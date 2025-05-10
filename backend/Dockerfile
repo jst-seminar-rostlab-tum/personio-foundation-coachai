@@ -1,23 +1,35 @@
+# Use Python 3.11 slim image as base
 FROM python:3.11-slim
 
+# Set working directory
 WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    && apt-get clean \
+    gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install uv
+RUN pip install uv
 
-# Copy the rest of the source code
+# Create and activate virtual environment
+RUN uv venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Copy the entire project structure
 COPY . .
 
+# Install dependencies using uv
+RUN uv pip install .
+
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+ENV stage=prod
+ENV POSTGRES_HOST=db
+ENV POSTGRES_PORT=5432
+
+# Expose the port the app runs on
+EXPOSE 8000
 
 # Command to run the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "backend.scripts.start_prod"]
