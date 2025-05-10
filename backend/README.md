@@ -2,7 +2,7 @@
 
 ## Setup
 
-### Local Development
+### Local Development (this is already implemented in Dockerfile)
 
 1. Create a virtual environment using uv:
 ```bash
