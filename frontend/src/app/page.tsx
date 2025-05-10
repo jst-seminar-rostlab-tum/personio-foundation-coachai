@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Message } from '@/interfaces/api';
-import Link from 'next/link';
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -51,16 +50,10 @@ export default function Home() {
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
         <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <span className="text-blue-600">
-            Coachai
-          </span>
+          Welcome to <span className="text-blue-600">Coachai</span>
         </h1>
 
-        <p className="mt-3 text-2xl">
-          Full-stack application with TypeScript and Python
-        </p>
-
+        <p className="mt-3 text-2xl">Full-stack application with TypeScript and Python</p>
 
         <form onSubmit={handleSubmit} className="mb-8">
           <input
@@ -80,10 +73,7 @@ export default function Home() {
 
         <div className="space-y-4">
           {messages.map((message) => (
-            <div
-              key={message.id}
-              className="border p-4 rounded shadow-sm"
-            >
+            <div key={message.id} className="border p-4 rounded shadow-sm">
               <p>{message.content}</p>
               <small className="text-gray-500">
                 {new Date(message.created_at).toLocaleString()}
