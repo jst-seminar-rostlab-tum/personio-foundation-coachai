@@ -1,2 +1,0 @@
-#!/bin/sh
-echo "✅ Husky pre-commit hook 2 triggered!"
