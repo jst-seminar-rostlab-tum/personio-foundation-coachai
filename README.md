@@ -65,6 +65,8 @@ The application will be available at:
 
 ## Development
 
+Find our dev guidelines [here](https://docs.google.com/document/d/170R8l0su_jjK_igha7evuvO341EeA1G8vX2RH5uijR0/edit?usp=sharing).
+
 ### Frontend Development
 
 The frontend is a Next.js application with TypeScript. Key features:
