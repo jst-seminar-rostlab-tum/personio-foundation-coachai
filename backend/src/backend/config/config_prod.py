@@ -1,0 +1,10 @@
+from .config import BaseConfig
+
+
+class ProdConfig(BaseConfig):
+    stage = "prod"
+    POSTGRES_SERVER = "db"
+    POSTGRES_USER = "postgres"
+    POSTGRES_PASSWORD = "postgres"
+    POSTGRES_DB = "app_db"
+    POSTGRES_PORT = "5432"

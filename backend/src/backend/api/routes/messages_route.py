@@ -1,0 +1,21 @@
+from backend import models, schemas
+from backend.database import get_db
+from fastapi import APIRouter, Depends
+from requests import Session
+
+router = APIRouter(prefix="/messages", tags=["Messages"])
+
+
+@router.post("/", response_model=schemas.Message)
+def create_message(message: schemas.MessageCreate, db: Session = Depends(get_db)):
+    db_message = models.Message(content=message.content)
+    db.add(db_message)
+    db.commit()
+    db.refresh(db_message)
+    return db_message
+
+
+@router.get("/", response_model=list[schemas.Message])
+def read_messages(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    messages = db.query(models.Message).offset(skip).limit(limit).all()
+    return messages

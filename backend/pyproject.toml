@@ -1,26 +1,35 @@
-[tool.poetry]
+[project]
 name = "backend"
 version = "0.1.0"
 description = "FastAPI backend for Next.js web application"
-authors = ["Your Name <your.email@example.com>"]
+requires-python = ">=3.9,<4.0"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn>=0.23.2",
+    "sqlalchemy>=2.0.22",
+    "pydantic>=2.4.2",
+    "pydantic-settings>=2.0.3",
+    "psycopg2-binary>=2.9.9",
+    "alembic>=1.12.0",
+    "python-jose>=3.3.0",
+    "passlib>=1.7.4",
+    "python-multipart>=0.0.6",
+    "email-validator>=2.0.0",
+    "docker>=7.1.0",
+]
+readme = "README.md"
+keywords = []
 
-[tool.poetry.dependencies]
-python = "^3.9"
-fastapi = "^0.104.0"
-uvicorn = "^0.23.2"
-sqlalchemy = "^2.0.22"
-pydantic = "^2.4.2"
-pydantic-settings = "^2.0.3"
-psycopg2-binary = "^2.9.9"
-alembic = "^1.12.0"
-python-jose = "^3.3.0"
-passlib = "^1.7.4"
-python-multipart = "^0.0.6"
-email-validator = "^2.0.0"
+[project.urls]
+Homepage = "https://example.com"
+Changelog = "https://example.com"
+Repository = "https://github.com/jst-seminar-rostlab-tum/personio-foundation-coachai"
+Documentation = "https://example.com"
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.4.2"
-httpx = "^0.25.0"
+[project.scripts]
+start = "backend.scripts:start"
+start-prod = "backend.scripts:start_prod"
+start-db = "backend.scripts:start_db"
 
 [tool.ruff]
 line-length = 88
@@ -44,5 +53,5 @@ target-version = ["py39"]
 include = '\.pyi?$'
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.7.3,<0.8.0"]
+build-backend = "uv_build"
