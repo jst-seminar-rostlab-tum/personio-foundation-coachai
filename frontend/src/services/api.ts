@@ -32,7 +32,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response } = error;
-    console.log(response);
+    console.warn(response);
     // Handle different error statuses here if needed
     return Promise.reject(error);
   }
