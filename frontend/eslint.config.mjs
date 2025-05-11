@@ -29,6 +29,14 @@ const eslintConfig = [
       'import/extensions': 'off',
       'no-underscore-dangle': 'off',
       'import/prefer-default-export': 'off',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.object.name='console'][callee.property.name='log']",
+          message: 'Unexpected console.log. Use console.warn or console.error instead.',
+        },
+      ],
+      'no-console': 'off',
     },
   },
   {
