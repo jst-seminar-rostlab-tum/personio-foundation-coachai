@@ -21,10 +21,8 @@ readme = "README.md"
 keywords = []
 
 [project.urls]
-Homepage = "https://example.com"
-Changelog = "https://example.com"
+Homepage = "https://www.notion.so/Personio-Foundation-1d85f44840578078ad73f8b0477bdf83"
 Repository = "https://github.com/jst-seminar-rostlab-tum/personio-foundation-coachai"
-Documentation = "https://example.com"
 
 [project.scripts]
 start = "backend.scripts:start"
