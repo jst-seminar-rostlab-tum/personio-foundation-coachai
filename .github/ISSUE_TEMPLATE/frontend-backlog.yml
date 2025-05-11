@@ -1,36 +1,12 @@
 name: Frontend Backlog
 description: Tasks related to UI/UX or frontend logic.
-title: ""
 labels: ["frontend"]
+projects: "jst-seminar-rostlab-tum/7"
 body:
   - type: textarea
     id: description
     attributes:
       label: Description
-    validations:
-      required: false
-
-  - type: dropdown
-    id: status
-    attributes:
-      label: Status
-      description: Current status of the task
-      options:
-        - Sprint Backlog
-        - In Progress
-        - Blocked
-        - In Review
-        - Done
-    validations:
-      required: true
-
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priority
-      options:
-        - Standard
-        - Low
-        - Critical
+      description: Add screenshots or mockups if relevant.
     validations:
       required: false

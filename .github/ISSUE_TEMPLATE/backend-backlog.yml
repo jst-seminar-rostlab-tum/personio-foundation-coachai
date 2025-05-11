@@ -1,36 +1,11 @@
 name: Backend Backlog
 description: Server, API, DB, logic tasks etc.
-title: ""
 labels: ["backend"]
+projects: "jst-seminar-rostlab-tum/6"
 body:
   - type: textarea
     id: description
     attributes:
       label: Description
-    validations:
-      required: false
-
-  - type: dropdown
-    id: status
-    attributes:
-      label: Status
-      description: Current status of the task
-      options:
-        - Sprint Backlog
-        - In Progress
-        - Blocked
-        - In Review
-        - Done
-    validations:
-      required: true
-
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priority
-      options:
-        - Standard
-        - Low
-        - Critical
     validations:
       required: false
