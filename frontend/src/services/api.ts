@@ -14,7 +14,13 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      return {
+        ...config,
+        headers: {
+          ...config.headers,
+          Authorization: `Bearer ${token}`,
+        },
+      };
     }
     return config;
   },
@@ -26,7 +32,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response } = error;
-    console.log(response);
+    console.warn(response);
     // Handle different error statuses here if needed
     return Promise.reject(error);
   }
