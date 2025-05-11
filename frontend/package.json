@@ -6,8 +6,13 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --fix --max-warnings=0",
+    "format": "prettier . --write",
     "prepare": "cd .. && husky frontend/.husky"
+  },
+  "lint-staged": {
+    "*.{js,cjs,mjs,ts,tsx,jsx}": "npm run lint",
+    "*.{js,cjs,mjs,ts,tsx,jsx,json}": "npm run format"
   },
   "dependencies": {
     "axios": "^1.9.0",
