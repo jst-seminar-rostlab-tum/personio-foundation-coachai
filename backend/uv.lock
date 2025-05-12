@@ -157,6 +157,9 @@ dependencies = [
 dev = [
     { name = "ruff" },
 ]
+lint = [
+    { name = "ruff" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -175,6 +178,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [{ name = "ruff", specifier = ">=0.11.9" }]
+lint = [{ name = "ruff" }]
 
 [[package]]
 name = "colorama"

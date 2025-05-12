@@ -1,8 +1,7 @@
-from ..database import Base
-
-from sqlalchemy import DateTime, Column, Integer, String
+from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.sql import func
 
+from ..database import Base
 
 
 class Message(Base):
