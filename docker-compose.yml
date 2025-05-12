@@ -25,16 +25,15 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      - POSTGRES_SERVER=db
+      - POSTGRES_HOST=db
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=postgres_prod
       - POSTGRES_DB=app_db
       - POSTGRES_PORT=5432
     depends_on:
       - db
     networks:
       - app-network
-    command: python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 
   db:
     image: postgres:15-alpine
@@ -43,9 +42,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=app_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_prod
+      POSTGRES_DB: app_db
     networks:
       - app-network
 

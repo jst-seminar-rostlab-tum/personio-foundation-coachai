@@ -1,11 +1,11 @@
 [project]
-name = "backend"
+name = "coachAI-backend"
 version = "0.1.0"
-description = "FastAPI backend for Next.js web application"
-requires-python = ">=3.9,<4.0"
+description = "A smart, voice-based training app for HR professionals to master difficult conversations through guided preparation, realistic simulations, and actionable feedback"
+readme = "README.md"
+requires-python = ">=3.9"
 dependencies = [
-    "fastapi>=0.104.0",
-    "uvicorn>=0.23.2",
+    "fastapi[standard]>=0.112.1",
     "sqlalchemy>=2.0.22",
     "pydantic>=2.4.2",
     "pydantic-settings>=2.0.3",
@@ -15,19 +15,8 @@ dependencies = [
     "passlib>=1.7.4",
     "python-multipart>=0.0.6",
     "email-validator>=2.0.0",
-    "docker>=7.1.0",
+    "docker>=7.1.0",   
 ]
-readme = "README.md"
-keywords = []
-
-[project.urls]
-Homepage = "https://www.notion.so/Personio-Foundation-1d85f44840578078ad73f8b0477bdf83"
-Repository = "https://github.com/jst-seminar-rostlab-tum/personio-foundation-coachai"
-
-[project.scripts]
-start = "backend.scripts:start"
-start-prod = "backend.scripts:start_prod"
-start-db = "backend.scripts:start_db"
 
 [tool.ruff]
 line-length = 88
@@ -50,6 +39,5 @@ line-length = 88
 target-version = ["py39"]
 include = '\.pyi?$'
 
-[build-system]
-requires = ["uv_build>=0.7.3,<0.8.0"]
-build-backend = "uv_build"
+[tool.uv.workspace]
+members = ["backend"]

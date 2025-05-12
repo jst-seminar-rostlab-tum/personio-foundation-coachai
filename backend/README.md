@@ -2,22 +2,40 @@
 
 ## Setup
 
-### Local Development (this is already implemented in Dockerfile)
+### Requirements
 
-1. Create a virtual environment using uv:
+Install [uv package and project manager](https://docs.astral.sh/uv/):
+
+- For Linux and MacOS:
 ```bash
-uv venv
-source .venv/bin/activate  # On Windows: .\.venv\Scripts\activate
+curl -LsSf https://astral.sh/uv/install.sh | less
+```
+- For Windows:
+```bash
+powershell -c "irm https://astral.sh/uv/install.ps1 | more"
 ```
 
-2. Install dependencies:
+
+### Local Development
+
+1. Sync the backend dependencies with the environment:
 ```bash
-uv pip install .
+cd backend
+uv sync
+```
+- (Optional) Activate the Python environment: 
+  ```bash
+  source .venv/bin/activate  # On Windows: .\.venv\Scripts\activate
+  ```
+
+2. Start the PostgreSQL database:
+```bash
+docker compose up db -d
 ```
 
 3. Run the development server:
 ```bash
-python -m uvicorn backend.main:app --reload
+uv run fastapi dev
 ```
 
 ### Docker Development
@@ -32,17 +50,16 @@ docker compose up backend
 
 ```
 backend/
-├── src/
-│   └── backend/
-│       ├── api/
-│       ├── config/
-│       ├── models/
-│       ├── schemas/
-│       ├── main.py
-│       ├── database.py
-│       └── scripts.py
+├── config/
+├── models/
+├── routers/
+├── schemas/
+├── database.py
+├── Dockerfile
+├── main.py
 ├── pyproject.toml
-└── Dockerfile
+├── README.md
+└── uv.lock
 ```
 
 ## API Documentation
