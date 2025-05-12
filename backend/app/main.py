@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from . import models, schemas
-from .database import engine, get_db
+from .database import engine, get_db, check_database_connection
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
@@ -22,6 +22,16 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the API"}
+
+@app.get("/health/db")
+def check_db_connection():
+    result = check_database_connection()
+    if result["status"] == "unhealthy":
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database connection failed: {result.get('error', 'Unknown error')}"
+        )
+    return result
 
 @app.post("/messages/", response_model=schemas.Message)
 def create_message(message: schemas.MessageCreate, db: Session = Depends(get_db)):
