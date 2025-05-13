@@ -6,7 +6,7 @@ A simple full-stack application built with Next.js, FastAPI, and PostgreSQL.
 
 ```
 .
-├── frontend/                 # Next.js frontend application
+├── frontend/                # Next.js frontend application
 │   ├── src/
 │   │   ├── app/             # Next.js app directory
 │   │   │   ├── components/      # TypeScript interfaces
