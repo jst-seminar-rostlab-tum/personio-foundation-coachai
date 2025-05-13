@@ -18,6 +18,5 @@ convention = "google"
 [format]
 line-ending = "lf"
 quote-style = "double"
-indent-style = "tab"
 docstring-code-format = true
 docstring-code-line-length = 20
