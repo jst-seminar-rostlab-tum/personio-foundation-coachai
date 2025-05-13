@@ -5,11 +5,13 @@
 ### Local Development
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -46,7 +48,6 @@ The following environment variables can be configured:
 ## Code Style
 
 The project uses ESLint for code linting and formatting. To check code style:
-
 
 ## Deployment
 

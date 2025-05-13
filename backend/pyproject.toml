@@ -15,7 +15,7 @@ dependencies = [
     "passlib>=1.7.4",
     "python-multipart>=0.0.6",
     "email-validator>=2.0.0",
-    "docker>=7.1.0",   
+    "pre-commit>=4.2.0",
 ]
 
 [tool.uv.workspace]
