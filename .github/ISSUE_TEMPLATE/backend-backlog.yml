@@ -1,0 +1,11 @@
+name: Backend Backlog
+description: Server, API, DB, logic tasks etc.
+labels: ["backend"]
+projects: "jst-seminar-rostlab-tum/6"
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: false
