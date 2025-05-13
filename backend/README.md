@@ -56,12 +56,13 @@ docker compose up backend
 
 ```
 backend/
-├── config/
 ├── models/
 ├── routers/
 ├── schemas/
 ├── database.py
 ├── Dockerfile
+├── .env.example
+├── .env  # Needs to be created by copying .env.example and configuring it
 ├── main.py
 ├── pyproject.toml
 ├── README.md
@@ -74,26 +75,6 @@ Once the server is running, you can access:
 
 - Interactive API documentation: http://localhost:8000/docs
 - Alternative API documentation: http://localhost:8000/redoc
-
-## API Endpoints
-
-### Messages
-
-- `GET /messages/`
-
-  - List all messages
-  - Query parameters:
-    - `skip`: Number of records to skip (default: 0)
-    - `limit`: Maximum number of records to return (default: 100)
-
-- `POST /messages/`
-  - Create a new message
-  - Request body:
-    ```json
-    {
-      "content": "string"
-    }
-    ```
 
 ## Development Tools
 
