@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Message } from '@/interfaces/api';
+import { Message } from '@/interfaces/Api';
 
-export default function Home() {
+export default function Page() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
