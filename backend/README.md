@@ -34,10 +34,7 @@ uv sync
 
 2. Assure the Supabase database is set:
 
-```bash
-create .env file
-add this line: DATABASE_URL = "Your URL" # you can get your URL in Supabase by going to new project -> Connect -> Direct Connection link
-```
+- create .env file from .env.example
 
 ```bash
 prisma generate # assures connection to supabase through prisma is set
