@@ -88,7 +88,6 @@ Unless this line is deleted, you have to set up your own account to try it out. 
    ```
 
 #### Important Notes
-- Currently Phone Authentication is supabase is activated, However it s not implemented in this backend folder since login funcitonnality is not ready in Nextjs. (16.05.2025)
 - Implementation will proceed once Next.js login functionality is ready
 - The current `twilio_service.py` is for demonstration purposes only!
 - This step is done BUT: To see how to setup twilio with supabase check https://supabase.com/docs/guides/auth/phone-login?showSmsProvider=Twilio#! . To set it in the CSEE x Personio Supabase account contact TA or META team 
