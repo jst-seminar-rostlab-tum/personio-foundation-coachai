@@ -18,7 +18,7 @@ export default function Page() {
       const data = await response.json();
       setMessages(data);
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error('Error fetching messages: ', error);
     } finally {
       setLoading(false);
     }
