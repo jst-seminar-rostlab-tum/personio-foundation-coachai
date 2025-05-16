@@ -2,4 +2,4 @@
 cd ./frontend && npx lint-staged
 
 # Backend pre-commit hook
-uv run pre-commit run --all-files
+cd ../backend && uv run pre-commit run
