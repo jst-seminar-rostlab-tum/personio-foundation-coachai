@@ -1,5 +1,5 @@
 # Frontend pre-push hook
-cd ./frontend && jest --bail
+cd ./frontend && npx jest --bail
 
 # Backend pre-commit hook
 cd ../backend
