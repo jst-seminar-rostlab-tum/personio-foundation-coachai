@@ -8,14 +8,14 @@ from .routers import messages_route
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="CoachAI", debug=settings.stage == "dev")
+app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=['http://localhost:3000'],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=['*'],
+    allow_headers=['*'],
 )
 
 app.include_router(messages_route.router)

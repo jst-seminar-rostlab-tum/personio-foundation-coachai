@@ -2,22 +2,28 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from .. import models, schemas
 from ..database import get_db
+from ..models import MessageModel
+from ..schemas import MessageCreateSchema, MessageSchema
 
-router = APIRouter(prefix="/messages", tags=["Messages"])
+router = APIRouter(prefix='/messages', tags=['Messages'])
 
 
-@router.post("/", response_model=schemas.Message)
-def create_message(message: schemas.MessageCreate, db: Annotated[dict, Depends(get_db)]):
-    db_message = models.Message(content=message.content)
+@router.post('/', response_model=MessageSchema)
+def create_message(
+    message: MessageCreateSchema, db: Annotated[dict, Depends(get_db)]
+) -> MessageModel:
+    db_message = MessageModel(content=message.content)
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
     return db_message
 
 
-@router.get("/", response_model=list[schemas.Message])
-def read_messages(db: Annotated[dict, Depends(get_db)], skip: int = 0, limit: int = 100):
-    messages = db.query(models.Message).offset(skip).limit(limit).all()
+@router.get('/', response_model=list[MessageSchema])
+def read_messages(
+    db: Annotated[dict, Depends(get_db)], skip: int = 0, limit: int = 100
+) -> list[MessageSchema]:
+    db_messages = db.query(MessageModel).offset(skip).limit(limit).all()
+    messages = [MessageSchema.model_validate(db_message) for db_message in db_messages]
     return messages
