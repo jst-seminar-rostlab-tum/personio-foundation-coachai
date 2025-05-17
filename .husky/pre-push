@@ -10,7 +10,7 @@ while read local_ref local_sha remote_ref remote_sha; do
     range="$remote_sha..$local_sha"
   fi
 
-  changed_files=$(git diff-tree --no-commit-id --name-only -r $range)
+  changed_files=$(git diff-tree --name-only -r $range)
 
   if echo "$changed_files" | grep -q '^frontend/'; then
     echo "🛠️- Changes in frontend. Running frontend pre-push hooks..."
