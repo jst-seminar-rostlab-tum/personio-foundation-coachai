@@ -1,4 +1,4 @@
-import Api from '../Api';
+import Api from '../../src/services/Api';
 
 describe('api instance', () => {
   it('adds Authorization header if token exists', async () => {

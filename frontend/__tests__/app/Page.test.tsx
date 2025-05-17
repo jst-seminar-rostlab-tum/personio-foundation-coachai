@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Page from '../Page';
+import Page from '../../src/app/Page';
 
 const mockMessages = [
   { id: 1, content: 'Hello world!', created_at: '2024-01-01T10:00:00Z' },
