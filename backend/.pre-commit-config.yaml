@@ -6,6 +6,7 @@ repos:
       - id: ruff
         name: Ruff Linter (backend)
         files: ^backend/
+        args: ["--fix"] 
         stages: [pre-commit]
 
       - id: ruff-format
