@@ -21,4 +21,4 @@ convention = "google"
 line-ending = "lf"
 quote-style = "single"
 docstring-code-format = true
-docstring-code-line-length = 19
+docstring-code-line-length = 20
