@@ -19,6 +19,6 @@ convention = "google"
 
 [format]
 line-ending = "lf"
-quote-style = "single"
+quote-style = "double"
 docstring-code-format = true
 docstring-code-line-length = 20
