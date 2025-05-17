@@ -25,6 +25,9 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 ```bash
 cd backend
 uv sync
+
+cd ../frontend
+npm install # Required to initialize Husky which manages the pre-commit hooks
 ```
 
 - Activate the Python environment:
