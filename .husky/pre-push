@@ -1,5 +1,9 @@
-# Frontend pre-push hook
-cd ./frontend && npx jest --bail
+# Go to root directory of the repository
+cd "$(git rev-parse --show-toplevel)" || exit 1
 
-# Backend pre-commit hook
-cd ../backend
+# Run frontend lint-staged
+cd ./frontend || exit 1
+npx jest --bail
+
+# Run backend pre-commit
+cd ../backend || exit 1
