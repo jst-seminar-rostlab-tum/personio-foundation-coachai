@@ -37,7 +37,6 @@ A simple full-stack application built with Next.js, FastAPI, and PostgreSQL.
 - SQLAlchemy
 - PostgreSQL
 - Pydantic
-- Uvicorn
 
 ## Prerequisites
 

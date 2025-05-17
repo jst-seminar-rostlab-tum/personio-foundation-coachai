@@ -3,17 +3,18 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class MessageBase(BaseModel):
+class MessageBaseSchema(BaseModel):
     content: str
 
 
-class MessageCreate(MessageBase):
+class MessageCreateSchema(MessageBaseSchema):
     pass
 
 
-class Message(MessageBase):
+class MessageSchema(MessageBaseSchema):
     id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        'from_attributes': True,
+    }
