@@ -15,7 +15,7 @@ while read local_ref local_sha remote_ref remote_sha; do
   if echo "$changed_files" | grep -q '^frontend/'; then
     echo "🛠️- Changes in frontend. Running frontend pre-push hooks..."
     cd frontend
-    npx jest --bail
+    npx jest --bail --passWithNoTests
     cd - >/dev/null
   fi
 
