@@ -4,11 +4,11 @@ set -e
 cd "$(git rev-parse --show-toplevel)"
 
 # Run frontend lint-staged
-echo -e "🛠️ Running frontend pre-commit hooks..."
+echo -e "🛠️\u0020Running frontend pre-commit hooks..."
 cd ./frontend
 npx lint-staged
 
 # Run backend pre-commit
-echo -e "🛠️ Running backend pre-commit hooks..."
+echo -e "🛠️\u0020Running backend pre-commit hooks..."
 cd ../backend
 uv run pre-commit run --config .pre-commit-config.yaml
