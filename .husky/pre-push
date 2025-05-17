@@ -13,14 +13,14 @@ while read local_ref local_sha remote_ref remote_sha; do
   changed_files=$(git diff-tree --no-commit-id --name-only -r $range)
 
   if echo "$changed_files" | grep -q '^frontend/'; then
-    echo "🛠️- Running frontend pre-push hooks..."
+    echo "🛠️- Changes in frontend. Running frontend pre-push hooks..."
     cd frontend
     npx jest --bail
     cd - >/dev/null
   fi
 
   if echo "$changed_files" | grep -q '^backend/'; then
-    echo "🛠️- Running backend pre-push hooks..."
+    echo "🛠️- Changes in backend. Running backend pre-push hooks..."
     cd backend
     echo "Running backend tests"
     cd - >/dev/null
