@@ -22,6 +22,10 @@
     "swr": "^2.3.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/format": "^19.8.1",
+    "@commitlint/prompt-cli": "^19.8.1",
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^22.15.17",
