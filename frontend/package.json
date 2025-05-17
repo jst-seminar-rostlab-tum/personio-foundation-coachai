@@ -15,10 +15,7 @@
   },
   "lint-staged": {
     "*.{js,cjs,mjs,ts,tsx,jsx,json}": "prettier --write",
-    "*.{js,cjs,mjs,ts,tsx,jsx}": [
-      "eslint --fix",
-      "jest --bail --findRelatedTests --"
-    ]
+    "*.{js,cjs,mjs,ts,tsx,jsx}": "eslint --fix"
   },
   "dependencies": {
     "axios": "^1.9.0",
