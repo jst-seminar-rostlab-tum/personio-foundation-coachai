@@ -9,9 +9,9 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --max-warnings=0 --fix",
     "format": "prettier \"**/*.{js,cjs,mjs,ts,tsx,jsx,json}\" --write",
-    "prepare": "cd .. && husky frontend/.husky",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "prepare": "cd .. && husky"
   },
   "lint-staged": {
     "*.{js,cjs,mjs,ts,tsx,jsx,json}": "prettier --write",

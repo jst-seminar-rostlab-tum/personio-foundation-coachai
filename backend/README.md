@@ -9,13 +9,13 @@ Install [uv package and project manager](https://docs.astral.sh/uv/):
 - For Linux and MacOS:
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | less
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 - For Windows:
 
 ```bash
-powershell -c "irm https://astral.sh/uv/install.ps1 | more"
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
 ### Local Development
@@ -25,6 +25,9 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | more"
 ```bash
 cd backend
 uv sync
+
+cd ../frontend
+npm install # Required to initialize Husky which manages the pre-commit hooks
 ```
 
 - Activate the Python environment:

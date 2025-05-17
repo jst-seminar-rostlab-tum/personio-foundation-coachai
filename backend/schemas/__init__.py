@@ -1,3 +1,3 @@
-from .message_schema import Message, MessageCreate
+from .message_schema import MessageCreateSchema, MessageSchema
 
-__all__ = ["Message", "MessageCreate"]
+__all__ = ['MessageSchema', 'MessageCreateSchema']

@@ -1,3 +1,3 @@
-from .message_model import Base, Message
+from .message_model import Base, MessageModel
 
-__all__ = ["Base", "Message"]
+__all__ = ['Base', 'MessageModel']
