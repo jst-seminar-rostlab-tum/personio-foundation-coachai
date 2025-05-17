@@ -1,5 +1,10 @@
-# Frontend pre-commit hook
-cd ./frontend && npx lint-staged
+# Go to root directory of the repository
+cd "$(git rev-parse --show-toplevel)" || exit 1
 
-# Backend pre-commit hook
-cd ../backend && uv run pre-commit run
+# Run frontend lint-staged
+cd ./frontend || exit 1
+npx lint-staged
+
+# Run backend pre-commit
+cd ../backend || exit 1
+uv run pre-commit run

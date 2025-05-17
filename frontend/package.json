@@ -14,8 +14,11 @@
     "prepare": "cd .. && husky"
   },
   "lint-staged": {
-    "*.{js,cjs,mjs,ts,tsx,jsx,json}": "prettier --write",
-    "*.{js,cjs,mjs,ts,tsx,jsx}": "eslint --fix"
+    "*.{js,cjs,mjs,ts,tsx,jsx}": [
+      "prettier --write",
+      "eslint --fix --max-warnings=0"
+    ],
+    "*.json": "prettier --write"
   },
   "dependencies": {
     "axios": "^1.9.0",
