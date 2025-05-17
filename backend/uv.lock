@@ -79,7 +79,6 @@ dependencies = [
     { name = "email-validator" },
     { name = "fastapi", extra = ["standard"] },
     { name = "passlib" },
-    { name = "pre-commit" },
     { name = "psycopg2-binary" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -90,6 +89,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "pre-commit" },
     { name = "ruff" },
 ]
 lint = [
@@ -102,7 +102,6 @@ requires-dist = [
     { name = "email-validator", specifier = ">=2.0.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.112.1" },
     { name = "passlib", specifier = ">=1.7.4" },
-    { name = "pre-commit", specifier = ">=4.2.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.9" },
     { name = "pydantic", specifier = ">=2.4.2" },
     { name = "pydantic-settings", specifier = ">=2.0.3" },
@@ -112,7 +111,10 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "ruff", specifier = ">=0.11.9" }]
+dev = [
+    { name = "pre-commit", specifier = ">=4.2.0" },
+    { name = "ruff", specifier = ">=0.11.9" },
+]
 lint = [{ name = "ruff" }]
 
 [[package]]
