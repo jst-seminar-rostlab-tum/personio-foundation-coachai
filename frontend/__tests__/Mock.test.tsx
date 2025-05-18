@@ -1,3 +1,3 @@
 test('test to verify pre-push hook', () => {
-  expect(true).toBe(true);
+  expect(true).toBe(false);
 });
