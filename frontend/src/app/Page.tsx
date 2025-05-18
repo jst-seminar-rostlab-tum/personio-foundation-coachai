@@ -21,7 +21,6 @@ export default function Page() {
       console.error('Error fetching messages:', error);
     } finally {
       setLoading(false);
-      // Set loading to false after fetching
     }
   };
 
