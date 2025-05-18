@@ -22,7 +22,7 @@ while read local_ref local_sha remote_ref remote_sha; do
   if echo "$changed_files" | grep -q '^backend/'; then
     echo "🛠️- Changes in backend. Running backend pre-push hooks..."
     cd backend
-    echo "Running backend tests"
+    pytest --exitfirst --disable-warnings
     cd - >/dev/null
   fi
 done
