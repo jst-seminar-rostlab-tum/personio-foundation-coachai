@@ -17,9 +17,6 @@ dependencies = [
     "email-validator>=2.0.0",
 ]
 
-[tool.setuptools]
-packages = ["models", "routers", "schemas"]
-
 [tool.uv.workspace]
 members = ["backend"]
 
