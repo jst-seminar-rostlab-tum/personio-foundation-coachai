@@ -7,16 +7,16 @@ repos:
         name: Ruff Linter (backend)
         files: ^backend/
         args: ["--fix"] 
-        stages: [pre-commit]
+        stages: [pre-commit, manual]
 
       - id: ruff-format
         name: Ruff Formatter (backend)
         files: ^backend/
-        stages: [pre-commit]
+        stages: [pre-commit, manual]
 
   # Check for leaked secrets
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.24.2
     hooks:
       - id: gitleaks
-        stages: [pre-commit]
+        stages: [pre-commit, manual]

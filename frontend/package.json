@@ -9,14 +9,14 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --max-warnings=0 --fix",
     "format": "prettier \"**/*.{js,cjs,mjs,ts,tsx,jsx,json}\" --write",
-    "test": "jest",
+    "test": "jest --ci --bail --passWithNoTests",
     "test:watch": "jest --watch",
     "prepare": "cd .. && husky"
   },
   "lint-staged": {
     "*.{js,cjs,mjs,ts,tsx,jsx}": [
       "prettier --write",
-      "eslint --fix --max-warnings=0"
+      "eslint --fix --max-warnings=0 --no-warn-ignored"
     ],
     "*.json": "prettier --write"
   },
