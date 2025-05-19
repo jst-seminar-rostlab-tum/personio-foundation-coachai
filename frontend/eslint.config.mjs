@@ -12,7 +12,13 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    ignores: ['**/node_modules/**', '**/.next/**'],
+    ignores: [
+      '**/node_modules/**',
+      '**/.next/**',
+      'eslint.config.mjs',
+      'jest.setup.ts',
+      'package.json',
+    ],
   },
   ...compat.extends(
     'airbnb-base',
@@ -29,7 +35,6 @@ const eslintConfig = [
       '@typescript-eslint/no-use-before-define': 'off',
       'import/extensions': 'off',
       'no-underscore-dangle': 'off',
-      'import/prefer-default-export': 'off',
       'no-restricted-syntax': [
         'error',
         {
@@ -38,12 +43,6 @@ const eslintConfig = [
         },
       ],
       'no-console': 'off',
-    },
-  },
-  {
-    files: ['eslint.config.mjs'],
-    rules: {
-      'import/no-extraneous-dependencies': 'off',
     },
   },
   {
