@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, constr
 
 from ..services.twilio_service import twilio_service
@@ -17,7 +17,6 @@ async def send_sms(request: SMSRequest):
     Send an SMS message using Twilio.
     """
     result = await twilio_service.send_sms(request.to_number, request.message)
-    if not result["success"]:
-        raise HTTPException(status_code=400, detail=result["error"])
+    if not result['success']:
+        raise HTTPException(status_code=400, detail=result['error'])
     return result
-

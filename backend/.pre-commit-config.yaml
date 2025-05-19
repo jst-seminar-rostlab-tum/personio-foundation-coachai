@@ -4,15 +4,27 @@ repos:
     rev: v0.11.9
     hooks:
       - id: ruff
-        name: Ruff Linter (backend)
+        name: Ruff Linter (backend - pre-commit)
         files: ^backend/
         args: ["--fix"] 
-        stages: [pre-commit, manual]
+        stages: [pre-commit]
+
+      - id: ruff
+        name: Ruff Linter (backend - ci)
+        files: ^backend/
+        args: ["--no-fix"]
+        stages: [manual]
 
       - id: ruff-format
-        name: Ruff Formatter (backend)
+        name: Ruff Formatter (backend - pre-commit)
         files: ^backend/
-        stages: [pre-commit, manual]
+        stages: [pre-commit]
+
+      - id: ruff-format
+        name: Ruff Formatter (backend - ci)
+        files: ^backend/
+        args: ["--check"]
+        stages: [manual]     
 
   # Check for leaked secrets
   - repo: https://github.com/gitleaks/gitleaks
