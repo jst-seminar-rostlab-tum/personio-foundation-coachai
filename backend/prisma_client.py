@@ -8,7 +8,8 @@ def get_prisma() -> Prisma:
     return Prisma()
 
 
-async def get_prisma():
+async def get_prisma_async() -> Prisma:
+    prisma = Prisma()
     await prisma.connect()
     try:
         yield prisma

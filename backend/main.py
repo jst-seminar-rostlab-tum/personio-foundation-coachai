@@ -19,5 +19,5 @@ app.include_router(twilio_route.router)
 
 
 @app.get('/')
-async def root():
+async def root() -> dict:
     return {'message': 'Welcome to the API'}
