@@ -2,7 +2,7 @@ module.exports = {
   extends: ['@commitlint/config-conventional'],
   parserPreset: {
     parserOpts: {
-      headerPattern: /^(\w+)(?:\((\d{1,4})\))?:\s(.*)$/,
+      headerPattern: /^(\w+)\((F-\d{1,4}|B-\d{1,4}|M)\):\s(.*)$/,
       headerCorrespondence: ['type', 'scope', 'subject'],
       issuePrefixes: [],
     },
@@ -14,7 +14,7 @@ module.exports = {
       'always',
       ['feat', 'fix', 'docs', 'style', 'refactor', 'test', 'revert', 'ci'],
     ],
-    'scope-empty': [1, 'never'],
+    'scope-empty': [2, 'never'],
     'subject-empty': [2, 'never'],
     'subject-case': [1, 'always', ['sentence-case', 'lower-case']],
   },
