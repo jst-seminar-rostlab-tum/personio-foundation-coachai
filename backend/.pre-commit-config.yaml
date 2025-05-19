@@ -6,16 +6,17 @@ repos:
       - id: ruff
         name: Ruff Linter (backend)
         files: ^backend/
-        stages: [pre-commit, pre-push]
+        args: ["--fix"] 
+        stages: [pre-commit]
 
       - id: ruff-format
         name: Ruff Formatter (backend)
         files: ^backend/
-        stages: [pre-commit, pre-push]
+        stages: [pre-commit]
 
   # Check for leaked secrets
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.24.2
     hooks:
       - id: gitleaks
-        stages: [pre-commit, pre-push]
+        stages: [pre-commit]

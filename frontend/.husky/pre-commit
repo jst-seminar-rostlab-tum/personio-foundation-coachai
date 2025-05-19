@@ -1,5 +1,0 @@
-# Frontend pre-commit hook
-cd ./frontend && npx lint-staged
-
-# Backend pre-commit hook
-cd ../backend && uv run pre-commit run
