@@ -1,12 +1,18 @@
-import argparse
 import asyncio
-import logging
+import base64
+import datetime
+import json
 import os
 
 import httpx
-from aiortc import MediaStreamTrack, RTCDataChannel, RTCPeerConnection, RTCSessionDescription
+from aiortc import (
+    MediaStreamTrack,
+    RTCDataChannel,
+    RTCIceCandidate,
+    RTCPeerConnection,
+    RTCSessionDescription,
+)
 from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder
-from aiortc.contrib.signaling import add_signaling_arguments, create_signaling
 from dotenv import load_dotenv
 
 ROOT = os.path.dirname(__file__)
@@ -21,7 +27,69 @@ if OPENAI_API_KEY is None:
 OPENAI_BASE_URL = 'https://api.openai.com/v1/realtime'
 MODEL_NAME = os.getenv('MODEL_NAME', 'gpt-4o-mini-realtime-preview-2024-12-17')
 
+# TODO: replace with server URL
 SESSION_URL = 'http://localhost:8000/session' # Our Session Endpoint to fetch a session token
+
+# Send a client event to the Realtime API through the data channel.
+def send_client_event(event: dict, data_channel: RTCDataChannel) -> None:
+    if not data_channel or data_channel.readyState != 'open':
+        print('Data channel is not open. Cannot send event.')
+        return
+
+    # Convert the event to a JSON string
+    event_json = json.dumps(event)
+
+    # Send the event over the data channel
+    data_channel.send(event_json)
+    print('Sent client event')
+
+def send_text_message(data_channel: RTCDataChannel, text:str = 'Hello World! How are you?') -> None:
+    event = {
+        'type': 'conversation.item.create',
+        'item': {
+            'type': 'message',
+            'role': 'user',
+            'content': [
+                {
+                    'type': 'input_text',
+                    'text': text,
+                }
+            ],
+        },
+    }
+    send_client_event(event, data_channel)
+
+    response_event = {
+        'type': 'response.create',
+        'response': {
+            'modalities': ['text'],
+        }
+    }
+    send_client_event(response_event, data_channel)
+
+def send_audio_message(data_channel: RTCDataChannel) -> None:
+    audio_file_path = os.path.join(ROOT, '../short-fireing-example.wav')
+
+    with open(audio_file_path, 'rb') as audio_file:
+        audio_bytes = audio_file.read()
+        # Convert audio bytes to base64 string
+        full_audio = base64.b64encode(audio_bytes).decode('utf-8')
+
+    event = {
+        'type': 'conversation.item.create',
+        'item': {
+            'type': 'message',
+            'role': 'user',
+            'content': [
+                {
+                    'type': 'input_audio',
+                    'audio': full_audio,
+                }
+            ],
+        },
+    }
+    send_client_event(event, data_channel)
+    send_client_event({ 'type': 'response.create' }, data_channel)
 
 """
 Initialize a WebRTC session with OpenAI's Realtime API.
@@ -36,11 +104,6 @@ The function performs the following steps:
 5. Start the session using the Session Description Protocol (SDP)
 - Send the SDP offer to the server and receive the SDP answer
 - Set the remote description for the peer connection
-8. Handle incoming messages on the data channel
-9. Handle incoming audio tracks
-10. Handle outgoing audio tracks
-11. Handle the end of the audio track
-12. Handle the end of the WebRTC session
 
 """
 async def init_webrtc_session() -> None:
@@ -53,8 +116,9 @@ async def init_webrtc_session() -> None:
 
         # 2. Create a WebRTC peer connection
         pc = RTCPeerConnection()
-        # recorder = MediaRecorder(args.record_to) if args.record_to else MediaBlackhole()
-        recorder = MediaBlackhole() # Use MediaBlackhole to discard incoming audio
+        recorder = MediaRecorder(os.path.join(ROOT, 'recorded_audio.wav'))
+        # MediaRecorder uses ffmpeg. If ffmpeg is not installed or not in PATH, it won't work.
+        # ffmpeg.org/download.html
 
         # 3. Set up the audio
         # Incoming audio: play remote audio from the model
@@ -63,17 +127,30 @@ async def init_webrtc_session() -> None:
             print(f'Track received: {track.kind}')
             await recorder.start()
             recorder.addTrack(track)
+            print('Recorder started')
 
             @track.on('ended')
             async def on_ended() -> None:
                 print(f'Track {track.kind} ended')
                 await recorder.stop()
+                print('Recorder stopped')
 
         # Outgoing audio: send local microphone audio to the peer
-        player = MediaPlayer(os.path.join(ROOT, '../short-fireing-example.wav')) # Replace with your audio source
-        pc.addTrack(player.audio)
+        #TODO: replace with audio source from browser
 
-        # Set up data channel for sending and receiving events
+        # Option 1: Use microphone audio
+        # player = MediaPlayer(
+        #     'audio=Mikrofonarray (Intel® Smart Sound Technologie für digitale Mikrofone)',
+        #     format='dshow'
+        # )
+        # pc.addTrack(player.audio)
+
+        # Option 2: Use a audio file
+        player = MediaPlayer(os.path.join(ROOT, '../short-fireing-example.wav'))
+        pc.addTrack(player.audio)
+        player.audio.on('ended', lambda: print('(MediaPlayer) Audio track ended'))
+
+        # 4. Set up data channel for sending and receiving events
         data_channel = pc.createDataChannel('oai-events')
 
         @data_channel.on('open')
@@ -83,9 +160,34 @@ async def init_webrtc_session() -> None:
             data_channel.send('Hello from client!')
 
         @data_channel.on('message')
-        def on_message(message: str) -> None:
-            print(f'Message received on data channel: {message}')
+        async def on_message(message: str) -> None:
+            print(f'({data_channel.label}) Message received on data channel: {message}')
             # data_channel.send(f'Echo: {message}')
+
+            # convert the message to a JSON object
+            try:
+                message = json.loads(message)
+            except json.JSONDecodeError:
+                print(f'Failed to parse message as JSON: {message}')
+
+            if message.get('type') == 'session.created':
+                print('Session created')
+                send_client_event({
+                    "type": "session.update",
+                    "session": {
+                        "instructions": "Never use the word 'moist' in your responses!"
+                    }
+                }, data_channel)
+
+            elif message.get('type') == 'input_audio_buffer.speech_started':
+                print('Speech started')
+                send_audio_message(data_channel)
+
+            elif message.get('type') == 'response.done':
+                print('Response done')
+            
+            else:
+                print(f'Unknown message type: {message.get('type')}')
 
         # incoming data channel
         @pc.on('datachannel')
@@ -94,7 +196,7 @@ async def init_webrtc_session() -> None:
 
             @channel.on('message')
             def on_message(message: str) -> None:
-                print(f'Message received on data channel: {message}')
+                print(f'({channel.label}) Message received on data channel: {message}')
                 channel.send(f'Echo: {message}')
                 # Realtime server events appear here!
 
@@ -105,7 +207,21 @@ async def init_webrtc_session() -> None:
                 await pc.close()
                 # pcs.discard(pc)
 
-        # 4. Start the session using the Session Description Protocol (SDP)
+        @pc.on('iceconnectionstatechange')
+        async def on_iceconnectionstatechange() -> None:
+            print('ICE connection state changed:', pc.iceConnectionState)
+
+        @pc.on('icecandidate')
+        async def on_icecandidate(candidate: RTCIceCandidate) -> None:
+            print('ICE candidate:', candidate)
+
+        @pc.on('signalingstatechange')
+        async def on_signalingstatechange() -> None:
+            print('Signaling state changed:', pc.signalingState)
+            # print timestamp
+            print('Timestamp (seconds):', datetime.datetime.now().timestamp())
+
+        # 5. Start the session using the Session Description Protocol (SDP)
         offer = await pc.createOffer()
         await pc.setLocalDescription(offer)
 
@@ -126,15 +242,19 @@ async def init_webrtc_session() -> None:
         answer = RTCSessionDescription(sdp=sdp_answer, type='answer')
         await pc.setRemoteDescription(answer)
 
+        # Stay connected until the connection is closed or failed
+        try:
+            while pc.connectionState not in ['closed', 'failed']:
+                await asyncio.sleep(1)
+            
+        finally:
+            print('Disconnecting...')
+            if pc.connectionState == 'connected':
+                await pc.close()
+            if data_channel.readyState == 'open':
+                await data_channel.close()
+            await recorder.stop()
+            print('Disconnected!')
+
 if __name__ == '__main__':
     asyncio.run(init_webrtc_session())
-
-# Once you have connected to the Realtime API through either WebRTC or WebSocket, 
-# you can call a Realtime model (such as gpt-4o-realtime-preview) to have speech-to-speech conversations. 
-# Doing so will require you to send client events to initiate actions, 
-# and listen for server events to respond to actions taken by the Realtime API.
-
-# A Realtime Session is a stateful interaction between the model and a connected client. The key components of the session are:
-# - The Session object, which controls the parameters of the interaction, like the model being used, the voice used to generate output, and other configuration.
-# - A Conversation, which represents user input Items and model output Items generated during the current session.
-# - Responses, which are model-generated audio or text Items that are added to the Conversation.
