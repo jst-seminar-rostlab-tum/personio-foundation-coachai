@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import messages_route, users_route, twilio_route
+from .routers import messages_route, twilio_route, users_route
 
 app = FastAPI(title="CoachAI", debug=True)
 
@@ -18,5 +18,5 @@ app.include_router(users_route.router)
 app.include_router(twilio_route.router)
 
 @app.get("/")
-async def root():
+async def root() -> dict:
     return {"message": "Welcome to the API"}

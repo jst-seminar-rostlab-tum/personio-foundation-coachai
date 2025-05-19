@@ -1,6 +1,7 @@
-from twilio.rest import Client
 import os
+
 from dotenv import load_dotenv
+from twilio.rest import Client
 
 load_dotenv()  # THIS IS REQUIRED TO LOAD FROM .ENV
 
@@ -13,7 +14,7 @@ print(account_sid, auth_token, verify_sid)
 
 client = Client(account_sid, auth_token)
 
-def send_verification_code(phone_number):
+def send_verification_code(phone_number: str) -> str:
     verification = client.verify.v2.services(verify_sid).verifications.create(
         to=phone_number,
         channel='sms'  # or 'call' for phone call
@@ -21,7 +22,7 @@ def send_verification_code(phone_number):
     return verification.status
 
 
-def check_verification_code(phone_number, code):
+def check_verification_code(phone_number: str, code: str) -> bool:
     verification_check = client.verify.v2.services(verify_sid).verification_checks.create(
         to=phone_number,
         code=code

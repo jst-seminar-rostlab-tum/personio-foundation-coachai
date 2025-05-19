@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, constr
 
 from ..services.twilio_service import twilio_service
@@ -12,7 +12,7 @@ class SMSRequest(BaseModel):
 
 
 @router.post('/sms')
-async def send_sms(request: SMSRequest):
+async def send_sms(request: SMSRequest) -> dict:
     """
     Send an SMS message using Twilio.
     """
