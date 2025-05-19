@@ -12,7 +12,7 @@ class SMSRequest(BaseModel):
 
 
 @router.post('/sms')
-async def send_sms(request: SMSRequest):
+async def send_sms(request: SMSRequest) -> dict:
     """
     Send an SMS message using Twilio.
     """
