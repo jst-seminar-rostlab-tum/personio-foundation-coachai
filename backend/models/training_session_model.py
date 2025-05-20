@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
 from uuid import uuid4, UUID
-from typing import Optional
+from typing import Optional, List
 
 class TrainingSessionModel(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -17,6 +17,9 @@ class TrainingSessionModel(SQLModel, table=True):  # `table=True` makes it a dat
     # Relationships
     case: Optional["TrainingCaseModel"] = Relationship(back_populates="sessions")
     language: Optional["LanguageModel"] = Relationship()  # Relationship to LanguageModel
+    conversation_turns: List["ConversationTurnModel"] = Relationship(back_populates="session")
+    feedback: Optional["TrainingSessionFeedbackModel"] = Relationship(back_populates="session")
+    ratings: List["RatingModel"] = Relationship(back_populates="session")
 
 # Schema for creating a new TrainingSession
 class TrainingSessionCreate(SQLModel):
