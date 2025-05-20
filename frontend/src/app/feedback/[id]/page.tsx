@@ -25,7 +25,7 @@ export default function FeedbackDetailPage() {
         <div className="text-xl font-bold text-gray-700">Feedback & Analysis</div>
       </div>
 
-      {/* Performance Summary Section*/}
+      {/* Performance Summary Section */}
       <div className="mb-8 flex flex-row items-stretch gap-4">
         <div className="flex-1">
           <div className="text-lg font-bold text-gray-400 mb-4">Performance Summary</div>
