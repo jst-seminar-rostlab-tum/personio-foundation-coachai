@@ -1,9 +1,6 @@
 import Link from 'next/link';
 
 export default function HistoryPage() {
-  return <div>History Page (placeholder)</div>;
-}
-
   return (
     <div>
       {/* Header */}
@@ -107,7 +104,6 @@ export default function HistoryPage() {
         </div>
       </div>
 
-      {/* Return to dashboard button */}
       <div className="w-full flex justify-center pb-8">
         <Link href="/dashboard" className="text-gray-400 hover:text-gray-500 text-sm underline">
           Return to dashboard

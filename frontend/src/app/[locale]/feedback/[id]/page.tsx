@@ -1,9 +1,6 @@
 import Link from 'next/link';
 
 export default function FeedbackDetailPage() {
-  return <div>Feedback Detail Page (placeholder)</div>;
-}
-
   return (
     <div>
       {/* Header */}
@@ -114,7 +111,6 @@ export default function FeedbackDetailPage() {
         ))}
       </div>
 
-      {/* Return to dashboard button */}
       <div className="w-full flex justify-center pb-8">
         <Link href="/dashboard" className="text-gray-400 hover:text-gray-500 text-sm underline">
           Return to dashboard

@@ -1,9 +1,6 @@
 import Link from 'next/link';
 
 export default function NewTrainingPage() {
-  return <div>New Training Page (placeholder)</div>;
-}
-
   return (
     <div>
       {/* Header */}

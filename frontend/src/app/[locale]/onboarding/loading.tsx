@@ -1,18 +1,13 @@
 import Link from 'next/link';
 
 export default function OnboardingPage() {
-  return <div>Onboarding Page (placeholder)</div>;
-}
-
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
-      {/* Skeleton content */}
       <div className="flex-1 flex flex-col items-center justify-between px-4 py-2">
         {/* Title skeleton */}
         <div className="w-3/4 h-8 mt-4 mb-2 text-2xl font-bold text-gray-400 text-center">
           Personalize Your Experience
         </div>
-        {/* Subtitle skeleton */}
         <div className="w-1/2 h-4 bg-gray-100 rounded mb-3 animate-pulse" />
         {/* Steps skeleton */}
         <div className="flex gap-2 mb-4 w-full max-w-md justify-center">

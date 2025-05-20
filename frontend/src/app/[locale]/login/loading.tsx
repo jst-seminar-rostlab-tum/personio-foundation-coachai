@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export default function HomePage() {
+export default function LoginPage() {
   return (
     <div className="  flex flex-col lg:flex-row">
       {/* Left Side (Desktop only) */}

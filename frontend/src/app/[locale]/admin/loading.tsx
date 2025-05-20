@@ -1,9 +1,6 @@
 import Link from 'next/link';
 
 export default function AdminPage() {
-  return <div>Admin Page (placeholder)</div>;
-}
-
   return (
     <div>
       {/* Header */}
