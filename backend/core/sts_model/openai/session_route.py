@@ -4,6 +4,7 @@ import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 """
 The Session object controls the parameters of the interaction, like 
@@ -12,7 +13,12 @@ The Session object controls the parameters of the interaction, like
 - the system instructions for the model,
 and other configuration.
 
-Run the FastAPI app: 1. navigate to backend folder 2. uvicorn core.sts_model.openai.session_route:app --reload
+Run the FastAPI app:
+1. Navigate to the backend folder
+2. Run:
+    uvicorn core.sts_model.openai.session_route:app --reload --port <PORT_NUMBER>
+Replace <PORT_NUMBER> with your desired port, e.g., 8080:
+    uvicorn core.sts_model.openai.session_route:app --reload --port 8080
 """
 
 # Load environment variables from .env file
@@ -23,6 +29,14 @@ OPENAI_SESSION_URL = 'https://api.openai.com/v1/realtime/sessions'
 MODEL_NAME = os.getenv('MODEL_NAME', 'gpt-4o-mini-realtime-preview-2024-12-17')
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # oder ["*"] für alle
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 """
 Gets an ephemeral session token from OpenAI's Realtime API.
