@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Message } from '@/interfaces/api';
+import { StrictMode } from 'react';
+import RealtimeApp from '@/app/sts_model/openai/components/RealtimeApp';
 
 export default function Home() {
+  /*
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -45,10 +46,12 @@ export default function Home() {
   if (loading) {
     return <div className="p-4">Loading...</div>;
   }
+  */
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
+        {/*
         <h1 className="text-6xl font-bold">
           Welcome to <span className="text-blue-600">Coachai</span>
         </h1>
@@ -81,6 +84,11 @@ export default function Home() {
             </div>
           ))}
         </div>
+        */}
+
+        <StrictMode>
+          <RealtimeApp />
+        </StrictMode>
       </main>
     </div>
   );
