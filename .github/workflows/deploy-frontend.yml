@@ -1,12 +1,9 @@
 name: Deploy Frontend to Vercel
 
-#on:
-#  push:
-#    branches: [ main ]
-#    paths: [ 'frontend/**' ]   # Only run when frontend files change
-
 on:
-  push
+  push:
+    branches: [ main ]
+    paths: [ 'frontend/**' ]   # Only run when frontend files change
 
 jobs:
   lint:
@@ -47,24 +44,24 @@ jobs:
         run: npm run build
         working-directory: ./frontend
 
-#  deploy-production:
-#    name: Deploy (Production)
-#    needs: [ lint, build ]
-#    runs-on: ubuntu-22.04
-#    steps:
-#      - uses: actions/checkout@v4
+  deploy-production:
+    name: Deploy (Production)
+    needs: [ lint, build ]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
 
-#      - name: Install Vercel CLI
-#        run: npm install --global vercel@latest
-#
-#      - name: Pull Vercel Environment Information
-#        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-#        working-directory: ./frontend
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
 
-#      - name: Build Project Artifacts
-#        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-#        working-directory: ./frontend
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: ./frontend
 
-#      - name: Deploy Project Artifacts to Vercel
-#        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-#        working-directory: ./frontend
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: ./frontend
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: ./frontend
