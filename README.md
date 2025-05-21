@@ -51,7 +51,8 @@ The frontend is a Next.js application with TypeScript. Key features:
 - Responsive design with TailwindCSS
 
 Directory structure:
-- `src/app/`: Next.js app directory with pages and components
+- `src/app/`: Next.js app directory with pages
+- `src/components/`: Components directory
 - `src/interfaces/`: TypeScript interfaces for type safety
 - `src/lib/`: Utility functions and API clients
 
