@@ -33,7 +33,7 @@ jobs:
 
   build:
     name: Build
-    needs: [ lint ]
+    needs: [ test ]
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -44,9 +44,9 @@ jobs:
         run: npm run build
         working-directory: ./frontend
 
-  deploy-production:
+  deploy:
     name: Deploy (Production)
-    needs: [ lint, build ]
+    needs: [ build ]
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
