@@ -14,4 +14,4 @@ async def get_prisma_async() -> Prisma:
     try:
         yield prisma
     finally:
-        await prisma.disconnect() 
+        await prisma.disconnect()
