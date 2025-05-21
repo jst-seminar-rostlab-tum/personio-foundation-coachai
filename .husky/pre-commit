@@ -11,4 +11,4 @@ npx lint-staged
 # Run backend pre-commit
 echo "🛠️- Running backend pre-commit hooks..."
 cd ../backend
-uv run pre-commit run --config .pre-commit-config.yaml
+uv run pre-commit run --config .pre-commit-config.yaml --hook-stage pre-commit

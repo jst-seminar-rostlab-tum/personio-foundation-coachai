@@ -8,7 +8,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
@@ -16,6 +16,19 @@ jobs:
         working-directory: ./frontend
       - name: Run ESLint
         run: npm run lint
+        working-directory: ./frontend
+
+  test:
+    name: Test
+    needs: lint
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./frontend
+      - name: Run Tests
+        run: npm test
         working-directory: ./frontend
 
   build:
@@ -30,8 +43,6 @@ jobs:
       - name: Build app
         run: npm run build
         working-directory: ./frontend
-
-  # TODO: Running tests when tests are added
 
   deploy-production:
     name: Deploy (Production)

@@ -6,17 +6,17 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --max-warnings=0",
-    "lint:fix": "eslint . --max-warnings=0 --fix",
+    "lint": "eslint . --max-warnings=0 --no-warn-ignored",
+    "lint:fix": "eslint . --max-warnings=0 --fix --no-warn-ignored",
     "format": "prettier \"**/*.{js,cjs,mjs,ts,tsx,jsx,json}\" --write",
-    "test": "jest",
+    "test": "jest --ci --bail --passWithNoTests",
     "test:watch": "jest --watch",
     "prepare": "cd .. && husky"
   },
   "lint-staged": {
     "*.{js,cjs,mjs,ts,tsx,jsx}": [
       "prettier --write",
-      "eslint --fix --max-warnings=0"
+      "eslint --fix --max-warnings=0 --no-warn-ignored"
     ],
     "*.json": "prettier --write"
   },
@@ -31,6 +31,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.510.0",
     "next": "15.3.2",
+    "next-intl": "^4.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "swr": "^2.3.3",

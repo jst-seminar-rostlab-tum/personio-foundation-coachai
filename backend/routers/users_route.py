@@ -29,32 +29,17 @@ class UserResponse(BaseModel):
 
 
 @router.post('/', response_model=UserResponse)
-async def create_user(
-    user: UserCreate,
-    prisma: Prisma = get_prisma_dependency
-) -> UserResponse:
+async def create_user(user: UserCreate, prisma: Prisma = get_prisma_dependency) -> UserResponse:
     try:
-        db_user = await prisma.user.create(
-            data={
-                'email': user.email,
-                'name': user.name
-            }
-        )
+        db_user = await prisma.user.create(data={'email': user.email, 'name': user.name})
         return UserResponse.model_validate(db_user)
     except Exception as err:
-        raise HTTPException(status_code=400, detail="Email already exists") from err
+        raise HTTPException(status_code=400, detail='Email already exists') from err
 
 
 @router.get('/{user_id}', response_model=UserResponse)
-async def get_user(
-    user_id: str,
-    prisma: Prisma = get_prisma_dependency
-) -> UserResponse:
-    user = await prisma.user.find_unique(
-        where={
-            'id': user_id
-        }
-    )
+async def get_user(user_id: str, prisma: Prisma = get_prisma_dependency) -> UserResponse:
+    user = await prisma.user.find_unique(where={'id': user_id})
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail='User not found')
     return UserResponse.model_validate(user)
