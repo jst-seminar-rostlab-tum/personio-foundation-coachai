@@ -1,9 +1,12 @@
 name: Deploy Frontend to Vercel
 
+#on:
+#  push:
+#    branches: [ main ]
+#    paths: [ 'frontend/**' ]   # Only run when frontend files change
+
 on:
-  push:
-    branches: [ main ]
-    paths: [ 'frontend/**' ]   # Only run when frontend files change
+  push
 
 jobs:
   lint:
