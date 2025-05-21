@@ -47,7 +47,7 @@ The following environment variables can be configured:
 
 ## Code Style
 
-The project uses ESLint for code linting and formatting. To check code style:
+This project uses ESLint to enforce linting rules and Prettier to automatically format your code.
 
 ## Deployment
 
