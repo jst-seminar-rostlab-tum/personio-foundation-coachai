@@ -18,4 +18,4 @@ function Label({ className, ...props }: React.ComponentProps<typeof LabelPrimiti
   );
 }
 
-export { Label };
+export default Label;

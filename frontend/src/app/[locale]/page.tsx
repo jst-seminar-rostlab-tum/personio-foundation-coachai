@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { Message } from '@/interfaces/Api';
+import { useTranslations } from 'next-intl';
 
 export default function Page() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const t = useTranslations('HomePage');
 
   useEffect(() => {
     fetchMessages();
@@ -51,10 +53,11 @@ export default function Page() {
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
         <h1 className="text-6xl font-bold">
-          Welcome to <span className="text-blue-600">Coachai</span>
+          {t('welcome')}
+          <span className="text-blue-600">{t('appName')}</span>
         </h1>
 
-        <p className="mt-3 text-2xl">Full-stack application with TypeScript and Python</p>
+        <p className="mt-3 text-2xl">{t('description')}</p>
 
         <form onSubmit={handleSubmit} className="mb-8">
           <input
