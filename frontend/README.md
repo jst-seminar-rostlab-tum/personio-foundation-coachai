@@ -43,6 +43,7 @@ The following environment variables can be configured:
 - **Next.js**: For server-side rendering and routing
 - **TailwindCSS**: For styling
 - **ESLint**: For code linting
+- **Prettier**: For auto formatting
 - **SWR**: For data fetching
 
 ## Code Style
