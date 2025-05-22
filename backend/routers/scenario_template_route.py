@@ -5,11 +5,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.conversation_category_model import ConversationCategoryModel
-from ..models.language_model import LanguageModel
-from ..models.scenario_template_model import (
+from ..models.conversation_category import ConversationCategory
+from ..models.language import Language
+from ..models.scenario_template import (
+    ScenarioTemplate,
     ScenarioTemplateCreate,
-    ScenarioTemplateModel,
     ScenarioTemplateRead,
 )
 
@@ -23,7 +23,7 @@ def get_scenario_templates(
     """
     Retrieve all scenario templates.
     """
-    statement = select(ScenarioTemplateModel)
+    statement = select(ScenarioTemplate)
     templates = session.exec(statement).all()
     return templates
 
@@ -31,23 +31,23 @@ def get_scenario_templates(
 @router.post("/", response_model=ScenarioTemplateRead)
 def create_scenario_template(
     template: ScenarioTemplateCreate, session: Annotated[Session, Depends(get_session)]
-) -> ScenarioTemplateModel:
+) -> ScenarioTemplate:
     """
     Create a new scenario template.
     """
     # Validate foreign keys
     if template.category_id:
-        category = session.get(ConversationCategoryModel, template.category_id)
+        category = session.get(ConversationCategory, template.category_id)
         if not category:
             raise HTTPException(status_code=404, detail="Category not found")
 
     language = session.exec(
-        select(LanguageModel).where(LanguageModel.code == template.language_code)
+        select(Language).where(Language.code == template.language_code)
     ).first()
     if not language:
         raise HTTPException(status_code=404, detail="Language not found")
 
-    db_template = ScenarioTemplateModel(**template.dict())
+    db_template = ScenarioTemplate(**template.dict())
     session.add(db_template)
     session.commit()
     session.refresh(db_template)
@@ -59,23 +59,23 @@ def update_scenario_template(
     template_id: UUID,
     updated_data: ScenarioTemplateCreate,
     session: Annotated[Session, Depends(get_session)],
-) -> ScenarioTemplateModel:
+) -> ScenarioTemplate:
     """
     Update an existing scenario template.
     """
-    template = session.get(ScenarioTemplateModel, template_id)
+    template = session.get(ScenarioTemplate, template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Scenario template not found")
 
     # Validate foreign keys
     if updated_data.category_id:
-        category = session.get(ConversationCategoryModel, updated_data.category_id)
+        category = session.get(ConversationCategory, updated_data.category_id)
         if not category:
             raise HTTPException(status_code=404, detail="Category not found")
 
     if updated_data.language_code:
         language = session.exec(
-            select(LanguageModel).where(LanguageModel.code == updated_data.language_code)
+            select(Language).where(Language.code == updated_data.language_code)
         ).first()
         if not language:
             raise HTTPException(status_code=404, detail="Language not found")
@@ -96,7 +96,7 @@ def delete_scenario_template(
     """
     Delete a scenario template.
     """
-    template = session.get(ScenarioTemplateModel, template_id)
+    template = session.get(ScenarioTemplate, template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Scenario template not found")
 

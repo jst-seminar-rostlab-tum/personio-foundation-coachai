@@ -5,12 +5,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.conversation_turn_model import (
+from ..models.conversation_turn import (
     ConversationTurnCreate,
-    ConversationTurnModel,
+    ConversationTurn,
     ConversationTurnRead,
 )
-from ..models.training_session_model import TrainingSessionModel
+from ..models.training_session import TrainingSession
 
 router = APIRouter(prefix="/conversation-turns", tags=["Conversation Turns"])
 
@@ -22,7 +22,7 @@ def get_conversation_turns(
     """
     Retrieve all conversation turns.
     """
-    statement = select(ConversationTurnModel)
+    statement = select(ConversationTurn)
     turns = session.exec(statement).all()
     return turns
 
@@ -30,16 +30,16 @@ def get_conversation_turns(
 @router.post("/", response_model=ConversationTurnRead)
 def create_conversation_turn(
     turn: ConversationTurnCreate, session: Annotated[Session, Depends(get_session)]
-) -> ConversationTurnModel:
+) -> ConversationTurn:
     """
     Create a new conversation turn.
     """
     # Validate foreign key
-    training_session = session.get(TrainingSessionModel, turn.session_id)
+    training_session = session.get(TrainingSession, turn.session_id)
     if not training_session:
         raise HTTPException(status_code=404, detail="Training session not found")
 
-    db_turn = ConversationTurnModel(**turn.dict())
+    db_turn = ConversationTurn(**turn.dict())
     session.add(db_turn)
     session.commit()
     session.refresh(db_turn)
@@ -51,17 +51,17 @@ def update_conversation_turn(
     turn_id: UUID,
     updated_data: ConversationTurnCreate,
     session: Annotated[Session, Depends(get_session)],
-) -> ConversationTurnModel:
+) -> ConversationTurn:
     """
     Update an existing conversation turn.
     """
-    turn = session.get(ConversationTurnModel, turn_id)
+    turn = session.get(ConversationTurn, turn_id)
     if not turn:
         raise HTTPException(status_code=404, detail="Conversation turn not found")
 
     # Validate foreign key
     if updated_data.session_id:
-        training_session = session.get(TrainingSessionModel, updated_data.session_id)
+        training_session = session.get(TrainingSession, updated_data.session_id)
         if not training_session:
             raise HTTPException(status_code=404, detail="Training session not found")
 
@@ -81,7 +81,7 @@ def delete_conversation_turn(
     """
     Delete a conversation turn.
     """
-    turn = session.get(ConversationTurnModel, turn_id)
+    turn = session.get(ConversationTurn, turn_id)
     if not turn:
         raise HTTPException(status_code=404, detail="Conversation turn not found")
 

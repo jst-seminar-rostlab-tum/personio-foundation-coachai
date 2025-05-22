@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     postgres_db: str = 'postgres'
     postgres_port: str = '5432'
 
-    model_config = SettingsConfigDict(env_file='.env.example', extra='ignore')
+    model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 
 
 settings = Settings()

@@ -1,75 +1,74 @@
-from .conversation_category_model import (
+from .conversation_category import (
+    ConversationCategory,
     ConversationCategoryCreate,
-    ConversationCategoryModel,
     ConversationCategoryRead,
 )
-from .conversation_turn_model import (
+from .conversation_turn import (
+    ConversationTurn,
     ConversationTurnCreate,
-    ConversationTurnModel,
     ConversationTurnRead,
 )
-from .language_model import LanguageCreate, LanguageModel, LanguageRead
-from .message_model import MessageModel
-from .rating_model import RatingCreate, RatingModel, RatingRead
-from .scenario_template_model import (
+from .language import Language, LanguageCreate, LanguageRead
+from .rating import Rating, RatingCreate, RatingRead
+from .scenario_template import (
+    ScenarioTemplate,
     ScenarioTemplateCreate,
-    ScenarioTemplateModel,
     ScenarioTemplateRead,
     ScenarioTemplateStatus,
 )
-from .training_case_model import (
+from .training_case import (
+    TrainingCase,
     TrainingCaseCreate,
-    TrainingCaseModel,
     TrainingCaseRead,
     TrainingCaseStatus,
 )
-from .training_preparation_model import (
+from .training_preparation import (
+    TrainingPreparation,
     TrainingPreparationCreate,
-    TrainingPreparationModel,
     TrainingPreparationRead,
     TrainingPreparationStatus,
 )
-from .training_session_feedback_model import (
+from .training_session import TrainingSession, TrainingSessionCreate, TrainingSessionRead
+from .training_session_feedback import (
+    TrainingSessionFeedback,
     TrainingSessionFeedbackCreate,
-    TrainingSessionFeedbackModel,
     TrainingSessionFeedbackRead,
 )
-from .training_session_model import TrainingSessionCreate, TrainingSessionModel, TrainingSessionRead
+from .user_profile import UserProfile, UserProfileCreate, UserProfileRead
 
-from .user_profile_model import UserProfileModel, UserProfileCreate, UserProfileRead
 __all__ = [
-    'MessageModel',
-    'LanguageModel',
+    'Message',
+    'Language',
     'LanguageCreate',
     'LanguageRead',
-    'ConversationCategoryModel',
+    'ConversationCategory',
     'ConversationCategoryCreate',
     'ConversationCategoryRead',
-    'TrainingCaseModel',
+    'TrainingCase',
     'TrainingCaseCreate',
     'TrainingCaseRead',
     'TrainingCaseStatus',
-    'TrainingSessionModel',
+    'TrainingSession',
     'TrainingSessionCreate',
     'TrainingSessionRead',
-    'ScenarioTemplateModel',
+    'ScenarioTemplate',
     'ScenarioTemplateCreate',
     'ScenarioTemplateRead',
     'ScenarioTemplateStatus',
-    'TrainingPreparationModel',
+    'TrainingPreparation',
     'TrainingPreparationCreate',
     'TrainingPreparationRead',
     'TrainingPreparationStatus',
-    'ConversationTurnModel',
+    'ConversationTurn',
     'ConversationTurnCreate',
     'ConversationTurnRead',
-    'TrainingSessionFeedbackModel',
+    'TrainingSessionFeedback',
     'TrainingSessionFeedbackCreate',
     'TrainingSessionFeedbackRead',
-    'RatingModel',
+    'Rating',
     'RatingCreate',
     'RatingRead',
-    'UserProfileModel',
+    'UserProfile',
     'UserProfileCreate',
     'UserProfileRead',
 

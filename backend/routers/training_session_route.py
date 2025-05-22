@@ -5,11 +5,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.language_model import LanguageModel
-from ..models.training_case_model import TrainingCaseModel
-from ..models.training_session_model import (
+from ..models.language import Language
+from ..models.training_case import TrainingCase
+from ..models.training_session import (
+    TrainingSession,
     TrainingSessionCreate,
-    TrainingSessionModel,
     TrainingSessionRead,
 )
 
@@ -23,7 +23,7 @@ def get_training_sessions(
     """
     Retrieve all training sessions.
     """
-    statement = select(TrainingSessionModel)
+    statement = select(TrainingSession)
     sessions = session.exec(statement).all()
     return sessions
 
@@ -31,22 +31,22 @@ def get_training_sessions(
 @router.post("/", response_model=TrainingSessionRead)
 def create_training_session(
     session_data: TrainingSessionCreate, session: Annotated[Session, Depends(get_session)]
-) -> TrainingSessionModel:
+) -> TrainingSession:
     """
     Create a new training session.
     """
     # Validate foreign keys
-    case = session.get(TrainingCaseModel, session_data.case_id)
+    case = session.get(TrainingCase, session_data.case_id)
     if not case:
         raise HTTPException(status_code=404, detail="Training case not found")
 
     language = session.exec(
-        select(LanguageModel).where(LanguageModel.code == session_data.language_code)
+        select(Language).where(Language.code == session_data.language_code)
     ).first()
     if not language:
         raise HTTPException(status_code=404, detail="Language not found")
 
-    db_session = TrainingSessionModel(**session_data.dict())
+    db_session = TrainingSession(**session_data.dict())
     session.add(db_session)
     session.commit()
     session.refresh(db_session)
@@ -58,23 +58,23 @@ def update_training_session(
     session_id: UUID,
     updated_data: TrainingSessionCreate,
     session: Annotated[Session, Depends(get_session)],
-) -> TrainingSessionModel:
+) -> TrainingSession:
     """
     Update an existing training session.
     """
-    training_session = session.get(TrainingSessionModel, session_id)
+    training_session = session.get(TrainingSession, session_id)
     if not training_session:
         raise HTTPException(status_code=404, detail="Training session not found")
 
     # Validate foreign keys
     if updated_data.case_id:
-        case = session.get(TrainingCaseModel, updated_data.case_id)
+        case = session.get(TrainingCase, updated_data.case_id)
         if not case:
             raise HTTPException(status_code=404, detail="Training case not found")
 
     if updated_data.language_code:
         language = session.exec(
-            select(LanguageModel).where(LanguageModel.code == updated_data.language_code)
+            select(Language).where(Language.code == updated_data.language_code)
         ).first()
         if not language:
             raise HTTPException(status_code=404, detail="Language not found")
@@ -95,7 +95,7 @@ def delete_training_session(
     """
     Delete a training session.
     """
-    training_session = session.get(TrainingSessionModel, session_id)
+    training_session = session.get(TrainingSession, session_id)
     if not training_session:
         raise HTTPException(status_code=404, detail="Training session not found")
 

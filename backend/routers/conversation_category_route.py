@@ -5,9 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.conversation_category_model import (
+from ..models.conversation_category import (
     ConversationCategoryCreate,
-    ConversationCategoryModel,
+    ConversationCategory,
     ConversationCategoryRead,
 )
 
@@ -21,7 +21,7 @@ def get_conversation_categories(
     """
     Retrieve all conversation categories.
     """
-    statement = select(ConversationCategoryModel)
+    statement = select(ConversationCategory)
     categories = session.exec(statement).all()
     return categories
 
@@ -29,11 +29,11 @@ def get_conversation_categories(
 @router.post("/", response_model=ConversationCategoryRead)
 def create_conversation_category(
     category: ConversationCategoryCreate, session: Annotated[Session, Depends(get_session)]
-) -> ConversationCategoryModel:
+) -> ConversationCategory:
     """
     Create a new conversation category.
     """
-    db_category = ConversationCategoryModel(**category.dict())
+    db_category = ConversationCategory(**category.dict())
     session.add(db_category)
     session.commit()
     session.refresh(db_category)
@@ -45,11 +45,11 @@ def update_conversation_category(
     category_id: UUID,
     updated_data: ConversationCategoryCreate,
     session: Annotated[Session, Depends(get_session)],
-) -> ConversationCategoryModel:
+) -> ConversationCategory:
     """
     Update an existing conversation category.
     """
-    category = session.get(ConversationCategoryModel, category_id)
+    category = session.get(ConversationCategory, category_id)
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
 
@@ -69,7 +69,7 @@ def delete_conversation_category(
     """
     Delete a conversation category.
     """
-    category = session.get(ConversationCategoryModel, category_id)
+    category = session.get(ConversationCategory, category_id)
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
 

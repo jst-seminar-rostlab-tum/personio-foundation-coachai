@@ -5,12 +5,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.training_session_feedback_model import (
+from ..models.training_session import TrainingSession
+from ..models.training_session_feedback import (
+    TrainingSessionFeedback,
     TrainingSessionFeedbackCreate,
-    TrainingSessionFeedbackModel,
     TrainingSessionFeedbackRead,
 )
-from ..models.training_session_model import TrainingSessionModel
 
 router = APIRouter(prefix="/training-session-feedback", tags=["Training Session Feedback"])
 
@@ -22,7 +22,7 @@ def get_training_session_feedbacks(
     """
     Retrieve all training session feedbacks.
     """
-    statement = select(TrainingSessionFeedbackModel)
+    statement = select(TrainingSessionFeedback)
     feedbacks = session.exec(statement).all()
     return feedbacks
 
@@ -30,16 +30,16 @@ def get_training_session_feedbacks(
 @router.post("/", response_model=TrainingSessionFeedbackRead)
 def create_training_session_feedback(
     feedback: TrainingSessionFeedbackCreate, session: Annotated[Session, Depends(get_session)]
-) -> TrainingSessionFeedbackModel:
+) -> TrainingSessionFeedback:
     """
     Create a new training session feedback.
     """
     # Validate foreign key
-    training_session = session.get(TrainingSessionModel, feedback.session_id)
+    training_session = session.get(TrainingSession, feedback.session_id)
     if not training_session:
         raise HTTPException(status_code=404, detail="Training session not found")
 
-    db_feedback = TrainingSessionFeedbackModel(**feedback.dict())
+    db_feedback = TrainingSessionFeedback(**feedback.dict())
     session.add(db_feedback)
     session.commit()
     session.refresh(db_feedback)
@@ -51,17 +51,17 @@ def update_training_session_feedback(
     feedback_id: UUID,
     updated_data: TrainingSessionFeedbackCreate,
     session: Annotated[Session, Depends(get_session)],
-) -> TrainingSessionFeedbackModel:
+) -> TrainingSessionFeedback:
     """
     Update an existing training session feedback.
     """
-    feedback = session.get(TrainingSessionFeedbackModel, feedback_id)
+    feedback = session.get(TrainingSessionFeedback, feedback_id)
     if not feedback:
         raise HTTPException(status_code=404, detail="Training session feedback not found")
 
     # Validate foreign key
     if updated_data.session_id:
-        training_session = session.get(TrainingSessionModel, updated_data.session_id)
+        training_session = session.get(TrainingSession, updated_data.session_id)
         if not training_session:
             raise HTTPException(status_code=404, detail="Training session not found")
 
@@ -81,7 +81,7 @@ def delete_training_session_feedback(
     """
     Delete a training session feedback.
     """
-    feedback = session.get(TrainingSessionFeedbackModel, feedback_id)
+    feedback = session.get(TrainingSessionFeedback, feedback_id)
     if not feedback:
         raise HTTPException(status_code=404, detail="Training session feedback not found")
 

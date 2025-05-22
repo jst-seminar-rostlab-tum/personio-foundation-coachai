@@ -9,7 +9,6 @@ from .routers import (
     conversation_category_route,
     conversation_turn_route,
     language_route,
-    messages_route,
     rating_route,
     scenario_template_route,
     training_case_route,
@@ -31,7 +30,6 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-app.include_router(messages_route.router)
 app.include_router(language_route.router)
 app.include_router(conversation_category_route.router)
 app.include_router(training_case_route.router)

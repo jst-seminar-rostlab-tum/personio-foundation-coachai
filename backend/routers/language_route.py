@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.language_model import LanguageCreate, LanguageModel, LanguageRead
+from ..models.language import LanguageCreate, Language, LanguageRead
 
 router = APIRouter(prefix="/language", tags=["Language"])
 
@@ -12,19 +12,19 @@ router = APIRouter(prefix="/language", tags=["Language"])
 @router.post("/", response_model=LanguageRead)
 def create_language(
     language: LanguageCreate, session: Annotated[Session, Depends(get_session)]
-) -> LanguageModel:
+) -> Language:
     """
     Create a new language.
     """
     # Check if the language code already exists
     existing_language = session.exec(
-        select(LanguageModel).where(LanguageModel.code == language.code)
+        select(Language).where(Language.code == language.code)
     ).first()
     if existing_language:
         raise HTTPException(status_code=400, detail="Language code must be unique")
 
-    # Convert LanguageCreate to LanguageModel
-    db_language = LanguageModel(**language.dict())
+    # Convert LanguageCreate to Language
+    db_language = Language(**language.dict())
     session.add(db_language)
     session.commit()
     session.refresh(db_language)
@@ -38,6 +38,6 @@ def read_languages(
     """
     Retrieve a list of languages.
     """
-    statement = select(LanguageModel).offset(skip).limit(limit)
+    statement = select(Language).offset(skip).limit(limit)
     languages = session.exec(statement).all()
     return languages

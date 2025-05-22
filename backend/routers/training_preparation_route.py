@@ -5,10 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.training_case_model import TrainingCaseModel
-from ..models.training_preparation_model import (
+from ..models.training_case import TrainingCase
+from ..models.training_preparation import (
+    TrainingPreparation,
     TrainingPreparationCreate,
-    TrainingPreparationModel,
     TrainingPreparationRead,
 )
 
@@ -22,7 +22,7 @@ def get_training_preparations(
     """
     Retrieve all training preparations.
     """
-    statement = select(TrainingPreparationModel)
+    statement = select(TrainingPreparation)
     preparations = session.exec(statement).all()
     return preparations
 
@@ -30,16 +30,16 @@ def get_training_preparations(
 @router.post("/", response_model=TrainingPreparationRead)
 def create_training_preparation(
     preparation: TrainingPreparationCreate, session: Annotated[Session, Depends(get_session)]
-) -> TrainingPreparationModel:
+) -> TrainingPreparation:
     """
     Create a new training preparation.
     """
     # Validate foreign key
-    case = session.get(TrainingCaseModel, preparation.case_id)
+    case = session.get(TrainingCase, preparation.case_id)
     if not case:
         raise HTTPException(status_code=404, detail="Training case not found")
 
-    db_preparation = TrainingPreparationModel(**preparation.dict())
+    db_preparation = TrainingPreparation(**preparation.dict())
     session.add(db_preparation)
     session.commit()
     session.refresh(db_preparation)
@@ -51,17 +51,17 @@ def update_training_preparation(
     preparation_id: UUID,
     updated_data: TrainingPreparationCreate,
     session: Annotated[Session, Depends(get_session)],
-) -> TrainingPreparationModel:
+) -> TrainingPreparation:
     """
     Update an existing training preparation.
     """
-    preparation = session.get(TrainingPreparationModel, preparation_id)
+    preparation = session.get(TrainingPreparation, preparation_id)
     if not preparation:
         raise HTTPException(status_code=404, detail="Training preparation not found")
 
     # Validate foreign key
     if updated_data.case_id:
-        case = session.get(TrainingCaseModel, updated_data.case_id)
+        case = session.get(TrainingCase, updated_data.case_id)
         if not case:
             raise HTTPException(status_code=404, detail="Training case not found")
 
@@ -81,7 +81,7 @@ def delete_training_preparation(
     """
     Delete a training preparation.
     """
-    preparation = session.get(TrainingPreparationModel, preparation_id)
+    preparation = session.get(TrainingPreparation, preparation_id)
     if not preparation:
         raise HTTPException(status_code=404, detail="Training preparation not found")
 

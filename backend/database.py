@@ -2,29 +2,25 @@ from collections.abc import Generator
 from typing import Any
 
 from sqlmodel import Session, SQLModel, create_engine
-
+import os
+from dotenv import load_dotenv
 # from .config import settings
 
-# SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
+# Load environment variables from .env file
+load_dotenv()
 
-# SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}?sslmode=require"
-# Database connection parameters
-
-
-# POSTGRES_USER = 'postgres'
-# POSTGRES_PASSWORD = 'zusjyx-Hedkyr-wevwi9'  
-# POSTGRES_HOST = 'db.qgqfapwoopmzrkartwfw.supabase.co'
-# POSTGRES_PORT = '5432'
-# POSTGRES_DB = 'postgres'
-
+# Database connection parameters from .env
+POSTGRES_USER = os.getenv("POSTGRES_USER")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+POSTGRES_DB = os.getenv("POSTGRES_DB")
 
 # Database connection string
-#  Depend on your network the first option is Direct connection and the second one is transaction pool
-# SQLALCHEMY_DATABASE_URL = (
-#     'postgresql://postgres:zusjyx-Hedkyr-wevwi9@db.qgqfapwoopmzrkartwfw.supabase.co:5432/postgres'
-# )
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres.syucjzgfvvmwsnairifl:fawgUs-9vujto-wyxgit@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
-
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+)
+print(SQLALCHEMY_DATABASE_URL)
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 

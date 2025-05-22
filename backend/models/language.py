@@ -1,7 +1,7 @@
 from sqlmodel import Field, SQLModel
 
 
-class LanguageModel(SQLModel, table=True):  # `table=True` makes it a database table
+class Language(SQLModel, table=True):  # `table=True` makes it a database table
     code: str = Field(default=None, primary_key=True)
     name : str
 # Schema for creating a new Language

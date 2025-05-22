@@ -13,9 +13,10 @@ class TrainingPreparationStatus(str, Enum):
     failed = "failed"
 
 # Database model
-class TrainingPreparationModel(SQLModel, table=True):  # `table=True` makes it a database table
+class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    case_id: UUID = Field(foreign_key="trainingcasemodel.id")
+    case_id: UUID = Field(foreign_key="trainingcase.id")
+    objectives: dict = Field(default_factory=dict, sa_column=Column(JSON))
     key_concepts: dict = Field(default_factory=dict, sa_column=Column(JSON))
     prep_checklist: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: TrainingPreparationStatus = Field(default=TrainingPreparationStatus.pending)
@@ -23,16 +24,17 @@ class TrainingPreparationModel(SQLModel, table=True):  # `table=True` makes it a
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    case: Optional["TrainingCaseModel"] = Relationship(back_populates="preparations")
+    case: Optional["TrainingCase"] = Relationship(back_populates="preparations")
     
 
     # Automatically update `updated_at` before an update
-@event.listens_for(TrainingPreparationModel, "before_update")
+@event.listens_for(TrainingPreparation, "before_update")
 def update_timestamp(mapper, connection, target) -> None:
     target.updated_at = datetime.utcnow()
 # Schema for creating a new TrainingPreparation
 class TrainingPreparationCreate(SQLModel):
     case_id: UUID
+    objectives: dict = Field(default_factory=dict, sa_column=Column(JSON))
     key_concepts: dict = Field(default_factory=dict, sa_column=Column(JSON))
     prep_checklist: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: TrainingPreparationStatus = TrainingPreparationStatus.pending
@@ -41,6 +43,7 @@ class TrainingPreparationCreate(SQLModel):
 class TrainingPreparationRead(SQLModel):
     id: UUID
     case_id: UUID
+    objectives: dict = Field(default_factory=dict, sa_column=Column(JSON))
     key_concepts: dict = Field(default_factory=dict, sa_column=Column(JSON))
     prep_checklist: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: TrainingPreparationStatus

@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.rating_model import RatingCreate, RatingModel, RatingRead
-from ..models.training_session_model import TrainingSessionModel
+from ..models.rating import RatingCreate, Rating, RatingRead
+from ..models.training_session import TrainingSession
 
 router = APIRouter(prefix="/ratings", tags=["Ratings"])
 
@@ -18,7 +18,7 @@ def get_ratings(
     """
     Retrieve all ratings.
     """
-    statement = select(RatingModel)
+    statement = select(Rating)
     ratings = session.exec(statement).all()
     return ratings
 
@@ -26,16 +26,16 @@ def get_ratings(
 @router.post("/", response_model=RatingRead)
 def create_rating(
     rating: RatingCreate, session: Annotated[Session, Depends(get_session)]
-) -> RatingModel:
+) -> Rating:
     """
     Create a new rating.
     """
     # Validate foreign key
-    training_session = session.get(TrainingSessionModel, rating.session_id)
+    training_session = session.get(TrainingSession, rating.session_id)
     if not training_session:
         raise HTTPException(status_code=404, detail="Training session not found")
 
-    db_rating = RatingModel(**rating.dict())
+    db_rating = Rating(**rating.dict())
     session.add(db_rating)
     session.commit()
     session.refresh(db_rating)
@@ -47,17 +47,17 @@ def update_rating(
     rating_id: UUID,
     updated_data: RatingCreate,
     session: Annotated[Session, Depends(get_session)],
-) -> RatingModel:
+) -> Rating:
     """
     Update an existing rating.
     """
-    rating = session.get(RatingModel, rating_id)
+    rating = session.get(Rating, rating_id)
     if not rating:
         raise HTTPException(status_code=404, detail="Rating not found")
 
     # Validate foreign key
     if updated_data.session_id:
-        training_session = session.get(TrainingSessionModel, updated_data.session_id)
+        training_session = session.get(TrainingSession, updated_data.session_id)
         if not training_session:
             raise HTTPException(status_code=404, detail="Training session not found")
 
@@ -77,7 +77,7 @@ def delete_rating(
     """
     Delete a rating.
     """
-    rating = session.get(RatingModel, rating_id)
+    rating = session.get(Rating, rating_id)
     if not rating:
         raise HTTPException(status_code=404, detail="Rating not found")
 

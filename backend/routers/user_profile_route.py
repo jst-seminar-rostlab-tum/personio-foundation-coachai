@@ -5,10 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.language_model import LanguageModel
-from ..models.user_profile_model import (
+from ..models.language import Language
+from ..models.user_profile import (
+    UserProfile,
     UserProfileCreate,
-    UserProfileModel,
     UserProfileRead,
 )
 
@@ -22,7 +22,7 @@ def get_user_profiles(
     """
     Retrieve all user profiles.
     """
-    statement = select(UserProfileModel)
+    statement = select(UserProfile)
     user_profiles = session.exec(statement).all()
     return user_profiles
 
@@ -30,18 +30,18 @@ def get_user_profiles(
 @router.post("/", response_model=UserProfileRead)
 def create_user_profile(
     user_profile: UserProfileCreate, session: Annotated[Session, Depends(get_session)]
-) -> UserProfileModel:
+) -> UserProfile:
     """
     Create a new user profile.
     """
     # Validate foreign key
     language = session.exec(
-        select(LanguageModel).where(LanguageModel.code == user_profile.preferred_language)
+        select(Language).where(Language.code == user_profile.preferred_language)
     ).first()
     if not language:
         raise HTTPException(status_code=404, detail="Preferred language not found")
 
-    db_user_profile = UserProfileModel(**user_profile.dict())
+    db_user_profile = UserProfile(**user_profile.dict())
     session.add(db_user_profile)
     session.commit()
     session.refresh(db_user_profile)
@@ -53,18 +53,18 @@ def update_user_profile(
     user_id: UUID,
     updated_data: UserProfileCreate,
     session: Annotated[Session, Depends(get_session)],
-) -> UserProfileModel:
+) -> UserProfile:
     """
     Update an existing user profile.
     """
-    user_profile = session.get(UserProfileModel, user_id)
+    user_profile = session.get(UserProfile, user_id)
     if not user_profile:
         raise HTTPException(status_code=404, detail="User profile not found")
 
     # Validate foreign key
     if updated_data.preferred_language:
         language = session.exec(
-            select(LanguageModel).where(LanguageModel.code == updated_data.preferred_language)
+            select(Language).where(Language.code == updated_data.preferred_language)
         ).first()
         if not language:
             raise HTTPException(status_code=404, detail="Preferred language not found")
@@ -85,7 +85,7 @@ def delete_user_profile(
     """
     Delete a user profile and cascade delete related entries.
     """
-    user_profile = session.get(UserProfileModel, user_id)
+    user_profile = session.get(UserProfile, user_id)
     if not user_profile:
         raise HTTPException(status_code=404, detail="User profile not found")
 

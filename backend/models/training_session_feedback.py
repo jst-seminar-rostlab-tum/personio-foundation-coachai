@@ -12,9 +12,9 @@ class FeedbackStatusEnum(str, Enum):
     completed = "completed"
     failed = "failed"
 
-class TrainingSessionFeedbackModel(SQLModel, table=True):  # `table=True` makes it a database table
+class TrainingSessionFeedback(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key="trainingsessionmodel.id")  # FK to TrainingSessionModel
+    session_id: UUID = Field(foreign_key="trainingsession.id")  # FK to TrainingSession
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: int
@@ -31,10 +31,10 @@ class TrainingSessionFeedbackModel(SQLModel, table=True):  # `table=True` makes 
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    session: Optional["TrainingSessionModel"] = Relationship(back_populates="feedback")
+    session: Optional["TrainingSession"] = Relationship(back_populates="feedback")
 
     # Automatically update `updated_at` before an update
-@event.listens_for(TrainingSessionFeedbackModel, "before_update")
+@event.listens_for(TrainingSessionFeedback, "before_update")
 def update_timestamp(mapper, connection, target) -> None:
     target.updated_at = datetime.utcnow()
 # Schema for creating a new TrainingSessionFeedback

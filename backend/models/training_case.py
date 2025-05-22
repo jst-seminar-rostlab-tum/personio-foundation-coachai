@@ -14,11 +14,11 @@ class TrainingCaseStatus(str, Enum):
     archived = "archived"
 
 # Database model
-class TrainingCaseModel(SQLModel, table=True):  # `table=True` makes it a database table
+class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key="userprofilemodel.id", nullable=False)  # FK to UserProfileModel
-    category_id: Optional[UUID] = Field(default=None, foreign_key="conversationcategorymodel.id")
-    scenario_template_id: Optional[UUID] = Field(default=None, foreign_key="scenariotemplatemodel.id")
+    user_id: UUID = Field(foreign_key="userprofile.id", nullable=False)  # FK to UserProfile
+    category_id: Optional[UUID] = Field(default=None, foreign_key="conversationcategory.id")
+    scenario_template_id: Optional[UUID] = Field(default=None, foreign_key="scenariotemplate.id")
     custom_category_label: Optional[str] = None
     context: str
     goal: str
@@ -31,12 +31,12 @@ class TrainingCaseModel(SQLModel, table=True):  # `table=True` makes it a databa
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    category: Optional["ConversationCategoryModel"] = Relationship(back_populates="training_cases")
-    sessions: List["TrainingSessionModel"] = Relationship(back_populates="case")
-    scenario_template: Optional["ScenarioTemplateModel"] = Relationship()
-    preparations: List["TrainingPreparationModel"] = Relationship(back_populates="case")
-    user: Optional["UserProfileModel"] = Relationship(back_populates="training_cases")
-@event.listens_for(TrainingCaseModel, "before_update")
+    category: Optional["ConversationCategory"] = Relationship(back_populates="training_cases")
+    sessions: List["TrainingSession"] = Relationship(back_populates="case")
+    scenario_template: Optional["ScenarioTemplate"] = Relationship()
+    preparations: List["TrainingPreparation"] = Relationship(back_populates="case")
+    user: Optional["UserProfile"] = Relationship(back_populates="training_cases")
+@event.listens_for(TrainingCase, "before_update")
 def update_timestamp(mapper, connection, target) -> None:
     target.updated_at = datetime.utcnow()
 # Schema for creating a new TrainingCase

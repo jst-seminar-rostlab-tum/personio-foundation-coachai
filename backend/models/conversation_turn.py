@@ -10,9 +10,9 @@ class SpeakerEnum(str, Enum):
     user = "user"
     ai = "ai"
 
-class ConversationTurnModel(SQLModel, table=True):  # `table=True` makes it a database table
+class ConversationTurn(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key="trainingsessionmodel.id")  # FK to TrainingSessionModel
+    session_id: UUID = Field(foreign_key="trainingsession.id")  # FK to TrainingSession
     speaker: SpeakerEnum
     start_offset_ms: int
     end_offset_ms: int
@@ -22,7 +22,7 @@ class ConversationTurnModel(SQLModel, table=True):  # `table=True` makes it a da
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    session: Optional["TrainingSessionModel"] = Relationship(back_populates="conversation_turns")
+    session: Optional["TrainingSession"] = Relationship(back_populates="conversation_turns")
     
 # Schema for creating a new ConversationTurn
 class ConversationTurnCreate(SQLModel):

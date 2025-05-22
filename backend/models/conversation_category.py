@@ -6,7 +6,7 @@ from sqlalchemy import event
 from sqlmodel import Field, Relationship, SQLModel
 
 
-class ConversationCategoryModel(SQLModel, table=True):  # `table=True` makes it a database table
+class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(unique=True)
     icon_uri: str
@@ -15,9 +15,9 @@ class ConversationCategoryModel(SQLModel, table=True):  # `table=True` makes it 
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    training_cases: List["TrainingCaseModel"] = Relationship(back_populates="category")
+    training_cases: List["TrainingCase"] = Relationship(back_populates="category")
     
-@event.listens_for(ConversationCategoryModel, "before_update")
+@event.listens_for(ConversationCategory, "before_update")
 def update_timestamp(mapper, connection, target) -> None:
     target.updated_at = datetime.utcnow()
 # Schema for creating a new ConversationCategory
