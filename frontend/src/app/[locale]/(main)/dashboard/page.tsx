@@ -1,4 +1,10 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'CoachAI - Dashboard',
+  description: 'View your training progress, start new sessions, and track your performance',
+};
 
 export default function DashboardPage() {
   return (

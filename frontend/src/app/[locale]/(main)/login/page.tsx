@@ -1,4 +1,10 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'CoachAI - Login',
+  description: 'Sign in to your CoachAI account',
+};
 
 export default function LoginPage() {
   return (

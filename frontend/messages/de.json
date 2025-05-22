@@ -2,6 +2,83 @@
   "HomePage": {
     "welcome": "Willkommen bei ",
     "appName": "CoachAI",
-    "description": "Full-stack-Anwendung mit TypeScript und Python"
+    "description": "Full-stack-Anwendung mit TypeScript und Python",
+    "header": {
+      "appName": "Leadership Coach",
+      "signIn": "Anmelden",
+      "getStarted": "Jetzt starten"
+    },
+    "hero": {
+      "badge": "KI-gestütztes Führungstraining",
+      "title": "Entwickeln Sie Ihre Führungskompetenz mit KI-Coaching",
+      "description": "Trainieren Sie anspruchsvolle Gesprächssituationen und erhalten Sie direktes Feedback für Ihre persönliche Weiterentwicklung als Führungskraft.",
+      "cta": {
+        "primary": "Jetzt starten",
+        "secondary": "Mehr erfahren"
+      }
+    },
+    "howItWorks": {
+      "title": "So funktioniert Ihr KI-Führungscoach",
+      "description": "Mit unserer KI-Plattform üben Sie realistische Gesprächsszenarien und entwickeln Ihre Führungskompetenz in einer geschützten Umgebung.",
+      "steps": {
+        "1": {
+          "title": "Szenario auswählen",
+          "description": "Wählen Sie aus bewährten Szenarien oder erstellen Sie Ihr individuelles Training für Ihre spezifischen Herausforderungen."
+        },
+        "2": {
+          "title": "Mit KI trainieren",
+          "description": "Führen Sie natürliche Gespräche mit unserer KI, die situationsgerecht und authentisch reagiert."
+        },
+        "3": {
+          "title": "Feedback erhalten",
+          "description": "Bekommen Sie eine detaillierte Analyse Ihrer Gesprächsführung mit konkreten Handlungsempfehlungen."
+        }
+      },
+      "cta": "Erstes Training starten"
+    },
+    "features": {
+      "title": "Ihre Vorteile im Überblick",
+      "description": "Alles, was Sie für Ihre erfolgreiche Führungskräfteentwicklung benötigen.",
+      "items": {
+        "simulations": {
+          "title": "Realistische Übungsszenarien",
+          "description": "Trainieren Sie mit einer KI, die sich Ihrem Kommunikationsstil anpasst."
+        },
+        "voice": {
+          "title": "Sprachbasiertes Training",
+          "description": "Üben Sie in authentischen Gesprächssituationen wie im echten Berufsalltag."
+        },
+        "feedback": {
+          "title": "Individuelles Feedback",
+          "description": "Erhalten Sie nach jedem Training eine detaillierte Auswertung mit konkreten Verbesserungsvorschlägen."
+        },
+        "progress": {
+          "title": "Fortschrittskontrolle",
+          "description": "Verfolgen Sie Ihre Entwicklung mit aussagekräftigen Kennzahlen und Einblicken."
+        },
+        "gamification": {
+          "title": "Motivierendes Training",
+          "description": "Steigern Sie Ihre Motivation durch Erfolge, Auszeichnungen und persönliche Meilensteine."
+        },
+        "personalized": {
+          "title": "Individuelles Lernen",
+          "description": "Konzentrieren Sie sich auf die Kompetenzen, die für Ihre Führungsrolle entscheidend sind."
+        }
+      }
+    },
+    "cta": {
+      "title": "Bereit für den nächsten Karriereschritt?",
+      "description": "Werden Sie Teil unserer Community erfolgreicher Führungskräfte, die KI für ihre persönliche Entwicklung nutzen.",
+      "button": "Jetzt starten"
+    },
+    "footer": {
+      "appName": "Leadership Coach",
+      "links": {
+        "privacy": "Datenschutz",
+        "terms": "AGB",
+        "cookies": "Cookie-Einstellungen"
+      },
+      "copyright": "© 2025 AI Leadership Coach. Alle Rechte vorbehalten."
+    }
   }
 }
