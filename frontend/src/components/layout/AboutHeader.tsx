@@ -16,13 +16,13 @@ export default function AboutHeader() {
         </div>
         <nav className="hidden md:flex items-center gap-6">
           <Button asChild variant="default">
-            <Link href="/dashboard">
+            <Link href="/login">
               <span className="text-sm">{t('header.getStarted')}</span>
             </Link>
           </Button>
         </nav>
         <div className="md:hidden">
-          <Link href="/dashboard">
+          <Link href="/login">
             <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 h-8 w-8 bg-marigold-30">
               <ArrowRight className="h-5 w-5" />
             </button>

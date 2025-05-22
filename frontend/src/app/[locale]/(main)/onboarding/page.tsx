@@ -1,4 +1,10 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'CoachAI - Onboarding',
+  description: 'Get started with CoachAI - Set up your profile and preferences',
+};
 
 export default function OnboardingPage() {
   return (

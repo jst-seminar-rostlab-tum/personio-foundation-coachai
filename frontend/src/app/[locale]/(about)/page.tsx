@@ -27,7 +27,7 @@ export default function Page() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 w-full">
                   <Button asChild variant="default" className="w-full md:w-auto text-center">
-                    <Link href="/dashboard" className="w-full md:w-auto">
+                    <Link href="/login" className="w-full md:w-auto">
                       {t('hero.cta.primary')}
                     </Link>
                   </Button>
@@ -93,7 +93,7 @@ export default function Page() {
             </div>
 
             <div className="w-full mt-8">
-              <Link href="/new-training" className="inline-flex items-center justify-center w-full">
+              <Link href="/login" className="inline-flex items-center justify-center w-full">
                 <Button variant="default" className="w-full md:w-auto">
                   {t('howItWorks.cta')}
                 </Button>
@@ -168,7 +168,7 @@ export default function Page() {
                 {t('cta.description')}
               </p>
               <div className="w-full">
-                <Link href="/dashboard" className="inline-flex items-center justify-center w-full">
+                <Link href="/login" className="inline-flex items-center justify-center w-full">
                   <Button variant="default" className="w-full md:w-auto">
                     {t('cta.button')}
                   </Button>

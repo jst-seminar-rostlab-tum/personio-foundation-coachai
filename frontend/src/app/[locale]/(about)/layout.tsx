@@ -8,8 +8,9 @@ import AboutFooter from '@/components/layout/AboutFooter';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Next.js + FastAPI App',
-  description: 'Web application built with Next.js and FastAPI',
+  title: 'CoachAI - About',
+  description:
+    'Learn about CoachAI - Your AI-powered leadership coaching platform for developing exceptional soft skills',
   manifest: '/manifest.json',
 };
 
