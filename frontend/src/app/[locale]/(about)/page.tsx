@@ -3,15 +3,7 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-  MessageSquare,
-  Video,
-  BrainCircuit,
-  TrendingUp,
-  Award,
-  Target,
-  ArrowRight,
-} from 'lucide-react';
+import { MessageSquare, Video, BrainCircuit, TrendingUp, Award, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Page() {
@@ -19,31 +11,7 @@ export default function Page() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full bg-white mb-1">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="text-xl font-semibold text-black">{t('header.appName')}</span>
-            </Link>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Button asChild variant="default">
-              <Link href="/dashboard">
-                <span className="text-sm">{t('header.getStarted')}</span>
-              </Link>
-            </Button>
-          </nav>
-          <div className="md:hidden">
-            <Link href="/dashboard">
-              <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8 bg-marigold-30">
-                <ArrowRight className="h-5 w-5" />
-              </button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1">
+      <div className="flex-1">
         <section className="pb-16 pt-8 md:pt-16 md:pb-24 bg-gradient-to-br from-white to-primary/5">
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -209,33 +177,7 @@ export default function Page() {
             </div>
           </div>
         </section>
-      </main>
-
-      <footer className="border-t border-marigold-90">
-        <div className="container py-4 md:pt-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-semibold text-black">{t('footer.appName')}</span>
-              </div>
-            </div>
-            <div className="md:col-span-3 flex justify-between md:justify-end gap-4 md:gap-8 text-sm">
-              <Link href="/privacy" className="text-stone-500 hover:text-stone-900">
-                {t('footer.links.privacy')}
-              </Link>
-              <Link href="/terms" className="text-stone-500 hover:text-stone-900">
-                {t('footer.links.terms')}
-              </Link>
-              <Link href="/cookies" className="text-stone-500 hover:text-stone-900">
-                {t('footer.links.cookies')}
-              </Link>
-            </div>
-          </div>
-          <div className="pt-8 text-center text-stone-500 text-sm">
-            <p>{t('footer.copyright')}</p>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }
