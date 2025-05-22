@@ -3,7 +3,10 @@ from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy import event
+from sqlalchemy.engine.base import Connection
+from sqlalchemy.orm.mapper import Mapper
+from sqlmodel import JSON, Column, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from backend.models.training_session_model import TrainingSessionModel
@@ -18,17 +21,17 @@ class FeedbackStatusEnum(str, Enum):
 class TrainingSessionFeedbackModel(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     session_id: UUID = Field(foreign_key='trainingsessionmodel.id')  # FK to TrainingSessionModel
-    scores: int
-    tone_analysis: str
+    scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: int
     transcript_uri: str
     speak_time_percent: float
     questions_asked: int
     session_length_s: int
     goals_achieved: int
-    examples_positive: str
-    examples_negative: str
-    recommendations: str
+    examples_positive: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    examples_negative: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    recommendations: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: FeedbackStatusEnum = Field(default=FeedbackStatusEnum.pending)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -36,21 +39,30 @@ class TrainingSessionFeedbackModel(SQLModel, table=True):  # `table=True` makes 
     # Relationships
     session: Optional['TrainingSessionModel'] = Relationship(back_populates='feedback')
 
+    # Automatically update `updated_at` before an update
+
+
+@event.listens_for(TrainingSessionFeedbackModel, 'before_update')
+def update_timestamp(
+    mapper: Mapper, connection: Connection, target: 'TrainingSessionFeedbackModel'
+) -> None:
+    target.updated_at = datetime.utcnow()
+
 
 # Schema for creating a new TrainingSessionFeedback
 class TrainingSessionFeedbackCreate(SQLModel):
     session_id: UUID
-    scores: int
-    tone_analysis: str
+    scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: int
     transcript_uri: str
     speak_time_percent: float
     questions_asked: int
     session_length_s: int
     goals_achieved: int
-    examples_positive: str
-    examples_negative: str
-    recommendations: str
+    examples_positive: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    examples_negative: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    recommendations: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: FeedbackStatusEnum = FeedbackStatusEnum.pending
 
 
@@ -58,17 +70,17 @@ class TrainingSessionFeedbackCreate(SQLModel):
 class TrainingSessionFeedbackRead(SQLModel):
     id: UUID
     session_id: UUID
-    scores: int
-    tone_analysis: str
+    scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: int
     transcript_uri: str
     speak_time_percent: float
     questions_asked: int
     session_length_s: int
     goals_achieved: int
-    examples_positive: str
-    examples_negative: str
-    recommendations: str
+    examples_positive: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    examples_negative: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    recommendations: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: FeedbackStatusEnum
     created_at: datetime
     updated_at: datetime

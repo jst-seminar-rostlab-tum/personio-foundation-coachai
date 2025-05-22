@@ -35,6 +35,7 @@ from .training_session_feedback_model import (
     TrainingSessionFeedbackRead,
 )
 from .training_session_model import TrainingSessionCreate, TrainingSessionModel, TrainingSessionRead
+from .user_profile_model import UserProfileCreate, UserProfileModel, UserProfileRead
 
 __all__ = [
     'MessageModel',
@@ -68,4 +69,7 @@ __all__ = [
     'RatingModel',
     'RatingCreate',
     'RatingRead',
+    'UserProfileModel',
+    'UserProfileCreate',
+    'UserProfileRead',
 ]

@@ -2,7 +2,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy import event
+from sqlalchemy.engine.base import Connection
+from sqlalchemy.orm.mapper import Mapper
+from sqlmodel import JSON, Column, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from backend.models.conversation_turn_model import ConversationTurnModel
@@ -19,7 +22,7 @@ class TrainingSessionModel(SQLModel, table=True):  # `table=True` makes it a dat
     started_at: Optional[datetime] = None
     ended_at: Optional[datetime] = None
     language_code: str = Field(foreign_key='languagemodel.code')  # Foreign key to LanguageModel
-    ai_persona: str
+    ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -30,6 +33,15 @@ class TrainingSessionModel(SQLModel, table=True):  # `table=True` makes it a dat
     feedback: Optional['TrainingSessionFeedbackModel'] = Relationship(back_populates='session')
     ratings: list['RatingModel'] = Relationship(back_populates='session')
 
+    # Automatically update `updated_at` before an update
+
+
+@event.listens_for(TrainingSessionModel, 'before_update')
+def update_timestamp(
+    mapper: Mapper, connection: Connection, target: 'TrainingSessionModel'
+) -> None:
+    target.updated_at = datetime.utcnow()
+
 
 # Schema for creating a new TrainingSession
 class TrainingSessionCreate(SQLModel):
@@ -38,7 +50,7 @@ class TrainingSessionCreate(SQLModel):
     started_at: Optional[datetime] = None
     ended_at: Optional[datetime] = None
     language_code: str
-    ai_persona: str
+    ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
 
 
 # Schema for reading TrainingSession data
@@ -49,6 +61,6 @@ class TrainingSessionRead(SQLModel):
     started_at: Optional[datetime]
     ended_at: Optional[datetime]
     language_code: str
-    ai_persona: str
+    ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime
     updated_at: datetime

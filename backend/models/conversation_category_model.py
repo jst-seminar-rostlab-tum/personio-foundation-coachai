@@ -2,6 +2,9 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
+from sqlalchemy import event
+from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Mapper
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
@@ -18,6 +21,13 @@ class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a dat
 
     # Relationships
     training_cases: list['TrainingCaseModel'] = Relationship(back_populates='category')
+
+
+@event.listens_for(ConversationCategory, 'before_update')
+def update_timestamp(
+    mapper: Mapper, connection: Connection, target: 'ConversationCategory'
+) -> None:
+    target.updated_at = datetime.utcnow()
 
 
 # Schema for creating a new ConversationCategory
