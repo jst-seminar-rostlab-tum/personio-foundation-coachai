@@ -1,32 +1,41 @@
-from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from uuid import uuid4, UUID
-from typing import Optional, List
 from enum import Enum
+from typing import TYPE_CHECKING, Optional
+from uuid import UUID, uuid4
+
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from backend.models.conversation_category_model import ConversationCategory
+    from backend.models.language_model import LanguageModel
+    from backend.models.training_case_model import TrainingCaseModel
+
 
 class ScenarioTemplateStatus(str, Enum):
-    draft = "draft"
-    ready = "ready"
-    archived = "archived"
+    draft = 'draft'
+    ready = 'ready'
+    archived = 'archived'
+
 
 # Database model
 class ScenarioTemplateModel(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    category_id: Optional[UUID] = Field(default=None, foreign_key="conversationcategorymodel.id")
+    category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
     title: str
     description: str
     system_prompt: str
     initial_prompt: str
     ai_setup: str
-    language_code: str = Field(foreign_key="languagemodel.code")
+    language_code: str = Field(foreign_key='languagemodel.code')
     status: ScenarioTemplateStatus = Field(default=ScenarioTemplateStatus.draft)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    category: Optional["ConversationCategoryModel"] = Relationship()
-    language: Optional["LanguageModel"] = Relationship()
-    training_cases: List["TrainingCaseModel"] = Relationship(back_populates="scenario_template")
+    category: Optional['ConversationCategory'] = Relationship()
+    language: Optional['LanguageModel'] = Relationship()
+    training_cases: list['TrainingCaseModel'] = Relationship(back_populates='scenario_template')
+
 
 # Schema for creating a new ScenarioTemplate
 class ScenarioTemplateCreate(SQLModel):
@@ -38,6 +47,7 @@ class ScenarioTemplateCreate(SQLModel):
     ai_setup: str
     language_code: str
     status: ScenarioTemplateStatus = ScenarioTemplateStatus.draft
+
 
 # Schema for reading ScenarioTemplate data
 class ScenarioTemplateRead(SQLModel):

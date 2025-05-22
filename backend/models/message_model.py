@@ -1,6 +1,6 @@
-
-from sqlmodel import SQLModel, Field
 from datetime import datetime
+
+from sqlmodel import Field, SQLModel
 
 
 class MessageModel(SQLModel, table=True):  # `table=True` makes it a database table

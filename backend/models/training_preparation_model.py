@@ -1,18 +1,24 @@
-from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from uuid import uuid4, UUID
 from enum import Enum
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+from uuid import UUID, uuid4
+
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from backend.models.training_case_model import TrainingCaseModel
+
 
 class TrainingPreparationStatus(str, Enum):
-    pending = "pending"
-    completed = "completed"
-    failed = "failed"
+    pending = 'pending'
+    completed = 'completed'
+    failed = 'failed'
+
 
 # Database model
 class TrainingPreparationModel(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    case_id: UUID = Field(foreign_key="trainingcasemodel.id")
+    case_id: UUID = Field(foreign_key='trainingcasemodel.id')
     key_concepts: str
     prep_checklist: str
     status: TrainingPreparationStatus = Field(default=TrainingPreparationStatus.pending)
@@ -20,7 +26,8 @@ class TrainingPreparationModel(SQLModel, table=True):  # `table=True` makes it a
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    case: Optional["TrainingCaseModel"] = Relationship(back_populates="preparations")
+    case: Optional['TrainingCaseModel'] = Relationship(back_populates='preparations')
+
 
 # Schema for creating a new TrainingPreparation
 class TrainingPreparationCreate(SQLModel):
@@ -28,6 +35,7 @@ class TrainingPreparationCreate(SQLModel):
     key_concepts: str
     prep_checklist: str
     status: TrainingPreparationStatus = TrainingPreparationStatus.pending
+
 
 # Schema for reading TrainingPreparation data
 class TrainingPreparationRead(SQLModel):

@@ -1,17 +1,23 @@
-from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from uuid import uuid4, UUID
 from enum import Enum
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+from uuid import UUID, uuid4
+
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from backend.models.training_session_model import TrainingSessionModel
+
 
 class FeedbackStatusEnum(str, Enum):
-    pending = "pending"
-    completed = "completed"
-    failed = "failed"
+    pending = 'pending'
+    completed = 'completed'
+    failed = 'failed'
+
 
 class TrainingSessionFeedbackModel(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key="trainingsessionmodel.id")  # FK to TrainingSessionModel
+    session_id: UUID = Field(foreign_key='trainingsessionmodel.id')  # FK to TrainingSessionModel
     scores: int
     tone_analysis: str
     overall_score: int
@@ -28,7 +34,8 @@ class TrainingSessionFeedbackModel(SQLModel, table=True):  # `table=True` makes 
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    session: Optional["TrainingSessionModel"] = Relationship(back_populates="feedback")
+    session: Optional['TrainingSessionModel'] = Relationship(back_populates='feedback')
+
 
 # Schema for creating a new TrainingSessionFeedback
 class TrainingSessionFeedbackCreate(SQLModel):
@@ -45,6 +52,7 @@ class TrainingSessionFeedbackCreate(SQLModel):
     examples_negative: str
     recommendations: str
     status: FeedbackStatusEnum = FeedbackStatusEnum.pending
+
 
 # Schema for reading TrainingSessionFeedback data
 class TrainingSessionFeedbackRead(SQLModel):
