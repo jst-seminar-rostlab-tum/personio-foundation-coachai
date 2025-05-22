@@ -17,15 +17,9 @@ from .routers import (
     training_session_route,
     # twilio_route,
     user_profile_route,
-    users_route,
 )
 
-# models.Base.metadata.create_all(bind=engine)
-
 app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
-
-
-# app = FastAPI(title='CoachAI', debug=True)
 
 app.add_middleware(
     CORSMiddleware,
@@ -53,7 +47,6 @@ def on_startup() -> None:
     create_db_and_tables()
 
 
-app.include_router(users_route.router)
 # app.include_router(twilio_route.router)
 
 

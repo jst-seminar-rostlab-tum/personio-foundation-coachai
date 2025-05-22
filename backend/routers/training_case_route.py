@@ -8,8 +8,8 @@ from ..database import get_session
 from ..models.conversation_category import ConversationCategory
 from ..models.scenario_template import ScenarioTemplate
 from ..models.training_case import (
-    TrainingCaseCreate,
     TrainingCase,
+    TrainingCaseCreate,
     TrainingCaseRead,
 )
 
