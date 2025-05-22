@@ -1,8 +1,11 @@
-from enum import Enum
-from typing import Optional, List
-from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from uuid import uuid4, UUID
+from enum import Enum
+from typing import List, Optional
+from uuid import UUID, uuid4
+
+from sqlalchemy import event
+from sqlmodel import Field, Relationship, SQLModel
+
 
 # Enum for status
 class TrainingCaseStatus(str, Enum):
@@ -13,7 +16,7 @@ class TrainingCaseStatus(str, Enum):
 # Database model
 class TrainingCaseModel(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID
+    user_id: UUID = Field(foreign_key="userprofilemodel.id", nullable=False)  # FK to UserProfileModel
     category_id: Optional[UUID] = Field(default=None, foreign_key="conversationcategorymodel.id")
     scenario_template_id: Optional[UUID] = Field(default=None, foreign_key="scenariotemplatemodel.id")
     custom_category_label: Optional[str] = None
@@ -32,7 +35,10 @@ class TrainingCaseModel(SQLModel, table=True):  # `table=True` makes it a databa
     sessions: List["TrainingSessionModel"] = Relationship(back_populates="case")
     scenario_template: Optional["ScenarioTemplateModel"] = Relationship()
     preparations: List["TrainingPreparationModel"] = Relationship(back_populates="case")
-
+    user: Optional["UserProfileModel"] = Relationship(back_populates="training_cases")
+@event.listens_for(TrainingCaseModel, "before_update")
+def update_timestamp(mapper, connection, target) -> None:
+    target.updated_at = datetime.utcnow()
 # Schema for creating a new TrainingCase
 class TrainingCaseCreate(SQLModel):
     user_id: UUID

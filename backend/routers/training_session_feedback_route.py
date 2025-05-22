@@ -1,12 +1,13 @@
+from typing import Annotated, List
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from typing import List, Annotated
-from uuid import UUID
 
 from ..database import get_session
 from ..models.training_session_feedback_model import (
-    TrainingSessionFeedbackModel,
     TrainingSessionFeedbackCreate,
+    TrainingSessionFeedbackModel,
     TrainingSessionFeedbackRead,
 )
 from ..models.training_session_model import TrainingSessionModel

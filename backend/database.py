@@ -1,7 +1,7 @@
 from collections.abc import Generator
 from typing import Any
-from sqlmodel import SQLModel, create_engine, Session
 
+from sqlmodel import Session, SQLModel, create_engine
 
 # from .config import settings
 
@@ -29,7 +29,7 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 
 # Create the database tables
-def create_db_and_tables():
+def create_db_and_tables() -> None:
     SQLModel.metadata.create_all(engine)
 
 

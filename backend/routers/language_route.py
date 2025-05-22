@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
 from typing import Annotated
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import Session, select
+
 from ..database import get_session
-from ..models.language_model import LanguageModel, LanguageCreate, LanguageRead
+from ..models.language_model import LanguageCreate, LanguageModel, LanguageRead
 
 router = APIRouter(prefix="/language", tags=["Language"])
 

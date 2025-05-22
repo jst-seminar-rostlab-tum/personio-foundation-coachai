@@ -1,8 +1,11 @@
-from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from uuid import uuid4, UUID
-from typing import Optional, List
 from enum import Enum
+from typing import Dict, List, Optional
+from uuid import UUID, uuid4
+
+from sqlalchemy import event
+from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+
 
 class ScenarioTemplateStatus(str, Enum):
     draft = "draft"
@@ -17,7 +20,7 @@ class ScenarioTemplateModel(SQLModel, table=True):  # `table=True` makes it a da
     description: str
     system_prompt: str
     initial_prompt: str
-    ai_setup: str
+    ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON)) 
     language_code: str = Field(foreign_key="languagemodel.code")
     status: ScenarioTemplateStatus = Field(default=ScenarioTemplateStatus.draft)
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -27,7 +30,12 @@ class ScenarioTemplateModel(SQLModel, table=True):  # `table=True` makes it a da
     category: Optional["ConversationCategoryModel"] = Relationship()
     language: Optional["LanguageModel"] = Relationship()
     training_cases: List["TrainingCaseModel"] = Relationship(back_populates="scenario_template")
-
+    # Needed for Column(JSON)
+    class Config:
+        arbitrary_types_allowed = True
+@event.listens_for(ScenarioTemplateModel, "before_update")
+def update_timestamp(mapper, connection, target) -> None:
+    target.updated_at = datetime.utcnow()
 # Schema for creating a new ScenarioTemplate
 class ScenarioTemplateCreate(SQLModel):
     category_id: Optional[UUID] = None
@@ -35,7 +43,7 @@ class ScenarioTemplateCreate(SQLModel):
     description: str
     system_prompt: str
     initial_prompt: str
-    ai_setup: str
+    ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON)) 
     language_code: str
     status: ScenarioTemplateStatus = ScenarioTemplateStatus.draft
 
@@ -47,7 +55,7 @@ class ScenarioTemplateRead(SQLModel):
     description: str
     system_prompt: str
     initial_prompt: str
-    ai_setup: str
+    ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON)) 
     language_code: str
     status: ScenarioTemplateStatus
     created_at: datetime

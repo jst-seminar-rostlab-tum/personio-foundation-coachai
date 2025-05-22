@@ -1,7 +1,10 @@
-from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from uuid import uuid4, UUID
-from typing import Optional, List
+from typing import List
+from uuid import UUID, uuid4
+
+from sqlalchemy import event
+from sqlmodel import Field, Relationship, SQLModel
+
 
 class ConversationCategoryModel(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -13,7 +16,10 @@ class ConversationCategoryModel(SQLModel, table=True):  # `table=True` makes it 
 
     # Relationships
     training_cases: List["TrainingCaseModel"] = Relationship(back_populates="category")
-
+    
+@event.listens_for(ConversationCategoryModel, "before_update")
+def update_timestamp(mapper, connection, target) -> None:
+    target.updated_at = datetime.utcnow()
 # Schema for creating a new ConversationCategory
 class ConversationCategoryCreate(SQLModel):
     name: str

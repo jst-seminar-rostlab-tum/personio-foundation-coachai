@@ -1,12 +1,13 @@
+from typing import Annotated, List
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from typing import List, Annotated
-from uuid import UUID
 
 from ..database import get_session
 from ..models.conversation_category_model import (
-    ConversationCategoryModel,
     ConversationCategoryCreate,
+    ConversationCategoryModel,
     ConversationCategoryRead,
 )
 

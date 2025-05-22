@@ -1,16 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
-from typing import List, Annotated
+from typing import Annotated, List
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import Session, select
+
 from ..database import get_session
-from ..models.scenario_template_model import (
-    ScenarioTemplateModel,
-    ScenarioTemplateCreate,
-    ScenarioTemplateRead,
-)
 from ..models.conversation_category_model import ConversationCategoryModel
 from ..models.language_model import LanguageModel
+from ..models.scenario_template_model import (
+    ScenarioTemplateCreate,
+    ScenarioTemplateModel,
+    ScenarioTemplateRead,
+)
 
 router = APIRouter(prefix="/scenario-templates", tags=["Scenario Templates"])
 

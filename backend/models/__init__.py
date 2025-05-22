@@ -1,13 +1,42 @@
+from .conversation_category_model import (
+    ConversationCategoryCreate,
+    ConversationCategoryModel,
+    ConversationCategoryRead,
+)
+from .conversation_turn_model import (
+    ConversationTurnCreate,
+    ConversationTurnModel,
+    ConversationTurnRead,
+)
+from .language_model import LanguageCreate, LanguageModel, LanguageRead
 from .message_model import MessageModel
-from .language_model import LanguageModel, LanguageCreate, LanguageRead
-from .conversation_category_model import ConversationCategoryModel, ConversationCategoryCreate, ConversationCategoryRead
-from .training_case_model import TrainingCaseModel, TrainingCaseStatus, TrainingCaseCreate, TrainingCaseRead
-from .training_session_model import TrainingSessionModel, TrainingSessionCreate, TrainingSessionRead
-from .scenario_template_model import ScenarioTemplateModel, ScenarioTemplateCreate, ScenarioTemplateRead, ScenarioTemplateStatus
-from .training_preparation_model import TrainingPreparationModel, TrainingPreparationStatus, TrainingPreparationCreate, TrainingPreparationRead
-from .conversation_turn_model import ConversationTurnModel, ConversationTurnCreate, ConversationTurnRead
-from .training_session_feedback_model import TrainingSessionFeedbackModel, TrainingSessionFeedbackCreate, TrainingSessionFeedbackRead
-from .rating_model import RatingModel, RatingCreate, RatingRead
+from .rating_model import RatingCreate, RatingModel, RatingRead
+from .scenario_template_model import (
+    ScenarioTemplateCreate,
+    ScenarioTemplateModel,
+    ScenarioTemplateRead,
+    ScenarioTemplateStatus,
+)
+from .training_case_model import (
+    TrainingCaseCreate,
+    TrainingCaseModel,
+    TrainingCaseRead,
+    TrainingCaseStatus,
+)
+from .training_preparation_model import (
+    TrainingPreparationCreate,
+    TrainingPreparationModel,
+    TrainingPreparationRead,
+    TrainingPreparationStatus,
+)
+from .training_session_feedback_model import (
+    TrainingSessionFeedbackCreate,
+    TrainingSessionFeedbackModel,
+    TrainingSessionFeedbackRead,
+)
+from .training_session_model import TrainingSessionCreate, TrainingSessionModel, TrainingSessionRead
+
+from .user_profile_model import UserProfileModel, UserProfileCreate, UserProfileRead
 __all__ = [
     'MessageModel',
     'LanguageModel',
@@ -39,6 +68,9 @@ __all__ = [
     'TrainingSessionFeedbackRead',
     'RatingModel',
     'RatingCreate',
-    'RatingRead'
+    'RatingRead',
+    'UserProfileModel',
+    'UserProfileCreate',
+    'UserProfileRead',
 
 ]

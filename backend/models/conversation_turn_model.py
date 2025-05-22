@@ -1,8 +1,10 @@
-from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from uuid import uuid4, UUID
 from enum import Enum
 from typing import Optional
+from uuid import UUID, uuid4
+
+from sqlmodel import Field, Relationship, SQLModel
+
 
 class SpeakerEnum(str, Enum):
     user = "user"
@@ -21,7 +23,7 @@ class ConversationTurnModel(SQLModel, table=True):  # `table=True` makes it a da
 
     # Relationships
     session: Optional["TrainingSessionModel"] = Relationship(back_populates="conversation_turns")
-
+    
 # Schema for creating a new ConversationTurn
 class ConversationTurnCreate(SQLModel):
     session_id: UUID

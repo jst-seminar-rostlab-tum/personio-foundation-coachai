@@ -1,15 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
-from typing import List, Annotated
+from typing import Annotated, List
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import Session, select
+
 from ..database import get_session
+from ..models.training_case_model import TrainingCaseModel
 from ..models.training_preparation_model import (
-    TrainingPreparationModel,
     TrainingPreparationCreate,
+    TrainingPreparationModel,
     TrainingPreparationRead,
 )
-from ..models.training_case_model import TrainingCaseModel
 
 router = APIRouter(prefix="/training-preparations", tags=["Training Preparations"])
 

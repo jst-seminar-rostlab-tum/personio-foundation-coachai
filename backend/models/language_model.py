@@ -1,6 +1,5 @@
-from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime
-from typing import Optional
+from sqlmodel import Field, SQLModel
+
 
 class LanguageModel(SQLModel, table=True):  # `table=True` makes it a database table
     code: str = Field(default=None, primary_key=True)
