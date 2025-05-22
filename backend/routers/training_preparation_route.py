@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -12,22 +12,22 @@ from ..models.training_preparation import (
     TrainingPreparationRead,
 )
 
-router = APIRouter(prefix="/training-preparations", tags=["Training Preparations"])
+router = APIRouter(prefix='/training-preparations', tags=['Training Preparations'])
 
 
-@router.get("/", response_model=List[TrainingPreparationRead])
+@router.get('/', response_model=list[TrainingPreparationRead])
 def get_training_preparations(
-    session: Annotated[Session, Depends(get_session)]
-) -> List[TrainingPreparationRead]:
+    session: Annotated[Session, Depends(get_session)],
+) -> list[TrainingPreparation]:
     """
     Retrieve all training preparations.
     """
     statement = select(TrainingPreparation)
     preparations = session.exec(statement).all()
-    return preparations
+    return list(preparations)
 
 
-@router.post("/", response_model=TrainingPreparationRead)
+@router.post('/', response_model=TrainingPreparationRead)
 def create_training_preparation(
     preparation: TrainingPreparationCreate, session: Annotated[Session, Depends(get_session)]
 ) -> TrainingPreparation:
@@ -37,7 +37,7 @@ def create_training_preparation(
     # Validate foreign key
     case = session.get(TrainingCase, preparation.case_id)
     if not case:
-        raise HTTPException(status_code=404, detail="Training case not found")
+        raise HTTPException(status_code=404, detail='Training case not found')
 
     db_preparation = TrainingPreparation(**preparation.dict())
     session.add(db_preparation)
@@ -46,7 +46,7 @@ def create_training_preparation(
     return db_preparation
 
 
-@router.put("/{preparation_id}", response_model=TrainingPreparationRead)
+@router.put('/{preparation_id}', response_model=TrainingPreparationRead)
 def update_training_preparation(
     preparation_id: UUID,
     updated_data: TrainingPreparationCreate,
@@ -57,13 +57,13 @@ def update_training_preparation(
     """
     preparation = session.get(TrainingPreparation, preparation_id)
     if not preparation:
-        raise HTTPException(status_code=404, detail="Training preparation not found")
+        raise HTTPException(status_code=404, detail='Training preparation not found')
 
     # Validate foreign key
     if updated_data.case_id:
         case = session.get(TrainingCase, updated_data.case_id)
         if not case:
-            raise HTTPException(status_code=404, detail="Training case not found")
+            raise HTTPException(status_code=404, detail='Training case not found')
 
     for key, value in updated_data.dict().items():
         setattr(preparation, key, value)
@@ -74,7 +74,7 @@ def update_training_preparation(
     return preparation
 
 
-@router.delete("/{preparation_id}", response_model=dict)
+@router.delete('/{preparation_id}', response_model=dict)
 def delete_training_preparation(
     preparation_id: UUID, session: Annotated[Session, Depends(get_session)]
 ) -> dict:
@@ -83,8 +83,8 @@ def delete_training_preparation(
     """
     preparation = session.get(TrainingPreparation, preparation_id)
     if not preparation:
-        raise HTTPException(status_code=404, detail="Training preparation not found")
+        raise HTTPException(status_code=404, detail='Training preparation not found')
 
     session.delete(preparation)
     session.commit()
-    return {"message": "Training preparation deleted successfully"}
+    return {'message': 'Training preparation deleted successfully'}

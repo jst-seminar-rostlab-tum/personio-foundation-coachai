@@ -1,17 +1,27 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import event
+from sqlalchemy.engine.base import Connection
+from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from .conversation_category import ConversationCategory
+    from .scenario_template import ScenarioTemplate
+    from .training_preparation import TrainingPreparation
+    from .training_session import TrainingSession
+    from .user_profile import UserProfile
 
 
 # Enum for status
 class TrainingCaseStatus(str, Enum):
-    draft = "draft"
-    ready = "ready"
-    archived = "archived"
+    draft = 'draft'
+    ready = 'ready'
+    archived = 'archived'
+
 
 # Database model
 class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database table
@@ -32,13 +42,15 @@ class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database ta
 
     # Relationships
     category: Optional["ConversationCategory"] = Relationship(back_populates="training_cases")
-    sessions: List["TrainingSession"] = Relationship(back_populates="case")
+    sessions: list["TrainingSession"] = Relationship(back_populates="case")
     scenario_template: Optional["ScenarioTemplate"] = Relationship()
-    preparations: List["TrainingPreparation"] = Relationship(back_populates="case")
+    preparations: list["TrainingPreparation"] = Relationship(back_populates="case")
     user: Optional["UserProfile"] = Relationship(back_populates="training_cases")
-@event.listens_for(TrainingCase, "before_update")
-def update_timestamp(mapper, connection, target) -> None:
+@event.listens_for(TrainingCase, 'before_update')
+def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingCase') -> None:
     target.updated_at = datetime.utcnow()
+
+
 # Schema for creating a new TrainingCase
 class TrainingCaseCreate(SQLModel):
     user_id: UUID
@@ -52,6 +64,7 @@ class TrainingCaseCreate(SQLModel):
     tone: Optional[str] = None
     complexity: Optional[str] = None
     status: TrainingCaseStatus = TrainingCaseStatus.draft
+
 
 # Schema for reading TrainingCase data
 class TrainingCaseRead(SQLModel):

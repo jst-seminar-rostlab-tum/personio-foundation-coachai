@@ -1,14 +1,20 @@
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import event
+from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Mapper
 from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from backend.models.rating import Rating
+    from backend.models.training_case import TrainingCase
 
 
 class UserProfile(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    preferred_language: str = Field(foreign_key="language.code")  # FK to LanguageModel
+    preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
     role_id: UUID
     experience_id: UUID
     preferred_learning_style: str
@@ -17,20 +23,14 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
     deleted_at: Optional[datetime] = None
 
     # Relationships
-    ratings: Optional["Rating"] = Relationship(back_populates="user")
-    training_cases: Optional["TrainingCase"] = Relationship(back_populates="user")
+    ratings: Optional['Rating'] = Relationship(back_populates='user')
+    training_cases: Optional['TrainingCase'] = Relationship(back_populates='user')
 
 
 # Automatically update `updated_at` before an update
-@event.listens_for(UserProfile, "before_update")
-def update_timestamp(mapper, connection, target) -> None:
+@event.listens_for(UserProfile, 'before_update')
+def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfile') -> None:
     target.updated_at = datetime.utcnow()
-
-
-# Automatically set `deleted_at` and cascade delete related entries
-@event.listens_for(UserProfile, "before_delete")
-def cascade_delete(mapper, connection, target) -> None:
-    target.deleted_at = datetime.utcnow()
 
 
 # Schema for creating a new UserProfile

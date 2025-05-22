@@ -1,9 +1,12 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from backend.models.training_session import TrainingSession
 
 
 class SpeakerEnum(str, Enum):
@@ -45,3 +48,4 @@ class ConversationTurnRead(SQLModel):
     audio_uri: str
     ai_emotion: str
     created_at: datetime
+  

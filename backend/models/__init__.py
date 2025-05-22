@@ -34,7 +34,6 @@ from .training_session_feedback import (
     TrainingSessionFeedbackCreate,
     TrainingSessionFeedbackRead,
 )
-from .user_profile import UserProfile, UserProfileCreate, UserProfileRead
 
 __all__ = [
     'Message',
@@ -71,5 +70,4 @@ __all__ = [
     'UserProfile',
     'UserProfileCreate',
     'UserProfileRead',
-
 ]

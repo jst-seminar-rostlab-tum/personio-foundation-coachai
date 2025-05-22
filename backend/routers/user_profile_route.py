@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -15,10 +15,10 @@ from ..models.user_profile import (
 router = APIRouter(prefix="/user-profiles", tags=["User Profiles"])
 
 
-@router.get("/", response_model=List[UserProfileRead])
+@router.get("/", response_model=list[UserProfileRead])
 def get_user_profiles(
     session: Annotated[Session, Depends(get_session)]
-) -> List[UserProfileRead]:
+) -> list[UserProfileRead]:
     """
     Retrieve all user profiles.
     """

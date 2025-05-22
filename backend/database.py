@@ -1,9 +1,10 @@
+import os
 from collections.abc import Generator
 from typing import Any
 
-from sqlmodel import Session, SQLModel, create_engine
-import os
 from dotenv import load_dotenv
+from sqlmodel import Session, SQLModel, create_engine
+
 # from .config import settings
 
 # Load environment variables from .env file

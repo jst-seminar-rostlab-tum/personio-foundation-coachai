@@ -1,29 +1,27 @@
-from typing import Annotated, List
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.rating import RatingCreate, Rating, RatingRead
+from ..models.rating import Rating, RatingCreate, RatingRead
 from ..models.training_session import TrainingSession
 
-router = APIRouter(prefix="/ratings", tags=["Ratings"])
+router = APIRouter(prefix='/ratings', tags=['Ratings'])
 
 
-@router.get("/", response_model=List[RatingRead])
-def get_ratings(
-    session: Annotated[Session, Depends(get_session)]
-) -> List[RatingRead]:
+@router.get('/', response_model=list[RatingRead])
+def get_ratings(session: Annotated[Session, Depends(get_session)]) -> list[Rating]:
     """
     Retrieve all ratings.
     """
     statement = select(Rating)
     ratings = session.exec(statement).all()
-    return ratings
+    return list(ratings)
 
 
-@router.post("/", response_model=RatingRead)
+@router.post('/', response_model=RatingRead)
 def create_rating(
     rating: RatingCreate, session: Annotated[Session, Depends(get_session)]
 ) -> Rating:
@@ -33,7 +31,7 @@ def create_rating(
     # Validate foreign key
     training_session = session.get(TrainingSession, rating.session_id)
     if not training_session:
-        raise HTTPException(status_code=404, detail="Training session not found")
+        raise HTTPException(status_code=404, detail='Training session not found')
 
     db_rating = Rating(**rating.dict())
     session.add(db_rating)
@@ -42,7 +40,7 @@ def create_rating(
     return db_rating
 
 
-@router.put("/{rating_id}", response_model=RatingRead)
+@router.put('/{rating_id}', response_model=RatingRead)
 def update_rating(
     rating_id: UUID,
     updated_data: RatingCreate,
@@ -53,13 +51,13 @@ def update_rating(
     """
     rating = session.get(Rating, rating_id)
     if not rating:
-        raise HTTPException(status_code=404, detail="Rating not found")
+        raise HTTPException(status_code=404, detail='Rating not found')
 
     # Validate foreign key
     if updated_data.session_id:
         training_session = session.get(TrainingSession, updated_data.session_id)
         if not training_session:
-            raise HTTPException(status_code=404, detail="Training session not found")
+            raise HTTPException(status_code=404, detail='Training session not found')
 
     for key, value in updated_data.dict().items():
         setattr(rating, key, value)
@@ -70,17 +68,15 @@ def update_rating(
     return rating
 
 
-@router.delete("/{rating_id}", response_model=dict)
-def delete_rating(
-    rating_id: UUID, session: Annotated[Session, Depends(get_session)]
-) -> dict:
+@router.delete('/{rating_id}', response_model=dict)
+def delete_rating(rating_id: UUID, session: Annotated[Session, Depends(get_session)]) -> dict:
     """
     Delete a rating.
     """
     rating = session.get(Rating, rating_id)
     if not rating:
-        raise HTTPException(status_code=404, detail="Rating not found")
+        raise HTTPException(status_code=404, detail='Rating not found')
 
     session.delete(rating)
     session.commit()
-    return {"message": "Rating deleted successfully"}
+    return {'message': 'Rating deleted successfully'}

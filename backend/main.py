@@ -15,12 +15,17 @@ from .routers import (
     training_preparation_route,
     training_session_feedback_route,
     training_session_route,
+    # twilio_route,
     user_profile_route,
+    users_route,
 )
 
 # models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
+
+
+# app = FastAPI(title='CoachAI', debug=True)
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,7 +46,17 @@ app.include_router(training_session_feedback_route.router)
 app.include_router(rating_route.router)
 app.include_router(user_profile_route.router)
 
+
 # Create database tables on startup
-@app.on_event("startup")
-def on_startup():
+@app.on_event('startup')
+def on_startup() -> None:
     create_db_and_tables()
+
+
+app.include_router(users_route.router)
+# app.include_router(twilio_route.router)
+
+
+@app.get('/')
+async def root() -> dict:
+    return {'message': 'Welcome to the API'}

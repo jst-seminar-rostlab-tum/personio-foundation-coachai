@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -6,27 +6,27 @@ from sqlmodel import Session, select
 
 from ..database import get_session
 from ..models.conversation_category import (
-    ConversationCategoryCreate,
     ConversationCategory,
+    ConversationCategoryCreate,
     ConversationCategoryRead,
 )
 
-router = APIRouter(prefix="/conversation-categories", tags=["Conversation Categories"])
+router = APIRouter(prefix='/conversation-categories', tags=['Conversation Categories'])
 
 
-@router.get("/", response_model=List[ConversationCategoryRead])
+@router.get('/', response_model=list[ConversationCategoryRead])
 def get_conversation_categories(
-    session: Annotated[Session, Depends(get_session)]
-) -> List[ConversationCategoryRead]:
+    session: Annotated[Session, Depends(get_session)],
+) -> list[ConversationCategory]:
     """
     Retrieve all conversation categories.
     """
     statement = select(ConversationCategory)
     categories = session.exec(statement).all()
-    return categories
+    return list(categories)
 
 
-@router.post("/", response_model=ConversationCategoryRead)
+@router.post('/', response_model=ConversationCategoryRead)
 def create_conversation_category(
     category: ConversationCategoryCreate, session: Annotated[Session, Depends(get_session)]
 ) -> ConversationCategory:
@@ -40,7 +40,7 @@ def create_conversation_category(
     return db_category
 
 
-@router.put("/{category_id}", response_model=ConversationCategoryRead)
+@router.put('/{category_id}', response_model=ConversationCategoryRead)
 def update_conversation_category(
     category_id: UUID,
     updated_data: ConversationCategoryCreate,
@@ -51,7 +51,7 @@ def update_conversation_category(
     """
     category = session.get(ConversationCategory, category_id)
     if not category:
-        raise HTTPException(status_code=404, detail="Category not found")
+        raise HTTPException(status_code=404, detail='Category not found')
 
     for key, value in updated_data.dict().items():
         setattr(category, key, value)
@@ -62,7 +62,7 @@ def update_conversation_category(
     return category
 
 
-@router.delete("/{category_id}", response_model=dict)
+@router.delete('/{category_id}', response_model=dict)
 def delete_conversation_category(
     category_id: UUID, session: Annotated[Session, Depends(get_session)]
 ) -> dict:
@@ -71,8 +71,8 @@ def delete_conversation_category(
     """
     category = session.get(ConversationCategory, category_id)
     if not category:
-        raise HTTPException(status_code=404, detail="Category not found")
+        raise HTTPException(status_code=404, detail='Category not found')
 
     session.delete(category)
     session.commit()
-    return {"message": "Category deleted successfully"}
+    return {'message': 'Category deleted successfully'}

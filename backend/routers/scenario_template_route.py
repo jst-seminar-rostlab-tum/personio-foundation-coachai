@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -13,22 +13,22 @@ from ..models.scenario_template import (
     ScenarioTemplateRead,
 )
 
-router = APIRouter(prefix="/scenario-templates", tags=["Scenario Templates"])
+router = APIRouter(prefix='/scenario-templates', tags=['Scenario Templates'])
 
 
-@router.get("/", response_model=List[ScenarioTemplateRead])
+@router.get('/', response_model=list[ScenarioTemplateRead])
 def get_scenario_templates(
-    session: Annotated[Session, Depends(get_session)]
-) -> List[ScenarioTemplateRead]:
+    session: Annotated[Session, Depends(get_session)],
+) -> list[ScenarioTemplate]:
     """
     Retrieve all scenario templates.
     """
     statement = select(ScenarioTemplate)
     templates = session.exec(statement).all()
-    return templates
+    return list(templates)
 
 
-@router.post("/", response_model=ScenarioTemplateRead)
+@router.post('/', response_model=ScenarioTemplateRead)
 def create_scenario_template(
     template: ScenarioTemplateCreate, session: Annotated[Session, Depends(get_session)]
 ) -> ScenarioTemplate:
@@ -39,13 +39,13 @@ def create_scenario_template(
     if template.category_id:
         category = session.get(ConversationCategory, template.category_id)
         if not category:
-            raise HTTPException(status_code=404, detail="Category not found")
+            raise HTTPException(status_code=404, detail='Category not found')
 
     language = session.exec(
         select(Language).where(Language.code == template.language_code)
     ).first()
     if not language:
-        raise HTTPException(status_code=404, detail="Language not found")
+        raise HTTPException(status_code=404, detail='Language not found')
 
     db_template = ScenarioTemplate(**template.dict())
     session.add(db_template)
@@ -54,7 +54,7 @@ def create_scenario_template(
     return db_template
 
 
-@router.put("/{template_id}", response_model=ScenarioTemplateRead)
+@router.put('/{template_id}', response_model=ScenarioTemplateRead)
 def update_scenario_template(
     template_id: UUID,
     updated_data: ScenarioTemplateCreate,
@@ -65,20 +65,20 @@ def update_scenario_template(
     """
     template = session.get(ScenarioTemplate, template_id)
     if not template:
-        raise HTTPException(status_code=404, detail="Scenario template not found")
+        raise HTTPException(status_code=404, detail='Scenario template not found')
 
     # Validate foreign keys
     if updated_data.category_id:
         category = session.get(ConversationCategory, updated_data.category_id)
         if not category:
-            raise HTTPException(status_code=404, detail="Category not found")
+            raise HTTPException(status_code=404, detail='Category not found')
 
     if updated_data.language_code:
         language = session.exec(
             select(Language).where(Language.code == updated_data.language_code)
         ).first()
         if not language:
-            raise HTTPException(status_code=404, detail="Language not found")
+            raise HTTPException(status_code=404, detail='Language not found')
 
     for key, value in updated_data.dict().items():
         setattr(template, key, value)
@@ -89,7 +89,7 @@ def update_scenario_template(
     return template
 
 
-@router.delete("/{template_id}", response_model=dict)
+@router.delete('/{template_id}', response_model=dict)
 def delete_scenario_template(
     template_id: UUID, session: Annotated[Session, Depends(get_session)]
 ) -> dict:
@@ -98,8 +98,8 @@ def delete_scenario_template(
     """
     template = session.get(ScenarioTemplate, template_id)
     if not template:
-        raise HTTPException(status_code=404, detail="Scenario template not found")
+        raise HTTPException(status_code=404, detail='Scenario template not found')
 
     session.delete(template)
     session.commit()
-    return {"message": "Scenario template deleted successfully"}
+    return {'message': 'Scenario template deleted successfully'}
