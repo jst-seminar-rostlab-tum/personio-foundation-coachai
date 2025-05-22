@@ -14,7 +14,7 @@ from ..models.training_case import (
 )
 from ..models.training_preparation import TrainingPreparation, TrainingPreparationRead
 
-router = APIRouter(prefix='/training-cases', tags=['Training Cases'])
+router = APIRouter(prefix='/training-case', tags=['Training Cases'])
 
 
 @router.get('/', response_model=list[TrainingCaseRead])
