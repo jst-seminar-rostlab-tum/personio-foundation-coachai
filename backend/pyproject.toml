@@ -5,18 +5,21 @@ description = "A smart, voice-based training app for HR professionals to master 
 readme = "README.md"
 requires-python = ">=3.9,<4.0"
 dependencies = [
-    "fastapi[standard]>=0.112.1",
-    "sqlalchemy>=2.0.22",
-    "pydantic>=2.4.2",
-    "pydantic-settings>=2.0.3",
-    "psycopg2-binary>=2.9.9",
-    "alembic>=1.12.0",
-    "python-jose>=3.3.0",
-    "passlib>=1.7.4",
-    "python-multipart>=0.0.6",
-    "email-validator>=2.0.0",
-    "pre-commit>=4.2.0",
-    "sqlmodel>=0.0.24"
+  "fastapi[standard]>=0.112.1",
+  "sqlalchemy>=2.0.22",
+  "pydantic>=2.4.2",
+  "pydantic-settings>=2.0.3",
+  "psycopg[binary]>=3.2.0",
+  "alembic>=1.12.0",
+  "python-jose>=3.3.0",
+  "passlib>=1.7.4",
+  "python-multipart>=0.0.6",
+  "email-validator>=2.0.0",
+  "pre-commit>=4.2.0",
+  "sqlmodel>=0.0.24",
+  "prisma>=0.11.0",
+  "twilio>=8.12.0",
+  "python-dotenv>=1.0.0",
 ]
 
 [tool.uv.workspace]
@@ -24,9 +27,13 @@ members = ["backend"]
 
 [dependency-groups]
 dev = [
-    "ruff>=0.11.9",
+  "ruff>=0.11.9",
+  "pre-commit>=4.2.0",
+  "pytest",
+  "pytest-asyncio",
+  "pytest-postgresql",
+  "httpx",
+  "respx",
 ]
 
-lint = [
-  "ruff"
-]
+lint = ["ruff"]

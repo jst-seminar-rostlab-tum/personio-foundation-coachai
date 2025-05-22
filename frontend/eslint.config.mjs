@@ -12,7 +12,13 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    ignores: ['**/node_modules/**', '**/.next/**'],
+    ignores: [
+      '**/node_modules/**',
+      '**/.next/**',
+      'eslint.config.mjs',
+      'jest.setup.ts',
+      'package.json',
+    ],
   },
   ...compat.extends(
     'airbnb-base',
@@ -38,12 +44,6 @@ const eslintConfig = [
         },
       ],
       'no-console': 'off',
-    },
-  },
-  {
-    files: ['eslint.config.mjs'],
-    rules: {
-      'import/no-extraneous-dependencies': 'off',
     },
   },
   {

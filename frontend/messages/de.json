@@ -1,0 +1,7 @@
+{
+  "HomePage": {
+    "welcome": "Willkommen bei ",
+    "appName": "CoachAI",
+    "description": "Full-stack-Anwendung mit TypeScript und Python"
+  }
+}

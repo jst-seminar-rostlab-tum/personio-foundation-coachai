@@ -2,29 +2,6 @@
 
 A simple full-stack application built with Next.js, FastAPI, and PostgreSQL.
 
-## Project Structure
-
-```
-.
-├── frontend/                 # Next.js frontend application
-│   ├── src/
-│   │   ├── app/             # Next.js app directory
-│   │   │   ├── components/      # TypeScript interfaces
-│   │   │   └── ..
-│   │   ├── package.json
-│   │   └── Dockerfile
-│   ├── backend/                 # FastAPI backend application
-│   │   ├── app/
-│   │   │   ├── main.py         # FastAPI application entry point
-│   │   │   ├── models.py       # SQLAlchemy models
-│   │   │   ├── schemas.py      # Pydantic schemas
-│   │   │   └── database.py     # Database configuration
-│   │   ├── requirements.txt
-│   │   └── Dockerfile
-│   └── docker-compose.yml      # Docker Compose to run backend + frontend + db
-```
-
-## Tech Stack
 
 ### Frontend
 - Next.js 15.3.2
@@ -74,7 +51,8 @@ The frontend is a Next.js application with TypeScript. Key features:
 - Responsive design with TailwindCSS
 
 Directory structure:
-- `src/app/`: Next.js app directory with pages and components
+- `src/app/`: Next.js app directory with pages
+- `src/components/`: Components directory
 - `src/interfaces/`: TypeScript interfaces for type safety
 - `src/lib/`: Utility functions and API clients
 
