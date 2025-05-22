@@ -29,7 +29,7 @@ class TrainingCaseModel(SQLModel, table=True):  # `table=True` makes it a databa
     user_id: UUID = Field(
         foreign_key='userprofilemodel.id', nullable=False
     )  # FK to UserProfileModel
-    category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategorymodel.id')
+    category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
     scenario_template_id: Optional[UUID] = Field(
         default=None, foreign_key='scenariotemplatemodel.id'
     )
