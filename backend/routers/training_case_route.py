@@ -12,6 +12,7 @@ from ..models.training_case import (
     TrainingCaseCreate,
     TrainingCaseRead,
 )
+from ..models.training_preparation import TrainingPreparation, TrainingPreparationRead
 
 router = APIRouter(prefix='/training-cases', tags=['Training Cases'])
 
@@ -28,6 +29,7 @@ def get_training_cases(
     return list(training_cases)
 
 
+# needed
 @router.post('/', response_model=TrainingCaseRead)
 def create_training_case(
     training_case: TrainingCaseCreate, session: Annotated[Session, Depends(get_session)]
@@ -98,3 +100,25 @@ def delete_training_case(case_id: UUID, session: Annotated[Session, Depends(get_
     session.delete(training_case)
     session.commit()
     return {'message': 'Training case deleted successfully'}
+
+
+@router.get('/{id_training_case}/preparation', response_model=TrainingPreparationRead)
+def get_training_preparation_by_case_id(
+    id_training_case: UUID, session: Annotated[Session, Depends(get_session)]
+) -> TrainingPreparation:
+    """
+    Retrieve the training preparation data for a given training case ID.
+    """
+    # Validate that the training case exists
+    training_case = session.get(TrainingCase, id_training_case)
+    if not training_case:
+        raise HTTPException(status_code=404, detail='Training case not found')
+
+    # Fetch the associated training preparation
+    statement = select(TrainingPreparation).where(TrainingPreparation.case_id == id_training_case)
+    training_preparation = session.exec(statement).first()
+
+    if not training_preparation:
+        raise HTTPException(status_code=404, detail='Training preparation not found')
+
+    return training_preparation
