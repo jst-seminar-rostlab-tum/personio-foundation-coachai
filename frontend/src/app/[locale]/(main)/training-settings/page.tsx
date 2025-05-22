@@ -1,4 +1,10 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'CoachAI - Training Settings',
+  description: 'Customize your training preferences and goals',
+};
 
 export default function TrainingSettingsPage() {
   return (

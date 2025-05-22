@@ -1,4 +1,10 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'CoachAI - History',
+  description: 'View your past training sessions and track your progress',
+};
 
 export default function HistoryPage() {
   return (

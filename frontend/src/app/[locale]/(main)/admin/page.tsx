@@ -1,4 +1,10 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'CoachAI - Administration',
+  description: 'Manage users, training sessions, and system settings',
+};
 
 export default function AdminPage() {
   return (
