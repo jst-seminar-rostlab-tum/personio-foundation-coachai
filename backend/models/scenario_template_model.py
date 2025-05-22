@@ -40,7 +40,7 @@ class ScenarioTemplateModel(SQLModel, table=True):  # `table=True` makes it a da
     training_cases: list['TrainingCaseModel'] = Relationship(back_populates='scenario_template')
 
     # Needed for Column(JSON)
-    class Config:
+    class Config:  # type: ignore
         arbitrary_types_allowed = True
 
 
