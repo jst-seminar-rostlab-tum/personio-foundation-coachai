@@ -31,6 +31,8 @@ export default function OnboardingPage() {
         steps={onboardingSteps}
         currentStep={currentOnboardingStep}
         onStepClick={handleStepChange}
+        showAllStepNumbers={true}
+        showStepLabels={true}
         className="mb-8 md:w-1/2" // Adjust width as needed
       />
 
