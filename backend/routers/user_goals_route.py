@@ -54,5 +54,5 @@ def get_user_goals(user_id: UUID, session: Annotated[Session, Depends(get_sessio
     goal_ids = [user_goal.goal_id for user_goal in user_goals]
     statement = select(Goal).where(Goal.id.is_in(goal_ids))
     goals = session.exec(statement).all()
-
+dds
     return list(goals)
