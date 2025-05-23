@@ -8,6 +8,7 @@ from .conversation_turn import (
     ConversationTurnCreate,
     ConversationTurnRead,
 )
+from .goal import Goal, GoalCreate, GoalRead
 from .language import Language, LanguageCreate, LanguageRead
 from .rating import Rating, RatingCreate, RatingRead
 from .scenario_template import (
@@ -34,9 +35,10 @@ from .training_session_feedback import (
     TrainingSessionFeedbackCreate,
     TrainingSessionFeedbackRead,
 )
+from .user_goal import UserGoal, UserGoalCreate, UserGoalRead
+from .user_profile import UserProfile, UserProfileCreate, UserProfileRead
 
 __all__ = [
-    'Message',
     'Language',
     'LanguageCreate',
     'LanguageRead',
@@ -70,4 +72,10 @@ __all__ = [
     'UserProfile',
     'UserProfileCreate',
     'UserProfileRead',
+    'Goal',
+    'GoalCreate',
+    'GoalRead',
+    'UserGoal',
+    'UserGoalCreate',
+    'UserGoalRead',
 ]
