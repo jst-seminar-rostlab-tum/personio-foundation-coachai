@@ -1,14 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import models
-from .config import settings
-from .database import engine
-from .routers import messages_route
+from .routers import messages_route, twilio_route, users_route
 
-models.Base.metadata.create_all(bind=engine)
-
-app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
+app = FastAPI(title='CoachAI', debug=True)
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,3 +14,10 @@ app.add_middleware(
 )
 
 app.include_router(messages_route.router)
+app.include_router(users_route.router)
+app.include_router(twilio_route.router)
+
+
+@app.get('/')
+async def root() -> dict:
+    return {'message': 'Welcome to the API'}
