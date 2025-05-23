@@ -5,9 +5,9 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 
 export default function OnboardingPage() {
-  const [currentOnboardingStep, setCurrentOnboardingStep] = React.useState(0); // Start at the first step (index 0)
+  const [currentOnboardingStep, setCurrentOnboardingStep] = React.useState(0);
 
-  const onboardingSteps = ['Step1', 'Step2', 'Step3', 'Step4', 'Step5', 'Step6', 'Step7'];
+  const onboardingSteps = ['Step1', 'Step2', 'Step3', 'Step4', 'Step5'];
 
   const handleStepChange = (stepIndex: number) => {
     if (stepIndex <= currentOnboardingStep || stepIndex === currentOnboardingStep + 1) {
@@ -31,7 +31,7 @@ export default function OnboardingPage() {
         steps={onboardingSteps}
         currentStep={currentOnboardingStep}
         onStepClick={handleStepChange}
-        className="mb-8 w-1/2" // Adjust width as needed
+        className="mb-8 md:w-1/2" // Adjust width as needed
       />
 
       <div className="text-center text-lg">

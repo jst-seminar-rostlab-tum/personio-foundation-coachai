@@ -22,9 +22,9 @@ const Stepper: React.FC<StepperProps> = ({ steps, currentStep, onStepClick, clas
             disabled={index > currentStep + 1}
           >
             {index < currentStep ? (
-              <CheckIcon className="size-5" />
+              <CheckIcon className="size-5" strokeWidth={3} />
             ) : (
-              index === currentStep && <span className="font-semibold text-xl">{index + 1}</span>
+              index === currentStep && <span className="font-semibold text-icon">{index + 1}</span>
             )}
           </Button>
 
