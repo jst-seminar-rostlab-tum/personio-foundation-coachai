@@ -1,0 +1,24 @@
+# Go to root directory of the repository
+cd "$(git rev-parse --show-toplevel)"
+
+# Run commitlint
+set +e
+cd frontend && npx --no -- commitlint --edit "$1"
+status=$?
+set -e
+if [ $status -eq 1 ]; then
+    echo ""
+    echo "✖ Commit message must follow <type>(<scope>): <subject>"
+    echo ""
+    echo "Examples:"
+    echo "  feat(F-123): Implement search endpoint"
+    echo "  fix(B-42): Correct logger typo"
+    echo "  docs(M): Update README"
+    echo ""
+    echo "Allowed <type> values: feat | fix | docs | style | refactor | test | revert | ci"
+    echo "Allowed <scope> values: F-#### | B-#### | M [custom-error-message]"
+    echo ""
+    echo "For more information, please refer to the documentation."
+    echo ""
+fi
+exit $status

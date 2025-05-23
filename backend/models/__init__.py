@@ -8,7 +8,10 @@ from .conversation_turn import (
     ConversationTurnCreate,
     ConversationTurnRead,
 )
+<<<<<<< HEAD
 from .goal import Goal, GoalCreate, GoalRead
+=======
+>>>>>>> 526b8159b2d22d7f4236332585cfe3e85eaa0444
 from .language import Language, LanguageCreate, LanguageRead
 from .rating import Rating, RatingCreate, RatingRead
 from .scenario_template import (
@@ -35,10 +38,16 @@ from .training_session_feedback import (
     TrainingSessionFeedbackCreate,
     TrainingSessionFeedbackRead,
 )
+<<<<<<< HEAD
 from .user_goal import UserGoal, UserGoalCreate, UserGoalRead
 from .user_profile import UserProfile, UserProfileCreate, UserProfileRead
 
 __all__ = [
+=======
+
+__all__ = [
+    'Message',
+>>>>>>> 526b8159b2d22d7f4236332585cfe3e85eaa0444
     'Language',
     'LanguageCreate',
     'LanguageRead',
@@ -72,10 +81,13 @@ __all__ = [
     'UserProfile',
     'UserProfileCreate',
     'UserProfileRead',
+<<<<<<< HEAD
     'Goal',
     'GoalCreate',
     'GoalRead',
     'UserGoal',
     'UserGoalCreate',
     'UserGoalRead',
+=======
+>>>>>>> 526b8159b2d22d7f4236332585cfe3e85eaa0444
 ]
