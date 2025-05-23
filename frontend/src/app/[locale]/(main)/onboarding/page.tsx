@@ -1,51 +1,60 @@
-import Link from 'next/link';
-import type { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'CoachAI - Onboarding',
-  description: 'Get started with CoachAI - Set up your profile and preferences',
-};
+import Stepper from '@/components/ui/stepper';
+import React from 'react';
+import { Button } from '@/components/ui/button';
 
 export default function OnboardingPage() {
+  const [currentOnboardingStep, setCurrentOnboardingStep] = React.useState(0);
+
+  const onboardingSteps = ['Step1', 'Step2', 'Step3', 'Step4', 'Step5'];
+
+  const handleStepChange = (stepIndex: number) => {
+    if (stepIndex <= currentOnboardingStep || stepIndex === currentOnboardingStep + 1) {
+      setCurrentOnboardingStep(stepIndex);
+    }
+  };
+
+  const goToNextStep = () => {
+    setCurrentOnboardingStep((prev) => Math.min(prev + 1, onboardingSteps.length - 1));
+  };
+
+  const goToPreviousStep = () => {
+    setCurrentOnboardingStep((prev) => Math.max(prev - 1, 0));
+  };
+
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
-      <div className="flex-1 flex flex-col items-center justify-between px-4 py-2">
-        {/* Title skeleton */}
-        <div className="w-3/4 h-8 mt-4 mb-2 text-2xl font-bold text-gray-400 text-center">
-          Personalize Your Experience
-        </div>
-        <div className="w-1/2 h-4 bg-gray-100 rounded mb-3 animate-pulse" />
-        {/* Steps skeleton */}
-        <div className="flex gap-2 mb-4 w-full max-w-md justify-center">
-          {[1, 2, 3].map((_, i) => (
-            <div key={i} className="flex flex-col items-center">
-              <div className="w-7 h-7 bg-gray-200 rounded-full animate-pulse mb-1" />
-              <div className="w-10 h-2 bg-gray-100 rounded animate-pulse" />
-            </div>
-          ))}
-        </div>
-        {/* Question skeleton */}
-        <div className="w-2/3 h-6 bg-gray-200 rounded mb-3 animate-pulse" />
-        {/* Options skeleton */}
-        <div className="w-full max-w-md space-y-2 mb-3">
-          {[1, 2, 3, 4].map((_, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-200 rounded-full animate-pulse" />
-              <div className="flex-1 h-4 bg-gray-100 rounded animate-pulse" />
-            </div>
-          ))}
-        </div>
-        {/* Navigation buttons skeleton */}
-        <div className="flex w-full max-w-md gap-2 mb-2">
-          <div className="flex-1 h-9 bg-gray-100 rounded animate-pulse" />
-          <div className="flex-1 h-9 bg-gray-200 rounded animate-pulse" />
-        </div>
+    <div className="flex flex-col items-center p-8 space-y-8">
+      <h1 className="text-2xl font-bold text-center mb-8">Onboarding Process</h1>
+
+      <Stepper
+        steps={onboardingSteps}
+        currentStep={currentOnboardingStep}
+        onStepClick={handleStepChange}
+        showAllStepNumbers={true}
+        showStepLabels={true}
+        className="mb-8 md:w-1/2"
+      />
+
+      <div className="text-center text-lg">
+        <p>
+          You are currently on:{' '}
+          <span className="font-semibold text-blue-600">
+            {onboardingSteps[currentOnboardingStep]}
+          </span>
+        </p>
       </div>
-      {/* Skip for now button */}
-      <div className="flex justify-center pb-2">
-        <Link href="/dashboard" className="text-sm text-gray-500 hover:underline">
-          Skip for now
-        </Link>
+
+      <div className="flex justify-center space-x-4 mt-8">
+        <Button onClick={goToPreviousStep} disabled={currentOnboardingStep === 0}>
+          Previous
+        </Button>
+        <Button
+          onClick={goToNextStep}
+          disabled={currentOnboardingStep === onboardingSteps.length - 1}
+        >
+          {currentOnboardingStep === onboardingSteps.length - 1 ? 'Finish' : 'Next'}
+        </Button>
       </div>
     </div>
   );
