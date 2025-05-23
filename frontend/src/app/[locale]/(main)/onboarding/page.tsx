@@ -33,7 +33,7 @@ export default function OnboardingPage() {
         onStepClick={handleStepChange}
         showAllStepNumbers={true}
         showStepLabels={true}
-        className="mb-8 md:w-1/2" // Adjust width as needed
+        className="mb-8 md:w-1/2"
       />
 
       <div className="text-center text-lg">

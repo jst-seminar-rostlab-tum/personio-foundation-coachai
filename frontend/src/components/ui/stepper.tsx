@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { CheckIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { StepperProps } from '@/interfaces/Props';
+import { StepperProps } from '@/interfaces/StepperProps';
 
 const Stepper: React.FC<StepperProps> = ({
   steps,
@@ -33,7 +33,7 @@ const Stepper: React.FC<StepperProps> = ({
                 <CheckIcon className="size-5" strokeWidth={3} />
               ) : (
                 (index === currentStep || showAllStepNumbers) && (
-                  <span className="font-semibold text-icon">{index + 1}</span>
+                  <span className="font-semibold text-xl">{index + 1}</span>
                 )
               )}
             </Button>
