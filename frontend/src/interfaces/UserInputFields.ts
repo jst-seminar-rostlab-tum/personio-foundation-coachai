@@ -10,3 +10,12 @@ export interface UserPreference {
   defaultValue?: string;
   onChange?: (value: string) => void;
 }
+
+export interface UserConfidenceField {
+  title: string;
+  minLabel: string;
+  maxLabel: string;
+  minValue: number;
+  maxValue: number;
+  onChange?: (value: number[]) => void;
+}

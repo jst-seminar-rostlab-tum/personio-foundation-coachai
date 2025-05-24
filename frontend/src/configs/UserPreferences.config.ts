@@ -1,4 +1,4 @@
-import { UserPreference } from '@/interfaces/UserPreference';
+import { UserPreference } from '@/interfaces/UserInputFields';
 
 export const userPreferences: UserPreference[] = [
   {
