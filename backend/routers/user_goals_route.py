@@ -1,13 +1,12 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from ..database import get_session
-from ..models.goal import Goal, GoalRead
+from ..models.goal import UUID, Goal, GoalRead
 from ..models.user_goal import UserGoal, UserGoalCreate, UserGoalRead
-from ..models.user_profile_model import UserProfileModel
+from ..models.user_profile import UserProfile
 
 router = APIRouter(prefix='/user-goals', tags=['User Goals'])
 
@@ -24,7 +23,7 @@ def create_user_goal(
     if not goal:
         raise HTTPException(status_code=404, detail='Goal not found')
 
-    user = session.get(UserProfileModel, user_goal.user_id)
+    user = session.get(UserProfile, user_goal.user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
 
@@ -42,7 +41,7 @@ def get_user_goals(user_id: UUID, session: Annotated[Session, Depends(get_sessio
     Retrieve all goals associated with a specific user.
     """
     # Validate that the user exists
-    user = session.get(UserProfileModel, user_id)
+    user = session.get(UserProfile, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
 
@@ -50,9 +49,13 @@ def get_user_goals(user_id: UUID, session: Annotated[Session, Depends(get_sessio
     statement = select(UserGoal).where(UserGoal.user_id == user_id)
     user_goals = session.exec(statement).all()
 
+    goal_ids = [ug.goal_id for ug in user_goals]
+
+    # If the user has no goals, avoid generating an empty IN () clause
+    if not goal_ids:
+        return []
+
     # Fetch the associated goals
-    goal_ids = [user_goal.goal_id for user_goal in user_goals]
-    statement = select(Goal).where(Goal.id.is_in(goal_ids))
+    statement = select(Goal).where(col(Goal.id).in_(goal_ids))
     goals = session.exec(statement).all()
-dds
     return list(goals)

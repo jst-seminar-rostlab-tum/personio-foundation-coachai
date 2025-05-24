@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class UserGoal(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     goal_id: UUID = Field(foreign_key='goal.id')  # FK to Goal
-    user_id: UUID = Field(foreign_key='userprofilemodel.id')  # FK to UserProfileModel
+    user_id: UUID = Field(foreign_key='userprofile.id')  # FK to UserProfileModel
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
