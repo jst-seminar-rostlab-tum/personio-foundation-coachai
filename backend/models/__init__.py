@@ -8,6 +8,7 @@ from .conversation_turn import (
     ConversationTurnCreate,
     ConversationTurnRead,
 )
+from .difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
 from .experience import Experience, ExperienceCreate, ExperienceRead
 from .goal import Goal, GoalCreate, GoalRead
 from .language import Language, LanguageCreate, LanguageRead
@@ -86,4 +87,7 @@ __all__ = [
     'Experience',
     'ExperienceCreate',
     'ExperienceRead',
+    'DifficultyLevel',
+    'DifficultyLevelCreate',
+    'DifficultyLevelRead',
 ]
