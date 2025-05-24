@@ -32,4 +32,3 @@ def create_db_and_tables() -> None:
 def get_session() -> Generator[Session, Any, None]:
     with Session(engine) as session:
         yield session
-
