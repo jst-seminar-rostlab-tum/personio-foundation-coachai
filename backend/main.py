@@ -9,6 +9,7 @@ from .populate_dummy_data import populate_data
 from .routers import (
     conversation_category_route,
     conversation_turn_route,
+    goal_route,
     language_route,
     rating_route,
     scenario_template_route,
@@ -16,7 +17,7 @@ from .routers import (
     training_preparation_route,
     training_session_feedback_route,
     training_session_route,
-    # twilio_route,
+    user_goals_route,
     user_profile_route,
 )
 
@@ -40,6 +41,8 @@ app.include_router(conversation_turn_route.router)
 app.include_router(training_session_feedback_route.router)
 app.include_router(rating_route.router)
 app.include_router(user_profile_route.router)
+app.include_router(user_goals_route.router)
+app.include_router(goal_route.router)
 
 
 # Create database tables on startup
