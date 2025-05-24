@@ -35,7 +35,7 @@ def generate_checklist(request: ChecklistRequest) -> List[str]:
 
 
 def build_objective_prompt(request: ObjectiveRequest) -> str:
-    return f"""You're a training expert. Based on the case below, generate {request.num_objectives} clear, specific training objectives.
+    return f"""You're a HR professionals training expert. Based on the case below, generate {request.num_objectives} clear, specific training objectives.
 
 Category: {request.category}
 Goal: {request.goal}
@@ -48,7 +48,7 @@ List:
 
 def build_key_concept_prompt(request: KeyConceptRequest) -> str:
     return f"""
-You are a training assistant. Based on the training case below, generate **one** key concept and return it in the following strict JSON format.
+You are a training assistant. Based on the HR professionals training case below, generate **one** key concept and return it in the following strict JSON format.
 
 Structure:
 {{
@@ -74,7 +74,7 @@ Training Case:
 
 
 def build_checklist_prompt(request: ChecklistRequest) -> str:
-    return f"""You're preparing for a training session. Based on the following information, list {request.num_checkpoints} concrete preparation checklist items.
+    return f"""You're preparing for a HR professionals training session. Based on the following information, list {request.num_checkpoints} concrete preparation checklist items.
 
 Category: {request.category}
 Goal: {request.goal}
