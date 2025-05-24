@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os
 from typing import List
-from backend.schemas.traning_preparation_schema import ObjectiveRequest, KeyConceptRequest, ChecklistRequest, \
+from backend.schemas.training_preparation_schema import ObjectiveRequest, KeyConceptRequest, ChecklistRequest, \
     ConceptOutput
 from openai import OpenAI
 import json

@@ -3,7 +3,7 @@ from unittest.mock import patch
 from backend.services.training_preparation_service import (
     generate_objectives, generate_key_concept, generate_checklist
 )
-from backend.schemas.traning_preparation_schema import (
+from backend.schemas.training_preparation_schema import (
     ObjectiveRequest, KeyConceptRequest, ChecklistRequest, ConceptOutput
 )
 
