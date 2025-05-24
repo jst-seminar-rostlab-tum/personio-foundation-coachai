@@ -1,3 +1,5 @@
+import os
+import urllib.request
 from collections.abc import Generator
 from typing import Any
 
@@ -5,10 +7,17 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from .config import settings
 
-# Database connection string
+if settings.stage == 'prod':
+    os.makedirs(settings.ssl_cert_dir, exist_ok=True)
+    ssl_cert_path = f'{settings.ssl_cert_dir}{settings.ssl_cert_name}'
+    urllib.request.urlretrieve(settings.ssl_cert_url, ssl_cert_path)
+else:
+    ssl_cert_path = None
+
 SQLALCHEMY_DATABASE_URL = (
-    settings.database_url
-    or f"postgresql://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}"
+        f'{settings.database_url}?sslmode=verify-full&sslrootcert={ssl_cert_path}'
+        or
+        f'postgresql://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
 )
 # print(SQLALCHEMY_DATABASE_URL)
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
