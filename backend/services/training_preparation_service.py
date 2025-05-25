@@ -44,6 +44,8 @@ def generate_objectives(request: ObjectiveRequest) -> list[str]:
     user_prompt = (
         f"Generate {request.num_objectives} clear, specific training objectives based on "
         f"the following case:\n"
+        f"Each item should be a single, concise sentence,"
+        f" similar in length and style to the examples below.\n"
         f"Return the result strictly as a JSON object like:\n"
         f'{{ "items": ["Objective 1", "Objective 2", "Objective 3"] }}\n'
         f"Do not include markdown or ```json formatting.\n\n"
@@ -52,6 +54,11 @@ def generate_objectives(request: ObjectiveRequest) -> list[str]:
         f"Goal: {request.goal}\n"
         f"Context: {request.context}\n"
         f"Other Party: {request.other_party}"
+        f"Here are example objectives items(for style and length reference only):\n"
+        f"Clearly communicate the impact of the missed deadlines\n"
+        f"Understand potential underlying causes\n"
+        f"Collaboratively develop a solution\n"
+        f"End the conversation on a positive note"
     )
 
     result = call_structured_llm(
@@ -69,6 +76,8 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
     """
     user_prompt = (
         f"Generate {request.num_checkpoints} checklist items for the following training case:\n"
+        f"Each item should be a single, concise sentence,"
+        f" similar in length and style to the examples below.\n"
         f"Return the result strictly as a JSON object like:\n"
         f'{{ "items": ["Objective 1", "Objective 2", "Objective 3"] }}\n'
         f"Do not include markdown or ```json formatting.\n\n"
@@ -77,6 +86,14 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
         f"Goal: {request.goal}\n"
         f"Context: {request.context}\n"
         f"Other Party: {request.other_party}"
+        f"Here are example checklist items(for style and length reference only):\n"
+        f"Gather specific examples of missed deadlines\n"
+        f"Document the impact on team and projects\n"
+        f"Consider potential underlying causes\n"
+        f"Prepare open-ended questions\n"
+        f"Think about potential solutions to suggest\n"
+        f"Plan a positive closing statement\n"
+        f"Choose a private, comfortable meeting environment\n"
     )
 
     result = call_structured_llm(
