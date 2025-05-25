@@ -18,12 +18,12 @@ const Stepper: React.FC<StepperProps> = ({
         <React.Fragment key={step}>
           <div className="flex flex-col gap-2">
             <Button
-              variant={index <= currentStep ? 'default' : 'disabled'}
               className={cn(
                 'size-10 rounded-full transition-colors duration-200 flex items-center justify-center text-white p-0',
                 {
                   'bg-marigold-50': index <= currentStep,
-                  'border-1 border-solid border-bw-20 text-bw-40': index > currentStep,
+                  'border-1 border-solid border-bw-20 bg-bw-10 hover:bg-bw-30 text-bw-40':
+                    index > currentStep,
                 }
               )}
               onClick={() => onStepClick && onStepClick(index)}
