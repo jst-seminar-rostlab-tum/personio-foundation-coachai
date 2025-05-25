@@ -88,8 +88,10 @@
       "title": "Anmelden",
       "emailInputLabel": "E-Mail",
       "emailInputPlaceholder": "Gib deine E-Mail ein",
+      "emailInputError": "Email ist ungültig",
       "passwordInputLabel": "Passwort",
       "passwordInputPlaceholder": "Gib dein Passwort ein",
+      "passwordInputError": "Password ist ungültig",
       "stayLoggedInCheckboxLabel": "Angemeldet bleiben",
       "signInButtonLabel": "Anmelden",
       "signInWithGoogleButtonLabel": "Oder mit Google anmelden"
@@ -98,14 +100,19 @@
       "title": "Registrieren",
       "fullNameInputLabel": "Vollständiger Name *",
       "fullNameInputPlaceholder": "Dein Name",
+      "fullNameInputError": "Name ist ungültig",
       "emailInputLabel": "E-Mail *",
       "emailInputPlaceholder": "Deine E-Mail",
+      "emailInputError": "Email ist ungültig",
       "phoneNumberInputLabel": "Telefonnummer *",
       "phoneNumberInputPlaceholder": "Deine Telefonnummer",
+      "phoneNumberInputError": "Telefonnummer ist ungültig",
       "passwordInputLabel": "Passwort *",
       "passwordInputPlaceholder": "Erstelle ein Passwort",
+      "passwordInputError": "Password ist ungültig",
       "agreeToTermsCheckboxLabel": "Ich stimme den Nutzungsbedingungen und der Datenschutzrichtlinie zu",
-      "signUpButtonLabel": "Registrieren"
+      "signUpButtonLabel": "Registrieren",
+      "signUpWithGoogleButtonLabel": "Oder mit Google registrieren"
     }
   }
 }

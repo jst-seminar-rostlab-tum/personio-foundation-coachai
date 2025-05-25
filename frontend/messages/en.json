@@ -88,8 +88,10 @@
       "title": "Sign-In",
       "emailInputLabel": "Email",
       "emailInputPlaceholder": "Enter Your Email",
+      "emailInputError": "Email is invalid",
       "passwordInputLabel": "Password",
       "passwordInputPlaceholder": "Enter Your Password",
+      "passwordInputError": "Password is invalid",
       "stayLoggedInCheckboxLabel": "Stay Logged In",
       "signInButtonLabel": "Sign In",
       "signInWithGoogleButtonLabel": "Or Sign In With Google"
@@ -98,14 +100,19 @@
       "title": "Sign-Up",
       "fullNameInputLabel": "Full Name *",
       "fullNameInputPlaceholder": "Your Name",
+      "fullNameInputError": "Name is invalid",
       "emailInputLabel": "Email *",
       "emailInputPlaceholder": "Your Email",
+      "emailInputError": "Email is invalid",
       "phoneNumberInputLabel": "Phone Number *",
       "phoneNumberInputPlaceholder": "Your Phone Number",
+      "phoneNumberInputError": "Phone number is invalid",
       "passwordInputLabel": "Password *",
       "passwordInputPlaceholder": "Create a Password",
+      "passwordInputError": "Password is invalid",
       "agreeToTermsCheckboxLabel": "I agree to the Terms of Service and Privacy Policy",
-      "signUpButtonLabel": "Sign Up"
+      "signUpButtonLabel": "Sign Up",
+      "signUpWithGoogleButtonLabel": "Or Sign Up With Google"
     }
   }
 }

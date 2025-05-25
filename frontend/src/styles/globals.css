@@ -19,6 +19,7 @@
   --marigold-90: #4d2d00;
   --marigold-95: #291800;
   --radius-md: 8px;
+  --destructive: #dc2626;
 }
 
 @theme inline {
