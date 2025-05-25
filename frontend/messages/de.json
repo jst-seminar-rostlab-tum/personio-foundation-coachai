@@ -80,5 +80,32 @@
       },
       "copyright": "© 2025 AI Leadership Coach. Alle Rechte vorbehalten."
     }
+  },
+  "LoginPage": {
+    "welcome": "Willkommen bei Leadership Coach",
+    "description": "Beginne deine Reise im Leadership Coaching",
+    "SignInTab": {
+      "title": "Anmelden",
+      "emailInputLabel": "E-Mail",
+      "emailInputPlaceholder": "Gib deine E-Mail ein",
+      "passwordInputLabel": "Passwort",
+      "passwordInputPlaceholder": "Gib dein Passwort ein",
+      "stayLoggedInCheckboxLabel": "Angemeldet bleiben",
+      "signInButtonLabel": "Anmelden",
+      "signInWithGoogleButtonLabel": "Oder mit Google anmelden"
+    },
+    "SignUpTab": {
+      "title": "Registrieren",
+      "fullNameInputLabel": "Vollständiger Name *",
+      "fullNameInputPlaceholder": "Dein Name",
+      "emailInputLabel": "E-Mail *",
+      "emailInputPlaceholder": "Deine E-Mail",
+      "phoneNumberInputLabel": "Telefonnummer *",
+      "phoneNumberInputPlaceholder": "Deine Telefonnummer",
+      "passwordInputLabel": "Passwort *",
+      "passwordInputPlaceholder": "Erstelle ein Passwort",
+      "agreeToTermsCheckboxLabel": "Ich stimme den Nutzungsbedingungen und der Datenschutzrichtlinie zu",
+      "signUpButtonLabel": "Registrieren"
+    }
   }
 }
