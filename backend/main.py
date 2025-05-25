@@ -1,9 +1,11 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .config import settings
+from backend.connections.gemini_client import init_gemini
 
-# from .database import engine
+from .config import settings
 from .database import create_db_and_tables
 from .routers import (
     conversation_category_route,
@@ -19,7 +21,15 @@ from .routers import (
     user_profile_route,
 )
 
-app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):  # noqa: ANN201
+    create_db_and_tables()
+    init_gemini()
+    yield
+
+
+app = FastAPI(title='CoachAI', debug=settings.stage == 'dev', lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,13 +49,6 @@ app.include_router(conversation_turn_route.router)
 app.include_router(training_session_feedback_route.router)
 app.include_router(rating_route.router)
 app.include_router(user_profile_route.router)
-
-
-# Create database tables on startup
-@app.on_event('startup')
-def on_startup() -> None:
-    create_db_and_tables()
-
 
 # app.include_router(twilio_route.router)
 
