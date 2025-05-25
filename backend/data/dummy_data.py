@@ -23,8 +23,6 @@ from backend.models.user_profile import UserProfile
 def get_dummy_languages() -> list[Language]:
     return [
         Language(code='en', name='English'),
-        Language(code='fr', name='French'),
-        Language(code='es', name='Spanish'),
         Language(code='de', name='German'),
     ]
 
@@ -79,7 +77,7 @@ def get_dummy_user_profiles(roles: list[Role], experiences: list[Experience]) ->
         ),
         UserProfile(
             id=uuid4(),
-            preferred_language='fr',
+            preferred_language='de',
             role_id=roles[1].id,
             experience_id=experiences[1].id,
             preferred_learning_style='Auditory',
@@ -90,8 +88,8 @@ def get_dummy_user_profiles(roles: list[Role], experiences: list[Experience]) ->
 
 def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) -> list[UserGoal]:
     return [
-        UserGoal(id=uuid4(), goal_id=goals[0].id, user_id=user_profiles[0].id),
-        UserGoal(id=uuid4(), goal_id=goals[1].id, user_id=user_profiles[1].id),
+        UserGoal(goal_id=goals[0].id, user_id=user_profiles[0].id),
+        UserGoal(goal_id=goals[1].id, user_id=user_profiles[1].id),
     ]
 
 
@@ -243,7 +241,7 @@ def get_dummy_training_sessions(training_cases: list[TrainingCase]) -> list[Trai
             scheduled_at=datetime.utcnow(),
             started_at=datetime.utcnow(),
             ended_at=datetime.utcnow(),
-            language_code='fr',  # Assuming "fr" is a valid language code in the LanguageModel table
+            language_code='de',  # Assuming "fr" is a valid language code in the LanguageModel table
             ai_persona={'persona_name': 'AI Mentor', 'persona_role': 'Guide'},
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),

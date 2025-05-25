@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
@@ -13,9 +13,8 @@ if TYPE_CHECKING:
 
 
 class UserGoal(SQLModel, table=True):  # `table=True` makes it a database table
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
-    goal_id: UUID = Field(foreign_key='goal.id')  # FK to Goal
-    user_id: UUID = Field(foreign_key='userprofile.id')  # FK to UserProfileModel
+    goal_id: UUID = Field(foreign_key='goal.id', primary_key=True)  # FK to Goal
+    user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)  # FK to UserProfileModel
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
@@ -36,7 +35,6 @@ class UserGoalCreate(SQLModel):
 
 # Schema for reading UserGoal data
 class UserGoalRead(SQLModel):
-    id: UUID
     goal_id: UUID
     user_id: UUID
     updated_at: datetime
