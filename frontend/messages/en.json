@@ -112,7 +112,20 @@
       "passwordInputError": "Password is invalid",
       "agreeToTermsCheckboxLabel": "I agree to the Terms of Service and Privacy Policy",
       "signUpButtonLabel": "Sign Up",
-      "signUpWithGoogleButtonLabel": "Or Sign Up With Google"
+      "signUpWithGoogleButtonLabel": "Or Sign Up With Google",
+      "termsError": "You must accept the terms and conditions to continue",
+      "genericError": "An error occurred during sign up"
+    },
+    "Verification": {
+      "title": "Verify Your Phone Number",
+      "description": "We've sent a verification code to {phoneNumber}. Please enter it below.",
+      "codeLabel": "Verification Code",
+      "codePlaceholder": "Enter 6-digit code",
+      "verifyButton": "Verify",
+      "verifyingButton": "Verifying...",
+      "cancelButton": "Cancel",
+      "invalidCode": "Invalid verification code. Please try again.",
+      "genericError": "An error occurred during verification"
     }
   }
 }

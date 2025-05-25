@@ -15,10 +15,14 @@ if TYPE_CHECKING:
 class UserProfile(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
-    role_id: UUID
-    experience_id: UUID
-    preferred_learning_style: str
-    preferred_session_length: str
+    role_id: Optional[UUID] = None
+    experience_id: Optional[UUID] = None
+    preferred_learning_style: Optional[str] = None
+    preferred_session_length: Optional[str] = None
+    full_name: str
+    email: str
+    phone_number: str
+    password: str
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     deleted_at: Optional[datetime] = None
 
@@ -35,20 +39,27 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfil
 
 # Schema for creating a new UserProfile
 class UserProfileCreate(SQLModel):
-    preferred_language: str
-    role_id: UUID
-    experience_id: UUID
-    preferred_learning_style: str
-    preferred_session_length: str
+    preferred_language: Optional[str] = None
+    role_id: Optional[UUID] = None
+    experience_id: Optional[UUID] = None
+    preferred_learning_style: Optional[str] = None
+    preferred_session_length: Optional[str] = None
+    full_name: str
+    email: str
+    phone_number: str
+    password: str
 
 
 # Schema for reading UserProfile data
 class UserProfileRead(SQLModel):
     id: UUID
     preferred_language: str
-    role_id: UUID
-    experience_id: UUID
-    preferred_learning_style: str
-    preferred_session_length: str
+    role_id: Optional[UUID] = None
+    experience_id: Optional[UUID] = None
+    preferred_learning_style: Optional[str] = None
+    preferred_session_length: Optional[str] = None
+    full_name: str
+    email: str
+    phone_number: str
     updated_at: datetime
-    deleted_at: Optional[datetime]
+    deleted_at: Optional[datetime] = None

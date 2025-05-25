@@ -44,7 +44,9 @@ app.include_router(user_profile_route.router)
 # Create database tables on startup
 @app.on_event('startup')
 def on_startup() -> None:
+    print('Creating database tables...')
     create_db_and_tables()
+    print('Database tables created successfully!')
 
 
 # app.include_router(twilio_route.router)
