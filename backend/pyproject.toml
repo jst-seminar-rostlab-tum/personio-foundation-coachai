@@ -16,6 +16,11 @@ dependencies = [
     "python-multipart>=0.0.6",
     "email-validator>=2.0.0",
     "pre-commit>=4.2.0",
+    "google-genai>=1.16.1",
+    "opencv-python>=4.11.0.86",
+    "pyaudio>=0.2.14",
+    "pillow>=11.2.1",
+    "mss>=10.0.0",
 ]
 
 [tool.uv.workspace]
