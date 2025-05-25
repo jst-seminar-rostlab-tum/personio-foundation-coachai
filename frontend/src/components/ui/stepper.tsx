@@ -16,7 +16,7 @@ const Stepper: React.FC<StepperProps> = ({
     <div className={cn('flex items-start justify-center w-full', className)}>
       {steps.map((step, index) => (
         <React.Fragment key={step}>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 relative">
             <Button
               variant={index <= currentStep ? 'default' : 'disabled'}
               className={cn(
@@ -39,9 +39,12 @@ const Stepper: React.FC<StepperProps> = ({
             </Button>
             {showStepLabels && (
               <span
-                className={cn('text-base text-bw-40', {
-                  'text-marigold-50': index <= currentStep,
-                })}
+                className={cn(
+                  'text-base text-bw-40 absolute left-1/2 -translate-x-1/2 top-full mt-4 whitespace-nowrap',
+                  {
+                    'text-marigold-50': index <= currentStep,
+                  }
+                )}
               >
                 {step}
               </span>
