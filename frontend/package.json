@@ -11,7 +11,7 @@
     "format": "prettier \"**/*.{js,cjs,mjs,ts,tsx,jsx,json}\" --write",
     "test": "jest --ci --bail --passWithNoTests",
     "test:watch": "jest --watch",
-    "prepare": "husky",
+    "prepare": "cd .. && husky",
     "commit": "git-cz"
   },
   "config": {
