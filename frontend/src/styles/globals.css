@@ -3,6 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --flame-50: #ff3700;
   --bw-10: #f4f4f5;
   --bw-20: #e4e4e7;
   --bw-30: #d4d4d8;
@@ -26,6 +27,7 @@
   /* colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-flame-50: var(--flame-50);
   --color-bw-10: var(--bw-10);
   --color-bw-20: var(--bw-20);
   --color-bw-30: var(--bw-30);
@@ -47,13 +49,6 @@
   --text-lg--font-weight: 600;
   --text-base: 13px;
   --text-base--font-weight: 400;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {

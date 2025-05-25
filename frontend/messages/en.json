@@ -2,6 +2,83 @@
   "HomePage": {
     "welcome": "Welcome to ",
     "appName": "CoachAI",
-    "description": "Full-stack application with TypeScript and Python"
+    "description": "Full-stack application with TypeScript and Python",
+    "header": {
+      "appName": "Leadership Coach",
+      "signIn": "Sign In",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "badge": "AI-Powered Leadership Training",
+      "title": "Develop exceptional leadership skills with AI coaching",
+      "description": "Practice difficult workplace conversations and receive real-time feedback to improve your communication and leadership skills.",
+      "cta": {
+        "primary": "Get Started Now",
+        "secondary": "Watch How It Works"
+      }
+    },
+    "howItWorks": {
+      "title": "How AI Leadership Coach Works",
+      "description": "Our platform uses AI to create realistic conversation scenarios, allowing you to practice and improve your leadership skills in a safe environment.",
+      "steps": {
+        "1": {
+          "title": "Describe Your Scenario",
+          "description": "Choose from pre-defined scenarios or create a custom one that matches your specific workplace challenges."
+        },
+        "2": {
+          "title": "Practice with Voice AI",
+          "description": "Engage in realistic voice conversations with our AI, which responds with different personalities and reactions."
+        },
+        "3": {
+          "title": "Receive Detailed Feedback",
+          "description": "Get personalized analysis on your tone, empathy, clarity, and structure with actionable improvement tips."
+        }
+      },
+      "cta": "Start Your First Training"
+    },
+    "features": {
+      "title": "Powerful Features for Leadership Development",
+      "description": "Everything you need to master difficult workplace conversations and become a more effective leader.",
+      "items": {
+        "simulations": {
+          "title": "Realistic Simulations",
+          "description": "Practice with AI that responds naturally to your communication style and approach."
+        },
+        "voice": {
+          "title": "Voice-Based Training",
+          "description": "Engage in actual conversations that mimic real workplace interactions."
+        },
+        "feedback": {
+          "title": "AI-Powered Feedback",
+          "description": "Receive detailed analysis and personalized suggestions after each session."
+        },
+        "progress": {
+          "title": "Progress Tracking",
+          "description": "Monitor your improvement over time with detailed metrics and insights."
+        },
+        "gamification": {
+          "title": "Gamification",
+          "description": "Stay motivated with badges, achievements, and progress milestones."
+        },
+        "personalized": {
+          "title": "Personalized Learning",
+          "description": "Focus on the specific skills and scenarios most relevant to your role."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to transform your leadership skills?",
+      "description": "Join thousands of professionals who are using AI to become more effective leaders.",
+      "button": "Get Started Now"
+    },
+    "footer": {
+      "appName": "Leadership Coach",
+      "links": {
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "cookies": "Cookie Policy"
+      },
+      "copyright": "© 2025 AI Leadership Coach. All rights reserved."
+    }
   }
 }
