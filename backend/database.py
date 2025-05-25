@@ -7,6 +7,7 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from .config import settings
 
+
 if settings.stage == 'prod':
     os.makedirs(settings.ssl_cert_dir, exist_ok=True)
     ssl_cert_path = f'{settings.ssl_cert_dir}{settings.ssl_cert_name}'
@@ -19,6 +20,7 @@ SQLALCHEMY_DATABASE_URL = (
         or
         f'postgresql://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
 )
+
 # print(SQLALCHEMY_DATABASE_URL)
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
