@@ -16,6 +16,7 @@ const UserConfidenceFields: React.FC<{ fields: UserConfidenceField[]; className?
             min={field.minValue}
             max={field.maxValue}
             step={1}
+            defaultValue={[50]}
             onValueChange={(value) => {
               if (field.onChange) {
                 field.onChange(value);
