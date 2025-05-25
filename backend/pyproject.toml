@@ -16,6 +16,7 @@ dependencies = [
   "python-multipart>=0.0.6",
   "email-validator>=2.0.0",
   "pre-commit>=4.2.0",
+  "sqlmodel>=0.0.24",
   "prisma>=0.11.0",
   "twilio>=8.12.0",
   "python-dotenv>=1.0.0",
