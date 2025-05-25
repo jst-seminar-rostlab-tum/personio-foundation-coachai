@@ -1,14 +1,11 @@
 from __future__ import annotations
-import os
 from typing import List
 from backend.schemas.training_preparation_schema import ObjectiveRequest, KeyConceptRequest, ChecklistRequest, \
     ConceptOutput
-from openai import OpenAI
+from backend.connections.openai_client import get_client
 import json
-from dotenv import load_dotenv
 
-load_dotenv()  # Load environment variables from .env file
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = get_client()
 
 
 def generate_objectives(request: ObjectiveRequest) -> List[str]:
@@ -46,7 +43,7 @@ def generate_key_concept(request: KeyConceptRequest) -> ConceptOutput:
     try:
         parsed = json.loads(response)
         return ConceptOutput(**parsed)
-    except Exception as e:
+    except json.JSONDecodeError as e:
         raise ValueError(f"Could not parse JSON: {e}\nRaw output:\n{response}")
 
 
