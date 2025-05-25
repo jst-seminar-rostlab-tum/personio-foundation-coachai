@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-from typing import List
 
 
 class TrainingCaseBase(BaseModel):
@@ -22,17 +21,8 @@ class ChecklistRequest(TrainingCaseBase):
 
 
 class StringListResponse(BaseModel):
-    items: List[str] = Field(..., description="List of generated text items")
+    items: list[str] = Field(..., description="List of generated text items")
 
 
-class TextSection(BaseModel):
-    title: str
-    body: str
-
-
-class ConceptOutput(BaseModel):
-    header: str
-    situation: str
-    behavior: str
-    impacts: str
-    text: List[TextSection]
+class KeyConceptOutput(BaseModel):
+    markdown: str

@@ -1,15 +1,23 @@
-import pytest
-from unittest.mock import patch
-from backend.services.training_preparation_service import (
-    generate_objectives, generate_key_concept, generate_checklist
-)
+from unittest.mock import MagicMock, patch
+
 from backend.schemas.training_preparation_schema import (
-    ObjectiveRequest, KeyConceptRequest, ChecklistRequest, ConceptOutput
+    ChecklistRequest,
+    KeyConceptOutput,
+    KeyConceptRequest,
+    ObjectiveRequest,
+    StringListResponse,
+)
+from backend.services.training_preparation_service import (
+    generate_checklist,
+    generate_key_concept,
+    generate_objectives,
 )
 
-@patch("backend.services.training_preparation_service.call_llm")
-def test_generate_objectives_returns_correct_list(mock_llm):
-    mock_llm.return_value = "1. Prepare outline\n2. Rehearse responses\n3. Stay calm"
+
+@patch("backend.services.training_preparation_service.call_structured_llm")
+def test_generate_objectives_returns_correct_list(mock_llm: MagicMock) -> None:
+    items = ["1. Prepare outline", "2. Rehearse responses", "3. Stay calm"]
+    mock_llm.return_value = StringListResponse(items=items)
 
     req = ObjectiveRequest(
         category="Performance Feedback",
@@ -22,12 +30,14 @@ def test_generate_objectives_returns_correct_list(mock_llm):
     result = generate_objectives(req)
     assert len(result) == 3
     assert all(isinstance(item, str) for item in result)
-    assert result[0].startswith("Prepare")
+    for i in range(len(result)):
+        assert result[i] == items[i]
 
 
-@patch("backend.services.training_preparation_service.call_llm")
-def test_generate_checklist_returns_correct_list(mock_llm):
-    mock_llm.return_value = "1. Review past performance\n2. Prepare documents\n3. Set up private room"
+@patch("backend.services.training_preparation_service.call_structured_llm")
+def test_generate_checklist_returns_correct_list(mock_llm: MagicMock) -> None:
+    items = ["1. Review past performance", "2. Prepare documents", "3. Set up private room"]
+    mock_llm.return_value = StringListResponse(items=items)
 
     req = ChecklistRequest(
         category="Performance Review",
@@ -39,23 +49,32 @@ def test_generate_checklist_returns_correct_list(mock_llm):
 
     result = generate_checklist(req)
     assert len(result) == 3
-    assert "Review" in result[0]
+    for i in range(len(result)):
+        assert result[i] == items[i]
 
 
 @patch("backend.services.training_preparation_service.call_llm")
-def test_generate_key_concept_parses_json(mock_llm):
-    mock_llm.return_value = """
-    {
-        "header": "SBI Framework",
-        "situation": "Feedback on missed deadlines",
-        "behavior": "Describe observable actions",
-        "impacts": "Helps clarify consequences and reduce conflict",
-        "text": [
-            { "title": "Be Specific", "body": "Focus on actual events" },
-            { "title": "Stay Neutral", "body": "Avoid judgment" }
-        ]
-    }
+def test_generate_key_concept_parses_json(mock_llm: MagicMock) -> None:
+    mocked_value = """
+   ### The SBI Framework
+- **Situation:** Describe the specific situation  
+- **Behavior:** Address the specific behaviors observed  
+- **Impact:** Explain the impact of those behaviors  
+
+### Active Listening
+Show genuine interest in understanding the other person's perspective. 
+Paraphrase what you've heard to confirm understanding.
+
+### Use "I" Statements
+Frame feedback in terms of your observations and feelings rather than accusations. 
+For example, "I noticed..." instead of "You always..."
+
+### Collaborative Problem-Solving
+Work together to identify solutions rather than dictating next steps. 
+Ask questions like "What do you think would help in this situation?"
+
     """
+    mock_llm.return_value = mocked_value
 
     req = KeyConceptRequest(
         category="Feedback",
@@ -65,23 +84,5 @@ def test_generate_key_concept_parses_json(mock_llm):
     )
 
     result = generate_key_concept(req)
-    assert isinstance(result, ConceptOutput)
-    assert result.header == "SBI Framework"
-    assert len(result.text) == 2
-    assert result.text[0].title == "Be Specific"
-
-
-@patch("backend.services.training_preparation_service.call_llm")
-def test_generate_key_concept_raises_on_bad_json(mock_llm):
-    mock_llm.return_value = "This is not JSON"
-
-    req = KeyConceptRequest(
-        category="Feedback",
-        goal="Test error case",
-        context="Some context",
-        other_party="Someone"
-    )
-
-    with pytest.raises(ValueError) as e:
-        generate_key_concept(req)
-    assert "Could not parse JSON" in str(e.value)
+    assert isinstance(result, KeyConceptOutput)
+    assert result.markdown == mocked_value

@@ -1,115 +1,131 @@
 from __future__ import annotations
-from typing import List
-from backend.schemas.training_preparation_schema import ObjectiveRequest, KeyConceptRequest, ChecklistRequest, \
-    ConceptOutput
+
+from typing import TypeVar
+
 from backend.connections.openai_client import get_client
-import json
+from backend.schemas.training_preparation_schema import (
+    ChecklistRequest,
+    KeyConceptOutput,
+    KeyConceptRequest,
+    ObjectiveRequest,
+    StringListResponse,
+)
+from pydantic import BaseModel
 
 client = get_client()
+# This is a type variable for the output model, which must be a subclass of BaseModel
+T = TypeVar("T", bound=BaseModel)
 
 
-def generate_objectives(request: ObjectiveRequest) -> List[str]:
+def call_structured_llm(
+        request_prompt: str,
+        system_prompt: str,
+        model: str,
+        output_model: type[T],
+        temperature: float = 1,
+        max_tokens: int = 500
+) -> BaseModel:
+    response = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": request_prompt},
+        ],
+        temperature=temperature,
+        max_tokens=max_tokens,
+    )
+    return output_model.model_validate_json(response.choices[0].message.content.strip())
+
+
+def generate_objectives(request: ObjectiveRequest) -> list[str]:
     """
-    Generate a list of training objectives for HR professionals based on the given request.
-
-    Args:
-        request (ObjectiveRequest): The request containing training details.
-
-    Returns:
-        List[str]: The generated list of objectives.
+    Generate a list of training objectives using structured output from the LLM.
     """
-    prompt = build_objective_prompt(request)
-    response = call_llm(prompt)
-    return parse_text_list(response, request.num_objectives)
+    user_prompt = (
+        f"Generate {request.num_objectives} clear, specific training objectives based on "
+        f"the following case:\n"
+        f"Return the result strictly as a JSON object like:\n"
+        f'{{ "items": ["Objective 1", "Objective 2", "Objective 3"] }}\n'
+        f"Do not include markdown or ```json formatting.\n\n"
+        f"Simply include the content and ignore 'Objective:'\n"
+        f"Category: {request.category}\n"
+        f"Goal: {request.goal}\n"
+        f"Context: {request.context}\n"
+        f"Other Party: {request.other_party}"
+    )
+
+    result = call_structured_llm(
+        request_prompt=user_prompt,
+        system_prompt="You are a training expert generating learning objectives.",
+        model="gpt-4o-2024-08-06",
+        output_model=StringListResponse,
+    )
+    return result.items
 
 
-def generate_key_concept(request: KeyConceptRequest) -> ConceptOutput:
+def generate_checklist(request: ChecklistRequest) -> list[str]:
     """
-    Build a prompt based on the given KeyConceptRequest, call the LLM to generate a key concept,
-    and parse the result into a ConceptOutput object.
-
-    Args:
-        request (KeyConceptRequest): The request object containing training details.
-
-    Returns:
-        ConceptOutput: The parsed key concept output object.
-
-    Raises:
-        ValueError: If the LLM response cannot be parsed as JSON.
+    Generate a preparation checklist using structured output from the LLM.
     """
+    user_prompt = (
+        f"Generate {request.num_checkpoints} checklist items for the following training case:\n"
+        f"Return the result strictly as a JSON object like:\n"
+        f'{{ "items": ["Objective 1", "Objective 2", "Objective 3"] }}\n'
+        f"Do not include markdown or ```json formatting.\n\n"
+        f"Simply include the content and ignore 'Objective:'\n"
+        f"Category: {request.category}\n"
+        f"Goal: {request.goal}\n"
+        f"Context: {request.context}\n"
+        f"Other Party: {request.other_party}"
+    )
+
+    result = call_structured_llm(
+        request_prompt=user_prompt,
+        system_prompt="You are a training expert generating preparation checklists.",
+        model="gpt-4o-2024-08-06",
+        output_model=StringListResponse,
+    )
+    return result.items
+
+
+def generate_key_concept(request: KeyConceptRequest) -> KeyConceptOutput:
     prompt = build_key_concept_prompt(request)
-    response = call_llm(prompt)
-
-    try:
-        parsed = json.loads(response)
-        return ConceptOutput(**parsed)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Could not parse JSON: {e}\nRaw output:\n{response}")
-
-
-def generate_checklist(request: ChecklistRequest) -> List[str]:
-    """
-    Generate a preparation checklist for HR training.
-
-    Args:
-        request (ChecklistRequest): The request containing training details.
-
-    Returns:
-        List[str]: The generated checklist items.
-    """
-    prompt = build_checklist_prompt(request)
-    response = call_llm(prompt)
-    return parse_text_list(response, request.num_checkpoints)
-
-
-def build_objective_prompt(request: ObjectiveRequest) -> str:
-    """
-    Build a prompt for the LLM to generate a preparation objective for HR training.
-
-    Args:
-        request (ObjectiveRequest): The request containing training details.
-
-    Returns:
-        str: The formatted prompt string.
-    """
-    return f"""You're a HR professionals training expert. Based on the case below, generate {request.num_objectives} clear, specific training objectives.
-
-Category: {request.category}
-Goal: {request.goal}
-Context: {request.context}
-Other Party: {request.other_party}
-
-List:
-1."""
+    markdown = call_llm(prompt)
+    return KeyConceptOutput(markdown=markdown)
 
 
 def build_key_concept_prompt(request: KeyConceptRequest) -> str:
-    """
-    Build a prompt for the LLM to generate a preparation concept for HR training.
-
-    Args:
-        request (KeyConceptRequest): The request containing training details.
-
-    Returns:
-        str: The formatted prompt string.
-    """
     return f"""
-You are a training assistant. Based on the HR professionals training case below, generate **one** key concept and return it in the following strict JSON format.
+You are a training assistant. Based on the HR professionals training case below, 
+generate 3-4 key concepts for the conversation.
 
-Structure:
-{{
-  "header": "Title of the concept",
-  "situation": "Describe the situation for this concept",
-  "behavior": "Describe the recommended behavior",
-  "impacts": "Describe the impact of applying this behavior",
-  "text": [
-    {{ "title": "Subpoint title", "body": "Explanation for the subpoint" }},
-    {{ "title": "Another title", "body": "Explanation..." }}
-  ]
-}}
+Return them in a markdown format with the following structure:
+- Each concept begins with a heading: ### Title
+- Followed by a short descriptive paragraph
+- Follow the exact formatting style shown in the example below (use `###`, `**`, etc.)
+- Do not return any introductory text or explanations, just the markdown content
+- Also include blank lines between sections for readability
 
+Example format:
 
-Only return a single JSON object. Do not include any explanations, formatting, or markdown.
+### The SBI Framework
+- **Situation:** Describe the specific situation  
+- **Behavior:** Address the specific behaviors observed  
+- **Impact:** Explain the impact of those behaviors
+
+### Active Listening
+Show genuine interest in understanding the other person's perspective. 
+Paraphrase what you've heard to confirm understanding.
+
+### Use \"I\" Statements
+Frame feedback in terms of your observations and feelings rather than accusations. 
+For example, \"I noticed...\" instead of \"You always...\"
+
+### Collaborative Problem-Solving
+Work together to identify solutions rather than dictating next steps. 
+Ask questions like \"What do you think would help in this situation?\"
+
+---
 
 Training Case:
 - Category: {request.category}
@@ -119,69 +135,11 @@ Training Case:
 """
 
 
-def build_checklist_prompt(request: ChecklistRequest) -> str:
-    """
-    Build a prompt for the LLM to generate a preparation checklist for HR training.
-
-    Args:
-        request (ChecklistRequest): The request containing training details.
-
-    Returns:
-        str: The formatted prompt string.
-    """
-    return f"""You're preparing for a HR professionals training session. Based on the following information, list {request.num_checkpoints} concrete preparation checklist items.
-
-Category: {request.category}
-Goal: {request.goal}
-Context: {request.context}
-Other Party: {request.other_party}
-
-Checklist:
-1."""
-
-
 def call_llm(prompt: str) -> str:
-    """
-    Calls the OpenAI LLM with the given prompt and returns the response content as a string.
-
-    Args:
-        prompt (str): The prompt to send to the language model.
-
-    Returns:
-        str: The content of the model's response.
-    """
     response = client.chat.completions.create(
         model="gpt-4",
         messages=[{"role": "user", "content": prompt}],
-        temperature=0.7,
+        temperature=1,
         max_tokens=500
     )
     return response.choices[0].message.content.strip()
-
-
-def parse_text_list(text: str, max_items: int | None = None) -> List[str]:
-    """
-    Parse a multi-line string into a list of strings, removing leading numbering, dashes, or asterisks.
-
-    Args:
-        text (str): The input multi-line text, where each line may start with a number, dash, or asterisk.
-        max_items (int | None): Maximum number of items to return. If None, return all items.
-
-    Returns:
-        List[str]: The processed list of items.
-    """
-    lines = text.splitlines()
-    items = []
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-        # Remove leading "1. ", "- ", "* " etc.
-        if line[0].isdigit() and "." in line:
-            line = line.split(".", 1)[-1].strip()
-        elif line.startswith(("-", "*")):
-            line = line[1:].strip()
-        items.append(line)
-        if max_items and len(items) >= max_items:
-            break
-    return items
