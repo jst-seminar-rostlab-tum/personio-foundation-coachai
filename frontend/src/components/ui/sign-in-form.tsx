@@ -13,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { PasswordInput } from './password-input';
 
 interface SignInFormProps {
   onSubmit: (values: { email: string; password: string }) => void;
@@ -66,8 +67,7 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
                 <FormItem>
                   <FormLabel>{t('SignInTab.passwordInputLabel')}</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
+                    <PasswordInput
                       placeholder={t('SignInTab.passwordInputPlaceholder')}
                       {...field}
                       className="w-full"

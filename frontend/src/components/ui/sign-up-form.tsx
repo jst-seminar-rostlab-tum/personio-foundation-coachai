@@ -16,6 +16,7 @@ import {
 import Checkbox from '@/components/ui/checkbox';
 import { useState } from 'react';
 import { VerificationPopup } from './verification-popup';
+import { PasswordInput } from './password-input';
 
 interface SignUpFormProps {
   onSubmit: (values: {
@@ -181,11 +182,10 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                   <FormItem>
                     <FormLabel>{t('SignUpTab.passwordInputLabel')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <PasswordInput
                         placeholder={t('SignUpTab.passwordInputPlaceholder')}
                         {...field}
                         className="w-full"
-                        type="password"
                         disabled={isLoading}
                       />
                     </FormControl>
