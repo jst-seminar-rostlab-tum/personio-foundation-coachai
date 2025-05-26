@@ -3,6 +3,10 @@
 import Stepper from '@/components/ui/stepper';
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import UserPreferences from '@/components/layout/UserPreferences';
+import { userPreferences } from '@/configs/UserPreferences.config';
+import UserConfidenceFields from '@/components/layout/UserConfidenceFields';
+import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 
 export default function OnboardingPage() {
   const [currentOnboardingStep, setCurrentOnboardingStep] = React.useState(0);
@@ -44,6 +48,12 @@ export default function OnboardingPage() {
           </span>
         </p>
       </div>
+      {currentOnboardingStep === 0 && (
+        <UserPreferences className="md:w-1/2" preferences={userPreferences} />
+      )}
+      {currentOnboardingStep === 1 && (
+        <UserConfidenceFields className="md:w-1/2" fields={confidenceFields} />
+      )}
 
       <div className="flex justify-center space-x-4 mt-8">
         <Button onClick={goToPreviousStep} disabled={currentOnboardingStep === 0}>

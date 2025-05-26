@@ -25,6 +25,7 @@ services:
     volumes:
       - ./backend:/app
     environment:
+      - STAGE=dev
       - POSTGRES_HOST=db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres_prod
