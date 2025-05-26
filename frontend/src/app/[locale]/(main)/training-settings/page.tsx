@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Accordion,
@@ -20,13 +21,14 @@ import { userRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.confi
 export default function TrainingSettingsPage() {
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [transcriptEnabled, setTranscriptEnabled] = useState(false);
+  const t = useTranslations('TrainingSettings');
 
   return (
     <div>
       <div className="flex items-center justify-between">
-        <div className="text-xl font-bold text-black">Training Settings</div>
+        <div className="text-xl font-bold text-black">{t('title')}</div>
         <Link href="/dashboard">
-          <Button className="px-3 py-2 rounded text-sm">Back to Dashboard</Button>
+          <Button className="px-3 py-2 rounded text-sm">{t('backToDashboard')}</Button>
         </Link>
       </div>
 
@@ -35,36 +37,36 @@ export default function TrainingSettingsPage() {
         <div className="w-full px-4 py-3 flex items-center rounded-t-lg">
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1" className="text-dark">
-              <AccordionTrigger className="font-bw-70">Privacy Controls</AccordionTrigger>
+              <AccordionTrigger className="font-bw-70">{t('privacyControls')}</AccordionTrigger>
               <AccordionContent>
                 <div className="flex items-start justify-between w-full">
                   <div className="flex flex-col">
-                    <div className="text-bw-70">Store Conversation Recordings</div>
-                    <div className="text-bw-40">Save audio of your sessions</div>
+                    <div className="text-bw-70">{t('storeAudio')}</div>
+                    <div className="text-bw-40">{t('storeAudioDesc')}</div>
                   </div>
                   <div className="flex flex-col items-center">
                     <Switch checked={audioEnabled} onCheckedChange={setAudioEnabled} />
                     <div className="text-xs mt-2 text-center">
-                      {audioEnabled ? '90 Days' : '0 Days'}
+                      {audioEnabled ? t('ninetyDays') : t('zeroDays')}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-start justify-between w-full mt-4">
                   <div className="flex flex-col">
-                    <div className="text-bw-70">Store Transcript Data</div>
-                    <div className="text-bw-40">Save text transcripts of your sessions</div>
+                    <div className="text-bw-70">{t('storeTranscript')}</div>
+                    <div className="text-bw-40">{t('storeTranscriptDesc')}</div>
                   </div>
                   <div className="flex flex-col items-center">
                     <Switch checked={transcriptEnabled} onCheckedChange={setTranscriptEnabled} />
                     <div className="text-xs mt-2 text-center">
-                      {transcriptEnabled ? '90 Days' : '0 Days'}
+                      {transcriptEnabled ? t('ninetyDays') : t('zeroDays')}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-start justify-between w-full mt-4">
                   <div className="flex flex-col">
-                    <div className="text-bw-70">Export personal data</div>
-                    <div className="text-bw-40">Download all your personal data</div>
+                    <div className="text-bw-70">{t('exportData')}</div>
+                    <div className="text-bw-40">{t('exportDataDesc')}</div>
                   </div>
                   <Image
                     src="/icons/download.svg"
@@ -76,18 +78,20 @@ export default function TrainingSettingsPage() {
                 </div>
                 <div className="flex items-start justify-between w-full mt-4">
                   <div className="flex flex-col">
-                    <div className="text-bw-70">Delete account</div>
-                    <div className="text-bw-40">Permanently delete your account and all data</div>
+                    <div className="text-bw-70">{t('deleteAccount')}</div>
+                    <div className="text-bw-40">{t('deleteAccountDesc')}</div>
                   </div>
                   <Button className="px-3 py-2 rounded text-sm" variant={'destructive'}>
                     {' '}
-                    Request Deletion{' '}
+                    {t('requestDeletion')}{' '}
                   </Button>
                 </div>
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2" className="text-dark">
-              <AccordionTrigger className="font-bw-70">Personalization Settings</AccordionTrigger>
+              <AccordionTrigger className="font-bw-70">
+                {t('personalizationSettings')}
+              </AccordionTrigger>
               <AccordionContent>
                 <UserPreferences className="md:w-1/2" preferences={userRoleLeadershipGoals} />
                 <hr className="my-10 border-gray-200" />
@@ -100,7 +104,7 @@ export default function TrainingSettingsPage() {
         </div>
       </div>
       <div className="mt-8 w-full sm:w-auto sm:flex sm:justify-end">
-        <Button className="px-3 py-2 rounded text-sm">Save Settings</Button>
+        <Button className="px-3 py-2 rounded text-sm">{t('saveSettings')}</Button>
       </div>
     </div>
   );

@@ -80,5 +80,23 @@
       },
       "copyright": "© 2025 AI Leadership Coach. All rights reserved."
     }
+  },
+  "TrainingSettings": {
+    "title": "Training Settings",
+    "backToDashboard": "Back to Dashboard",
+    "privacyControls": "Privacy Controls",
+    "storeAudio": "Store Conversation Recordings",
+    "storeAudioDesc": "Save audio of your sessions",
+    "storeTranscript": "Store Transcript Data",
+    "storeTranscriptDesc": "Save text transcripts of your sessions",
+    "exportData": "Export personal data",
+    "exportDataDesc": "Download all your personal data",
+    "deleteAccount": "Delete account",
+    "deleteAccountDesc": "Permanently delete your account and all data",
+    "requestDeletion": "Request Deletion",
+    "personalizationSettings": "Personalization Settings",
+    "saveSettings": "Save Settings",
+    "ninetyDays": "90 Days",
+    "zeroDays": "0 Days"
   }
 }
