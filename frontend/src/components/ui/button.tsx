@@ -17,7 +17,7 @@ const buttonVariants = cva(
       },
       size: {
         default: 'rounded-md px-4 py-3',
-        full: 'rounded-md px-4 py-3 w-full justify-center',
+        full: 'rounded-md px-4 py-3 w-full justify-center flex-1',
       },
     },
     defaultVariants: {

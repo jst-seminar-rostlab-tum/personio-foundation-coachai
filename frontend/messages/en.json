@@ -80,5 +80,79 @@
       },
       "copyright": "© 2025 AI Leadership Coach. All rights reserved."
     }
+  },
+  "NewTraining": {
+    "title": "New Training Session",
+    "steps": {
+      "category": "Category",
+      "situation": "Situation",
+      "customize": "Customize"
+    },
+    "category": {
+      "title": "Choose a Conversation Category",
+      "options": {
+        "feedback": "Giving Feedback",
+        "conflict": "Conflict Resolution",
+        "performance": "Performance Reviews",
+        "salary": "Salary Discussions",
+        "custom": "Custom"
+      },
+      "customPlaceholder": "E.g., Promotion discussion, Onboarding new team member...",
+      "customInput": "Define your own conversation topic:"
+    },
+    "situation": {
+      "title": "Describe your Situation",
+      "party": {
+        "title": "Who is the other party?",
+        "options": {
+          "employee": "Employee",
+          "manager": "Manager",
+          "peer": "Peer/Colleague",
+          "stakeholder": "Stakeholder",
+          "other": "Other"
+        },
+        "otherPlaceholder": "Other name"
+      },
+      "context": {
+        "title": "What is the context?",
+        "placeholder": "Please specify the context of the conversation here."
+      },
+      "goal": {
+        "title": "What is your goal?",
+        "placeholder": "What outcome do you hope to achieve?"
+      }
+    },
+    "customize": {
+      "title": "Customize your Training",
+      "difficulty": {
+        "title": "Difficulty Level",
+        "options": {
+          "easy": "Easy",
+          "medium": "Medium",
+          "hard": "Hard"
+        }
+      },
+      "emotionalTone": {
+        "title": "Emotional Tone",
+        "options": {
+          "positive": "Positive",
+          "neutral": "Neutral",
+          "negative": "Negative"
+        }
+      },
+      "complexity": {
+        "title": "Response Complexity",
+        "options": {
+          "simple": "Simple",
+          "medium": "Medium",
+          "complex": "Complex"
+        }
+      }
+    },
+    "navigation": {
+      "back": "Go Back",
+      "next": "Next Step",
+      "create": "Create Training"
+    }
   }
 }
