@@ -12,8 +12,12 @@ from ..models.training_session import (
     TrainingSessionCreate,
     TrainingSessionRead,
 )
+from ..models.training_session_feedback import (
+    TrainingSessionFeedback,
+    TrainingSessionFeedbackRead,
+)
 
-router = APIRouter(prefix='/training-sessions', tags=['Training Sessions'])
+router = APIRouter(prefix='/training-session', tags=['Training Sessions'])
 
 
 @router.get('/', response_model=list[TrainingSessionRead])
@@ -102,3 +106,27 @@ def delete_training_session(
     session.delete(training_session)
     session.commit()
     return {'message': 'Training session deleted successfully'}
+
+
+@router.get('/{id_training_session}/feedback', response_model=TrainingSessionFeedbackRead)
+def get_training_session_feedback(
+    id_training_session: UUID, session: Annotated[Session, Depends(get_session)]
+) -> TrainingSessionFeedback:
+    """
+    Retrieve the training session feedback for a given training session ID.
+    """
+    # Validate that the training session exists
+    training_session = session.get(TrainingSession, id_training_session)
+    if not training_session:
+        raise HTTPException(status_code=404, detail='Training session not found')
+
+    # Fetch the associated training session feedback
+    statement = select(TrainingSessionFeedback).where(
+        TrainingSessionFeedback.session_id == id_training_session
+    )
+    training_session_feedback = session.exec(statement).first()
+
+    if not training_session_feedback:
+        raise HTTPException(status_code=404, detail='Training session feedback not found')
+
+    return training_session_feedback
