@@ -125,7 +125,6 @@
       "codeInputPlaceholder": "Enter 6-digit code",
       "codeInputError": "Invalid verification code",
       "resendButtonLabel": "Resend code",
-      "resendingButtonLabel": "Code is being resent...",
       "verifyButtonLabel": "Verify",
       "verifyingButtonLabel": "Verifying...",
       "cancelButtonLabel": "Cancel",

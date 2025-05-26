@@ -44,7 +44,7 @@ export function VerificationPopup({
   const [error, setError] = useState<string | null>(null);
 
   const verificationSchema = z.object({
-    code: z.string().min(1, 'Verification code is required'),
+    code: z.string().regex(/^\d{6}$/, t('codeInputError')),
   });
 
   const form = useForm({
