@@ -41,29 +41,27 @@ npm install # Required to initialize Husky which manages the pre-commit hooks
 
 - Fill in variable values:
 
-```bash
-OPENAI_API_KEY = <..key..>
-```
+  ```bash
+  OPENAI_API_KEY = <..key..>
+  ```
 
 3. Run a local PostgreSQL instace on Docker:
 
-```bash
-docker compose up db -d
-```
+   ```bash
+   docker compose up db -d
+   ```
 
-3.1. Populate local PostgreSQL with dummy data:
+4. Populate local PostgreSQL with dummy data. From the project root (not inside backend folder), run the following:
 
-- From the project root (not inside backend folder), run the following:
+   ```bash
+   uv run -m backend.data.populate_dummy_data
+   ```
 
-```bash
-uv run -m backend.data.populate_dummy_data
-```
+5. Start the FastAPI development server:
 
-4. Start the FastAPI development server:
-
-```bash
-uv run fastapi dev
-```
+   ```bash
+   uv run fastapi dev
+   ```
 
 Once the server is running, you can access:
 
