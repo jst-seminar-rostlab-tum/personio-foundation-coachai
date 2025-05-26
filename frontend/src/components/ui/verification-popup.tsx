@@ -13,9 +13,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { userProfileApi } from '@/services/Api';
+import { RotateCcw } from 'lucide-react';
 
 interface VerificationPopupProps {
   isOpen: boolean;
@@ -36,9 +37,10 @@ export function VerificationPopup({
   phoneNumber,
   formData,
 }: VerificationPopupProps) {
-  const t = useTranslations('LoginPage');
+  const t = useTranslations('LoginPage.VerificationPopup');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const verificationSchema = z.object({
@@ -53,6 +55,16 @@ export function VerificationPopup({
     },
   });
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (resendCooldown > 0) {
+      timer = setTimeout(() => {
+        setResendCooldown(resendCooldown - 1);
+      }, 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
+
   //   const handleSubmit = async (values: z.infer<typeof verificationSchema>) => {
   const handleSubmit = async () => {
     try {
@@ -64,7 +76,7 @@ export function VerificationPopup({
       const isVerified = true;
 
       if (!isVerified) {
-        setError(t('Verification.invalidCode'));
+        setError(t('invalidCode'));
         return;
       }
 
@@ -104,6 +116,32 @@ export function VerificationPopup({
     }
   };
 
+  const handleResendCode = async () => {
+    try {
+      setError(null);
+
+      setResendCooldown(30);
+    } catch (err: unknown) {
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
+        err.response.data &&
+        typeof err.response.data === 'object' &&
+        'detail' in err.response.data
+      ) {
+        setError(err.response.data.detail as string);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(t('Verification.resendError'));
+      }
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -113,9 +151,11 @@ export function VerificationPopup({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <CardContent className="space-y-4 p-4">
-              <h2 className="text-xl font-semibold text-center">{t('Verification.title')}</h2>
+              <h2 className="text-xl font-semibold text-center">{t('title')}</h2>
               <p className="text-sm text-center text-gray-600">
-                {t('Verification.description', { phoneNumber })}
+                {t('descriptionPartOne')}
+                <strong>{phoneNumber}</strong>
+                {t('descriptionPartTwo')}
               </p>
 
               {error && (
@@ -127,10 +167,10 @@ export function VerificationPopup({
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm">{t('Verification.codeLabel')}</FormLabel>
+                    <FormLabel className="text-sm">{t('codeInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('Verification.codePlaceholder')}
+                        placeholder={t('codeInputPlaceholder')}
                         {...field}
                         className="w-full"
                         disabled={isLoading}
@@ -140,13 +180,36 @@ export function VerificationPopup({
                   </FormItem>
                 )}
               />
+
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleResendCode}
+                  disabled={resendCooldown > 0 || isLoading}
+                  className={`text-sm p-0 h-auto font-normal transition-colors flex items-center gap-1 ${
+                    resendCooldown > 0 || isLoading
+                      ? 'text-gray-400 cursor-not-allowed hover:text-gray-400'
+                      : 'text-blue-600 hover:text-blue-700 cursor-pointer'
+                  }`}
+                >
+                  <RotateCcw
+                    size={14}
+                    className={`${resendCooldown > 0 ? 'animate-spin' : ''} ${
+                      resendCooldown > 0 || isLoading ? 'text-gray-400' : 'text-blue-600'
+                    }`}
+                  />
+                  {`${t('resendButtonLabel')}${resendCooldown > 0 ? ` (${resendCooldown}s)` : ''}`}
+                </Button>
+              </div>
             </CardContent>
             <CardFooter className="flex-col gap-2 p-4">
               <Button size={'full'} type="submit" disabled={isLoading}>
-                {isLoading ? t('Verification.verifyingButton') : t('Verification.verifyButton')}
+                {isLoading ? t('verifyingButtonLabel') : t('verifyButtonLabel')}
               </Button>
               <Button size={'full'} variant={'secondary'} onClick={onClose} disabled={isLoading}>
-                {t('Verification.cancelButton')}
+                {t('cancelButtonLabel')}
               </Button>
             </CardFooter>
           </form>

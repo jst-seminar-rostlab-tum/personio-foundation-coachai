@@ -115,6 +115,19 @@
       "agreeToTermsCheckboxLabel": "Ich stimme den Nutzungsbedingungen und der Datenschutzrichtlinie zu",
       "signUpButtonLabel": "Registrieren",
       "signUpWithGoogleButtonLabel": "Oder mit Google registrieren"
+    },
+    "VerificationPopup": {
+      "title": "Bestätige deine Telefonnummer",
+      "descriptionPartOne": "Wir haben einen Bestätigungscode an ",
+      "descriptionPartTwo": " gesendet. Bitte gib ihn unten ein.",
+      "codeInputLabel": "Bestätigungscode",
+      "codeInputPlaceholder": "6-stelligen Code eingeben",
+      "codeInputError": "Ungültiger Bestätigungscode",
+      "resendButtonLabel": "Code erneut senden",
+      "verifyButtonLabel": "Bestätigen",
+      "verifyingButtonLabel": "Wird überprüft...",
+      "cancelButtonLabel": "Abbrechen",
+      "genericError": "Bei der Überprüfung ist ein Fehler aufgetreten"
     }
   }
 }

@@ -62,6 +62,8 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
     try {
       setIsLoading(true);
 
+      // TODO: Call API to check if email address is already registered
+
       // Show verification popup first
       setSignedUpPhone(values.phoneNumber);
       setShowVerification(true);
@@ -194,7 +196,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                   <p className="text-base">
                     {t('SignUpTab.gdprAdherenceText')}
                     <Button
-                      variant="secondary"
+                      variant="link"
                       className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
                     >
                       {t('SignUpTab.readMoreOnGdprLink')}
