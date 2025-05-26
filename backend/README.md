@@ -1,8 +1,6 @@
-# FastAPI Backend
+# CoachAI Backend
 
-## Setup
-
-### Requirements
+## Requirements
 
 Install [uv package and project manager](https://docs.astral.sh/uv/):
 
@@ -18,7 +16,25 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### Local Development
+## Local Development
+
+### Option A: Docker (easier)
+
+Use this option if you want to run the backend quickly without setting up a local Python environment. This is the easiest way to get started — especially useful for frontend developers who just need the API running.
+
+```bash
+docker compose up db backend --build
+```
+
+### Option B: Console (better for developing)
+
+Use this option when you’re doing active backend development, and need:
+
+- Fast reloads
+- Full control over logs and breakpoints
+- Access to local Python environment / venv
+
+**Steps:**
 
 1. Sync the backend dependencies with the environment:
 
@@ -39,42 +55,34 @@ npm install # Required to initialize Husky which manages the pre-commit hooks
 
 - Create .env file from .env.example
 
-- Fill in variable values:
+- Fill in variable values. Reach out to TA or Ron for keys.
 
-  ```bash
-  OPENAI_API_KEY = <..key..>
-  ```
+```bash
+OPENAI_API_KEY = <..key..>
+```
 
 3. Run a local PostgreSQL instace on Docker:
 
-   ```bash
-   docker compose up db -d
-   ```
+```bash
+docker compose up db -d
+```
 
-4. Populate local PostgreSQL with dummy data. From the project root (not inside backend folder), run the following:
+4. Populate local PostgreSQL with dummy data. From the backend folder, run the following:
 
-   ```bash
-   uv run -m backend.data.populate_dummy_data
-   ```
+```bash
+cd .. && uv run -m backend.data.populate_dummy_data && cd backend
+```
 
 5. Start the FastAPI development server:
 
-   ```bash
-   uv run fastapi dev
-   ```
+```bash
+uv run fastapi dev
+```
 
 Once the server is running, you can access:
 
 - Interactive API documentation: http://localhost:8000/docs
 - Alternative API documentation: http://localhost:8000/redoc
-
-### Docker Development
-
-The backend service is containerized using Docker. You can run it using Docker Compose:
-
-```bash
-docker compose up backend
-```
 
 ### Twilio Setup
 
