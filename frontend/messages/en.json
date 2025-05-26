@@ -110,10 +110,11 @@
       "passwordInputLabel": "Password *",
       "passwordInputPlaceholder": "Create a Password",
       "passwordInputError": "Password is invalid",
+      "gdprAdherenceText": "We strictly adhere to GDPR by collecting only essential data, storing nothing unnecessary, and deleting data as soon as possible. ",
+      "readMoreOnGdprLink": "read more",
       "agreeToTermsCheckboxLabel": "I agree to the Terms of Service and Privacy Policy",
       "signUpButtonLabel": "Sign Up",
       "signUpWithGoogleButtonLabel": "Or Sign Up With Google",
-      "termsError": "You must accept the terms and conditions to continue",
       "genericError": "An error occurred during sign up"
     },
     "Verification": {

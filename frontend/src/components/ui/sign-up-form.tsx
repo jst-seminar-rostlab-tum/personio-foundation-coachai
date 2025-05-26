@@ -37,15 +37,10 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
 
   const signUpFormSchema = z.object({
     fullName: z.string().min(1, t('SignUpTab.fullNameInputError')),
-    email: z
-      .string()
-      .min(1, t('SignUpTab.emailInputError'))
-      .email(t('SignUpTab.emailInvalidError')),
+    email: z.string().min(1, t('SignUpTab.emailInputError')).email(t('SignUpTab.emailInputError')),
     phoneNumber: z.string().min(1, t('SignUpTab.phoneNumberInputError')),
     password: z.string().min(1, t('SignUpTab.passwordInputError')),
-    terms: z.boolean().refine((val) => val === true, {
-      message: t('SignUpTab.termsError'),
-    }),
+    terms: z.boolean().refine((val) => val === true),
   });
 
   const signUpForm = useForm({
@@ -197,13 +192,12 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
               <Card className="shadow-none border border-bw-30 p-2">
                 <CardContent className="p-1">
                   <p className="text-base">
-                    We strictly adhere to GDPR by collecting only essential data, storing nothing
-                    unnecessary, and deleting data as soon as possible.{' '}
+                    {t('SignUpTab.gdprAdherenceText')}
                     <Button
                       variant="secondary"
                       className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
                     >
-                      read more
+                      {t('SignUpTab.readMoreOnGdprLink')}
                     </Button>
                   </p>
                 </CardContent>
@@ -225,7 +219,6 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                       </FormControl>
                       <FormLabel>{t('SignUpTab.agreeToTermsCheckboxLabel')}</FormLabel>
                     </div>
-                    <FormMessage />
                   </FormItem>
                 )}
               />

@@ -41,6 +41,7 @@
   --color-marigold-50: var(--marigold-50);
   --color-marigold-90: var(--marigold-90);
   --color-marigold-95: var(--marigold-95);
+  --color-destructive: var(--destructive);
   /* typography */
   --text-2xl: 24px;
   --text-2xl--font-weight: 700;
