@@ -98,5 +98,60 @@
     "saveSettings": "Save Settings",
     "ninetyDays": "90 Days",
     "zeroDays": "0 Days"
+  },
+  "preferences": {
+    "language": {
+      "label": "Preferred Language",
+      "en": "English",
+      "es": "Spanish",
+      "fr": "French"
+    },
+    "learningStyle": {
+      "label": "Preferred Learning Style",
+      "visual": "Visual",
+      "handson": "Hands-on practice",
+      "auditory": "Auditory",
+      "kinesthetic": "Kinesthetic"
+    },
+    "session": {
+      "label": "Preferred Session",
+      "short": "Less than 30 minutes",
+      "medium": "30–60 minutes",
+      "long": "Over 1 hour"
+    }
+  },
+  "leadershipGoals": {
+    "currentRole": {
+      "label": "Current Role",
+      "tl": "Team Leader",
+      "rec": "Recruitment Specialist",
+      "tr": "Trainee"
+    },
+    "experience": {
+      "label": "Leadership Experience",
+      "strong": "Strong (>3 years)",
+      "intermediate": "Intermediate (1-3 years)",
+      "beginner": "Beginner (0-1 years)",
+      "no": "No Experience"
+    },
+    "primaryGoals": {
+      "label": "Primary Goals",
+      "feedback": "Give Constructive Feedback",
+      "coaching": "Coaching & Mentoring",
+      "coping": "Coping Mechanisms"
+    }
+  },
+  "confidenceFields": {
+    "givingFeedback": {
+      "title": "Giving difficult feedback"
+    },
+    "teamConflicts": {
+      "title": "Managing team conflicts"
+    },
+    "challengingConversations": {
+      "title": "Leading challenging conversations"
+    },
+    "minLabel": "Not confident",
+    "maxLabel": "Very confident"
   }
 }

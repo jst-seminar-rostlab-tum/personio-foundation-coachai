@@ -1,32 +1,36 @@
 import { UserPreference } from '@/interfaces/UserInputFields';
+import { useTranslations } from 'next-intl';
 
-export const userPreferences: UserPreference[] = [
-  {
-    label: 'Preferred Language',
-    options: [
-      { code: 'en', name: 'English' },
-      { code: 'es', name: 'Spanish' },
-      { code: 'fr', name: 'French' },
-    ],
-    defaultValue: 'en',
-  },
-  {
-    label: 'Preferred Learning Style',
-    options: [
-      { code: 'visual', name: 'Visual' },
-      { code: 'hands-on', name: 'Hands-on practice' },
-      { code: 'auditory', name: 'Auditory' },
-      { code: 'kinesthetic', name: 'Kinesthetic' },
-    ],
-    defaultValue: 'hands-on',
-  },
-  {
-    label: 'Preferred Session',
-    options: [
-      { code: 'short', name: 'Less than 30 minutes' },
-      { code: 'medium', name: '30–60 minutes' },
-      { code: 'long', name: 'Over 1 hour' },
-    ],
-    defaultValue: 'medium',
-  },
-];
+export function useUserPreferences(): UserPreference[] {
+  const t = useTranslations('preferences');
+  return [
+    {
+      label: t('language.label'),
+      options: [
+        { code: 'en', name: t('language.en') },
+        { code: 'es', name: t('language.es') },
+        { code: 'fr', name: t('language.fr') },
+      ],
+      defaultValue: 'en',
+    },
+    {
+      label: t('learningStyle.label'),
+      options: [
+        { code: 'visual', name: t('learningStyle.visual') },
+        { code: 'handson', name: t('learningStyle.handson') },
+        { code: 'auditory', name: t('learningStyle.auditory') },
+        { code: 'kinesthetic', name: t('learningStyle.kinesthetic') },
+      ],
+      defaultValue: 'handson',
+    },
+    {
+      label: t('session.label'),
+      options: [
+        { code: 'short', name: t('session.short') },
+        { code: 'medium', name: t('session.medium') },
+        { code: 'long', name: t('session.long') },
+      ],
+      defaultValue: 'medium',
+    },
+  ];
+}

@@ -1,32 +1,36 @@
 import { UserPreference } from '@/interfaces/UserInputFields';
+import { useTranslations } from 'next-intl';
 
-export const userRoleLeadershipGoals: UserPreference[] = [
-  {
-    label: 'Current Role',
-    options: [
-      { code: 'tl', name: 'Team Leader' },
-      { code: 'rec', name: 'Recruitment Specialist' },
-      { code: 'tr', name: 'Trainee' },
-    ],
-    defaultValue: 'tl',
-  },
-  {
-    label: 'Leadership Experience',
-    options: [
-      { code: 'strong', name: 'Strong (>3 years)' },
-      { code: 'intermediate', name: 'Intermediate (1-3 years)' },
-      { code: 'beginner', name: 'Beginner (0-1 years)' },
-      { code: 'no', name: 'No Experience' },
-    ],
-    defaultValue: 'intermediate',
-  },
-  {
-    label: 'Primary Goals',
-    options: [
-      { code: 'feedback', name: 'Give Constructive Feedback' },
-      { code: 'coaching', name: 'Coaching & Mentoring' },
-      { code: 'coping', name: 'Coping Mechanisms' },
-    ],
-    defaultValue: 'coaching',
-  },
-];
+export function useUserRoleLeadershipGoals(): UserPreference[] {
+  const t = useTranslations('leadershipGoals');
+  return [
+    {
+      label: t('currentRole.label'),
+      options: [
+        { code: 'tl', name: t('currentRole.tl') },
+        { code: 'rec', name: t('currentRole.rec') },
+        { code: 'tr', name: t('currentRole.tr') },
+      ],
+      defaultValue: 'tl',
+    },
+    {
+      label: t('experience.label'),
+      options: [
+        { code: 'strong', name: t('experience.strong') },
+        { code: 'intermediate', name: t('experience.intermediate') },
+        { code: 'beginner', name: t('experience.beginner') },
+        { code: 'no', name: t('experience.no') },
+      ],
+      defaultValue: 'intermediate',
+    },
+    {
+      label: t('primaryGoals.label'),
+      options: [
+        { code: 'feedback', name: t('primaryGoals.feedback') },
+        { code: 'coaching', name: t('primaryGoals.coaching') },
+        { code: 'coping', name: t('primaryGoals.coping') },
+      ],
+      defaultValue: 'coaching',
+    },
+  ];
+}

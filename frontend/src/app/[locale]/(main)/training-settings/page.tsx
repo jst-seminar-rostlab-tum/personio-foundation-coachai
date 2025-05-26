@@ -14,9 +14,9 @@ import Switch from '@/components/ui/switch';
 import UserPreferences from '@/components/layout/UserPreferences';
 import Image from 'next/image';
 import UserConfidenceFields from '@/components/layout/UserConfidenceFields';
-import { confidenceFields } from '@/configs/UserConfidenceFields.config';
-import { userPreferences } from '@/configs/UserPreferences.config';
-import { userRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
+import { useUserConfidenceFields } from '@/configs/UserConfidenceFields.config';
+import { useUserPreferences } from '@/configs/UserPreferences.config';
+import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
 
 export default function TrainingSettingsPage() {
   const [audioEnabled, setAudioEnabled] = useState(false);
@@ -93,11 +93,11 @@ export default function TrainingSettingsPage() {
                 {t('personalizationSettings')}
               </AccordionTrigger>
               <AccordionContent>
-                <UserPreferences className="md:w-1/2" preferences={userRoleLeadershipGoals} />
+                <UserPreferences className="md:w-1/2" preferences={useUserRoleLeadershipGoals()} />
                 <hr className="my-10 border-gray-200" />
-                <UserConfidenceFields className="md:w-1/2" fields={confidenceFields} />
+                <UserConfidenceFields className="md:w-1/2" fields={useUserConfidenceFields()} />
                 <hr className="my-10 border-gray-200" />
-                <UserPreferences className="md:w-1/2" preferences={userPreferences} />
+                <UserPreferences className="md:w-1/2" preferences={useUserPreferences()} />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
