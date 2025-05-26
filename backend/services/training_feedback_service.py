@@ -2,6 +2,8 @@ from backend.connections.openai_client import get_client
 from backend.schemas.training_feedback_schema import (
     ExamplesRequest,
     GoalAchievementRequest,
+    RecommendationsCollection,
+    RecommendationsRequest,
     TrainingExamplesCollection,
 )
 
@@ -93,8 +95,62 @@ def get_achieved_goals(request: GoalAchievementRequest) -> int:
         raise ValueError(f'LLM response could not be parsed as an integer: {result}') from err
 
 
+def generate_recommendations(request: RecommendationsRequest) -> RecommendationsCollection:
+    user_prompt = f"""
+    Analyze the following transcript from a training session.
+    Based on the goal, objectives, and key concepts, suggest 3-5 specific, actionable 
+    communication improvement recommendations for the user.
+    The recommendations should be short, actionable, and directly related to the user's performance 
+    in the transcript.
+
+    Transcript:
+    {request.transcript}
+
+    Training Goal:
+    {request.goal}
+    
+    Objectives:
+    {request.objectives}
+
+    Key Concepts:
+    {request.key_concepts}
+
+    Context:
+    {request.context}
+
+    Situation:
+    - the conversation of this training session is about {request.category}. 
+    - The user is practicing how to {request.goal}.
+    - The other party, the AI, is simulating a {request.other_party}.
+
+    Format your JSON output like this:
+    {{
+        "recommendations": [
+            {{ "heading": "...", "text": "..." }}
+        ]
+    }}
+    Only include JSON. Do not include markdown, explanation, or code formatting.
+
+    Example Recommendations:
+    1. heading: "Practice the STAR method", 
+    text: "When giving feedback, use the Situation, Task, Action, Result framework to provide more 
+    concrete examples."
+    
+    2. heading: "Ask more diagnostic questions", 
+    text: "Spend more time understanding root causes before moving to solutions. 
+    This builds empathy and leads to more effective outcomes."
+
+    3. heading: "Define clear next steps",
+    text: "End feedback conversations with agreed-upon action items, timelines, and follow-up plans.
+
+    """
+
+    response = invoke_llm(user_prompt)
+    return RecommendationsCollection.model_validate_json(response)
+
+
 if __name__ == '__main__':
-    # Example usage of the generate_training_examples function
+    # Example usage of the service functions
     example_request = ExamplesRequest(
         category='Termination',
         goal='Successfully conduct a termination meeting',
@@ -147,3 +203,17 @@ if __name__ == '__main__':
     )
     goals_achieved = get_achieved_goals(goals_achievement_request)
     print(f'Number of goals achieved: {goals_achieved} / {len(example_request.objectives)}')
+
+    recommendation_request = RecommendationsRequest(
+        category=example_request.category,
+        goal=example_request.goal,
+        context=example_request.context,
+        other_party=example_request.other_party,
+        transcript=example_request.transcript,
+        objectives=example_request.objectives,
+        key_concepts=example_request.key_concepts,
+    )
+    recommendations = generate_recommendations(recommendation_request)
+    for recommendation in recommendations.recommendations:
+        print(f'Recommendation: {recommendation.heading}')
+        print(f'Text: {recommendation.text}\n')

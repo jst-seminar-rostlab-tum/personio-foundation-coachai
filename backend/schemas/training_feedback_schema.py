@@ -1,14 +1,11 @@
 from pydantic import BaseModel, Field
 
 
-class TrainingFeedbackBase(BaseModel):
+class ExamplesRequest(BaseModel):
     transcript: str  # Full transcript of the training session
     objectives: list[str] = Field(
         ..., description='List of training objectives the user is expected to achieve'
     )
-
-
-class ExamplesRequest(TrainingFeedbackBase):
     category: str = Field(..., description='Training category')
     goal: str = Field(..., description='Training goal')
     context: str = Field(..., description='Training context')
@@ -35,7 +32,29 @@ class TrainingExamplesCollection(BaseModel):
     negative_examples: list[NegativeExample] = Field(..., description='List of negative examples')
 
 
-class GoalAchievementRequest(TrainingFeedbackBase):
+class GoalAchievementRequest(BaseModel):
     """Request to evaluate how many training goals (objectives) were achieved in the transcript."""
 
+    transcript: str  # Full transcript of the training session
+    objectives: list[str] = Field(
+        ..., description='List of training objectives the user is expected to achieve'
+    )
+
+
+class RecommendationsRequest(ExamplesRequest):
+    """Request to generate improvement recommendations based on training feedback.
+    Same fields as ExamplesRequest, but used for generating recommendations instead of examples.
+    """
+
     pass
+
+
+class Recommendation(BaseModel):
+    heading: str = Field(..., description='Title or summary of the recommendation')
+    text: str = Field(..., description='Description or elaboration of the recommendation')
+
+
+class RecommendationsCollection(BaseModel):
+    recommendations: list[Recommendation] = Field(
+        ..., description='List of improvement recommendations'
+    )
