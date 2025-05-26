@@ -13,7 +13,7 @@ export const UserRadio: React.FC<UserRadioQuestion> = ({
 }) => {
   return (
     <>
-      <div className="self-center text-xl min-h-20 max-w-70 flex items-center text-center px-10">
+      <div className="self-center text-xl min-h-20 max-w-70 flex items-center text-center">
         {question}
       </div>
       <RadioGroup value={selectedValue} onValueChange={onValueChange}>
