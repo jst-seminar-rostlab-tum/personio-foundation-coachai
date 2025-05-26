@@ -32,7 +32,7 @@ def update_timestamp(
 
 # Schema for creating a new ConversationCategory
 class ConversationCategoryCreate(SQLModel):
-    name: str
+    name: str = Field(description='Name of the conversation category')
     icon_uri: str
     description: str
 

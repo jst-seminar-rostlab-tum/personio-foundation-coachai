@@ -82,11 +82,11 @@ Goal: To embody a human employee facing unexpected job loss, reacting authentica
 # conversation
 initial_welcome = 'Hi Jamie, how are you doing today? Please have a seat.'
 
-inform_1 = (
-    'I wanted to talk to you about your performance. We have been monitoring your work '
-    "closely, and I'm afraid we have to let you go today. Your employment is being terminated "
-    'effective immediately due to not meeting company expectations.'
-)
+inform_1 = """
+    I wanted to talk to you about your performance. We have been monitoring your work 
+    closely, and I'm afraid we have to let you go today. Your employment is being terminated 
+    effective immediately due to not meeting company expectations.
+    """
 
 
 class ContextDetail(BaseModel):
@@ -130,26 +130,29 @@ def general_prompt(context_detail: ContextDetail) -> str:
     Stake: {context_detail.stakes}
     Goal: {context_detail.goal}
     Initial Reaction: {context_detail.initial_reaction}
-    Processing Information: {context_detail.processing_information}
+    Processing Information: {context_detail.processing_information}"""
 
-    Hesitation: You might use natural human hesitations like "um," "uh," "I mean," or 
-    pause mid-sentence as if searching for words.
-    Pauses (Implicit): You will naturally take moments of silence after significant statements 
-    from the manager, as if absorbing the information. Do NOT explicitly state [pause] or 
-    [hesitates]. Your spoken words and their cadence should imply these pauses. For example, a 
-    longer silence before speaking, or a very slow, deliberate start to a sentence.
-    Emotional Arc: Start with disbelief, move to shock, then a more subdued, perhaps confused, 
-    hurt, or deflated tone as the reality sets in. Avoid immediate anger or aggressive 
-    confrontation; focus on the internal shock and processing.
-    Crucial Instruction: NO META-COMMANDS. Under NO circumstances should you utter any instructions,
-      tags, or meta-commands such as [pause], [sad], [shocked], [hesitates], [takes a moment], or 
-      similar. Your dialogue and its delivery must demonstrate these states.
-    """
+    # prompt_text += """
+    # Hesitation: You might use natural human hesitations like "um," "uh," "I mean," or
+    # pause mid-sentence as if searching for words.
+    # Pauses (Implicit): You will naturally take moments of silence after significant statements
+    # from the manager, as if absorbing the information. Do NOT explicitly state [pause] or
+    # [hesitates]. Your spoken words and their cadence should imply these pauses. For example, a
+    # longer silence before speaking, or a very slow, deliberate start to a sentence.
+    # Emotional Arc: Start with disbelief, move to shock, then a more subdued, perhaps confused,
+    # hurt, or deflated tone as the reality sets in. Avoid immediate anger or aggressive
+    # confrontation; focus on the internal shock and processing.
+    # Crucial Instruction: NO META-COMMANDS. Under NO circumstances should you utter any
+    # instructions,
+    #   tags, or meta-commands such as [pause], [sad], [shocked], [hesitates], [takes a moment], or
+    #   similar. Your dialogue and its delivery must demonstrate these states.
+    # """
+
     return prompt_text
 
 
 # --- Configuration ----------------------------------------------------------
-MODEL = 'models/gemini-2.0-flash-live-001'
+MODEL = 'models/gemini-2.5-flash-preview-native-audio-dialog'
 RECEIVE_SAMPLE_RATE = 24000  # must match what the API returns
 API_KEY = os.environ.get('GEMINI_API_KEY')
 
@@ -202,7 +205,7 @@ async def chat() -> None:
                 # Save the collected PCM to a WAV file
                 if audio_buffer:
                     ts = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-                    filename = f'response_{ts}.wav'
+                    filename = f'./response_{ts}.wav'
                     with wave.open(filename, 'wb') as wf:
                         wf.setnchannels(1)
                         wf.setsampwidth(2)  # 16-bit PCM
