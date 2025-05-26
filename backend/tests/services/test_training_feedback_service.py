@@ -1,10 +1,14 @@
 from unittest.mock import MagicMock, patch
 
 from backend.schemas.training_feedback_schema import (
+    ExamplesRequest,
+    GoalAchievementRequest,
     TrainingExamplesCollection,
-    TrainingFeedbackRequest,
 )
-from backend.services.training_feedback_service import generate_training_examples
+from backend.services.training_feedback_service import (
+    generate_training_examples,
+    get_achieved_goals,
+)
 
 
 @patch('backend.services.training_feedback_service.client')
@@ -32,7 +36,7 @@ def test_generate_training_examples(mock_client: MagicMock) -> None:
     """
     mock_client.chat.completions.create.return_value = mock_response
 
-    request = TrainingFeedbackRequest(
+    request = ExamplesRequest(
         category='Feedback',
         goal='Deliver constructive feedback',
         context='Performance review',
@@ -50,3 +54,22 @@ def test_generate_training_examples(mock_client: MagicMock) -> None:
     assert len(result.negative_examples) == 1
     assert result.positive_examples[0].heading == 'Clear Objective Addressed'
     assert result.negative_examples[0].quote == "That's not important right now."
+
+
+def test_get_achieved_goals() -> None:
+    transcript = "User: I understand your frustration. Let's find a solution together."
+    goals = [
+        'Clearly communicate the impact of the missed deadlines',
+        'Understand potential underlying causes',
+        'Collaboratively develop a solution',
+        'End the conversation on a positive note',
+    ]
+
+    with patch('backend.services.training_feedback_service.invoke_llm') as mock_llm:
+        mock_llm.return_value = '2'
+        request = GoalAchievementRequest(
+            transcript=transcript,
+            objectives=goals,
+        )
+        result = get_achieved_goals(request)
+        assert result == 2

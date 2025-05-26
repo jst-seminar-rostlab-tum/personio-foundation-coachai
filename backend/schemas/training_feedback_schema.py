@@ -1,13 +1,18 @@
 from pydantic import BaseModel, Field
 
 
-class TrainingFeedbackRequest(BaseModel):
+class TrainingFeedbackBase(BaseModel):
+    transcript: str  # Full transcript of the training session
+    objectives: list[str] = Field(
+        ..., description='List of training objectives the user is expected to achieve'
+    )
+
+
+class ExamplesRequest(TrainingFeedbackBase):
     category: str = Field(..., description='Training category')
     goal: str = Field(..., description='Training goal')
     context: str = Field(..., description='Training context')
     other_party: str = Field(..., description='Persona spoken with')
-    transcript: str  # Full transcript of the training session
-    objectives: list[str]
     key_concepts: str  # Can be markdown or plain text
 
 
@@ -28,3 +33,9 @@ class NegativeExample(BaseModel):
 class TrainingExamplesCollection(BaseModel):
     positive_examples: list[PositiveExample] = Field(..., description='List of positive examples')
     negative_examples: list[NegativeExample] = Field(..., description='List of negative examples')
+
+
+class GoalAchievementRequest(TrainingFeedbackBase):
+    """Request to evaluate how many training goals (objectives) were achieved in the transcript."""
+
+    pass

@@ -1,7 +1,8 @@
 from backend.connections.openai_client import get_client
 from backend.schemas.training_feedback_schema import (
+    ExamplesRequest,
+    GoalAchievementRequest,
     TrainingExamplesCollection,
-    TrainingFeedbackRequest,
 )
 
 client = get_client()
@@ -24,7 +25,7 @@ def invoke_llm(user_prompt: str) -> str:
     return response.choices[0].message.content.strip()
 
 
-def generate_training_examples(request: TrainingFeedbackRequest) -> TrainingExamplesCollection:
+def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesCollection:
     user_prompt = f"""
     The following is a training session transcript, in which the user is practicing 
     communication skills in the context of {request.category}. 
@@ -67,9 +68,34 @@ def generate_training_examples(request: TrainingFeedbackRequest) -> TrainingExam
     return TrainingExamplesCollection.model_validate_json(response)
 
 
+def get_achieved_goals(request: GoalAchievementRequest) -> int:
+    user_prompt = f"""
+    The following is a transcript of a training session.
+    Please evaluate how many of the listed goals were clearly achieved by the user 
+    in this conversation.
+
+    Transcript:
+    {request.transcript}
+
+    Goals:
+    {request.objectives}
+
+    Instructions:
+    - For each goal, determine if the user’s speech aligns with and fulfills the intention behind it.
+    - Only count goals that are clearly demonstrated in the user's statements.
+    - Return only the number of goals achieved as an integer.
+    """
+
+    result = invoke_llm(user_prompt)
+    try:
+        return int(result.strip())
+    except ValueError as err:
+        raise ValueError(f'LLM response could not be parsed as an integer: {result}') from err
+
+
 if __name__ == '__main__':
     # Example usage of the generate_training_examples function
-    example_request = TrainingFeedbackRequest(
+    example_request = ExamplesRequest(
         category='Termination',
         goal='Successfully conduct a termination meeting',
         context='Termination meeting with a team member on poor performance',
@@ -114,3 +140,10 @@ if __name__ == '__main__':
         print(f"Improved Quote: '{example.improved_quote}'\n")
 
     print('Training examples generated successfully.')
+
+    goals_achievement_request = GoalAchievementRequest(
+        transcript=example_request.transcript,
+        objectives=example_request.objectives,
+    )
+    goals_achieved = get_achieved_goals(goals_achievement_request)
+    print(f'Number of goals achieved: {goals_achieved} / {len(example_request.objectives)}')
