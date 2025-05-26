@@ -321,7 +321,7 @@ def get_dummy_training_preparations(
                 'objective_1': "Understand the client's needs",
                 'objective_2': 'Prepare a solution proposal',
             },
-            key_concepts={'concept_1': 'Active listening', 'concept_2': 'Problem-solving'},
+            key_concepts='### SBI Framework - **Situation**: Describe the specific situation.',
             prep_checklist={
                 'item_1': 'Review client history',
                 'item_2': 'Prepare presentation slides',
@@ -337,7 +337,7 @@ def get_dummy_training_preparations(
                 'objective_1': 'Discuss project timeline',
                 'objective_2': 'Finalize deliverables',
             },
-            key_concepts={'concept_1': 'Time management', 'concept_2': 'Collaboration'},
+            key_concepts='### SBI Framework - **Situation**: Describe the specific situation.',
             prep_checklist={
                 'item_1': 'Prepare project timeline',
                 'item_2': 'Review deliverables checklist',

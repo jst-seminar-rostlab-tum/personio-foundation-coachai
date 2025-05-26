@@ -23,7 +23,7 @@ class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a data
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     case_id: UUID = Field(foreign_key='trainingcase.id')
     objectives: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    key_concepts: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    key_concepts: Optional[str] = Field(default=None)
     prep_checklist: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: TrainingPreparationStatus = Field(default=TrainingPreparationStatus.pending)
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -36,9 +36,7 @@ class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a data
 
 
 @event.listens_for(TrainingPreparation, 'before_update')
-def update_timestamp(
-    mapper: Mapper, connection: Connection, target: 'TrainingPreparation'
-) -> None:
+def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingPreparation') -> None:
     target.updated_at = datetime.utcnow()
 
 
@@ -46,7 +44,7 @@ def update_timestamp(
 class TrainingPreparationCreate(SQLModel):
     case_id: UUID
     objectives: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    key_concepts: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    key_concepts: str
     prep_checklist: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: TrainingPreparationStatus = TrainingPreparationStatus.pending
 
@@ -56,7 +54,7 @@ class TrainingPreparationRead(SQLModel):
     id: UUID
     case_id: UUID
     objectives: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    key_concepts: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    key_concepts: str
     prep_checklist: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: TrainingPreparationStatus
     created_at: datetime
