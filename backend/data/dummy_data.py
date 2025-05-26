@@ -264,18 +264,19 @@ def get_dummy_training_session_feedback(
             questions_asked=5,
             session_length_s=1800,
             goals_achieved=3,
-            examples_positive={
-                'example_1': 'Great use of examples',
-                'example_2': 'Clear explanations',
-            },
-            examples_negative={
-                'example_1': 'Missed a key point',
-                'example_2': 'Could improve tone',
-            },
-            recommendations={
-                'recommendation_1': 'Focus on tone',
-                'recommendation_2': 'Ask more questions',
-            },
+            examples_positive='### Clear framing of the issue You effectively communicated the '
+            'specific issue (missed deadlines) and its impact on the team without being '
+            'accusatory. > “I’ve noticed that several deadlines were missed last week, and '
+            'it’s causing our team to fall behind on the overall project timeline.” --- ',
+            examples_negative='### Lack of specific examples While you mentioned missed '
+            'deadlines, you didn’t provide specific instances or data to illustrate the issue. '
+            'Including concrete examples would strengthen your feedback. > “For example, the '
+            'report due on Friday was submitted on Monday, which delayed our progress.” --- ',
+            recommendations='### Practice the STAR method When giving feedback, use the c '
+            'Situation, Task, Action, Result framework to provide more concrete examples. '
+            '--- ### Ask more diagnostic questions Spend more time understanding root causes '
+            'before moving to solutions. This builds empathy and leads to more effective '
+            'outcomes.  --- ### Define next steps End feedback conversations with agreed-upon',
             status=FeedbackStatusEnum.pending,  # Use the enum for status
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
@@ -291,18 +292,19 @@ def get_dummy_training_session_feedback(
             questions_asked=7,
             session_length_s=2000,
             goals_achieved=4,
-            examples_positive={
-                'example_1': 'Engaged with the audience',
-                'example_2': 'Good pacing',
-            },
-            examples_negative={
-                'example_1': 'Could elaborate more',
-                'example_2': 'Missed a follow-up question',
-            },
-            recommendations={
-                'recommendation_1': 'Provide more examples',
-                'recommendation_2': 'Improve follow-ups',
-            },
+            examples_positive='### Clear framing of the issue You effectively communicated the '
+            'specific issue (missed deadlines) and its impact on the team without being '
+            'accusatory. > “I’ve noticed that several deadlines were missed last week, and '
+            'it’s causing our team to fall behind on the overall project timeline.” --- ',
+            examples_negative='### Lack of specific examples While you mentioned missed '
+            'deadlines, you didn’t provide specific instances or data to illustrate the issue. '
+            'Including concrete examples would strengthen your feedback. > “For example, the '
+            'report due on Friday was submitted on Monday, which delayed our progress.” --- ',
+            recommendations='### Practice the STAR method When giving feedback, use the c '
+            'Situation, Task, Action, Result framework to provide more concrete examples. '
+            '--- ### Ask more diagnostic questions Spend more time understanding root causes '
+            'before moving to solutions. This builds empathy and leads to more effective '
+            'outcomes.  --- ### Define next steps End feedback conversations with agreed-upon',
             status=FeedbackStatusEnum.pending,  # Use the enum for status
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
@@ -321,7 +323,7 @@ def get_dummy_training_preparations(
                 'objective_1': "Understand the client's needs",
                 'objective_2': 'Prepare a solution proposal',
             },
-            key_concepts={'concept_1': 'Active listening', 'concept_2': 'Problem-solving'},
+            key_concepts='### SBI Framework - **Situation**: Describe the specific situation.',
             prep_checklist={
                 'item_1': 'Review client history',
                 'item_2': 'Prepare presentation slides',
@@ -337,7 +339,7 @@ def get_dummy_training_preparations(
                 'objective_1': 'Discuss project timeline',
                 'objective_2': 'Finalize deliverables',
             },
-            key_concepts={'concept_1': 'Time management', 'concept_2': 'Collaboration'},
+            key_concepts='### SBI Framework - **Situation**: Describe the specific situation.',
             prep_checklist={
                 'item_1': 'Prepare project timeline',
                 'item_2': 'Review deliverables checklist',

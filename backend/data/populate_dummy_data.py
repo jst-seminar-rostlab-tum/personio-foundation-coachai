@@ -1,6 +1,6 @@
-from sqlmodel import Session
+from sqlmodel import Session, SQLModel
 
-from .data import (
+from backend.data import (
     get_dummy_conversation_categories,
     get_dummy_conversation_turns,
     get_dummy_difficulty_levels,
@@ -16,10 +16,16 @@ from .data import (
     get_dummy_user_goals,
     get_dummy_user_profiles,
 )
-from .database import engine
+from backend.database import engine
 
 
 def populate_data() -> None:
+    print('Dropping tables...')
+    SQLModel.metadata.drop_all(engine)
+
+    print('Creating tables...')
+    SQLModel.metadata.create_all(engine)
+
     with Session(engine) as session:
         # Populate Languages
         languages = get_dummy_languages()
@@ -93,3 +99,7 @@ def populate_data() -> None:
         session.commit()
 
         print('Dummy data populated successfully!')
+
+
+if __name__ == '__main__':
+    populate_data()
