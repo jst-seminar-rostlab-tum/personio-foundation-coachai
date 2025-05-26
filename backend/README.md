@@ -35,28 +35,32 @@ npm install # Required to initialize Husky which manages the pre-commit hooks
   source .venv/bin/activate  # On Windows: .\.venv\Scripts\activate
   ```
 
-2. Assure the Supabase database is set:
+2. Set local environment variables:
 
-- create .env file from .env.example
+- Create .env file from .env.example
 
-```bash
-prisma generate # assures connection to supabase through prisma is set
-```
+- Fill in variable values:
 
 ```bash
-prisma db push # pushes changementes done in schema.prisma to supabase
+OPENAI_API_KEY = <..key..>
 ```
 
-3. Run the FASTapi development server:
+3. Run a local PostgreSQL instace on Docker:
+
+```bash
+docker compose up db -d
+```
+
+4. Start the FastAPI development server:
 
 ```bash
 uv run fastapi dev
 ```
+
 Once the server is running, you can access:
 
 - Interactive API documentation: http://localhost:8000/docs
 - Alternative API documentation: http://localhost:8000/redoc
-
 
 ### Docker Development
 
@@ -70,9 +74,10 @@ docker compose up backend
 
 Twilio is used for phone number verification by sending verification codes via SMS.
 
-Unless this line is deleted, you have to set up your own account to try it out. Follow the links in .env.example to do so. Later we will make one general account for everyone to use. 
+Unless this line is deleted, you have to set up your own account to try it out. Follow the links in .env.example to do so. Later we will make one general account for everyone to use.
 
 #### Setup Instructions
+
 1. Create a Twilio account at https://www.twilio.com/try-twilio
 2. Get your credentials from the Twilio Console:
    - Account SID
@@ -91,10 +96,10 @@ Unless this line is deleted, you have to set up your own account to try it out. 
    ```
 
 #### Important Notes
+
 - Implementation will proceed once Next.js login functionality is ready
 - The current `twilio_service.py` is for demonstration purposes only!
-- This step is done BUT: To see how to setup twilio with supabase check https://supabase.com/docs/guides/auth/phone-login?showSmsProvider=Twilio#! . To set it in the CSEE x Personio Supabase account contact TA or META team 
-
+- This step is done BUT: To see how to setup twilio with supabase check https://supabase.com/docs/guides/auth/phone-login?showSmsProvider=Twilio#! . To set it in the CSEE x Personio Supabase account contact TA or META team
 
 ## Development Tools
 
