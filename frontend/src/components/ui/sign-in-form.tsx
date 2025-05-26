@@ -23,7 +23,7 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
   const t = useTranslations('LoginPage');
 
   const signInFormSchema = z.object({
-    email: z.string().min(1, t('SignInTab.emailInputError')),
+    email: z.string().email(t('SignInTab.emailInputError')),
     password: z.string().min(1, t('SignInTab.passwordInputError')),
   });
 

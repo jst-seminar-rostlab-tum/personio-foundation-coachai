@@ -16,7 +16,7 @@ import {
 import Checkbox from '@/components/ui/checkbox';
 import { useState } from 'react';
 import { VerificationPopup } from './verification-popup';
-import { PasswordInput } from './password-input';
+import { PasswordInput, PasswordRequirement } from './password-input';
 
 interface SignUpFormProps {
   onSubmit: (values: {
@@ -37,9 +37,13 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
 
   const signUpFormSchema = z.object({
     fullName: z.string().min(1, t('SignUpTab.fullNameInputError')),
-    email: z.string().min(1, t('SignUpTab.emailInputError')).email(t('SignUpTab.emailInputError')),
-    phoneNumber: z.string().min(1, t('SignUpTab.phoneNumberInputError')),
-    password: z.string().min(1, t('SignUpTab.passwordInputError')),
+    email: z.string().email(t('SignUpTab.emailInputError')),
+    phoneNumber: z.string().regex(/^\+?[1-9]\d{7,14}$/, t('SignUpTab.phoneNumberInputError')),
+    password: z
+      .string()
+      .regex(/^.{8,}$/)
+      .regex(/[A-Z]/)
+      .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/),
     terms: z.boolean().refine((val) => val === true),
   });
 
@@ -54,6 +58,24 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
       terms: false,
     },
   });
+
+  const passwordRequirements: PasswordRequirement[] = [
+    {
+      id: 'length',
+      label: 'At least 8 characters',
+      test: (password: string) => password.length >= 8,
+    },
+    {
+      id: 'uppercase',
+      label: 'One uppercase letter',
+      test: (password: string) => /[A-Z]/.test(password),
+    },
+    {
+      id: 'special',
+      label: 'One special character (!@#$%^&*)',
+      test: (password: string) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
+    },
+  ];
 
   const handleSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
     // Clear any existing errors at the start of a new submission
@@ -181,12 +203,11 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                     <FormControl>
                       <PasswordInput
                         placeholder={t('SignUpTab.passwordInputPlaceholder')}
-                        {...field}
-                        className="w-full"
                         disabled={isLoading}
+                        requirements={passwordRequirements}
+                        {...field}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
