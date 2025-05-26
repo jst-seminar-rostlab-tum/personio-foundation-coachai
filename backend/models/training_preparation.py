@@ -44,7 +44,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingPr
 class TrainingPreparationCreate(SQLModel):
     case_id: UUID
     objectives: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    key_concepts: str
+    key_concepts: Optional[str] = None
     prep_checklist: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: TrainingPreparationStatus = TrainingPreparationStatus.pending
 
@@ -54,7 +54,7 @@ class TrainingPreparationRead(SQLModel):
     id: UUID
     case_id: UUID
     objectives: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    key_concepts: str
+    key_concepts: Optional[str] = None
     prep_checklist: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: TrainingPreparationStatus
     created_at: datetime
