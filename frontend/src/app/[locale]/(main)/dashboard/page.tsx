@@ -2,7 +2,11 @@ import Link from 'next/link';
 
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
+
 import type { Props } from '@/interfaces/LayoutProps';
+import { Button } from '@/components/ui/Button';
+import HistoryItem from '@/components/layout/HistoryItem';
+import StatCard from '@/components/layout/StatCard';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -11,84 +15,76 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function DashboardPage() {
   return (
-    <div>
+    <div className="flex flex-col gap-12 p-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="text-xl font-bold text-gray-700">Dashboard</div>
+      <section className="flex items-center justify-between">
+        <p className="text-2xl">Hello, Anton!</p>
         <Link href="/new-training">
-          <button className="px-3 py-2 bg-gray-200 rounded text-gray-700 text-sm">
-            New Training
-          </button>
+          <Button>Create Training</Button>
         </Link>
-      </div>
+      </section>
+
+      {/* Current Session */}
+      <section className="flex flex-col gap-4">
+        <div>
+          <h2 className="text-xl">Current Session</h2>
+          <p className="text-base text-[var(--bw-40)]">Continue your active training session</p>
+        </div>
+
+        {/* Current Session Card */}
+        <div className="bg-[var(--marigold-5)] border border-[var(--marigold-30)] rounded-lg p-8 gap-8 flex flex-col">
+          <div>
+            <h2 className="text-xl">Giving Constructive Feedback</h2>
+            <p className="text-base text-[var(--bw-40)]">
+              Practice giving feedback to a team member about missed deadlines
+            </p>
+          </div>
+          <Link href="/simulation/1">
+            <Button className="w-full mx-auto">Continue</Button>
+          </Link>
+        </div>
+      </section>
 
       {/* Simple Stats: 2x2 on small, 1x4 on large screens */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
-          <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-        </div>
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
-          <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-        </div>
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
-          <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-        </div>
-        <div className="bg-gray-100 p-4 rounded-lg shadow-md animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
-          <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-        </div>
+      {/* Stats Grid (2x2 on small, 1x4 on large screens) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard value={56} label="Total Sessions" />
+        <StatCard value={12} label="This Month" />
+        <StatCard value="4.8" label="Avg. Rating" />
+        <StatCard value="89%" label="Completion Rate" />
       </div>
 
-      {/* Current Training Section */}
-      <div className="mt-6 w-full bg-gray-50 p-4 rounded-lg shadow-md">
-        <div className="text-lg text-gray-400 font-semibold mb-2">Current Training</div>
-        <div className="flex items-center justify-end bg-gray-100 p-4 rounded-lg shadow-md w-full">
-          <Link href="/simulation/1">
-            <button className="px-4 py-2 bg-gray-200 rounded text-gray-700 text-sm">
-              Continue
-            </button>
-          </Link>
+      {/* Recent Training History */}
+      <section className="flex flex-col gap-4">
+        <div>
+          <h2 className="text-xl">Recent Training History</h2>
+          <p className="text-base text-[var(--bw-40)]">Your last completed training sessions</p>
         </div>
-      </div>
 
-      {/* Recent Training Section */}
-      <div className="mt-6 w-full bg-gray-50 p-4 rounded-lg shadow-md">
-        <div className="text-lg text-gray-400 font-semibold mb-2">Recent Training History</div>
-        <div className="space-y-4">
-          {[1, 2].map((_, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between bg-gray-100 p-4 rounded-lg shadow animate-pulse"
-            >
-              <div>
-                <div className="h-4 bg-gray-200 rounded w-32 mb-2"></div>
-                <div className="h-6 bg-gray-200 rounded w-48"></div>
-              </div>
-              <div className="h-8 w-8 bg-gray-200 rounded-full ml-4"></div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 w-full">
-          <Link href="/history" className="w-full block">
-            <button className="px-4 py-2 w-full bg-gray-200 rounded text-gray-700 text-sm">
-              View All Training History
-            </button>
-          </Link>
-        </div>
-      </div>
+        {/* History Items */}
+        <HistoryItem
+          title="Negotiating Job Offers"
+          description="Practice salary negotiation with a potential candidate"
+          date={new Date('2025-01-04T13:36:00')}
+          duration={5672} // 1h 34m 32s
+        />
+        <HistoryItem
+          title="Conflict Resolution"
+          description="Mediate a disagreement between team members"
+          date={new Date('2024-04-16T13:36:00')}
+          duration={368}
+        />
+        <HistoryItem
+          title="Performance Review"
+          description="Conduct a quaterly performance review"
+          date={new Date('2023-07-28T13:36:00')}
+          duration={634}
+        />
 
-      {/* Placeholder Section 1 */}
-      <div className="mt-6 w-full bg-gray-50 p-4 rounded-lg shadow-md">
-        <div className="bg-gray-100 h-24 rounded animate-pulse" />
-      </div>
-
-      {/* Placeholder Section 2 */}
-      <div className="mt-6 w-full bg-gray-50 p-4 rounded-lg shadow-md">
-        <div className="bg-gray-100 h-16 rounded animate-pulse" />
-      </div>
+        <Link href="/history">
+          <Button className="w-full">Show Entire History</Button>
+        </Link>
+      </section>
     </div>
   );
 }
