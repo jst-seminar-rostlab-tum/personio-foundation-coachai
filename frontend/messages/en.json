@@ -154,5 +154,23 @@
       "next": "Next Step",
       "create": "Create Training"
     }
+  },
+  "Onboarding": {
+    "title": "Personalize Your Experience",
+    "subTitle": "Tailor your leadership training to your needs",
+    "steps": {
+      "step1": "What’s Your Role?",
+      "step2": "How much leadership experience do you have?",
+      "step3": "What are your primary goals?",
+      "step3Subtitle": "Select up to 3 areas you'd like to focus on.",
+      "step4": "Rate Your Confidence in These Areas",
+      "step5": "Your Preferences"
+    },
+    "navigation": {
+      "back": "Go Back",
+      "next": "Next Step",
+      "finish": "Finish Setup",
+      "skip": "Skip for now"
+    }
   }
 }
