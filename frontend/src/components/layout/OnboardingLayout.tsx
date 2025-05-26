@@ -53,11 +53,6 @@ export default function OnboardingLayout() {
     { id: 'g3', label: 'Performance reviews' },
     { id: 'g4', label: 'Motivating team members' },
     { id: 'g5', label: 'Leading difficult conversations' },
-    { id: 'g6', label: 'Communicating organizatorial change' },
-    { id: 'g7', label: 'Develop emotional intelligence' },
-    { id: 'g8', label: 'Building inclusive teams' },
-    { id: 'g9', label: 'Negotiation skills' },
-    { id: 'g10', label: 'Coaching & Mentoring' },
   ];
 
   const onboardingSteps = ['Step1', 'Step2', 'Step3', 'Step4', 'Step5'];
@@ -67,7 +62,16 @@ export default function OnboardingLayout() {
   const [selectedGoals, setSelectedGoals] = React.useState<string[]>([]);
   const t = useTranslations('Onboarding');
 
+  const isValidStep = (stepIndex: number) => {
+    if (stepIndex === 0) return selectedRole !== '';
+    if (stepIndex === 1) return selectedLeadership !== '';
+    if (stepIndex === 2) return selectedGoals.length > 0;
+    return true;
+  };
   const handleStepChange = (stepIndex: number) => {
+    if (!isValidStep(stepIndex - 1)) {
+      return;
+    }
     if (stepIndex <= currentOnboardingStep || stepIndex === currentOnboardingStep + 1) {
       setCurrentOnboardingStep(stepIndex);
     }
@@ -82,7 +86,7 @@ export default function OnboardingLayout() {
   };
 
   return (
-    <div className="flex flex-col w-fit min-h-[calc(100vh-2rem)] py-5 gap-5 mr-auto ml-auto">
+    <div className="flex flex-col w-fit py-5 gap-5 mr-auto ml-auto">
       <div className="flex flex-col gap-2 text-center">
         <span className="text-2xl">{t('title')}</span>
         <span className="text-base text-bw-40">{t('subtitle')}</span>
@@ -147,7 +151,7 @@ export default function OnboardingLayout() {
           <div className="text-xl self-center min-h-20 text-center max-w-70 flex items-center">
             {t('steps.step4')}
           </div>
-          <UserPreferences preferences={userPreferences} />
+          <UserConfidenceFields fields={confidenceFields} />
         </>
       )}
 
@@ -156,11 +160,10 @@ export default function OnboardingLayout() {
           <div className="text-xl self-center min-h-20 text-center max-w-70 flex items-center">
             {t('steps.step5')}
           </div>
-
-          <UserConfidenceFields fields={confidenceFields} />
+          <UserPreferences preferences={userPreferences} />
         </>
       )}
-      <div className="flex flex-col gap-3 items-center mt-auto">
+      <div className="flex flex-col gap-3 items-center">
         <div
           className={`grid w-full gap-3 ${currentOnboardingStep > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}
         >
@@ -184,7 +187,11 @@ export default function OnboardingLayout() {
               </Button>
             </Link>
           ) : (
-            <Button className="w-full" onClick={goToNextStep}>
+            <Button
+              className="w-full"
+              onClick={goToNextStep}
+              variant={isValidStep(currentOnboardingStep) ? 'default' : 'disabled'}
+            >
               {t('navigation.next')}
               <ArrowRightIcon />
             </Button>
