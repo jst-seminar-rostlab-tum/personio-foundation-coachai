@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,7 +13,6 @@ import {
 } from '@/components/ui/accordion';
 import Switch from '@/components/ui/switch';
 import UserPreferences from '@/components/layout/UserPreferences';
-import Image from 'next/image';
 import UserConfidenceFields from '@/components/layout/UserConfidenceFields';
 import { useUserConfidenceFields } from '@/configs/UserConfidenceFields.config';
 import { useUserPreferences } from '@/configs/UserPreferences.config';
@@ -68,13 +68,10 @@ export default function TrainingSettingsPage() {
                     <div className="text-bw-70">{t('exportData')}</div>
                     <div className="text-bw-40">{t('exportDataDesc')}</div>
                   </div>
-                  <Image
-                    src="/icons/download.svg"
-                    className="w-5 h-5 text-gray-500"
-                    alt="download"
-                    width={24}
-                    height={24}
-                  />
+                  <Button variant="outline" className="flex items-center gap-2 px-3 py-2 text-sm">
+                    <Download className="w-4 h-4" />
+                    <span className="hidden sm:inline">{t('export')}</span>
+                  </Button>
                 </div>
                 <div className="flex items-start justify-between w-full mt-4">
                   <div className="flex flex-col">

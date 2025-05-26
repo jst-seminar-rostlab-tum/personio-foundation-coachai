@@ -89,6 +89,7 @@
     "storeAudioDesc": "Audio Ihrer Sitzungen speichern",
     "storeTranscript": "Transkriptdaten speichern",
     "storeTranscriptDesc": "Texttranskripte Ihrer Sitzungen speichern",
+    "export": "Exportieren",
     "exportData": "Persönliche Daten exportieren",
     "exportDataDesc": "Alle Ihre persönlichen Daten herunterladen",
     "deleteAccount": "Konto löschen",

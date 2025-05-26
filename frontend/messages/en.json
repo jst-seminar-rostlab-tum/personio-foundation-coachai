@@ -89,6 +89,7 @@
     "storeAudioDesc": "Save audio of your sessions",
     "storeTranscript": "Store Transcript Data",
     "storeTranscriptDesc": "Save text transcripts of your sessions",
+    "export": "Export",
     "exportData": "Export personal data",
     "exportDataDesc": "Download all your personal data",
     "deleteAccount": "Delete account",
