@@ -15,9 +15,11 @@ else:
     ssl_cert_path = None
 
 if settings.database_url:
-    SQLALCHEMY_DATABASE_URL = f'{settings.database_url}?sslmode=verify-full&sslrootcert={ssl_cert_path}'
+    SQLALCHEMY_DATABASE_URL = (
+        f'{settings.database_url}?sslmode=verify-full&sslrootcert={ssl_cert_path}'
+    )
 else:
-    SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
+    SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
 
 
 # print(SQLALCHEMY_DATABASE_URL)
