@@ -115,6 +115,24 @@ Unless this line is deleted, you have to set up your own account to try it out. 
 - The current `twilio_service.py` is for demonstration purposes only!
 - This step is done BUT: To see how to setup twilio with supabase check https://supabase.com/docs/guides/auth/phone-login?showSmsProvider=Twilio#! . To set it in the CSEE x Personio Supabase account contact TA or META team
 
+## Updating PostgreSQL Password (Local Docker)
+
+If the PostgreSQL password has changed and you need to apply the new password locally, follow these steps:
+
+1. Stop and remove the existing containers and volume:
+
+```bash
+docker-compose down -v
+```
+
+The -v flag ensures the associated volume (which stores PostgreSQL data) is deleted. This is necessary to avoid authentication errors due to the old password.
+
+2. Run a local PostgreSQL instace on Docker:
+
+```bash
+docker compose up db -d
+```
+
 ## Development Tools
 
 - **uv**: For Python package management and virtual environments
