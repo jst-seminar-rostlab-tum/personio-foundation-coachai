@@ -67,10 +67,10 @@ OPENAI_API_KEY = <..key..>
 docker compose up db -d
 ```
 
-4. Populate local PostgreSQL with dummy data. From the project root (not inside backend folder), run the following:
+4. Populate local PostgreSQL with dummy data. From the backend folder, run the following:
 
 ```bash
-uv run -m backend.data.populate_dummy_data
+cd .. && uv run -m backend.data.populate_dummy_data && cd backend
 ```
 
 5. Start the FastAPI development server:
