@@ -5,7 +5,6 @@ from .config import settings
 
 # from .database import engine
 from .database import create_db_and_tables
-from .populate_dummy_data import populate_data
 from .routers import (
     conversation_category_route,
     conversation_turn_route,
@@ -52,11 +51,6 @@ def on_startup() -> None:
 
 
 # app.include_router(twilio_route.router)
-# Endpoint to populate dummy data
-@app.post('/populate-data')
-def populate_dummy_data() -> dict:
-    populate_data()
-    return {'message': 'Dummy data populated successfully!'}
 
 
 @app.get('/')
