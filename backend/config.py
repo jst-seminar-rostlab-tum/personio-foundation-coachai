@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     postgres_host: str = 'localhost'
     postgres_user: str = 'postgres'
     postgres_password: str = 'postgres'
-    postgres_db: str = 'postgres'
+    postgres_db: str = 'app_db'
     postgres_port: str = '5432'
     database_url: Optional[str] = None
     ssl_cert_url: str = 'https://test.com'
