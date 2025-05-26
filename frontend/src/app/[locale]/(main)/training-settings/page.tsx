@@ -28,14 +28,14 @@ export default function TrainingSettingsPage() {
       <div className="flex items-center justify-between">
         <div className="text-xl font-bold text-black">{t('title')}</div>
         <Link href="/dashboard">
-          <Button className="px-3 py-2 rounded text-sm">{t('backToDashboard')}</Button>
+          <Button className="px-3 py-2 text-sm">{t('backToDashboard')}</Button>
         </Link>
       </div>
 
       {/* Accordion Sections */}
       <div className="mt-6 space-y-4">
         <div className="w-full px-4 py-3 flex items-center rounded-t-lg">
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="multiple" className="w-full">
             <AccordionItem value="item-1" className="text-dark">
               <AccordionTrigger className="font-bw-70">{t('privacyControls')}</AccordionTrigger>
               <AccordionContent>
@@ -81,7 +81,7 @@ export default function TrainingSettingsPage() {
                     <div className="text-bw-70">{t('deleteAccount')}</div>
                     <div className="text-bw-40">{t('deleteAccountDesc')}</div>
                   </div>
-                  <Button className="px-3 py-2 rounded text-sm" variant={'destructive'}>
+                  <Button className="px-3 py-2 text-sm" variant={'destructive'}>
                     {' '}
                     {t('requestDeletion')}{' '}
                   </Button>
@@ -93,18 +93,27 @@ export default function TrainingSettingsPage() {
                 {t('personalizationSettings')}
               </AccordionTrigger>
               <AccordionContent>
-                <UserPreferences className="md:w-1/2" preferences={useUserRoleLeadershipGoals()} />
-                <hr className="my-10 border-gray-200" />
-                <UserConfidenceFields className="md:w-1/2" fields={useUserConfidenceFields()} />
-                <hr className="my-10 border-gray-200" />
-                <UserPreferences className="md:w-1/2" preferences={useUserPreferences()} />
+                <UserPreferences
+                  className="md:w-1/2 flex flex-col gap-5 px-2"
+                  preferences={useUserRoleLeadershipGoals()}
+                />
+                <hr className="my-9.5 border-gray-200" />
+                <UserConfidenceFields
+                  className="md:w-1/2 flex flex-col gap-5 px-2"
+                  fields={useUserConfidenceFields()}
+                />
+                <hr className="my-9.5 border-gray-200" />
+                <UserPreferences
+                  className="md:w-1/2 flex flex-col gap-5 px-2"
+                  preferences={useUserPreferences()}
+                />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
         </div>
       </div>
-      <div className="mt-8 w-full sm:w-auto sm:flex sm:justify-end">
-        <Button className="px-3 py-2 rounded text-sm">{t('saveSettings')}</Button>
+      <div className="mt-8 w-full flex justify-center sm:justify-end">
+        <Button className="w-full sm:w-auto px-3 py-2 text-sm">{t('saveSettings')}</Button>
       </div>
     </div>
   );
