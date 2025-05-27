@@ -29,16 +29,16 @@ interface SignUpFormProps {
 }
 
 export function SignUpForm({ onSubmit }: SignUpFormProps) {
-  const t = useTranslations('LoginPage');
+  const t = useTranslations('LoginPage.SignUpTab');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showVerification, setShowVerification] = useState(false);
   const [signedUpPhone, setSignedUpPhone] = useState('');
 
   const signUpFormSchema = z.object({
-    fullName: z.string().min(1, t('SignUpTab.fullNameInputError')),
-    email: z.string().email(t('SignUpTab.emailInputError')),
-    phoneNumber: z.string().regex(/^\+?[1-9]\d{7,14}$/, t('SignUpTab.phoneNumberInputError')),
+    fullName: z.string().min(1, t('fullNameInputError')),
+    email: z.string().email(t('emailInputError')),
+    phoneNumber: z.string().regex(/^\+?[1-9]\d{7,14}$/, t('phoneNumberInputError')),
     password: z
       .string()
       .regex(/^.{8,}$/)
@@ -62,17 +62,17 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
   const passwordRequirements: PasswordRequirement[] = [
     {
       id: 'length',
-      label: 'At least 8 characters',
+      label: t('passwordInputRequirementOneLabel'),
       test: (password: string) => password.length >= 8,
     },
     {
       id: 'uppercase',
-      label: 'One uppercase letter',
+      label: t('passwordInputRequirementTwoLabel'),
       test: (password: string) => /[A-Z]/.test(password),
     },
     {
       id: 'special',
-      label: 'One special character (!@#$%^&*)',
+      label: t('passwordInputRequirementThreeLabel'),
       test: (password: string) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
     },
   ];
@@ -118,7 +118,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
       } else if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError(t('SignUpTab.genericError'));
+        setError(t('genericError'));
       }
     } finally {
       setIsLoading(false);
@@ -140,10 +140,10 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                 name="fullName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('SignUpTab.fullNameInputLabel')}</FormLabel>
+                    <FormLabel>{t('fullNameInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('SignUpTab.fullNameInputPlaceholder')}
+                        placeholder={t('fullNameInputPlaceholder')}
                         {...field}
                         className="w-full"
                         disabled={isLoading}
@@ -159,10 +159,10 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('SignUpTab.emailInputLabel')}</FormLabel>
+                    <FormLabel>{t('emailInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('SignUpTab.emailInputPlaceholder')}
+                        placeholder={t('emailInputPlaceholder')}
                         {...field}
                         className="w-full"
                         type="email"
@@ -179,10 +179,10 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                 name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('SignUpTab.phoneNumberInputLabel')}</FormLabel>
+                    <FormLabel>{t('phoneNumberInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('SignUpTab.phoneNumberInputPlaceholder')}
+                        placeholder={t('phoneNumberInputPlaceholder')}
                         {...field}
                         className="w-full"
                         type="tel"
@@ -199,10 +199,10 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('SignUpTab.passwordInputLabel')}</FormLabel>
+                    <FormLabel>{t('passwordInputLabel')}</FormLabel>
                     <FormControl>
                       <PasswordInput
-                        placeholder={t('SignUpTab.passwordInputPlaceholder')}
+                        placeholder={t('passwordInputPlaceholder')}
                         disabled={isLoading}
                         requirements={passwordRequirements}
                         {...field}
@@ -215,12 +215,12 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
               <Card className="shadow-none border border-bw-30 p-2">
                 <CardContent className="p-1">
                   <p className="text-base">
-                    {t('SignUpTab.gdprAdherenceText')}
+                    {t('gdprAdherenceText')}
                     <Button
                       variant="link"
                       className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
                     >
-                      {t('SignUpTab.readMoreOnGdprLink')}
+                      {t('readMoreOnGdprLink')}
                     </Button>
                   </p>
                 </CardContent>
@@ -240,7 +240,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                           disabled={isLoading}
                         />
                       </FormControl>
-                      <FormLabel>{t('SignUpTab.agreeToTermsCheckboxLabel')}</FormLabel>
+                      <FormLabel>{t('agreeToTermsCheckboxLabel')}</FormLabel>
                     </div>
                   </FormItem>
                 )}
@@ -248,7 +248,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
             </CardContent>
             <CardFooter className="flex-col gap-6">
               <Button size={'full'} type="submit" disabled={isLoading}>
-                {isLoading ? t('SignUpTab.signingUpButtonLabel') : t('SignUpTab.signUpButtonLabel')}
+                {isLoading ? t('signingUpButtonLabel') : t('signUpButtonLabel')}
               </Button>
               <div className="w-full border-t border-gray-300" />
               <Button size={'full'} variant={'secondary'} disabled={isLoading}>
@@ -274,7 +274,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                     fill="#ea4335"
                   />
                 </svg>
-                {t('SignUpTab.signUpWithGoogleButtonLabel')}
+                {t('signUpWithGoogleButtonLabel')}
               </Button>
             </CardFooter>
           </form>
