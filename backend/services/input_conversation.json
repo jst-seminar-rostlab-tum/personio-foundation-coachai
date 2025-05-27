@@ -1,0 +1,26 @@
+{
+    "conversations": [
+        {
+            "id": 1,
+            "type": "Termination",
+            "conversation": [
+                "Hi, how are you doing today? Please have a seat.",
+                "I wanted to talk to you about your performance. We have been monitoring your work closely, and I'm afraid we have to let you go today. Your employment is being terminated effective immediately due to not meeting company expectations.",
+                "I understand this might come as a shock, and I want to acknowledge that this is not easy news to receive. We’ve had several discussions over the past few months regarding expectations, and unfortunately, there hasn’t been enough improvement.",
+                "This decision was not made lightly. It involved input from your team lead, HR, and senior management. We reviewed your performance metrics, feedback from your peers, and the support that was provided.",
+                "HR will be in touch shortly to go over the details regarding your final paycheck, benefits, and the return of any company property. I want to thank you for the work you’ve done here, and I wish you all the best in your next opportunity."
+            ]
+        },
+        {
+            "id": 2,
+            "type": "Salary Discussion",
+            "conversation": [
+                "Hi Morgan, thanks for coming in—please have a seat.",
+                "I understand you’d like to discuss your compensation, and I appreciate you initiating the conversation. First, I want to recognize the outstanding results you achieved on the recent campaign.",
+                "I’ve reviewed the performance data and market benchmarks you shared. Your contributions have been impressive, and I’d like to be transparent about how our salary-review process works and the budget constraints we’re currently facing.",
+                "Given your impact and with HR’s preliminary sign-off, I’m prepared to recommend a mid-cycle salary adjustment of 4 % effective next month, pending final approval from senior leadership.",
+                "HR will reach out with the formal paperwork, and I’d like us to set some new stretch goals so we can continue advocating for you at the next review cycle. Thank you again for your hard work, and let’s keep the momentum going."
+            ]
+        }
+    ]
+}
