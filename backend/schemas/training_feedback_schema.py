@@ -28,8 +28,8 @@ class NegativeExample(BaseModel):
 
 
 class TrainingExamplesCollection(BaseModel):
-    positive_examples: list[PositiveExample] = Field(..., description='List of positive examples')
-    negative_examples: list[NegativeExample] = Field(..., description='List of negative examples')
+    positive_examples: str = Field(..., description='Markdown of positive examples')
+    negative_examples: str = Field(..., description='Markdown of negative examples')
 
 
 class GoalAchievementRequest(BaseModel):
@@ -41,6 +41,12 @@ class GoalAchievementRequest(BaseModel):
     )
 
 
+class GoalAchieved(BaseModel):
+    """Response indicating how many training goals were achieved."""
+
+    goals_achieved: int = Field(..., description='Number of training goals achieved in the session')
+
+
 class RecommendationsRequest(ExamplesRequest):
     """Request to generate improvement recommendations based on training feedback.
     Same fields as ExamplesRequest, but used for generating recommendations instead of examples.
@@ -50,11 +56,15 @@ class RecommendationsRequest(ExamplesRequest):
 
 
 class Recommendation(BaseModel):
-    heading: str = Field(..., description='Title or summary of the recommendation')
-    text: str = Field(..., description='Description or elaboration of the recommendation')
+    markdown: str = Field(
+        ...,
+        description='Full recommendation as single Markdown text, including header (####) and body',
+    )
 
 
 class RecommendationsCollection(BaseModel):
     recommendations: list[Recommendation] = Field(
-        ..., description='List of improvement recommendations'
+        ...,
+        description='List of recommendations, each a single Markdown '
+        'text with a header (####) and body',
     )
