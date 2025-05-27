@@ -130,6 +130,100 @@
       "verifyingButtonLabel": "Wird überprüft...",
       "cancelButtonLabel": "Abbrechen",
       "genericError": "Bei der Überprüfung ist ein Fehler aufgetreten"
+    },
+    "PrivacyPolicyDialog": {
+      "title": "Datenschutzerklärung",
+      "dataProcessing": {
+        "title": "Datenverarbeitung",
+        "table": {
+          "headers": {
+            "personalData": "Verarbeitete personenbezogene Daten",
+            "purpose": "Zweck",
+            "storageDuration": "Speicherdauer"
+          },
+          "accountInfo": {
+            "title": "Kontoinformationen",
+            "description": "E-Mail, Telefonnummer, bevorzugte Sprache",
+            "purposes": {
+              "signIn": "Anmeldung und Kontoverwaltung",
+              "phoneVerification": "Telefonnummernverifizierung",
+              "setLanguage": "Sprache für Benutzeroberfläche und KI festlegen"
+            },
+            "storage": {
+              "collectedAt": "Erhoben bei der Anmeldung",
+              "retained": "Gespeichert bis zur Kontolöschung"
+            }
+          },
+          "aiPersonalization": {
+            "title": "KI-Personalisierung",
+            "description": "Rolle, Führungserfahrung, Ziele, Selbstvertrauen",
+            "purposes": {
+              "provideTips": "Tipps vor Sitzungen bereitstellen",
+              "personalizeResponses": "Antworten während Sitzungen personalisieren",
+              "provideFeedback": "Feedback nach Sitzungen geben"
+            },
+            "storage": {
+              "collectedAt": "Erhoben bei der Anmeldung",
+              "retained": "Gespeichert bis zur Kontolöschung"
+            }
+          },
+          "voiceRecordings": {
+            "title": "Sprachaufzeichnungen",
+            "description": "Audioaufnahmen während Trainingssitzungen",
+            "purposes": {
+              "reviewSessions": "Ermöglicht das Anhören vergangener Trainingssitzungen"
+            },
+            "storage": {
+              "collectedAt": "Erhoben zum Zeitpunkt der Aufnahme",
+              "retainedConsent": "Für 90 Tage gespeichert, wenn Zustimmung erteilt wurde",
+              "deletedImmediately": "Sofort und dauerhaft gelöscht, wenn keine Zustimmung"
+            }
+          },
+          "usageMetrics": {
+            "title": "Nutzungsmetriken",
+            "description": "Tage mit Login, Trainingssitzungen, verwendete KI-Tokens, ...",
+            "purposes": {
+              "trackProgress": "Benutzerfortschritt verfolgen",
+              "markAchievements": "Erfolge kennzeichnen",
+              "provideMetrics": "Nutzungsstatistiken bereitstellen"
+            },
+            "storage": {
+              "collectedAt": "Erhoben während der Nutzung der App",
+              "retained": "Gespeichert bis zur Kontolöschung"
+            }
+          }
+        }
+      },
+      "security": {
+        "title": "Sicherheit & Datenschutz",
+        "euServers": {
+          "title": "EU-basierte Server",
+          "description": "Alle Daten werden auf Servern innerhalb der Europäischen Union gespeichert und verarbeitet"
+        },
+        "encryption": {
+          "title": "Ende-zu-Ende-Verschlüsselung",
+          "description": "Daten werden sowohl während der Übertragung als auch im Ruhezustand verschlüsselt"
+        },
+        "externalServices": {
+          "title": "Externe Dienstleister",
+          "vercel": "Vercel – EU-Server und globales CDN",
+          "supabase": "Supabase – EU-Server",
+          "fly": "Fly.io – EU-Server",
+          "gcp": "GCP – EU-Server",
+          "dpaLinkText": "ADV"
+        }
+      },
+      "userRights": {
+        "title": "Ihre Rechte",
+        "accountDeletion": {
+          "title": "Kontolöschung",
+          "description": "Fordern Sie die dauerhafte Löschung Ihres Kontos und aller zugehörigen Daten an"
+        },
+        "dataExport": {
+          "title": "Datenexport",
+          "description": "Fordern Sie einen Export aller über Sie gespeicherten Daten an"
+        }
+      }
     }
   }
 }

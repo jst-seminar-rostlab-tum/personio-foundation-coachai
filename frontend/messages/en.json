@@ -132,6 +132,99 @@
       "cancelButtonLabel": "Cancel",
       "genericError": "An error occurred during verification"
     },
-    "PrivacyPolicyDialog": {}
+    "PrivacyPolicyDialog": {
+      "title": "Privacy Policy",
+      "dataProcessing": {
+        "title": "Data Processing",
+        "table": {
+          "headers": {
+            "personalData": "Personal Data Processed",
+            "purpose": "Purpose",
+            "storageDuration": "Storage Duration"
+          },
+          "accountInfo": {
+            "title": "Account Information",
+            "description": "E-mail, phone number, preferred language",
+            "purposes": {
+              "signIn": "Sign in and account management",
+              "phoneVerification": "Phone number verification",
+              "setLanguage": "Set language for UI and AI"
+            },
+            "storage": {
+              "collectedAt": "Collected at sign-up",
+              "retained": "Retained until account deletion"
+            }
+          },
+          "aiPersonalization": {
+            "title": "AI Personalization",
+            "description": "Role, leadership experience, goals, confidence levels",
+            "purposes": {
+              "provideTips": "Provide tips before sessions",
+              "personalizeResponses": "Personalize responses during sessions",
+              "provideFeedback": "Provide feedback after sessions"
+            },
+            "storage": {
+              "collectedAt": "Collected at sign-up",
+              "retained": "Retained until account deletion"
+            }
+          },
+          "voiceRecordings": {
+            "title": "Voice Recordings",
+            "description": "Audio recordings during training sessions",
+            "purposes": {
+              "reviewSessions": "Allows users to review past training sessions by listening to the audio recording"
+            },
+            "storage": {
+              "collectedAt": "Collected at recording time",
+              "retainedConsent": "Retained for 90 days if consent is given",
+              "deletedImmediately": "Deleted permanently and immediately otherwise"
+            }
+          },
+          "usageMetrics": {
+            "title": "Usage Metrics",
+            "description": "Days logged in, training sessions, AI tokens used, ...",
+            "purposes": {
+              "trackProgress": "Track user progress",
+              "markAchievements": "Mark achievements",
+              "provideMetrics": "Provide app usage metrics"
+            },
+            "storage": {
+              "collectedAt": "Collected at various points as the user interacts with the app",
+              "retained": "Retained until account deletion"
+            }
+          }
+        }
+      },
+      "security": {
+        "title": "Security & Data Protection",
+        "euServers": {
+          "title": "EU-Based Servers",
+          "description": "All data is stored and processed on servers located in the European Union"
+        },
+        "encryption": {
+          "title": "End-to-End Encryption",
+          "description": "Data is encrypted both in-transit and at-rest for maximum security"
+        },
+        "externalServices": {
+          "title": "External Service Providers",
+          "vercel": "Vercel - EU servers and global CDN",
+          "supabase": "Supabase - EU servers",
+          "fly": "Fly.io - EU servers",
+          "gcp": "GCP - EU servers",
+          "dpaLinkText": "DPA"
+        }
+      },
+      "userRights": {
+        "title": "Your Rights",
+        "accountDeletion": {
+          "title": "Account Deletion",
+          "description": "Request permanent deletion of your account and all related data"
+        },
+        "dataExport": {
+          "title": "Data Export",
+          "description": "Request an export of all data we have stored about you"
+        }
+      }
+    }
   }
 }

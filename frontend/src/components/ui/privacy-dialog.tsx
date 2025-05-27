@@ -1,274 +1,300 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Shield, Download, Trash2, Server, Lock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { useTranslations } from 'next-intl';
 
 export default function PrivacyDialog({ open, onOpenChange }) {
+  const t = useTranslations('LoginPage.PrivacyPolicyDialog');
+
+  // Memoize data structure to avoid recreation on each render
+  const dataProcessingItems = useMemo(
+    () => [
+      {
+        key: 'accountInfo',
+        title: t('dataProcessing.table.accountInfo.title'),
+        description: t('dataProcessing.table.accountInfo.description'),
+        purposes: [
+          t('dataProcessing.table.accountInfo.purposes.signIn'),
+          t('dataProcessing.table.accountInfo.purposes.phoneVerification'),
+          t('dataProcessing.table.accountInfo.purposes.setLanguage'),
+        ],
+        storage: [
+          t('dataProcessing.table.accountInfo.storage.collectedAt'),
+          t('dataProcessing.table.accountInfo.storage.retained'),
+        ],
+      },
+      {
+        key: 'aiPersonalization',
+        title: t('dataProcessing.table.aiPersonalization.title'),
+        description: t('dataProcessing.table.aiPersonalization.description'),
+        purposes: [
+          t('dataProcessing.table.aiPersonalization.purposes.provideTips'),
+          t('dataProcessing.table.aiPersonalization.purposes.personalizeResponses'),
+          t('dataProcessing.table.aiPersonalization.purposes.provideFeedback'),
+        ],
+        storage: [
+          t('dataProcessing.table.aiPersonalization.storage.collectedAt'),
+          t('dataProcessing.table.aiPersonalization.storage.retained'),
+        ],
+      },
+      {
+        key: 'voiceRecordings',
+        title: t('dataProcessing.table.voiceRecordings.title'),
+        description: t('dataProcessing.table.voiceRecordings.description'),
+        purposes: [t('dataProcessing.table.voiceRecordings.purposes.reviewSessions')],
+        storage: [
+          t('dataProcessing.table.voiceRecordings.storage.collectedAt'),
+          t('dataProcessing.table.voiceRecordings.storage.retainedConsent'),
+          t('dataProcessing.table.voiceRecordings.storage.deletedImmediately'),
+        ],
+      },
+      {
+        key: 'usageMetrics',
+        title: t('dataProcessing.table.usageMetrics.title'),
+        description: t('dataProcessing.table.usageMetrics.description'),
+        purposes: [
+          t('dataProcessing.table.usageMetrics.purposes.trackProgress'),
+          t('dataProcessing.table.usageMetrics.purposes.markAchievements'),
+          t('dataProcessing.table.usageMetrics.purposes.provideMetrics'),
+        ],
+        storage: [
+          t('dataProcessing.table.usageMetrics.storage.collectedAt'),
+          t('dataProcessing.table.usageMetrics.storage.retained'),
+        ],
+      },
+    ],
+    [t]
+  );
+
+  const externalServices = useMemo(
+    () => [
+      { name: t('security.externalServices.vercel'), url: 'https://vercel.com/legal/dpa' },
+      { name: t('security.externalServices.supabase'), url: 'https://supabase.com/legal/dpa' },
+      { name: t('security.externalServices.fly'), url: 'https://fly.io/documents' },
+      {
+        name: t('security.externalServices.gcp'),
+        url: 'https://cloud.google.com/terms/data-processing-addendum',
+      },
+    ],
+    [t]
+  );
+
+  const DataProcessingCard = ({ item }) => (
+    <div className="border rounded-lg p-4" key={item.key}>
+      <div className="font-semibold text-base sm:text-base mb-2">{item.title}</div>
+      <div className="text-base sm:text-base text-gray-600 mb-3">{item.description}</div>
+      <div className="space-y-2">
+        <div>
+          <div className="font-medium text-base mb-1">
+            {t('dataProcessing.table.headers.purpose')}:
+          </div>
+          <div className="text-base space-y-1">
+            {item.purposes.map((purpose, idx) => (
+              <div key={idx}>• {purpose}</div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="font-medium text-base mb-1">
+            {t('dataProcessing.table.headers.storageDuration')}:
+          </div>
+          <div className="text-base space-y-1">
+            {item.storage.map((storage, idx) => (
+              <div key={idx}>• {storage}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const DataProcessingTable = ({ items }) => (
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse" role="table">
+        <thead>
+          <tr className="border-b">
+            <th className="text-left py-3 pr-4 font-semibold text-base sm:text-base" scope="col">
+              {t('dataProcessing.table.headers.personalData')}
+            </th>
+            <th className="text-left py-3 pr-4 font-semibold text-base sm:text-base" scope="col">
+              {t('dataProcessing.table.headers.purpose')}
+            </th>
+            <th className="text-left py-3 font-semibold text-base sm:text-base" scope="col">
+              {t('dataProcessing.table.headers.storageDuration')}
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y">
+          {items.map((item) => (
+            <tr key={item.key}>
+              <td className="py-4 pr-4 align-top">
+                <div className="font-medium text-base sm:text-base">{item.title}</div>
+                <div className="text-base sm:text-base text-gray-600 mt-1">{item.description}</div>
+              </td>
+              <td className="py-4 pr-4 align-top">
+                <ul className="text-base sm:text-base space-y-1" role="list">
+                  {item.purposes.map((purpose, idx) => (
+                    <li key={idx}>• {purpose}</li>
+                  ))}
+                </ul>
+              </td>
+              <td className="py-4 align-top">
+                <ul className="text-base sm:text-base space-y-1" role="list">
+                  {item.storage.map((storage, idx) => (
+                    <li key={idx}>• {storage}</li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-sm sm:max-w-2xl lg:max-w-4xl max-h-[85vh] overflow-y-auto p-4">
-        <DialogHeader>
-          <DialogTitle>Privacy Policy</DialogTitle>
-        </DialogHeader>
+      <DialogContent
+        aria-describedby={undefined}
+        className="w-[95vw] max-w-sm sm:max-w-2xl lg:max-w-4xl max-h-[85vh] overflow-y-auto p-4"
+      >
+        <DialogTitle>{t('title')}</DialogTitle>
 
-        <div className="space-y-3 sm:space-y-6 mt-2">
-          {/* Data Processing Purposes Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Data Processing</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Mobile Card Layout */}
-              <div className="block sm:hidden space-y-3 px-4">
-                <div className="border rounded-lg p-3">
-                  <div className="font-medium text-base mb-1">Account Information</div>
-                  <div className="text-base text-gray-600 mb-2">
-                    E-mail, phone number, preferred language
-                  </div>
-                  <div className="text-base space-y-0.5">
-                    <div>• Sign in and account management</div>
-                    <div>• Phone number verification</div>
-                    <div>• Set language for UI and AI</div>
-                    <div>• Collected at sign-up</div>
-                    <div>• Retained until account deletion</div>
-                  </div>
+        <div className="space-y-4 sm:space-y-6 mt-4" role="document">
+          {/* Data Processing Section */}
+          <section aria-labelledby="data-processing-title">
+            <Card>
+              <CardHeader>
+                <CardTitle id="data-processing-title">{t('dataProcessing.title')}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                {/* Mobile Layout */}
+                <div className="block lg:hidden space-y-4">
+                  {dataProcessingItems.map((item) => (
+                    <DataProcessingCard key={item.key} item={item} />
+                  ))}
                 </div>
 
-                <div className="border rounded-lg p-3">
-                  <div className="font-medium text-base mb-1">AI Personalization</div>
-                  <div className="text-base text-gray-600 mb-2">
-                    Role, leadership experience, goals, confidence levels
-                  </div>
-                  <div className="text-base space-y-0.5">
-                    <div>• Provide tips before sessions</div>
-                    <div>• Personalize responses during sessions</div>
-                    <div>• Provide feedback after sessions</div>
-                    <div>• Collected at sign-up</div>
-                    <div>• Retained until account deletion</div>
-                  </div>
+                {/* Desktop Table Layout */}
+                <div className="hidden lg:block">
+                  <DataProcessingTable items={dataProcessingItems} />
                 </div>
+              </CardContent>
+            </Card>
+          </section>
 
-                <div className="border rounded-lg p-3">
-                  <div className="font-medium text-base mb-1">Voice Recordings</div>
-                  <div className="text-base text-gray-600 mb-2">
-                    Audio recordings during training sessions
+          {/* Security Section */}
+          <section aria-labelledby="security-title">
+            <Card>
+              <CardHeader>
+                <CardTitle id="security-title">
+                  <div className="flex items-center justify-center gap-2">
+                    <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" aria-hidden="true" />
+                    {t('security.title')}
                   </div>
-                  <div className="text-base space-y-0.5">
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="flex items-start gap-3">
+                    <Server
+                      className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mt-0.5 flex-shrink-0"
+                      aria-hidden="true"
+                    />
                     <div>
-                      • Allows users to review past training sessions by listening to the audio
-                      recording
+                      <h4 className="font-semibold text-base sm:text-base">
+                        {t('security.euServers.title')}
+                      </h4>
+                      <p className="text-base sm:text-base text-gray-600 mt-1">
+                        {t('security.euServers.description')}
+                      </p>
                     </div>
-                    <div>• Collected at recording time</div>
-                    <div>• Retained for 90 days if consent is given</div>
-                    <div>• Deleted permanently and immediately otherwise</div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <Lock
+                      className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 mt-0.5 flex-shrink-0"
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <h4 className="font-semibold text-base sm:text-base">
+                        {t('security.encryption.title')}
+                      </h4>
+                      <p className="text-base sm:text-base text-gray-600 mt-1">
+                        {t('security.encryption.description')}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="border rounded-lg p-3">
-                  <div className="font-medium text-base mb-1">Usage Metrics</div>
-                  <div className="text-base text-gray-600 mb-2">
-                    Days logged in, training sessions, AI tokens used, ...
-                  </div>
-                  <div className="text-base space-y-0.5">
-                    <div>• Track user progress</div>
-                    <div>• Mark achievements</div>
-                    <div>• Provide app usage metrics</div>
-                    <div>• Collected at various points as the user interacts with the app</div>
-                    <div>• Retained until account deletion</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Desktop Table Layout */}
-              <div className="hidden sm:block overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 pr-4 font-semibold">Personal Data Processed</th>
-                      <th className="text-left py-3 font-semibold">Purpose</th>
-                      <th className="text-left py-3 font-semibold">Storage Duration</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    <tr>
-                      <td className="py-4 pr-4">
-                        <div className="font-medium">Account Information</div>
-                        <div className="text-base text-gray-600 mt-1">
-                          E-mail, phone number, preferred language
-                        </div>
-                      </td>
-                      <td className="py-4 pr-4">
-                        <ul className="text-base space-y-1">
-                          <li>• Sign in and account management</li>
-                          <li>• Phone number verification</li>
-                          <li>• Set language for UI and AI</li>
-                        </ul>
-                      </td>
-                      <td className="py-4">
-                        <ul className="text-base space-y-1">
-                          <li>• Collected at sign-up</li>
-                          <li>• Retained until account deletion</li>
-                        </ul>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td className="py-4 pr-4">
-                        <div className="font-medium">AI Personalization</div>
-                        <div className="text-base text-gray-600 mt-1">
-                          Role, leadership experience, goals, confidence levels
-                        </div>
-                      </td>
-                      <td className="py-4 pr-4">
-                        <ul className="text-base space-y-1">
-                          <li>• Provide tips before sessions</li>
-                          <li>• Personalize responses during sessions</li>
-                          <li>• Provide feedback after sessions</li>
-                        </ul>
-                      </td>
-                      <td className="py-4">
-                        <ul className="text-base space-y-1">
-                          <li>• Collected at sign-up</li>
-                          <li>• Retained until account deletion</li>
-                        </ul>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td className="py-4 pr-4">
-                        <div className="font-medium">Voice Recordings</div>
-                        <div className="text-base text-gray-600 mt-1">
-                          Audio recordings during training sessions
-                        </div>
-                      </td>
-                      <td className="py-4 pr-4">
-                        <ul className="text-base space-y-1">
-                          <li>
-                            • Allows users to review past training sessions by listening to the
-                            audio recording
-                          </li>
-                        </ul>
-                      </td>
-                      <td className="py-4">
-                        <ul className="text-base space-y-1">
-                          <li>• Collected at recording time</li>
-                          <li>• Retained for 90 days if consent is given</li>
-                          <li>• Deleted permanently and immediately otherwise</li>
-                        </ul>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td className="py-4 pr-4">
-                        <div className="font-medium">Usage Metrics</div>
-                        <div className="text-base text-gray-600 mt-1">
-                          Days logged in, training sessions, AI tokens used, ...
-                        </div>
-                      </td>
-                      <td className="py-4 pr-4">
-                        <ul className="text-base space-y-1">
-                          <li>• Track user progress</li>
-                          <li>• Mark achievements</li>
-                          <li>• Provide app usage metrics</li>
-                        </ul>
-                      </td>
-                      <td className="py-4">
-                        <ul className="text-base space-y-1">
-                          <li>• Collected at various points as the user interacts with the app</li>
-                          <li>• Retained until account deletion</li>
-                        </ul>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Security Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <div className="flex items-center justify-center gap-2">
-                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-                  Security & Data Protection
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="flex items-start gap-3">
-                  <Server className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-medium text-base sm:text-base">EU-Based Servers</h4>
-                    <p className="text-base sm:text-base text-gray-600 mt-1">
-                      All data is stored and processed on servers located in the European Union
-                    </p>
+                <div className="mt-6 pt-4 border-t">
+                  <h4 className="font-semibold mb-3 text-base sm:text-base">
+                    {t('security.externalServices.title')}
+                  </h4>
+                  <div className="text-base sm:text-base text-gray-600 space-y-2">
+                    {externalServices.map((service, idx) => (
+                      <p key={idx}>
+                        • <strong>{service.name}</strong> (
+                        <a
+                          href={service.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded"
+                          aria-label={`${service.name} Data Processing Agreement - opens in new tab`}
+                        >
+                          {t('security.externalServices.dpaLinkText')}
+                        </a>
+                        )
+                      </p>
+                    ))}
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          </section>
 
-                <div className="flex items-start gap-3">
-                  <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-medium text-base sm:text-base">End-to-End Encryption</h4>
-                    <p className="text-base sm:text-base text-gray-600 mt-1">
-                      Data is encrypted both in-transit and at-rest for maximum security
-                    </p>
+          {/* User Rights Section */}
+          <section aria-labelledby="user-rights-title">
+            <Card>
+              <CardHeader>
+                <CardTitle id="user-rights-title">{t('userRights.title')}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <Trash2
+                      className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 mt-0.5 flex-shrink-0"
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <h4 className="font-semibold text-base sm:text-base">
+                        {t('userRights.accountDeletion.title')}
+                      </h4>
+                      <p className="text-base sm:text-base text-gray-600 mt-1">
+                        {t('userRights.accountDeletion.description')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                    <Download
+                      className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mt-0.5 flex-shrink-0"
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <h4 className="font-semibold text-base sm:text-base">
+                        {t('userRights.dataExport.title')}
+                      </h4>
+                      <p className="text-base sm:text-base text-gray-600 mt-1">
+                        {t('userRights.dataExport.description')}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="mt-4 pt-4 border-t">
-                <h4 className="font-medium mb-2 text-base sm:text-base">
-                  External Service Providers
-                </h4>
-                <div className="text-base sm:text-base text-gray-600 space-y-1">
-                  <p>
-                    • <strong>Vercel</strong> - EU servers and global CDN (DPA)
-                  </p>
-                  <p>
-                    • <strong>Supabase</strong> - EU servers (DPA)
-                  </p>
-                  <p>
-                    • <strong>Fly.io</strong> - EU servers (DPA)
-                  </p>
-                  <p>
-                    • <strong>GCP</strong> - EU servers (DPA)
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* User Rights */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Rights</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
-                <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 border rounded-lg">
-                  <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-medium text-base sm:text-base">Account Deletion</h4>
-                    <p className="text-base sm:text-base text-gray-600 mt-1">
-                      Request permanent deletion of your account and all related data
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 border rounded-lg">
-                  <Download className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-medium text-base sm:text-base">Data Export</h4>
-                    <p className="text-base sm:text-base text-gray-600 mt-1">
-                      Request an export of all data we have stored about you
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </section>
         </div>
       </DialogContent>
     </Dialog>
