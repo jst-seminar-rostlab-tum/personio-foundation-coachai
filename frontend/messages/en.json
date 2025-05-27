@@ -131,6 +131,7 @@
       "verifyingButtonLabel": "Verifying...",
       "cancelButtonLabel": "Cancel",
       "genericError": "An error occurred during verification"
-    }
+    },
+    "PrivacyPolicyDialog": {}
   }
 }

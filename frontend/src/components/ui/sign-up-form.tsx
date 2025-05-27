@@ -17,6 +17,7 @@ import Checkbox from '@/components/ui/checkbox';
 import { useState } from 'react';
 import { VerificationPopup } from './verification-popup';
 import { PasswordInput, PasswordRequirement } from './password-input';
+import PrivacyDialog from './privacy-dialog';
 
 interface SignUpFormProps {
   onSubmit: (values: {
@@ -33,6 +34,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showVerification, setShowVerification] = useState(false);
+  const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [signedUpPhone, setSignedUpPhone] = useState('');
 
   const signUpFormSchema = z.object({
@@ -218,7 +220,9 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                     {t('gdprAdherenceText')}
                     <Button
                       variant="link"
+                      type="button"
                       className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
+                      onClick={() => setShowPrivacyDialog(true)}
                     >
                       {t('readMoreOnGdprLink')}
                     </Button>
@@ -287,6 +291,8 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
         phoneNumber={signedUpPhone}
         formData={signUpForm.getValues()}
       />
+
+      <PrivacyDialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}></PrivacyDialog>
     </>
   );
 }
