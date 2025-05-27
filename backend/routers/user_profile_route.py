@@ -1,6 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
+import phonenumbers
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
@@ -11,6 +12,7 @@ from ..models.user_profile import (
     UserProfileCreate,
     UserProfileRead,
 )
+from ..utils.validators.password_validator.password_validator import PasswordValidator
 
 router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
 
@@ -66,6 +68,28 @@ def create_user_profile(
         ).first()
         if existing_phone:
             raise HTTPException(status_code=400, detail='Phone number already registered')
+
+    # Validate phone number format
+    phone_number = phonenumbers.parse(user_profile.phone_number, None)
+    if not phonenumbers.is_valid_number(phone_number):
+        raise HTTPException(status_code=400, detail='Invalid phone number format')
+
+    # Check if password is weak
+    schema = (
+        PasswordValidator()
+        .min(8)
+        .max(64)
+        .no()
+        .spaces()
+        .uppercase()
+        .lowercase()
+        .digits()
+        .special_char()
+    )
+    try:
+        schema.validate(user_profile.password, raise_exceptions=True)
+    except Exception as exception:
+        raise HTTPException(status_code=400, detail=str(exception)) from exception
 
     # Create new user profile
     db_user_profile = UserProfile(**user_profile.dict())
