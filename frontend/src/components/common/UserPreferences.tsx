@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/Select';
 
 const UserPreferences: React.FC<{ preferences: UserPreference[]; className?: string }> = ({
   preferences,

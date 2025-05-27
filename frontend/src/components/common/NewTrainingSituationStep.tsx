@@ -1,9 +1,9 @@
 'use client';
 
-import Label from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import Input from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import Label from '@/components/ui/Label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
+import Input from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/Textarea';
 import { useTranslations } from 'next-intl';
 import { SituationStepProps } from '@/interfaces/SituationStepProps';
 

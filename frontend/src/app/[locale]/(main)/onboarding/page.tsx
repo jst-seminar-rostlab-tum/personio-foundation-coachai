@@ -1,11 +1,11 @@
 'use client';
 
-import Stepper from '@/components/ui/stepper';
+import Stepper from '@/components/common/Stepper';
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import UserPreferences from '@/components/layout/UserPreferences';
+import { Button } from '@/components/ui/Button';
+import UserPreferences from '@/components/common/UserPreferences';
 import { userPreferences } from '@/configs/UserPreferences.config';
-import UserConfidenceFields from '@/components/layout/UserConfidenceFields';
+import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 
 export default function OnboardingPage() {
