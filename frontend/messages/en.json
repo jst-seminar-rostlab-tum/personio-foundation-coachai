@@ -93,7 +93,11 @@
     "personalizationSettings": "Personalization Settings",
     "saveSettings": "Save Settings",
     "ninetyDays": "Your audio and transcripts will be retained and viewable in the training history for 90 days.",
-    "zeroDays": "Your audio and transcripts will not be saved."
+    "zeroDays": "Your audio and transcripts will not be saved.",
+    "deleteAccountConfirmTitle": "Are you sure?",
+    "deleteAccountConfirmDesc": "This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   },
   "preferences": {
     "language": {

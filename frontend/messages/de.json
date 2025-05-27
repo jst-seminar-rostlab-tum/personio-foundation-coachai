@@ -93,7 +93,11 @@
     "personalizationSettings": "Personalisierungseinstellungen",
     "saveSettings": "Einstellungen speichern",
     "ninetyDays": "Ihre Audiodateien und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf einsehbar.",
-    "zeroDays": "Ihre Audiodateien und Transkripte werden nicht gespeichert."
+    "zeroDays": "Ihre Audiodateien und Transkripte werden nicht gespeichert.",
+    "deleteAccountConfirmTitle": "Sind Sie sicher?",
+    "deleteAccountConfirmDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen"
   },
   "preferences": {
     "language": {
