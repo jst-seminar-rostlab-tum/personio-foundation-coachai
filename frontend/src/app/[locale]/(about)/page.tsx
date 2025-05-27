@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import Image from 'next/image';
 import { MessageSquare, Video, BrainCircuit, TrendingUp, Award, Target } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 
 export default function Page() {
   const t = useTranslations('HomePage');
