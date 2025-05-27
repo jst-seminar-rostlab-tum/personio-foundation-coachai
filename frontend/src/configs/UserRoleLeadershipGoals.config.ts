@@ -14,16 +14,6 @@ export function useUserRoleLeadershipGoals(): UserPreference[] {
       defaultValue: 'tl',
     },
     {
-      label: t('experience.label'),
-      options: [
-        { code: 'strong', name: t('experience.strong') },
-        { code: 'intermediate', name: t('experience.intermediate') },
-        { code: 'beginner', name: t('experience.beginner') },
-        { code: 'no', name: t('experience.no') },
-      ],
-      defaultValue: 'intermediate',
-    },
-    {
       label: t('primaryGoals.label'),
       options: [
         { code: 'feedback', name: t('primaryGoals.feedback') },

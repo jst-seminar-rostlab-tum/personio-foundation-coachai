@@ -85,20 +85,15 @@
     "title": "Trainingseinstellungen",
     "backToDashboard": "Zurück zum Dashboard",
     "privacyControls": "Datenschutzeinstellungen",
-    "storeAudio": "Gesprächsaufzeichnungen speichern",
-    "storeAudioDesc": "Audio Ihrer Sitzungen speichern",
-    "storeTranscript": "Transkriptdaten speichern",
-    "storeTranscriptDesc": "Texttranskripte Ihrer Sitzungen speichern",
+    "storeAudioTranscripts": "Gesprächsaudio und Transkripte speichern",
     "export": "Exportieren",
     "exportData": "Persönliche Daten exportieren",
-    "exportDataDesc": "Alle Ihre persönlichen Daten herunterladen",
     "deleteAccount": "Konto löschen",
-    "deleteAccountDesc": "Ihr Konto und alle Daten dauerhaft löschen",
     "requestDeletion": "Löschung anfordern",
     "personalizationSettings": "Personalisierungseinstellungen",
     "saveSettings": "Einstellungen speichern",
-    "ninetyDays": "90 Tage",
-    "zeroDays": "0 Tage"
+    "ninetyDays": "Ihre Audiodateien und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf einsehbar.",
+    "zeroDays": "Ihre Audiodateien und Transkripte werden nicht gespeichert."
   },
   "preferences": {
     "language": {
@@ -127,13 +122,6 @@
       "tl": "Teamleiter",
       "rec": "Recruiting-Spezialist",
       "tr": "Trainee"
-    },
-    "experience": {
-      "label": "Führungserfahrung",
-      "strong": "Stark (>3 Jahre)",
-      "intermediate": "Mittel (1-3 Jahre)",
-      "beginner": "Anfänger (0-1 Jahre)",
-      "no": "Keine Erfahrung"
     },
     "primaryGoals": {
       "label": "Hauptziele",
