@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
-import Stepper from '@/components/ui/stepper';
+import Stepper from '@/components/common/Stepper';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FormState } from '@/interfaces/NewTrainingFormState';

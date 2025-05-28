@@ -1,10 +1,4 @@
 import Link from 'next/link';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'CoachAI - Feedback',
-  description: 'Detailed feedback and analysis for your training session',
-};
 
 export default function FeedbackDetailPage() {
   return (

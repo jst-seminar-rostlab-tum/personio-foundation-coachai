@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { useTranslations } from 'next-intl';
 import { CustomizeStepProps } from '@/interfaces/CustomizeStepProps';
 

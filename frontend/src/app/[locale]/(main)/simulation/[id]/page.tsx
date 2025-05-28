@@ -1,10 +1,4 @@
 import Link from 'next/link';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'CoachAI - Simulation',
-  description: 'Practice your skills in an interactive training simulation',
-};
 
 export default function SimulationPage() {
   return (

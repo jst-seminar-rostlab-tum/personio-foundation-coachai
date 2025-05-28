@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     stage: Literal['dev', 'prod'] = 'dev'
     postgres_host: str = 'localhost'
     postgres_user: str = 'postgres'
-    postgres_password: str = 'postgres_prod'
+    postgres_password: str = 'postgres'
     postgres_db: str = 'app_db'
     postgres_port: str = '5432'
     database_url: Optional[str] = None

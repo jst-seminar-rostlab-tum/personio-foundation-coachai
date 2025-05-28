@@ -1,6 +1,6 @@
 'use client';
 
-import { CategoryButton } from '@/components/ui/category-button';
+import { CategoryButton } from '@/components/common/CategoryButton';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { CategoryStepProps } from '@/interfaces/CategoryStepProps';
