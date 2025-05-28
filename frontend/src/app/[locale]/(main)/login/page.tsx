@@ -1,10 +1,10 @@
 'use client';
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { useTranslations } from 'next-intl';
-import { SignInForm } from '@/components/ui/sign-in-form';
-import { SignUpForm } from '@/components/ui/sign-up-form';
+import { SignInForm } from '@/components/common/SignInForm';
+import { SignUpForm } from '@/components/common/SignUpForm';
 
 export default function LoginPage() {
   const t = useTranslations('LoginPage');

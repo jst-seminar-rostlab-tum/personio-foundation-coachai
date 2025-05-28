@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Shield, Download, Trash2, Server, Lock } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
 
 export default function PrivacyDialog({ open, onOpenChange }) {

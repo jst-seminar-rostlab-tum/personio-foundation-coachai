@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -12,12 +12,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from '@/components/ui/Form';
 import Checkbox from '@/components/ui/Checkbox';
 import { useState } from 'react';
-import { VerificationPopup } from './verification-popup';
-import { PasswordInput, PasswordRequirement } from './password-input';
-import PrivacyDialog from './privacy-dialog';
+import { PasswordInput, PasswordRequirement } from './PasswordInput';
+import PrivacyDialog from './PrivacyDialog';
+import { VerificationPopup } from './VerificationPopup';
 
 interface SignUpFormProps {
   onSubmit: (values: {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { EyeIcon, EyeOffIcon, CheckIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Input from './Input';
+import Input from '../ui/Input';
 
 export interface PasswordRequirement {
   id: string;

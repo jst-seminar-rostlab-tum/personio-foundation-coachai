@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -12,8 +12,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { PasswordInput } from './password-input';
+} from '@/components/ui/Form';
+import { PasswordInput } from './PasswordInput';
 
 interface SignInFormProps {
   onSubmit: (values: { email: string; password: string }) => void;

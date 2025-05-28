@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { userProfileApi } from '@/services/Api';
