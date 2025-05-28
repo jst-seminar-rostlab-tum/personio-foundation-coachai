@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
-import Input from '@/components/ui/input';
+import { Button } from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useTranslations } from 'next-intl';
 import { z } from 'zod';
@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import Checkbox from '@/components/ui/checkbox';
+import Checkbox from '@/components/ui/Checkbox';
 import { useState } from 'react';
 import { VerificationPopup } from './verification-popup';
 import { PasswordInput, PasswordRequirement } from './password-input';

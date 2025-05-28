@@ -3,6 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --background-light: #f0f0f0;
   --flame-50: #ff3700;
   --bw-10: #f4f4f5;
   --bw-20: #e4e4e7;
@@ -18,6 +19,7 @@
   --marigold-50: #ff9500;
   --marigold-90: #4d2d00;
   --marigold-95: #291800;
+  --font-dark: #262626;
   --radius-md: 8px;
   --destructive: #dc2626;
 }
@@ -28,6 +30,7 @@
   /* colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-background-light: var(--background-light);
   --color-flame-50: var(--flame-50);
   --color-bw-10: var(--bw-10);
   --color-bw-20: var(--bw-20);
@@ -41,6 +44,7 @@
   --color-marigold-50: var(--marigold-50);
   --color-marigold-90: var(--marigold-90);
   --color-marigold-95: var(--marigold-95);
+  --color-font-dark: var(--font-dark);
   --color-destructive: var(--destructive);
   /* typography */
   --text-2xl: 24px;

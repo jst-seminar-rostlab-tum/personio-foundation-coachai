@@ -29,9 +29,9 @@ class TrainingSessionFeedback(SQLModel, table=True):  # `table=True` makes it a 
     questions_asked: int
     session_length_s: int
     goals_achieved: int
-    examples_positive: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    examples_negative: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    recommendations: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    examples_positive: Optional[str] = None
+    examples_negative: Optional[str] = None
+    recommendations: Optional[str] = None
     status: FeedbackStatusEnum = Field(default=FeedbackStatusEnum.pending)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -60,9 +60,9 @@ class TrainingSessionFeedbackCreate(SQLModel):
     questions_asked: int
     session_length_s: int
     goals_achieved: int
-    examples_positive: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    examples_negative: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    recommendations: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    examples_positive: Optional[str] = None
+    examples_negative: Optional[str] = None
+    recommendations: Optional[str] = None
     status: FeedbackStatusEnum = FeedbackStatusEnum.pending
 
 
@@ -78,9 +78,9 @@ class TrainingSessionFeedbackRead(SQLModel):
     questions_asked: int
     session_length_s: int
     goals_achieved: int
-    examples_positive: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    examples_negative: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    recommendations: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    examples_positive: Optional[str] = None
+    examples_negative: Optional[str] = None
+    recommendations: Optional[str] = None
     status: FeedbackStatusEnum
     created_at: datetime
     updated_at: datetime

@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -8,8 +8,12 @@ class Settings(BaseSettings):
     postgres_host: str = 'localhost'
     postgres_user: str = 'postgres'
     postgres_password: str = 'postgres'
-    postgres_db: str = 'postgres'
+    postgres_db: str = 'app_db'
     postgres_port: str = '5432'
+    database_url: Optional[str] = None
+    ssl_cert_url: str = 'https://test.com'
+    ssl_cert_dir: str = 'cert/'  # Must be either /tmp or relative
+    ssl_cert_name: str = 'prod-ca-2021.pem'
     # Twilio settings
     TWILIO_ACCOUNT_SID: str = ''
     TWILIO_AUTH_TOKEN: str = ''
