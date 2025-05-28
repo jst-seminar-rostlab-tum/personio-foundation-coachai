@@ -2,32 +2,21 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from langchain.chains import RetrievalQA
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.vectorstores import SupabaseVectorStore
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from supabase import Client, create_client
+from embeddings import get_embedding_model
+from langchain.prompts import PromptTemplate
+from langchain_core.runnables import RunnableMap, RunnableSequence
+from langchain_google_genai import ChatGoogleGenerativeAI
+from vectorstore import format_docs, load_vectorstore, prepare_vector_db_docs
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).parent
-PDF_PATH = BASE_DIR / 'documents' / 'Giving Feedback (CC BY-NC 4.0).pdf'
+DOC_FOLDER = BASE_DIR / 'documents'
 
-SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_KEY = os.getenv('SUPABASE_KEY')
-TABLE = 'hr_information'
+SUPABASE_BACKEND = 'supabase'
+EMBEDDING_TYPE = 'gemini'
+TABLE_NAME = 'hr_information'
 QUERY_FN = 'match_documents'
-
-
-def get_supabase_client() -> Client:
-    return create_client(SUPABASE_URL, SUPABASE_KEY)
-
-
-def get_embeddings() -> GoogleGenerativeAIEmbeddings:
-    return GoogleGenerativeAIEmbeddings(
-        model='models/embedding-001', google_api_key=os.getenv('GEMINI_API_KEY')
-    )
 
 
 def get_llm() -> ChatGoogleGenerativeAI:
@@ -36,38 +25,51 @@ def get_llm() -> ChatGoogleGenerativeAI:
     )
 
 
-def load_and_index_pdf() -> None:
-    docs = PyPDFLoader(str(PDF_PATH)).load()
-    chunks = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50).split_documents(docs)
+def load_and_index_documents() -> None:
+    os.makedirs(DOC_FOLDER, exist_ok=True)
+    docs = prepare_vector_db_docs(str(DOC_FOLDER))
+    if not docs:
+        print(f'⚠️ No documents found in folder: {DOC_FOLDER}')
+        return
 
-    for doc in chunks:
-        doc.metadata = {'metadata': doc.metadata}
-
-    SupabaseVectorStore.from_documents(
-        documents=chunks,
-        embedding=get_embeddings(),
-        client=get_supabase_client(),
-        table_name=TABLE,
-        query_name=QUERY_FN,
-        chunk_size=500,
-    )
+    embedding = get_embedding_model(EMBEDDING_TYPE)
+    vectorstore = load_vectorstore(SUPABASE_BACKEND, embedding, TABLE_NAME)
+    vectorstore.add_documents(docs)
+    print(f'Added {len(docs)} documents to vector store: {TABLE_NAME}')
 
 
-def rag_chain() -> RetrievalQA:
-    vectorstore = SupabaseVectorStore(
-        client=get_supabase_client(),
-        embedding=get_embeddings(),
-        table_name=TABLE,
-        query_name=QUERY_FN,
-    )
+def rag_chain() -> RunnableSequence:
+    embedding = get_embedding_model(EMBEDDING_TYPE)
+    vectorstore = load_vectorstore(SUPABASE_BACKEND, embedding, TABLE_NAME, query_name=QUERY_FN)
     retriever = vectorstore.as_retriever(search_type='mmr', search_kwargs={'k': 5})
-    return RetrievalQA.from_chain_type(llm=get_llm(), retriever=retriever, chain_type='stuff')
+
+    prompt = PromptTemplate.from_template(
+        """
+You are a concise assistant that gives an answer to a query based on the provided context.
+Context: {context}
+Query: {query}
+Answer:
+
+    """
+    )
+
+    return (
+        RunnableMap(
+            {
+                'context': lambda x: format_docs(retriever.invoke(x['query'])),
+                'query': lambda x: x['query'],
+            }
+        )
+        | prompt
+        | get_llm()
+    )
 
 
 if __name__ == '__main__':
-    load_and_index_pdf()
+    load_and_index_documents()
     chain = rag_chain()
-    print(chain.invoke('What are barriers to effective feedback?'))
+    result = chain.invoke({'query': 'What are barriers to effective feedback?'})
+    print(result.content)
     print(
         """
 Sources: 
