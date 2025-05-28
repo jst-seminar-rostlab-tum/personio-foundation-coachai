@@ -13,7 +13,6 @@ from ...schemas.webrtc_schema import (
 )
 from .types import MessageFactory, MessageType, SignalHandler
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 

@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from ..schemas.webrtc_schema import WebRTCMessage
 from ..services.webrtc.webrtc_base import WebRTCService, get_webrtc_service
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix='/webrtc', tags=['WebRTC'])
 
