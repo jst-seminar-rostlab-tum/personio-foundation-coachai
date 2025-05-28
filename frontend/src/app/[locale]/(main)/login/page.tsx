@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
-import type { Props } from '@/interfaces/Props';
+import type { Props } from '@/interfaces/LayoutProps';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;

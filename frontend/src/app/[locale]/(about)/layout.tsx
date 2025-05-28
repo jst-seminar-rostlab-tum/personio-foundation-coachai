@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import AboutHeader from '@/components/layout/AboutHeader';
 import AboutFooter from '@/components/layout/AboutFooter';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
-import type { Props } from '@/interfaces/Props';
+import type { Props } from '@/interfaces/LayoutProps';
 
 const inter = Inter({ subsets: ['latin'] });
 
