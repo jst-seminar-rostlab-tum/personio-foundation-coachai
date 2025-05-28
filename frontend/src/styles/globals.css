@@ -52,6 +52,7 @@
   --text-lg--font-weight: 600;
   --text-base: 13px;
   --text-base--font-weight: 400;
+  --destructive: var(--destructive);
 }
 
 body {

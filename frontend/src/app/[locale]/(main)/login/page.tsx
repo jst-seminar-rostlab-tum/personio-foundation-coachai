@@ -1,13 +1,10 @@
+'use client';
+
 import { SignInForm } from '@/components/common/SignInForm';
 import { SignUpForm } from '@/components/common/SignUpForm';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'CoachAI - Login',
-  description: 'Sign in to your CoachAI account',
-};
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
   const t = useTranslations('LoginPage');
