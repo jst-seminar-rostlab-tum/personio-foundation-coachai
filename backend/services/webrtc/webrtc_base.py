@@ -63,7 +63,13 @@ def signal_handler(signal_type: WebRTCSignalingType) -> Callable[[SignalHandler]
         if not hasattr(signal_handler, '_handlers'):
             logger.debug('Creating _handlers dictionary')
             signal_handler._handlers = {}
-        signal_handler._handlers[signal_type] = wrapper
+
+        # Initialize list for this signal type if it doesn't exist
+        if signal_type not in signal_handler._handlers:
+            signal_handler._handlers[signal_type] = []
+
+        # Append the new handler to the list
+        signal_handler._handlers[signal_type].append(wrapper)
         logger.debug(f'Registered handler for signal type: {signal_type}')
         logger.debug(f'Current handlers: {list(signal_handler._handlers.keys())}')
         return wrapper
@@ -83,7 +89,7 @@ class WebRTCService:
         """Initialize the WebRTC service with an empty peer connection store"""
         self.peers: dict[str, RTCPeerConnection] = {}
         self.media_blackhole = MediaBlackhole()
-        self.signal_handlers: dict[WebRTCSignalingType, SignalHandler] = {}
+        self.signal_handlers: dict[WebRTCSignalingType, list[SignalHandler]] = {}
         self._register_handlers()
 
     def _register_handlers(self) -> None:
@@ -147,16 +153,17 @@ class WebRTCService:
 
         # Handle custom signal types
         elif message.type in self.signal_handlers:
-            handler = self.signal_handlers[message.type]
+            handlers = self.signal_handlers[message.type]
             try:
-                logger.debug(f'Found handler for message type: {message.type}')
+                logger.debug(f'Found {len(handlers)} handlers for message type: {message.type}')
                 if message.type in message_factory._factories:
                     logger.debug('Creating message with factory')
                     message = await self._create_message(
                         message.type, message.model_dump(), websocket
                     )
-                logger.debug('Calling handler')
-                await handler(message, peer_id)
+                logger.debug('Calling handlers')
+                for handler in handlers:
+                    await handler(message, peer_id)
                 return None
             except Exception as e:
                 logger.error(f'Error handling message type {message.type}: {e}')

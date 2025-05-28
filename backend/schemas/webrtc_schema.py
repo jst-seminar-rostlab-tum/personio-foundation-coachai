@@ -17,6 +17,7 @@ class WebRTCSignalingType(str, Enum):
     ANSWER = 'answer'
     CANDIDATE = 'candidate'
     TRANSCRIPT = 'transcript'
+    AUDIO = 'audio'
 
 
 class WebRTCSignalingBase(BaseModel):
@@ -90,3 +91,17 @@ class WebRTCTranscript(WebRTCMessage):
     """WebRTC transcript message"""
 
     transcript: TranscriptMessage
+
+
+class AudioMessage(BaseModel):
+    """Audio upload message"""
+
+    audio: bytes
+    timestamp: str
+    audio_url: Optional[str] = None
+
+
+class WebRTCAudio(WebRTCMessage):
+    """WebRTC audio message"""
+
+    audio: AudioMessage
