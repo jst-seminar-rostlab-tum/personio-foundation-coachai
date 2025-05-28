@@ -27,7 +27,7 @@ export default async function StandaloneLayout({ children, params }: Props) {
         />
       </head>
       <body className={inter.className}>
-        <main className="container mx-auto p-4">
+        <main className="container mx-auto max-w-4xl">
           <NextIntlClientProvider>{children}</NextIntlClientProvider>
         </main>
       </body>
