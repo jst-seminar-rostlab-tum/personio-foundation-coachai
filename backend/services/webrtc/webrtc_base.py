@@ -88,9 +88,12 @@ class WebRTCService:
 
     def _register_handlers(self) -> None:
         """Reload all registered handlers"""
+        logger.debug('Registering handlers in WebRTCService')
         if hasattr(signal_handler, '_handlers'):
             self.signal_handlers.update(signal_handler._handlers)
             logger.debug(f'Reloaded handlers in service: {list(self.signal_handlers.keys())}')
+        else:
+            logger.warning('No handlers found in signal_handler._handlers')
 
     async def _create_message(
         self, message_type: WebRTCSignalingType, data: MessageType, websocket: WebSocket

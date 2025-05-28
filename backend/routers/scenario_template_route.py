@@ -41,9 +41,7 @@ def create_scenario_template(
         if not category:
             raise HTTPException(status_code=404, detail='Category not found')
 
-    language = session.exec(
-        select(Language).where(Language.code == template.language_code)
-    ).first()
+    language = session.exec(select(Language).where(Language.code == template.language_code)).first()
     if not language:
         raise HTTPException(status_code=404, detail='Language not found')
 

@@ -23,6 +23,7 @@ from .routers import (
 
 app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['http://localhost:3000'],
