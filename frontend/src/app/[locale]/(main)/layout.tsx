@@ -4,9 +4,28 @@ import { NextIntlClientProvider } from 'next-intl';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+type Props = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function RootLayout({ children, params }: Props) {
+  const { locale } = await params;
+
   return (
-    <html lang="en">
+    <html lang={locale}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Coach AI',
+              url: 'https://personiofoundation-coachai.com',
+            }),
+          }}
+        />
+      </head>
       <body className={inter.className}>
         <main className="container mx-auto p-4">
           <NextIntlClientProvider>{children}</NextIntlClientProvider>
