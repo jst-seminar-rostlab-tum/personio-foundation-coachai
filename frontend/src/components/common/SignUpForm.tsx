@@ -40,7 +40,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
   const signUpFormSchema = z.object({
     fullName: z.string().min(1, t('fullNameInputError')),
     email: z.string().email(t('emailInputError')),
-    phoneNumber: z.string().regex(/^\+?[1-9]\d{7,14}$/, t('phoneNumberInputError')),
+    phoneNumber: z.string().regex(/^\+[1-9]\d{7,14}$/, t('phoneNumberInputError')),
     password: z
       .string()
       .regex(/^.{8,}$/)
