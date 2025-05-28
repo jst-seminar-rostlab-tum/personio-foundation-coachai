@@ -23,7 +23,6 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
     preferred_learning_style: str
     preferred_session_length: str
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    deleted_at: Optional[datetime] = None
 
     # Relationships
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
@@ -61,4 +60,3 @@ class UserProfileRead(SQLModel):
     preferred_learning_style: str
     preferred_session_length: str
     updated_at: datetime
-    deleted_at: Optional[datetime]
