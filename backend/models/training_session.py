@@ -29,17 +29,19 @@ class TrainingSession(SQLModel, table=True):  # `table=True` makes it a database
     # Relationships
     case: Optional['TrainingCase'] = Relationship(back_populates='sessions')
     language: Optional['Language'] = Relationship()  # Relationship to Language
-    conversation_turns: list['ConversationTurn'] = Relationship(back_populates='session')
-    feedback: Optional['TrainingSessionFeedback'] = Relationship(back_populates='session')
-    ratings: list['Rating'] = Relationship(back_populates='session')
+    conversation_turns: list['ConversationTurn'] = Relationship(
+        back_populates='session', cascade_delete=True
+    )
+    feedback: Optional['TrainingSessionFeedback'] = Relationship(
+        back_populates='session', cascade_delete=True
+    )
+    ratings: list['Rating'] = Relationship(back_populates='session', cascade_delete=True)
 
     # Automatically update `updated_at` before an update
 
 
 @event.listens_for(TrainingSession, 'before_update')
-def update_timestamp(
-    mapper: Mapper, connection: Connection, target: 'TrainingSession'
-) -> None:
+def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingSession') -> None:
     target.updated_at = datetime.utcnow()
 
 

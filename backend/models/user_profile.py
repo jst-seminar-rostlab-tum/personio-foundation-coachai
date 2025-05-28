@@ -26,11 +26,15 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
     deleted_at: Optional[datetime] = None
 
     # Relationships
-    ratings: Optional['Rating'] = Relationship(back_populates='user')
-    training_cases: Optional['TrainingCase'] = Relationship(back_populates='user')
+    ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
+    training_cases: Optional['TrainingCase'] = Relationship(
+        back_populates='user', cascade_delete=True
+    )
     role: Optional['Role'] = Relationship(back_populates='user_profiles')  # Use string reference
     experience: Optional['Experience'] = Relationship(back_populates='user')
-    user_goals: list['UserGoal'] = Relationship(back_populates='user')  # Add this line
+    user_goals: list['UserGoal'] = Relationship(
+        back_populates='user', cascade_delete=True
+    )  # Add this line
 
 
 # Automatically update `updated_at` before an update
