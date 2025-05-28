@@ -21,6 +21,8 @@ const buttonVariants = cva(
         full: 'rounded-md px-4 py-3 w-full justify-center flex-1',
         pagination: 'h-9 px-4 py-2 has-[>svg]:px-3 hover:bg-bw-10 hover:rounded-md',
         paginationIcon: 'size-9 rounded-md ',
+        iconLarge:
+          'w-14 h-14 max-h-14 aspect-square rounded-full flex items-center justify-center p-0',
       },
     },
     defaultVariants: {
