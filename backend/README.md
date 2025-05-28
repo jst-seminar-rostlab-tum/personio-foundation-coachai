@@ -52,10 +52,7 @@ uv sync
 source .venv/bin/activate  # On Windows: .\.venv\Scripts\activate
 ```
 
-3. Create .env file from .env.example
-4. setup your supabase and Twilio accounts and paste credentials in your .env file
-
-5. Set local environment variables:
+2. Assure the Supabase database is set:
 
 - Create .env file from .env.example
 

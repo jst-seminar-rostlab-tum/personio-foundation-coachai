@@ -24,7 +24,7 @@ def get_user_profiles(session: Annotated[Session, Depends(get_session)]) -> list
     """
     statement = select(UserProfile)
     user_profiles = session.exec(statement).all()
-    return user_profiles
+    return list(user_profiles)
 
 
 @router.post('/', response_model=UserProfileRead)
@@ -44,15 +44,7 @@ def create_user_profile(
     ).first()
 
     if not language:
-        # Create English language if it doesn't exist
-        if user_profile.preferred_language == 'en':
-            new_language = Language(code='en', name='English')
-            session.add(new_language)
-            session.commit()
-            session.refresh(new_language)
-            language = new_language
-        else:
-            raise HTTPException(status_code=404, detail='Preferred language not found')
+        raise HTTPException(status_code=404, detail='Preferred language not found')
 
     # Check if email already exists
     existing_user = session.exec(

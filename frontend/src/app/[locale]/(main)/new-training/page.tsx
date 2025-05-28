@@ -1,5 +1,5 @@
-import type { Metadata } from 'next';
 import NewTrainingForm from '@/components/common/NewTrainingForm';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'CoachAI - New Training',
