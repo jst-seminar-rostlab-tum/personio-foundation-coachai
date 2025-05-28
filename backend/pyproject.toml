@@ -23,6 +23,7 @@ dependencies = [
   "psycopg2-binary>=2.9.10",
   "openai>=1.81.0",
   "langchain>=0.3.25",
+<<<<<<< HEAD
   "google>=3.0.0",
   "generativeai>=0.0.1",
   "google-generativeai>=0.8.5",
@@ -30,6 +31,26 @@ dependencies = [
   "langchain-huggingface>=0.2.0",
   "langchain-postgres>=0.0.14",
   "langchain-community>=0.3.21",
+=======
+  "langchain-community>0.3.20",
+  "langchain-google-genai>=2.0.10",
+  "google-generativeai>=0.8.5",
+  "supabase>=2.15.2",
+  "pypdf>=5.4.0",
+  "pgvector>=0.4.1"
+
+]
+
+[tool.setuptools]
+packages = [
+  "rag",
+  "data",
+  "models",
+  "routers",
+  "schemas",
+  "services",
+  "connections"
+>>>>>>> c9db856 (feat(B-130): Created Simple RAG with supabase pgvector)
 ]
 
 [tool.uv.workspace]
@@ -43,7 +64,7 @@ dev = [
   "pytest-asyncio",
   "pytest-postgresql",
   "httpx",
-  "respx",
+  "respx"
 ]
 
 lint = ["ruff"]
