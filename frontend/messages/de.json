@@ -1,5 +1,7 @@
 {
   "HomePage": {
+    "metaTitle": "Coach AI",
+    "metaDescription": "Trainieren Sie anspruchsvolle Gesprächssituationen und erhalten Sie direktes Feedback für Ihre persönliche Weiterentwicklung als Führungskraft.",
     "welcome": "Willkommen bei ",
     "appName": "CoachAI",
     "description": "Full-stack-Anwendung mit TypeScript und Python",
@@ -82,6 +84,8 @@
     }
   },
   "NewTraining": {
+    "metaTitle": "Neues Training - Coach AI",
+    "metaDescription": "Starten Sie eine neue Trainingssitzung mit persönlichem Coaching",
     "title": "Neue Trainingssession",
     "steps": {
       "category": "Kategorie",
@@ -154,5 +158,41 @@
       "next": "Weiter",
       "create": "Training erstellen"
     }
+  },
+  "Admin": {
+    "metaTitle": "Admin - Coach AI",
+    "metaDescription": "Verwalten Sie Benutzer, Trainingssitzungen und Systemeinstellungen"
+  },
+  "Dashboard": {
+    "metaTitle": "Dashboard - Coach AI",
+    "metaDescription": "Verfolgen Sie Ihre Trainingsfortschritte, starten Sie neue Sitzungen und analysieren Sie Ihre Entwicklung"
+  },
+  "Feedback": {
+    "metaTitle": "Auswertung - Coach AI",
+    "metaDescription": "Detaillierte Auswertung und Analyse Ihrer Trainingssitzung"
+  },
+  "History": {
+    "metaTitle": "Verlauf - Coach AI",
+    "metaDescription": "Überblick über Ihre bisherigen Trainingseinheiten und Entwicklungsfortschritte"
+  },
+  "Login": {
+    "metaTitle": "Anmelden - Coach AI",
+    "metaDescription": "Melden Sie sich bei Ihrem Coach AI Konto an"
+  },
+  "Onboarding": {
+    "metaTitle": "Einführung - Coach AI",
+    "metaDescription": "Starten Sie Ihre Führungskräfteentwicklung mit Coach AI"
+  },
+  "Preparation": {
+    "metaTitle": "Vorbereitung - Coach AI",
+    "metaDescription": "Bereiten Sie Ihre Trainingssitzung optimal vor"
+  },
+  "Simulation": {
+    "metaTitle": "Simulation - Coach AI",
+    "metaDescription": "Üben Sie Ihre Fähigkeiten in einer interaktiven Trainingssimulation"
+  },
+  "TrainingSettings": {
+    "metaTitle": "Trainingsseinstellungen - Coach AI",
+    "metaDescription": "Passen Sie Ihre Trainingsseinstellungen an"
   }
 }
