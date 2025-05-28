@@ -21,6 +21,7 @@ from backend.data import (
     get_dummy_user_profiles,
 )
 from backend.database import engine
+from backend.models.hr_information import HrInformation
 
 
 def populate_data() -> None:
@@ -35,6 +36,7 @@ def populate_data() -> None:
         languages = get_dummy_languages()
         session.add_all(languages)
         session.commit()
+
         # Populate Roles
         roles = get_dummy_roles()
         session.add_all(roles)
@@ -120,6 +122,12 @@ def populate_data() -> None:
         # Commit all data
         session.commit()
         print('Dummy data populated successfully!')
+
+        print('Creating empty vector store')
+        empty_vector_data = HrInformation(content='', meta_data={}, embedding=[0.0] * 768)
+        session.add(empty_vector_data)
+        session.commit()
+        print('Vector store created successfully!')
 
 
 if __name__ == '__main__':
