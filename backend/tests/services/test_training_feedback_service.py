@@ -2,8 +2,10 @@ from unittest.mock import MagicMock, patch
 
 from backend.schemas.training_feedback_schema import (
     ExamplesRequest,
-    GoalAchieved,
-    GoalAchievementRequest,
+    GoalsAchievedCollection,
+    GoalsAchievementRequest,
+    NegativeExample,
+    PositiveExample,
     Recommendation,
     RecommendationsCollection,
     RecommendationsRequest,
@@ -19,32 +21,22 @@ from backend.services.training_feedback_service import (
 @patch('backend.services.training_feedback_service.call_structured_llm')
 def test_generate_training_examples(mock_client: MagicMock) -> None:
     mock_client.return_value = TrainingExamplesCollection(
-        positive_examples="""**Maintaining Professionalism**  
-        - **Explanation:** The attempt to address the performance issue directly, 
-        without hostility, maintains a professional tone.
-        - **Quote:** "I'm sorry but I'm not happy with your performance."
-        - **Relevant Guideline:** Maintain professionalism.
-                           """,
-        negative_examples="""**Lack of Specific Feedback**  
-        - **Explanation:** Failing to provide specific areas of improvement does not give the 
-        team member clarity on their shortcomings.
-        - **Quote:** "I'm sorry but I'm not happy with your performance."
-        - **Suggested Improvement:** Provide specific examples of performance issues to help the 
-        team member understand and accept the decision.
-
-        **Closing Off Open Dialogue**  
-        - **Explanation:** Abruptly stating that nothing can change fails to encourage an 
-        open dialogue and does not foster understanding.
-        - **Quote:** "You can't do anything it's too late to improve."
-        - **Suggested Improvement:** Allow the team member to express their concerns and 
-        acknowledge their willingness to improve.
-
-        **Ending on a Positive Note**  
-        - **Explanation:** The conversation ends on a negative note without acknowledging the 
-        team member's contributions or potential future opportunities.
-        - **Quote:** "You can't do anything it's too late to improve."
-        - **Suggested Improvement:** Conclude with positive remarks about the person's skills 
-        or contributions and suggest ways they can grow in the future.""",
+        positive_examples=[
+            PositiveExample(
+                heading='Clear Objective Addressed',
+                text='The user successfully summarized the objective.',
+                quote='I want to make sure we both feel heard and find a solution together.',
+                guideline='Collaborative Problem-Solving',
+            )
+        ],
+        negative_examples=[
+            NegativeExample(
+                heading='Missed Empathy',
+                text="The user dismissed the other party's concern.",
+                quote="That's not important right now.",
+                improved_quote="I understand your concern—let's come back to it in a moment.",
+            )
+        ],
     )
 
     request = ExamplesRequest(
@@ -61,11 +53,20 @@ def test_generate_training_examples(mock_client: MagicMock) -> None:
 
     result = generate_training_examples(request)
     assert isinstance(result, TrainingExamplesCollection)
+    assert len(result.positive_examples) == 1
+    assert len(result.negative_examples) == 1
+    assert result.positive_examples[0].heading == 'Clear Objective Addressed'
+    assert result.negative_examples[0].quote == "That's not important right now."
 
 
 @patch('backend.services.training_feedback_service.call_structured_llm')
 def test_get_achieved_goals(mock_client: MagicMock) -> None:
-    mock_client.return_value = GoalAchieved(goals_achieved=2)
+    mock_client.return_value = GoalsAchievedCollection(
+        goals_achieved=[
+            'Clearly communicate the impact of the missed deadlines',
+            'Understand potential underlying causes',
+        ]
+    )
 
     transcript = "User: I understand your frustration. Let's find a solution together."
     goals = [
@@ -75,12 +76,12 @@ def test_get_achieved_goals(mock_client: MagicMock) -> None:
         'End the conversation on a positive note',
     ]
 
-    request = GoalAchievementRequest(
+    request = GoalsAchievementRequest(
         transcript=transcript,
         objectives=goals,
     )
     result = get_achieved_goals(request)
-    assert result == 2
+    assert isinstance(result, GoalsAchievedCollection)
 
 
 @patch('backend.services.training_feedback_service.call_structured_llm')
@@ -96,16 +97,19 @@ def test_generate_recommendations(mock_client: MagicMock) -> None:
     mock_client.return_value = RecommendationsCollection(
         recommendations=[
             Recommendation(
-                markdown='#### Practice the STAR method\n'
-                'Use the STAR method to structure your feedback: Situation, Task, Action, Result. '
+                heading='Practice the STAR method',
+                text='When giving feedback, use the Situation, Task, Action, Result framework to '
+                + 'provide more concrete examples.',
             ),
             Recommendation(
-                markdown='#### Focus on specific behaviors\n'
-                'Identify specific behaviors rather than generalizations.'
+                heading='Ask more diagnostic questions',
+                text='Spend more time understanding root causes before moving to solutions. '
+                + 'This builds empathy and leads to more effective outcomes.',
             ),
             Recommendation(
-                markdown='#### Encourage open dialogue\n'
-                'Foster an environment where both parties can share their perspectives.'
+                heading='Define clear next steps',
+                text='End feedback conversations with agreed-upon action items, timelines, and'
+                + ' follow-up plans.',
             ),
         ]
     )
@@ -121,7 +125,4 @@ def test_generate_recommendations(mock_client: MagicMock) -> None:
     )
     result = generate_recommendations(request)
     assert len(result.recommendations) == 3
-    assert (
-        result.recommendations[0].markdown == '#### Practice the STAR method\n'
-        'Use the STAR method to structure your feedback: Situation, Task, Action, Result. '
-    )
+    assert result.recommendations[0].heading == 'Practice the STAR method'
