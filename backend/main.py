@@ -18,6 +18,7 @@ from .routers import (
     training_session_route,
     user_goals_route,
     user_profile_route,
+    webrtc_signal_route,
 )
 
 app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
@@ -42,6 +43,7 @@ app.include_router(rating_route.router)
 app.include_router(user_profile_route.router)
 app.include_router(user_goals_route.router)
 app.include_router(goal_route.router)
+app.include_router(webrtc_signal_route.router)
 
 
 # Create database tables on startup

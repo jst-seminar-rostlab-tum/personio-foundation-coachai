@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Test with Speech Recognition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #status {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+        #log {
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WebRTC Test with Speech Recognition</h1>
+        
+        <div class="controls">
+            <button id="startButton">Start</button>
+            <button id="stopButton">Stop</button>
+        </div>
+        
+        <div id="status">Disconnected</div>
+        
+        <div id="log"></div>
+    </div>
+    
+    <script src="webrtc-test.js"></script>
+</body>
+</html> 
