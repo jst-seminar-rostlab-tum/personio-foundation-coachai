@@ -1,4 +1,4 @@
-from backend.utils.validators.password_validator.rules import (
+from .rules import (
     BaseRule,
     DigitRule,
     LowercaseRule,

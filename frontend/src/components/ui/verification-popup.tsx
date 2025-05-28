@@ -5,14 +5,7 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { userProfileApi } from '@/services/Api';
@@ -46,6 +39,7 @@ export function VerificationPopup({
   const verificationSchema = z.object({
     code: z.string().regex(/^\d{6}$/, t('codeInputError')),
   });
+  const codeSize = 6;
 
   const form = useForm({
     resolver: zodResolver(verificationSchema),
@@ -167,19 +161,51 @@ export function VerificationPopup({
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm">{t('codeInputLabel')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={t('codeInputPlaceholder')}
-                        {...field}
-                        className="w-full"
-                        disabled={isLoading}
-                      />
-                    </FormControl>
+                    <FormLabel className="text-sm flex justify-center">
+                      {t('codeInputLabel')}
+                    </FormLabel>
+
+                    <div className="flex justify-center gap-2">
+                      {[...Array(codeSize)].map((_, idx) => (
+                        <Input
+                          key={idx}
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={1}
+                          className="w-10 text-center text-lg"
+                          disabled={isLoading || resendCooldown > 0}
+                          value={field.value[idx] || ''}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '');
+                            const codeArr = (field.value || '').split('');
+                            codeArr[idx] = val;
+                            const newCode = codeArr.join('').slice(0, codeSize);
+                            field.onChange(newCode);
+                            if (val && idx < codeSize - 1) {
+                              const next = document.getElementById(`code-cell-${idx + 1}`);
+                              (next as HTMLInputElement)?.focus();
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Backspace') {
+                              const codeArr = (field.value || '').split('');
+                              if (!codeArr[idx] && idx > 0) {
+                                const prev = document.getElementById(`code-cell-${idx - 1}`);
+                                (prev as HTMLInputElement)?.focus();
+                              }
+                            }
+                          }}
+                          id={`code-cell-${idx}`}
+                          autoFocus={idx === 0}
+                        />
+                      ))}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <FormMessage />
 
               <div className="flex justify-center">
                 <Button
@@ -205,7 +231,12 @@ export function VerificationPopup({
               </div>
             </CardContent>
             <CardFooter className="flex-col gap-2 p-4">
-              <Button size={'full'} type="submit" disabled={isLoading}>
+              <Button
+                size={'full'}
+                type="submit"
+                disabled={isLoading || resendCooldown > 0 || form.watch('code').length !== codeSize}
+                className="disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
+              >
                 {isLoading ? t('verifyingButtonLabel') : t('verifyButtonLabel')}
               </Button>
               <Button size={'full'} variant={'secondary'} onClick={onClose} disabled={isLoading}>
