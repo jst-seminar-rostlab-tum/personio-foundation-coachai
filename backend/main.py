@@ -12,6 +12,7 @@ from .routers import (
     goal_route,
     language_route,
     learning_style_route,
+    personalization_options_route,
     rating_route,
     scenario_template_route,
     session_length_route,
@@ -50,6 +51,7 @@ app.include_router(confidence_area_route.router)
 app.include_router(user_confidence_score_route.router)
 app.include_router(learning_style_route.router)
 app.include_router(session_length_route.router)
+app.include_router(personalization_options_route.router)
 
 
 # Create database tables on startup

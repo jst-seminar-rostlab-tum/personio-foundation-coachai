@@ -14,6 +14,7 @@ from .experience import Experience, ExperienceCreate, ExperienceRead
 from .goal import Goal, GoalCreate, GoalRead
 from .language import Language, LanguageCreate, LanguageRead
 from .learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
+from .personalization_option import PersonalizationOptionRead
 from .rating import Rating, RatingCreate, RatingRead
 from .role import Role, RoleCreate, RoleRead
 from .scenario_template import (
@@ -113,4 +114,5 @@ __all__ = [
     'SessionLengthRead',
     'ConfidenceScoreRead',
     'UserProfileExtendedRead',
+    'PersonalizationOptionRead',
 ]
