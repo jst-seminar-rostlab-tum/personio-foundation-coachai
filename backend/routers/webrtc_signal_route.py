@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 
 from ..schemas.webrtc_schema import WebRTCMessage
-from ..services.webrtc.webrtc_base import WebRTCService, get_webrtc_service
+from ..services.webrtc_service import WebRTCService, get_webrtc_service
 
 logging.basicConfig(level=logging.INFO)
 

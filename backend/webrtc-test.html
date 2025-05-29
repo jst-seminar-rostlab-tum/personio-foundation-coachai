@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebRTC Test with Speech Recognition</title>
+    <title>WebRTC Audio Test</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,10 +15,6 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-        }
-        .controls {
-            display: flex;
-            gap: 10px;
         }
         button {
             padding: 10px 20px;
@@ -57,16 +53,18 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+        .error {
+            color: red;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #ffeeee;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>WebRTC Test with Speech Recognition</h1>
-        
-        <div class="controls">
-            <button id="startButton">Start</button>
-            <button id="stopButton">Stop</button>
-        </div>
+        <h1>WebRTC Audio Test</h1>
         
         <div class="audio-controls">
             <h3>Audio Controls</h3>
@@ -76,10 +74,43 @@
         </div>
         
         <div id="status">Disconnected</div>
-        
+        <div id="error" class="error" style="display: none;"></div>
         <div id="log"></div>
     </div>
     
+    <script>
+        // Add global error handling
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = `Error: ${msg} (${url}:${lineNo}:${columnNo})`;
+            console.error('Error:', msg, url, lineNo, columnNo, error);
+            return false;
+        };
+
+        // Check browser support
+        function checkBrowserSupport() {
+            const errorDiv = document.getElementById('error');
+            if (!window.AudioContext && !window.webkitAudioContext) {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Your browser does not support AudioContext API';
+                return false;
+            }
+            if (!window.AudioWorkletNode) {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Your browser does not support AudioWorklet API';
+                return false;
+            }
+            return true;
+        }
+
+        // Check browser support after page load
+        window.addEventListener('load', function() {
+            if (!checkBrowserSupport()) {
+                document.getElementById('startAudioButton').disabled = true;
+            }
+        });
+    </script>
     <script src="webrtc-test.js"></script>
 </body>
 </html> 

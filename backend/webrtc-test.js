@@ -6,8 +6,6 @@ const configuration = {
 };
 
 // DOM elements
-const startButton = document.getElementById('startButton');
-const stopButton = document.getElementById('stopButton');
 const startAudioButton = document.getElementById('startAudioButton');
 const stopAudioButton = document.getElementById('stopAudioButton');
 const statusDiv = document.getElementById('status');
@@ -24,9 +22,7 @@ let audioContext = null;
 let audioSource = null;
 let analyser = null;
 let animationFrameId = null;
-
-// Speech recognition
-let recognition = null;
+let audioDataChannel = null;
 
 // Logging function
 function log(message) {
@@ -104,53 +100,6 @@ function stopAudioVisualization() {
     }
 }
 
-// Initialize speech recognition
-function initSpeechRecognition() {
-    if ('webkitSpeechRecognition' in window) {
-        recognition = new webkitSpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-
-        recognition.onresult = (event) => {
-            let finalTranscript = '';
-            let interimTranscript = '';
-
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                const transcript = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                    finalTranscript += transcript;
-                } else {
-                    interimTranscript += transcript;
-                }
-            }
-
-            if (finalTranscript) {
-                log(`Recognized: ${finalTranscript}`);
-                // Send final transcript through WebSocket
-                sendTranscript(finalTranscript);
-            }
-            if (interimTranscript) {
-                log(`Interim: ${interimTranscript}`);
-            }
-        };
-
-        recognition.onerror = (event) => {
-            log(`Speech recognition error: ${event.error}`);
-        };
-
-        recognition.onend = () => {
-            log('Speech recognition ended');
-            // Only restart if session is still active
-            if (isSessionActive) {
-                recognition.start();
-            }
-        };
-    } else {
-        log('Speech recognition not supported in this browser');
-    }
-}
-
 // Create and send offer
 async function createAndSendOffer() {
     try {
@@ -174,8 +123,8 @@ async function createAndSendOffer() {
     }
 }
 
-// Start WebRTC session
-async function startSession() {
+// Start audio streaming
+async function startAudio() {
     try {
         isSessionActive = true;
         
@@ -183,19 +132,63 @@ async function startSession() {
         localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         log('Got local audio stream');
 
-        // Initialize speech recognition
-        initSpeechRecognition();
-        recognition.start();
-        log('Started speech recognition');
-
         // Create peer connection
         peerConnection = new RTCPeerConnection(configuration);
         log('Created peer connection');
 
-        // Add local stream to peer connection
-        localStream.getTracks().forEach(track => {
-            peerConnection.addTrack(track, localStream);
+        // Create audio data channel
+        audioDataChannel = peerConnection.createDataChannel('audio', {
+            ordered: true,
+            maxRetransmits: 3
         });
+
+        audioDataChannel.onopen = () => {
+            log('Audio data channel opened');
+        };
+
+        audioDataChannel.onclose = (event) => {
+            log(`Audio data channel closed: code=${event.code}, reason=${event.reason}`);
+        };
+
+        audioDataChannel.onerror = (error) => {
+            log(`Audio data channel error: ${error.message || 'Unknown error'}`);
+            console.error('Data channel error details:', error);
+        };
+
+        // 添加数据通道状态监控
+        audioDataChannel.onbufferedamountlow = () => {
+            log(`Data channel buffer amount low: ${audioDataChannel.bufferedAmount}`);
+        };
+
+        // 添加 ICE 连接状态监控
+        peerConnection.oniceconnectionstatechange = () => {
+            log(`ICE connection state changed to: ${peerConnection.iceConnectionState}`);
+        };
+
+        peerConnection.onicegatheringstatechange = () => {
+            log(`ICE gathering state changed to: ${peerConnection.iceGatheringState}`);
+        };
+
+        peerConnection.onconnectionstatechange = () => {
+            log(`Connection state changed to: ${peerConnection.connectionState}`);
+        };
+
+        peerConnection.onsignalingstatechange = () => {
+            log(`Signaling state changed to: ${peerConnection.signalingState}`);
+        };
+
+        // 添加 ICE 候选处理
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                log(`New ICE candidate: ${event.candidate.candidate}`);
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'candidate',
+                        candidate: event.candidate
+                    }));
+                }
+            }
+        };
 
         // Connect to signaling server
         ws = new WebSocket('ws://localhost:8000/webrtc/signal');
@@ -234,11 +227,66 @@ async function startSession() {
                 if (message.type === 'answer') {
                     await peerConnection.setRemoteDescription(new RTCSessionDescription(message));
                     log('Set remote description');
+                    
+                    // 处理音频配置
+                    if (message.audio_config) {
+                        log(`Received audio config: ${JSON.stringify(message.audio_config, null, 2)}`);
+                        // 保存音频配置供后续使用
+                        window.audioConfig = message.audio_config;
+                    }
+                    
+                    // Setup audio processing
+                    const audioTrack = localStream.getAudioTracks()[0];
+                    const audioContext = new AudioContext();
+                    const source = audioContext.createMediaStreamSource(new MediaStream([audioTrack]));
+                    
+                    try {
+                        // Create audio processing work thread
+                        const processorPath = new URL('audio-processor.js', window.location.href).href;
+                        console.log('Loading audio processor from:', processorPath);
+                        await audioContext.audioWorklet.addModule(processorPath);
+                        const processor = new AudioWorkletNode(audioContext, 'audio-processor');
+                        
+                        // Set audio processing parameters
+                        processor.port.postMessage({
+                            type: 'config',
+                            config: window.audioConfig
+                        });
+                        
+                        // Process audio data
+                        processor.port.onmessage = (e) => {
+                            if (audioDataChannel && audioDataChannel.readyState === 'open') {
+                                try {
+                                    const message = e.data;
+                                    if (audioDataChannel.bufferedAmount > 65535) {  // If buffer is too large
+                                        log('Data channel buffer full, skipping data');
+                                        return;
+                                    }
+                                    audioDataChannel.send(message.buffer);
+                                    log(`Sent audio data, size: ${message.buffer.byteLength} bytes, buffer: ${audioDataChannel.bufferedAmount}`);
+                                } catch (error) {
+                                    log(`Error sending audio data: ${error.message}`);
+                                    console.error('Send error details:', error);
+                                }
+                            } else {
+                                log(`Data channel not ready, state: ${audioDataChannel ? audioDataChannel.readyState : 'null'}`);
+                            }
+                        };
+                        
+                        source.connect(processor);
+                        processor.connect(audioContext.destination);
+                        log('Audio processing setup completed');
+                    } catch (error) {
+                        log(`Error loading audio processor: ${error.message}`);
+                        const errorDiv = document.getElementById('error');
+                        errorDiv.style.display = 'block';
+                        errorDiv.textContent = `Error loading audio processor: ${error.message}`;
+                        throw error;
+                    }
+                    
                 } else if (message.type === 'candidate') {
                     await peerConnection.addIceCandidate(new RTCIceCandidate(message.candidate));
                     log('Added ICE candidate');
-                } else if (message.type === 'transcript_ack') {
-                    log(`Transcript acknowledged: ${message.message}`);
                 }
             } catch (error) {
                 log(`Error processing message: ${error.message}`);
@@ -247,25 +295,23 @@ async function startSession() {
 
         // Create offer
         await createAndSendOffer();
+        
+        // Initialize audio visualization
+        initAudioVisualization(localStream);
+        log('Started audio visualization');
 
     } catch (error) {
         isSessionActive = false;
-        log(`Error starting session: ${error.message}`);
+        log(`Error starting audio: ${error.message}`);
         statusDiv.textContent = 'Error';
     }
 }
 
-// Stop WebRTC session
-async function stopSession() {
+// Stop audio streaming
+async function stopAudio() {
     try {
         isSessionActive = false;
         
-        // Stop speech recognition
-        if (recognition) {
-            recognition.stop();
-            recognition = null;
-        }
-
         // Stop local stream
         if (localStream) {
             localStream.getTracks().forEach(track => track.stop());
@@ -274,6 +320,12 @@ async function stopSession() {
 
         // Stop audio visualization
         stopAudioVisualization();
+
+        // Close data channel
+        if (audioDataChannel) {
+            audioDataChannel.close();
+            audioDataChannel = null;
+        }
 
         // Close peer connection
         if (peerConnection) {
@@ -288,82 +340,12 @@ async function stopSession() {
         }
 
         statusDiv.textContent = 'Disconnected';
-        log('Session stopped');
+        log('Stopped audio streaming');
     } catch (error) {
-        log(`Error stopping session: ${error.message}`);
-    }
-}
-
-// Start audio streaming
-async function startAudio() {
-    try {
-        if (!localStream) {
-            localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            log('Got local audio stream');
-        }
-        
-        initAudioVisualization(localStream);
-        log('Started audio visualization');
-        
-        // Send audio data through WebSocket
-        const audioTrack = localStream.getAudioTracks()[0];
-        const audioStream = new MediaStream([audioTrack]);
-        const audioContext = new AudioContext();
-        
-        // Load and register AudioWorklet
-        await audioContext.audioWorklet.addModule('audio-processor.js');
-        const source = audioContext.createMediaStreamSource(audioStream);
-        const processor = new AudioWorkletNode(audioContext, 'audio-processor');
-        
-        processor.port.onmessage = (e) => {
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                const message = e.data;
-                if (message.type === 'sentence') {
-                    ws.send(JSON.stringify({
-                        type: 'audio',
-                        audio: message.audio,
-                        duration: message.duration
-                    }));
-                    log(`Sent audio sentence (duration: ${message.duration.toFixed(2)}s)`);
-                }
-            }
-        };
-        
-        source.connect(processor);
-        processor.connect(audioContext.destination);
-        
-        log('Started audio streaming');
-    } catch (error) {
-        log(`Error starting audio: ${error.message}`);
-    }
-}
-
-// Stop audio streaming
-function stopAudio() {
-    stopAudioVisualization();
-    log('Stopped audio streaming');
-}
-
-// Send transcript through WebSocket
-function sendTranscript(text) {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
-            type: 'transcript',
-            transcript: {
-                text: text,
-                timestamp: new Date().toISOString(),
-                confidence: 0.95,
-                language: 'en-US'
-            }
-        }));
-        log(`Sent transcript: ${text}`);
-    } else {
-        log('WebSocket not ready for sending transcript');
+        log(`Error stopping audio: ${error.message}`);
     }
 }
 
 // Event listeners
-startButton.addEventListener('click', startSession);
-stopButton.addEventListener('click', stopSession);
 startAudioButton.addEventListener('click', startAudio);
 stopAudioButton.addEventListener('click', stopAudio); 

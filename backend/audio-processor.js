@@ -1,26 +1,41 @@
 class AudioProcessor extends AudioWorkletProcessor {
     constructor() {
         super();
-        this.silenceThreshold = 0.01;  // silence threshold
-        this.silenceDuration = 0.5;    // silence duration (seconds)
-        this.minSpeechDuration = 0.3;  // minimum speech duration (seconds)
-        this.sampleRate = 48000;       // sample rate
+        // 默认配置
+        this.silenceThreshold = 0.01;  // 静音阈值
+        this.silenceDuration = 0.5;    // 静音持续时间(秒)
+        this.minSpeechDuration = 0.3;  // 最小语音持续时间(秒)
+        this.sampleRate = 48000;       // 采样率
+        this.bufferSize = 2048;        // 缓冲区大小
         
         this.silenceCounter = 0;
         this.speechCounter = 0;
         this.isSpeaking = false;
         this.buffer = [];
+
+        // 监听配置消息
+        this.port.onmessage = (event) => {
+            if (event.data.type === 'config') {
+                const config = event.data.config;
+                this.silenceThreshold = config.silence_threshold;
+                this.silenceDuration = config.silence_duration;
+                this.minSpeechDuration = config.min_speech_duration;
+                this.sampleRate = config.sample_rate;
+                this.bufferSize = config.buffer_size;
+                console.log('Audio processor configured:', config);
+            }
+        };
     }
 
-    process(inputs, outputs) {
+    process(inputs) {
         const input = inputs[0];
         if (input.length > 0) {
             const audioData = input[0];
             
-            // calculate audio energy
+            // 计算音频能量
             const energy = this.calculateEnergy(audioData);
             
-            // detect speech activity
+            // 检测语音活动
             if (energy > this.silenceThreshold) {
                 this.silenceCounter = 0;
                 this.speechCounter++;
@@ -32,24 +47,23 @@ class AudioProcessor extends AudioWorkletProcessor {
                 }
             }
 
-            // add audio data to buffer
+            // 添加音频数据到缓冲区
             this.buffer.push(...audioData);
 
-            // detect sentence boundaries
+            // 检测句子边界
             const silenceFrames = this.silenceCounter * (128 / this.sampleRate);
             const speechFrames = this.speechCounter * (128 / this.sampleRate);
 
             if (this.isSpeaking && 
                 silenceFrames >= this.silenceDuration && 
                 speechFrames >= this.minSpeechDuration) {
-                // send complete sentence audio data
+                // 发送完整的句子音频数据
                 this.port.postMessage({
-                    type: 'sentence',
-                    audio: Array.from(this.buffer),
+                    buffer: new Float32Array(this.buffer).buffer,
                     duration: speechFrames
-                });
+                }, [new Float32Array(this.buffer).buffer]);
                 
-                // reset state
+                // 重置状态
                 this.buffer = [];
                 this.isSpeaking = false;
                 this.speechCounter = 0;

@@ -16,8 +16,8 @@ class WebRTCSignalingType(str, Enum):
     OFFER = 'offer'
     ANSWER = 'answer'
     CANDIDATE = 'candidate'
-    TRANSCRIPT = 'transcript'
-    AUDIO = 'audio'
+    CONTROL = 'control'
+    CONFIG = 'config'
 
 
 class WebRTCSignalingBase(BaseModel):
@@ -49,13 +49,55 @@ class WebRTCIceCandidate(WebRTCSignalingBase):
     candidate: str = Field(..., description='ICE candidate string')
 
 
+class WebRTCDataChannelConfig(BaseModel):
+    """WebRTC data channel configuration"""
+
+    label: str = Field(default='audio', description='Data channel label')
+    ordered: bool = Field(default=True, description='Whether the data channel is ordered')
+    max_retransmits: int = Field(default=3, description='Maximum number of retransmits')
+    protocol: str = Field(default='', description='Data channel protocol')
+    negotiated: bool = Field(default=False, description='Whether the data channel is negotiated')
+    id: Optional[int] = Field(default=None, description='Data channel ID for negotiated channels')
+
+
+class AudioControlConfig(BaseModel):
+    """Audio control configuration"""
+
+    sample_rate: int = Field(default=48000, description='Audio sample rate in Hz')
+    silence_threshold: float = Field(default=0.01, description='Silence detection threshold')
+    silence_duration: float = Field(
+        default=0.5, description='Silence duration threshold in seconds'
+    )
+    min_speech_duration: float = Field(
+        default=0.3, description='Minimum speech duration in seconds'
+    )
+    buffer_size: int = Field(default=2048, description='Audio buffer size')
+
+
+class WebRTCControlMessage(WebRTCSignalingBase):
+    """WebRTC control message"""
+
+    type: Literal['control'] = Field(..., description="Type of the message, must be 'control'")
+    audio_config: AudioControlConfig = Field(..., description='Audio control configuration')
+
+
+class WebRTCIceCandidateResponse(BaseModel):
+    """WebRTC ICE candidate response"""
+
+    status: Literal['success', 'error'] = Field(
+        ..., description='Status of the ICE candidate processing'
+    )
+    message: str = Field(..., description='Response message')
+
+
 class WebRTCSignalingMessage(WebRTCSignalingBase):
     """WebRTC signaling message"""
 
+    type: WebRTCSignalingType = Field(..., description='Type of the message')
     sdp: Optional[str] = None
-    candidate: Optional[dict] = None
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    candidate: Optional[WebRTCIceCandidate] = None
+    audio_config: Optional[AudioControlConfig] = None
+    candidate_response: Optional[WebRTCIceCandidateResponse] = None
 
 
 class WebRTCMessage(WebRTCSignalingMessage):
@@ -69,6 +111,9 @@ class WebRTCResponse(BaseModel):
 
     type: Literal['answer'] = Field(..., description="Type of the response, must be 'answer'")
     sdp: str = Field(..., description='Session Description Protocol (SDP) for the answer')
+    audio_config: Optional[AudioControlConfig] = Field(
+        None, description='Audio control configuration'
+    )
 
 
 # ============================================================================
@@ -76,32 +121,3 @@ class WebRTCResponse(BaseModel):
 # ============================================================================
 # These schemas define the business-specific message formats and data structures
 # ============================================================================
-
-
-class TranscriptMessage(BaseModel):
-    """Transcript message format"""
-
-    text: str
-    timestamp: str
-    confidence: Optional[float] = None
-    language: Optional[str] = None
-
-
-class WebRTCTranscript(WebRTCMessage):
-    """WebRTC transcript message"""
-
-    transcript: TranscriptMessage
-
-
-class AudioMessage(BaseModel):
-    """Audio upload message"""
-
-    audio: bytes
-    timestamp: str
-    audio_url: Optional[str] = None
-
-
-class WebRTCAudio(WebRTCMessage):
-    """WebRTC audio message"""
-
-    audio: AudioMessage
