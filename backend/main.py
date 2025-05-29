@@ -6,16 +6,20 @@ from .config import settings
 # from .database import engine
 from .database import create_db_and_tables
 from .routers import (
+    confidence_area_route,
     conversation_category_route,
     conversation_turn_route,
     goal_route,
     language_route,
+    learning_style_route,
     rating_route,
     scenario_template_route,
+    session_length_route,
     training_case_route,
     training_preparation_route,
     training_session_feedback_route,
     training_session_route,
+    user_confidence_score_route,
     user_goals_route,
     user_profile_route,
 )
@@ -42,6 +46,10 @@ app.include_router(rating_route.router)
 app.include_router(user_profile_route.router)
 app.include_router(user_goals_route.router)
 app.include_router(goal_route.router)
+app.include_router(confidence_area_route.router)
+app.include_router(user_confidence_score_route.router)
+app.include_router(learning_style_route.router)
+app.include_router(session_length_route.router)
 
 
 # Create database tables on startup
