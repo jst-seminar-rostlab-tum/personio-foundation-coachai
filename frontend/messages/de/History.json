@@ -1,0 +1,18 @@
+{
+  "metaTitle": "Verlauf - Coach AI",
+  "metaDescription": "Überblick über Ihre bisherigen Trainingseinheiten und Entwicklungsfortschritte",
+  "title": "Trainingsverlauf",
+  "subtitle": "Übersicht und Analyse Ihrer Trainingseinheiten",
+  "skillsPerformance": "Kompetenzbewertung",
+  "activity": "Aktivitätsübersicht",
+  "structure": "Strukturierung",
+  "empathy": "Einfühlungsvermögen",
+  "solutionFocus": "Lösungskompetenz",
+  "totalSessions": "Sitzungen",
+  "avgScore": "Leistung",
+  "goalsAchieved": "Erreichte Ziele",
+  "previousSessions": "Bisherige Sitzungen",
+  "exportHistory": "Verlauf exportieren",
+  "clearAll": "Alle löschen",
+  "loadMore": "Mehr laden"
+}

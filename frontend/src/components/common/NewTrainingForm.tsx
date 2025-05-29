@@ -42,6 +42,7 @@ export default function NewTrainingForm() {
         return !!formState.category;
       case 1:
         return (
+          (formState.category !== 'custom' || !!formState.customCategory) &&
           !!formState.party.type &&
           (formState.party.type !== 'other' || !!formState.party.otherName) &&
           !!formState.context &&
@@ -95,10 +96,11 @@ export default function NewTrainingForm() {
       <Stepper
         steps={steps}
         currentStep={currentStep}
-        onStepClick={handleStepClick}
         showAllStepNumbers
         showStepLabels
-        className="p-2 mb-16"
+        className="px-6 py-2 mb-16"
+        onStepClick={handleStepClick}
+        currentStepValid={isStepValid(currentStep)}
       />
 
       {currentStep === 0 && (
