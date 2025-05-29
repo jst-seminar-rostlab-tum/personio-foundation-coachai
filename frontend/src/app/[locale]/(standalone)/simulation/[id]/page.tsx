@@ -1,16 +1,13 @@
-import type { Metadata } from 'next';
+import SimulationPageComponent from '@/components/common/SimulationPage';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
-
-type Props = {
-  params: Promise<{ locale: string }>;
-};
+import type { Metadata } from 'next';
+import type { Props } from '@/interfaces/LayoutProps';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-
   return generateDynamicMetadata(locale, '/simulation/[id]', true);
 }
 
-export default function SimulationLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+export default function SimulationPage() {
+  return <SimulationPageComponent />;
 }
