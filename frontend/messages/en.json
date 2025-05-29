@@ -166,11 +166,9 @@
     "subtitle": "Tailor your leadership training to your needs",
     "steps": {
       "step1": "What’s Your Role?",
-      "step2": "How Much Leadership Experience Do You Have?",
-      "step3": "What Are Your Primary Goals?",
-      "step3Subtitle": "Select up to 3 areas you'd like to focus on.",
-      "step4": "Rate Your Confidence In These Areas",
-      "step5": "Your Preferences"
+      "step2": "What Are Your Primary Goals?",
+      "step2Subtitle": "Select up to 3 areas you'd like to focus on.",
+      "step3": "Rate Your Confidence In These Areas"
     },
     "navigation": {
       "back": "Go Back",

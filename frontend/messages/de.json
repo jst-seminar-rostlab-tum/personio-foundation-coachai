@@ -166,11 +166,9 @@
     "subtitle": "Passen Sie Ihr Training an Ihre Bedürfnisse an",
     "steps": {
       "step1": "Was ist Ihre Rolle?",
-      "step2": "Wie viel Führungserfahrung haben Sie?",
-      "step3": "Was sind Ihre Hauptziele?",
-      "step3Subtitle": "Wählen Sie bis zu 3 Bereiche",
-      "step4": "Bewerten Sie Ihr Vertrauen in diese Bereiche",
-      "step5": "Ihre Präferenzen"
+      "step2": "Was sind Ihre Hauptziele?",
+      "step2Subtitle": "Wählen Sie bis zu 3 Bereiche",
+      "step3": "Bewerten Sie Ihr Vertrauen in diese Bereiche"
     },
     "navigation": {
       "back": "Zurück",
