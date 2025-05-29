@@ -22,15 +22,15 @@ DOC_FOLDER = BASE_DIR / 'documents'
 
 EMBEDDING_TYPE = 'gemini'
 TABLE_NAME = 'hr_information'
-QUERY_FN = 'match_documents'
 SEARCH_TYPE = 'mmr'
 K_SEARCH = 5
-default_prompt = """
+DEFAULT_PROMPT = """
         You are a concise assistant that gives an answer to a query based on the provided context.
         Context: {context}
         Query: {query}
         Answer:
         """
+DEFAULT_POPULATE_DB = False
 
 
 def load_and_index_documents(vector_db: SupabaseVectorStore) -> None:
@@ -44,10 +44,11 @@ def load_and_index_documents(vector_db: SupabaseVectorStore) -> None:
     print(f'Added {len(docs)} documents to vector store: {TABLE_NAME}')
 
 
-def get_vector_db_retriever() -> VectorStoreRetriever:
+def build_vector_db_retriever(populate_db: bool) -> VectorStoreRetriever:
     embedding = get_embedding_model(EMBEDDING_TYPE)
-    vector_db = load_vector_db(embedding, TABLE_NAME, query_name=QUERY_FN)
-    load_and_index_documents(vector_db)
+    vector_db = load_vector_db(embedding, TABLE_NAME)
+    if populate_db:
+        load_and_index_documents(vector_db)
     retriever = vector_db.as_retriever(search_type=SEARCH_TYPE, search_kwargs={'k': K_SEARCH})
     return retriever
 
@@ -58,9 +59,12 @@ def get_llm() -> ChatGoogleGenerativeAI:
     )
 
 
-def rag_chain(prompt: str = default_prompt) -> RunnableSerializable[Any, BaseMessage]:
+def rag_chain(
+    populate_db: bool = DEFAULT_POPULATE_DB,
+    prompt: str = DEFAULT_PROMPT,
+) -> RunnableSerializable[Any, BaseMessage]:
     llm = get_llm()
-    retriever = get_vector_db_retriever()
+    retriever = build_vector_db_retriever(populate_db)
     prompt = PromptTemplate.from_template(prompt)
 
     return (
@@ -74,7 +78,10 @@ def rag_chain(prompt: str = default_prompt) -> RunnableSerializable[Any, BaseMes
 
 if __name__ == '__main__':
     query = 'What are barriers to effective feedback?'
-    chain = rag_chain()
+    chain = rag_chain(
+        # Uncomment to populate db (if vector db is emtpy)
+        populate_db=True,
+    )
     result = chain.invoke({'query': query})
     print(result.content)
     print(
