@@ -2,7 +2,7 @@ import { UserPreference } from '@/interfaces/UserInputFields';
 import { useTranslations } from 'next-intl';
 
 export function useUserRoleLeadershipGoals(): UserPreference[] {
-  const t = useTranslations('leadershipGoals');
+  const t = useTranslations('TrainingSettings.leadershipGoals');
   return [
     {
       label: t('currentRole.label'),

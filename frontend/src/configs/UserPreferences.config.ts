@@ -2,7 +2,7 @@ import { UserPreference } from '@/interfaces/UserInputFields';
 import { useTranslations } from 'next-intl';
 
 export function useUserPreferences(): UserPreference[] {
-  const t = useTranslations('preferences');
+  const t = useTranslations('TrainingSettings.preferences');
   return [
     {
       label: t('language.label'),

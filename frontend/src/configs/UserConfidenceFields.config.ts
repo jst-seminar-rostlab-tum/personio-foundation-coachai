@@ -2,7 +2,7 @@ import { UserConfidenceField } from '@/interfaces/UserInputFields';
 import { useTranslations } from 'next-intl';
 
 export function useUserConfidenceFields(): UserConfidenceField[] {
-  const t = useTranslations('confidenceFields');
+  const t = useTranslations('TrainingSettings.confidenceFields');
   return [
     {
       title: t('givingFeedback.title'),
