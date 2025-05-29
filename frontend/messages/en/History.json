@@ -1,4 +1,18 @@
 {
   "metaTitle": "History - Coach AI",
-  "metaDescription": "View your past training sessions and track your progress"
+  "metaDescription": "View your past training sessions and track your progress",
+  "title": "Training History",
+  "subtitle": "View & analyse your training sessions",
+  "skillsPerformance": "Skills Performance",
+  "activity": "Activity",
+  "structure": "Structure",
+  "empathy": "Empathy",
+  "solutionFocus": "Solution Focus",
+  "totalSessions": "total\nsessions",
+  "avgScore": "avg.\nscore",
+  "goalsAchieved": "goals\nachieved",
+  "previousSessions": "Previous Sessions",
+  "exportHistory": "Export History",
+  "clearAll": "Clear All",
+  "loadMore": "Load More"
 }
