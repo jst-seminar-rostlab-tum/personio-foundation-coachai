@@ -74,6 +74,10 @@ def get_dummy_user_profiles(roles: list[Role], experiences: list[Experience]) ->
             experience_id=experiences[0].id,
             preferred_learning_style='Visual',
             preferred_session_length='30 minutes',
+            full_name='Dummy User 1',
+            email='dummy1@mail.com',
+            phone_number='+1234567890',
+            password='securepassword123',
         ),
         UserProfile(
             id=uuid4(),
@@ -82,6 +86,10 @@ def get_dummy_user_profiles(roles: list[Role], experiences: list[Experience]) ->
             experience_id=experiences[1].id,
             preferred_learning_style='Auditory',
             preferred_session_length='1 hour',
+            full_name='Dummy User 2',
+            email='dummy2@mail.com',
+            phone_number='+1234567890',
+            password='securepassword123',
         ),
     ]
 

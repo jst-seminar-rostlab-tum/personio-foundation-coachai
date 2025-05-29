@@ -50,6 +50,9 @@ class UserProfileCreate(SQLModel):
     experience_id: UUID
     preferred_learning_style: str
     preferred_session_length: str
+    email: str
+    phone_number: str
+    password: str
 
 
 # Schema for reading UserProfile data
@@ -62,3 +65,5 @@ class UserProfileRead(SQLModel):
     preferred_session_length: str
     updated_at: datetime
     deleted_at: Optional[datetime]
+    email: str
+    phone_number: str

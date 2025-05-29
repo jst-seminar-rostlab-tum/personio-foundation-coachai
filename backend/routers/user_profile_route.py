@@ -22,7 +22,7 @@ def get_user_profiles(session: Annotated[Session, Depends(get_session)]) -> list
     """
     Retrieve all user profiles.
     """
-    statement = select(UserProfile)
+    statement = select(UserProfileRead)
     user_profiles = session.exec(statement).all()
     return list(user_profiles)
 
