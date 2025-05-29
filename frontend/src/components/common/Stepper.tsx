@@ -11,6 +11,7 @@ const Stepper: React.FC<StepperProps> = ({
   className,
   showAllStepNumbers,
   showStepLabels,
+  currentStepValid,
 }) => {
   return (
     <div className={cn('flex items-start justify-center w-full', className)}>
@@ -27,7 +28,7 @@ const Stepper: React.FC<StepperProps> = ({
                 }
               )}
               onClick={() => onStepClick && onStepClick(index)}
-              disabled={index > currentStep + 1}
+              disabled={index > currentStep + 1 || !currentStepValid}
             >
               {index < currentStep ? (
                 <CheckIcon className="size-5" strokeWidth={3} />

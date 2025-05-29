@@ -1,12 +1,9 @@
 import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
+import { Props } from '@/interfaces/LayoutProps';
 
 const inter = Inter({ subsets: ['latin'] });
-
-type Props = {
-  params: Promise<{ locale: string }>;
-};
 
 export default async function RootLayout({ children, params }: Props) {
   const { locale } = await params;
