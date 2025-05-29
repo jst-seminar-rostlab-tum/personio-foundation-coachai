@@ -23,30 +23,31 @@ class ScenarioTemplateStatus(str, Enum):
 # Database model
 class ScenarioTemplate(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    category_id: Optional[UUID] = Field(default=None, foreign_key="conversationcategory.id")
+    category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
     title: str
     description: str
     system_prompt: str
     initial_prompt: str
-    ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON)) 
-    language_code: str = Field(foreign_key="language.code")
+    ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    language_code: str = Field(foreign_key='language.code')
     status: ScenarioTemplateStatus = Field(default=ScenarioTemplateStatus.draft)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    category: Optional["ConversationCategory"] = Relationship()
-    language: Optional["Language"] = Relationship()
-    training_cases: list["TrainingCase"] = Relationship(back_populates="scenario_template")
+    category: Optional['ConversationCategory'] = Relationship(back_populates='scenario_templates')
+    language: Optional['Language'] = Relationship()
+    training_cases: list['TrainingCase'] = Relationship(
+        back_populates='scenario_template', cascade_delete=True
+    )
+
     # Needed for Column(JSON)
     class Config:  # type: ignore
         arbitrary_types_allowed = True
 
 
 @event.listens_for(ScenarioTemplate, 'before_update')
-def update_timestamp(
-    mapper: Mapper, connection: Connection, target: 'ScenarioTemplate'
-) -> None:
+def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioTemplate') -> None:
     target.updated_at = datetime.utcnow()
 
 
