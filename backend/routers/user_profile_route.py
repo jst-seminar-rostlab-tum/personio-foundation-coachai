@@ -22,9 +22,9 @@ def get_user_profiles(session: Annotated[Session, Depends(get_session)]) -> list
     """
     Retrieve all user profiles.
     """
-    statement = select(UserProfileRead)
+    statement = select(UserProfile)
     user_profiles = session.exec(statement).all()
-    return list(user_profiles)
+    return [UserProfileRead.model_validate(user_profile) for user_profile in user_profiles]
 
 
 @router.post('/', response_model=UserProfileRead)
