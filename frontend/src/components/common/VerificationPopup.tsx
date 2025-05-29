@@ -30,7 +30,7 @@ export function VerificationPopup({
   phoneNumber,
   formData,
 }: VerificationPopupProps) {
-  const t = useTranslations('LoginPage.VerificationPopup');
+  const t = useTranslations('Login.VerificationPopup');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);

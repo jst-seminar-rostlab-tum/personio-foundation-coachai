@@ -5,7 +5,7 @@ import { Props } from '@/interfaces/LayoutProps';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export default async function RootLayout({ children, params }: Props) {
+export default async function StandaloneLayout({ children, params }: Props) {
   const { locale } = await params;
 
   return (
@@ -24,7 +24,7 @@ export default async function RootLayout({ children, params }: Props) {
         />
       </head>
       <body className={inter.className}>
-        <main className="container mx-auto px-4">
+        <main className="container mx-auto max-w-4xl">
           <NextIntlClientProvider>{children}</NextIntlClientProvider>
         </main>
       </body>

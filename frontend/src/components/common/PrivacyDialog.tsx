@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
 
 export default function PrivacyDialog({ open, onOpenChange }) {
-  const t = useTranslations('LoginPage.PrivacyPolicyDialog');
+  const t = useTranslations('Login.PrivacyPolicyDialog');
 
   // Memoize data structure to avoid recreation on each render
   const dataProcessingItems = useMemo(

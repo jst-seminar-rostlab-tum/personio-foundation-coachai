@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
-  const t = useTranslations('LoginPage');
+  const t = useTranslations('Login');
 
   const onClickSignIn = (values: { email: string; password: string }) => {
     console.warn(values);

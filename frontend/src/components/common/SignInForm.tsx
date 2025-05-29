@@ -20,11 +20,11 @@ interface SignInFormProps {
 }
 
 export function SignInForm({ onSubmit }: SignInFormProps) {
-  const t = useTranslations('LoginPage');
+  const t = useTranslations('Login.SignInTab');
 
   const signInFormSchema = z.object({
-    email: z.string().email(t('SignInTab.emailInputError')),
-    password: z.string().min(1, t('SignInTab.passwordInputError')),
+    email: z.string().email(t('emailInputError')),
+    password: z.string().min(1, t('passwordInputError')),
   });
 
   const signInForm = useForm({
@@ -46,10 +46,10 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('SignInTab.emailInputLabel')}</FormLabel>
+                  <FormLabel>{t('emailInputLabel')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t('SignInTab.emailInputPlaceholder')}
+                      placeholder={t('emailInputPlaceholder')}
                       {...field}
                       className="w-full"
                       type="email"
@@ -65,10 +65,10 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('SignInTab.passwordInputLabel')}</FormLabel>
+                  <FormLabel>{t('passwordInputLabel')}</FormLabel>
                   <FormControl>
                     <PasswordInput
-                      placeholder={t('SignInTab.passwordInputPlaceholder')}
+                      placeholder={t('passwordInputPlaceholder')}
                       {...field}
                       className="w-full"
                     />
@@ -81,7 +81,7 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
 
           <CardFooter className="flex-col gap-6">
             <Button type="submit" size="full">
-              {t('SignInTab.signInButtonLabel')}
+              {t('signInButtonLabel')}
             </Button>
             <div className="w-full border-t border-gray-300" />
             <Button size={'full'} variant={'secondary'}>
@@ -107,7 +107,7 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
                   fill="#ea4335"
                 />
               </svg>
-              {t('SignInTab.signInWithGoogleButtonLabel')}
+              {t('signInWithGoogleButtonLabel')}
             </Button>
           </CardFooter>
         </form>

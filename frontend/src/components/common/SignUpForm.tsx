@@ -30,7 +30,7 @@ interface SignUpFormProps {
 }
 
 export function SignUpForm({ onSubmit }: SignUpFormProps) {
-  const t = useTranslations('LoginPage.SignUpTab');
+  const t = useTranslations('Login.SignUpTab');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showVerification, setShowVerification] = useState(false);

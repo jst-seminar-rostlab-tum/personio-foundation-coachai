@@ -5,12 +5,9 @@ import { NextIntlClientProvider } from 'next-intl';
 import AboutHeader from '@/components/layout/AboutHeader';
 import AboutFooter from '@/components/layout/AboutFooter';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import type { Props } from '@/interfaces/LayoutProps';
 
 const inter = Inter({ subsets: ['latin'] });
-
-type Props = {
-  params: Promise<{ locale: string }>;
-};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
