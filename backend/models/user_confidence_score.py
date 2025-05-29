@@ -41,3 +41,8 @@ class UserConfidenceScoreRead(SQLModel):
     user_id: UUID
     score: int
     updated_at: datetime
+
+
+class ConfidenceScoreRead(SQLModel):
+    area_label: str
+    score: int

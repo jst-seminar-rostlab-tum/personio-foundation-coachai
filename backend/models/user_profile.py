@@ -7,6 +7,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
 from sqlmodel import Field, Relationship, SQLModel
 
+from backend.models.user_confidence_score import ConfidenceScoreRead
+
 if TYPE_CHECKING:
     from backend.models.experience import Experience
     from backend.models.learning_style import LearningStyle
@@ -56,8 +58,8 @@ class UserProfileCreate(SQLModel):
     preferred_language: str
     role_id: UUID
     experience_id: UUID
-    preferred_learning_style: UUID
-    preferred_session_length: UUID
+    preferred_learning_style_id: UUID
+    preferred_session_length_id: UUID
 
 
 # Schema for reading UserProfile data
@@ -66,7 +68,23 @@ class UserProfileRead(SQLModel):
     preferred_language: str
     role_id: UUID
     experience_id: UUID
-    preferred_learning_style: UUID
-    preferred_session_length: UUID
+    preferred_learning_style_id: UUID
+    preferred_session_length_id: UUID
+    goal: list[UUID]
+    confidence_scores: list[UUID]
     updated_at: datetime
     deleted_at: Optional[datetime]
+
+
+class UserProfileExtendedRead(SQLModel):
+    user_id: UUID
+    preferred_language: str
+    role: Optional[str]
+    experience: Optional[str]
+    preferred_learning_style: Optional[str]
+    preferred_session_length: Optional[str]
+    goal: list[str]
+    confidence_scores: list[ConfidenceScoreRead]
+
+
+UserProfileExtendedRead.model_rebuild()

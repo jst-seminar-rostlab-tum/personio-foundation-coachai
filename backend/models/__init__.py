@@ -42,12 +42,13 @@ from .training_session_feedback import (
     TrainingSessionFeedbackRead,
 )
 from .user_confidence_score import (
+    ConfidenceScoreRead,
     UserConfidenceScore,
     UserConfidenceScoreCreate,
     UserConfidenceScoreRead,
 )
 from .user_goal import UserGoal, UserGoalCreate, UserGoalRead
-from .user_profile import UserProfile, UserProfileCreate, UserProfileRead
+from .user_profile import UserProfile, UserProfileCreate, UserProfileExtendedRead, UserProfileRead
 
 __all__ = [
     'Language',
@@ -107,4 +108,9 @@ __all__ = [
     'LearningStyle',
     'LearningStyleCreate',
     'LearningStyleRead',
+    'SessionLength',
+    'SessionLengthCreate',
+    'SessionLengthRead',
+    'ConfidenceScoreRead',
+    'UserProfileExtendedRead',
 ]
