@@ -1,10 +1,13 @@
 import Link from 'next/link';
-import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'CoachAI - Training Settings',
-  description: 'Customize your training preferences and goals',
-};
+import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import type { Metadata } from 'next';
+import type { Props } from '@/interfaces/LayoutProps';
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '/training-settings', true);
+}
 
 export default function TrainingSettingsPage() {
   return (

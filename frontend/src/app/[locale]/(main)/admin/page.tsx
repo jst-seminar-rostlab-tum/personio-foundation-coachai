@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
+import type { Props } from '@/interfaces/LayoutProps';
 
-export const metadata: Metadata = {
-  title: 'CoachAI - Administration',
-  description: 'Manage users, training sessions, and system settings',
-};
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '/admin', true);
+}
 
 export default function AdminPage() {
   return (

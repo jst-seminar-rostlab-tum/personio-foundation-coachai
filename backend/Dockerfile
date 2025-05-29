@@ -10,7 +10,10 @@ COPY . /app
 WORKDIR /app
 RUN uv sync --frozen --no-cache
 
-ENV stage=prod
+# Defaults to production stage
+ARG stage=prod
+# Set the environment variable for the stage.
+ENV stage=${stage}
 
 # Run the application.
-CMD ["uv", "run", "fastapi", "run", "main.py", "--port", "8000"]
+CMD ["uv", "run", "fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "8000"]

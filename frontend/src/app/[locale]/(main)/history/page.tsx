@@ -1,10 +1,13 @@
 import Link from 'next/link';
-import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'CoachAI - History',
-  description: 'View your past training sessions and track your progress',
-};
+import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import type { Metadata } from 'next';
+import type { Props } from '@/interfaces/LayoutProps';
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '/history', true);
+}
 
 export default function HistoryPage() {
   return (

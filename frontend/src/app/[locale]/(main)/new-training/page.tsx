@@ -1,10 +1,12 @@
+import NewTrainingForm from '@/components/common/NewTrainingForm';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
-import NewTrainingForm from '@/components/layout/NewTrainingForm';
+import type { Props } from '@/interfaces/LayoutProps';
 
-export const metadata: Metadata = {
-  title: 'CoachAI - New Training',
-  description: 'Start a new training session with personalized coaching',
-};
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '/new-training', true);
+}
 
 export default function NewTrainingPage() {
   return <NewTrainingForm />;

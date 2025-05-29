@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
-import Stepper from '@/components/ui/stepper';
+import Stepper from '@/components/common/Stepper';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FormState } from '@/interfaces/NewTrainingFormState';
@@ -42,6 +42,7 @@ export default function NewTrainingForm() {
         return !!formState.category;
       case 1:
         return (
+          (formState.category !== 'custom' || !!formState.customCategory) &&
           !!formState.party.type &&
           (formState.party.type !== 'other' || !!formState.party.otherName) &&
           !!formState.context &&
@@ -95,10 +96,11 @@ export default function NewTrainingForm() {
       <Stepper
         steps={steps}
         currentStep={currentStep}
-        onStepClick={handleStepClick}
         showAllStepNumbers
         showStepLabels
-        className="p-2 mb-16"
+        className="px-6 py-2 mb-16"
+        onStepClick={handleStepClick}
+        currentStepValid={isStepValid(currentStep)}
       />
 
       {currentStep === 0 && (

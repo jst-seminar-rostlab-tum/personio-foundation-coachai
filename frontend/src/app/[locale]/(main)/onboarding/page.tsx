@@ -1,11 +1,13 @@
-import OnboardingLayout from '@/components/layout/OnboardingLayout';
-import { Metadata } from 'next';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import type { Metadata } from 'next';
+import type { Props } from '@/interfaces/LayoutProps';
+import OnboardingPageComponent from '@/components/common/OnboardingPage';
 
-export const metadata: Metadata = {
-  title: 'CoachAI - Onboarding',
-  description: 'Get started with CoachAI - Set up your profile and preferences',
-};
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '/onboarding', true);
+}
 
 export default function OnboardingPage() {
-  return <OnboardingLayout />;
+  return <OnboardingPageComponent />;
 }

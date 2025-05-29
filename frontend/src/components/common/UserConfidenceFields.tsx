@@ -1,5 +1,5 @@
 import { UserConfidenceField } from '@/interfaces/UserInputFields';
-import Slider from '@/components/ui/slider';
+import Slider from '@/components/ui/Slider';
 import { cn } from '@/lib/utils';
 
 const UserConfidenceFields: React.FC<{ fields: UserConfidenceField[]; className?: string }> = ({

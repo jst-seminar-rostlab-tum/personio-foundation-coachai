@@ -1,5 +1,7 @@
 {
   "HomePage": {
+    "metaTitle": "Coach AI",
+    "metaDescription": "Practice difficult workplace conversations and receive real-time feedback to improve your communication and leadership skills.",
     "welcome": "Welcome to ",
     "appName": "CoachAI",
     "description": "Full-stack application with TypeScript and Python",
@@ -82,6 +84,8 @@
     }
   },
   "NewTraining": {
+    "metaTitle": "New Training - Coach AI",
+    "metaDescription": "Start a new training session with personalized coaching",
     "title": "New Training Session",
     "steps": {
       "category": "Category",
@@ -156,6 +160,8 @@
     }
   },
   "Onboarding": {
+    "metaTitle": "Onboarding - Coach AI",
+    "metaDescription": "Start your leadership development journey with Coach AI",
     "title": "Personalize Your Experience",
     "subtitle": "Tailor your leadership training to your needs",
     "steps": {
@@ -172,5 +178,37 @@
       "finish": "Finish Setup",
       "skip": "Skip for now"
     }
+  },
+  "Admin": {
+    "metaTitle": "Admin - Coach AI",
+    "metaDescription": "Manage users, training sessions, and system settings"
+  },
+  "Dashboard": {
+    "metaTitle": "Dashboard - Coach AI",
+    "metaDescription": "View your training progress, start new sessions, and track your performance"
+  },
+  "Feedback": {
+    "metaTitle": "Feedback - Coach AI",
+    "metaDescription": "Detailed analysis and evaluation of your training session"
+  },
+  "History": {
+    "metaTitle": "History - Coach AI",
+    "metaDescription": "View your past training sessions and track your progress"
+  },
+  "Login": {
+    "metaTitle": "Login - Coach AI",
+    "metaDescription": "Sign in to your Coach AI account"
+  },
+  "Preparation": {
+    "metaTitle": "Preparation - Coach AI",
+    "metaDescription": "Prepare for your training session with Coach AI"
+  },
+  "Simulation": {
+    "metaTitle": "Simulation - Coach AI",
+    "metaDescription": "Practice your skills in an interactive training simulation"
+  },
+  "TrainingSettings": {
+    "metaTitle": "Training Settings - Coach AI",
+    "metaDescription": "Customize your training preferences and goals"
   }
 }

@@ -8,8 +8,12 @@ from .conversation_turn import (
     ConversationTurnCreate,
     ConversationTurnRead,
 )
+from .difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
+from .experience import Experience, ExperienceCreate, ExperienceRead
+from .goal import Goal, GoalCreate, GoalRead
 from .language import Language, LanguageCreate, LanguageRead
 from .rating import Rating, RatingCreate, RatingRead
+from .role import Role, RoleCreate, RoleRead
 from .scenario_template import (
     ScenarioTemplate,
     ScenarioTemplateCreate,
@@ -34,9 +38,10 @@ from .training_session_feedback import (
     TrainingSessionFeedbackCreate,
     TrainingSessionFeedbackRead,
 )
+from .user_goal import UserGoal, UserGoalCreate, UserGoalRead
+from .user_profile import UserProfile, UserProfileCreate, UserProfileRead
 
 __all__ = [
-    'Message',
     'Language',
     'LanguageCreate',
     'LanguageRead',
@@ -70,4 +75,19 @@ __all__ = [
     'UserProfile',
     'UserProfileCreate',
     'UserProfileRead',
+    'Goal',
+    'GoalCreate',
+    'GoalRead',
+    'UserGoal',
+    'UserGoalCreate',
+    'UserGoalRead',
+    'Role',
+    'RoleCreate',
+    'RoleRead',
+    'Experience',
+    'ExperienceCreate',
+    'ExperienceRead',
+    'DifficultyLevel',
+    'DifficultyLevelCreate',
+    'DifficultyLevelRead',
 ]

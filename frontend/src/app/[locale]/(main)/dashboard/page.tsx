@@ -1,10 +1,13 @@
 import Link from 'next/link';
-import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'CoachAI - Dashboard',
-  description: 'View your training progress, start new sessions, and track your performance',
-};
+import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import type { Metadata } from 'next';
+import type { Props } from '@/interfaces/LayoutProps';
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '/dashboard', true);
+}
 
 export default function DashboardPage() {
   return (

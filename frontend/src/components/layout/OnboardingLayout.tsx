@@ -1,15 +1,15 @@
 'use client';
 
-import Stepper from '@/components/ui/stepper';
+import Stepper from '@/components/common/Stepper';
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import UserPreferences from '@/components/layout/UserPreferences';
+import { Button } from '@/components/ui/Button';
+import UserPreferences from '@/components/common/UserPreferences';
 import { userPreferences } from '@/configs/UserPreferences.config';
-import UserConfidenceFields from '@/components/layout/UserConfidenceFields';
+import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 import { UserOption } from '@/interfaces/UserInputFields';
-import Checkbox from '@/components/ui/checkbox';
-import Label from '@/components/ui/label';
+import Checkbox from '@/components/ui/Checkbox';
+import Label from '@/components/ui/Label';
 import { UserRadio } from '@/components/layout/UserRadioQuestion';
 import { useTranslations } from 'next-intl';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
