@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
@@ -14,33 +15,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function DashboardPage() {
+  const name = 'Anton';
+  const t = useTranslations('Dashboard');
+
   return (
     <div className="flex flex-col gap-12 p-8">
       {/* Header */}
       <section className="flex items-center justify-between">
-        <p className="text-2xl">Hello, Anton!</p>
+        <p className="text-2xl">
+          {t('header.greeting')}
+          {name}
+        </p>
         <Link href="/new-training">
-          <Button>Create Training</Button>
+          <Button>{t('header.cta')}</Button>
         </Link>
       </section>
 
       {/* Current Session */}
       <section className="flex flex-col gap-4">
         <div>
-          <h2 className="text-xl">Current Session</h2>
-          <p className="text-base text-[var(--bw-40)]">Continue your active training session</p>
+          <h2 className="text-xl">{t('currentSession.title')}</h2>
+          <p className="text-base text-[var(--bw-40)]">{t('currentSession.subtitle')}</p>
         </div>
 
         {/* Current Session Card */}
         <div className="bg-[var(--marigold-5)] border border-[var(--marigold-30)] rounded-lg p-8 gap-8 flex flex-col">
           <div>
-            <h2 className="text-xl">Giving Constructive Feedback</h2>
+            <h2 className="text-xl">{t('currentSession.sessionCard.title')}</h2>
             <p className="text-base text-[var(--bw-40)]">
-              Practice giving feedback to a team member about missed deadlines
+              {t('currentSession.sessionCard.subtitle')}
             </p>
           </div>
           <Link href="/simulation/1">
-            <Button className="w-full mx-auto">Continue</Button>
+            <Button className="w-full mx-auto">{t('currentSession.sessionCard.cta')}</Button>
           </Link>
         </div>
       </section>
@@ -48,17 +55,17 @@ export default function DashboardPage() {
       {/* Simple Stats: 2x2 on small, 1x4 on large screens */}
       {/* Stats Grid (2x2 on small, 1x4 on large screens) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard value={56} label="Total Sessions" />
-        <StatCard value={12} label="This Month" />
-        <StatCard value="4.8" label="Avg. Rating" />
-        <StatCard value="89%" label="Completion Rate" />
+        <StatCard value={56} label={t('userStats.totalSessions')} />
+        <StatCard value={12} label={t('userStats.monthlySessions')} />
+        <StatCard value="4.8" label={t('userStats.avgRating')} />
+        <StatCard value="89%" label={t('userStats.completionRate')} />
       </div>
 
       {/* Recent Training History */}
       <section className="flex flex-col gap-4">
         <div>
-          <h2 className="text-xl">Recent Training History</h2>
-          <p className="text-base text-[var(--bw-40)]">Your last completed training sessions</p>
+          <h2 className="text-xl">{t('recentSessions.title')}</h2>
+          <p className="text-base text-[var(--bw-40)]">{t('recentSessions.subtitle')}</p>
         </div>
 
         {/* History Items */}
@@ -82,7 +89,7 @@ export default function DashboardPage() {
         />
 
         <Link href="/history">
-          <Button className="w-full">Show Entire History</Button>
+          <Button className="w-full">{t('recentSessions.cta')}</Button>
         </Link>
       </section>
     </div>
