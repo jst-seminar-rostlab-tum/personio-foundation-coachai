@@ -1,7 +1,9 @@
 import { useTranslations } from 'next-intl';
 import {
   CheckCircle,
+  CircleX,
   Clock,
+  InfoIcon,
   MessageCircle,
   MessageCircleQuestion,
   Mic,
@@ -56,6 +58,10 @@ export default function FeedbackDetail() {
         return <Clock size={20} />;
       case 'Check':
         return <CheckCircle size={20} />;
+      case 'Cross':
+        return <CircleX size={18} className="text-red-300" />;
+      case 'Info':
+        return <InfoIcon size={18} className="text-marigold-50" />;
       default:
         return <MessageCircleQuestion size={20} />;
     }
