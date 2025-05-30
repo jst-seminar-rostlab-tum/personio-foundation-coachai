@@ -1,0 +1,68 @@
+{
+  "metaTitle": "Trainingsseinstellungen - Coach AI",
+  "metaDescription": "Passen Sie Ihre Trainingsseinstellungen an",
+  "title": "Trainingseinstellungen",
+  "backToDashboard": "Zurück zum Dashboard",
+  "privacyControls": "Datenschutzeinstellungen",
+  "storeAudioTranscripts": "Gesprächsaudio und Transkripte speichern",
+  "export": "Exportieren",
+  "exportData": "Persönliche Daten exportieren",
+  "deleteAccount": "Konto löschen",
+  "requestDeletion": "Löschung anfordern",
+  "personalizationSettings": "Personalisierungseinstellungen",
+  "saveSettings": "Einstellungen speichern",
+  "ninetyDays": "Ihre Audiodateien und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf einsehbar.",
+  "zeroDays": "Ihre Audiodateien und Transkripte werden nicht gespeichert.",
+  "deleteAccountConfirmTitle": "Sind Sie sicher?",
+  "deleteAccountConfirmDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
+  "cancel": "Abbrechen",
+  "confirm": "Bestätigen",
+  "preferences": {
+    "language": {
+      "label": "Bevorzugte Sprache",
+      "en": "Englisch",
+      "es": "Spanisch",
+      "fr": "Französisch"
+    },
+    "learningStyle": {
+      "label": "Bevorzugter Lernstil",
+      "visual": "Visuell",
+      "handson": "Praktische Übungen",
+      "auditory": "Auditiv",
+      "kinesthetic": "Kinästhetisch"
+    },
+    "session": {
+      "label": "Bevorzugte Sitzungsdauer",
+      "short": "Weniger als 30 Minuten",
+      "medium": "30–60 Minuten",
+      "long": "Über 1 Stunde"
+    }
+  },
+  "leadershipGoals": {
+    "currentRole": {
+      "label": "Aktuelle Rolle",
+      "tl": "Teamleiter",
+      "rec": "Recruiting-Spezialist",
+      "tr": "Trainee"
+    },
+    "primaryGoals": {
+      "label": "Hauptziele",
+      "feedback": "Konstruktives Feedback geben",
+      "coaching": "Coaching & Mentoring",
+      "coping": "Bewältigungsstrategien"
+    }
+  },
+  "confidenceFields": {
+    "givingFeedback": {
+      "title": "Schwieriges Feedback geben"
+    },
+    "teamConflicts": {
+      "title": "Teamkonflikte managen"
+    },
+    "challengingConversations": {
+      "title": "Herausfordernde Gespräche führen"
+    },
+    "minLabel": "Nicht sicher",
+    "maxLabel": "Sehr sicher"
+  }
+}

@@ -13,7 +13,7 @@ class Goal(SQLModel, table=True):  # `table=True` makes it a database table
     description: str
 
     # Relationships
-    user_goals: list['UserGoal'] = Relationship(back_populates='goal')
+    user_goals: list['UserGoal'] = Relationship(back_populates='goal', cascade_delete=True)
 
 
 # Schema for creating a new Goal

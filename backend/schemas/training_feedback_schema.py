@@ -28,12 +28,12 @@ class NegativeExample(BaseModel):
 
 
 class TrainingExamplesCollection(BaseModel):
-    positive_examples: str = Field(..., description='Markdown of positive examples')
-    negative_examples: str = Field(..., description='Markdown of negative examples')
+    positive_examples: list[PositiveExample] = Field(..., description='List of positive examples')
+    negative_examples: list[NegativeExample] = Field(..., description='List of negative examples')
 
 
-class GoalAchievementRequest(BaseModel):
-    """Request to evaluate how many training goals (objectives) were achieved in the transcript."""
+class GoalsAchievementRequest(BaseModel):
+    """Request to evaluate the training objectives that were achieved in the transcript."""
 
     transcript: str  # Full transcript of the training session
     objectives: list[str] = Field(
@@ -41,10 +41,12 @@ class GoalAchievementRequest(BaseModel):
     )
 
 
-class GoalAchieved(BaseModel):
-    """Response indicating how many training goals were achieved."""
+class GoalsAchievedCollection(BaseModel):
+    """Response indicating the training goals that were achieved."""
 
-    goals_achieved: int = Field(..., description='Number of training goals achieved in the session')
+    goals_achieved: list[str] = Field(
+        ..., description='List of training objectives achieved in the session'
+    )
 
 
 class RecommendationsRequest(ExamplesRequest):
@@ -56,15 +58,11 @@ class RecommendationsRequest(ExamplesRequest):
 
 
 class Recommendation(BaseModel):
-    markdown: str = Field(
-        ...,
-        description='Full recommendation as single Markdown text, including header (####) and body',
-    )
+    heading: str = Field(..., description='Title or summary of the recommendation')
+    text: str = Field(..., description='Description or elaboration of the recommendation')
 
 
 class RecommendationsCollection(BaseModel):
     recommendations: list[Recommendation] = Field(
-        ...,
-        description='List of recommendations, each a single Markdown '
-        'text with a header (####) and body',
+        ..., description='List of improvement recommendations'
     )
