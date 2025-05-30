@@ -316,15 +316,18 @@ def get_dummy_training_preparations(
         TrainingPreparation(
             id=uuid4(),
             case_id=training_cases[0].id,
-            objectives={
-                'objective_1': "Understand the client's needs",
-                'objective_2': 'Prepare a solution proposal',
-            },
-            key_concepts='### SBI Framework - **Situation**: Describe the specific situation.',
-            prep_checklist={
-                'item_1': 'Review client history',
-                'item_2': 'Prepare presentation slides',
-            },
+            objectives=[
+                "Understand the client's needs",
+                'Prepare a solution proposal',
+            ],
+            key_concepts=[
+                {'header': 'Time management', 'value': 'Time management'},
+                {'header': 'Collaboration', 'value': 'Collaboration'},
+            ],
+            prep_checklist=[
+                'Review client history',
+                'Prepare presentation slides',
+            ],
             status=TrainingPreparationStatus.pending,  # Use the enum for status
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
@@ -332,15 +335,18 @@ def get_dummy_training_preparations(
         TrainingPreparation(
             id=uuid4(),
             case_id=training_cases[1].id,
-            objectives={
-                'objective_1': 'Discuss project timeline',
-                'objective_2': 'Finalize deliverables',
-            },
-            key_concepts='### SBI Framework - **Situation**: Describe the specific situation.',
-            prep_checklist={
-                'item_1': 'Prepare project timeline',
-                'item_2': 'Review deliverables checklist',
-            },
+            objectives=[
+                'Discuss project timeline',
+                'Finalize deliverables',
+            ],
+            key_concepts=[
+                {'header': 'Time management', 'value': 'Time management'},
+                {'header': 'Collaboration', 'value': 'Collaboration'},
+            ],
+            prep_checklist=[
+                'Prepare project timeline',
+                'Review deliverables checklist',
+            ],
             status=TrainingPreparationStatus.pending,  # Use the enum for status
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
