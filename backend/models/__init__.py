@@ -34,6 +34,9 @@ from .training_preparation import (
 )
 from .training_session import TrainingSession, TrainingSessionCreate, TrainingSessionRead
 from .training_session_feedback import (
+    NegativeExample,
+    PositiveExample,
+    Recommendation,
     TrainingSessionFeedback,
     TrainingSessionFeedbackCreate,
     TrainingSessionFeedbackRead,
@@ -90,4 +93,7 @@ __all__ = [
     'DifficultyLevel',
     'DifficultyLevelCreate',
     'DifficultyLevelRead',
+    'PositiveExample',
+    'NegativeExample',
+    'Recommendation',
 ]
