@@ -76,40 +76,32 @@ export function VerificationPopup({
 
       // If verification successful and we have form data, create the user
       if (formData) {
-        await userProfileApi.create({
-          full_name: formData.fullName,
-          email: formData.email,
-          phone_number: formData.phoneNumber,
-          password: formData.password,
-          preferred_language: 'en', // Default language
-          role_id: '', // These will be set later
-          experience_id: '',
-          preferred_learning_style: '',
-          preferred_session_length: '',
-        });
-      }
+        try {
+          await userProfileApi.create({
+            full_name: formData.fullName,
+            email: formData.email,
+            phone_number: formData.phoneNumber,
+            password: formData.password,
+            preferred_language: 'en',
+            preferred_learning_style: '',
+            preferred_session_length: '',
+            role_id: undefined,
+            experience_id: undefined,
+          });
 
-      // Close the popup and redirect
-      onClose();
-      router.push('/');
-    } catch (err: unknown) {
-      if (
-        err &&
-        typeof err === 'object' &&
-        'response' in err &&
-        err.response &&
-        typeof err.response === 'object' &&
-        'data' in err.response &&
-        err.response.data &&
-        typeof err.response.data === 'object' &&
-        'detail' in err.response.data
-      ) {
-        setError(err.response.data.detail as string);
-      } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError(t('Verification.genericError'));
+          // If we get here, user was created successfully
+          onClose();
+          router.push('/');
+        } catch (err) {
+          console.error('Error creating user:', err);
+          setError(t('genericError'));
+        }
       }
+    } catch (err: unknown) {
+      const errorMessage = t('genericError');
+      console.error('Error creating user:', err);
+
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -118,9 +110,10 @@ export function VerificationPopup({
   const handleResendCode = async () => {
     try {
       setError(null);
-
       setResendCooldown(30);
     } catch (err: unknown) {
+      let errorMessage = t('resendError');
+
       if (
         err &&
         typeof err === 'object' &&
@@ -132,12 +125,19 @@ export function VerificationPopup({
         typeof err.response.data === 'object' &&
         'detail' in err.response.data
       ) {
-        setError(err.response.data.detail as string);
+        const { detail } = err.response.data;
+        if (typeof detail === 'string') {
+          errorMessage = detail;
+        } else if (Array.isArray(detail)) {
+          errorMessage = detail[0]?.msg || t('resendError');
+        } else if (typeof detail === 'object' && detail !== null && 'msg' in detail) {
+          errorMessage = String(detail.msg);
+        }
       } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError(t('Verification.resendError'));
+        errorMessage = err.message;
       }
+
+      setError(errorMessage);
     }
   };
 
@@ -216,7 +216,7 @@ export function VerificationPopup({
                 <Button
                   type="button"
                   variant="ghost"
-                  size="sm"
+                  size="default"
                   onClick={handleResendCode}
                   disabled={resendCooldown > 0 || isLoading}
                   className={`text-sm p-0 h-auto font-normal transition-colors flex items-center gap-1 ${

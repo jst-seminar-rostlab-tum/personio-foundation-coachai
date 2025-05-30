@@ -56,12 +56,25 @@ class UserProfileCreate(SQLModel):
     full_name: str
 
 
+# Schema for creating a new UserProfile
+class UserProfileValidate(SQLModel):
+    preferred_language: str
+    role_id: Optional[UUID] = None
+    experience_id: Optional[UUID] = None
+    preferred_learning_style: str
+    preferred_session_length: str
+    email: str
+    phone_number: str
+    password: str
+    full_name: str
+
+
 # Schema for reading UserProfile data
 class UserProfileRead(SQLModel):
     id: UUID
     preferred_language: str
-    role_id: UUID
-    experience_id: UUID
+    role_id: Optional[UUID] = None
+    experience_id: Optional[UUID] = None
     preferred_learning_style: str
     preferred_session_length: str
     updated_at: datetime

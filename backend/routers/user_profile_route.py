@@ -5,15 +5,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..models.experience import Experience
 from ..models.language import Language
-from ..models.role import Role
 from ..models.user_profile import (
     UserProfile,
     UserProfileCreate,
     UserProfileRead,
     UserProfileSignIn,
     UserProfileSignInResponse,
+    UserProfileValidate,
     UserProfileValidationResponse,
 )
 
@@ -49,8 +48,18 @@ def create_user_profile(
     if not language:
         raise HTTPException(status_code=404, detail='Preferred language not found')
 
-    # Create new user profile
-    db_user_profile = UserProfile(**user_profile.dict())
+    # Create new user profile with only required fields
+    db_user_profile = UserProfile(
+        preferred_language=user_profile.preferred_language,
+        role_id=user_profile.role_id,
+        experience_id=user_profile.experience_id,
+        preferred_learning_style=user_profile.preferred_learning_style,
+        preferred_session_length=user_profile.preferred_session_length,
+        full_name=user_profile.full_name,
+        email=user_profile.email,
+        phone_number=user_profile.phone_number,
+        password=user_profile.password,
+    )
     session.add(db_user_profile)
     session.commit()
     session.refresh(db_user_profile)
@@ -141,7 +150,7 @@ def sign_in(
 
 @router.post('/validate', response_model=UserProfileValidationResponse)
 def validate_user_profile(
-    user_profile: UserProfileCreate, session: Annotated[Session, Depends(get_session)]
+    user_profile: UserProfileValidate, session: Annotated[Session, Depends(get_session)]
 ) -> UserProfileValidationResponse:
     """
     Validate user profile data before creation.
@@ -169,24 +178,6 @@ def validate_user_profile(
     ).first()
     if existing_name:
         errors['full_name'] = 'Full name already registered'
-
-    # Check if language exists
-    language = session.exec(
-        select(Language).where(Language.code == user_profile.preferred_language)
-    ).first()
-    if not language:
-        errors['preferred_language'] = 'Preferred language not found'
-
-    # Only validate UUIDs if they are provided
-    if user_profile.role_id:
-        role = session.get(Role, user_profile.role_id)
-        if not role:
-            errors['role_id'] = 'Invalid role selected'
-
-    if user_profile.experience_id:
-        experience = session.get(Experience, user_profile.experience_id)
-        if not experience:
-            errors['experience_id'] = 'Invalid experience level selected'
 
     if errors:
         return UserProfileValidationResponse(

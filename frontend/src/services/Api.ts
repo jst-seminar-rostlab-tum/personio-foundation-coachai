@@ -63,5 +63,3 @@ export const userProfileApi = {
     return response.data;
   },
 };
-
-export default api;
