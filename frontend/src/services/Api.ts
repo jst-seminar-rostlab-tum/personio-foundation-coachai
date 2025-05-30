@@ -1,3 +1,4 @@
+import { SignInCredentials, UserProfileCreate } from '@/interfaces/Api';
 import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -31,23 +32,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export interface UserProfileCreate {
-  full_name: string;
-  email: string;
-  phone_number: string;
-  password: string;
-  preferred_language: string;
-  role_id?: string;
-  experience_id?: string;
-  preferred_learning_style: string;
-  preferred_session_length: string;
-}
-
-export interface SignInCredentials {
-  email: string;
-  password: string;
-}
 
 export const userProfileApi = {
   create: async (data: UserProfileCreate) => {

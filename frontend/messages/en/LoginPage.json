@@ -142,5 +142,9 @@
         "description": "Request an export of all data we have stored about you"
       }
     }
+  },
+  "PasswordInput": {
+    "showPasswordSpan": "Show Password",
+    "hidePasswordSpan": "Hide Password"
   }
 }

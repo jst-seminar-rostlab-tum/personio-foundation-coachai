@@ -1,15 +1,16 @@
-export interface Message {
-  id: number;
-  content: string;
-  created_at: string;
+export interface UserProfileCreate {
+  full_name: string;
+  email: string;
+  phone_number: string;
+  password: string;
+  preferred_language: string;
+  role_id?: string;
+  experience_id?: string;
+  preferred_learning_style: string;
+  preferred_session_length: string;
 }
 
-export interface ApiResponse<T> {
-  data?: T;
-  error?: string;
-}
-
-export interface PaginationParams {
-  page?: number;
-  limit?: number;
+export interface SignInCredentials {
+  email: string;
+  password: string;
 }

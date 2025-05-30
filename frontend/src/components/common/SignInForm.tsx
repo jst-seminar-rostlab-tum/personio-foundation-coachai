@@ -15,11 +15,8 @@ import {
 } from '@/components/ui/Form';
 import { useState } from 'react';
 import { userProfileApi } from '@/services/Api';
+import { SignInFormProps } from '@/interfaces/SignInForm';
 import { PasswordInput } from './PasswordInput';
-
-interface SignInFormProps {
-  onSubmit: (values: { email: string; password: string }) => void;
-}
 
 export function SignInForm({ onSubmit }: SignInFormProps) {
   const t = useTranslations('Login.SignInTab');

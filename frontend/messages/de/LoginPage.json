@@ -141,5 +141,9 @@
         "description": "Fordern Sie einen Export aller über Sie gespeicherten Daten an"
       }
     }
+  },
+  "PasswordInput": {
+    "showPasswordSpan": "Zeige Passwort",
+    "hidePasswordSpan": "Verstecke Passwort"
   }
 }
