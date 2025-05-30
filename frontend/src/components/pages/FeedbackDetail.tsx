@@ -8,8 +8,15 @@ import {
   PlayIcon,
   Zap,
 } from 'lucide-react';
-import Progress from '../ui/Progress';
-import { Button } from '../ui/Button';
+import Progress from '@/components/ui/Progress';
+import { Button } from '@/components/ui/Button';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/Accordion';
+import Link from 'next/link';
 
 const mockFeedback = {
   topic: 'Giving Constructive Feedback',
@@ -55,11 +62,11 @@ export default function FeedbackDetail() {
     }
   };
   return (
-    <div className="flex flex-col items-center gap-5 mx-auto md:w-150">
+    <div className="flex flex-col items-center gap-7 mx-auto max-w-3xl">
       <div className="text-2xl ">{t('title')}</div>
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
-        <div className="text-lg">{mockFeedback.topic}</div>
-        <div className="text-base">{mockFeedback.time}</div>
+        <div className="text-lg text-marigold-90">{mockFeedback.topic}</div>
+        <div className="text-base text-marigold-95">{mockFeedback.time}</div>
       </div>
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
@@ -73,15 +80,15 @@ export default function FeedbackDetail() {
             </div>
           ))}
         </div>
-        <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl">
+        <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
           {mockFeedback.overall}%
         </div>
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
 
-      <div className="grid grid-cols-2 gap-y-4 w-full px-1">
+      <div className="grid grid-cols-2 gap-y-4 w-full md:w-fit md:gap-x-48 px-1">
         {roundCardStats.map((stat) => (
-          <div className="flex gap-2 items-center md:justify-center" key={stat.key}>
+          <div className="flex gap-2 items-center" key={stat.key}>
             <div className="rounded-full size-11 border-1 border-bw-30 bg-bw-10 flex items-center justify-center">
               {getIcon(stat.icon, 20)}
             </div>
@@ -117,7 +124,23 @@ export default function FeedbackDetail() {
           {t('compareAI')}
         </Button>
       </div>
-      <Button size="full">{t('return')}</Button>
+      <Accordion type="multiple" className="w-full">
+        <AccordionItem value="feedback">
+          <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
+          <AccordionContent></AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="suggestion">
+          <AccordionTrigger>{t('accordian.suggestion')}</AccordionTrigger>
+          <AccordionContent></AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="session">
+          <AccordionTrigger>{t('accordian.sessions')}</AccordionTrigger>
+          <AccordionContent></AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      <Link href="/dashboard" className="w-full">
+        <Button size="full">{t('return')}</Button>
+      </Link>
     </div>
   );
 }
