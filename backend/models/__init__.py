@@ -14,12 +14,6 @@ from .goal import Goal, GoalCreate, GoalRead
 from .language import Language, LanguageCreate, LanguageRead
 from .rating import Rating, RatingCreate, RatingRead
 from .role import Role, RoleCreate, RoleRead
-from .scenario_template import (
-    ScenarioTemplate,
-    ScenarioTemplateCreate,
-    ScenarioTemplateRead,
-    ScenarioTemplateStatus,
-)
 from .training_case import (
     TrainingCase,
     TrainingCaseCreate,
@@ -55,10 +49,6 @@ __all__ = [
     'TrainingSession',
     'TrainingSessionCreate',
     'TrainingSessionRead',
-    'ScenarioTemplate',
-    'ScenarioTemplateCreate',
-    'ScenarioTemplateRead',
-    'ScenarioTemplateStatus',
     'TrainingPreparation',
     'TrainingPreparationCreate',
     'TrainingPreparationRead',
