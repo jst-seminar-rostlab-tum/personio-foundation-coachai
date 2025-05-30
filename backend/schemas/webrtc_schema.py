@@ -97,6 +97,7 @@ class WebRTCSignalingMessage(WebRTCSignalingBase):
     candidate: Optional[WebRTCIceCandidate] = None
     audio_config: Optional[AudioControlConfig] = None
     candidate_response: Optional[WebRTCIceCandidateResponse] = None
+    username_fragment: Optional[str] = Field(None, description='Username fragment for the ICE candidate', alias='usernameFragment')
 
 
 class WebRTCMessage(WebRTCSignalingMessage):

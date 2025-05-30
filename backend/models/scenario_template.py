@@ -35,17 +35,11 @@ class ScenarioTemplate(SQLModel, table=True):  # `table=True` makes it a databas
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-<<<<<<< HEAD
-    category: Optional['ConversationCategory'] = Relationship()
-    language: Optional['Language'] = Relationship()
-    training_cases: list['TrainingCase'] = Relationship(back_populates='scenario_template')
-=======
     category: Optional['ConversationCategory'] = Relationship(back_populates='scenario_templates')
     language: Optional['Language'] = Relationship()
     training_cases: list['TrainingCase'] = Relationship(
         back_populates='scenario_template', cascade_delete=True
     )
->>>>>>> dev
 
     # Needed for Column(JSON)
     class Config:  # type: ignore

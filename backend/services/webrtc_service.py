@@ -119,7 +119,7 @@ class WebRTCService:
                     'candidate': message.candidate.candidate,
                     'sdpMid': message.candidate.sdp_mid,
                     'sdpMLineIndex': message.candidate.sdp_mline_index,
-                    'usernameFragment': getattr(message.candidate, 'usernameFragment', None),
+                    'usernameFragment': message.candidate.username_fragment,
                 })
                 logger.debug(f'Added ICE candidate for peer {peer_id}')
                 return WebRTCSignalingMessage(
