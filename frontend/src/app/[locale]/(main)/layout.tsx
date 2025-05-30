@@ -23,7 +23,9 @@ export default async function RootLayout({ children, params }: Props) {
           }}
         />
       </head>
-      <body className={inter.className}>
+
+      {/* suppressHydrationWarning Prevents the warning about existing browser extensions modifying the DOM */}
+      <body className={inter.className} suppressHydrationWarning>
         <main className="container mx-auto px-4">
           <NextIntlClientProvider>{children}</NextIntlClientProvider>
         </main>

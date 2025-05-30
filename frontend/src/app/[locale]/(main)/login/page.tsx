@@ -5,13 +5,17 @@ import { SignUpForm } from '@/components/common/SignUpForm';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const t = useTranslations('Login');
+  const router = useRouter();
 
   const onClickSignIn = (values: { email: string; password: string }) => {
-    console.warn(values);
-    // TODO: Implement sign in logic
+    // The actual sign-in logic is handled in the SignInForm component
+    // This function is called only after successful sign-in
+    console.warn('Sign in successful:', values);
+    router.push('/dashboard');
   };
 
   const onClickSignUp = (values: {

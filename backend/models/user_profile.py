@@ -67,3 +67,21 @@ class UserProfileRead(SQLModel):
     deleted_at: Optional[datetime]
     email: str
     phone_number: str
+
+
+# Schema for sign-in credentials
+class UserProfileSignIn(SQLModel):
+    email: str
+    password: str
+
+
+# Schema for sign-in response
+class UserProfileSignInResponse(SQLModel):
+    id: UUID
+    email: str
+    full_name: str
+    preferred_language: str
+    role_id: Optional[UUID] = None
+    experience_id: Optional[UUID] = None
+    preferred_learning_style: Optional[str] = None
+    preferred_session_length: Optional[str] = None

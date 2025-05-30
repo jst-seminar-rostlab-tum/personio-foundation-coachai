@@ -17,9 +17,7 @@ def create_language(
     Create a new language.
     """
     # Check if the language code already exists
-    existing_language = session.exec(
-        select(Language).where(Language.code == language.code)
-    ).first()
+    existing_language = session.exec(select(Language).where(Language.code == language.code)).first()
     if existing_language:
         raise HTTPException(status_code=400, detail='Language code must be unique')
 

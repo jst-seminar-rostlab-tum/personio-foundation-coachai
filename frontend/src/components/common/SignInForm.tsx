@@ -13,6 +13,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/Form';
+import { useState } from 'react';
+import { userProfileApi } from '@/services/Api';
 import { PasswordInput } from './PasswordInput';
 
 interface SignInFormProps {
@@ -21,6 +23,8 @@ interface SignInFormProps {
 
 export function SignInForm({ onSubmit }: SignInFormProps) {
   const t = useTranslations('Login.SignInTab');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const signInFormSchema = z.object({
     email: z.string().email(t('emailInputError')),
@@ -36,11 +40,43 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
     },
   });
 
+  const handleSubmit = async (values: z.infer<typeof signInFormSchema>) => {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      await userProfileApi.signIn(values);
+      onSubmit(values);
+    } catch (err: unknown) {
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
+        err.response.data &&
+        typeof err.response.data === 'object' &&
+        'detail' in err.response.data
+      ) {
+        setError(err.response.data.detail as string);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(t('genericError'));
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="shadow-none">
       <Form {...signInForm}>
-        <form onSubmit={signInForm.handleSubmit(onSubmit)}>
+        <form onSubmit={signInForm.handleSubmit(handleSubmit)}>
           <CardContent className="space-y-6 p-0">
+            {error && <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">{error}</div>}
+
             <FormField
               control={signInForm.control}
               name="email"
@@ -53,6 +89,7 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
                       {...field}
                       className="w-full"
                       type="email"
+                      disabled={isLoading}
                     />
                   </FormControl>
                   <FormMessage />
@@ -71,6 +108,8 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
                       placeholder={t('passwordInputPlaceholder')}
                       {...field}
                       className="w-full"
+                      disabled={isLoading}
+                      requirements={[]}
                     />
                   </FormControl>
                   <FormMessage />
@@ -80,11 +119,11 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
           </CardContent>
 
           <CardFooter className="flex-col gap-6">
-            <Button type="submit" size="full">
+            <Button type="submit" size="full" disabled={isLoading}>
               {t('signInButtonLabel')}
             </Button>
             <div className="w-full border-t border-gray-300" />
-            <Button size={'full'} variant={'secondary'}>
+            <Button size={'full'} variant={'secondary'} disabled={isLoading}>
               <svg
                 className="w-5 h-5 mr-2"
                 viewBox="0 0 533.5 544.3"
