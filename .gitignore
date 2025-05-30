@@ -2,3 +2,5 @@
 /.ruff_cache/
 /.idea/
 .env
+
+audio_data/
