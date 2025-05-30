@@ -81,6 +81,11 @@ export function VerificationPopup({
           email: formData.email,
           phone_number: formData.phoneNumber,
           password: formData.password,
+          preferred_language: 'en', // Default language
+          role_id: '', // These will be set later
+          experience_id: '',
+          preferred_learning_style: '',
+          preferred_session_length: '',
         });
       }
 

@@ -1,65 +1,23 @@
 from typing import Annotated
 from uuid import UUID
 
-import phonenumbers
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from ..database import get_session
+from ..models.experience import Experience
 from ..models.language import Language
+from ..models.role import Role
 from ..models.user_profile import (
     UserProfile,
     UserProfileCreate,
     UserProfileRead,
     UserProfileSignIn,
     UserProfileSignInResponse,
+    UserProfileValidationResponse,
 )
-from ..utils.validators.password_validator.password_validator import PasswordValidator
 
 router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
-
-
-def validate_user_profile_data(user_profile: UserProfileCreate, session: Session) -> None:
-    """
-    Validate user profile data including email, phone number, and password.
-    Raises HTTPException if validation fails.
-    """
-    # Check if email already exists
-    existing_user = session.exec(
-        select(UserProfile).where(UserProfile.email == user_profile.email)
-    ).first()
-    if existing_user:
-        raise HTTPException(status_code=400, detail='Email already registered')
-
-    # Check if phone number already exists
-    if user_profile.phone_number:
-        existing_phone = session.exec(
-            select(UserProfile).where(UserProfile.phone_number == user_profile.phone_number)
-        ).first()
-        if existing_phone:
-            raise HTTPException(status_code=400, detail='Phone number already registered')
-
-    # Validate phone number format
-    phone_number = phonenumbers.parse(user_profile.phone_number, None)
-    if not phonenumbers.is_valid_number(phone_number):
-        raise HTTPException(status_code=400, detail='Invalid phone number format')
-
-    # Check if password is weak
-    schema = (
-        PasswordValidator()
-        .min(8)
-        .max(64)
-        .no()
-        .spaces()
-        .uppercase()
-        .lowercase()
-        .digits()
-        .special_char()
-    )
-    try:
-        schema.validate(user_profile.password, raise_exceptions=True)
-    except Exception as exception:
-        raise HTTPException(status_code=400, detail=str(exception)) from exception
 
 
 @router.get('/', response_model=list[UserProfileRead])
@@ -90,9 +48,6 @@ def create_user_profile(
 
     if not language:
         raise HTTPException(status_code=404, detail='Preferred language not found')
-
-    # Validate user profile data
-    validate_user_profile_data(user_profile, session)
 
     # Create new user profile
     db_user_profile = UserProfile(**user_profile.dict())
@@ -182,3 +137,60 @@ def sign_in(
         preferred_learning_style=user.preferred_learning_style,
         preferred_session_length=user.preferred_session_length,
     )
+
+
+@router.post('/validate', response_model=UserProfileValidationResponse)
+def validate_user_profile(
+    user_profile: UserProfileCreate, session: Annotated[Session, Depends(get_session)]
+) -> UserProfileValidationResponse:
+    """
+    Validate user profile data before creation.
+    Checks for existing email, phone number, and full name.
+    """
+    errors = {}
+
+    # Check if email already exists
+    existing_email = session.exec(
+        select(UserProfile).where(UserProfile.email == user_profile.email)
+    ).first()
+    if existing_email:
+        errors['email'] = 'Email already registered'
+
+    # Check if phone number already exists
+    existing_phone = session.exec(
+        select(UserProfile).where(UserProfile.phone_number == user_profile.phone_number)
+    ).first()
+    if existing_phone:
+        errors['phone_number'] = 'Phone number already registered'
+
+    # Check if full name already exists
+    existing_name = session.exec(
+        select(UserProfile).where(UserProfile.full_name == user_profile.full_name)
+    ).first()
+    if existing_name:
+        errors['full_name'] = 'Full name already registered'
+
+    # Check if language exists
+    language = session.exec(
+        select(Language).where(Language.code == user_profile.preferred_language)
+    ).first()
+    if not language:
+        errors['preferred_language'] = 'Preferred language not found'
+
+    # Only validate UUIDs if they are provided
+    if user_profile.role_id:
+        role = session.get(Role, user_profile.role_id)
+        if not role:
+            errors['role_id'] = 'Invalid role selected'
+
+    if user_profile.experience_id:
+        experience = session.get(Experience, user_profile.experience_id)
+        if not experience:
+            errors['experience_id'] = 'Invalid experience level selected'
+
+    if errors:
+        return UserProfileValidationResponse(
+            message='Validation failed', is_valid=False, errors=errors
+        )
+
+    return UserProfileValidationResponse(message='Validation successful', is_valid=True)

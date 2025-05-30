@@ -37,6 +37,11 @@ export interface UserProfileCreate {
   email: string;
   phone_number: string;
   password: string;
+  preferred_language: string;
+  role_id?: string;
+  experience_id?: string;
+  preferred_learning_style: string;
+  preferred_session_length: string;
 }
 
 export interface SignInCredentials {
@@ -47,6 +52,10 @@ export interface SignInCredentials {
 export const userProfileApi = {
   create: async (data: UserProfileCreate) => {
     const response = await api.post('/user-profiles/', data);
+    return response.data;
+  },
+  validate: async (data: UserProfileCreate) => {
+    const response = await api.post('/user-profiles/validate', data);
     return response.data;
   },
   signIn: async (credentials: SignInCredentials) => {

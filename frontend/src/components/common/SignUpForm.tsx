@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/Form';
 import Checkbox from '@/components/ui/Checkbox';
 import { useState } from 'react';
+import { userProfileApi } from '@/services/Api';
 import { PasswordInput, PasswordRequirement } from './PasswordInput';
 import PrivacyDialog from './PrivacyDialog';
 import { VerificationPopup } from './VerificationPopup';
@@ -86,25 +87,53 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
     try {
       setIsLoading(true);
 
-      // TODO: Call API to check if email address is already registered
+      // First validate the user data
+      const validationResponse = await userProfileApi.validate({
+        full_name: values.fullName,
+        email: values.email,
+        phone_number: values.phoneNumber,
+        password: values.password,
+        preferred_language: 'en', // Default language
+        preferred_learning_style: '',
+        preferred_session_length: '',
+      });
 
-      // Show verification popup first
+      if (!validationResponse.is_valid && validationResponse.errors) {
+        // Set field-specific errors
+        Object.entries(validationResponse.errors).forEach(([field, message]) => {
+          const errorMessage = String(message);
+          switch (field) {
+            case 'email':
+              signUpForm.setError('email', { message: errorMessage });
+              break;
+            case 'phone_number':
+              signUpForm.setError('phoneNumber', { message: errorMessage });
+              break;
+            case 'full_name':
+              signUpForm.setError('fullName', { message: errorMessage });
+              break;
+            default:
+              setError(errorMessage);
+          }
+        });
+        return;
+      }
+
+      // If validation passes, show verification popup
       setSignedUpPhone(values.phoneNumber);
       setShowVerification(true);
 
-      // Store form values for later use after verification
-      const formData = {
+      // Call the parent onSubmit handler with the form data
+      onSubmit({
         fullName: values.fullName,
         email: values.email,
         phoneNumber: values.phoneNumber,
         password: values.password,
         terms: values.terms,
-      };
-
-      // Call the parent onSubmit handler with the form data
-      onSubmit(formData);
+      });
     } catch (err: unknown) {
-      // Handle API error responses
+      let errorMessage = t('genericError');
+
       if (
         err &&
         typeof err === 'object' &&
@@ -116,12 +145,19 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
         typeof err.response.data === 'object' &&
         'detail' in err.response.data
       ) {
-        setError(err.response.data.detail as string);
+        const { detail } = err.response.data;
+        if (typeof detail === 'string') {
+          errorMessage = detail;
+        } else if (Array.isArray(detail)) {
+          errorMessage = detail[0]?.msg || t('genericError');
+        } else if (typeof detail === 'object' && detail !== null && 'msg' in detail) {
+          errorMessage = String(detail.msg);
+        }
       } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError(t('genericError'));
+        errorMessage = err.message;
       }
+
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -219,7 +255,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                   <p className="text-base">
                     {t('gdprAdherenceText')}
                     <Button
-                      variant="link"
+                      variant="ghost"
                       type="button"
                       className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
                       onClick={() => setShowPrivacyDialog(true)}
@@ -252,7 +288,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
             </CardContent>
             <CardFooter className="flex-col gap-6">
               <Button size={'full'} type="submit" disabled={isLoading}>
-                {isLoading ? t('signingUpButtonLabel') : t('signUpButtonLabel')}
+                {t('signUpButtonLabel')}
               </Button>
               <div className="w-full border-t border-gray-300" />
               <Button size={'full'} variant={'secondary'} disabled={isLoading}>

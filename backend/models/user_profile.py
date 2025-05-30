@@ -46,13 +46,14 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfil
 # Schema for creating a new UserProfile
 class UserProfileCreate(SQLModel):
     preferred_language: str
-    role_id: UUID
-    experience_id: UUID
+    role_id: Optional[UUID] = None
+    experience_id: Optional[UUID] = None
     preferred_learning_style: str
     preferred_session_length: str
     email: str
     phone_number: str
     password: str
+    full_name: str
 
 
 # Schema for reading UserProfile data
@@ -85,3 +86,10 @@ class UserProfileSignInResponse(SQLModel):
     experience_id: Optional[UUID] = None
     preferred_learning_style: Optional[str] = None
     preferred_session_length: Optional[str] = None
+
+
+# Schema for validation response
+class UserProfileValidationResponse(SQLModel):
+    message: str
+    is_valid: bool
+    errors: Optional[dict[str, str]] = None
