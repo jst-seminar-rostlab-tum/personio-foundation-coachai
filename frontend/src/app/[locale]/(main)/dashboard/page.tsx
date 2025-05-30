@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { ArrowRightIcon, Play, Plus } from 'lucide-react';
 
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
 import type { Props } from '@/interfaces/LayoutProps';
 import { Button } from '@/components/ui/Button';
-import HistoryItem from '@/components/layout/HistoryItem';
-import StatCard from '@/components/layout/StatCard';
+import HistoryItem from '@/components/common/HistoryItem';
+import StatCard from '@/components/common/StatCard';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -20,60 +21,57 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-12 p-8">
-      {/* Header */}
-      <section className="flex items-center justify-between">
-        <p className="text-2xl">
+      <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+        <p className="text-2xl text-center md:text-left">
           {t('header.greeting')}
-          {name}
+          {name}!
         </p>
-        <Link href="/new-training">
-          <Button>{t('header.cta')}</Button>
+        <Link href="/new-training" className="w-full md:w-auto">
+          <Button size="full" className="md:!size-default">
+            <Plus />
+            {t('header.cta')}
+          </Button>
         </Link>
       </section>
 
-      {/* Current Session */}
       <section className="flex flex-col gap-4">
         <div>
           <h2 className="text-xl">{t('currentSession.title')}</h2>
-          <p className="text-base text-[var(--bw-40)]">{t('currentSession.subtitle')}</p>
+          <p className="text-base text-bw-40">{t('currentSession.subtitle')}</p>
         </div>
 
-        {/* Current Session Card */}
-        <div className="bg-[var(--marigold-5)] border border-[var(--marigold-30)] rounded-lg p-8 gap-8 flex flex-col">
+        <div className="bg-marigold-5 border border-marigold-30 rounded-lg p-8 gap-8 flex flex-col">
           <div>
             <h2 className="text-xl">{t('currentSession.sessionCard.title')}</h2>
-            <p className="text-base text-[var(--bw-40)]">
-              {t('currentSession.sessionCard.subtitle')}
-            </p>
+            <p className="text-base text-bw-40">{t('currentSession.sessionCard.subtitle')}</p>
           </div>
           <Link href="/simulation/1">
-            <Button className="w-full mx-auto">{t('currentSession.sessionCard.cta')}</Button>
+            <Button size="full" className="mx-auto">
+              <Play />
+              {t('currentSession.sessionCard.cta')}
+            </Button>
           </Link>
         </div>
       </section>
 
-      {/* Simple Stats: 2x2 on small, 1x4 on large screens */}
-      {/* Stats Grid (2x2 on small, 1x4 on large screens) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard value={56} label={t('userStats.totalSessions')} />
-        <StatCard value={12} label={t('userStats.monthlySessions')} />
-        <StatCard value="4.8" label={t('userStats.avgRating')} />
-        <StatCard value="89%" label={t('userStats.completionRate')} />
+        <StatCard value="17.2h" label={t('userStats.trainingTime')} />
+        <StatCard value="37d" label={t('userStats.currentStreak')} />
+        <StatCard value="89%" label={t('userStats.avgScore')} />
       </div>
 
-      {/* Recent Training History */}
       <section className="flex flex-col gap-4">
         <div>
           <h2 className="text-xl">{t('recentSessions.title')}</h2>
-          <p className="text-base text-[var(--bw-40)]">{t('recentSessions.subtitle')}</p>
+          <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
         </div>
 
-        {/* History Items */}
         <HistoryItem
           title="Negotiating Job Offers"
           description="Practice salary negotiation with a potential candidate"
           date={new Date('2025-01-04T13:36:00')}
-          duration={5672} // 1h 34m 32s
+          duration={5672}
         />
         <HistoryItem
           title="Conflict Resolution"
@@ -89,7 +87,10 @@ export default function DashboardPage() {
         />
 
         <Link href="/history">
-          <Button className="w-full">{t('recentSessions.cta')}</Button>
+          <Button size="full">
+            {t('recentSessions.cta')}
+            <ArrowRightIcon />
+          </Button>
         </Link>
       </section>
     </div>

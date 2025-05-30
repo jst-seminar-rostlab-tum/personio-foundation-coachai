@@ -3,7 +3,7 @@
   "metaDescription": "Sieh dir deinen Trainingsfortschritt an, starte neue Sitzungen und verfolge deine Leistung",
   "header": {
     "greeting": "Hallo, ",
-    "cta": "Training erstellen"
+    "cta": "Neue Trainingseinheit"
   },
   "currentSession": {
     "title": "Aktuelle Sitzung",
@@ -15,15 +15,14 @@
     }
   },
   "userStats": {
-    "totalSessions": "Gesamte Sitzungen",
-    "monthlySessions": "Sitzungen diesen Monat",
-    "avgRating": "Bewertung",
-    "completionRate": "Abschlussrate"
+    "totalSessions": "Sitzungen",
+    "trainingTime": "Trainingzeit",
+    "currentStreak": "Streak",
+    "avgScore": "Bewertung"
   },
   "recentSessions": {
     "title": "Letzte Trainingseinheiten",
     "subtitle": "Deine zuletzt abgeschlossenen Trainings",
-    "sessions": {},
     "cta": "Gesamte Historie anzeigen"
   }
 }

@@ -1,9 +1,4 @@
-interface HistoryItemProps {
-  title: string;
-  description: string;
-  date: Date;
-  duration: number; // in seconds
-}
+import { HistoryItemProps } from '@/interfaces/HistoryItemProps';
 
 function formatDuration(durationInSeconds: number): string {
   const hours = Math.floor(durationInSeconds / 3600);
@@ -31,10 +26,10 @@ export default function HistoryItem({ title, description, date, duration }: Hist
   const formattedDuration = formatDuration(duration);
 
   return (
-    <div className="border border-[var(--bw-20)] rounded-lg p-8 flex justify-between items-center gap-x-8">
+    <div className="border border-bw-20 rounded-lg p-8 flex justify-between items-center gap-x-8">
       <div className="flex flex-col gap-2">
         <h2 className="text-xl">{title}</h2>
-        <p className="text-base text-[var(--bw-40)]">{description}</p>
+        <p className="text-base text-bw-40">{description}</p>
       </div>
       <div className="flex flex-col justify-center text-center min-w-max">
         <p className="text-base font-semibold whitespace-nowrap">{formattedDuration}</p>

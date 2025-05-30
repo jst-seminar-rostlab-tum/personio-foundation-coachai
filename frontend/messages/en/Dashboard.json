@@ -3,7 +3,7 @@
   "metaDescription": "View your training progress, start new sessions, and track your performance",
   "header": {
     "greeting": "Hello, ",
-    "cta": "Create Training"
+    "cta": "New Training Session"
   },
   "currentSession": {
     "title": "Current Session",
@@ -16,14 +16,13 @@
   },
   "userStats": {
     "totalSessions": "Total Sessions",
-    "monthlySessions": "Sessions this Month",
-    "avgRating": "Average Rating",
-    "completionRate": "Completion Rate"
+    "trainingTime": "Training Time",
+    "currentStreak": "Current Streak",
+    "avgScore": "Avg Score"
   },
   "recentSessions": {
     "title": "Recent Training History",
     "subtitle": "Your last completed training sessions",
-    "sessions": {},
     "cta": "Show Entire History"
   }
 }
