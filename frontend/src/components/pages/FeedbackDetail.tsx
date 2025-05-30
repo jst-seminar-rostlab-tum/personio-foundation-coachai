@@ -185,7 +185,7 @@ export default function FeedbackDetail() {
               ))}
             </div>
 
-            <div className="flex items-center gap-2 mt-6">
+            <div className="flex items-center gap-2 mt-10">
               <CircleX size={24} className="text-red-500" />
               <span className="text-xl">{t('detailedFeedback.negative')}</span>
             </div>
@@ -195,7 +195,7 @@ export default function FeedbackDetail() {
               ))}
             </div>
 
-            <div className="flex items-center gap-2 mt-6">
+            <div className="flex items-center gap-2 mt-10">
               <ChartNoAxesColumnIncreasingIcon size={24} className="text-marigold-50" />
               <span className="text-xl">{t('detailedFeedback.recommendations')}</span>
             </div>
