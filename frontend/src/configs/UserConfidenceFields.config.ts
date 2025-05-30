@@ -1,25 +1,29 @@
 import { UserConfidenceField } from '@/interfaces/UserInputFields';
+import { useTranslations } from 'next-intl';
 
-export const confidenceFields: UserConfidenceField[] = [
-  {
-    title: 'Giving difficult feedback',
-    minLabel: 'Not confident',
-    maxLabel: 'Very confident',
-    minValue: 0,
-    maxValue: 100,
-  },
-  {
-    title: 'Managing team conflicts',
-    minLabel: 'Not confident',
-    maxLabel: 'Very confident',
-    minValue: 0,
-    maxValue: 100,
-  },
-  {
-    title: 'Leading challenging conversations',
-    minLabel: 'Not confident',
-    maxLabel: 'Very confident',
-    minValue: 0,
-    maxValue: 100,
-  },
-];
+export function useUserConfidenceFields(): UserConfidenceField[] {
+  const t = useTranslations('TrainingSettings.confidenceFields');
+  return [
+    {
+      title: t('givingFeedback.title'),
+      minLabel: t('minLabel'),
+      maxLabel: t('maxLabel'),
+      minValue: 0,
+      maxValue: 100,
+    },
+    {
+      title: t('teamConflicts.title'),
+      minLabel: t('minLabel'),
+      maxLabel: t('maxLabel'),
+      minValue: 0,
+      maxValue: 100,
+    },
+    {
+      title: t('challengingConversations.title'),
+      minLabel: t('minLabel'),
+      maxLabel: t('maxLabel'),
+      minValue: 0,
+      maxValue: 100,
+    },
+  ];
+}
