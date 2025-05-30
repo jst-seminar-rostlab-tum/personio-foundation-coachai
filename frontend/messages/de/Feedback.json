@@ -1,4 +1,25 @@
 {
   "metaTitle": "Auswertung - Coach AI",
-  "metaDescription": "Detaillierte Auswertung und Analyse Ihrer Trainingssitzung"
+  "metaDescription": "Detaillierte Auswertung und Analyse Ihrer Trainingssitzung",
+  "title": "Performance Zusammenfassung",
+  "progressBars": {
+    "structure": "Struktur",
+    "empathy": "Empathie",
+    "focus": "Fokus"
+  },
+  "stats": {
+    "speakingTime": "Sprechzeit",
+    "questionsAsked": "Gestellte Fragen",
+    "sessionLength": "Sitzungsdauer",
+    "goalsAchieved": "Erreichte Ziele"
+  },
+  "listenConversation": "Gespräch anhören",
+  "yourApproach": "Ihr Ansatz",
+  "compareAI": "Mit KI vergleichen",
+  "accordian": {
+    "feedback": "Detailliertes Feedback",
+    "suggestion": "Vorgeschlagene Ressourcen",
+    "sessions": "Empfohlene Sitzungen"
+  },
+  "return": "Zurück zum Dashboard"
 }

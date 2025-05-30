@@ -73,7 +73,7 @@ export default function FeedbackDetail() {
             </div>
           ))}
         </div>
-        <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center">
+        <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl">
           {mockFeedback.overall}%
         </div>
       </div>
