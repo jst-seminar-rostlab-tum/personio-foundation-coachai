@@ -1,4 +1,25 @@
 {
   "metaTitle": "Feedback - Coach AI",
-  "metaDescription": "Detailed analysis and evaluation of your training session"
+  "metaDescription": "Detailed analysis and evaluation of your training session",
+  "title": "Performance Summary",
+  "progressBars": {
+    "structure": "Structure",
+    "empathy": "Empathy",
+    "focus": "Focus"
+  },
+  "stats": {
+    "speakingTime": "Speaking Time",
+    "questionsAsked": "Questions Asked",
+    "sessionLength": "Session Length",
+    "goalsAchieved": "Goals Achieved"
+  },
+  "listenConversation": "Listen to Conversation",
+  "yourApproach": "Your Approach",
+  "compareAI": "Compare with AI",
+  "accordian": {
+    "feedback": "Detailed Feedback",
+    "suggestion": "Suggested Resources",
+    "sessions": "Recommended Sessions"
+  },
+  "return": "Return to Dashboard"
 }

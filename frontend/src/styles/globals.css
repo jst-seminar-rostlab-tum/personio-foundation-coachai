@@ -38,6 +38,7 @@
   --color-bw-50: var(--bw-50);
   --color-bw-60: var(--bw-60);
   --color-bw-70: var(--bw-70);
+  --color-marigold-10: var(--marigold-10);
   --color-marigold-30: var(--marigold-30);
   --color-marigold-40: var(--marigold-40);
   --color-marigold-50: var(--marigold-50);
@@ -49,6 +50,8 @@
   --text-2xl--font-weight: 700;
   --text-xl: 18px;
   --text-xl--font-weight: 600;
+  --text-md: 16px;
+  --text-md--font-weight: 600;
   --text-lg: 13px;
   --text-lg--font-weight: 600;
   --text-base: 13px;
