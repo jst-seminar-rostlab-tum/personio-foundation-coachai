@@ -132,6 +132,7 @@ def get_dummy_user_profiles(
             experience_id=experiences[0].id,
             preferred_learning_style_id=learning_styles[0].id,
             preferred_session_length_id=session_lengths[0].id,
+            store_conversations=False,
         ),
         UserProfile(
             id=uuid4(),
@@ -140,6 +141,7 @@ def get_dummy_user_profiles(
             experience_id=experiences[1].id,
             preferred_learning_style_id=learning_styles[1].id,
             preferred_session_length_id=session_lengths[1].id,
+            store_conversations=True,
         ),
     ]
 

@@ -7,6 +7,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
 from sqlmodel import Field, Relationship, SQLModel
 
+from backend.models.user_confidence_score import ConfidenceScoreRead
+
 if TYPE_CHECKING:
     from backend.models.experience import Experience
     from backend.models.learning_style import LearningStyle
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
     from backend.models.role import Role
     from backend.models.session_length import SessionLength
     from backend.models.training_case import TrainingCase
-    from backend.models.user_confidence_score import ConfidenceScoreRead, UserConfidenceScore
+    from backend.models.user_confidence_score import UserConfidenceScore
     from backend.models.user_goal import UserGoal
 
 
@@ -26,7 +28,7 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
     preferred_learning_style_id: UUID = Field(foreign_key='learningstyle.id')
     preferred_session_length_id: UUID = Field(foreign_key='sessionlength.id')
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-
+    store_conversations: bool = Field(default=True)
     # Relationships
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
     training_cases: Optional['TrainingCase'] = Relationship(
@@ -61,6 +63,7 @@ class UserProfileCreate(SQLModel):
     experience_id: UUID
     preferred_learning_style_id: UUID
     preferred_session_length_id: UUID
+    store_conversations: bool
 
 
 # Schema for reading UserProfile data
@@ -73,6 +76,7 @@ class UserProfileRead(SQLModel):
     preferred_session_length_id: UUID
     goal: list[UUID]
     confidence_scores: list[UUID]
+    store_conversations: bool
     updated_at: datetime
 
 
@@ -85,6 +89,7 @@ class UserProfileExtendedRead(SQLModel):
     preferred_session_length: Optional[str]
     goal: list[str]
     confidence_scores: list[ConfidenceScoreRead]
+    store_conversations: bool
 
 
 UserProfileExtendedRead.model_rebuild()
