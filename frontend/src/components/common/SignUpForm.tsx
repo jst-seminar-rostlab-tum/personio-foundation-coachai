@@ -16,19 +16,11 @@ import {
 import Checkbox from '@/components/ui/Checkbox';
 import { useState } from 'react';
 import { userProfileApi } from '@/services/Api';
-import { PasswordInput, PasswordRequirement } from './PasswordInput';
+import { SignUpFormProps } from '@/interfaces/SignUpForm';
+import { PasswordRequirement } from '@/interfaces/PasswordInput';
+import { PasswordInput } from './PasswordInput';
 import PrivacyDialog from './PrivacyDialog';
 import { VerificationPopup } from './VerificationPopup';
-
-interface SignUpFormProps {
-  onSubmit: (values: {
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
-    terms: boolean;
-  }) => void;
-}
 
 export function SignUpForm({ onSubmit }: SignUpFormProps) {
   const t = useTranslations('Login.SignUpTab');
@@ -274,7 +266,6 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
                     <div className="flex items-center space-x-2">
                       <FormControl>
                         <Checkbox
-                          className=""
                           checked={field.value}
                           onClick={() => field.onChange(!field.value)}
                           disabled={isLoading}
@@ -287,11 +278,11 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
               />
             </CardContent>
             <CardFooter className="flex-col gap-6">
-              <Button size={'full'} type="submit" disabled={isLoading}>
+              <Button size="full" type="submit" disabled={isLoading}>
                 {t('signUpButtonLabel')}
               </Button>
               <div className="w-full border-t border-gray-300" />
-              <Button size={'full'} variant={'secondary'} disabled={isLoading}>
+              <Button size="full" variant="secondary" disabled={isLoading}>
                 <svg
                   className="w-5 h-5 mr-2"
                   viewBox="0 0 533.5 544.3"

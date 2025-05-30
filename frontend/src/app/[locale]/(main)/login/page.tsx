@@ -30,11 +30,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center py-4">
       <div className="w-full max-w-md">
         <Card>
           <CardHeader className="text-center pb-6 pt-8">
-            <h1 className="text-2xl mb-2">{t('welcome')}</h1>
+            <h1 className="text-bw-70 mb-2">{t('welcome')}</h1>
             <p className="text-bw-40 text-lg">{t('description')}</p>
           </CardHeader>
 

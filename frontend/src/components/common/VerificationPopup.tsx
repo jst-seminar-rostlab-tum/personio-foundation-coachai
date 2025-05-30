@@ -10,19 +10,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { userProfileApi } from '@/services/Api';
 import { RotateCcw } from 'lucide-react';
-
-interface VerificationPopupProps {
-  isOpen: boolean;
-  onClose: () => void;
-  phoneNumber: string;
-  formData?: {
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
-    terms: boolean;
-  };
-}
+import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
 
 export function VerificationPopup({
   isOpen,

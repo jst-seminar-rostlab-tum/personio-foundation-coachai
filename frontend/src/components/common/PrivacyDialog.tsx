@@ -3,12 +3,17 @@ import { Shield, Download, Trash2, Server, Lock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
+import {
+  DataProcessingTopic,
+  ExternalService,
+  PrivacyDialogProps,
+} from '@/interfaces/PrivacyDialog';
 
-export default function PrivacyDialog({ open, onOpenChange }) {
+export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps) {
   const t = useTranslations('Login.PrivacyPolicyDialog');
 
   // Memoize data structure to avoid recreation on each render
-  const dataProcessingItems = useMemo(
+  const dataProcessingTopics = useMemo<DataProcessingTopic[]>(
     () => [
       {
         key: 'accountInfo',
@@ -67,7 +72,7 @@ export default function PrivacyDialog({ open, onOpenChange }) {
     [t]
   );
 
-  const externalServices = useMemo(
+  const externalServices = useMemo<ExternalService[]>(
     () => [
       { name: t('security.externalServices.vercel'), url: 'https://vercel.com/legal/dpa' },
       { name: t('security.externalServices.supabase'), url: 'https://supabase.com/legal/dpa' },
@@ -80,7 +85,7 @@ export default function PrivacyDialog({ open, onOpenChange }) {
     [t]
   );
 
-  const DataProcessingCard = ({ item }) => (
+  const DataProcessingCard = ({ dataProcessingTopic: item }: DataProcessingTopic) => (
     <div className="border rounded-lg p-4" key={item.key}>
       <div className="font-semibold text-base sm:text-base mb-2">{item.title}</div>
       <div className="text-base sm:text-base text-gray-600 mb-3">{item.description}</div>
@@ -109,7 +114,7 @@ export default function PrivacyDialog({ open, onOpenChange }) {
     </div>
   );
 
-  const DataProcessingTable = ({ items }) => (
+  const DataProcessingTable = ({ items }: DataProcessingTopic[]) => (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse" role="table">
         <thead>
@@ -155,10 +160,7 @@ export default function PrivacyDialog({ open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        aria-describedby={undefined}
-        className="w-[95vw] max-w-sm sm:max-w-2xl lg:max-w-4xl max-h-[85vh] overflow-y-auto p-4"
-      >
+      <DialogContent className="w-[95vw] max-w-sm sm:max-w-2xl lg:max-w-4xl max-h-[85vh] overflow-y-auto p-4">
         <DialogTitle>{t('title')}</DialogTitle>
 
         <div className="space-y-4 sm:space-y-6 mt-4" role="document">
@@ -171,14 +173,14 @@ export default function PrivacyDialog({ open, onOpenChange }) {
               <CardContent className="p-4">
                 {/* Mobile Layout */}
                 <div className="block lg:hidden space-y-4">
-                  {dataProcessingItems.map((item) => (
+                  {dataProcessingTopics.map((item) => (
                     <DataProcessingCard key={item.key} item={item} />
                   ))}
                 </div>
 
                 {/* Desktop Table Layout */}
                 <div className="hidden lg:block">
-                  <DataProcessingTable items={dataProcessingItems} />
+                  <DataProcessingTable items={dataProcessingTopics} />
                 </div>
               </CardContent>
             </Card>

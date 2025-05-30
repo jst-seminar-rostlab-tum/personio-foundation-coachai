@@ -1,17 +1,13 @@
 import { useState } from 'react';
 import { EyeIcon, EyeOffIcon, CheckIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import Input from '../ui/Input';
-
-export interface PasswordRequirement {
-  id: string;
-  label: string;
-  test: (password: string) => boolean;
-}
 
 export function PasswordInput({ placeholder, disabled, requirements, ...props }) {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordValue, setPasswordValue] = useState('');
+  const t = useTranslations('Login.PasswordInput');
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -36,7 +32,9 @@ export function PasswordInput({ placeholder, disabled, requirements, ...props })
           onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
-          <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+          <span className="sr-only">
+            {showPassword ? t('hidePasswordSpan') : t('showPasswordSpan')}
+          </span>
         </button>
       </div>
 
