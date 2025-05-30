@@ -1,5 +1,8 @@
+'use client';
+
 import { FeedbackQuoteProps } from '@/interfaces/FeedbackQuoteProps';
-import { CheckCircle, CircleX, InfoIcon } from 'lucide-react';
+import { ChartNoAxesColumnIncreasingIcon, CheckCircle, CircleX } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function FeedbackQuote({
   heading,
@@ -12,27 +15,33 @@ export default function FeedbackQuote({
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Check':
-        return <CheckCircle size={18} className="text-green-300" />;
+        return <CheckCircle size={20} className="text-green-500" />;
       case 'Cross':
-        return <CircleX size={18} className="text-red-300" />;
+        return <CircleX size={20} className="text-red-500" />;
       case 'Info':
-        return <InfoIcon size={18} className="text-marigold-50" />;
+        return <ChartNoAxesColumnIncreasingIcon size={20} className="text-marigold-50" />;
       default:
         return null;
     }
   };
   const iconElement = getIcon(icon || 'Info');
+  const t = useTranslations('Feedback');
   return (
-    <div className="w-full flex gap-3 px-2">
-      {iconElement}
-      <div className="flex flex-col gap-2">
-        <div className="text-xl">{heading}</div>
+    <div className="w-full">
+      <div className="flex gap-2 items-center">
+        {iconElement}
+        <div className="text-md">{heading}</div>
+      </div>
+      <div className="flex flex-col gap-2 mt-2 px-7">
         {feedback && <div className="text-base">{feedback}</div>}
         {(quote || improvedQuote) && (
-          <div className="flex flex-col gap-1 bg-bw-10 border-1 border-bw-20 p-2">
-            {quote && <div className="text-base italic">{quote}</div>}
+          <div className="flex flex-col gap-1 bg-bw-10 border-1 border-bw-20 p-2 text-base rounded-sm">
+            {quote && <div className="italic">&quot;{quote}&quot;</div>}
             {improvedQuote && (
-              <div className="text-base italic text-green-200">{improvedQuote}</div>
+              <>
+                <div>{t('detailedFeedback.nextTime')}</div>
+                <div className="italic text-green-600">&quot;{improvedQuote}&quot;</div>
+              </>
             )}
           </div>
         )}

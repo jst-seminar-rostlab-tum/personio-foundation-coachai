@@ -1,9 +1,9 @@
 import { useTranslations } from 'next-intl';
 import {
+  ChartNoAxesColumnIncreasingIcon,
   CheckCircle,
   CircleX,
   Clock,
-  InfoIcon,
   MessageCircle,
   MessageCircleQuestion,
   Mic,
@@ -18,6 +18,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import Link from 'next/link';
+import FeedbackQuote from '../common/FeedbackQuote';
 
 const mockFeedback = {
   topic: 'Giving Constructive Feedback',
@@ -48,6 +49,59 @@ export default function FeedbackDetail() {
     { key: t('stats.goalsAchieved'), value: mockFeedback.goalsAcheived, icon: 'Check' },
   ];
 
+  const examplesPositive = [
+    {
+      heading: 'Clear framing of the issue',
+      feedback:
+        'You effectively communicated the specific issue (missed deadlines) and its impact on the team without being accusatory.',
+      quote:
+        'I’ve noticed that several deadlines were missed last week, and it’s causing our team to fall behind on the overall project timeline.',
+    },
+    {
+      heading: 'Strong active listening',
+      feedback:
+        'You demonstrated excellent listening skills by paraphrasing Sarah’s concerns and asking thoughtful follow-up questions.',
+      quote:
+        'It sounds like you’re feeling overwhelmed by the number of tasks you’re responsible for. Let’s talk about how we might prioritize these better.',
+    },
+  ];
+
+  const examplesNegative = [
+    {
+      heading: 'More specific examples needed',
+      feedback:
+        'Your feedback would have been more impactful with specific examples of the missed deadlines and their consequences.',
+      quote: 'Several tasks have been delayed…',
+      improvedQuote:
+        'The UI mockups were due last Tuesday and the API documentation was due Friday, both of which are still incomplete. This has prevented the developers from starting their work.',
+    },
+    {
+      heading: 'Rushed to solutions',
+      feedback:
+        'You moved to problem-solving before fully exploring the root causes of the missed deadlines.',
+      quote: '',
+      improvedQuote:
+        'What specific challenges have made it difficult to meet these deadlines? Are there particular aspects of these tasks that are taking more time than expected?',
+    },
+  ];
+
+  const recommendations = [
+    {
+      heading: 'Practice the STAR method',
+      recommendation:
+        'When giving feedback, use the Situation, Task, Action, Result framework to provide more concrete examples.',
+    },
+    {
+      heading: 'Ask more diagnostic questions',
+      recommendation:
+        'Spend more time understanding root causes before moving to solutions. This builds empathy and leads to more effective outcomes.',
+    },
+    {
+      heading: 'Define clear next steps',
+      recommendation: 'End feedback conversations with agreed-upon action items.',
+    },
+  ];
+
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Mic':
@@ -56,12 +110,6 @@ export default function FeedbackDetail() {
         return <MessageCircle size={20} />;
       case 'Clock':
         return <Clock size={20} />;
-      case 'Check':
-        return <CheckCircle size={20} />;
-      case 'Cross':
-        return <CircleX size={18} className="text-red-300" />;
-      case 'Info':
-        return <InfoIcon size={18} className="text-marigold-50" />;
       default:
         return <MessageCircleQuestion size={20} />;
     }
@@ -126,7 +174,37 @@ export default function FeedbackDetail() {
       <Accordion type="multiple" className="w-full">
         <AccordionItem value="feedback">
           <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
-          <AccordionContent></AccordionContent>
+          <AccordionContent className="px-5">
+            <div className="flex items-center gap-2 mt-3">
+              <CheckCircle size={24} className="text-green-500" />
+              <span className="text-xl">{t('detailedFeedback.positive')}</span>
+            </div>
+            <div className="flex flex-col gap-4 mt-5 px-5">
+              {examplesPositive.map((example, index) => (
+                <FeedbackQuote key={index} {...example} icon="Check" />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 mt-6">
+              <CircleX size={24} className="text-red-500" />
+              <span className="text-xl">{t('detailedFeedback.negative')}</span>
+            </div>
+            <div className="flex flex-col gap-4 mt-5 px-5">
+              {examplesNegative.map((negative, index) => (
+                <FeedbackQuote key={index} {...negative} icon="Cross" />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 mt-6">
+              <ChartNoAxesColumnIncreasingIcon size={24} className="text-marigold-50" />
+              <span className="text-xl">{t('detailedFeedback.recommendations')}</span>
+            </div>
+            <div className="flex flex-col gap-4 mt-5 px-5">
+              {recommendations.map((recommendation, index) => (
+                <FeedbackQuote key={index} {...recommendation} icon="Info" />
+              ))}
+            </div>
+          </AccordionContent>
         </AccordionItem>
         <AccordionItem value="suggestion">
           <AccordionTrigger>{t('accordian.suggestion')}</AccordionTrigger>

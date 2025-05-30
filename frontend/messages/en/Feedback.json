@@ -21,5 +21,11 @@
     "suggestion": "Suggested Resources",
     "sessions": "Recommended Sessions"
   },
+  "detailedFeedback": {
+    "positive": "What Went Well",
+    "negative": "Areas for Improvement",
+    "recommendations": "Recommendations",
+    "nextTime": "Next time, try asking:"
+  },
   "return": "Return to Dashboard"
 }

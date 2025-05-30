@@ -21,5 +21,11 @@
     "suggestion": "Vorgeschlagene Ressourcen",
     "sessions": "Empfohlene Sitzungen"
   },
+  "detailedFeedback": {
+    "positive": "Was gut lief",
+    "negative": "Verbesserungsbereiche",
+    "recommendations": "Empfehlungen",
+    "nextTime": "Nächstes Mal, frag:"
+  },
   "return": "Zurück zum Dashboard"
 }
