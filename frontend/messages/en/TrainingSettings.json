@@ -1,4 +1,68 @@
 {
   "metaTitle": "Training Settings - Coach AI",
-  "metaDescription": "Customize your training preferences and goals"
+  "metaDescription": "Customize your training preferences and goals",
+  "title": "Training Settings",
+  "backToDashboard": "Back to Dashboard",
+  "privacyControls": "Privacy Controls",
+  "storeAudioTranscripts": "Store Conversation Audio and Transcripts",
+  "export": "Export",
+  "exportData": "Export personal data",
+  "deleteAccount": "Delete account",
+  "requestDeletion": "Request Deletion",
+  "personalizationSettings": "Personalization Settings",
+  "saveSettings": "Save Settings",
+  "ninetyDays": "Your audio and transcripts will be retained and viewable in the training history for 90 days.",
+  "zeroDays": "Your audio and transcripts will not be saved.",
+  "deleteAccountConfirmTitle": "Are you sure?",
+  "deleteAccountConfirmDesc": "This action cannot be undone.",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "preferences": {
+    "language": {
+      "label": "Preferred Language",
+      "en": "English",
+      "es": "Spanish",
+      "fr": "French"
+    },
+    "learningStyle": {
+      "label": "Preferred Learning Style",
+      "visual": "Visual",
+      "handson": "Hands-on practice",
+      "auditory": "Auditory",
+      "kinesthetic": "Kinesthetic"
+    },
+    "session": {
+      "label": "Preferred Session",
+      "short": "Less than 30 minutes",
+      "medium": "30–60 minutes",
+      "long": "Over 1 hour"
+    }
+  },
+  "leadershipGoals": {
+    "currentRole": {
+      "label": "Current Role",
+      "tl": "Team Leader",
+      "rec": "Recruitment Specialist",
+      "tr": "Trainee"
+    },
+    "primaryGoals": {
+      "label": "Primary Goals",
+      "feedback": "Give Constructive Feedback",
+      "coaching": "Coaching & Mentoring",
+      "coping": "Coping Mechanisms"
+    }
+  },
+  "confidenceFields": {
+    "givingFeedback": {
+      "title": "Giving difficult feedback"
+    },
+    "teamConflicts": {
+      "title": "Managing team conflicts"
+    },
+    "challengingConversations": {
+      "title": "Leading challenging conversations"
+    },
+    "minLabel": "Not confident",
+    "maxLabel": "Very confident"
+  }
 }

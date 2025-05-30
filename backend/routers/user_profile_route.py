@@ -47,7 +47,6 @@ def get_user_profile_ids(
                 goal=list(goals),
                 confidence_scores=list(confidence_scores),
                 updated_at=user.updated_at,
-                deleted_at=user.deleted_at,
             )
         )
 
