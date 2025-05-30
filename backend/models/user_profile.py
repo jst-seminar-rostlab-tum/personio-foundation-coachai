@@ -26,9 +26,7 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
 
     # Relationships
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
-    training_cases: Optional['TrainingCase'] = Relationship(
-        back_populates='user', cascade_delete=True
-    )
+    training_cases: list['TrainingCase'] = Relationship(back_populates='user', cascade_delete=True)
     role: Optional['Role'] = Relationship(back_populates='user_profiles')  # Use string reference
     experience: Optional['Experience'] = Relationship(back_populates='user')
     user_goals: list['UserGoal'] = Relationship(
