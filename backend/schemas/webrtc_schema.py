@@ -40,13 +40,12 @@ class WebRTCAnswer(WebRTCSignalingBase):
     sdp: str = Field(..., description='Session Description Protocol (SDP) for the answer')
 
 
-class WebRTCIceCandidate(WebRTCSignalingBase):
+class WebRTCIceCandidate(BaseModel):
     """WebRTC ICE candidate signaling message"""
-
-    type: Literal['candidate'] = Field(..., description="Type of the message, must be 'candidate'")
-    sdp_mid: str = Field(..., description='Media stream identification')
-    sdp_mline_index: int = Field(..., description='Index of the media description in the SDP')
-    candidate: str = Field(..., description='ICE candidate string')
+    
+    sdp_mid: str = Field(..., description='Media stream identification', alias='sdpMid')
+    sdp_mline_index: int = Field(..., description='Index of the media description in the SDP', alias='sdpMLineIndex')
+    candidate: str = Field(..., description='ICE candidate string', alias='candidate')
 
 
 class WebRTCDataChannelConfig(BaseModel):
@@ -54,7 +53,7 @@ class WebRTCDataChannelConfig(BaseModel):
 
     label: str = Field(default='audio', description='Data channel label')
     ordered: bool = Field(default=True, description='Whether the data channel is ordered')
-    max_retransmits: int = Field(default=3, description='Maximum number of retransmits')
+    max_retransmits: int = Field(default=3, description='Maximum number of retransmits', alias='maxRetransmits')
     protocol: str = Field(default='', description='Data channel protocol')
     negotiated: bool = Field(default=False, description='Whether the data channel is negotiated')
     id: Optional[int] = Field(default=None, description='Data channel ID for negotiated channels')
@@ -63,15 +62,15 @@ class WebRTCDataChannelConfig(BaseModel):
 class AudioControlConfig(BaseModel):
     """Audio control configuration"""
 
-    sample_rate: int = Field(default=48000, description='Audio sample rate in Hz')
-    silence_threshold: float = Field(default=0.01, description='Silence detection threshold')
+    sample_rate: int = Field(default=48000, description='Audio sample rate in Hz', alias='sampleRate')
+    silence_threshold: float = Field(default=0.01, description='Silence detection threshold', alias='silenceThreshold')
     silence_duration: float = Field(
-        default=0.5, description='Silence duration threshold in seconds'
+        default=0.5, description='Silence duration threshold in seconds', alias='silenceDuration'
     )
     min_speech_duration: float = Field(
-        default=0.3, description='Minimum speech duration in seconds'
+        default=0.3, description='Minimum speech duration in seconds', alias='minSpeechDuration'
     )
-    buffer_size: int = Field(default=2048, description='Audio buffer size')
+    buffer_size: int = Field(default=2048, description='Audio buffer size', alias='bufferSize')
 
 
 class WebRTCControlMessage(WebRTCSignalingBase):

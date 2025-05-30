@@ -5,4 +5,5 @@ export interface StepperProps {
   className?: string;
   showAllStepNumbers?: boolean;
   showStepLabels?: boolean;
+  currentStepValid?: boolean;
 }

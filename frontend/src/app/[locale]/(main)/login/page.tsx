@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
+import type { Props } from '@/interfaces/LayoutProps';
 
-export const metadata: Metadata = {
-  title: 'CoachAI - Login',
-  description: 'Sign in to your CoachAI account',
-};
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '/login', true);
+}
 
 export default function LoginPage() {
   return (

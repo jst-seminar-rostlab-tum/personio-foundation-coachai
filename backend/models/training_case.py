@@ -43,9 +43,11 @@ class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database ta
 
     # Relationships
     category: Optional['ConversationCategory'] = Relationship(back_populates='training_cases')
-    sessions: list['TrainingSession'] = Relationship(back_populates='case')
-    scenario_template: Optional['ScenarioTemplate'] = Relationship()
-    preparations: list['TrainingPreparation'] = Relationship(back_populates='case')
+    sessions: list['TrainingSession'] = Relationship(back_populates='case', cascade_delete=True)
+    scenario_template: Optional['ScenarioTemplate'] = Relationship(back_populates='training_cases')
+    preparations: list['TrainingPreparation'] = Relationship(
+        back_populates='case', cascade_delete=True
+    )
     user: Optional['UserProfile'] = Relationship(back_populates='training_cases')
     difficulty_level: Optional['DifficultyLevel'] = Relationship(back_populates='training_cases')
 

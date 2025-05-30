@@ -115,7 +115,12 @@ class WebRTCService:
         elif message.type == WebRTCSignalingType.CANDIDATE:
             peer = self.peers.get(peer_id)
             if peer:
-                await peer.connection.addIceCandidate(message.candidate)
+                await peer.connection.addIceCandidate({
+                    'candidate': message.candidate.candidate,
+                    'sdpMid': message.candidate.sdp_mid,
+                    'sdpMLineIndex': message.candidate.sdp_mline_index,
+                    'usernameFragment': getattr(message.candidate, 'usernameFragment', None),
+                })
                 logger.debug(f'Added ICE candidate for peer {peer_id}')
                 return WebRTCSignalingMessage(
                     type=WebRTCSignalingType.CANDIDATE,
@@ -175,7 +180,7 @@ class WebRTCService:
                 if peer_id in self.peers:
                     self.peers[peer_id].audio_channel = None
                     # Clean up audio resources
-                    self.audio_service.cleanup(peer_id)
+                    asyncio.create_task(self.audio_service.cleanup(peer_id))
 
             @audio_channel.on('error')
             def on_error(error: Exception) -> None:

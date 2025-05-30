@@ -4,19 +4,34 @@ import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import AboutHeader from '@/components/layout/AboutHeader';
 import AboutFooter from '@/components/layout/AboutFooter';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import type { Props } from '@/interfaces/LayoutProps';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'CoachAI - About',
-  description:
-    'Learn about CoachAI - Your AI-powered leadership coaching platform for developing exceptional soft skills',
-  manifest: '/manifest.json',
-};
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '', false);
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children, params }: Props) {
+  const { locale } = await params;
+
   return (
-    <html lang="en">
+    <html lang={locale}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Coach AI',
+              url: 'https://personiofoundation-coachai.com',
+            }),
+          }}
+        />
+      </head>
       <body className={inter.className}>
         <AboutHeader />
         <main className="container mx-auto px-4">
