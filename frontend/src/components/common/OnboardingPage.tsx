@@ -4,7 +4,6 @@ import Stepper from '@/components/common/Stepper';
 import React from 'react';
 import { Button } from '@/components/ui/Button';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
-import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 import { UserOption } from '@/interfaces/UserInputFields';
 import Checkbox from '@/components/ui/Checkbox';
 import Label from '@/components/ui/Label';
@@ -12,6 +11,7 @@ import { UserRadio } from '@/components/common/UserRadioQuestion';
 import { useTranslations } from 'next-intl';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Link from 'next/link';
+import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 
 export default function OnboardingPageComponent() {
   const roleQuestion: UserOption[] = [
@@ -107,7 +107,7 @@ export default function OnboardingPageComponent() {
             <div className="text-xl">{t('steps.step2')}</div>
             <div className="text-base text-bw-40">{t('steps.step2Subtitle')}</div>
           </div>
-          <div className="h-60 overflow-y-auto">
+          <div className="h-63 overflow-y-auto">
             <div className="flex flex-col gap-5">
               {primaryGoals.map((goal) => (
                 <div key={goal.id} className="flex items-center gap-2">
