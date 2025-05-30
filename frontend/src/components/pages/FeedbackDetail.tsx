@@ -6,7 +6,6 @@ import {
   MessageCircleQuestion,
   Mic,
   PlayIcon,
-  Zap,
 } from 'lucide-react';
 import Progress from '@/components/ui/Progress';
 import { Button } from '@/components/ui/Button';
@@ -47,18 +46,18 @@ export default function FeedbackDetail() {
     { key: t('stats.goalsAchieved'), value: mockFeedback.goalsAcheived, icon: 'Check' },
   ];
 
-  const getIcon = (iconName: string, size: number) => {
+  const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Mic':
-        return <Mic size={size} />;
+        return <Mic size={20} />;
       case 'Message':
-        return <MessageCircle size={size} />;
+        return <MessageCircle size={20} />;
       case 'Clock':
-        return <Clock size={size} />;
+        return <Clock size={20} />;
       case 'Check':
-        return <CheckCircle size={size} />;
+        return <CheckCircle size={20} />;
       default:
-        return <MessageCircleQuestion size={size} />;
+        return <MessageCircleQuestion size={20} />;
     }
   };
   return (
@@ -90,7 +89,7 @@ export default function FeedbackDetail() {
         {roundCardStats.map((stat) => (
           <div className="flex gap-2 items-center" key={stat.key}>
             <div className="rounded-full size-11 border-1 border-bw-30 bg-bw-10 flex items-center justify-center">
-              {getIcon(stat.icon, 20)}
+              {getIcon(stat.icon)}
             </div>
             <div className="flex flex-col gap-1 justify-between">
               <span className="text-base">{stat.key}</span>
@@ -115,15 +114,9 @@ export default function FeedbackDetail() {
           </div>
         </div>
       </div>
-      <div className="flex gap-3 w-full">
-        <Button variant="outline" size="full">
-          {t('yourApproach')}
-        </Button>
-        <Button size="full">
-          <Zap size={13} />
-          {t('compareAI')}
-        </Button>
-      </div>
+      <Button variant="outline" size="full">
+        {t('yourApproach')}
+      </Button>
       <Accordion type="multiple" className="w-full">
         <AccordionItem value="feedback">
           <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
