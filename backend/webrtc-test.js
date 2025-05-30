@@ -180,7 +180,7 @@ async function startAudio() {
         // 添加 ICE 候选处理
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
-                log(`New ICE candidate: ${event.candidate.candidate}`);
+                log(`New ICE candidate: ${JSON.stringify(event.candidate)}`);
                 if (ws && ws.readyState === WebSocket.OPEN) {
                     ws.send(JSON.stringify({
                         type: 'candidate',

@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
+from aiortc import RTCIceCandidate
 
 # ============================================================================
 #                           SIGNALING SCHEMAS
@@ -39,13 +40,6 @@ class WebRTCAnswer(WebRTCSignalingBase):
     type: Literal['answer'] = Field(..., description="Type of the message, must be 'answer'")
     sdp: str = Field(..., description='Session Description Protocol (SDP) for the answer')
 
-
-class WebRTCIceCandidate(BaseModel):
-    """WebRTC ICE candidate signaling message"""
-    
-    sdp_mid: str = Field(..., description='Media stream identification', alias='sdpMid')
-    sdp_mline_index: int = Field(..., description='Index of the media description in the SDP', alias='sdpMLineIndex')
-    candidate: str = Field(..., description='ICE candidate string', alias='candidate')
 
 
 class WebRTCDataChannelConfig(BaseModel):
@@ -89,6 +83,14 @@ class WebRTCIceCandidateResponse(BaseModel):
     message: str = Field(..., description='Response message')
 
 
+class WebRTCIceCandidate(BaseModel):
+    """WebRTC ICE candidate"""
+
+    candidate: str = Field(..., description='ICE candidate')
+    sdp_mline_index: int = Field(..., description='SDP m-line index', alias='sdpMLineIndex')
+    sdp_mid: str = Field(..., description='SDP m-id', alias='sdpMid')
+    username_fragment: Optional[str] = Field(None, description='Username fragment', alias='usernameFragment')
+
 class WebRTCSignalingMessage(WebRTCSignalingBase):
     """WebRTC signaling message"""
 
@@ -97,7 +99,6 @@ class WebRTCSignalingMessage(WebRTCSignalingBase):
     candidate: Optional[WebRTCIceCandidate] = None
     audio_config: Optional[AudioControlConfig] = None
     candidate_response: Optional[WebRTCIceCandidateResponse] = None
-    username_fragment: Optional[str] = Field(None, description='Username fragment for the ICE candidate', alias='usernameFragment')
 
 
 class WebRTCMessage(WebRTCSignalingMessage):

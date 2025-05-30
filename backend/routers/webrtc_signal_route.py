@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 
-from ..schemas.webrtc_schema import WebRTCMessage
+from ..schemas.webrtc_schema import WebRTCSignalingMessage
 from ..services.webrtc_service import WebRTCService, get_webrtc_service
 
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +26,7 @@ async def websocket_signaling(
             data = await websocket.receive_json()
             logger.debug(f'Received message: {data}')
 
-            signaling_message = WebRTCMessage(**data)
+            signaling_message = WebRTCSignalingMessage(**data)
             logger.debug(f'Parsed message: {signaling_message.model_dump()}')
 
             response = await webrtc_service.handle_signaling(signaling_message, websocket)
