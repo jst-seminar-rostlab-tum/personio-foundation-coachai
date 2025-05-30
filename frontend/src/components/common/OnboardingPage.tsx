@@ -77,7 +77,7 @@ export default function OnboardingPageComponent() {
   };
 
   return (
-    <div className="flex flex-col w-fit py-5 gap-5 mr-auto ml-auto">
+    <div className="flex flex-col max-w-2xl py-5 gap-5 mr-auto ml-auto">
       <div className="flex flex-col gap-2 text-center">
         <span className="text-2xl">{t('title')}</span>
         <span className="text-base text-bw-40">{t('subtitle')}</span>
