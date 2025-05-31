@@ -358,19 +358,59 @@ def get_dummy_training_session_feedback(
             questions_asked=5,
             session_length_s=1800,
             goals_achieved=3,
-            examples_positive='### Clear framing of the issue You effectively communicated the '
-            'specific issue (missed deadlines) and its impact on the team without being '
-            'accusatory. > “I’ve noticed that several deadlines were missed last week, and '
-            'it’s causing our team to fall behind on the overall project timeline.” --- ',
-            examples_negative='### Lack of specific examples While you mentioned missed '
-            'deadlines, you didn’t provide specific instances or data to illustrate the issue. '
-            'Including concrete examples would strengthen your feedback. > “For example, the '
-            'report due on Friday was submitted on Monday, which delayed our progress.” --- ',
-            recommendations='### Practice the STAR method When giving feedback, use the c '
-            'Situation, Task, Action, Result framework to provide more concrete examples. '
-            '--- ### Ask more diagnostic questions Spend more time understanding root causes '
-            'before moving to solutions. This builds empathy and leads to more effective '
-            'outcomes.  --- ### Define next steps End feedback conversations with agreed-upon',
+            example_positive=[
+                {
+                    'heading': 'Clear framing of the issue',
+                    'feedback': (
+                        'You effectively communicated the specific issue (missed deadlines) and its '
+                        'impact on the team without being accusatory.'
+                    ),
+                    'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and it’s causing '
+                        'our team to fall behind on the overall project timeline.'
+                    ),
+                }
+            ],
+            example_negative=[
+                {
+                    'heading': 'Lack of specific examples',
+                    'feedback': (
+                        'While you mentioned missed deadlines, you didn’t provide specific instances '
+                        'or data to illustrate the issue. Including concrete examples would strengthen '
+                        'your feedback.'
+                    ),
+                    'quote': (
+                        'The report due on Friday was submitted on Monday, which delayed our progress.'
+                    ),
+                    'improved_quote': (
+                        'Ensure deadlines are met by setting clear expectations and providing specific '
+                        'examples of missed deadlines.'
+                    ),
+                }
+            ],
+            recommendations=[
+                {
+                    'heading': 'Practice the STAR method',
+                    'recommendation': (
+                        'When giving feedback, use the Situation, Task, Action, Result framework to '
+                        'provide more concrete examples.'
+                    ),
+                },
+                {
+                    'heading': 'Ask more diagnostic questions',
+                    'recommendation': (
+                        'Spend more time understanding root causes before moving to solutions. This '
+                        'builds empathy and leads to more effective outcomes.'
+                    ),
+                },
+                {
+                    'heading': 'Define next steps',
+                    'recommendation': (
+                        'End feedback conversations with agreed-upon actions to ensure clarity and '
+                        'accountability.'
+                    ),
+                },
+            ],
             status=FeedbackStatusEnum.pending,  # Use the enum for status
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
@@ -386,19 +426,59 @@ def get_dummy_training_session_feedback(
             questions_asked=7,
             session_length_s=2000,
             goals_achieved=4,
-            examples_positive='### Clear framing of the issue You effectively communicated the '
-            'specific issue (missed deadlines) and its impact on the team without being '
-            'accusatory. > “I’ve noticed that several deadlines were missed last week, and '
-            'it’s causing our team to fall behind on the overall project timeline.” --- ',
-            examples_negative='### Lack of specific examples While you mentioned missed '
-            'deadlines, you didn’t provide specific instances or data to illustrate the issue. '
-            'Including concrete examples would strengthen your feedback. > “For example, the '
-            'report due on Friday was submitted on Monday, which delayed our progress.” --- ',
-            recommendations='### Practice the STAR method When giving feedback, use the c '
-            'Situation, Task, Action, Result framework to provide more concrete examples. '
-            '--- ### Ask more diagnostic questions Spend more time understanding root causes '
-            'before moving to solutions. This builds empathy and leads to more effective '
-            'outcomes.  --- ### Define next steps End feedback conversations with agreed-upon',
+            example_positive=[
+                {
+                    'heading': 'Clear framing of the issue',
+                    'feedback': (
+                        'You effectively communicated the specific issue (missed deadlines) and its '
+                        'impact on the team without being accusatory.'
+                    ),
+                    'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and it’s causing '
+                        'our team to fall behind on the overall project timeline.'
+                    ),
+                }
+            ],
+            example_negative=[
+                {
+                    'heading': 'Lack of specific examples',
+                    'feedback': (
+                        'While you mentioned missed deadlines, you didn’t provide specific instances '
+                        'or data to illustrate the issue. Including concrete examples would strengthen '
+                        'your feedback.'
+                    ),
+                    'quote': (
+                        'The report due on Friday was submitted on Monday, which delayed our progress.'
+                    ),
+                    'improved_quote': (
+                        'Ensure deadlines are met by setting clear expectations and providing specific '
+                        'examples of missed deadlines.'
+                    ),
+                }
+            ],
+            recommendations=[
+                {
+                    'heading': 'Practice the STAR method',
+                    'recommendation': (
+                        'When giving feedback, use the Situation, Task, Action, Result framework to '
+                        'provide more concrete examples.'
+                    ),
+                },
+                {
+                    'heading': 'Ask more diagnostic questions',
+                    'recommendation': (
+                        'Spend more time understanding root causes before moving to solutions. This '
+                        'builds empathy and leads to more effective outcomes.'
+                    ),
+                },
+                {
+                    'heading': 'Define next steps',
+                    'recommendation': (
+                        'End feedback conversations with agreed-upon actions to ensure clarity and '
+                        'accountability.'
+                    ),
+                },
+            ],
             status=FeedbackStatusEnum.pending,  # Use the enum for status
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),

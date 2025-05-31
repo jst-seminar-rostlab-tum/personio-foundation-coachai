@@ -18,6 +18,24 @@ class FeedbackStatusEnum(str, Enum):
     failed = 'failed'
 
 
+class PositiveExample(SQLModel):
+    heading: str
+    feedback: str
+    quote: str
+
+
+class NegativeExample(SQLModel):
+    heading: str
+    feedback: str
+    quote: str
+    improved_quote: str
+
+
+class Recommendation(SQLModel):
+    heading: str
+    recommendation: str
+
+
 class TrainingSessionFeedback(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
@@ -29,9 +47,9 @@ class TrainingSessionFeedback(SQLModel, table=True):  # `table=True` makes it a 
     questions_asked: int
     session_length_s: int
     goals_achieved: int
-    examples_positive: Optional[str] = None
-    examples_negative: Optional[str] = None
-    recommendations: Optional[str] = None
+    example_positive: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
+    example_negative: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
+    recommendations: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     status: FeedbackStatusEnum = Field(default=FeedbackStatusEnum.pending)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -60,9 +78,9 @@ class TrainingSessionFeedbackCreate(SQLModel):
     questions_asked: int
     session_length_s: int
     goals_achieved: int
-    examples_positive: Optional[str] = None
-    examples_negative: Optional[str] = None
-    recommendations: Optional[str] = None
+    example_positive: list[PositiveExample] = Field(default_factory=list)
+    example_negative: list[NegativeExample] = Field(default_factory=list)
+    recommendations: list[Recommendation] = Field(default_factory=list)
     status: FeedbackStatusEnum = FeedbackStatusEnum.pending
 
 
@@ -78,9 +96,9 @@ class TrainingSessionFeedbackRead(SQLModel):
     questions_asked: int
     session_length_s: int
     goals_achieved: int
-    examples_positive: Optional[str] = None
-    examples_negative: Optional[str] = None
-    recommendations: Optional[str] = None
+    example_positive: list[PositiveExample] = Field(default_factory=list)
+    example_negative: list[NegativeExample] = Field(default_factory=list)
+    recommendations: list[Recommendation] = Field(default_factory=list)
     status: FeedbackStatusEnum
     created_at: datetime
     updated_at: datetime
