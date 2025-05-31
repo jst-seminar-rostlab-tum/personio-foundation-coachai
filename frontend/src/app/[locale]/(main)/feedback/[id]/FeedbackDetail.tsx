@@ -1,3 +1,5 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 import {
   ChartNoAxesColumnIncreasingIcon,
@@ -18,38 +20,26 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import Link from 'next/link';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { FeedbackData, RawFeedbackData } from '@/interfaces/Feedback';
 import FeedbackQuote from './FeedbackQuote';
+import FeedbackDetailLoadingPage from './loading';
 
-const mockFeedback = {
-  topic: 'Giving Constructive Feedback',
-  time: '16.04.2025, 12:24',
-  structure: 85,
-  empathy: 85,
-  focus: 85,
-  overall: 82,
-  speakingTime: 62,
-  questionAsked: 6,
-  sessionLength: '3:30',
-  goalsAcheived: '4/5',
-  conversationLength: 3,
-};
-
-export default function FeedbackDetail() {
-  const t = useTranslations('Feedback');
-  const progressBarData = [
-    { key: t('progressBars.structure'), value: mockFeedback.structure },
-    { key: t('progressBars.empathy'), value: mockFeedback.empathy },
-    { key: t('progressBars.focus'), value: mockFeedback.focus },
-  ];
-
-  const roundCardStats = [
-    { key: t('stats.speakingTime'), value: `${mockFeedback.speakingTime}%`, icon: 'Mic' },
-    { key: t('stats.questionsAsked'), value: mockFeedback.questionAsked, icon: 'Message' },
-    { key: t('stats.sessionLength'), value: mockFeedback.sessionLength, icon: 'Clock' },
-    { key: t('stats.goalsAchieved'), value: mockFeedback.goalsAcheived, icon: 'Check' },
-  ];
-
-  const examplesPositive = [
+const DEFAULT_FEEDBACK: FeedbackData = {
+  sessionTopic: 'Constructive Feedback Session',
+  overallScore: 82,
+  scores: {
+    clarity: 78,
+    empathy: 76,
+    structure: 90,
+    solutionFocus: 76,
+  },
+  speakTimePercent: 62,
+  questionsAsked: 5,
+  sessionLength: 504,
+  goalsAchieved: 3,
+  examplesPositive: [
     {
       heading: 'Clear framing of the issue',
       feedback:
@@ -64,9 +54,8 @@ export default function FeedbackDetail() {
       quote:
         'It sounds like you’re feeling overwhelmed by the number of tasks you’re responsible for. Let’s talk about how we might prioritize these better.',
     },
-  ];
-
-  const examplesNegative = [
+  ],
+  examplesNegative: [
     {
       heading: 'More specific examples needed',
       feedback:
@@ -83,9 +72,8 @@ export default function FeedbackDetail() {
       improvedQuote:
         'What specific challenges have made it difficult to meet these deadlines? Are there particular aspects of these tasks that are taking more time than expected?',
     },
-  ];
-
-  const recommendations = [
+  ],
+  recommendations: [
     {
       heading: 'Practice the STAR method',
       recommendation:
@@ -100,6 +88,104 @@ export default function FeedbackDetail() {
       heading: 'Define clear next steps',
       recommendation: 'End feedback conversations with agreed-upon action items.',
     },
+  ],
+  status: 'completed',
+  createdAt: '2023-04-16T12:16:00Z',
+};
+
+export default function FeedbackDetail({ id }: { id: string }) {
+  const t = useTranslations('Feedback');
+  const [feedbackData, setFeedbackData] = useState<FeedbackData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const transformData = (raw: RawFeedbackData): FeedbackData => {
+    return {
+      sessionTopic: raw.session_topic,
+      overallScore: raw.overall_score,
+      scores: {
+        clarity: raw.scores.clarity,
+        empathy: raw.scores.empathy,
+        structure: raw.scores.structure,
+        solutionFocus: raw.scores.solution_focus,
+      },
+      speakTimePercent: raw.speak_time_percent,
+      questionsAsked: raw.questions_asked,
+      sessionLength: raw.session_length_s,
+      goalsAchieved: raw.goals_achieved,
+      examplesPositive: raw.examples_positive.map((item) => ({
+        heading: item.heading,
+        feedback: item.feedback,
+        quote: item.quote,
+      })),
+      examplesNegative: raw.examples_negative.map((item) => ({
+        heading: item.heading,
+        feedback: item.feedback,
+        quote: item.quote,
+        improvedQuote: item.improved_quote,
+      })),
+      recommendations: raw.recommendations.map((item) => ({
+        heading: item.heading,
+        recommendation: item.recommendation,
+      })),
+      status: raw.status,
+      createdAt: raw.created_at,
+    };
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      try {
+        const res = await axios.get<RawFeedbackData>(
+          `${process.env.NEXT_PUBLIC_API_URL}/training-session/${id}/feedback`
+        );
+
+        if (!isMounted) return;
+
+        if (res.status === 200) {
+          setFeedbackData(transformData(res.data));
+          setLoading(false);
+        } else if (res.status === 202) {
+          setTimeout(fetchData, 3000);
+        }
+      } catch (err) {
+        console.error('Failed to fetch feedback:', err);
+        setFeedbackData(DEFAULT_FEEDBACK);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+
+  if (loading && !feedbackData) {
+    return <FeedbackDetailLoadingPage />;
+  }
+
+  const convertTimeToMinutes = (seconds: number) => {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  };
+
+  const progressBarData = [
+    { key: t('progressBars.structure'), value: feedbackData!.scores.structure },
+    { key: t('progressBars.empathy'), value: feedbackData!.scores.empathy },
+    { key: t('progressBars.focus'), value: feedbackData!.scores.solutionFocus },
+  ];
+
+  const roundCardStats = [
+    { key: t('stats.speakingTime'), value: `${feedbackData!.speakTimePercent}%`, icon: 'Mic' },
+    { key: t('stats.questionsAsked'), value: feedbackData!.questionsAsked, icon: 'Message' },
+    {
+      key: t('stats.sessionLength'),
+      value: convertTimeToMinutes(feedbackData!.sessionLength),
+      icon: 'Clock',
+    },
+    { key: t('stats.goalsAchieved'), value: `${feedbackData!.goalsAchieved}/4`, icon: 'Check' },
   ];
 
   const getIcon = (iconName: string) => {
@@ -114,12 +200,25 @@ export default function FeedbackDetail() {
         return <MessageCircleQuestion size={20} />;
     }
   };
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${day}.${month}.${year}, ${hours}:${minutes}`;
+  };
   return (
     <div className="flex flex-col items-center gap-7 mx-auto max-w-3xl">
       <div className="text-2xl ">{t('title')}</div>
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
-        <div className="text-lg text-marigold-90">{mockFeedback.topic}</div>
-        <div className="text-base text-marigold-95">{mockFeedback.time}</div>
+        <div className="text-lg text-marigold-90">{feedbackData!.sessionTopic}</div>
+        <div className="text-base text-marigold-95">{formatDateTime(feedbackData!.createdAt)}</div>
       </div>
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
@@ -134,7 +233,7 @@ export default function FeedbackDetail() {
           ))}
         </div>
         <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
-          {mockFeedback.overall}%
+          {feedbackData!.overallScore}%
         </div>
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
@@ -163,7 +262,7 @@ export default function FeedbackDetail() {
             <Progress className="w-10 flex-1" value={62} />
             <div className="flex gap-1 items-center text-base text-bw-40">
               <Clock size={13} />
-              <span>{mockFeedback.conversationLength} min</span>
+              <span>{convertTimeToMinutes(feedbackData!.sessionLength)} min</span>
             </div>
           </div>
         </div>
@@ -180,7 +279,7 @@ export default function FeedbackDetail() {
               <span className="text-xl">{t('detailedFeedback.positive')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {examplesPositive.map((example, index) => (
+              {feedbackData!.examplesPositive.map((example, index) => (
                 <FeedbackQuote key={index} {...example} icon="Check" />
               ))}
             </div>
@@ -190,7 +289,7 @@ export default function FeedbackDetail() {
               <span className="text-xl">{t('detailedFeedback.negative')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {examplesNegative.map((negative, index) => (
+              {feedbackData!.examplesNegative.map((negative, index) => (
                 <FeedbackQuote key={index} {...negative} icon="Cross" />
               ))}
             </div>
@@ -200,7 +299,7 @@ export default function FeedbackDetail() {
               <span className="text-xl">{t('detailedFeedback.recommendations')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {recommendations.map((recommendation, index) => (
+              {feedbackData!.recommendations.map((recommendation, index) => (
                 <FeedbackQuote key={index} {...recommendation} icon="Info" />
               ))}
             </div>
