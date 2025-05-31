@@ -20,9 +20,9 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import Link from 'next/link';
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { FeedbackData, RawFeedbackData } from '@/interfaces/Feedback';
+import api from '@/lib/axios';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDetailLoadingPage from './loading';
 
@@ -137,9 +137,7 @@ export default function FeedbackDetail({ id }: { id: string }) {
 
     const fetchData = async () => {
       try {
-        const res = await axios.get<RawFeedbackData>(
-          `${process.env.NEXT_PUBLIC_API_URL}/training-session/${id}/feedback`
-        );
+        const res = await api.get<RawFeedbackData>(`/training-session/${id}/feedback`);
 
         if (!isMounted) return;
 
