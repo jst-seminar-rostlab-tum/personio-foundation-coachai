@@ -51,18 +51,5 @@
       "coaching": "Coaching & Mentoring",
       "coping": "Bewältigungsstrategien"
     }
-  },
-  "confidenceFields": {
-    "givingFeedback": {
-      "title": "Schwieriges Feedback geben"
-    },
-    "teamConflicts": {
-      "title": "Teamkonflikte managen"
-    },
-    "challengingConversations": {
-      "title": "Herausfordernde Gespräche führen"
-    },
-    "minLabel": "Nicht sicher",
-    "maxLabel": "Sehr sicher"
   }
 }
