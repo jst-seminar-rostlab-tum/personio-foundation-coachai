@@ -51,18 +51,5 @@
       "coaching": "Coaching & Mentoring",
       "coping": "Coping Mechanisms"
     }
-  },
-  "confidenceFields": {
-    "givingFeedback": {
-      "title": "Giving difficult feedback"
-    },
-    "teamConflicts": {
-      "title": "Managing team conflicts"
-    },
-    "challengingConversations": {
-      "title": "Leading challenging conversations"
-    },
-    "minLabel": "Not confident",
-    "maxLabel": "Very confident"
   }
 }
