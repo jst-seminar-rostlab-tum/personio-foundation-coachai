@@ -179,7 +179,7 @@ export default function FeedbackDetail() {
               <CheckCircle size={24} className="text-forest-50" />
               <span className="text-xl">{t('detailedFeedback.positive')}</span>
             </div>
-            <div className="flex flex-col gap-4 mt-5 px-5">
+            <div className="flex flex-col gap-4 mt-5 pl-4">
               {examplesPositive.map((example, index) => (
                 <FeedbackQuote key={index} {...example} icon="Check" />
               ))}
@@ -189,7 +189,7 @@ export default function FeedbackDetail() {
               <CircleX size={24} className="text-flame-50" />
               <span className="text-xl">{t('detailedFeedback.negative')}</span>
             </div>
-            <div className="flex flex-col gap-4 mt-5 px-5">
+            <div className="flex flex-col gap-4 mt-5 pl-4">
               {examplesNegative.map((negative, index) => (
                 <FeedbackQuote key={index} {...negative} icon="Cross" />
               ))}
@@ -199,7 +199,7 @@ export default function FeedbackDetail() {
               <ChartNoAxesColumnIncreasingIcon size={24} className="text-marigold-50" />
               <span className="text-xl">{t('detailedFeedback.recommendations')}</span>
             </div>
-            <div className="flex flex-col gap-4 mt-5 px-5">
+            <div className="flex flex-col gap-4 mt-5 pl-4">
               {recommendations.map((recommendation, index) => (
                 <FeedbackQuote key={index} {...recommendation} icon="Info" />
               ))}
