@@ -274,13 +274,11 @@ def patch_user_profile(
     session: Annotated[Session, Depends(get_session)],
 ) -> UserProfile:
     """
-    Partially update an existing user profile with new data.
-    Allows updating individual fields.
+    Update an existing user profile.
     """
     user = session.get(UserProfile, user_id)
-
     if not user:
-        raise HTTPException(status_code=404, detail='User not found')
+        raise HTTPException(status_code=404, detail='User profile not found')
 
     # Update UserProfile fields if provided
     if 'role_id' in user_data:
