@@ -209,6 +209,21 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         ),
+        ConversationCategory(
+            id=uuid4(),
+            name='Custom Category',
+            icon_uri='https://example.com/icons/custom.png',
+            system_prompt='',
+            initial_prompt='',
+            ai_setup={},
+            default_context='',
+            default_goal='',
+            default_other_party='',
+            is_custom=True,
+            language_code='en',
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        ),
     ]
 
 
