@@ -64,6 +64,8 @@ class UserProfileCreate(SQLModel):
     preferred_learning_style_id: UUID
     preferred_session_length_id: UUID
     store_conversations: bool
+    goal_ids: list[UUID]
+    confidence_scores: list[dict]
 
 
 # Schema for reading UserProfile data

@@ -7,7 +7,12 @@ from sqlmodel import Session, select
 from ..database import get_session
 from ..models.user_confidence_score import ConfidenceScoreRead, UserConfidenceScore
 from ..models.user_goal import UserGoal
-from ..models.user_profile import UserProfile, UserProfileExtendedRead, UserProfileRead
+from ..models.user_profile import (
+    UserProfile,
+    UserProfileCreate,
+    UserProfileExtendedRead,
+    UserProfileRead,
+)
 
 router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
 
@@ -210,12 +215,67 @@ def create_user_profile(
 @router.put('/{user_id}', response_model=UserProfile)
 def update_user_profile(
     user_id: UUID,
-    user_data: dict,
+    user_data: UserProfileCreate,  # Expect full data for PUT
     session: Annotated[Session, Depends(get_session)],
 ) -> UserProfile:
     """
-    Update an existing user profile with new data.
-    Allows partial updates to individual fields.
+    Fully update an existing user profile with new data.
+    Requires all fields to be provided.
+    """
+    user = session.get(UserProfile, user_id)
+
+    if not user:
+        raise HTTPException(status_code=404, detail='User not found')
+
+    # Update UserProfile fields
+    user.role_id = user_data.role_id
+    user.experience_id = user_data.experience_id
+    user.preferred_language = user_data.preferred_language
+    user.preferred_learning_style_id = user_data.preferred_learning_style_id
+    user.preferred_session_length_id = user_data.preferred_session_length_id
+    user.store_conversations = user_data.store_conversations
+
+    session.add(user)
+
+    # Update goals
+    statement = select(UserGoal).where(UserGoal.user_id == user_id)
+    user_goals = session.exec(statement)
+    for user_goal in user_goals:
+        session.delete(user_goal)
+    session.commit()  # Commit to remove old goals
+    for goal_id in user_data.goal_ids:
+        user_goal = UserGoal(user_id=user.id, goal_id=goal_id)
+        session.add(user_goal)
+
+    # Update confidence scores
+    statement = select(UserConfidenceScore).where(UserConfidenceScore.user_id == user_id)
+    user_confidence_scores = session.exec(statement)
+    for user_confidence_score in user_confidence_scores:
+        session.delete(user_confidence_score)
+    session.commit()
+    for confidence_score in user_data.confidence_scores:
+        user_confidence_score = UserConfidenceScore(
+            user_id=user.id,
+            area_id=confidence_score['area_id'],
+            score=confidence_score['score'],
+        )
+        session.add(user_confidence_score)
+
+    session.commit()
+    session.refresh(user)
+
+    return user
+
+
+@router.patch('/{user_id}', response_model=UserProfile)
+def patch_user_profile(
+    user_id: UUID,
+    user_data: dict,  # Expect partial data for PATCH
+    session: Annotated[Session, Depends(get_session)],
+) -> UserProfile:
+    """
+    Partially update an existing user profile with new data.
+    Allows updating individual fields.
     """
     user = session.get(UserProfile, user_id)
 
