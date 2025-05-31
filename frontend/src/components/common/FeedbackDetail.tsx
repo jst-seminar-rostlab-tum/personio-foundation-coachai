@@ -16,7 +16,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/CustomAccordion';
+} from '@/components/ui/Accordion';
 import Link from 'next/link';
 import FeedbackQuote from './FeedbackQuote';
 

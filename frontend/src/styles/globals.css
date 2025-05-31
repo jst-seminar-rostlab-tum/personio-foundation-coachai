@@ -81,10 +81,10 @@
 }
 
 .accordionContent[data-state='open'] {
-  animation: slideDown 1s ease-out;
+  animation: slideDown 700ms ease-out;
 }
 .accordionContent[data-state='closed'] {
-  animation: slideUp 1s ease-out;
+  animation: slideUp 700ms ease-out;
 }
 
 body {
