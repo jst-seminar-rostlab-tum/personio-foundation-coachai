@@ -208,11 +208,9 @@ export default function FeedbackDetail() {
         </AccordionItem>
         <AccordionItem value="suggestion">
           <AccordionTrigger>{t('accordian.suggestion')}</AccordionTrigger>
-          <AccordionContent></AccordionContent>
         </AccordionItem>
         <AccordionItem value="session">
           <AccordionTrigger>{t('accordian.sessions')}</AccordionTrigger>
-          <AccordionContent></AccordionContent>
         </AccordionItem>
       </Accordion>
       <Link href="/dashboard" className="w-full">
