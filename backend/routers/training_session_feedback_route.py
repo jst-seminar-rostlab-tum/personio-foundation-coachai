@@ -7,6 +7,7 @@ from sqlmodel import Session, select
 from ..database import get_session
 from ..models.training_session import TrainingSession
 from ..models.training_session_feedback import (
+    FeedbackStatusEnum,
     TrainingSessionFeedback,
     TrainingSessionFeedbackCreate,
     TrainingSessionFeedbackRead,
@@ -25,6 +26,27 @@ def get_training_session_feedbacks(
     statement = select(TrainingSessionFeedback)
     feedbacks = session.exec(statement).all()
     return list(feedbacks)
+
+
+@router.get('/{feedback_id}', response_model=TrainingSessionFeedbackRead)
+def get_training_session_feedback(
+    feedback_id: UUID, session: Annotated[Session, Depends(get_session)]
+) -> TrainingSessionFeedbackRead:
+    """
+    Retrieve a specific training feedback by ID.
+    """
+    feedback = session.get(TrainingSessionFeedback, feedback_id)
+
+    if not feedback:
+        raise HTTPException(status_code=404, detail='Session feedback not found')
+
+    if feedback.status == FeedbackStatusEnum.pending:
+        raise HTTPException(status_code=202, detail='Session feedback in progress.')
+
+    elif feedback.status == FeedbackStatusEnum.failed:
+        raise HTTPException(status_code=500, detail='Session feedback failed.')
+
+    return feedback
 
 
 @router.post('/', response_model=TrainingSessionFeedbackRead)
