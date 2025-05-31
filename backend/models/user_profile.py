@@ -28,14 +28,15 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
     preferred_learning_style_id: UUID = Field(foreign_key='learningstyle.id')
     preferred_session_length_id: UUID = Field(foreign_key='sessionlength.id')
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    deleted_at: Optional[datetime] = None
-
+    store_conversations: bool = Field(default=True)
     # Relationships
-    ratings: Optional['Rating'] = Relationship(back_populates='user')
-    training_cases: Optional['TrainingCase'] = Relationship(back_populates='user')
+    ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
+    training_cases: list['TrainingCase'] = Relationship(back_populates='user', cascade_delete=True)
     role: Optional['Role'] = Relationship(back_populates='user_profiles')  # Use string reference
     experience: Optional['Experience'] = Relationship(back_populates='user')
-    user_goals: list['UserGoal'] = Relationship(back_populates='user')  # Add this line
+    user_goals: list['UserGoal'] = Relationship(
+        back_populates='user', cascade_delete=True
+    )  # Add this line
     user_confidence_scores: list['UserConfidenceScore'] = Relationship(
         back_populates='user', cascade_delete=True
     )
@@ -60,6 +61,9 @@ class UserProfileCreate(SQLModel):
     experience_id: UUID
     preferred_learning_style_id: UUID
     preferred_session_length_id: UUID
+    store_conversations: bool
+    goal_ids: list[UUID]
+    confidence_scores: list[dict]
 
 
 # Schema for reading UserProfile data
@@ -72,8 +76,8 @@ class UserProfileRead(SQLModel):
     preferred_session_length_id: UUID
     goal: list[UUID]
     confidence_scores: list[UUID]
+    store_conversations: bool
     updated_at: datetime
-    deleted_at: Optional[datetime]
 
 
 class UserProfileExtendedRead(SQLModel):
@@ -85,6 +89,7 @@ class UserProfileExtendedRead(SQLModel):
     preferred_session_length: Optional[str]
     goal: list[str]
     confidence_scores: list[ConfidenceScoreRead]
+    store_conversations: bool
 
 
 UserProfileExtendedRead.model_rebuild()

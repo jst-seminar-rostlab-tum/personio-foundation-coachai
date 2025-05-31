@@ -132,6 +132,7 @@ def get_dummy_user_profiles(
             experience_id=experiences[0].id,
             preferred_learning_style_id=learning_styles[0].id,
             preferred_session_length_id=session_lengths[0].id,
+            store_conversations=False,
         ),
         UserProfile(
             id=uuid4(),
@@ -140,6 +141,7 @@ def get_dummy_user_profiles(
             experience_id=experiences[1].id,
             preferred_learning_style_id=learning_styles[1].id,
             preferred_session_length_id=session_lengths[1].id,
+            store_conversations=True,
         ),
     ]
 
@@ -228,7 +230,6 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             id=uuid4(),
             name='Business',
             icon_uri='https://example.com/icons/business.png',
-            description='Business-related conversations',
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         ),
@@ -236,7 +237,6 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             id=uuid4(),
             name='Casual',
             icon_uri='https://example.com/icons/casual.png',
-            description='Casual conversations',
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         ),
@@ -244,7 +244,6 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             id=uuid4(),
             name='Technical',
             icon_uri='https://example.com/icons/technical.png',
-            description='Technical discussions and problem-solving',
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         ),

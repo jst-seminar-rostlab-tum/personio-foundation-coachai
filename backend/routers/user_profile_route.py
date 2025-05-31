@@ -7,7 +7,12 @@ from sqlmodel import Session, select
 from ..database import get_session
 from ..models.user_confidence_score import ConfidenceScoreRead, UserConfidenceScore
 from ..models.user_goal import UserGoal
-from ..models.user_profile import UserProfile, UserProfileExtendedRead, UserProfileRead
+from ..models.user_profile import (
+    UserProfile,
+    UserProfileCreate,
+    UserProfileExtendedRead,
+    UserProfileRead,
+)
 
 router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
 
@@ -47,7 +52,7 @@ def get_user_profile_ids(
                 goal=list(goals),
                 confidence_scores=list(confidence_scores),
                 updated_at=user.updated_at,
-                deleted_at=user.deleted_at,
+                store_conversations=user.store_conversations,
             )
         )
 
@@ -91,6 +96,7 @@ def get_user_profile_by_id(
             if user_goal.goal and user_goal.goal.label
         ],
         confidence_scores=confidence_scores,
+        store_conversations=user.store_conversations,
     )
 
     return user_data
@@ -160,6 +166,7 @@ def get_user_profiles(
                 preferred_session_length=user_data['preferred_session_length'],
                 goal=list(user_data['goal']),
                 confidence_scores=confidence_scores,
+                store_conversations=user_data['store_conversations'],
             )
         )
 
@@ -208,12 +215,12 @@ def create_user_profile(
 @router.put('/{user_id}', response_model=UserProfile)
 def update_user_profile(
     user_id: UUID,
-    user_data: dict,
+    user_data: UserProfileCreate,  # Expect full data for PUT
     session: Annotated[Session, Depends(get_session)],
 ) -> UserProfile:
     """
-    Update an existing user profile with new data.
-    Replaces goals and confidence scores with the provided values.
+    Fully update an existing user profile with new data.
+    Requires all fields to be provided.
     """
     user = session.get(UserProfile, user_id)
 
@@ -221,11 +228,12 @@ def update_user_profile(
         raise HTTPException(status_code=404, detail='User not found')
 
     # Update UserProfile fields
-    user.role_id = user_data['role_id']
-    user.experience_id = user_data['experience_id']
-    user.preferred_language = user_data['preferred_language']
-    user.preferred_learning_style_id = user_data['preferred_learning_style_id']
-    user.preferred_session_length_id = user_data['preferred_session_length_id']
+    user.role_id = user_data.role_id
+    user.experience_id = user_data.experience_id
+    user.preferred_language = user_data.preferred_language
+    user.preferred_learning_style_id = user_data.preferred_learning_style_id
+    user.preferred_session_length_id = user_data.preferred_session_length_id
+    user.store_conversations = user_data.store_conversations
 
     session.add(user)
 
@@ -235,7 +243,7 @@ def update_user_profile(
     for user_goal in user_goals:
         session.delete(user_goal)
     session.commit()  # Commit to remove old goals
-    for goal_id in user_data['goal_ids']:
+    for goal_id in user_data.goal_ids:
         user_goal = UserGoal(user_id=user.id, goal_id=goal_id)
         session.add(user_goal)
 
@@ -245,13 +253,74 @@ def update_user_profile(
     for user_confidence_score in user_confidence_scores:
         session.delete(user_confidence_score)
     session.commit()
-    for confidence_score in user_data['confidence_scores']:
+    for confidence_score in user_data.confidence_scores:
         user_confidence_score = UserConfidenceScore(
             user_id=user.id,
             area_id=confidence_score['area_id'],
             score=confidence_score['score'],
         )
         session.add(user_confidence_score)
+
+    session.commit()
+    session.refresh(user)
+
+    return user
+
+
+@router.patch('/{user_id}', response_model=UserProfile)
+def patch_user_profile(
+    user_id: UUID,
+    user_data: dict,  # Expect partial data for PATCH
+    session: Annotated[Session, Depends(get_session)],
+) -> UserProfile:
+    """
+    Update an existing user profile.
+    """
+    user = session.get(UserProfile, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail='User profile not found')
+
+    # Update UserProfile fields if provided
+    if 'role_id' in user_data:
+        user.role_id = user_data['role_id']
+    if 'experience_id' in user_data:
+        user.experience_id = user_data['experience_id']
+    if 'preferred_language' in user_data:
+        user.preferred_language = user_data['preferred_language']
+    if 'preferred_learning_style_id' in user_data:
+        user.preferred_learning_style_id = user_data['preferred_learning_style_id']
+    if 'preferred_session_length_id' in user_data:
+        user.preferred_session_length_id = user_data['preferred_session_length_id']
+    if 'store_conversations' in user_data:
+        user.store_conversations = user_data['store_conversations']
+
+    session.add(user)
+
+    # Update goals if provided
+    if 'goal_ids' in user_data:
+        statement = select(UserGoal).where(UserGoal.user_id == user_id)
+        user_goals = session.exec(statement)
+        for user_goal in user_goals:
+            session.delete(user_goal)
+        session.commit()  # Commit to remove old goals
+        for goal_id in user_data['goal_ids']:
+            user_goal = UserGoal(user_id=user.id, goal_id=goal_id)
+            session.add(user_goal)
+
+    # Update confidence scores if provided
+    if 'confidence_scores' in user_data:
+        statement = select(UserConfidenceScore).where(UserConfidenceScore.user_id == user_id)
+        user_confidence_scores = session.exec(statement)
+        for user_confidence_score in user_confidence_scores:
+            session.delete(user_confidence_score)
+        session.commit()
+        for confidence_score in user_data['confidence_scores']:
+            user_confidence_score = UserConfidenceScore(
+                user_id=user.id,
+                area_id=confidence_score['area_id'],
+                score=confidence_score['score'],
+            )
+            session.add(user_confidence_score)
 
     session.commit()
     session.refresh(user)

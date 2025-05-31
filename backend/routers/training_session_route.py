@@ -20,6 +20,30 @@ from ..models.training_session_feedback import (
 router = APIRouter(prefix='/training-session', tags=['Training Sessions'])
 
 
+@router.get('/{id_training_session}/feedback', response_model=TrainingSessionFeedbackRead)
+def get_training_session_feedback(
+    id_training_session: UUID, session: Annotated[Session, Depends(get_session)]
+) -> TrainingSessionFeedback:
+    """
+    Retrieve the training session feedback for a given training session ID.
+    """
+    # Validate that the training session exists
+    training_session = session.get(TrainingSession, id_training_session)
+    if not training_session:
+        raise HTTPException(status_code=404, detail='Training session not found')
+
+    # Fetch the associated training session feedback
+    statement = select(TrainingSessionFeedback).where(
+        TrainingSessionFeedback.session_id == id_training_session
+    )
+    training_session_feedback = session.exec(statement).first()
+
+    if not training_session_feedback:
+        raise HTTPException(status_code=404, detail='Training session feedback not found')
+
+    return training_session_feedback
+
+
 @router.get('/', response_model=list[TrainingSessionRead])
 def get_training_sessions(
     session: Annotated[Session, Depends(get_session)],
@@ -108,25 +132,35 @@ def delete_training_session(
     return {'message': 'Training session deleted successfully'}
 
 
-@router.get('/{id_training_session}/feedback', response_model=TrainingSessionFeedbackRead)
-def get_training_session_feedback(
-    id_training_session: UUID, session: Annotated[Session, Depends(get_session)]
-) -> TrainingSessionFeedback:
+@router.delete('/clear-all/{user_id}', response_model=dict)
+def delete_training_sessions_by_user(
+    user_id: UUID, session: Annotated[Session, Depends(get_session)]
+) -> dict:
     """
-    Retrieve the training session feedback for a given training session ID.
+    Delete all training sessions related to training cases for a given user ID.
     """
-    # Validate that the training session exists
-    training_session = session.get(TrainingSession, id_training_session)
-    if not training_session:
-        raise HTTPException(status_code=404, detail='Training session not found')
+    # Retrieve all training cases for the given user ID
+    statement = select(TrainingCase).where(TrainingCase.user_id == user_id)
+    training_cases = session.exec(statement).all()
+    print(f'Training cases for user ID {user_id}: {training_cases}')
+    if not training_cases:
+        raise HTTPException(
+            status_code=404, detail='No training sessions found for the given user ID'
+        )
+    count_of_deleted_training_sessions = 0
+    audios = []
+    # Print all audio_uri values from ConversationTurn for each training session
+    for training_case in training_cases:
+        count_of_deleted_training_sessions += len(training_case.sessions)
 
-    # Fetch the associated training session feedback
-    statement = select(TrainingSessionFeedback).where(
-        TrainingSessionFeedback.session_id == id_training_session
-    )
-    training_session_feedback = session.exec(statement).first()
+        for training_session in training_case.sessions:
+            for conversation_turn in training_session.conversation_turns:
+                audios.append(conversation_turn.audio_uri)
+            session.delete(training_session)
 
-    if not training_session_feedback:
-        raise HTTPException(status_code=404, detail='Training session feedback not found')
+    session.commit()
 
-    return training_session_feedback
+    return {
+        'message': f'Deleted {count_of_deleted_training_sessions} sessions for user ID {user_id}',
+        'audios': audios,
+    }
