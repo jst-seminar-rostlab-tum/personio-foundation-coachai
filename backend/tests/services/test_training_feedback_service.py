@@ -18,7 +18,7 @@ from backend.services.training_feedback_service import (
 )
 
 
-@patch('backend.services.training_feedback_service.call_structured_llm')
+@patch('backend.services.training_feedback_service.call_ai_service')
 def test_generate_training_examples(mock_client: MagicMock) -> None:
     mock_client.return_value = TrainingExamplesCollection(
         positive_examples=[
@@ -59,7 +59,7 @@ def test_generate_training_examples(mock_client: MagicMock) -> None:
     assert result.negative_examples[0].quote == "That's not important right now."
 
 
-@patch('backend.services.training_feedback_service.call_structured_llm')
+@patch('backend.services.training_feedback_service.call_ai_service')
 def test_get_achieved_goals(mock_client: MagicMock) -> None:
     mock_client.return_value = GoalsAchievedCollection(
         goals_achieved=[
@@ -84,7 +84,7 @@ def test_get_achieved_goals(mock_client: MagicMock) -> None:
     assert isinstance(result, GoalsAchievedCollection)
 
 
-@patch('backend.services.training_feedback_service.call_structured_llm')
+@patch('backend.services.training_feedback_service.call_ai_service')
 def test_generate_recommendations(mock_client: MagicMock) -> None:
     transcript = "User: Let's explore what might be causing these delays."
     objectives = ['Understand root causes', 'Collaboratively develop a solution']

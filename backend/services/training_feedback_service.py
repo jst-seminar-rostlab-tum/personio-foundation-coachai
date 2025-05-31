@@ -1,8 +1,11 @@
-from backend.connections.openai_client import call_structured_llm
+from backend.connections.openai_client import _call_structured_llm, call_ai_service
 from backend.schemas.training_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
     GoalsAchievementRequest,
+    NegativeExample,
+    PositiveExample,
+    Recommendation,
     RecommendationsCollection,
     RecommendationsRequest,
     TrainingExamplesCollection,
@@ -10,6 +13,25 @@ from backend.schemas.training_feedback_schema import (
 
 
 def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesCollection:
+    mock_response = TrainingExamplesCollection(
+        positive_examples=[
+            PositiveExample(
+                heading='Clear Objective Addressed',
+                text='The user successfully summarized the objective.',
+                quote='I want to make sure we both feel heard and find a solution together.',
+                guideline='Collaborative Problem-Solving',
+            )
+        ],
+        negative_examples=[
+            NegativeExample(
+                heading='Missed Empathy',
+                text="The user dismissed the other party's concern.",
+                quote="That's not important right now.",
+                improved_quote="I understand your concern—let's come back to it in a moment.",
+            )
+        ],
+    )
+
     user_prompt = f"""
     The following is a training session transcript, in which you are practicing 
     communication skills in the context of {request.category}. 
@@ -63,17 +85,26 @@ def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesColl
     strings as values for the Pydantic fields.
     """
 
-    response = call_structured_llm(
-        request_prompt=user_prompt,
-        system_prompt='You are an expert communication coach analyzing training sessions.',
+    response = call_ai_service(
+        mock_response=mock_response,
         model='gpt-4o-2024-08-06',
-        output_model=TrainingExamplesCollection,
+        llm_function=_call_structured_llm,
+        function_args={
+            "request_prompt": user_prompt,
+            "system_prompt": 'You are an expert communication coach analyzing training sessions.',
+            "output_model": TrainingExamplesCollection}
     )
 
     return response
 
 
 def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollection:
+    mock_response = GoalsAchievedCollection(
+        goals_achieved=[
+            'Clearly communicate the impact of the missed deadlines',
+            'Understand potential underlying causes',
+        ]
+    )
     user_prompt = f"""
     The following is a transcript of a training session.
     Please evaluate which of the listed goals were clearly achieved by the user 
@@ -99,17 +130,41 @@ def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollect
     - Do not include any markdown formatting or extra text.
     """
 
-    response = call_structured_llm(
-        request_prompt=user_prompt,
-        system_prompt='You are an expert communication coach analyzing training sessions.',
+    response = call_ai_service(
+        mock_response=mock_response,
         model='gpt-4o-2024-08-06',
-        output_model=GoalsAchievedCollection,
+        llm_function=_call_structured_llm,
+        function_args={
+            'request_prompt': user_prompt,
+            'system_prompt': 'You are an expert communication coach analyzing training sessions.',
+            'output_model': GoalsAchievedCollection,
+        },
     )
 
     return response
 
 
 def generate_recommendations(request: RecommendationsRequest) -> RecommendationsCollection:
+    mock_response = RecommendationsCollection(
+        recommendations=[
+            Recommendation(
+                heading='Practice the STAR method',
+                text='When giving feedback, use the Situation, Task, Action, Result framework to '
+                     + 'provide more concrete examples.',
+            ),
+            Recommendation(
+                heading='Ask more diagnostic questions',
+                text='Spend more time understanding root causes before moving to solutions. '
+                     + 'This builds empathy and leads to more effective outcomes.',
+            ),
+            Recommendation(
+                heading='Define clear next steps',
+                text='End feedback conversations with agreed-upon action items, timelines, and'
+                     + ' follow-up plans.',
+            ),
+        ]
+    )
+
     user_prompt = f"""
     Analyze the following transcript from a training session.
     Based on the goal, objectives, and key concepts, suggest 3 to 5 specific, actionable 
@@ -159,12 +214,15 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
     text: "End feedback conversations with agreed-upon action items, timelines, and follow-up plans.
 
     """
-
-    response = call_structured_llm(
-        request_prompt=user_prompt,
-        system_prompt='You are an expert communication coach analyzing training sessions.',
+    response = call_ai_service(
+        mock_response=mock_response,
         model='gpt-4o-2024-08-06',
-        output_model=RecommendationsCollection,
+        llm_function=_call_structured_llm,
+        function_args={
+            'request_prompt': user_prompt,
+            'system_prompt': 'You are an expert communication coach analyzing training sessions.',
+            'output_model': RecommendationsCollection,
+        },
     )
 
     return response
@@ -178,19 +236,19 @@ if __name__ == '__main__':
         context='Termination meeting with a team member on poor performance',
         other_party='Team member',
         transcript='User:  Hi, I have to talk to you.'
-        + "AI: Yes, what is it? Please don't fire me, I really need this job. "
-        + "I know I haven't been performing well lately, but I promise I can improve. "
-        + "I'll do whatever it takes."
-        + 'Response interrupted'
-        + "User:  I'm sorry but I'm not happy with your performance."
-        + 'AI: I understand, and I take full responsibility. '
-        + 'Could you please tell me specifically what areas I need to improve on?'
-        + "I'm willing to work late, come in early, take on extra tasks—anything "
-        + 'to meet your expectations. Just please give me a chance to prove myself.'
-        + "User:  You can't do anything it's too late to improve."
-        + "AI: Please, don't say that. I'm a hard worker, and I'm a quick learner."
-        + "If you give me another chance, I promise I won't let you down."
-        + 'Is there anything, anything at all, I can do to change your mind?',
+                   + "AI: Yes, what is it? Please don't fire me, I really need this job. "
+                   + "I know I haven't been performing well lately, but I promise I can improve. "
+                   + "I'll do whatever it takes."
+                   + 'Response interrupted'
+                   + "User:  I'm sorry but I'm not happy with your performance."
+                   + 'AI: I understand, and I take full responsibility. '
+                   + 'Could you please tell me specifically what areas I need to improve on?'
+                   + "I'm willing to work late, come in early, take on extra tasks—anything "
+                   + 'to meet your expectations. Just please give me a chance to prove myself.'
+                   + "User:  You can't do anything it's too late to improve."
+                   + "AI: Please, don't say that. I'm a hard worker, and I'm a quick learner."
+                   + "If you give me another chance, I promise I won't let you down."
+                   + 'Is there anything, anything at all, I can do to change your mind?',
         objectives=[
             'Bring clarity to the situation',
             'Encourage open dialogue',
