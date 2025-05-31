@@ -4,7 +4,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { UserRadioQuestion } from '@/interfaces/UserInputFields';
 import { cn } from '@/lib/utils';
 
-export const UserRadio: React.FC<UserRadioQuestion> = ({
+export const UserRadioComponent: React.FC<UserRadioQuestion> = ({
   question,
   options,
   labelHintAlign,

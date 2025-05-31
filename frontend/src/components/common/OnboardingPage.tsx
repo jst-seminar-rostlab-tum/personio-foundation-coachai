@@ -7,7 +7,7 @@ import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { UserOption } from '@/interfaces/UserInputFields';
 import Checkbox from '@/components/ui/Checkbox';
 import Label from '@/components/ui/Label';
-import { UserRadio } from '@/components/common/UserRadioQuestion';
+import { UserRadioComponent } from '@/components/common/UserRadioComponent';
 import { useTranslations } from 'next-intl';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -92,7 +92,7 @@ export default function OnboardingPageComponent() {
       />
 
       {currentOnboardingStep === 0 && (
-        <UserRadio
+        <UserRadioComponent
           question={t('steps.step1')}
           options={roleQuestion}
           selectedValue={selectedRole}
@@ -176,7 +176,7 @@ export default function OnboardingPageComponent() {
           )}
         </div>
 
-        <Link href={'/dashboard'} className="text-base text-bw-40">
+        <Link href={'/dashboard'} className="text-base text-bw-40 hover:underline hover:text-bw-60">
           {t('navigation.skip')}
         </Link>
       </div>
