@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/AlertDialog';
 import UserPreferences from '@/components/common/UserPreferences';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
-import { useUserConfidenceFields } from '@/configs/UserConfidenceFields.config';
+import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
 
 export default function TrainingSettings() {
@@ -107,7 +107,7 @@ export default function TrainingSettings() {
                 <hr className="my-9.5 border-gray-200" />
                 <UserConfidenceFields
                   className="flex flex-col gap-5 px-2"
-                  fields={useUserConfidenceFields()}
+                  fields={confidenceFields}
                 />
               </AccordionContent>
             </AccordionItem>
