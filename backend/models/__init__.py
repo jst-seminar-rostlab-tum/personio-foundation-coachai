@@ -1,3 +1,4 @@
+from .confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from .conversation_category import (
     ConversationCategory,
     ConversationCategoryCreate,
@@ -12,6 +13,7 @@ from .difficulty_level import DifficultyLevel, DifficultyLevelCreate, Difficulty
 from .experience import Experience, ExperienceCreate, ExperienceRead
 from .goal import Goal, GoalCreate, GoalRead
 from .language import Language, LanguageCreate, LanguageRead
+from .learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from .rating import Rating, RatingCreate, RatingRead
 from .role import Role, RoleCreate, RoleRead
 from .scenario_template import (
@@ -20,6 +22,7 @@ from .scenario_template import (
     ScenarioTemplateRead,
     ScenarioTemplateStatus,
 )
+from .session_length import SessionLength, SessionLengthCreate, SessionLengthRead
 from .training_case import (
     TrainingCase,
     TrainingCaseCreate,
@@ -38,8 +41,14 @@ from .training_session_feedback import (
     TrainingSessionFeedbackCreate,
     TrainingSessionFeedbackRead,
 )
+from .user_confidence_score import (
+    ConfidenceScoreRead,
+    UserConfidenceScore,
+    UserConfidenceScoreCreate,
+    UserConfidenceScoreRead,
+)
 from .user_goal import UserGoal, UserGoalCreate, UserGoalRead
-from .user_profile import UserProfile, UserProfileCreate, UserProfileRead
+from .user_profile import UserProfile, UserProfileCreate, UserProfileExtendedRead, UserProfileRead
 
 __all__ = [
     'Language',
@@ -90,4 +99,18 @@ __all__ = [
     'DifficultyLevel',
     'DifficultyLevelCreate',
     'DifficultyLevelRead',
+    'ConfidenceArea',
+    'ConfidenceAreaCreate',
+    'ConfidenceAreaRead',
+    'UserConfidenceScore',
+    'UserConfidenceScoreCreate',
+    'UserConfidenceScoreRead',
+    'LearningStyle',
+    'LearningStyleCreate',
+    'LearningStyleRead',
+    'SessionLength',
+    'SessionLengthCreate',
+    'SessionLengthRead',
+    'ConfidenceScoreRead',
+    'UserProfileExtendedRead',
 ]
