@@ -2,7 +2,7 @@ import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from aiortc import RTCDataChannel, RTCPeerConnection, RTCSessionDescription
+from aiortc import RTCDataChannel, RTCPeerConnection
 from fastapi import WebSocket
 
 from ...schemas.webrtc_schema import (

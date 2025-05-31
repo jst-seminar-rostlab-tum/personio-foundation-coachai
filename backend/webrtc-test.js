@@ -285,8 +285,16 @@ async function startAudio() {
                     }
                     
                 } else if (message.type === 'candidate') {
-                    await peerConnection.addIceCandidate(new RTCIceCandidate(message.candidate));
-                    log('Added ICE candidate');
+                    const success = message.candidate_response.status === 'success';
+                    if (success) {
+                        log('ICE candidate added successfully');
+                    } else {
+                        log('Failed to add ICE candidate');
+                        const errorDiv = document.getElementById('error');
+                        errorDiv.style.display = 'block';
+                        errorDiv.textContent = `Error adding ICE candidate: ${message.candidate_response.message}`;
+                        throw new Error(message.candidate_response.message);
+                    }
                 }
             } catch (error) {
                 log(`Error processing message: ${error.message}`);

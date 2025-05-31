@@ -2,7 +2,6 @@ from enum import Enum
 from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
-from aiortc import RTCIceCandidate
 
 # ============================================================================
 #                           SIGNALING SCHEMAS
@@ -47,7 +46,8 @@ class WebRTCDataChannelConfig(BaseModel):
 
     label: str = Field(default='audio', description='Data channel label')
     ordered: bool = Field(default=True, description='Whether the data channel is ordered')
-    max_retransmits: int = Field(default=3, description='Maximum number of retransmits', alias='maxRetransmits')
+    max_retransmits: int = Field(default=3, description='Maximum number of retransmits', 
+                                 alias='maxRetransmits')
     protocol: str = Field(default='', description='Data channel protocol')
     negotiated: bool = Field(default=False, description='Whether the data channel is negotiated')
     id: Optional[int] = Field(default=None, description='Data channel ID for negotiated channels')
@@ -56,8 +56,10 @@ class WebRTCDataChannelConfig(BaseModel):
 class AudioControlConfig(BaseModel):
     """Audio control configuration"""
 
-    sample_rate: int = Field(default=48000, description='Audio sample rate in Hz', alias='sampleRate')
-    silence_threshold: float = Field(default=0.01, description='Silence detection threshold', alias='silenceThreshold')
+    sample_rate: int = Field(default=48000, description='Audio sample rate in Hz', 
+                             alias='sampleRate')
+    silence_threshold: float = Field(default=0.01, description='Silence detection threshold',
+                                     alias='silenceThreshold')
     silence_duration: float = Field(
         default=0.5, description='Silence duration threshold in seconds', alias='silenceDuration'
     )
@@ -73,6 +75,14 @@ class WebRTCControlMessage(WebRTCSignalingBase):
     type: Literal['control'] = Field(..., description="Type of the message, must be 'control'")
     audio_config: AudioControlConfig = Field(..., description='Audio control configuration')
 
+class WebRTCIceCandidate(BaseModel):
+    """WebRTC ICE candidate"""
+
+    candidate: str = Field(..., description='ICE candidate')
+    sdp_mline_index: int = Field(..., description='SDP m-line index', alias='sdpMLineIndex')
+    sdp_mid: str = Field(..., description='SDP m-id', alias='sdpMid')
+    # username_fragment: Optional[str] = Field(None, description='Username fragment',
+    #                                         alias='usernameFragment')
 
 class WebRTCIceCandidateResponse(BaseModel):
     """WebRTC ICE candidate response"""
@@ -81,15 +91,6 @@ class WebRTCIceCandidateResponse(BaseModel):
         ..., description='Status of the ICE candidate processing'
     )
     message: str = Field(..., description='Response message')
-
-
-class WebRTCIceCandidate(BaseModel):
-    """WebRTC ICE candidate"""
-
-    candidate: str = Field(..., description='ICE candidate')
-    sdp_mline_index: int = Field(..., description='SDP m-line index', alias='sdpMLineIndex')
-    sdp_mid: str = Field(..., description='SDP m-id', alias='sdpMid')
-    username_fragment: Optional[str] = Field(None, description='Username fragment', alias='usernameFragment')
 
 class WebRTCSignalingMessage(WebRTCSignalingBase):
     """WebRTC signaling message"""

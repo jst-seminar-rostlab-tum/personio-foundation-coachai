@@ -1,9 +1,10 @@
 import asyncio
 import logging
-from dataclasses import dataclass
+from collections import deque
+from dataclasses import dataclass, field
 from typing import Optional
 
-from aiortc import RTCIceCandidate, RTCDataChannel, RTCPeerConnection, RTCSessionDescription
+from aiortc import RTCDataChannel, RTCIceCandidate, RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaBlackhole
 from fastapi import WebSocket
 
@@ -14,12 +15,14 @@ from ..schemas.webrtc_schema import (
     WebRTCSignalingMessage,
     WebRTCSignalingType,
 )
-from .audio_service import AudioService
 
-logging.basicConfig(level=logging.DEBUG)
+# from .audio_service import AudioService
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
+# aiortc doesn't support parsing ICE candidates from strings, this is a workaround
+# https://github.com/aiortc/aiortc/issues/1084
 def parse_candidate(candidate_str: str) -> dict:
     """
     Parses a WebRTC ICE candidate string into components.
@@ -35,24 +38,27 @@ def parse_candidate(candidate_str: str) -> dict:
     return {
         'foundation': parts[0][len('candidate:'):],  # Remove 'candidate:' prefix
         'component': int(parts[1]),
-        'transport': parts[2],
+        # 'transport': parts[2],
         'priority': int(parts[3]),
-        'host': parts[4],
+        'ip': parts[4],
         'port': int(parts[5]),
+        'protocol': parts[7],
         'type': parts[7],
-        'tcpType': None,  # Only set for TCP candidates
-        'ttl': None,      # Not used anymore
+        # 'tcpType': None,  # Only set for TCP candidates
+        # 'ttl': None,      # Not used anymore
     }
 
 @dataclass
 class Peer:
     """Peer connection and its associated resources"""
-
+    
     peer_id: str
     connection: RTCPeerConnection
     audio_channel: Optional[RTCDataChannel] = None
     channel_ready: asyncio.Event = None
     audio_config: Optional[AudioControlConfig] = None
+    pending_audio_data: deque[bytes] = field(default_factory=deque)
+
 
     async def cleanup(self) -> None:
         """Cleanup all resources associated with this peer"""
@@ -68,7 +74,7 @@ class WebRTCService:
         """Initialize the WebRTC service"""
         self.media_blackhole = MediaBlackhole()
         self.peers: dict[str, Peer] = {}
-        self.audio_service = AudioService()
+        # self.audio_service = AudioService()
         self.data_channel_config = WebRTCDataChannelConfig()
         self.default_audio_config = AudioControlConfig()
 
@@ -123,14 +129,6 @@ class WebRTCService:
             await self.setup_audio_channel(peer_id)
             logger.debug(f'Setup audio channel for peer {peer_id}')
 
-            # Wait for channel to be ready
-            try:
-                await asyncio.wait_for(channel_ready.wait(), timeout=10.0)
-                logger.debug(f'Audio channel ready for peer {peer_id}')
-            except asyncio.TimeoutError:
-                logger.error(
-                    f'Timeout waiting for audio channel to be ready for peer {peer_id}')
-                return None
 
             # Only return answer after audio channel is ready
             return WebRTCSignalingMessage(
@@ -151,7 +149,7 @@ class WebRTCService:
                 ice_candidate = parse_candidate(message.candidate.candidate)
                 ice_candidate['sdpMid'] = message.candidate.sdp_mid
                 ice_candidate['sdpMLineIndex'] = message.candidate.sdp_mline_index
-                ice_candidate['usernameFragment'] = message.candidate.username_fragment
+                # ice_candidate['usernameFragment'] = message.candidate.username_fragment
                 logger.debug(f'ICE candidate: {ice_candidate}')
                 await peer.connection.addIceCandidate(
                     RTCIceCandidate(**ice_candidate)
@@ -160,7 +158,7 @@ class WebRTCService:
                 return WebRTCSignalingMessage(
                     type=WebRTCSignalingType.CANDIDATE,
                     candidate_response=WebRTCIceCandidateResponse(
-                        status='success', message='ICE candidate added successfully'
+                        status='success', message='ICE candidate added successfully',
                     ),
                 )
             else:
@@ -168,7 +166,7 @@ class WebRTCService:
                 return WebRTCSignalingMessage(
                     type=WebRTCSignalingType.CANDIDATE,
                     candidate_response=WebRTCIceCandidateResponse(
-                        status='error', message='No peer connection found'
+                        status='error', message='No peer connection found',
                     ),
                 )
 
@@ -183,9 +181,9 @@ class WebRTCService:
 
         try:
             # Create audio file with the configured sample rate
-            await self.audio_service.create_audio_file(
-                peer_id, sample_rate=peer.audio_config.sample_rate
-            )
+            # await self.audio_service.create_audio_file(
+            #     peer_id, sample_rate=peer.audio_config.sample_rate
+            # )
 
             # Create audio data channel using configuration
             audio_channel = peer.connection.createDataChannel(
@@ -207,7 +205,12 @@ class WebRTCService:
 
             @ audio_channel.on('message')
             def on_message(message: bytes) -> None:
-                self.handle_audio_data(message, peer_id)
+                if peer.channel_ready.is_set():
+                    logger.info(f'Received audio data from peer {peer_id}, size: {len(message)} bytes')
+                    self.handle_audio_data(message, peer_id)
+                    logger.info(f'Processed audio data from peer {peer_id}, size: {len(message)} bytes')
+                else:
+                    logger.error(f'Audio channel not ready for peer {peer_id}')
 
             @ audio_channel.on('close')
             def on_close() -> None:
@@ -215,7 +218,7 @@ class WebRTCService:
                 if peer_id in self.peers:
                     self.peers[peer_id].audio_channel = None
                     # Clean up audio resources
-                    asyncio.create_task(self.audio_service.cleanup(peer_id))
+                    # asyncio.create_task(self.audio_service.cleanup(peer_id))
 
             @ audio_channel.on('error')
             def on_error(error: Exception) -> None:
@@ -229,7 +232,7 @@ class WebRTCService:
                 f'Error setting up audio channel for peer {peer_id}: {e}')
             raise
 
-    async def handle_audio_data(self, message: bytes, peer_id: str) -> None:
+    def handle_audio_data(self, message: bytes, peer_id: str) -> None:
         """Handle incoming audio data"""
         try:
             peer = self.peers.get(peer_id)
@@ -238,12 +241,12 @@ class WebRTCService:
                 return
 
             # Use audio service to process data with the configured parameters
-            await self.audio_service.write_audio_data(
-                peer_id,
-                message,
-                sample_rate=peer.audio_config.sample_rate,
-                buffer_size=peer.audio_config.buffer_size,
-            )
+            # await self.audio_service.write_audio_data(
+            #     peer_id,
+            #     message,
+            #     sample_rate=peer.audio_config.sample_rate,
+            #     buffer_size=peer.audio_config.buffer_size,
+            # )
             logger.debug(
                 f'Processed audio data from peer {peer_id}, size: {len(message)} bytes')
 
@@ -263,7 +266,7 @@ class WebRTCService:
             peer = self.peers[peer_id]
             await peer.cleanup()
             # Clean up audio resources
-            await self.audio_service.cleanup(peer_id)
+            # await self.audio_service.cleanup(peer_id)
             del self.peers[peer_id]
             logger.debug(f'Cleaned up peer connection for peer {peer_id}')
 
