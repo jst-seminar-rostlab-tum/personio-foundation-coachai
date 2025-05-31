@@ -202,6 +202,7 @@ class WebRTCService:
                 # Send audio configuration
                 audio_channel.send(peer.audio_config.model_dump_json())
                 peer.channel_ready.set()  # Set channel ready event
+                logger.info(f'Audio channel ready for peer {peer_id}')
 
             @ audio_channel.on('message')
             def on_message(message: bytes) -> None:
