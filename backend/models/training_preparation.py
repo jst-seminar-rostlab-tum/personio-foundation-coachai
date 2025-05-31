@@ -3,6 +3,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
+from pydantic import BaseModel
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
@@ -18,12 +19,17 @@ class TrainingPreparationStatus(str, Enum):
     failed = 'failed'
 
 
+class KeyConcept(BaseModel):
+    header: str
+    value: str
+
+
 # Database model
 class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     case_id: UUID = Field(foreign_key='trainingcase.id')
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
+    key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: TrainingPreparationStatus = Field(default=TrainingPreparationStatus.pending)
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -44,7 +50,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingPr
 class TrainingPreparationCreate(SQLModel):
     case_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
+    key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: TrainingPreparationStatus = Field(default=TrainingPreparationStatus.pending)
 
@@ -54,7 +60,7 @@ class TrainingPreparationRead(SQLModel):
     id: UUID
     case_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
+    key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: TrainingPreparationStatus
     created_at: datetime
