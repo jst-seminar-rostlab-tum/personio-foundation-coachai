@@ -17,12 +17,6 @@ from .learning_style import LearningStyle, LearningStyleCreate, LearningStyleRea
 from .personalization_option import PersonalizationOptionRead
 from .rating import Rating, RatingCreate, RatingRead
 from .role import Role, RoleCreate, RoleRead
-from .scenario_template import (
-    ScenarioTemplate,
-    ScenarioTemplateCreate,
-    ScenarioTemplateRead,
-    ScenarioTemplateStatus,
-)
 from .session_length import SessionLength, SessionLengthCreate, SessionLengthRead
 from .training_case import (
     TrainingCase,
@@ -65,10 +59,6 @@ __all__ = [
     'TrainingSession',
     'TrainingSessionCreate',
     'TrainingSessionRead',
-    'ScenarioTemplate',
-    'ScenarioTemplateCreate',
-    'ScenarioTemplateRead',
-    'ScenarioTemplateStatus',
     'TrainingPreparation',
     'TrainingPreparationCreate',
     'TrainingPreparationRead',

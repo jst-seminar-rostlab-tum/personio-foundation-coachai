@@ -14,7 +14,6 @@ from .routers import (
     learning_style_route,
     personalization_options_route,
     rating_route,
-    scenario_template_route,
     session_length_route,
     training_case_route,
     training_preparation_route,
@@ -40,7 +39,6 @@ app.include_router(conversation_category_route.router)
 app.include_router(training_case_route.router)
 app.include_router(training_session_route.router)
 app.include_router(training_preparation_route.router)
-app.include_router(scenario_template_route.router)
 app.include_router(conversation_turn_route.router)
 app.include_router(training_session_feedback_route.router)
 app.include_router(rating_route.router)

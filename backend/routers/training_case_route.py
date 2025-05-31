@@ -6,7 +6,6 @@ from sqlmodel import Session, select
 
 from ..database import get_session
 from ..models.conversation_category import ConversationCategory
-from ..models.scenario_template import ScenarioTemplate
 from ..models.training_case import (
     TrainingCase,
     TrainingCaseCreate,
@@ -43,11 +42,6 @@ def create_training_case(
         if not category:
             raise HTTPException(status_code=404, detail='Category not found')
 
-    if training_case.scenario_template_id:
-        template = session.get(ScenarioTemplate, training_case.scenario_template_id)
-        if not template:
-            raise HTTPException(status_code=404, detail='Scenario template not found')
-
     db_training_case = TrainingCase(**training_case.dict())
     session.add(db_training_case)
     session.commit()
@@ -73,11 +67,6 @@ def update_training_case(
         category = session.get(ConversationCategory, updated_data.category_id)
         if not category:
             raise HTTPException(status_code=404, detail='Category not found')
-
-    if updated_data.scenario_template_id:
-        template = session.get(ScenarioTemplate, updated_data.scenario_template_id)
-        if not template:
-            raise HTTPException(status_code=404, detail='Scenario template not found')
 
     for key, value in updated_data.dict().items():
         setattr(training_case, key, value)
