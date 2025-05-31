@@ -10,7 +10,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/Accordion';
+} from '@/components/ui/CustomAccordion';
 import Switch from '@/components/ui/Switch';
 import {
   AlertDialog,

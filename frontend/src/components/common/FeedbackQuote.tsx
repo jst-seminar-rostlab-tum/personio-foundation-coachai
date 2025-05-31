@@ -15,9 +15,9 @@ export default function FeedbackQuote({
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Check':
-        return <CheckCircle size={20} className="text-green-500" />;
+        return <CheckCircle size={20} className="text-forest-50" />;
       case 'Cross':
-        return <CircleX size={20} className="text-red-500" />;
+        return <CircleX size={20} className="text-flame-50" />;
       case 'Info':
         return <ChartNoAxesColumnIncreasingIcon size={20} className="text-marigold-50" />;
       default:
@@ -40,7 +40,7 @@ export default function FeedbackQuote({
             {improvedQuote && (
               <>
                 <div>{t('detailedFeedback.nextTime')}</div>
-                <div className="italic text-green-600">&quot;{improvedQuote}&quot;</div>
+                <div className="italic text-forest-60">&quot;{improvedQuote}&quot;</div>
               </>
             )}
           </div>

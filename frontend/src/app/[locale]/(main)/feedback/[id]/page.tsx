@@ -1,7 +1,7 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import type { Props } from '@/interfaces/LayoutProps';
-import FeedbackDetail from '@/components/pages/FeedbackDetail';
+import FeedbackDetail from '@/components/common/FeedbackDetail';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;

@@ -16,9 +16,9 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/Accordion';
+} from '@/components/ui/CustomAccordion';
 import Link from 'next/link';
-import FeedbackQuote from '../common/FeedbackQuote';
+import FeedbackQuote from './FeedbackQuote';
 
 const mockFeedback = {
   topic: 'Giving Constructive Feedback',
@@ -176,7 +176,7 @@ export default function FeedbackDetail() {
           <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
           <AccordionContent className="px-5">
             <div className="flex items-center gap-2 mt-3">
-              <CheckCircle size={24} className="text-green-500" />
+              <CheckCircle size={24} className="text-forest-50" />
               <span className="text-xl">{t('detailedFeedback.positive')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 px-5">
@@ -186,7 +186,7 @@ export default function FeedbackDetail() {
             </div>
 
             <div className="flex items-center gap-2 mt-10">
-              <CircleX size={24} className="text-red-500" />
+              <CircleX size={24} className="text-flame-50" />
               <span className="text-xl">{t('detailedFeedback.negative')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 px-5">
