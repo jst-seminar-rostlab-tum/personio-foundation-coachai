@@ -593,8 +593,4 @@ def get_dummy_app_configs() -> list[AppConfig]:
     """
     return [
         AppConfig(key='dailyUserTokenLimit', value='100', type=ConfigType.int),
-        AppConfig(key='number_of_users', value='large', type=ConfigType.string),
-        AppConfig(key='enable_feature_x', value='true', type=ConfigType.boolean),
-        AppConfig(key='max_sessions_per_user', value='10', type=ConfigType.int),
-        AppConfig(key='default_language', value='en', type=ConfigType.string),
     ]
