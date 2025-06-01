@@ -19,6 +19,7 @@ function useWebRTC() {
   const localAudioRef = useRef(null);
   const remoteAudioRef = useRef(null);
   const peerConnectionRef = useRef(null);
+  const audioChannelRef = useRef(null);
   const localStreamRef = useRef(null);
   const wsRef = useRef(null);
   const cleanupRef = useRef(null);
@@ -76,6 +77,22 @@ function useWebRTC() {
       const peerConnection = new RTCPeerConnection(RTC_CONFIG);
       peerConnectionRef.current = peerConnection;
 
+      const dataChannel = peerConnection.createDataChannel('audio');
+      audioChannelRef.current = dataChannel;
+
+      dataChannel.onopen = () => {
+        console.log('Data channel opened');
+      };
+      dataChannel.onmessage = (event) => {
+        console.log('Received message:', event.data);
+      };
+      dataChannel.onclose = () => {
+        console.log('Data channel closed');
+      };
+      dataChannel.onerror = (error) => {
+        console.error('Data channel error:', error);
+      };
+
       ws.onopen = async () => {
         console.log('WebSocket connected');
         // Add local audio track
@@ -92,15 +109,27 @@ function useWebRTC() {
 
         // Handle ICE candidate
         peerConnection.onicecandidate = (event) => {
-          if (event.candidate && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
-              type: 'candidate',
-              candidate: {
+          if (event.candidate) {
+            console.log('[WebRTC] ICE candidate generated:', event.candidate);
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({
+                type: 'candidate',
+                candidate: {
+                  candidate: event.candidate.candidate,
+                  sdpMid: event.candidate.sdpMid,
+                  sdpMLineIndex: event.candidate.sdpMLineIndex,
+                },
+              }));
+              console.log('[WebRTC] ICE candidate sent to server:', {
                 candidate: event.candidate.candidate,
                 sdpMid: event.candidate.sdpMid,
                 sdpMLineIndex: event.candidate.sdpMLineIndex,
-              },
-            }));
+              });
+            } else {
+              console.warn('[WebRTC] ICE candidate generated but WebSocket not open, candidate not sent:', event.candidate);
+            }
+          } else {
+            console.log('[WebRTC] ICE candidate gathering completed (null candidate)');
           }
         };
 
@@ -130,6 +159,7 @@ function useWebRTC() {
 
         switch (message.type) {
           case 'answer':
+            console.log('[WebRTC] Received answer:', message);
             await peerConnection.setRemoteDescription(new RTCSessionDescription({
               type: 'answer',
               sdp: message.sdp,
@@ -139,6 +169,7 @@ function useWebRTC() {
 
           case 'candidate':
             if (message.candidate) {
+              console.log('[WebRTC] Adding ICE candidate:', message.candidate);
               await peerConnection.addIceCandidate(new RTCIceCandidate({
                 candidate: message.candidate.candidate,
                 sdpMid: message.candidate.sdpMid,
