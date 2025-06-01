@@ -5,9 +5,24 @@ import routing from './routing';
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
   const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
+  const messages = {
+    Common: (await import(`../../messages/${locale}/Common.json`)).default,
+    HomePage: (await import(`../../messages/${locale}/HomePage.json`)).default,
+    NewTraining: (await import(`../../messages/${locale}/NewTraining.json`)).default,
+    Admin: (await import(`../../messages/${locale}/Admin.json`)).default,
+    Dashboard: (await import(`../../messages/${locale}/Dashboard.json`)).default,
+    Feedback: (await import(`../../messages/${locale}/Feedback.json`)).default,
+    History: (await import(`../../messages/${locale}/History.json`)).default,
+    Login: (await import(`../../messages/${locale}/Login.json`)).default,
+    Onboarding: (await import(`../../messages/${locale}/Onboarding.json`)).default,
+    Preparation: (await import(`../../messages/${locale}/Preparation.json`)).default,
+    Simulation: (await import(`../../messages/${locale}/Simulation.json`)).default,
+    TrainingSettings: (await import(`../../messages/${locale}/TrainingSettings.json`)).default,
+    AppHeader: (await import(`../../messages/${locale}/AppHeader.json`)).default,
+  };
 
   return {
     locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
+    messages,
   };
 });
