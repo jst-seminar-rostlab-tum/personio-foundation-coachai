@@ -151,7 +151,7 @@ async def test_setup_audio_channel(
     webrtc_service.peers[peer_id] = peer
 
     # Setup audio channel
-    await webrtc_service.setup_audio_channel(peer_id)
+    await webrtc_service.accept_audio_channel(peer_id)
 
     # Verify data channel creation
     peer_connection.createDataChannel.assert_called_once()

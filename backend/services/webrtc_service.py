@@ -21,6 +21,7 @@ from ..schemas.webrtc_schema import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # aiortc doesn't support parsing ICE candidates from strings, this is a workaround
 # https://github.com/aiortc/aiortc/issues/1084
 def parse_candidate(candidate_str: str) -> dict:
@@ -33,10 +34,10 @@ def parse_candidate(candidate_str: str) -> dict:
     """
     parts = candidate_str.strip().split()
     if not candidate_str.startswith('candidate:') or len(parts) < 8:
-        raise ValueError("Invalid ICE candidate string")
+        raise ValueError('Invalid ICE candidate string')
 
     return {
-        'foundation': parts[0][len('candidate:'):],  # Remove 'candidate:' prefix
+        'foundation': parts[0][len('candidate:') :],  # Remove 'candidate:' prefix
         'component': int(parts[1]),
         # 'transport': parts[2],
         'priority': int(parts[3]),
@@ -48,17 +49,15 @@ def parse_candidate(candidate_str: str) -> dict:
         # 'ttl': None,      # Not used anymore
     }
 
+
 @dataclass
 class Peer:
     """Peer connection and its associated resources"""
-    
+
     peer_id: str
     connection: RTCPeerConnection
     audio_channel: Optional[RTCDataChannel] = None
-    channel_ready: asyncio.Event = None
     audio_config: Optional[AudioControlConfig] = None
-    pending_audio_data: deque[bytes] = field(default_factory=deque)
-
 
     async def cleanup(self) -> None:
         """Cleanup all resources associated with this peer"""
@@ -92,13 +91,11 @@ class WebRTCService:
             Optional[WebRTCSignalingMessage]: Response to be sent to the client
         """
         peer_id = str(id(websocket))
-        logger.debug(
-            f'Received message type: {message.type} from peer {peer_id}')
+        logger.debug(f'Received message type: {message.type} from peer {peer_id}')
 
         if message.type == WebRTCSignalingType.OFFER:
             # Create new peer connection
             pc = RTCPeerConnection()
-            channel_ready = asyncio.Event()
 
             # Use the audio config from the message or the default config
             audio_config = message.audio_config or self.default_audio_config
@@ -106,7 +103,6 @@ class WebRTCService:
             self.peers[peer_id] = Peer(
                 peer_id=peer_id,
                 connection=pc,
-                channel_ready=channel_ready,
                 audio_config=audio_config,
             )
             logger.debug(
@@ -115,8 +111,7 @@ class WebRTCService:
 
             # Set remote description
             await pc.setRemoteDescription(
-                RTCSessionDescription(
-                    sdp=message.sdp, type=WebRTCSignalingType.OFFER)
+                RTCSessionDescription(sdp=message.sdp, type=WebRTCSignalingType.OFFER)
             )
             logger.debug(f'Set remote description for peer {peer_id}')
 
@@ -126,9 +121,8 @@ class WebRTCService:
             logger.debug(f'Created and set local answer for peer {peer_id}')
 
             # Setup audio channel and wait for it to be ready
-            await self.setup_audio_channel(peer_id)
+            await self.accept_audio_channel(peer_id)
             logger.debug(f'Setup audio channel for peer {peer_id}')
-
 
             # Only return answer after audio channel is ready
             return WebRTCSignalingMessage(
@@ -143,22 +137,20 @@ class WebRTCService:
             logger.debug(f'Adding ICE candidate for peer {peer_id}: {message}')
 
             if peer:
-                logger.debug(
-                    f'Adding ICE candidate for peer {peer_id}: {message.candidate}')
+                logger.debug(f'Adding ICE candidate for peer {peer_id}: {message.candidate}')
                 logger.debug(f'ICE candidate: {message.candidate.model_dump(by_alias=True)}')
                 ice_candidate = parse_candidate(message.candidate.candidate)
                 ice_candidate['sdpMid'] = message.candidate.sdp_mid
                 ice_candidate['sdpMLineIndex'] = message.candidate.sdp_mline_index
                 # ice_candidate['usernameFragment'] = message.candidate.username_fragment
                 logger.debug(f'ICE candidate: {ice_candidate}')
-                await peer.connection.addIceCandidate(
-                    RTCIceCandidate(**ice_candidate)
-                )   
+                await peer.connection.addIceCandidate(RTCIceCandidate(**ice_candidate))
                 logger.debug(f'Added ICE candidate for peer {peer_id}')
                 return WebRTCSignalingMessage(
                     type=WebRTCSignalingType.CANDIDATE,
                     candidate_response=WebRTCIceCandidateResponse(
-                        status='success', message='ICE candidate added successfully',
+                        status='success',
+                        message='ICE candidate added successfully',
                     ),
                 )
             else:
@@ -166,62 +158,53 @@ class WebRTCService:
                 return WebRTCSignalingMessage(
                     type=WebRTCSignalingType.CANDIDATE,
                     candidate_response=WebRTCIceCandidateResponse(
-                        status='error', message='No peer connection found',
+                        status='error',
+                        message='No peer connection found',
                     ),
                 )
 
         return None
 
-    async def setup_audio_channel(self, peer_id: str) -> None:
-        """Setup audio data channel for a peer"""
+    async def accept_audio_channel(self, peer_id: str) -> None:
+        """Accept audio data channel for a peer"""
         peer = self.peers.get(peer_id)
         if not peer:
             logger.error(f'No peer found for peer {peer_id}')
             return
 
         try:
-            # Create audio file with the configured sample rate
-            # await self.audio_service.create_audio_file(
-            #     peer_id, sample_rate=peer.audio_config.sample_rate
-            # )
 
-
-            # Set event handlers
-            @peer.connection.on("datachannel")
-            def on_datachannel(channel):
-                logger.info(f"Received data channel: {channel.label}")
+            @peer.connection.on('datachannel')
+            def on_datachannel(channel: RTCDataChannel) -> None:
+                logger.info(f'Received data channel: {channel.label}')
                 peer.audio_channel = channel
 
-                @channel.on("open")
-                def on_open():
-                    logger.info(f"Audio channel opened for peer {peer_id}")
-                    peer.channel_ready.set()
-                    logger.info(f"Audio channel ready for peer {peer_id}")
+                @channel.on('open')
+                def on_open() -> None:
+                    logger.info(f'Audio channel opened for peer {peer_id}')
 
-                @channel.on("message")
-                def on_message(message):
-                    print(f"Received audio data from peer {peer_id}, size: {len(message)} bytes")
-                    if peer.channel_ready.is_set():
-                        logger.info(f"Received audio data from peer {peer_id}, size: {len(message)} bytes")
-                        self.handle_audio_data(message, peer_id)
-                        logger.info(f"Processed audio data from peer {peer_id}, size: {len(message)} bytes")
-                    else:
-                        logger.error(f"Audio channel not ready for peer {peer_id}")
+                @channel.on('message')
+                def on_message(message: bytes) -> None:
+                    logger.info(
+                        f'Received audio data from peer {peer_id}, size: {len(message)} bytes'
+                    )
+                    self.handle_audio_data(message, peer_id)
+                    logger.info(
+                        f'Processed audio data from peer {peer_id}, size: {len(message)} bytes'
+                    )
 
-                @channel.on("close")
-                def on_close():
-                    logger.info(f"Audio channel closed for peer {peer_id}")
+                @channel.on('close')
+                def on_close() -> None:
+                    logger.info(f'Audio channel closed for peer {peer_id}')
                     peer.audio_channel = None
 
-                @channel.on("error")
-                def on_error(error):
-                    logger.error(f"Audio channel error for peer {peer_id}: {error}")
+                @channel.on('error')
+                def on_error(error: Exception) -> None:
+                    logger.error(f'Audio channel error for peer {peer_id}: {error}')
 
-
-            logger.info(f'Audio channel setup completed for peer {peer_id}')
+            logger.info(f'Audio channel accepted for peer {peer_id}')
         except Exception as e:
-            logger.error(
-                f'Error setting up audio channel for peer {peer_id}: {e}')
+            logger.error(f'Error accepting audio channel for peer {peer_id}: {e}')
             raise
 
     def handle_audio_data(self, message: bytes, peer_id: str) -> None:
@@ -239,8 +222,6 @@ class WebRTCService:
             #     sample_rate=peer.audio_config.sample_rate,
             #     buffer_size=peer.audio_config.buffer_size,
             # )
-            logger.debug(
-                f'Processed audio data from peer {peer_id}, size: {len(message)} bytes')
 
         except Exception as e:
             logger.error(f'Error handling audio data from peer {peer_id}: {e}')
