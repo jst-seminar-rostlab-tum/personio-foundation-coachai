@@ -155,12 +155,12 @@ async function startAudio() {
             console.error('Data channel error details:', error);
         };
 
-        // 添加数据通道状态监控
+        // Add buffer amount low event handler
         audioDataChannel.onbufferedamountlow = () => {
             log(`Data channel buffer amount low: ${audioDataChannel.bufferedAmount}`);
         };
 
-        // 添加 ICE 连接状态监控
+        // Add ICE connection state monitoring
         peerConnection.oniceconnectionstatechange = () => {
             log(`ICE connection state changed to: ${peerConnection.iceConnectionState}`);
         };
@@ -177,7 +177,7 @@ async function startAudio() {
             log(`Signaling state changed to: ${peerConnection.signalingState}`);
         };
 
-        // 添加 ICE 候选处理
+        // Add ICE candidate handling
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
                 log(`New ICE candidate: ${JSON.stringify(event.candidate)}`);
@@ -228,10 +228,10 @@ async function startAudio() {
                     await peerConnection.setRemoteDescription(new RTCSessionDescription(message));
                     log('Set remote description');
                     
-                    // 处理音频配置
+                    // Handle audio config
                     if (message.audio_config) {
                         log(`Received audio config: ${JSON.stringify(message.audio_config, null, 2)}`);
-                        // 保存音频配置供后续使用
+                        // Save audio config for later use
                         window.audioConfig = message.audio_config;
                     }
                     
