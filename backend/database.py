@@ -5,7 +5,9 @@ from typing import Any
 
 from sqlmodel import Session, SQLModel, create_engine
 
-from .config import settings
+from backend.config import Settings
+
+settings = Settings()
 
 if settings.stage == 'prod':
     os.makedirs(settings.ssl_cert_dir, exist_ok=True)

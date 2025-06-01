@@ -10,12 +10,13 @@ if TYPE_CHECKING:
 
 
 class SpeakerEnum(str, Enum):
-    user = "user"
-    ai = "ai"
+    user = 'user'
+    ai = 'ai'
+
 
 class ConversationTurn(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key="trainingsession.id")  # FK to TrainingSession
+    session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
     speaker: SpeakerEnum
     start_offset_ms: int
     end_offset_ms: int
@@ -25,8 +26,9 @@ class ConversationTurn(SQLModel, table=True):  # `table=True` makes it a databas
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationships
-    session: Optional["TrainingSession"] = Relationship(back_populates="conversation_turns")
-    
+    session: Optional['TrainingSession'] = Relationship(back_populates='conversation_turns')
+
+
 # Schema for creating a new ConversationTurn
 class ConversationTurnCreate(SQLModel):
     session_id: UUID
@@ -36,6 +38,7 @@ class ConversationTurnCreate(SQLModel):
     text: str
     audio_uri: str
     ai_emotion: str
+
 
 # Schema for reading ConversationTurn data
 class ConversationTurnRead(SQLModel):
@@ -48,4 +51,3 @@ class ConversationTurnRead(SQLModel):
     audio_uri: str
     ai_emotion: str
     created_at: datetime
-  

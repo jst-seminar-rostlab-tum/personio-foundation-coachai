@@ -1,6 +1,5 @@
 import os
 
-from dotenv import load_dotenv
 from langchain.embeddings.base import Embeddings
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -8,7 +7,9 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import SupabaseVectorStore
 from supabase import Client, create_client
 
-load_dotenv()
+from backend.config import Settings
+
+settings = Settings()
 
 
 def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
@@ -35,7 +36,7 @@ def format_docs(docs: list[Document]) -> str:
 
 
 def get_supabase_client() -> Client:
-    return create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY'))
+    return create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
 
 
 def load_vector_db(

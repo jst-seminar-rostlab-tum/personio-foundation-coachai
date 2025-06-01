@@ -2,8 +2,6 @@ import os
 from pathlib import Path
 from typing import Any
 
-from dotenv import load_dotenv
-from embeddings import get_embedding_model
 from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores import SupabaseVectorStore
 from langchain_core.messages import BaseMessage
@@ -13,12 +11,17 @@ from langchain_core.runnables import (
 )
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_google_genai import ChatGoogleGenerativeAI
-from vector_db import format_docs, load_vector_db, prepare_vector_db_docs
 
-load_dotenv()
+from backend.config import Settings
+
+from .embeddings import get_embedding_model
+from .vector_db import format_docs, load_vector_db, prepare_vector_db_docs
 
 BASE_DIR = Path(__file__).parent
 DOC_FOLDER = BASE_DIR / 'documents'
+
+settings = Settings()
+
 
 EMBEDDING_TYPE = 'gemini'
 TABLE_NAME = 'hr_information'
@@ -54,9 +57,9 @@ def build_vector_db_retriever(populate_db: bool) -> VectorStoreRetriever:
 
 
 def get_llm() -> ChatGoogleGenerativeAI:
-    return ChatGoogleGenerativeAI(
-        model='gemini-2.0-flash', google_api_key=os.getenv('GEMINI_API_KEY')
-    )
+    if not settings.GEMINI_API_KEY:
+        raise ValueError('Missing GEMINI_API_KEY in environment')
+    return ChatGoogleGenerativeAI(model='gemini-2.0-flash', google_api_key=settings.GEMINI_API_KEY)
 
 
 def rag_chain(
