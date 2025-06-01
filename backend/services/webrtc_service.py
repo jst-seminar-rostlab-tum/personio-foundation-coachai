@@ -13,10 +13,8 @@ from aiortc.contrib.media import MediaBlackhole
 from fastapi import WebSocket
 
 from ..schemas.webrtc_schema import (
-    AudioControlConfig,
-    WebRTCDataChannelConfig,
     WebRTCIceCandidate,
-    WebRTCIceCandidateResponse,
+    WebRTCSignalingMessage,
     WebRTCSignalingType,
 )
 
@@ -31,13 +29,12 @@ class Peer:
     peer_id: str
     connection: RTCPeerConnection
     transceiver: Optional[RTCRtpTransceiver] = None
-    audio_channel: Optional[RTCDataChannel] = None
-    audio_config: Optional[AudioControlConfig] = None
+    datachannel: Optional[RTCDataChannel] = None
 
     async def cleanup(self) -> None:
         """Cleanup all resources associated with this peer"""
-        if self.audio_channel:
-            self.audio_channel.close()
+        if self.datachannel:
+            self.datachannel.close()
         if self.transceiver:
             self.transceiver.stop()
         await self.connection.close()
@@ -50,8 +47,6 @@ class WebRTCService:
         """Initialize the WebRTC service"""
         self.media_blackhole = MediaBlackhole()
         self.peers: dict[str, Peer] = {}
-        self.data_channel_config = WebRTCDataChannelConfig()
-        self.default_audio_config = AudioControlConfig()
 
     async def _setup_ice_connection(
         self, pc: RTCPeerConnection, websocket: WebSocket, peer_id: str
@@ -65,7 +60,7 @@ class WebRTCService:
             logger.info(f'Received track: {track.kind} from peer {peer_id}')
             if track.kind == 'audio':
                 self.media_blackhole.addTrack(track)
-                logger.info(f'Added audio track to media blackhole for peer {peer_id}')
+                logger.info(f'Added track to media blackhole for peer {peer_id}')
 
         @pc.on('iceconnectionstatechange')
         async def on_iceconnectionstatechange() -> None:
@@ -108,7 +103,7 @@ class WebRTCService:
                 # Send ICE candidate to client
                 try:
                     await websocket.send_json(
-                        WebRTCIceCandidateResponse(
+                        WebRTCSignalingMessage(
                             type=WebRTCSignalingType.CANDIDATE,
                             candidate=WebRTCIceCandidate(
                                 candidate=candidate.candidate,
@@ -180,9 +175,7 @@ class WebRTCService:
             del self.peers[peer_id]
             logger.debug(f'Cleaned up peer connection for peer {peer_id}')
 
-    async def create_peer_connection(
-        self, websocket: WebSocket, peer_id: str, audio_config: Optional[AudioControlConfig] = None
-    ) -> None:
+    async def create_peer_connection(self, websocket: WebSocket, peer_id: str) -> None:
         """Create a new peer connection"""
         # Create new peer connection
         pc = RTCPeerConnection()
@@ -194,18 +187,12 @@ class WebRTCService:
         # Setup event handlers
         await self._setup_ice_connection(pc, websocket, peer_id)
 
-        # Use the provided audio config or the default config
-        audio_config = audio_config or self.default_audio_config
-
         self.peers[peer_id] = Peer(
             peer_id=peer_id,
             connection=pc,
             transceiver=transceiver,
-            audio_config=audio_config,
         )
-        logger.debug(
-            f'Created new peer connection for peer {peer_id} with audio config: {audio_config}'
-        )
+        logger.debug(f'Created new peer connection for peer {peer_id}')
 
 
 def get_webrtc_service() -> WebRTCService:
