@@ -23,22 +23,18 @@ class WebSocketService:
         peer_id = str(id(websocket))
         try:
             if message.type == WebRTCSignalingType.OFFER:
+                if peer_id not in self.webrtc_service.peers:
+                    # Create peer connection if not exists
+                    await self.webrtc_service.create_peer_connection(websocket, peer_id)
                 pc = self.webrtc_service.peers[peer_id].connection
+                logger.info(f'Setting remote description for peer {peer_id}')
                 await pc.setRemoteDescription(
                     RTCSessionDescription(sdp=message.sdp, type=WebRTCSignalingType.OFFER)
                 )
+        # TODO: use dedicated error handler
         except Exception as e:
             logger.error(f'Error handling WebRTC message: {e}')
-            await self.close_connection(websocket)
-
-    async def close_connection(self, websocket: WebSocket) -> None:
-        """Close WebSocket connection and cleanup resources"""
-        try:
             await self.webrtc_service.cleanup(websocket)
-            await websocket.close()
-        except Exception as e:
-            logger.error(f'Error closing connection: {e}')
-
 
 def get_websocket_service() -> WebSocketService:
     """

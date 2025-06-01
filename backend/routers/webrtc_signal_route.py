@@ -33,8 +33,8 @@ async def websocket_signaling(
             await websocket_service.handle_webrtc_message(websocket, signaling_message)
     except WebSocketDisconnect:
         logger.info(f'WebSocket connection closed: {websocket.client}')
-        await websocket_service.close_connection(websocket)
     except Exception as e:
         logger.error(f'WebSocket error: {str(e)}')
         logger.exception(e)
-        await websocket_service.close_connection(websocket)
+    finally:
+        await websocket.close()

@@ -72,8 +72,45 @@ function useWebRTC() {
       const ws = new WebSocket(WS_URL);
       wsRef.current = ws;
 
-      ws.onopen = () => {
+      // Create PeerConnection
+      const peerConnection = new RTCPeerConnection(RTC_CONFIG);
+      peerConnectionRef.current = peerConnection;
+
+      ws.onopen = async () => {
         console.log('WebSocket connected');
+        // Add local audio track
+        localStream.getTracks().forEach((track) => {
+          peerConnection.addTrack(track, localStream);
+        });
+
+        // Handle remote audio track
+        peerConnection.ontrack = (event) => {
+          if (remoteAudioRef.current && event.streams[0]) {
+            remoteAudioRef.current.srcObject = event.streams[0];
+          }
+        };
+
+        // Handle ICE candidate
+        peerConnection.onicecandidate = (event) => {
+          if (event.candidate && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'candidate',
+              candidate: {
+                candidate: event.candidate.candidate,
+                sdpMid: event.candidate.sdpMid,
+                sdpMLineIndex: event.candidate.sdpMLineIndex,
+              },
+            }));
+          }
+        };
+
+        // Create and send offer
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        ws.send(JSON.stringify({
+          type: 'offer',
+          sdp: offer.sdp,
+        }));
       };
 
       ws.onclose = () => {
@@ -85,51 +122,6 @@ function useWebRTC() {
         console.error('WebSocket error:', error);
         cleanup();
       };
-
-      // Create PeerConnection
-      const peerConnection = new RTCPeerConnection(RTC_CONFIG);
-      peerConnectionRef.current = peerConnection;
-
-      peerConnection.onconnectionstatechange = () => {
-        console.log('Connection state:', peerConnection.connectionState);
-        if (peerConnection.connectionState === 'failed') {
-          cleanup();
-        }
-      };
-
-      // Add local audio track
-      localStream.getTracks().forEach((track) => {
-        peerConnection.addTrack(track, localStream);
-      });
-
-      // Handle remote audio track
-      peerConnection.ontrack = (event) => {
-        if (remoteAudioRef.current && event.streams[0]) {
-          remoteAudioRef.current.srcObject = event.streams[0];
-        }
-      };
-
-      // Handle ICE candidate
-      peerConnection.onicecandidate = (event) => {
-        if (event.candidate) {
-          ws.send(JSON.stringify({
-            type: 'candidate',
-            candidate: {
-              candidate: event.candidate.candidate,
-              sdpMid: event.candidate.sdpMid,
-              sdpMLineIndex: event.candidate.sdpMLineIndex,
-            },
-          }));
-        }
-      };
-
-      // Create and send offer
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-      ws.send(JSON.stringify({
-        type: 'offer',
-        sdp: offer.sdp,
-      }));
 
       // Handle WebSocket message
       ws.onmessage = async (event) => {
