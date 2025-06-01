@@ -1,14 +1,17 @@
 from datetime import datetime
 from uuid import uuid4
 
+from backend.models.confidence_area import ConfidenceArea
 from backend.models.conversation_category import ConversationCategory
 from backend.models.conversation_turn import ConversationTurn, SpeakerEnum
 from backend.models.difficulty_level import DifficultyLevel  # Assuming this is the new model
 from backend.models.experience import Experience
 from backend.models.goal import Goal
 from backend.models.language import Language  # Import the Language model
+from backend.models.learning_style import LearningStyle
 from backend.models.rating import Rating
 from backend.models.role import Role
+from backend.models.session_length import SessionLength
 from backend.models.training_case import TrainingCase, TrainingCaseStatus
 from backend.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
 from backend.models.training_session import TrainingSession
@@ -16,8 +19,55 @@ from backend.models.training_session_feedback import (
     FeedbackStatusEnum,
     TrainingSessionFeedback,
 )
+from backend.models.user_confidence_score import UserConfidenceScore
 from backend.models.user_goal import UserGoal
 from backend.models.user_profile import UserProfile
+
+
+def get_dummy_learning_styles() -> list[LearningStyle]:
+    """
+    Generate dummy LearningStyle data.
+    """
+    return [
+        LearningStyle(
+            id=uuid4(),
+            label='Visual',
+            description='Prefers learning through visual aids like diagrams and charts.',
+        ),
+        LearningStyle(
+            id=uuid4(),
+            label='Auditory',
+            description='Prefers learning through listening to explanations and discussions.',
+        ),
+        LearningStyle(
+            id=uuid4(),
+            label='Kinesthetic',
+            description='Prefers learning through hands-on activities and physical engagement.',
+        ),
+    ]
+
+
+def get_dummy_session_lengths() -> list[SessionLength]:
+    """
+    Generate dummy SessionLength data.
+    """
+    return [
+        SessionLength(
+            id=uuid4(),
+            label='30 minutes',
+            description='Short session length for quick learning.',
+        ),
+        SessionLength(
+            id=uuid4(),
+            label='1 hour',
+            description='Standard session length for detailed learning.',
+        ),
+        SessionLength(
+            id=uuid4(),
+            label='2 hours',
+            description='Extended session length for in-depth learning.',
+        ),
+    ]
 
 
 def get_dummy_languages() -> list[Language]:
@@ -65,23 +115,33 @@ def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
     ]
 
 
-def get_dummy_user_profiles(roles: list[Role], experiences: list[Experience]) -> list[UserProfile]:
+def get_dummy_user_profiles(
+    roles: list[Role],
+    experiences: list[Experience],
+    learning_styles: list[LearningStyle],
+    session_lengths: list[SessionLength],
+) -> list[UserProfile]:
+    """
+    Generate dummy UserProfile data.
+    """
     return [
         UserProfile(
             id=uuid4(),
             preferred_language='en',
             role_id=roles[0].id,
             experience_id=experiences[0].id,
-            preferred_learning_style='Visual',
-            preferred_session_length='30 minutes',
+            preferred_learning_style_id=learning_styles[0].id,
+            preferred_session_length_id=session_lengths[0].id,
+            store_conversations=False,
         ),
         UserProfile(
             id=uuid4(),
             preferred_language='de',
             role_id=roles[1].id,
             experience_id=experiences[1].id,
-            preferred_learning_style='Auditory',
-            preferred_session_length='1 hour',
+            preferred_learning_style_id=learning_styles[1].id,
+            preferred_session_length_id=session_lengths[1].id,
+            store_conversations=True,
         ),
     ]
 
@@ -101,7 +161,6 @@ def get_dummy_training_cases(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=None,
-            scenario_template_id=None,
             custom_category_label='Custom Category 1',
             context='Context 1',
             goal='Goal 1',
@@ -117,7 +176,6 @@ def get_dummy_training_cases(
             id=uuid4(),
             user_id=user_profiles[1].id,
             category_id=None,
-            scenario_template_id=None,
             custom_category_label='Custom Category 2',
             context='Context 2',
             goal='Goal 2',
@@ -170,7 +228,14 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             id=uuid4(),
             name='Business',
             icon_uri='https://example.com/icons/business.png',
-            description='Business-related conversations',
+            system_prompt='You are a business consultant.',
+            initial_prompt='What is your business challenge?',
+            ai_setup={'type': 'business', 'complexity': 'high'},
+            default_context='Business meeting with stakeholders.',
+            default_goal='Improve communication and decision-making.',
+            default_other_party='Stakeholders',
+            is_custom=False,
+            language_code='en',
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         ),
@@ -178,7 +243,14 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             id=uuid4(),
             name='Casual',
             icon_uri='https://example.com/icons/casual.png',
-            description='Casual conversations',
+            system_prompt='You are a friendly conversationalist.',
+            initial_prompt='How was your day?',
+            ai_setup={'type': 'casual', 'complexity': 'low'},
+            default_context='Casual conversation with a friend.',
+            default_goal='Relax and enjoy the conversation.',
+            default_other_party='Friend',
+            is_custom=False,
+            language_code='en',
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         ),
@@ -186,7 +258,29 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             id=uuid4(),
             name='Technical',
             icon_uri='https://example.com/icons/technical.png',
-            description='Technical discussions and problem-solving',
+            system_prompt='You are a technical expert.',
+            initial_prompt='What technical issue are you facing?',
+            ai_setup={'type': 'technical', 'complexity': 'medium'},
+            default_context='Technical discussion about software development.',
+            default_goal='Solve technical problems efficiently.',
+            default_other_party='Developer',
+            is_custom=False,
+            language_code='en',
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        ),
+        ConversationCategory(
+            id=uuid4(),
+            name='Custom Category',
+            icon_uri='https://example.com/icons/custom.png',
+            system_prompt='',
+            initial_prompt='',
+            ai_setup={},
+            default_context='',
+            default_goal='',
+            default_other_party='',
+            is_custom=True,
+            language_code='en',
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         ),
@@ -264,19 +358,59 @@ def get_dummy_training_session_feedback(
             questions_asked=5,
             session_length_s=1800,
             goals_achieved=3,
-            examples_positive='### Clear framing of the issue You effectively communicated the '
-            'specific issue (missed deadlines) and its impact on the team without being '
-            'accusatory. > “I’ve noticed that several deadlines were missed last week, and '
-            'it’s causing our team to fall behind on the overall project timeline.” --- ',
-            examples_negative='### Lack of specific examples While you mentioned missed '
-            'deadlines, you didn’t provide specific instances or data to illustrate the issue. '
-            'Including concrete examples would strengthen your feedback. > “For example, the '
-            'report due on Friday was submitted on Monday, which delayed our progress.” --- ',
-            recommendations='### Practice the STAR method When giving feedback, use the c '
-            'Situation, Task, Action, Result framework to provide more concrete examples. '
-            '--- ### Ask more diagnostic questions Spend more time understanding root causes '
-            'before moving to solutions. This builds empathy and leads to more effective '
-            'outcomes.  --- ### Define next steps End feedback conversations with agreed-upon',
+            example_positive=[
+                {
+                    'heading': 'Clear framing of the issue',
+                    'feedback': (
+                        'You effectively communicated the specific issue (missed deadlines) and its '
+                        'impact on the team without being accusatory.'
+                    ),
+                    'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and it’s causing '
+                        'our team to fall behind on the overall project timeline.'
+                    ),
+                }
+            ],
+            example_negative=[
+                {
+                    'heading': 'Lack of specific examples',
+                    'feedback': (
+                        'While you mentioned missed deadlines, you didn’t provide specific instances '
+                        'or data to illustrate the issue. Including concrete examples would strengthen '
+                        'your feedback.'
+                    ),
+                    'quote': (
+                        'The report due on Friday was submitted on Monday, which delayed our progress.'
+                    ),
+                    'improved_quote': (
+                        'Ensure deadlines are met by setting clear expectations and providing specific '
+                        'examples of missed deadlines.'
+                    ),
+                }
+            ],
+            recommendations=[
+                {
+                    'heading': 'Practice the STAR method',
+                    'recommendation': (
+                        'When giving feedback, use the Situation, Task, Action, Result framework to '
+                        'provide more concrete examples.'
+                    ),
+                },
+                {
+                    'heading': 'Ask more diagnostic questions',
+                    'recommendation': (
+                        'Spend more time understanding root causes before moving to solutions. This '
+                        'builds empathy and leads to more effective outcomes.'
+                    ),
+                },
+                {
+                    'heading': 'Define next steps',
+                    'recommendation': (
+                        'End feedback conversations with agreed-upon actions to ensure clarity and '
+                        'accountability.'
+                    ),
+                },
+            ],
             status=FeedbackStatusEnum.pending,  # Use the enum for status
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
@@ -292,19 +426,59 @@ def get_dummy_training_session_feedback(
             questions_asked=7,
             session_length_s=2000,
             goals_achieved=4,
-            examples_positive='### Clear framing of the issue You effectively communicated the '
-            'specific issue (missed deadlines) and its impact on the team without being '
-            'accusatory. > “I’ve noticed that several deadlines were missed last week, and '
-            'it’s causing our team to fall behind on the overall project timeline.” --- ',
-            examples_negative='### Lack of specific examples While you mentioned missed '
-            'deadlines, you didn’t provide specific instances or data to illustrate the issue. '
-            'Including concrete examples would strengthen your feedback. > “For example, the '
-            'report due on Friday was submitted on Monday, which delayed our progress.” --- ',
-            recommendations='### Practice the STAR method When giving feedback, use the c '
-            'Situation, Task, Action, Result framework to provide more concrete examples. '
-            '--- ### Ask more diagnostic questions Spend more time understanding root causes '
-            'before moving to solutions. This builds empathy and leads to more effective '
-            'outcomes.  --- ### Define next steps End feedback conversations with agreed-upon',
+            example_positive=[
+                {
+                    'heading': 'Clear framing of the issue',
+                    'feedback': (
+                        'You effectively communicated the specific issue (missed deadlines) and its '
+                        'impact on the team without being accusatory.'
+                    ),
+                    'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and it’s causing '
+                        'our team to fall behind on the overall project timeline.'
+                    ),
+                }
+            ],
+            example_negative=[
+                {
+                    'heading': 'Lack of specific examples',
+                    'feedback': (
+                        'While you mentioned missed deadlines, you didn’t provide specific instances '
+                        'or data to illustrate the issue. Including concrete examples would strengthen '
+                        'your feedback.'
+                    ),
+                    'quote': (
+                        'The report due on Friday was submitted on Monday, which delayed our progress.'
+                    ),
+                    'improved_quote': (
+                        'Ensure deadlines are met by setting clear expectations and providing specific '
+                        'examples of missed deadlines.'
+                    ),
+                }
+            ],
+            recommendations=[
+                {
+                    'heading': 'Practice the STAR method',
+                    'recommendation': (
+                        'When giving feedback, use the Situation, Task, Action, Result framework to '
+                        'provide more concrete examples.'
+                    ),
+                },
+                {
+                    'heading': 'Ask more diagnostic questions',
+                    'recommendation': (
+                        'Spend more time understanding root causes before moving to solutions. This '
+                        'builds empathy and leads to more effective outcomes.'
+                    ),
+                },
+                {
+                    'heading': 'Define next steps',
+                    'recommendation': (
+                        'End feedback conversations with agreed-upon actions to ensure clarity and '
+                        'accountability.'
+                    ),
+                },
+            ],
             status=FeedbackStatusEnum.pending,  # Use the enum for status
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
@@ -319,15 +493,18 @@ def get_dummy_training_preparations(
         TrainingPreparation(
             id=uuid4(),
             case_id=training_cases[0].id,
-            objectives={
-                'objective_1': "Understand the client's needs",
-                'objective_2': 'Prepare a solution proposal',
-            },
-            key_concepts='### SBI Framework - **Situation**: Describe the specific situation.',
-            prep_checklist={
-                'item_1': 'Review client history',
-                'item_2': 'Prepare presentation slides',
-            },
+            objectives=[
+                "Understand the client's needs",
+                'Prepare a solution proposal',
+            ],
+            key_concepts=[
+                {'header': 'Time management', 'value': 'Time management'},
+                {'header': 'Collaboration', 'value': 'Collaboration'},
+            ],
+            prep_checklist=[
+                'Review client history',
+                'Prepare presentation slides',
+            ],
             status=TrainingPreparationStatus.pending,  # Use the enum for status
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
@@ -335,17 +512,75 @@ def get_dummy_training_preparations(
         TrainingPreparation(
             id=uuid4(),
             case_id=training_cases[1].id,
-            objectives={
-                'objective_1': 'Discuss project timeline',
-                'objective_2': 'Finalize deliverables',
-            },
-            key_concepts='### SBI Framework - **Situation**: Describe the specific situation.',
-            prep_checklist={
-                'item_1': 'Prepare project timeline',
-                'item_2': 'Review deliverables checklist',
-            },
+            objectives=[
+                'Discuss project timeline',
+                'Finalize deliverables',
+            ],
+            key_concepts=[
+                {'header': 'Time management', 'value': 'Time management'},
+                {'header': 'Collaboration', 'value': 'Collaboration'},
+            ],
+            prep_checklist=[
+                'Prepare project timeline',
+                'Review deliverables checklist',
+            ],
             status=TrainingPreparationStatus.pending,  # Use the enum for status
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
         ),
     ]
+
+
+def get_dummy_confidence_areas() -> list[ConfidenceArea]:
+    """
+    Generate dummy ConfidenceArea data.
+    """
+    return [
+        ConfidenceArea(
+            id=uuid4(),
+            label='Giving difficult feedback',
+            description='Confidence in providing constructive feedback in challenging situations.',
+            min_value=0,
+            max_value=100,
+            min_label='Not confident',
+            max_label='Very confident',
+        ),
+        ConfidenceArea(
+            id=uuid4(),
+            label='Managing team conflicts',
+            description='Confidence in resolving conflicts within a team effectively.',
+            min_value=0,
+            max_value=100,
+            min_label='Not confident',
+            max_label='Very confident',
+        ),
+        ConfidenceArea(
+            id=uuid4(),
+            label='Leading challenging conversations',
+            description='Confidence in leading conversations that require tact and diplomacy.',
+            min_value=0,
+            max_value=100,
+            min_label='Not confident',
+            max_label='Very confident',
+        ),
+    ]
+
+
+def get_dummy_user_confidence_scores(
+    user_profiles: list[UserProfile], confidence_areas: list[ConfidenceArea]
+) -> list[UserConfidenceScore]:
+    """
+    Generate dummy UserConfidenceScore data.
+    """
+    scores = []
+    for user in user_profiles:
+        for area in confidence_areas:
+            scores.append(
+                UserConfidenceScore(
+                    area_id=area.id,
+                    user_id=user.id,
+                    score=50,  # Default score for demonstration
+                    updated_at=datetime.utcnow(),
+                )
+            )
+    return scores
