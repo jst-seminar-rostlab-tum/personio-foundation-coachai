@@ -185,48 +185,39 @@ class WebRTCService:
             #     peer_id, sample_rate=peer.audio_config.sample_rate
             # )
 
-            # Create audio data channel using configuration
-            audio_channel = peer.connection.createDataChannel(
-                self.data_channel_config.label,
-                ordered=self.data_channel_config.ordered,
-                maxRetransmits=self.data_channel_config.max_retransmits,
-                protocol=self.data_channel_config.protocol,
-                negotiated=self.data_channel_config.negotiated,
-                id=self.data_channel_config.id,
-            )
 
             # Set event handlers
-            @ audio_channel.on('open')
-            def on_open() -> None:
-                logger.info(f'Audio channel opened for peer {peer_id}')
-                # Send audio configuration
-                audio_channel.send(peer.audio_config.model_dump_json())
-                peer.channel_ready.set()  # Set channel ready event
-                logger.info(f'Audio channel ready for peer {peer_id}')
+            @peer.connection.on("datachannel")
+            def on_datachannel(channel):
+                logger.info(f"Received data channel: {channel.label}")
+                peer.audio_channel = channel
 
-            @ audio_channel.on('message')
-            def on_message(message: bytes) -> None:
-                if peer.channel_ready.is_set():
-                    logger.info(f'Received audio data from peer {peer_id}, size: {len(message)} bytes')
-                    self.handle_audio_data(message, peer_id)
-                    logger.info(f'Processed audio data from peer {peer_id}, size: {len(message)} bytes')
-                else:
-                    logger.error(f'Audio channel not ready for peer {peer_id}')
+                @channel.on("open")
+                def on_open():
+                    logger.info(f"Audio channel opened for peer {peer_id}")
+                    peer.channel_ready.set()
+                    logger.info(f"Audio channel ready for peer {peer_id}")
 
-            @ audio_channel.on('close')
-            def on_close() -> None:
-                logger.info(f'Audio channel closed for peer {peer_id}')
-                if peer_id in self.peers:
-                    self.peers[peer_id].audio_channel = None
-                    # Clean up audio resources
-                    # asyncio.create_task(self.audio_service.cleanup(peer_id))
+                @channel.on("message")
+                def on_message(message):
+                    print(f"Received audio data from peer {peer_id}, size: {len(message)} bytes")
+                    if peer.channel_ready.is_set():
+                        logger.info(f"Received audio data from peer {peer_id}, size: {len(message)} bytes")
+                        self.handle_audio_data(message, peer_id)
+                        logger.info(f"Processed audio data from peer {peer_id}, size: {len(message)} bytes")
+                    else:
+                        logger.error(f"Audio channel not ready for peer {peer_id}")
 
-            @ audio_channel.on('error')
-            def on_error(error: Exception) -> None:
-                logger.error(
-                    f'Audio channel error for peer {peer_id}: {error}')
+                @channel.on("close")
+                def on_close():
+                    logger.info(f"Audio channel closed for peer {peer_id}")
+                    peer.audio_channel = None
 
-            peer.audio_channel = audio_channel
+                @channel.on("error")
+                def on_error(error):
+                    logger.error(f"Audio channel error for peer {peer_id}: {error}")
+
+
             logger.info(f'Audio channel setup completed for peer {peer_id}')
         except Exception as e:
             logger.error(
