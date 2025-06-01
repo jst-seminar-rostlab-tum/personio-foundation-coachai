@@ -1,13 +1,10 @@
-import asyncio
 import logging
-from collections import deque
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 from aiortc import (
     RTCDataChannel,
     RTCIceCandidate,
-    RTCIceCandidateError,
     RTCPeerConnection,
     RTCSessionDescription,
 )
@@ -171,14 +168,6 @@ class WebRTCService:
                     logger.error(f'[ICE] Failed to send candidate to client: {e}')
             else:
                 logger.info('[ICE] Candidate gathering completed')
-
-        @pc.on('icecandidateerror')
-        async def on_icecandidateerror(error: RTCIceCandidateError) -> None:
-            logger.error(f'[ICE] Candidate error: {error}')
-            logger.error(f'[ICE] Error address: {error.address}')
-            logger.error(f'[ICE] Error port: {error.port}')
-            logger.error(f'[ICE] Error status code: {error.statusCode}')
-            logger.error(f'[ICE] Error status text: {error.statusText}')
 
     async def _setup_datachannel(self, channel: RTCDataChannel, peer_id: str, peer: Peer) -> None:
         """Setup data channel event handlers"""

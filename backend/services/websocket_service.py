@@ -1,6 +1,8 @@
 import logging
-from fastapi import WebSocket
+
 from aiortc import RTCSessionDescription
+from fastapi import WebSocket
+
 from ..schemas.webrtc_schema import WebRTCSignalingMessage, WebRTCSignalingType
 from .webrtc_service import get_webrtc_service
 

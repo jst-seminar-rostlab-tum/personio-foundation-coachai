@@ -10,14 +10,17 @@ const RTC_CONFIG = {
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }],
 };
 
+const WS_URL = 'ws://localhost:8000/webrtc/signal';
+
 function useWebRTC() {
   const [isMicActive, setIsMicActive] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   const localAudioRef = useRef(null);
   const remoteAudioRef = useRef(null);
   const peerConnectionRef = useRef(null);
-  const remotePeerConnectionRef = useRef(null);
   const localStreamRef = useRef(null);
+  const wsRef = useRef(null);
   const cleanupRef = useRef(null);
 
   const cleanup = useCallback(() => {
@@ -29,9 +32,9 @@ function useWebRTC() {
       peerConnectionRef.current = null;
     }
 
-    if (remotePeerConnectionRef.current) {
-      remotePeerConnectionRef.current.close();
-      remotePeerConnectionRef.current = null;
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
     }
 
     if (localStreamRef.current) {
@@ -42,12 +45,14 @@ function useWebRTC() {
     }
 
     setIsMicActive(false);
+    setIsConnected(false);
   }, []);
 
   const initWebRTC = useCallback(async () => {
     try {
       cleanupRef.current = false;
 
+        // Get local audio stream
       const localStream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
@@ -63,52 +68,95 @@ function useWebRTC() {
         localAudioRef.current.srcObject = localStream;
       }
 
+      // Create WebSocket connection
+      const ws = new WebSocket(WS_URL);
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket closed');
+        cleanup();
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        cleanup();
+      };
+
+      // Create PeerConnection
       const peerConnection = new RTCPeerConnection(RTC_CONFIG);
       peerConnectionRef.current = peerConnection;
 
       peerConnection.onconnectionstatechange = () => {
+        console.log('Connection state:', peerConnection.connectionState);
         if (peerConnection.connectionState === 'failed') {
           cleanup();
         }
       };
 
+      // Add local audio track
       localStream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, localStream);
       });
 
+      // Handle remote audio track
       peerConnection.ontrack = (event) => {
         if (remoteAudioRef.current && event.streams[0]) {
           remoteAudioRef.current.srcObject = event.streams[0];
         }
       };
 
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-
-      // Simulate remote peer (for demo - remove in production)
-      const remotePeerConnection = new RTCPeerConnection(RTC_CONFIG);
-      remotePeerConnectionRef.current = remotePeerConnection;
-
+      // Handle ICE candidate
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
-          remotePeerConnection.addIceCandidate(event.candidate).catch(console.error);
+          ws.send(JSON.stringify({
+            type: 'candidate',
+            candidate: {
+              candidate: event.candidate.candidate,
+              sdpMid: event.candidate.sdpMid,
+              sdpMLineIndex: event.candidate.sdpMLineIndex,
+            },
+          }));
         }
       };
 
-      remotePeerConnection.onicecandidate = (event) => {
-        if (event.candidate) {
-          peerConnection.addIceCandidate(event.candidate).catch(console.error);
+      // Create and send offer
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+      ws.send(JSON.stringify({
+        type: 'offer',
+        sdp: offer.sdp,
+      }));
+
+      // Handle WebSocket message
+      ws.onmessage = async (event) => {
+        const message = JSON.parse(event.data);
+        console.log('Received message:', message);
+
+        switch (message.type) {
+          case 'answer':
+            await peerConnection.setRemoteDescription(new RTCSessionDescription({
+              type: 'answer',
+              sdp: message.sdp,
+            }));
+            setIsConnected(true);
+            break;
+
+          case 'candidate':
+            if (message.candidate) {
+              await peerConnection.addIceCandidate(new RTCIceCandidate({
+                candidate: message.candidate.candidate,
+                sdpMid: message.candidate.sdpMid,
+                sdpMLineIndex: message.candidate.sdpMLineIndex,
+              }));
+            }
+            break;
         }
       };
 
-      localStream.getTracks().forEach((track) => {
-        remotePeerConnection.addTrack(track, localStream);
-      });
-
-      await remotePeerConnection.setRemoteDescription(offer);
-      const answer = await remotePeerConnection.createAnswer();
-      await remotePeerConnection.setLocalDescription(answer);
-      await peerConnection.setRemoteDescription(answer);
     } catch (err) {
       console.error('WebRTC initialization error:', err);
       setIsMicActive(false);
@@ -119,6 +167,7 @@ function useWebRTC() {
   return {
     isMicActive,
     setIsMicActive,
+    isConnected,
     initWebRTC,
     cleanup,
     remoteAudioRef,
@@ -128,7 +177,7 @@ function useWebRTC() {
 export default function SimulationPageComponent() {
   const [time, setTime] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const { isMicActive, setIsMicActive, initWebRTC, cleanup, remoteAudioRef } = useWebRTC();
+  const { isMicActive, setIsMicActive, isConnected, initWebRTC, cleanup, remoteAudioRef } = useWebRTC();
 
   useEffect(() => {
     if (!isPaused) {
@@ -165,6 +214,7 @@ export default function SimulationPageComponent() {
         setIsPaused={setIsPaused}
         isMicActive={isMicActive}
         setIsMicActive={setIsMicActive}
+        isConnected={isConnected}
       />
       <audio ref={remoteAudioRef} autoPlay playsInline />
     </div>
