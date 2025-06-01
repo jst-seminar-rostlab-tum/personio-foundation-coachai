@@ -5,6 +5,7 @@
   --foreground: #171717;
   --background-light: #F0F0F0;
   --flame-50: #ff3700;
+  --forest-50: #33CC7B;
   --bw-10: #f4f4f5;
   --bw-20: #e4e4e7;
   --bw-30: #d4d4d8;
@@ -21,7 +22,6 @@
   --marigold-95: #291800;
   --font-dark: #262626;
   --radius-md: 8px;
-  --destructive: #dc2626;
 }
 
 @theme inline {
@@ -32,6 +32,7 @@
   --color-foreground: var(--foreground);
   --color-background-light: var(--background-light);
   --color-flame-50: var(--flame-50);
+  --color-forest-50: var(--forest-50);
   --color-bw-10: var(--bw-10);
   --color-bw-20: var(--bw-20);
   --color-bw-30: var(--bw-30);
@@ -45,7 +46,7 @@
   --color-marigold-90: var(--marigold-90);
   --color-marigold-95: var(--marigold-95);
   --color-font-dark: var(--font-dark);
-  --color-destructive: var(--destructive);
+  --color-destructive: var(--flame-50);
   /* typography */
   --text-2xl: 24px;
   --text-2xl--font-weight: 700;

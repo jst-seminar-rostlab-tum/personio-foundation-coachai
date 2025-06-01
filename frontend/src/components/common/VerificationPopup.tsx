@@ -138,25 +138,21 @@ export function VerificationPopup({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <CardContent className="space-y-4 p-4">
-              <h2 className="text-xl font-semibold text-center">{t('title')}</h2>
-              <p className="text-sm text-center text-gray-600">
+              <h2 className="text-xl text-center">{t('title')}</h2>
+              <p className="text-base text-center text-bw-50">
                 {t('descriptionPartOne')}
                 <strong>{phoneNumber}</strong>
                 {t('descriptionPartTwo')}
               </p>
 
-              {error && (
-                <div className="p-2 text-sm text-red-500 bg-red-50 rounded-md">{error}</div>
-              )}
+              {error && <div className="p-2 text-base text-destructive rounded-md">{error}</div>}
 
               <FormField
                 control={form.control}
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm flex justify-center">
-                      {t('codeInputLabel')}
-                    </FormLabel>
+                    <FormLabel className="text-center">{t('codeInputLabel')}</FormLabel>
 
                     <div className="flex justify-center gap-2">
                       {[...Array(codeSize)].map((_, idx) => (
@@ -207,16 +203,16 @@ export function VerificationPopup({
                   size="default"
                   onClick={handleResendCode}
                   disabled={resendCooldown > 0 || isLoading}
-                  className={`text-sm p-0 h-auto font-normal transition-colors flex items-center gap-1 ${
+                  className={`text-base p-0 h-auto font-normal transition-colors flex items-center gap-1 ${
                     resendCooldown > 0 || isLoading
-                      ? 'text-gray-400 cursor-not-allowed hover:text-gray-400'
-                      : 'text-blue-600 hover:text-blue-700 cursor-pointer'
+                      ? 'text-bw-40 cursor-not-allowed'
+                      : 'text-marigold-50 cursor-pointer'
                   }`}
                 >
                   <RotateCcw
                     size={14}
                     className={`${resendCooldown > 0 ? 'animate-spin' : ''} ${
-                      resendCooldown > 0 || isLoading ? 'text-gray-400' : 'text-blue-600'
+                      resendCooldown > 0 || isLoading ? 'text-gray-bw-40' : 'text-marigold-50'
                     }`}
                   />
                   {`${t('resendButtonLabel')}${resendCooldown > 0 ? ` (${resendCooldown}s)` : ''}`}
@@ -225,14 +221,13 @@ export function VerificationPopup({
             </CardContent>
             <CardFooter className="flex-col gap-2 p-4">
               <Button
-                size={'full'}
+                size="full"
                 type="submit"
                 disabled={isLoading || resendCooldown > 0 || form.watch('code').length !== codeSize}
-                className="disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
               >
                 {isLoading ? t('verifyingButtonLabel') : t('verifyButtonLabel')}
               </Button>
-              <Button size={'full'} variant={'secondary'} onClick={onClose} disabled={isLoading}>
+              <Button size="full" variant="secondary" onClick={onClose} disabled={isLoading}>
                 {t('cancelButtonLabel')}
               </Button>
             </CardFooter>

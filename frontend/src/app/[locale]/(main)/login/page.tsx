@@ -2,7 +2,7 @@
 
 import { SignInForm } from '@/components/common/SignInForm';
 import { SignUpForm } from '@/components/common/SignUpForm';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -33,13 +33,13 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center py-4">
       <div className="w-full max-w-md">
         <Card>
-          <CardHeader className="text-center pb-6 pt-8">
-            <h1 className="text-bw-70 mb-2">{t('welcome')}</h1>
-            <p className="text-bw-40 text-lg">{t('description')}</p>
+          <CardHeader className="mt-5">
+            <CardTitle>{t('welcome')}</CardTitle>
+            <CardDescription>{t('description')}</CardDescription>
           </CardHeader>
 
           <CardContent>
-            <Tabs defaultValue="sign-in">
+            <Tabs defaultValue="sign-in" className="mt-5">
               <TabsList>
                 <TabsTrigger value="sign-in">{t('SignInTab.title')}</TabsTrigger>
                 <TabsTrigger value="sign-up">{t('SignUpTab.title')}</TabsTrigger>
