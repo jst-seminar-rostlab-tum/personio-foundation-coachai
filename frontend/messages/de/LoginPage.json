@@ -46,7 +46,9 @@
     "verifyButtonLabel": "Bestätigen",
     "verifyingButtonLabel": "Wird überprüft...",
     "cancelButtonLabel": "Abbrechen",
-    "genericError": "Bei der Überprüfung ist ein Fehler aufgetreten"
+    "genericError": "Bei der Überprüfung ist ein Fehler aufgetreten",
+    "resendError": "Der Bestätigungscode konnte nicht erneut gesendet werden. Bitte versuche es erneut.",
+    "invalidCode": "Ungültiger Bestätigungscode. Bitte versuche es erneut."
   },
   "PrivacyPolicyDialog": {
     "title": "Datenschutzerklärung",

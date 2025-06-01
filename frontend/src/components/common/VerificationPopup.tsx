@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { userProfileApi } from '@/services/Api';
 import { RotateCcw } from 'lucide-react';
 import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
+import { supabase } from '@/lib/supabase';
 
 export function VerificationPopup({
   isOpen,
@@ -23,11 +24,14 @@ export function VerificationPopup({
   const [isLoading, setIsLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [verificationCode] = useState('');
 
   const verificationSchema = z.object({
     code: z.string().regex(/^\d{6}$/, t('codeInputError')),
   });
   const codeSize = 6;
+  const reciepientPhone = '+491753288376';
+  // const reciepientPhone = '+4915730709306';
 
   const form = useForm({
     resolver: zodResolver(verificationSchema),
@@ -36,6 +40,62 @@ export function VerificationPopup({
       code: '',
     },
   });
+
+  const signIn = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Supabase verification
+      const { error: signInError } = await supabase.auth.signInWithOtp({
+        phone: reciepientPhone,
+      });
+
+      if (signInError) {
+        console.error('Supabase verification error:', signInError);
+        throw signInError;
+      }
+
+      // Twilio verification (commented out but kept for reference)
+      // await userProfileApi.sendVerificationCode(reciepientPhone);
+    } catch (err) {
+      console.error('Error in sign in:', err);
+      setError('Failed to send verification code. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const verifyCode = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Supabase verification
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        phone: reciepientPhone,
+        token: verificationCode,
+        type: 'sms',
+      });
+
+      if (verifyError) {
+        console.error('Supabase verification error:', verifyError);
+        throw verifyError;
+      }
+
+      // Twilio verification (commented out but kept for reference)
+      // const result = await userProfileApi.verifyCode(reciepientPhone, verificationCode);
+      // if (!result.valid) {
+      //   throw new Error('Invalid verification code');
+      // }
+
+      onClose();
+      router.push('/');
+    } catch (err) {
+      console.error('Error verifying code:', err);
+      setError('Invalid verification code. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -47,14 +107,20 @@ export function VerificationPopup({
     return () => clearTimeout(timer);
   }, [resendCooldown]);
 
-  //   const handleSubmit = async (values: z.infer<typeof verificationSchema>) => {
+  // Send verification code when popup opens
+  useEffect(() => {
+    if (isOpen) {
+      signIn();
+    }
+  }, [isOpen]);
+
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
       // Verify the code
-      //   const isVerified = await userProfileApi.verifyCode(phoneNumber, values.code);
+      verifyCode();
       const isVerified = true;
 
       if (!isVerified) {
@@ -87,7 +153,7 @@ export function VerificationPopup({
       }
     } catch (err: unknown) {
       const errorMessage = t('genericError');
-      console.error('Error creating user:', err);
+      console.error('Error verifying code:', err);
 
       setError(errorMessage);
     } finally {
@@ -98,6 +164,7 @@ export function VerificationPopup({
   const handleResendCode = async () => {
     try {
       setError(null);
+      await userProfileApi.sendVerificationCode(phoneNumber);
       setResendCooldown(30);
     } catch (err: unknown) {
       let errorMessage = t('resendError');

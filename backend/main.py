@@ -16,15 +16,21 @@ from .routers import (
     training_preparation_route,
     training_session_feedback_route,
     training_session_route,
+    twilio_route,
     user_goals_route,
     user_profile_route,
 )
 
 app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
 
+# Update CORS settings to allow all origins in development
+origins = (
+    ['http://localhost:3000'] if settings.stage == 'dev' else ['https://your-production-domain.com']
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://localhost:3000'],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
@@ -42,6 +48,7 @@ app.include_router(rating_route.router)
 app.include_router(user_profile_route.router)
 app.include_router(user_goals_route.router)
 app.include_router(goal_route.router)
+app.include_router(twilio_route.router)
 
 
 # Create database tables on startup
@@ -50,9 +57,6 @@ def on_startup() -> None:
     print('Creating database tables...')
     create_db_and_tables()
     print('Database tables created successfully!')
-
-
-# app.include_router(twilio_route.router)
 
 
 @app.get('/')

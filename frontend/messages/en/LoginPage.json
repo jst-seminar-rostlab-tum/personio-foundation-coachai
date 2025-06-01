@@ -47,7 +47,9 @@
     "verifyButtonLabel": "Verify",
     "verifyingButtonLabel": "Verifying...",
     "cancelButtonLabel": "Cancel",
-    "genericError": "An error occurred during verification"
+    "genericError": "An error occurred during verification",
+    "resendError": "Failed to resend verification code. Please try again.",
+    "invalidCode": "Invalid verification code. Please try again."
   },
   "PrivacyPolicyDialog": {
     "title": "Privacy Policy",

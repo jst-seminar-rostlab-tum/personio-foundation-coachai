@@ -46,4 +46,15 @@ export const userProfileApi = {
     const response = await api.post('/user-profiles/sign-in', credentials);
     return response.data;
   },
+  sendVerificationCode: async (phoneNumber: string) => {
+    const response = await api.post('/twilio/send-verification', { phone_number: phoneNumber });
+    return response.data;
+  },
+  verifyCode: async (phoneNumber: string, code: string) => {
+    const response = await api.post('/twilio/check-verification', {
+      phone_number: phoneNumber,
+      code,
+    });
+    return response.data;
+  },
 };

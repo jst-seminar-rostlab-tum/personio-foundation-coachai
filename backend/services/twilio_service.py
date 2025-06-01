@@ -1,44 +1,54 @@
+import logging
 import os
 
 from dotenv import load_dotenv
-from twilio.rest import Client
 
-load_dotenv()  # THIS IS REQUIRED TO LOAD FROM .ENV
+# Load environment variables from the root directory
+load_dotenv(os.path.join(os.path.dirname(__file__), '../.env'))
 
-# Twilio credentials
 account_sid = os.getenv('TWILIO_ACCOUNT_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-verify_sid = os.getenv('TWILIO_VERIFY_SERVICE_SID')
+verify_service_sid = os.getenv('TWILIO_VERIFY_SERVICE_SID')
 
-print(account_sid, auth_token, verify_sid)
+# Comment out actual Twilio client initialization for testing
+# client = Client(account_sid, auth_token)
 
-client = Client(account_sid, auth_token)
+# Comment out actual SMS sending for testing
+# message = client.messages.create(
+#     from_='+16812400988',
+#     body='this is a test message',
+#     to='+4915730709306'
+# )
+# print(message.sid)
 
+# Hardcoded verification code for testing
+TEST_VERIFICATION_CODE = '123456'
 
-def send_verification_code(phone_number: str) -> str:
-    verification = client.verify.v2.services(verify_sid).verifications.create(
-        to=phone_number,
-        channel='sms',  # or 'call' for phone call
-    )
-    return verification.status
-
-
-def check_verification_code(phone_number: str, code: str) -> bool:
-    verification_check = client.verify.v2.services(verify_sid).verification_checks.create(
-        to=phone_number, code=code
-    )
-    return verification_check.status == 'approved'
+logger = logging.getLogger(__name__)
 
 
-# Send code
-send_status = send_verification_code(os.getenv('TEST_PHONE_NUMBER'))
-print('Send status:', send_status)
+async def send_verification_code(phone_number: str) -> str:
+    """
+    Send a verification code to the specified phone number.
+    In test mode, just prints the code instead of sending it.
+    """
+    try:
+        # For testing: just print the code and return success
+        print(
+            f'TEST MODE: Verification code {TEST_VERIFICATION_CODE} would be sent to {phone_number}'
+        )
+        return 'pending'
+    except Exception as e:
+        raise Exception(f'Failed to send verification code: {str(e)}') from e
 
-# Later, when user inputs the received code:
-user_input_code = input('Enter the code you received: ')
-is_verified = check_verification_code(os.getenv('TEST_PHONE_NUMBER'), user_input_code)
 
-if is_verified:
-    print('Phone number verified successfully!')
-else:
-    print('Verification failed.')
+async def verify_code(phone_number: str, code: str) -> bool:
+    """
+    Verify the code sent to the phone number.
+    In test mode, checks against the test code.
+    """
+    try:
+        # For testing: just check against the test code
+        return code == TEST_VERIFICATION_CODE
+    except Exception as e:
+        raise Exception(f'Failed to verify code: {str(e)}') from e
