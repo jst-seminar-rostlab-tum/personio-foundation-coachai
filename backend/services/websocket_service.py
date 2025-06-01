@@ -1,12 +1,13 @@
 import logging
 
-from aiortc import RTCSessionDescription, RTCIceCandidate
+from aiortc import RTCIceCandidate, RTCSessionDescription
 from fastapi import WebSocket
 
-from ..schemas.webrtc_schema import WebRTCSignalingMessage, WebRTCSignalingType, WebRTCIceCandidate
+from ..schemas.webrtc_schema import WebRTCIceCandidate, WebRTCSignalingMessage, WebRTCSignalingType
 from .webrtc_service import get_webrtc_service
 
 logger = logging.getLogger(__name__)
+
 
 # aiortc doesn't support parsing ICE candidates from strings, this is a workaround
 # https://github.com/aiortc/aiortc/issues/1084
@@ -34,6 +35,7 @@ def parse_candidate(candidate_str: str) -> dict:
         # 'tcpType': None,  # Only set for TCP candidates
         # 'ttl': None,      # Not used anymore
     }
+
 
 class WebSocketService:
     """WebSocket connection service"""
@@ -78,7 +80,9 @@ class WebSocketService:
                 logger.info(f'Adding ICE candidate for peer {peer_id}: {rtc_candidate}')
                 await peer.connection.addIceCandidate(rtc_candidate)
             else:
-                logger.warning(f'Received candidate message with no candidate for peer_id={peer_id}')
+                logger.warning(
+                    f'Received candidate message with no candidate for peer_id={peer_id}'
+                )
 
         else:
             logger.warning(f'Unknown signaling message type: {message.type}')
@@ -102,6 +106,7 @@ class WebSocketService:
             )
         else:
             raise ValueError('Invalid candidate object')
+
 
 def get_websocket_service() -> WebSocketService:
     """

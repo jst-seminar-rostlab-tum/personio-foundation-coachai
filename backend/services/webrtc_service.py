@@ -8,6 +8,7 @@ from aiortc import (
     RTCPeerConnection,
     RTCRtpTransceiver,
 )
+from aiortc.mediastreams import MediaStreamTrack
 from aiortc.contrib.media import MediaBlackhole
 from fastapi import WebSocket
 
@@ -19,9 +20,9 @@ from ..schemas.webrtc_schema import (
     WebRTCSignalingType,
 )
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class Peer:
@@ -58,6 +59,13 @@ class WebRTCService:
         """Setup peer connection event handlers"""
 
         logger.info(f'Setting up ICE connection for peer {peer_id}')
+
+        @pc.on('track')
+        async def on_track(track: MediaStreamTrack) -> None:
+            logger.info(f'Received track: {track.kind} from peer {peer_id}')
+            if track.kind == 'audio':
+                self.media_blackhole.addTrack(track)
+                logger.info(f'Added audio track to media blackhole for peer {peer_id}')
 
         @pc.on('iceconnectionstatechange')
         async def on_iceconnectionstatechange() -> None:
@@ -125,7 +133,6 @@ class WebRTCService:
         @channel.on('message')
         def on_message(message: bytes) -> None:
             logger.info(f'Received audio data from peer {peer_id}, size: {len(message)} bytes')
-            self.handle_audio_data(message, peer_id)
             logger.info(f'Processed audio data from peer {peer_id}, size: {len(message)} bytes')
 
         @channel.on('close')
@@ -136,7 +143,6 @@ class WebRTCService:
         @channel.on('error')
         def on_error(error: Exception) -> None:
             logger.error(f'Audio channel error for peer {peer_id}: {error}')
-
 
     async def accept_audio_channel(self, peer_id: str) -> None:
         """Accept audio data channel for a peer"""
@@ -157,26 +163,6 @@ class WebRTCService:
         except Exception as e:
             logger.error(f'Error accepting audio channel for peer {peer_id}: {e}')
             raise
-
-    def handle_audio_data(self, message: bytes, peer_id: str) -> None:
-        """Handle incoming audio data"""
-        try:
-            peer = self.peers.get(peer_id)
-            if not peer:
-                logger.error(f'No peer found for peer {peer_id}')
-                return
-
-            # Use audio service to process data with the configured parameters
-            # await self.audio_service.write_audio_data(
-            #     peer_id,
-            #     message,
-            #     sample_rate=peer.audio_config.sample_rate,
-            #     buffer_size=peer.audio_config.buffer_size,
-            # )
-
-        except Exception as e:
-            logger.error(f'Error handling audio data from peer {peer_id}: {e}')
-            logger.exception(e)
 
     async def cleanup(self, websocket: WebSocket) -> None:
         """
