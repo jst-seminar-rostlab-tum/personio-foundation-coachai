@@ -124,49 +124,26 @@ def populate_data() -> None:
 
         print('Dummy data populated successfully!')
 
+        # Vector store setup for RAG
         print('Creating empty vector store')
         empty_vector_data = HrInformation(content='', meta_data={}, embedding=[0.0] * 768)
         session.add(empty_vector_data)
         session.commit()
         print('Vector store created successfully!')
 
-        # ------------------------
-        # Supabase permission grants
-        # ------------------------
         print('Granting anon access to hr_information...')
-        session.exec(text('GRANT USAGE ON SCHEMA public TO anon;'))
-
-        session.exec(
-            text("""
-            ALTER TABLE hr_information ENABLE ROW LEVEL SECURITY;
-
-            DROP POLICY IF EXISTS "Allow anon read access to hr_information" ON hr_information;
-            CREATE POLICY "Allow anon read access to hr_information"
-                ON hr_information FOR SELECT TO anon USING (true);
-
-            DROP POLICY IF EXISTS "Allow anon insert access to hr_information" ON hr_information;
-            CREATE POLICY "Allow anon insert access to hr_information"
-                ON hr_information FOR INSERT TO anon WITH CHECK (true);
-
-            DROP POLICY IF EXISTS "Allow anon update access to hr_information" ON hr_information;
-            CREATE POLICY "Allow anon update access to hr_information"
-                ON hr_information FOR UPDATE TO anon USING (true) WITH CHECK (true);
-
-            GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE hr_information TO anon;
-        """)
-        )
+        permissions_sql_path = os.path.join(os.path.dirname(__file__), 'permissions.sql')
+        with open(permissions_sql_path) as f:
+            session.exec(text(f.read()))
         session.commit()
         print('Permissions granted.')
 
-        # ------------------------
-        # Execute match_function.sql
-        # ------------------------
-        print('Applying match_function.sql...')
+        print('Saving match_function for RAG')
         sql_path = os.path.join(os.path.dirname(__file__), '..', 'rag', 'match_function.sql')
         with open(sql_path) as f:
             session.exec(text(f.read()))
             session.commit()
-        print('match_function.sql applied.')
+        print('Saved match_function.sql')
 
 
 if __name__ == '__main__':
