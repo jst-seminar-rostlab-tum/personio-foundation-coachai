@@ -373,12 +373,12 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Clear framing of the issue',
                     'feedback': (
-                        'You effectively communicated the specific issue (missed deadlines) and its '
-                        'impact on the team without being accusatory.'
+                        'You effectively communicated the specific issue (missed deadlines) and its'
+                        ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s causing '
-                        'our team to fall behind on the overall project timeline.'
+                        'I’ve noticed that several deadlines were missed last week, and '
+                        'it’s causing team to fall behind on the overall project timeline.'
                     ),
                 }
             ],
@@ -386,16 +386,17 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific instances '
-                        'or data to illustrate the issue. Including concrete examples would strengthen '
-                        'your feedback.'
+                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
                     ),
                     'quote': (
-                        'The report due on Friday was submitted on Monday, which delayed our progress.'
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
                     ),
                     'improved_quote': (
-                        'Ensure deadlines are met by setting clear expectations and providing specific '
-                        'examples of missed deadlines.'
+                        'Ensure deadlines are met by setting clear expectations and providing '
+                        'specific examples of missed deadlines.'
                     ),
                 }
             ],
@@ -403,15 +404,15 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Practice the STAR method',
                     'recommendation': (
-                        'When giving feedback, use the Situation, Task, Action, Result framework to '
-                        'provide more concrete examples.'
+                        'When giving feedback, use the Situation, Task, Action, Result framework to'
+                        ' provide more concrete examples.'
                     ),
                 },
                 {
                     'heading': 'Ask more diagnostic questions',
                     'recommendation': (
-                        'Spend more time understanding root causes before moving to solutions. This '
-                        'builds empathy and leads to more effective outcomes.'
+                        'Spend more time understanding root causes before moving to solutions. This'
+                        ' builds empathy and leads to more effective outcomes.'
                     ),
                 },
                 {
@@ -441,12 +442,12 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Clear framing of the issue',
                     'feedback': (
-                        'You effectively communicated the specific issue (missed deadlines) and its '
-                        'impact on the team without being accusatory.'
+                        'You effectively communicated the specific issue (missed deadlines) and its'
+                        ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s causing '
-                        'our team to fall behind on the overall project timeline.'
+                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        'causing our team to fall behind on the overall project timeline.'
                     ),
                 }
             ],
@@ -454,16 +455,17 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific instances '
-                        'or data to illustrate the issue. Including concrete examples would strengthen '
-                        'your feedback.'
+                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
                     ),
                     'quote': (
-                        'The report due on Friday was submitted on Monday, which delayed our progress.'
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
                     ),
                     'improved_quote': (
-                        'Ensure deadlines are met by setting clear expectations and providing specific '
-                        'examples of missed deadlines.'
+                        'Ensure deadlines are met by setting clear expectations and providing '
+                        'specific examples of missed deadlines.'
                     ),
                 }
             ],
@@ -471,15 +473,15 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Practice the STAR method',
                     'recommendation': (
-                        'When giving feedback, use the Situation, Task, Action, Result framework to '
-                        'provide more concrete examples.'
+                        'When giving feedback, use the Situation, Task, Action, Result framework to'
+                        ' provide more concrete examples.'
                     ),
                 },
                 {
                     'heading': 'Ask more diagnostic questions',
                     'recommendation': (
-                        'Spend more time understanding root causes before moving to solutions. This '
-                        'builds empathy and leads to more effective outcomes.'
+                        'Spend more time understanding root causes before moving to solutions. This'
+                        ' builds empathy and leads to more effective outcomes.'
                     ),
                 },
                 {
