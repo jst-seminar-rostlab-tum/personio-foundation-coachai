@@ -135,7 +135,7 @@ export function VerificationPopup({
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <Card className="relative w-[90%] max-w-sm border-0 shadow-lg bg-white animate-in fade-in zoom-in duration-200">
+      <Card className="relative w-[90%] max-w-sm border-0 bg-white animate-in fade-in zoom-in duration-200">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <CardContent className="space-y-4 p-4">
