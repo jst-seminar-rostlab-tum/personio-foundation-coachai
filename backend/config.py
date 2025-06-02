@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     supabase_url: str
     supabase_key: str
-    supabase_ssl_cert_path: str = Path(__file__).parent / 'certs' / 'prod-ca-2021.crt'
+    supabase_ssl_cert_path: str = str(Path(__file__).parent / 'certs' / 'prod-ca-2021.crt')
 
     gemini_api_key: str
     twilio_account_sid: str
