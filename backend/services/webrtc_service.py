@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 RTC_CONFIG = RTCConfiguration(
     iceServers=[
         RTCIceServer(
-            urls=['stun:stun.l.google.com:19302']
+            urls=[
+                'stun:stun.l.google.com:19302',
+            ]
         ),
     ]
 )
@@ -49,7 +51,7 @@ class WebRTCService:
         """Initialize the WebRTC service"""
         self.peers: dict[str, Peer] = {}
 
-    async def create_peer_connection(self, websocket: WebSocket, peer_id: str) -> None:
+    async def create_peer_connection(self, peer_id: str) -> None:
         """Create a new peer connection"""
         if peer_id in self.peers:
             logger.info(f'Peer {peer_id} already exists, closing old connection')
@@ -63,8 +65,46 @@ class WebRTCService:
         transceiver = pc.addTransceiver('audio', direction='sendrecv')
         logger.info(f'Created transceiver for peer {peer_id}')
 
-        self.peers[peer_id] = Peer(connection=pc, peer_id=peer_id, transceiver=transceiver)
+        # Create negotiated data channel on server side
+        # data_channel = pc.createDataChannel('transcript', ordered=True, maxRetransmits=3, negotiated=True, id=0)
+        # logger.info(f'[DataChannel] Created negotiated data channel on server side: {data_channel.label}')
+        # logger.info(f'[DataChannel] Initial state: {data_channel.readyState}')
 
+        # Set up data channel event handlers
+        # @data_channel.on('open')
+        # async def on_open() -> None:
+        #     logger.info(f'[DataChannel] Channel {data_channel.label} opened for peer {peer_id}')
+        #     logger.info(f'[DataChannel] Channel state after open: {data_channel.readyState}')
+        #     try:
+        #         # Send a test message back to client
+        #         data_channel.send('test message from server')
+        #         logger.info('[DataChannel] Test message sent to client')
+        #     except Exception as e:
+        #         logger.error(f'[DataChannel] Error sending test message: {e}')
+
+        # @data_channel.on('message')
+        # async def on_message(message: str) -> None:
+        #     logger.info(f'[DataChannel] Received message from peer {peer_id}: {message}')
+        #     logger.info(f'[DataChannel] Channel state during message: {data_channel.readyState}')
+        #     try:
+        #         # Echo the message back to client
+        #         data_channel.send(f'Echo: {message}')
+       
+
+        # @data_channel.on('close')
+        # async def on_close() -> None:
+        #     logger.info(f'[DataChannel] Channel {data_channel.label} closed for peer {peer_id}')
+        #     logger.info(f'[DataChannel] Channel state after close: {data_channel.readyState}')
+        #     if peer_id in self.peers:
+        #         self.peers[peer_id].data_channel = None
+        #         logger.info(f'[DataChannel] Cleared data channel reference for peer {peer_id}')
+
+        # @data_channel.on('error')
+        # async def on_error(error: Exception) -> None:
+        #     logger.error(f'[DataChannel] Channel {data_channel.label} error for peer {peer_id}: {error}')
+        #     logger.error(f'[DataChannel] Channel state during error: {data_channel.readyState}')
+
+        # Register data channel handler for incoming channels
         @pc.on('datachannel')
         async def on_datachannel(channel: RTCDataChannel) -> None:
             logger.info(f'[DataChannel] Received data channel: {channel.label}')
@@ -73,43 +113,14 @@ class WebRTCService:
             logger.info(f'[DataChannel] Channel negotiated: {channel.negotiated}')
             logger.info(f'[DataChannel] Channel id: {channel.id}')
             
-            self.peers[peer_id].data_channel = channel
-            logger.info(f'[DataChannel] Stored data channel for peer {peer_id}')
+            if channel.label == 'transcript':
+                self.peers[peer_id].data_channel = channel
+            # Store the received channel
+            logger.info(f'[DataChannel] Stored received data channel for peer {peer_id}')
 
-            @channel.on('open')
-            async def on_open() -> None:
-                logger.info(f'[DataChannel] Channel {channel.label} opened for peer {peer_id}')
-                logger.info(f'[DataChannel] Channel state after open: {channel.readyState}')
-                try:
-                    # Send a test message back to client
-                    channel.send('test message from server')
-                    logger.info('[DataChannel] Test message sent to client')
-                except Exception as e:
-                    logger.error(f'[DataChannel] Error sending test message: {e}')
-
-            @channel.on('message')
-            async def on_message(message: str) -> None:
-                logger.info(f'[DataChannel] Received message from peer {peer_id}: {message}')
-                logger.info(f'[DataChannel] Channel state during message: {channel.readyState}')
-                try:
-                    # Echo the message back to client
-                    channel.send(f'Echo: {message}')
-                    logger.info(f'[DataChannel] Echo message sent to client: {message}')
-                except Exception as e:
-                    logger.error(f'[DataChannel] Error sending echo message: {e}')
-
-            @channel.on('close')
-            async def on_close() -> None:
-                logger.info(f'[DataChannel] Channel {channel.label} closed for peer {peer_id}')
-                logger.info(f'[DataChannel] Channel state after close: {channel.readyState}')
-                if peer_id in self.peers:
-                    self.peers[peer_id].data_channel = None
-                    logger.info(f'[DataChannel] Cleared data channel reference for peer {peer_id}')
-
-            @channel.on('error')
-            async def on_error(error: Exception) -> None:
-                logger.error(f'[DataChannel] Channel {channel.label} error for peer {peer_id}: {error}')
-                logger.error(f'[DataChannel] Channel state during error: {channel.readyState}')
+        # Create peer object AFTER registering handlers
+        self.peers[peer_id] = Peer(connection=pc, peer_id=peer_id, transceiver=transceiver)
+        logger.info(f'Peer connection created for peer {peer_id}')
 
         @pc.on('track')
         async def on_track(track: MediaStreamTrack) -> None:
@@ -130,11 +141,8 @@ class WebRTCService:
                 logger.info(f'[Connection] Peer {peer_id} connected successfully')
                 # Try to send a test message through data channel if it exists
                 if self.peers[peer_id].data_channel and self.peers[peer_id].data_channel.readyState == 'open':
-                    try:
-                        self.peers[peer_id].data_channel.send('test message from server after connection established')
-                        logger.info('[DataChannel] Test message sent after connection established')
-                    except Exception as e:
-                        logger.error(f'[DataChannel] Error sending test message after connection established: {e}')
+                    self.peers[peer_id].data_channel.send('test message from server after connection established')
+                    logger.info('[DataChannel] Test message sent after connection established')
             elif pc.connectionState == 'failed':
                 logger.error(f'[Connection] Peer {peer_id} connection failed')
                 await pc.close()
@@ -190,8 +198,6 @@ class WebRTCService:
             logger.info(f'[Signaling] State changed to {pc.signalingState} for peer {peer_id}')
             if pc.signalingState == 'stable':
                 logger.info(f'[Signaling] Peer {peer_id} signaling stable')
-
-        logger.info(f'Peer connection created for peer {peer_id}')
 
     async def close_peer_connection(self, peer_id: str) -> None:
         """Close a peer connection"""

@@ -1,4 +1,5 @@
 import logging
+import asyncio
 
 from aiortc import RTCIceCandidate, RTCSessionDescription
 from fastapi import WebSocket
@@ -52,7 +53,7 @@ class WebSocketService:
 
         if message.type == WebRTCSignalingType.OFFER:
             # always create/overwrite peer connection, ensure peer is the latest
-            await self.webrtc_service.create_peer_connection(websocket, peer_id)
+            await self.webrtc_service.create_peer_connection(peer_id)
             pc = self.webrtc_service.peers[peer_id].connection
 
             # set remote description
@@ -90,6 +91,7 @@ class WebSocketService:
             else:
                 logger.info('Data channel already present in answer SDP')
 
+            # Set local description BEFORE sending answer
             await pc.setLocalDescription(answer)
             logger.info(f'Local description set for peer {peer_id}')
 
@@ -101,6 +103,13 @@ class WebSocketService:
                 ).model_dump()
             )
             logger.info(f'Answer sent to peer {peer_id}')
+
+            # Wait for ICE gathering to complete
+            if pc.iceGatheringState != 'complete':
+                logger.info(f'Waiting for ICE gathering to complete for peer {peer_id}')
+                while pc.iceGatheringState != 'complete':
+                    await asyncio.sleep(0.1)
+                logger.info(f'ICE gathering completed for peer {peer_id}')
 
         elif message.type == WebRTCSignalingType.CANDIDATE:
             peer = self.webrtc_service.peers.get(peer_id)
@@ -114,6 +123,9 @@ class WebSocketService:
                     logger.info(f'Adding ICE candidate for peer {peer_id}: {rtc_candidate}')
                     await peer.connection.addIceCandidate(rtc_candidate)
                     logger.info(f'ICE candidate added successfully for peer {peer_id}')
+                    logger.info(f'Current ICE connection state: {peer.connection.iceConnectionState}')
+                    logger.info(f'Current connection state: {peer.connection.connectionState}')
+                    logger.info(f'Current signaling state: {peer.connection.signalingState}')
                 except Exception as e:
                     logger.error(f'Error adding ICE candidate for peer {peer_id}: {e}')
             else:
