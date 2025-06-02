@@ -102,14 +102,14 @@ function useWebRTC() {
           negotiated: false
         });
         dataChannelRef.current = dataChannel;
-        console.log('[WebRTC] Data channel created, state:', dataChannel.readyState);
+        console.debug('[WebRTC] Data channel created, state:', dataChannel.readyState);
 
         // Set up data channel event handlers
         dataChannel.onopen = () => {
           console.log('[WebRTC] Data channel opened, state:', dataChannel.readyState);
           try {
             dataChannel.send('test message from client');
-            console.log('[WebRTC] Test message sent');
+            console.debug('[WebRTC] Test message sent');
           } catch (error) {
             console.error('[WebRTC] Error sending test message:', error);
           }
@@ -125,10 +125,10 @@ function useWebRTC() {
         };
 
         dataChannel.onmessage = (event) => {
-          console.log('[WebRTC] Received message:', event.data);
+          console.debug('[WebRTC] Received message:', event.data);
           try {
             dataChannel.send(`Echo: ${event.data}`);
-            console.log('[WebRTC] Echo message sent');
+            console.debug('[WebRTC] Echo message sent');
           } catch (error) {
             console.error('[WebRTC] Error sending echo message:', error);
           }
@@ -150,7 +150,7 @@ function useWebRTC() {
           };
 
           receivedChannel.onmessage = (event) => {
-            console.log('[WebRTC] Received message:', event.data);
+            console.debug('[WebRTC] Received message:', event.data);
           };
         };
 
@@ -175,7 +175,7 @@ function useWebRTC() {
         // Add ICE candidate handler
         peerConnection.onicecandidate = (event) => {
           if (event.candidate) {
-            console.log('[WebRTC] New ICE candidate:', {
+            console.debug('[WebRTC] New ICE candidate:', {
               candidate: event.candidate.candidate,
               sdpMid: event.candidate.sdpMid,
               sdpMLineIndex: event.candidate.sdpMLineIndex,
@@ -194,7 +194,7 @@ function useWebRTC() {
         };
 
         peerConnection.onicegatheringstatechange = () => {
-          console.log('[WebRTC] ICE gathering state changed:', peerConnection.iceGatheringState);
+          console.debug('[WebRTC] ICE gathering state changed:', peerConnection.iceGatheringState);
         };
 
         // Handle incoming tracks
@@ -229,13 +229,13 @@ function useWebRTC() {
         
         if (message.type === 'answer') {
           console.log('[WebRTC] Received answer:', message);
-          console.log('[WebRTC] Answer SDP:', message.sdp);
+          console.debug('[WebRTC] Answer SDP:', message.sdp);
           await peerConnection.setRemoteDescription(new RTCSessionDescription({
             type: 'answer',
             sdp: message.sdp
           }));
         } else if (message.type === 'candidate') {
-          console.log('[WebRTC] Received ICE candidate');
+          console.debug('[WebRTC] Received ICE candidate');
           try {
             await peerConnection.addIceCandidate(new RTCIceCandidate(message.candidate));
           } catch (error) {

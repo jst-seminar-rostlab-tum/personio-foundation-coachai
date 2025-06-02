@@ -57,7 +57,7 @@ class WebSocketService:
             pc = self.webrtc_service.peers[peer_id].connection
 
             # set remote description
-            logger.info(f'Received offer SDP: {message.sdp}')
+            logger.debug(f'Received offer SDP: {message.sdp}')
             await pc.setRemoteDescription(
                 RTCSessionDescription(sdp=message.sdp, type=WebRTCSignalingType.OFFER)
             )
@@ -65,17 +65,17 @@ class WebSocketService:
 
             # Create answer and set local description
             answer = await pc.createAnswer()
-            logger.info(f'Created answer SDP: {answer.sdp}')
+            logger.debug(f'Created answer SDP: {answer.sdp}')
             
             # Check if data channel is in the offer
             if 'm=application' in message.sdp:
-                logger.info('Data channel found in offer SDP')
+                logger.debug('Data channel found in offer SDP')
             else:
-                logger.warning('Data channel not found in offer SDP')
+                logger.debug('Data channel not found in offer SDP')
             
             # Ensure data channel is included in the answer
             if 'm=application' not in answer.sdp:
-                logger.warning('Data channel not found in answer SDP, adding it manually')
+                logger.info('Data channel not found in answer SDP, adding it manually')
                 sdp_lines = answer.sdp.split('\n')
                 # Add data channel media line after the last media line
                 for i, line in enumerate(sdp_lines):
@@ -87,9 +87,9 @@ class WebSocketService:
                 sdp_lines.insert(last_media_index + 4, 'a=sctp-port:5000')
                 sdp_lines.insert(last_media_index + 5, 'a=max-message-size:65536')
                 answer = RTCSessionDescription(sdp='\n'.join(sdp_lines), type='answer')
-                logger.info(f'Modified answer SDP: {answer.sdp}')
+                logger.debug(f'Modified answer SDP: {answer.sdp}')
             else:
-                logger.info('Data channel already present in answer SDP')
+                logger.debug('Data channel already present in answer SDP')
 
             # Set local description BEFORE sending answer
             await pc.setLocalDescription(answer)
@@ -106,7 +106,7 @@ class WebSocketService:
 
             # Wait for ICE gathering to complete
             if pc.iceGatheringState != 'complete':
-                logger.info(f'Waiting for ICE gathering to complete for peer {peer_id}')
+                logger.debug(f'Waiting for ICE gathering to complete for peer {peer_id}')
                 while pc.iceGatheringState != 'complete':
                     await asyncio.sleep(0.1)
                 logger.info(f'ICE gathering completed for peer {peer_id}')
@@ -120,31 +120,31 @@ class WebSocketService:
             if candidate:
                 try:
                     rtc_candidate = self._build_rtc_ice_candidate(candidate)
-                    logger.info(f'Adding ICE candidate for peer {peer_id}:')
-                    logger.info(f'  - sdpMid: {rtc_candidate.sdpMid}')
-                    logger.info(f'  - sdpMLineIndex: {rtc_candidate.sdpMLineIndex}')
-                    logger.info(f'  - component: {rtc_candidate.component}')
-                    logger.info(f'  - foundation: {rtc_candidate.foundation}')
-                    logger.info(f'  - ip: {rtc_candidate.ip}')
-                    logger.info(f'  - port: {rtc_candidate.port}')
-                    logger.info(f'  - priority: {rtc_candidate.priority}')
-                    logger.info(f'  - protocol: {rtc_candidate.protocol}')
-                    logger.info(f'  - type: {rtc_candidate.type}')
+                    logger.debug(f'Adding ICE candidate for peer {peer_id}:')
+                    logger.debug(f'  - sdpMid: {rtc_candidate.sdpMid}')
+                    logger.debug(f'  - sdpMLineIndex: {rtc_candidate.sdpMLineIndex}')
+                    logger.debug(f'  - component: {rtc_candidate.component}')
+                    logger.debug(f'  - foundation: {rtc_candidate.foundation}')
+                    logger.debug(f'  - ip: {rtc_candidate.ip}')
+                    logger.debug(f'  - port: {rtc_candidate.port}')
+                    logger.debug(f'  - priority: {rtc_candidate.priority}')
+                    logger.debug(f'  - protocol: {rtc_candidate.protocol}')
+                    logger.debug(f'  - type: {rtc_candidate.type}')
                     
                     await peer.connection.addIceCandidate(rtc_candidate)
                     logger.info(f'ICE candidate added successfully for peer {peer_id}')
-                    logger.info(f'Current ICE connection state: {peer.connection.iceConnectionState}')
-                    logger.info(f'Current connection state: {peer.connection.connectionState}')
-                    logger.info(f'Current signaling state: {peer.connection.signalingState}')
+                    logger.debug(f'Current ICE connection state: {peer.connection.iceConnectionState}')
+                    logger.debug(f'Current connection state: {peer.connection.connectionState}')
+                    logger.debug(f'Current signaling state: {peer.connection.signalingState}')
                 except Exception as e:
                     logger.error(f'Error adding ICE candidate for peer {peer_id}: {e}')
             else:
-                logger.warning(
+                logger.debug(
                     f'Received candidate message with no candidate for peer_id={peer_id}'
                 )
 
         else:
-            logger.warning(f'Unknown signaling message type: {message.type}')
+            logger.debug(f'Unknown signaling message type: {message.type}')
 
     def _build_rtc_ice_candidate(self, candidate_obj: WebRTCIceCandidate) -> RTCIceCandidate:
         """
@@ -168,14 +168,14 @@ class WebSocketService:
             port = int(parts[5])
             type_ = parts[7]
 
-            logger.info(f'Parsed ICE candidate components:')
-            logger.info(f'  - foundation: {foundation}')
-            logger.info(f'  - component: {component}')
-            logger.info(f'  - protocol: {protocol}')
-            logger.info(f'  - priority: {priority}')
-            logger.info(f'  - ip: {ip}')
-            logger.info(f'  - port: {port}')
-            logger.info(f'  - type: {type_}')
+            logger.debug(f'Parsed ICE candidate components:')
+            logger.debug(f'  - foundation: {foundation}')
+            logger.debug(f'  - component: {component}')
+            logger.debug(f'  - protocol: {protocol}')
+            logger.debug(f'  - priority: {priority}')
+            logger.debug(f'  - ip: {ip}')
+            logger.debug(f'  - port: {port}')
+            logger.debug(f'  - type: {type_}')
 
             return RTCIceCandidate(
                 sdpMid=candidate_obj.sdp_mid,
