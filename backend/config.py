@@ -7,13 +7,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     stage: Literal['dev', 'prod'] = 'dev'
 
-    supabase_user: str = 'postgres'
+    supabase_project_id: str
     supabase_password: str
-    supabase_host: str
     supabase_port: int = 5432
     supabase_db: str = 'postgres'
+    supabase_user: str = 'postgres'
 
-    supabase_url: str
     supabase_key: str
     supabase_ssl_cert_path: str = str(Path(__file__).parent / 'certs' / 'prod-ca-2021.crt')
 

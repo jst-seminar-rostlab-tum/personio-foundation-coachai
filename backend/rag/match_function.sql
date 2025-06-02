@@ -13,7 +13,7 @@ BEGIN
   RETURN QUERY
   SELECT
     hr.id,
-    hr.content::text,       -- 👈 CAST this
+    hr.content::text,
     hr.metadata,
     hr.embedding
   FROM hr_information AS hr
