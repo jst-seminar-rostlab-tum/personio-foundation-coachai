@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from sqlmodel import Session, SQLModel
 
 from backend.data import (
@@ -25,8 +26,11 @@ from backend.models.hr_information import HrInformation
 
 
 def populate_data() -> None:
-    print('Dropping tables...')
-    SQLModel.metadata.drop_all(engine)
+    print('Dropping schema "public" (all tables & constraints will be removed)...')
+    with engine.connect() as conn:
+        conn.execute(text('DROP SCHEMA public CASCADE'))
+        conn.execute(text('CREATE SCHEMA public'))
+        conn.commit()
 
     print('Creating tables...')
     SQLModel.metadata.create_all(engine)
@@ -60,7 +64,7 @@ def populate_data() -> None:
         session_lengths = get_dummy_session_lengths()
         session.add_all(session_lengths)
 
-        # Commit roles, experiences, goals, learning_styles, session_length and difficulty levels to get their IDs
+        # Commit all to get their IDs
         session.commit()
 
         # Populate User Profiles

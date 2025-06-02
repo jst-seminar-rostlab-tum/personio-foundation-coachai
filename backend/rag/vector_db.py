@@ -36,7 +36,7 @@ def format_docs(docs: list[Document]) -> str:
 
 
 def get_supabase_client() -> Client:
-    return create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+    return create_client(settings.supabase_url, settings.supabase_key)
 
 
 def load_vector_db(
