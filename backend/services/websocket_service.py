@@ -120,7 +120,17 @@ class WebSocketService:
             if candidate:
                 try:
                     rtc_candidate = self._build_rtc_ice_candidate(candidate)
-                    logger.info(f'Adding ICE candidate for peer {peer_id}: {rtc_candidate}')
+                    logger.info(f'Adding ICE candidate for peer {peer_id}:')
+                    logger.info(f'  - sdpMid: {rtc_candidate.sdpMid}')
+                    logger.info(f'  - sdpMLineIndex: {rtc_candidate.sdpMLineIndex}')
+                    logger.info(f'  - component: {rtc_candidate.component}')
+                    logger.info(f'  - foundation: {rtc_candidate.foundation}')
+                    logger.info(f'  - ip: {rtc_candidate.ip}')
+                    logger.info(f'  - port: {rtc_candidate.port}')
+                    logger.info(f'  - priority: {rtc_candidate.priority}')
+                    logger.info(f'  - protocol: {rtc_candidate.protocol}')
+                    logger.info(f'  - type: {rtc_candidate.type}')
+                    
                     await peer.connection.addIceCandidate(rtc_candidate)
                     logger.info(f'ICE candidate added successfully for peer {peer_id}')
                     logger.info(f'Current ICE connection state: {peer.connection.iceConnectionState}')
@@ -138,28 +148,50 @@ class WebSocketService:
 
     def _build_rtc_ice_candidate(self, candidate_obj: WebRTCIceCandidate) -> RTCIceCandidate:
         """
-        Build RTCIceCandidate from candidate object, using parse_candidate if candidate is a string.
+        Build RTCIceCandidate from candidate object.
         """
-        if hasattr(candidate_obj, 'candidate') and isinstance(candidate_obj.candidate, str):
-            try:
-                parts = candidate_obj.candidate.strip().split()
-                logger.info(f'Parsing ICE candidate: {candidate_obj.candidate}')
-                return RTCIceCandidate(
-                    sdpMid=candidate_obj.sdp_mid,
-                    sdpMLineIndex=candidate_obj.sdp_mline_index,
-                    component=int(parts[1]),
-                    foundation=parts[0][len('candidate:') :],
-                    ip=parts[4],
-                    port=int(parts[5]),
-                    priority=int(parts[3]),
-                    protocol=parts[7],
-                    type=parts[7],
-                )
-            except Exception as e:
-                logger.error(f'Error parsing ICE candidate: {e}')
-                raise
-        else:
-            raise ValueError('Invalid candidate object')
+        if not candidate_obj.candidate:
+            raise ValueError('Candidate string is empty')
+
+        try:
+            # Parse the candidate string
+            parts = candidate_obj.candidate.strip().split()
+            if not parts[0].startswith('candidate:'):
+                raise ValueError('Invalid candidate string format')
+
+            # Extract components
+            foundation = parts[0][len('candidate:'):]
+            component = int(parts[1])
+            protocol = parts[2].lower()
+            priority = int(parts[3])
+            ip = parts[4]
+            port = int(parts[5])
+            type_ = parts[7]
+
+            logger.info(f'Parsed ICE candidate components:')
+            logger.info(f'  - foundation: {foundation}')
+            logger.info(f'  - component: {component}')
+            logger.info(f'  - protocol: {protocol}')
+            logger.info(f'  - priority: {priority}')
+            logger.info(f'  - ip: {ip}')
+            logger.info(f'  - port: {port}')
+            logger.info(f'  - type: {type_}')
+
+            return RTCIceCandidate(
+                sdpMid=candidate_obj.sdp_mid,
+                sdpMLineIndex=candidate_obj.sdp_mline_index,
+                component=component,
+                foundation=foundation,
+                ip=ip,
+                port=port,
+                priority=priority,
+                protocol=protocol,
+                type=type_
+            )
+        except Exception as e:
+            logger.error(f'Error parsing ICE candidate: {e}')
+            logger.error(f'Candidate string: {candidate_obj.candidate}')
+            raise
 
 
 def get_websocket_service() -> WebSocketService:

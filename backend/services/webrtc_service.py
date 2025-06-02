@@ -8,11 +8,11 @@ from aiortc import (
     RTCDataChannel,
     RTCConfiguration,
     RTCIceServer,
+    RTCIceCandidate,
 )
 from aiortc.mediastreams import MediaStreamTrack
-from fastapi import WebSocket
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -65,46 +65,11 @@ class WebRTCService:
         transceiver = pc.addTransceiver('audio', direction='sendrecv')
         logger.info(f'Created transceiver for peer {peer_id}')
 
-        # Create negotiated data channel on server side
-        # data_channel = pc.createDataChannel('transcript', ordered=True, maxRetransmits=3, negotiated=True, id=0)
-        # logger.info(f'[DataChannel] Created negotiated data channel on server side: {data_channel.label}')
-        # logger.info(f'[DataChannel] Initial state: {data_channel.readyState}')
-
-        # Set up data channel event handlers
-        # @data_channel.on('open')
-        # async def on_open() -> None:
-        #     logger.info(f'[DataChannel] Channel {data_channel.label} opened for peer {peer_id}')
-        #     logger.info(f'[DataChannel] Channel state after open: {data_channel.readyState}')
-        #     try:
-        #         # Send a test message back to client
-        #         data_channel.send('test message from server')
-        #         logger.info('[DataChannel] Test message sent to client')
-        #     except Exception as e:
-        #         logger.error(f'[DataChannel] Error sending test message: {e}')
-
-        # @data_channel.on('message')
-        # async def on_message(message: str) -> None:
-        #     logger.info(f'[DataChannel] Received message from peer {peer_id}: {message}')
-        #     logger.info(f'[DataChannel] Channel state during message: {data_channel.readyState}')
-        #     try:
-        #         # Echo the message back to client
-        #         data_channel.send(f'Echo: {message}')
-       
-
-        # @data_channel.on('close')
-        # async def on_close() -> None:
-        #     logger.info(f'[DataChannel] Channel {data_channel.label} closed for peer {peer_id}')
-        #     logger.info(f'[DataChannel] Channel state after close: {data_channel.readyState}')
-        #     if peer_id in self.peers:
-        #         self.peers[peer_id].data_channel = None
-        #         logger.info(f'[DataChannel] Cleared data channel reference for peer {peer_id}')
-
-        # @data_channel.on('error')
-        # async def on_error(error: Exception) -> None:
-        #     logger.error(f'[DataChannel] Channel {data_channel.label} error for peer {peer_id}: {error}')
-        #     logger.error(f'[DataChannel] Channel state during error: {data_channel.readyState}')
-
         # Register data channel handler for incoming channels
+        data_channel = pc.createDataChannel('transcript', ordered=True, maxRetransmits=3, negotiated=False) 
+        logger.info(f'[DataChannel] Created negotiated data channel on server side: {data_channel.label}')
+        logger.info(f'[DataChannel] Initial state: {data_channel.readyState}')
+
         @pc.on('datachannel')
         async def on_datachannel(channel: RTCDataChannel) -> None:
             logger.info(f'[DataChannel] Received data channel: {channel.label}')
@@ -114,12 +79,13 @@ class WebRTCService:
             logger.info(f'[DataChannel] Channel id: {channel.id}')
             
             if channel.label == 'transcript':
-                self.peers[peer_id].data_channel = channel
+                # TODO: send data channel to client
+                pass
             # Store the received channel
             logger.info(f'[DataChannel] Stored received data channel for peer {peer_id}')
 
         # Create peer object AFTER registering handlers
-        self.peers[peer_id] = Peer(connection=pc, peer_id=peer_id, transceiver=transceiver)
+        self.peers[peer_id] = Peer(connection=pc, peer_id=peer_id, transceiver=transceiver, data_channel=data_channel)
         logger.info(f'Peer connection created for peer {peer_id}')
 
         @pc.on('track')

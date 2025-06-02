@@ -95,37 +95,11 @@ function useWebRTC() {
           peerConnection.addTrack(track, localStream);
         });
 
-        // Set up connection state handlers first
-        peerConnection.onconnectionstatechange = () => {
-          console.log('[WebRTC] Connection state changed:', peerConnection.connectionState);
-          if (peerConnection.connectionState === 'connected') {
-            console.log('[WebRTC] Connection established');
-            setIsConnected(true);
-          } else if (peerConnection.connectionState === 'disconnected' ||
-                    peerConnection.connectionState === 'failed' ||
-                    peerConnection.connectionState === 'closed') {
-            console.log('[WebRTC] Connection lost');
-            disconnect();
-          }
-        };
-
-        peerConnection.oniceconnectionstatechange = () => {
-          console.log('[WebRTC] ICE connection state changed:', peerConnection.iceConnectionState);
-        };
-
-        // Handle incoming tracks
-        peerConnection.ontrack = (event) => {
-          console.log('[WebRTC] Received remote track:', event.track.kind);
-          if (event.track.kind === 'audio' && remoteAudioRef.current) {
-            remoteAudioRef.current.srcObject = event.streams[0];
-          }
-        };
-
-        // Create data channel
+        // Create data channel BEFORE creating the offer
         const dataChannel = peerConnection.createDataChannel('transcript', {
           ordered: true,
           maxRetransmits: 3,
-          negotiated: false,
+          negotiated: false
         });
         dataChannelRef.current = dataChannel;
         console.log('[WebRTC] Data channel created, state:', dataChannel.readyState);
@@ -165,13 +139,70 @@ function useWebRTC() {
           console.log('[WebRTC] Received data channel:', event.channel.label);
           const receivedChannel = event.channel;
           dataChannelRef.current = receivedChannel;
+
+          receivedChannel.onopen = () => {
+            console.log('[WebRTC] Received channel opened');
+          };
+
+          receivedChannel.onclose = () => {
+            console.log('[WebRTC] Received channel closed');
+            dataChannelRef.current = null;
+          };
+
+          receivedChannel.onmessage = (event) => {
+            console.log('[WebRTC] Received message:', event.data);
+          };
         };
 
-        // Handle incoming data channels
-        peerConnection.ondatachannel = (event) => {
-          console.log('[WebRTC] Received data channel:', event.channel.label);
-          const receivedChannel = event.channel;
-          dataChannelRef.current = receivedChannel;
+        // Set up connection state handlers
+        peerConnection.onconnectionstatechange = () => {
+          console.log('[WebRTC] Connection state changed:', peerConnection.connectionState);
+          if (peerConnection.connectionState === 'connected') {
+            console.log('[WebRTC] Connection established');
+            setIsConnected(true);
+          } else if (peerConnection.connectionState === 'disconnected' ||
+                    peerConnection.connectionState === 'failed' ||
+                    peerConnection.connectionState === 'closed') {
+            console.log('[WebRTC] Connection lost');
+            disconnect();
+          }
+        };
+
+        peerConnection.oniceconnectionstatechange = () => {
+          console.log('[WebRTC] ICE connection state changed:', peerConnection.iceConnectionState);
+        };
+
+        // Add ICE candidate handler
+        peerConnection.onicecandidate = (event) => {
+          if (event.candidate) {
+            console.log('[WebRTC] New ICE candidate:', {
+              candidate: event.candidate.candidate,
+              sdpMid: event.candidate.sdpMid,
+              sdpMLineIndex: event.candidate.sdpMLineIndex,
+              protocol: event.candidate.protocol,
+              type: event.candidate.type,
+              address: event.candidate.address,
+              port: event.candidate.port
+            });
+            ws.send(JSON.stringify({
+              type: 'candidate',
+              candidate: event.candidate
+            }));
+          } else {
+            console.log('[WebRTC] ICE candidate gathering completed');
+          }
+        };
+
+        peerConnection.onicegatheringstatechange = () => {
+          console.log('[WebRTC] ICE gathering state changed:', peerConnection.iceGatheringState);
+        };
+
+        // Handle incoming tracks
+        peerConnection.ontrack = (event) => {
+          console.log('[WebRTC] Received remote track:', event.track.kind);
+          if (event.track.kind === 'audio' && remoteAudioRef.current) {
+            remoteAudioRef.current.srcObject = event.streams[0];
+          }
         };
 
         // Create offer after data channel is created
