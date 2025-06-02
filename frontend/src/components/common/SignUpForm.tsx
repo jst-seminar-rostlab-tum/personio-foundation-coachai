@@ -87,8 +87,11 @@ export function SignUpForm({ onSubmit, setError }: SignUpFormProps) {
         phone_number: values.phoneNumber,
         password: values.password,
         preferred_language: 'en', // Default language
-        preferred_learning_style: '',
-        preferred_session_length: '',
+        role_id: undefined,
+        experience_id: undefined,
+        preferred_learning_style_id: undefined,
+        preferred_session_length_id: undefined,
+        store_conversations: true,
       });
 
       if (!validationResponse.is_valid && validationResponse.errors) {

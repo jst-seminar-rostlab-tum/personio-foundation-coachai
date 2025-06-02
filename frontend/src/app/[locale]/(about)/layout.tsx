@@ -33,11 +33,11 @@ export default async function RootLayout({ children, params }: Props) {
         />
       </head>
       <body className={inter.className}>
-        <AboutHeader />
-        <main className="container mx-auto px-4">
-          <NextIntlClientProvider>{children}</NextIntlClientProvider>
-        </main>
-        <AboutFooter />
+        <NextIntlClientProvider>
+          <AboutHeader />
+          <main className="container mx-auto px-4">{children}</main>
+          <AboutFooter />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

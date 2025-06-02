@@ -43,7 +43,7 @@ def create_conversation_category(
 @router.put('/{category_id}', response_model=ConversationCategoryRead)
 def update_conversation_category(
     category_id: UUID,
-    updated_data: ConversationCategoryCreate,
+    updated_data: dict,
     session: Annotated[Session, Depends(get_session)],
 ) -> ConversationCategory:
     """
@@ -53,8 +53,13 @@ def update_conversation_category(
     if not category:
         raise HTTPException(status_code=404, detail='Category not found')
 
-    for key, value in updated_data.dict().items():
-        setattr(category, key, value)
+    for key, value in updated_data.items():
+        if hasattr(category, key):  # Ensure the field exists in the model
+            setattr(
+                category,
+                key,
+                value if value is not None else getattr(ConversationCategory, key).default,
+            )
 
     session.add(category)
     session.commit()

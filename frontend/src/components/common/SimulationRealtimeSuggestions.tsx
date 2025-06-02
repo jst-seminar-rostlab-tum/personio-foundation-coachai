@@ -45,7 +45,7 @@ export default function SimulationRealtimeSuggestions() {
             {suggestions.map((suggestion, idx) => (
               <li
                 key={idx}
-                className="bg-[#FAFAFA] rounded-lg border border-background-light px-4 py-3"
+                className="bg-background-light rounded-lg border border-bw-20 px-4 py-3"
               >
                 <div className="font-semibold text-font-dark mb-1">{suggestion.title}</div>
                 <div className=" text-sm text-font-dark leading-snug">{suggestion.message}</div>

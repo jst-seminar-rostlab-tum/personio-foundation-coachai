@@ -11,7 +11,6 @@ from sqlmodel import Field, Relationship, SQLModel
 if TYPE_CHECKING:
     from .conversation_category import ConversationCategory
     from .difficulty_level import DifficultyLevel
-    from .scenario_template import ScenarioTemplate
     from .training_preparation import TrainingPreparation
     from .training_session import TrainingSession
     from .user_profile import UserProfile
@@ -29,7 +28,6 @@ class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database ta
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
-    scenario_template_id: Optional[UUID] = Field(default=None, foreign_key='scenariotemplate.id')
     custom_category_label: Optional[str] = None
     context: str
     goal: str
@@ -43,9 +41,10 @@ class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database ta
 
     # Relationships
     category: Optional['ConversationCategory'] = Relationship(back_populates='training_cases')
-    sessions: list['TrainingSession'] = Relationship(back_populates='case')
-    scenario_template: Optional['ScenarioTemplate'] = Relationship()
-    preparations: list['TrainingPreparation'] = Relationship(back_populates='case')
+    sessions: list['TrainingSession'] = Relationship(back_populates='case', cascade_delete=True)
+    preparations: list['TrainingPreparation'] = Relationship(
+        back_populates='case', cascade_delete=True
+    )
     user: Optional['UserProfile'] = Relationship(back_populates='training_cases')
     difficulty_level: Optional['DifficultyLevel'] = Relationship(back_populates='training_cases')
 
@@ -59,7 +58,6 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingCa
 class TrainingCaseCreate(SQLModel):
     user_id: UUID
     category_id: Optional[UUID] = None
-    scenario_template_id: Optional[UUID] = None
     custom_category_label: Optional[str] = None
     context: str
     goal: str
@@ -75,7 +73,6 @@ class TrainingCaseRead(SQLModel):
     id: UUID
     user_id: UUID
     category_id: Optional[UUID]
-    scenario_template_id: Optional[UUID]
     custom_category_label: Optional[str]
     context: str
     goal: str
