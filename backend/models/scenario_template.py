@@ -20,8 +20,7 @@ class ScenarioTemplateStatus(str, Enum):
     archived = 'archived'
 
 
-# Database model
-class ScenarioTemplate(SQLModel, table=True):  # `table=True` makes it a database table
+class ScenarioTemplate(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
     title: str

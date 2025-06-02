@@ -7,6 +7,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
 from sqlmodel import JSON, Column, Field, Relationship, SQLModel
 
+from backend.models.scenario_template import ScenarioTemplate
+
 if TYPE_CHECKING:
     from .training_case import TrainingCase
 
@@ -28,6 +30,9 @@ class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a dat
 
     # Relationships
     training_cases: list['TrainingCase'] = Relationship(
+        back_populates='category', cascade_delete=True
+    )
+    scenario_templates: list['ScenarioTemplate'] = Relationship(
         back_populates='category', cascade_delete=True
     )
 

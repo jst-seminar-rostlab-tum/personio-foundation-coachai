@@ -10,7 +10,6 @@ from backend.models.goal import Goal
 from backend.models.language import Language  # Import the Language model
 from backend.models.learning_style import LearningStyle
 from backend.models.rating import Rating
-from backend.models.role import Role
 from backend.models.session_length import SessionLength
 from backend.models.training_case import TrainingCase, TrainingCaseStatus
 from backend.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
@@ -21,7 +20,7 @@ from backend.models.training_session_feedback import (
 )
 from backend.models.user_confidence_score import UserConfidenceScore
 from backend.models.user_goal import UserGoal
-from backend.models.user_profile import UserProfile
+from backend.models.user_profile import UserProfile, UserRole
 
 
 def get_dummy_learning_styles() -> list[LearningStyle]:
@@ -77,13 +76,6 @@ def get_dummy_languages() -> list[Language]:
     ]
 
 
-def get_dummy_roles() -> list[Role]:
-    return [
-        Role(id=uuid4(), label='Admin', description='Administrator role'),
-        Role(id=uuid4(), label='User', description='Regular user role'),
-    ]
-
-
 def get_dummy_experiences() -> list[Experience]:
     return [
         Experience(id=uuid4(), label='Beginner', description='New to the field'),
@@ -116,7 +108,6 @@ def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
 
 
 def get_dummy_user_profiles(
-    roles: list[Role],
     experiences: list[Experience],
     learning_styles: list[LearningStyle],
     session_lengths: list[SessionLength],
@@ -128,7 +119,7 @@ def get_dummy_user_profiles(
         UserProfile(
             id=uuid4(),
             preferred_language='en',
-            role_id=roles[0].id,
+            role=UserRole.user,
             experience_id=experiences[0].id,
             preferred_learning_style_id=learning_styles[0].id,
             preferred_session_length_id=session_lengths[0].id,
@@ -137,7 +128,7 @@ def get_dummy_user_profiles(
         UserProfile(
             id=uuid4(),
             preferred_language='de',
-            role_id=roles[1].id,
+            role=UserRole.admin,
             experience_id=experiences[1].id,
             preferred_learning_style_id=learning_styles[1].id,
             preferred_session_length_id=session_lengths[1].id,
@@ -362,12 +353,12 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Clear framing of the issue',
                     'feedback': (
-                        'You effectively communicated the specific issue (missed deadlines) and its '
-                        'impact on the team without being accusatory.'
+                        'You effectively communicated the specific issue (missed deadlines) and '
+                        'its impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s causing '
-                        'our team to fall behind on the overall project timeline.'
+                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        'causing our team to fall behind on the overall project timeline.'
                     ),
                 }
             ],
@@ -375,16 +366,17 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific instances '
-                        'or data to illustrate the issue. Including concrete examples would strengthen '
-                        'your feedback.'
+                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
                     ),
                     'quote': (
-                        'The report due on Friday was submitted on Monday, which delayed our progress.'
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
                     ),
                     'improved_quote': (
-                        'Ensure deadlines are met by setting clear expectations and providing specific '
-                        'examples of missed deadlines.'
+                        'Ensure deadlines are met by setting clear expectations and providing '
+                        'specific examples of missed deadlines.'
                     ),
                 }
             ],
@@ -392,15 +384,15 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Practice the STAR method',
                     'recommendation': (
-                        'When giving feedback, use the Situation, Task, Action, Result framework to '
-                        'provide more concrete examples.'
+                        'When giving feedback, use the Situation, Task, Action, Result framework '
+                        'to provide more concrete examples.'
                     ),
                 },
                 {
                     'heading': 'Ask more diagnostic questions',
                     'recommendation': (
-                        'Spend more time understanding root causes before moving to solutions. This '
-                        'builds empathy and leads to more effective outcomes.'
+                        'Spend more time understanding root causes before moving to solutions. '
+                        'This builds empathy and leads to more effective outcomes.'
                     ),
                 },
                 {
@@ -430,12 +422,12 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Clear framing of the issue',
                     'feedback': (
-                        'You effectively communicated the specific issue (missed deadlines) and its '
-                        'impact on the team without being accusatory.'
+                        'You effectively communicated the specific issue (missed deadlines) and '
+                        'its impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s causing '
-                        'our team to fall behind on the overall project timeline.'
+                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        'causing our team to fall behind on the overall project timeline.'
                     ),
                 }
             ],
@@ -443,16 +435,17 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific instances '
-                        'or data to illustrate the issue. Including concrete examples would strengthen '
-                        'your feedback.'
+                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
                     ),
                     'quote': (
-                        'The report due on Friday was submitted on Monday, which delayed our progress.'
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
                     ),
                     'improved_quote': (
-                        'Ensure deadlines are met by setting clear expectations and providing specific '
-                        'examples of missed deadlines.'
+                        'Ensure deadlines are met by setting clear expectations and providing '
+                        'specific examples of missed deadlines.'
                     ),
                 }
             ],
@@ -460,15 +453,15 @@ def get_dummy_training_session_feedback(
                 {
                     'heading': 'Practice the STAR method',
                     'recommendation': (
-                        'When giving feedback, use the Situation, Task, Action, Result framework to '
-                        'provide more concrete examples.'
+                        'When giving feedback, use the Situation, Task, Action, Result framework '
+                        'to provide more concrete examples.'
                     ),
                 },
                 {
                     'heading': 'Ask more diagnostic questions',
                     'recommendation': (
-                        'Spend more time understanding root causes before moving to solutions. This '
-                        'builds empathy and leads to more effective outcomes.'
+                        'Spend more time understanding root causes before moving to solutions. '
+                        'This builds empathy and leads to more effective outcomes.'
                     ),
                 },
                 {

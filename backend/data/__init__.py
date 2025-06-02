@@ -8,7 +8,6 @@ from .dummy_data import (
     get_dummy_languages,
     get_dummy_learning_styles,
     get_dummy_ratings,
-    get_dummy_roles,
     get_dummy_session_lengths,
     get_dummy_training_cases,
     get_dummy_training_preparations,
@@ -20,7 +19,6 @@ from .dummy_data import (
 )
 
 __all__ = [
-    'get_dummy_roles',
     'get_dummy_experiences',
     'get_dummy_goals',
     'get_dummy_difficulty_levels',
