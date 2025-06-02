@@ -7,8 +7,7 @@ import SimulationRealtimeSuggestions from '@/components/common/SimulationRealtim
 import SimulationMessages from '@/components/common/SimulationMessages';
 
 const RTC_CONFIG = {
-  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }
-  ],
+  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
 };
 
 const WS_URL = 'ws://localhost:8000/webrtc/signal';
@@ -89,7 +88,7 @@ function useWebRTC() {
 
       ws.onopen = async () => {
         console.log('[WebRTC] WebSocket connected');
-        
+
         // Add local audio track
         localStream.getTracks().forEach((track) => {
           peerConnection.addTrack(track, localStream);
@@ -99,7 +98,7 @@ function useWebRTC() {
         const dataChannel = peerConnection.createDataChannel('transcript', {
           ordered: true,
           maxRetransmits: 3,
-          negotiated: false
+          negotiated: false,
         });
         dataChannelRef.current = dataChannel;
         console.debug('[WebRTC] Data channel created, state:', dataChannel.readyState);
@@ -160,9 +159,11 @@ function useWebRTC() {
           if (peerConnection.connectionState === 'connected') {
             console.log('[WebRTC] Connection established');
             setIsConnected(true);
-          } else if (peerConnection.connectionState === 'disconnected' ||
-                    peerConnection.connectionState === 'failed' ||
-                    peerConnection.connectionState === 'closed') {
+          } else if (
+            peerConnection.connectionState === 'disconnected' ||
+            peerConnection.connectionState === 'failed' ||
+            peerConnection.connectionState === 'closed'
+          ) {
             console.log('[WebRTC] Connection lost');
             disconnect();
           }
@@ -182,12 +183,14 @@ function useWebRTC() {
               protocol: event.candidate.protocol,
               type: event.candidate.type,
               address: event.candidate.address,
-              port: event.candidate.port
+              port: event.candidate.port,
             });
-            ws.send(JSON.stringify({
-              type: 'candidate',
-              candidate: event.candidate
-            }));
+            ws.send(
+              JSON.stringify({
+                type: 'candidate',
+                candidate: event.candidate,
+              })
+            );
           } else {
             console.log('[WebRTC] ICE candidate gathering completed');
           }
@@ -209,31 +212,35 @@ function useWebRTC() {
         const offer = await peerConnection.createOffer({
           iceRestart: true,
           offerToReceiveAudio: true,
-          offerToReceiveVideo: false
+          offerToReceiveVideo: false,
         });
 
         if (!offer.sdp) {
           throw new Error('Failed to create offer: SDP is undefined');
         }
-        
+
         await peerConnection.setLocalDescription(offer);
-        ws.send(JSON.stringify({
-          type: 'offer',
-          sdp: offer.sdp
-        }));
+        ws.send(
+          JSON.stringify({
+            type: 'offer',
+            sdp: offer.sdp,
+          })
+        );
       };
 
       // Handle incoming messages from signaling server
       ws.onmessage = async (event) => {
         const message = JSON.parse(event.data);
-        
+
         if (message.type === 'answer') {
           console.log('[WebRTC] Received answer:', message);
           console.debug('[WebRTC] Answer SDP:', message.sdp);
-          await peerConnection.setRemoteDescription(new RTCSessionDescription({
-            type: 'answer',
-            sdp: message.sdp
-          }));
+          await peerConnection.setRemoteDescription(
+            new RTCSessionDescription({
+              type: 'answer',
+              sdp: message.sdp,
+            })
+          );
         } else if (message.type === 'candidate') {
           console.debug('[WebRTC] Received ICE candidate');
           try {
@@ -253,7 +260,6 @@ function useWebRTC() {
         console.error('[WebRTC] WebSocket error:', error);
         disconnect();
       };
-
     } catch (err) {
       console.error('[WebRTC] Initialization error:', err);
       setIsMicActive(false);
@@ -270,20 +276,22 @@ function useWebRTC() {
     disconnect,
     remoteAudioRef,
     dataChannelRef,
+    localStreamRef,
   };
 }
 
 export default function SimulationPageComponent() {
   const [time, setTime] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const { 
-    isMicActive, 
-    setIsMicActive, 
-    isConnected, 
-    initWebRTC, 
-    cleanup, 
+  const {
+    isMicActive,
+    setIsMicActive,
+    isConnected,
+    initWebRTC,
+    cleanup,
     disconnect,
-    remoteAudioRef 
+    remoteAudioRef,
+    localStreamRef,
   } = useWebRTC();
 
   useEffect(() => {
@@ -304,6 +312,15 @@ export default function SimulationPageComponent() {
     };
   }, [initWebRTC, cleanup]);
 
+  const toggleMic = () => {
+    if (localStreamRef.current) {
+      localStreamRef.current.getAudioTracks().forEach((track) => {
+        track.enabled = !isMicActive;
+      });
+      setIsMicActive(!isMicActive);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <div className="mb-2">
@@ -320,7 +337,7 @@ export default function SimulationPageComponent() {
         isPaused={isPaused}
         setIsPaused={setIsPaused}
         isMicActive={isMicActive}
-        setIsMicActive={setIsMicActive}
+        toggleMic={toggleMic}
         isConnected={isConnected}
         onDisconnect={disconnect}
       />

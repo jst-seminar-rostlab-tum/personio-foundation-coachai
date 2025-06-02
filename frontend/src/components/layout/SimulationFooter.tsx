@@ -8,12 +8,12 @@ export default function SimulationFooter({
   isPaused,
   setIsPaused,
   isMicActive,
-  setIsMicActive,
+  toggleMic,
 }: {
   isPaused: boolean;
   setIsPaused: (v: boolean) => void;
   isMicActive: boolean;
-  setIsMicActive: (v: boolean) => void;
+  toggleMicrophone: () => void;
 }) {
   return (
     <footer className="flex items-center justify-between md:justify-center md:gap-16 px-6 pt-4 pb-6 bg-white z-10">
@@ -25,7 +25,7 @@ export default function SimulationFooter({
       >
         {isPaused ? <Play className="!w-6 !h-6" /> : <Pause className="!w-6 !h-6" />}
       </Button>
-      <Button size="iconLarge" variant="outline" onClick={() => setIsMicActive(!isMicActive)}>
+      <Button size="iconLarge" variant="outline" onClick={toggleMic}>
         {isMicActive ? <Mic className="!w-6 !h-6" /> : <MicOff className="!w-6 !h-6" />}
       </Button>
       <Link href="/feedback/1">
