@@ -42,7 +42,7 @@ class TrainingSession(SQLModel, table=True):  # `table=True` makes it a database
 
 @event.listens_for(TrainingSession, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingSession') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(datetime.timezone.utc)
 
 
 # Schema for creating a new TrainingSession

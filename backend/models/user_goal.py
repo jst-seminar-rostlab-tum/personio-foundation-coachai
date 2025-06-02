@@ -24,7 +24,7 @@ class UserGoal(SQLModel, table=True):  # `table=True` makes it a database table
 
 @event.listens_for(UserGoal, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserGoal') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(datetime.timezone.utc)
 
 
 # Schema for creating a new UserGoal

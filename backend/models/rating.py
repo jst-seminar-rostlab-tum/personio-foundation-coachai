@@ -28,7 +28,7 @@ class Rating(SQLModel, table=True):  # `table=True` makes it a database table
 
 @event.listens_for(Rating, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'Rating') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(datetime.timezone.utc)
 
 
 # Schema for creating a new Rating

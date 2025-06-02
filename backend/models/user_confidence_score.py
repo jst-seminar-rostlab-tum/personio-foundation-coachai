@@ -27,7 +27,7 @@ class UserConfidenceScore(SQLModel, table=True):
 
 @event.listens_for(UserConfidenceScore, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserConfidenceScore') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(datetime.timezone.utc)
 
 
 class UserConfidenceScoreCreate(SQLModel):

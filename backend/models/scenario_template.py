@@ -47,7 +47,7 @@ class ScenarioTemplate(SQLModel, table=True):
 
 @event.listens_for(ScenarioTemplate, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioTemplate') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(datetime.timezone.utc)
 
 
 # Schema for creating a new ScenarioTemplate

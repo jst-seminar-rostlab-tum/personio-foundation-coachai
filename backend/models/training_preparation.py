@@ -43,7 +43,7 @@ class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a data
 
 @event.listens_for(TrainingPreparation, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingPreparation') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(datetime.timezone.utc)
 
 
 # Schema for creating a new TrainingPreparation

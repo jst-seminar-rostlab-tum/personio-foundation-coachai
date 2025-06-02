@@ -55,7 +55,7 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
 # Automatically update `updated_at` before an update
 @event.listens_for(UserProfile, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfile') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(datetime.timezone.utc)
 
 
 # Schema for creating a new UserProfile

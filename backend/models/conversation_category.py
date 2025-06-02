@@ -41,7 +41,7 @@ class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a dat
 def update_timestamp(
     mapper: Mapper, connection: Connection, target: 'ConversationCategory'
 ) -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(datetime.timezone.utc)
 
 
 # Schema for creating a new ConversationCategory
