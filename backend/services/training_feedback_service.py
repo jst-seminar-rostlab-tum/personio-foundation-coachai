@@ -261,50 +261,50 @@ if __name__ == '__main__':
         key_concepts='### Active Listening\nShow empathy and paraphrase concerns.',
     )
 
-    # examples = generate_training_examples(example_request)
-    #
-    # if len(examples.positive_examples) == 0:
-    #     print('No positive examples found. Please check the transcript and guidelines.')
-    # if len(examples.negative_examples) == 0:
-    #     print('No negative examples found. Please check the transcript and guidelines.')
-    #
-    # for example in examples.positive_examples:
-    #     print(f'Positive Example: {example.heading}')
-    #     print(f'Text: {example.text}')
-    #     print(f'Quote: {example.quote}')
-    #     print(f'Guideline: {example.guideline}\n')
-    #
-    # for example in examples.negative_examples:
-    #     print(f'Negative Example: {example.heading}')
-    #     print(f'Text: {example.text}')
-    #     print(f'Quote: {example.quote}')
-    #     print(f'Improved Quote: {example.improved_quote}\n')
-    #
-    # print('Training examples generated successfully.')
-    #
-    # goals_achievement_request = GoalsAchievementRequest(
-    #     transcript=example_request.transcript,
-    #     objectives=example_request.objectives,
-    # )
-    # goals_achieved = get_achieved_goals(goals_achievement_request)
-    # print(
-    #     'Number of goals achieved: '
-    #     + f'{len(goals_achieved.goals_achieved)} / {len(example_request.objectives)}'
-    # )
-    #
-    # recommendation_request = RecommendationsRequest(
-    #     category=example_request.category,
-    #     goal=example_request.goal,
-    #     context=example_request.context,
-    #     other_party=example_request.other_party,
-    #     transcript=example_request.transcript,
-    #     objectives=example_request.objectives,
-    #     key_concepts=example_request.key_concepts,
-    # )
-    # recommendations = generate_recommendations(recommendation_request)
-    # for recommendation in recommendations.recommendations:
-    #     print(f'Recommendation: {recommendation.heading}')
-    #     print(f'Text: {recommendation.text}\n')
-    # print('Recommendations generated successfully.')
+    examples = generate_training_examples(example_request)
+
+    if len(examples.positive_examples) == 0:
+        print('No positive examples found. Please check the transcript and guidelines.')
+    if len(examples.negative_examples) == 0:
+        print('No negative examples found. Please check the transcript and guidelines.')
+
+    for example in examples.positive_examples:
+        print(f'Positive Example: {example.heading}')
+        print(f'Text: {example.text}')
+        print(f'Quote: {example.quote}')
+        print(f'Guideline: {example.guideline}\n')
+
+    for example in examples.negative_examples:
+        print(f'Negative Example: {example.heading}')
+        print(f'Text: {example.text}')
+        print(f'Quote: {example.quote}')
+        print(f'Improved Quote: {example.improved_quote}\n')
+
+    print('Training examples generated successfully.')
+
+    goals_achievement_request = GoalsAchievementRequest(
+        transcript=example_request.transcript,
+        objectives=example_request.objectives,
+    )
+    goals_achieved = get_achieved_goals(goals_achievement_request)
+    print(
+        'Number of goals achieved: '
+        + f'{len(goals_achieved.goals_achieved)} / {len(example_request.objectives)}'
+    )
+
+    recommendation_request = RecommendationsRequest(
+        category=example_request.category,
+        goal=example_request.goal,
+        context=example_request.context,
+        other_party=example_request.other_party,
+        transcript=example_request.transcript,
+        objectives=example_request.objectives,
+        key_concepts=example_request.key_concepts,
+    )
+    recommendations = generate_recommendations(recommendation_request)
+    for recommendation in recommendations.recommendations:
+        print(f'Recommendation: {recommendation.heading}')
+        print(f'Text: {recommendation.text}\n')
+    print('Recommendations generated successfully.')
 
     generate_and_store_feedback('', example_request, None)
