@@ -6,6 +6,7 @@ import Link from 'next/link';
 import PreparationChecklist from '@/components/common/PreparationChecklist';
 import ObjectivesList from '@/components/common/ObjectivesList';
 import { Button } from '@/components/ui/Button';
+import { useTranslations } from 'next-intl';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -13,6 +14,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function PreparationPage() {
+  const t = useTranslations('Preparation');
+
   const mockData = {
     id: 'f65e1b1b-1234-4a5b-9876-abc123def456',
     case_id: '9f27e05e-4321-4d89-b123-cde456gh7890',
@@ -39,49 +42,45 @@ export default function PreparationPage() {
 
   return (
     <div className="flex flex-col gap-8 p-8">
-      <h1 className="text-2xl text-center">Check Your Training Setup</h1>
+      <h1 className="text-2xl text-center">{t('title')}</h1>
 
       <section className="flex flex-col gap-4 bg-marigold-5 border border-marigold-30 rounded-lg p-8 text-marigold-95">
-        <h2 className="text-xl">Giving Constructive Feedback</h2>
-        <div className="text-base italic leading-loose">
-          You need to talk to Sarah, a team member who has missed several deadlines recently,
-          affecting morale and timelines. Your goal is to address it constructively while keeping a
-          positive relationship.
-        </div>
+        <h2 className="text-xl">{t('context.title')}</h2>
+        <div className="text-base italic leading-loose">{t('context.description')}</div>
       </section>
 
       <div className="flex flex-col md:flex-row gap-4 items-stretch">
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl">Objectives</h2>
+            <h2 className="text-xl">{t('objectives.title')}</h2>
           </div>
           <ObjectivesList objectives={mockData.objectives} />
         </section>
 
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl">Preparation Checklist</h2>
+            <h2 className="text-xl">{t('preparation.title')}</h2>
           </div>
           <PreparationChecklist checklist={mockData.prep_checklist} />
         </section>
       </div>
 
       <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
-        <h2 className="text-xl">Resources</h2>
+        <h2 className="text-xl">{t('resources.title')}</h2>
       </section>
 
       <div className="flex gap-4">
         <Link href="/new-training" className="flex-1">
           <Button size="full" variant="outline">
             <ArrowLeftIcon />
-            Go Back
+            {t('navigation.back')}
           </Button>
         </Link>
 
         <Link href="/simulation/1" className="flex-1">
           <Button size="full">
             <Play />
-            Start Training
+            {t('navigation.start')}
           </Button>
         </Link>
       </div>
