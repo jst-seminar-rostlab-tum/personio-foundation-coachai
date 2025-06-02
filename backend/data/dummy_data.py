@@ -134,6 +134,11 @@ def get_dummy_user_profiles(
             preferred_learning_style_id=learning_styles[0].id,
             preferred_session_length_id=session_lengths[0].id,
             store_conversations=False,
+            total_sessions=32,
+            training_time=4.5,
+            current_streak_days=3,
+            average_score=82,
+            goals_achieved=4,
         ),
         UserProfile(
             id=uuid4(),
@@ -143,6 +148,11 @@ def get_dummy_user_profiles(
             preferred_learning_style_id=learning_styles[1].id,
             preferred_session_length_id=session_lengths[1].id,
             store_conversations=True,
+            total_sessions=5,
+            training_time=4.2,
+            current_streak_days=2,
+            average_score=87,
+            goals_achieved=2,
         ),
     ]
 
