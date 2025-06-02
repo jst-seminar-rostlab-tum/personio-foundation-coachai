@@ -22,7 +22,7 @@ function useWebRTC() {
   const localStreamRef = useRef(null);
   const wsRef = useRef(null);
   const cleanupRef = useRef(null);
-
+  const dataChannelRef = useRef(null);
   const cleanup = useCallback(() => {
     if (cleanupRef.current) return;
     cleanupRef.current = true;
@@ -52,6 +52,12 @@ function useWebRTC() {
     setIsConnected(false);
   }, []);
 
+  const disconnect = useCallback(() => {
+    console.log('[WebRTC] Disconnecting...');
+    cleanup();
+    cleanupRef.current = false;
+  }, [cleanup]);
+
   const initWebRTC = useCallback(async () => {
     try {
       cleanupRef.current = false;
@@ -72,19 +78,54 @@ function useWebRTC() {
         localAudioRef.current.srcObject = localStream;
       }
 
-      // Create WebSocket connection
-      const ws = new WebSocket(WS_URL);
-      wsRef.current = ws;
-
       // Create PeerConnection
       const peerConnection = new RTCPeerConnection(RTC_CONFIG);
       peerConnectionRef.current = peerConnection;
 
-      // 监听连接状态变化
+      // Create data channel BEFORE creating offer
+      const dataChannel = peerConnection.createDataChannel('transcript', {
+        ordered: true,
+        maxRetransmits: 3,
+        negotiated: false,
+        id: 0
+      });
+      dataChannelRef.current = dataChannel;
+      console.log('[WebRTC] Data channel created');
+
+      // Set up data channel event handlers
+      dataChannel.onopen = () => {
+        console.log('[WebRTC] Data channel opened, state:', dataChannel.readyState);
+        // Send test message when channel opens
+        dataChannel.send('test message from client');
+        console.log('[WebRTC] Test message sent');
+      };
+
+      dataChannel.onclose = () => {
+        console.log('[WebRTC] Data channel closed, state:', dataChannel.readyState);
+      };
+
+      dataChannel.onerror = (error) => {
+        console.error('[WebRTC] Data channel error:', error);
+      };
+
+      dataChannel.onmessage = (event) => {
+        console.log('[WebRTC] Received message:', event.data);
+        // Echo the message back to client
+        dataChannel.send(`Echo: ${event.data}`);
+        console.log('[WebRTC] Echo message sent');
+      };
+
+      // Add connection state change handlers
       peerConnection.onconnectionstatechange = () => {
         console.log('[WebRTC] Connection state changed:', peerConnection.connectionState);
         if (peerConnection.connectionState === 'connected') {
           console.log('[WebRTC] Connection established');
+          setIsConnected(true);
+        } else if (peerConnection.connectionState === 'disconnected' ||
+                  peerConnection.connectionState === 'failed' ||
+                  peerConnection.connectionState === 'closed') {
+          console.log('[WebRTC] Connection lost');
+          disconnect();
         }
       };
 
@@ -92,7 +133,16 @@ function useWebRTC() {
         console.log('[WebRTC] ICE connection state changed:', peerConnection.iceConnectionState);
         if (peerConnection.iceConnectionState === 'connected') {
           console.log('[WebRTC] ICE connection established');
+        } else if (peerConnection.iceConnectionState === 'disconnected' || 
+                  peerConnection.iceConnectionState === 'failed' || 
+                  peerConnection.iceConnectionState === 'closed') {
+          console.log('[WebRTC] ICE connection lost');
+          disconnect();
         }
+      };
+
+      peerConnection.onicegatheringstatechange = () => {
+        console.log('[WebRTC] ICE gathering state changed:', peerConnection.iceGatheringState);
       };
 
       peerConnection.onsignalingstatechange = () => {
@@ -102,62 +152,17 @@ function useWebRTC() {
         }
       };
 
-      // 处理接收到的音频流
-      peerConnection.ontrack = (event) => {
-        console.log('[WebRTC] Received track:', event.track.kind);
-        if (event.track.kind === 'audio') {
-          console.log('[WebRTC] Received audio track');
-          if (remoteAudioRef.current && event.streams[0]) {
-            console.log('[WebRTC] Setting remote audio stream');
-            remoteAudioRef.current.srcObject = event.streams[0];
-          }
-        }
-      };
+      // Create WebSocket connection
+      const ws = new WebSocket(WS_URL);
+      wsRef.current = ws;
 
       ws.onopen = async () => {
         console.log('[WebRTC] WebSocket connected');
+        
         // Add local audio track
         localStream.getTracks().forEach((track) => {
           peerConnection.addTrack(track, localStream);
         });
-
-        // Handle remote audio track
-        peerConnection.ontrack = (event) => {
-          console.log('[WebRTC] Received track:', event.track.kind);
-          if (event.track.kind === 'audio') {
-            console.log('[WebRTC] Received audio track');
-            if (remoteAudioRef.current && event.streams[0]) {
-              console.log('[WebRTC] Setting remote audio stream');
-              remoteAudioRef.current.srcObject = event.streams[0];
-            }
-          }
-        };
-
-        // Handle ICE candidate
-        peerConnection.onicecandidate = (event) => {
-          if (event.candidate) {
-            console.log('[WebRTC] ICE candidate generated:', event.candidate);
-            if (ws.readyState === WebSocket.OPEN) {
-              ws.send(JSON.stringify({
-                type: 'candidate',
-                candidate: {
-                  candidate: event.candidate.candidate,
-                  sdpMid: event.candidate.sdpMid,
-                  sdpMLineIndex: event.candidate.sdpMLineIndex,
-                },
-              }));
-              console.log('[WebRTC] ICE candidate sent to server:', {
-                candidate: event.candidate.candidate,
-                sdpMid: event.candidate.sdpMid,
-                sdpMLineIndex: event.candidate.sdpMLineIndex,
-              });
-            } else {
-              console.warn('[WebRTC] ICE candidate generated but WebSocket not open, candidate not sent:', event.candidate);
-            }
-          } else {
-            console.log('[WebRTC] ICE candidate gathering completed (null candidate)');
-          }
-        };
 
         // Create and send offer
         const offer = await peerConnection.createOffer();
@@ -169,50 +174,42 @@ function useWebRTC() {
         }));
       };
 
-      ws.onclose = () => {
-        console.log('WebSocket closed');
-        cleanup();
-      };
-
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        cleanup();
-      };
-
-      // Handle WebSocket message
-      ws.onmessage = async (event) => {
-        const message = JSON.parse(event.data);
-        console.log('Received message:', message);
-
-        switch (message.type) {
-          case 'answer':
-            console.log('[WebRTC] Received answer:', message);
-            await peerConnection.setRemoteDescription(new RTCSessionDescription({
-              type: 'answer',
-              sdp: message.sdp,
+      // Handle ICE candidates
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          console.log('[WebRTC] ICE candidate generated:', event.candidate);
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'candidate',
+              candidate: {
+                candidate: event.candidate.candidate,
+                sdpMid: event.candidate.sdpMid,
+                sdpMLineIndex: event.candidate.sdpMLineIndex,
+              },
             }));
-            setIsConnected(true);
-            break;
-
-          case 'candidate':
-            if (message.candidate) {
-              console.log('[WebRTC] Adding ICE candidate:', message.candidate);
-              await peerConnection.addIceCandidate(new RTCIceCandidate({
-                candidate: message.candidate.candidate,
-                sdpMid: message.candidate.sdpMid,
-                sdpMLineIndex: message.candidate.sdpMLineIndex,
-              }));
-            }
-            break;
+            console.log('[WebRTC] ICE candidate sent to server');
+          }
+        } else {
+          console.log('[WebRTC] ICE candidate gathering completed');
         }
       };
 
+      ws.onclose = () => {
+        console.log('[WebRTC] WebSocket closed');
+        disconnect();
+      };
+
+      ws.onerror = (error) => {
+        console.error('[WebRTC] WebSocket error:', error);
+        disconnect();
+      };
+
     } catch (err) {
-      console.error('WebRTC initialization error:', err);
+      console.error('[WebRTC] Initialization error:', err);
       setIsMicActive(false);
-      cleanup();
+      disconnect();
     }
-  }, [cleanup]);
+  }, [disconnect]);
 
   return {
     isMicActive,
@@ -220,14 +217,24 @@ function useWebRTC() {
     isConnected,
     initWebRTC,
     cleanup,
+    disconnect,
     remoteAudioRef,
+    dataChannelRef,
   };
 }
 
 export default function SimulationPageComponent() {
   const [time, setTime] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const { isMicActive, setIsMicActive, isConnected, initWebRTC, cleanup, remoteAudioRef } = useWebRTC();
+  const { 
+    isMicActive, 
+    setIsMicActive, 
+    isConnected, 
+    initWebRTC, 
+    cleanup, 
+    disconnect,
+    remoteAudioRef 
+  } = useWebRTC();
 
   useEffect(() => {
     if (!isPaused) {
@@ -265,6 +272,7 @@ export default function SimulationPageComponent() {
         isMicActive={isMicActive}
         setIsMicActive={setIsMicActive}
         isConnected={isConnected}
+        onDisconnect={disconnect}
       />
       <audio ref={remoteAudioRef} autoPlay playsInline />
     </div>

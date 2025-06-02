@@ -65,6 +65,31 @@ class WebSocketService:
             # Create answer and set local description
             answer = await pc.createAnswer()
             logger.info(f'Created answer SDP: {answer.sdp}')
+            
+            # Check if data channel is in the offer
+            if 'm=application' in message.sdp:
+                logger.info('Data channel found in offer SDP')
+            else:
+                logger.warning('Data channel not found in offer SDP')
+            
+            # Ensure data channel is included in the answer
+            if 'm=application' not in answer.sdp:
+                logger.warning('Data channel not found in answer SDP, adding it manually')
+                sdp_lines = answer.sdp.split('\n')
+                # Add data channel media line after the last media line
+                for i, line in enumerate(sdp_lines):
+                    if line.startswith('m='):
+                        last_media_index = i
+                sdp_lines.insert(last_media_index + 1, 'm=application 9 UDP/DTLS/SCTP webrtc-datachannel')
+                sdp_lines.insert(last_media_index + 2, 'c=IN IP4 0.0.0.0')
+                sdp_lines.insert(last_media_index + 3, 'a=mid:1')
+                sdp_lines.insert(last_media_index + 4, 'a=sctp-port:5000')
+                sdp_lines.insert(last_media_index + 5, 'a=max-message-size:65536')
+                answer = RTCSessionDescription(sdp='\n'.join(sdp_lines), type='answer')
+                logger.info(f'Modified answer SDP: {answer.sdp}')
+            else:
+                logger.info('Data channel already present in answer SDP')
+
             await pc.setLocalDescription(answer)
             logger.info(f'Local description set for peer {peer_id}')
 
@@ -84,9 +109,13 @@ class WebSocketService:
                 return
             candidate = message.candidate
             if candidate:
-                rtc_candidate = self._build_rtc_ice_candidate(candidate)
-                logger.info(f'Adding ICE candidate for peer {peer_id}: {rtc_candidate}')
-                await peer.connection.addIceCandidate(rtc_candidate)
+                try:
+                    rtc_candidate = self._build_rtc_ice_candidate(candidate)
+                    logger.info(f'Adding ICE candidate for peer {peer_id}: {rtc_candidate}')
+                    await peer.connection.addIceCandidate(rtc_candidate)
+                    logger.info(f'ICE candidate added successfully for peer {peer_id}')
+                except Exception as e:
+                    logger.error(f'Error adding ICE candidate for peer {peer_id}: {e}')
             else:
                 logger.warning(
                     f'Received candidate message with no candidate for peer_id={peer_id}'
@@ -100,18 +129,23 @@ class WebSocketService:
         Build RTCIceCandidate from candidate object, using parse_candidate if candidate is a string.
         """
         if hasattr(candidate_obj, 'candidate') and isinstance(candidate_obj.candidate, str):
-            parts = candidate_obj.candidate.strip().split()
-            return RTCIceCandidate(
-                sdpMid=candidate_obj.sdp_mid,
-                sdpMLineIndex=candidate_obj.sdp_mline_index,
-                component=int(parts[1]),
-                foundation=parts[0][len('candidate:') :],
-                ip=parts[4],
-                port=int(parts[5]),
-                priority=int(parts[3]),
-                protocol=parts[7],
-                type=parts[7],
-            )
+            try:
+                parts = candidate_obj.candidate.strip().split()
+                logger.info(f'Parsing ICE candidate: {candidate_obj.candidate}')
+                return RTCIceCandidate(
+                    sdpMid=candidate_obj.sdp_mid,
+                    sdpMLineIndex=candidate_obj.sdp_mline_index,
+                    component=int(parts[1]),
+                    foundation=parts[0][len('candidate:') :],
+                    ip=parts[4],
+                    port=int(parts[5]),
+                    priority=int(parts[3]),
+                    protocol=parts[7],
+                    type=parts[7],
+                )
+            except Exception as e:
+                logger.error(f'Error parsing ICE candidate: {e}')
+                raise
         else:
             raise ValueError('Invalid candidate object')
 
