@@ -14,7 +14,6 @@ import {
   FormMessage,
 } from '@/components/ui/Form';
 import { useState } from 'react';
-import { userProfileApi } from '@/services/Api';
 import { SignInFormProps } from '@/interfaces/SignInForm';
 import Image from 'next/image';
 import GoogleIcon from '@/../public/icons/google-icon.svg';
@@ -42,31 +41,8 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
   const handleSubmit = async (values: z.infer<typeof signInFormSchema>) => {
     setError(null);
     setIsLoading(true);
-
-    try {
-      await userProfileApi.signIn(values);
-      onSubmit(values);
-    } catch (err: unknown) {
-      if (
-        err &&
-        typeof err === 'object' &&
-        'response' in err &&
-        err.response &&
-        typeof err.response === 'object' &&
-        'data' in err.response &&
-        err.response.data &&
-        typeof err.response.data === 'object' &&
-        'detail' in err.response.data
-      ) {
-        setError(err.response.data.detail as string);
-      } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError(t('genericError'));
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    await onSubmit(values);
+    setIsLoading(false);
   };
 
   return (

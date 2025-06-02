@@ -2,32 +2,41 @@
 
 import { SignInForm } from '@/components/common/SignInForm';
 import { SignUpForm } from '@/components/common/SignUpForm';
+import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+import { SignInCredentials } from '@/interfaces/Api';
+import { userProfileApi } from '@/services/Api';
+import { AxiosError } from 'axios';
+import { AlertCircleIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function LoginPage() {
   const t = useTranslations('Login');
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
-  const onClickSignIn = (values: { email: string; password: string }) => {
-    // The actual sign-in logic is handled in the SignInForm component
-    // This function is called only after successful sign-in
-    console.warn('Sign in successful:', values);
-    router.push('/dashboard');
+  const onClickSignIn = async (values: SignInCredentials) => {
+    try {
+      await userProfileApi.signIn(values);
+      router.push('/dashboard');
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        if (err.response?.status === 401) {
+          setError(t('SignInTab.alertErrorTitle401'));
+        } else {
+          setError(t('SignInTab.alertErrorTitleGeneric'));
+        }
+      } else {
+        setError(t('SignInTab.alertErrorTitleGeneric'));
+      }
+      console.error('Sign in failed:', err);
+    }
   };
 
-  const onClickSignUp = (values: {
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
-    terms: boolean;
-  }) => {
-    console.warn('Sign up successful:', values);
-    // The actual sign-up logic is now handled in the SignUpForm component
-  };
+  const onClickSignUp = () => {};
 
   return (
     <div className="min-h-screen flex items-center justify-center py-4">
@@ -50,12 +59,18 @@ export default function LoginPage() {
               </TabsContent>
 
               <TabsContent value="sign-up" className="mt-0">
-                <SignUpForm onSubmit={onClickSignUp} />
+                <SignUpForm onSubmit={onClickSignUp} setError={setError} />
               </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
       </div>
+      {error && (
+        <Alert>
+          <AlertCircleIcon />
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
+      )}
     </div>
   );
 }

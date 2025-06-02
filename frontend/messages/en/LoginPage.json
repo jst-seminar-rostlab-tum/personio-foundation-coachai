@@ -11,7 +11,9 @@
     "passwordInputError": "Password is invalid",
     "stayLoggedInCheckboxLabel": "Stay Logged In",
     "signInButtonLabel": "Sign In",
-    "signInWithGoogleButtonLabel": "Or Sign In With Google"
+    "signInWithGoogleButtonLabel": "Or Sign In With Google",
+    "alertErrorTitle401": "Invalid email or password",
+    "alertErrorTitleGeneric": "Something went wrong. Please try again."
   },
   "SignUpTab": {
     "title": "Sign-Up",

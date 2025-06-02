@@ -16,18 +16,17 @@ import {
 import Checkbox from '@/components/ui/Checkbox';
 import { useState } from 'react';
 import { userProfileApi } from '@/services/Api';
-import { SignUpFormProps } from '@/interfaces/SignUpForm';
 import { PasswordRequirement } from '@/interfaces/PasswordInput';
 import GoogleIcon from '@/../public/icons/google-icon.svg';
 import Image from 'next/image';
+import { SignUpFormProps } from '@/interfaces/SignUpForm';
 import { PasswordInput } from './PasswordInput';
 import PrivacyDialog from './PrivacyDialog';
 import { VerificationPopup } from './VerificationPopup';
 
-export function SignUpForm({ onSubmit }: SignUpFormProps) {
+export function SignUpForm({ onSubmit, setError }: SignUpFormProps) {
   const t = useTranslations('Login.SignUpTab');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [signedUpPhone, setSignedUpPhone] = useState('');
@@ -163,10 +162,6 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
         <Form {...signUpForm}>
           <form onSubmit={signUpForm.handleSubmit(handleSubmit)}>
             <CardContent className="space-y-6 p-0">
-              {error && (
-                <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">{error}</div>
-              )}
-
               <FormField
                 control={signUpForm.control}
                 name="fullName"
