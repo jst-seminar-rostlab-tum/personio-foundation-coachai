@@ -316,6 +316,7 @@ export default function SimulationPageComponent() {
     if (localStreamRef.current) {
       localStreamRef.current.getAudioTracks().forEach((track) => {
         track.enabled = !isMicActive;
+        console.log("test";)
       });
       setIsMicActive(!isMicActive);
     }
