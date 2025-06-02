@@ -36,5 +36,7 @@ async def websocket_signaling(
     except Exception as e:
         logger.error(f'WebSocket error: {str(e)}')
         logger.exception(e)
-    finally:
-        await websocket.close()
+        try:
+            await websocket.close()
+        except Exception as close_error:
+            logger.error(f'Error closing WebSocket: {str(close_error)}')

@@ -54,12 +54,19 @@ class WebSocketService:
             # always create/overwrite peer connection, ensure peer is the latest
             await self.webrtc_service.create_peer_connection(websocket, peer_id)
             pc = self.webrtc_service.peers[peer_id].connection
+
+            # set remote description
+            logger.info(f'Received offer SDP: {message.sdp}')
             await pc.setRemoteDescription(
                 RTCSessionDescription(sdp=message.sdp, type=WebRTCSignalingType.OFFER)
             )
+            logger.info(f'Remote description set for peer {peer_id}')
+
             # Create answer and set local description
             answer = await pc.createAnswer()
+            logger.info(f'Created answer SDP: {answer.sdp}')
             await pc.setLocalDescription(answer)
+            logger.info(f'Local description set for peer {peer_id}')
 
             # send answer to client
             await websocket.send_json(
@@ -68,6 +75,7 @@ class WebSocketService:
                     sdp=answer.sdp,
                 ).model_dump()
             )
+            logger.info(f'Answer sent to peer {peer_id}')
 
         elif message.type == WebRTCSignalingType.CANDIDATE:
             peer = self.webrtc_service.peers.get(peer_id)

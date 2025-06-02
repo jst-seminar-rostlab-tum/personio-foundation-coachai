@@ -19,7 +19,6 @@ function useWebRTC() {
   const localAudioRef = useRef(null);
   const remoteAudioRef = useRef(null);
   const peerConnectionRef = useRef(null);
-  const audioChannelRef = useRef(null);
   const localStreamRef = useRef(null);
   const wsRef = useRef(null);
   const cleanupRef = useRef(null);
@@ -45,6 +44,10 @@ function useWebRTC() {
       localStreamRef.current = null;
     }
 
+    if (remoteAudioRef.current) {
+      remoteAudioRef.current.srcObject = null;
+    }
+
     setIsMicActive(false);
     setIsConnected(false);
   }, []);
@@ -53,7 +56,7 @@ function useWebRTC() {
     try {
       cleanupRef.current = false;
 
-        // Get local audio stream
+      // Get local audio stream
       const localStream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
@@ -77,24 +80,42 @@ function useWebRTC() {
       const peerConnection = new RTCPeerConnection(RTC_CONFIG);
       peerConnectionRef.current = peerConnection;
 
-      const dataChannel = peerConnection.createDataChannel('audio');
-      audioChannelRef.current = dataChannel;
+      // 监听连接状态变化
+      peerConnection.onconnectionstatechange = () => {
+        console.log('[WebRTC] Connection state changed:', peerConnection.connectionState);
+        if (peerConnection.connectionState === 'connected') {
+          console.log('[WebRTC] Connection established');
+        }
+      };
 
-      dataChannel.onopen = () => {
-        console.log('Data channel opened');
+      peerConnection.oniceconnectionstatechange = () => {
+        console.log('[WebRTC] ICE connection state changed:', peerConnection.iceConnectionState);
+        if (peerConnection.iceConnectionState === 'connected') {
+          console.log('[WebRTC] ICE connection established');
+        }
       };
-      dataChannel.onmessage = (event) => {
-        console.log('Received message:', event.data);
+
+      peerConnection.onsignalingstatechange = () => {
+        console.log('[WebRTC] Signaling state changed:', peerConnection.signalingState);
+        if (peerConnection.signalingState === 'stable') {
+          console.log('[WebRTC] Signaling stable');
+        }
       };
-      dataChannel.onclose = () => {
-        console.log('Data channel closed');
-      };
-      dataChannel.onerror = (error) => {
-        console.error('Data channel error:', error);
+
+      // 处理接收到的音频流
+      peerConnection.ontrack = (event) => {
+        console.log('[WebRTC] Received track:', event.track.kind);
+        if (event.track.kind === 'audio') {
+          console.log('[WebRTC] Received audio track');
+          if (remoteAudioRef.current && event.streams[0]) {
+            console.log('[WebRTC] Setting remote audio stream');
+            remoteAudioRef.current.srcObject = event.streams[0];
+          }
+        }
       };
 
       ws.onopen = async () => {
-        console.log('WebSocket connected');
+        console.log('[WebRTC] WebSocket connected');
         // Add local audio track
         localStream.getTracks().forEach((track) => {
           peerConnection.addTrack(track, localStream);
@@ -102,8 +123,13 @@ function useWebRTC() {
 
         // Handle remote audio track
         peerConnection.ontrack = (event) => {
-          if (remoteAudioRef.current && event.streams[0]) {
-            remoteAudioRef.current.srcObject = event.streams[0];
+          console.log('[WebRTC] Received track:', event.track.kind);
+          if (event.track.kind === 'audio') {
+            console.log('[WebRTC] Received audio track');
+            if (remoteAudioRef.current && event.streams[0]) {
+              console.log('[WebRTC] Setting remote audio stream');
+              remoteAudioRef.current.srcObject = event.streams[0];
+            }
           }
         };
 
@@ -135,6 +161,7 @@ function useWebRTC() {
 
         // Create and send offer
         const offer = await peerConnection.createOffer();
+        console.log('[WebRTC] Created offer SDP:', offer.sdp);
         await peerConnection.setLocalDescription(offer);
         ws.send(JSON.stringify({
           type: 'offer',
