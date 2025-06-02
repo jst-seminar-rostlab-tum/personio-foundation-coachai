@@ -74,6 +74,11 @@ def get_dummy_user_profiles(roles: list[Role], experiences: list[Experience]) ->
             experience_id=experiences[0].id,
             preferred_learning_style='Visual',
             preferred_session_length='30 minutes',
+            total_sessions=32,
+            training_time=4.5,
+            current_streak_days=3,
+            average_score=82,
+            goals_achieved=4,
         ),
         UserProfile(
             id=uuid4(),
@@ -82,6 +87,11 @@ def get_dummy_user_profiles(roles: list[Role], experiences: list[Experience]) ->
             experience_id=experiences[1].id,
             preferred_learning_style='Auditory',
             preferred_session_length='1 hour',
+            total_sessions=5,
+            training_time=4.2,
+            current_streak_days=2,
+            average_score=87,
+            goals_achieved=2,
         ),
     ]
 
