@@ -7,6 +7,8 @@ from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import JSON, Column, Field, Relationship, SQLModel
 
+from backend.models.training_session_feedback import TrainingSessionFeedbackRead
+
 if TYPE_CHECKING:
     from app.models.conversation_turn import ConversationTurn
     from app.models.language import Language
@@ -66,3 +68,16 @@ class TrainingSessionRead(SQLModel):
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime
     updated_at: datetime
+
+
+# Schema for reading TrainingSession data with details including skill scores, goals achieved,
+# session metrics, and feedback insights
+class TrainingSessionDetailsRead(TrainingSessionRead):
+    title: Optional[str] = None
+    summary: Optional[str] = None
+    feedback: Optional['TrainingSessionFeedbackRead'] = None
+    # List of audio file URIs --> located in conversation_turns
+    audio_uris: list[str] = Field(default_factory=list)
+
+
+TrainingSessionDetailsRead.model_rebuild()

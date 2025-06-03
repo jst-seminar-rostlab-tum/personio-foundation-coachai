@@ -31,7 +31,12 @@ from .training_preparation import (
     TrainingPreparationRead,
     TrainingPreparationStatus,
 )
-from .training_session import TrainingSession, TrainingSessionCreate, TrainingSessionRead
+from .training_session import (
+    TrainingSession,
+    TrainingSessionCreate,
+    TrainingSessionDetailsRead,
+    TrainingSessionRead,
+)
 from .training_session_feedback import (
     NegativeExample,
     PositiveExample,
@@ -63,6 +68,7 @@ __all__ = [
     'TrainingSession',
     'TrainingSessionCreate',
     'TrainingSessionRead',
+    'TrainingSessionDetailsRead',
     'TrainingPreparation',
     'TrainingPreparationCreate',
     'TrainingPreparationRead',
