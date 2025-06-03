@@ -1,36 +1,33 @@
-import os
-import urllib.request
 from collections.abc import Generator
 from typing import Any
 
 from sqlmodel import Session, SQLModel, create_engine
 
-from backend.config import Settings
+from .config import Settings
 
 settings = Settings()
 
-if settings.stage == 'prod':
-    os.makedirs(settings.ssl_cert_dir, exist_ok=True)
-    ssl_cert_path = f'{settings.ssl_cert_dir}{settings.ssl_cert_name}'
-    urllib.request.urlretrieve(settings.ssl_cert_url, ssl_cert_path)
-else:
-    ssl_cert_path = None
+# Always use sslmode=require (TLS encryption without verifying a local CA file)
+ssl_suffix = '?sslmode=require'
 
-if settings.database_url:
-    SQLALCHEMY_DATABASE_URL = (
-        f'{settings.database_url}?sslmode=verify-full&sslrootcert={ssl_cert_path}'
-    )
-else:
-    SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+# Build the full database URL in one shot
+DATABASE_URL = (
+    f'postgresql+psycopg2://'
+    f'{settings.supabase_user}:{settings.supabase_password}'
+    f'@db.{settings.supabase_project_id}.supabase.co:{settings.supabase_port}'
+    f'/{settings.supabase_db}{ssl_suffix}'
+)
+
+# Create the SQLAlchemy engine
+engine = create_engine(DATABASE_URL)
 
 
-# Create the database tables
+# Create all tables
 def create_db_and_tables() -> None:
     SQLModel.metadata.create_all(engine)
 
 
-# Dependency to get the database session
+# Dependency to get a DB session
 def get_session() -> Generator[Session, Any, None]:
     with Session(engine) as session:
         yield session
