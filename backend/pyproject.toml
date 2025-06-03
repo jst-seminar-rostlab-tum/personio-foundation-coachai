@@ -30,7 +30,7 @@ dependencies = [
   "pypdf>=5.4.0",
   "pgvector>=0.2.5,<0.4",
   "langchain-huggingface>=0.2.0",
-  "langchain-postgres>=0.0.14"
+  "langchain-postgres>=0.0.14",
 ]
 
 [tool.setuptools]
@@ -41,11 +41,9 @@ packages = [
   "routers",
   "schemas",
   "services",
-  "connections"
+  "connections",
 ]
 
-[tool.uv.workspace]
-members = ["backend"]
 
 [dependency-groups]
 dev = [
@@ -55,7 +53,7 @@ dev = [
   "pytest-asyncio",
   "pytest-postgresql",
   "httpx",
-  "respx"
+  "respx",
 ]
 
 lint = ["ruff"]
