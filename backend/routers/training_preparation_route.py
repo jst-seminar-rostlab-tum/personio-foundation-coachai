@@ -10,6 +10,7 @@ from ..models.training_preparation import (
     TrainingPreparation,
     TrainingPreparationCreate,
     TrainingPreparationRead,
+    TrainingPreparationStatus,
 )
 
 router = APIRouter(prefix='/training-preparations', tags=['Training Preparations'])
@@ -25,6 +26,27 @@ def get_training_preparations(
     statement = select(TrainingPreparation)
     preparations = session.exec(statement).all()
     return list(preparations)
+
+
+@router.get('/{preparation_id}', response_model=TrainingPreparationRead)
+def get_training_preparation(
+    preparation_id: UUID, session: Annotated[Session, Depends(get_session)]
+) -> TrainingPreparation:
+    """
+    Retrieve a specific training preparation by ID.
+    """
+    preparation = session.get(TrainingPreparation, preparation_id)
+
+    if not preparation:
+        raise HTTPException(status_code=404, detail='Session preparation not found')
+
+    if preparation.status == TrainingPreparationStatus.pending:
+        raise HTTPException(status_code=202, detail='Session preparation in progress.')
+
+    elif preparation.status == TrainingPreparationStatus.failed:
+        raise HTTPException(status_code=500, detail='Session preparation failed.')
+
+    return preparation
 
 
 @router.post('/', response_model=TrainingPreparationRead)
