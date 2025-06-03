@@ -21,7 +21,6 @@ from ..schemas.webrtc_schema import (
     WebRTCSignalingError,
 )
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
