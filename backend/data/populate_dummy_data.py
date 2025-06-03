@@ -1,4 +1,4 @@
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session, SQLModel, text
 
 from backend.data import (
     get_dummy_app_configs,
@@ -26,13 +26,15 @@ from backend.models.hr_information import HrInformation
 
 
 def populate_data() -> None:
-    print('Dropping tables...')
-    SQLModel.metadata.drop_all(engine)
-
-    print('Creating tables...')
-    SQLModel.metadata.create_all(engine)
-
     with Session(engine) as session:
+        session.exec(text('CREATE EXTENSION IF NOT EXISTS vector'))
+
+        print('Dropping tables...')
+        SQLModel.metadata.drop_all(engine)
+
+        print('Creating tables...')
+        SQLModel.metadata.create_all(engine)
+
         # Populate Languages
         languages = get_dummy_languages()
         session.add_all(languages)
