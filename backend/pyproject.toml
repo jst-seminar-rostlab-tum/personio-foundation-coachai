@@ -3,7 +3,7 @@ name = "coachAI-backend"
 version = "0.1.0"
 description = "A smart, voice-based training app for HR professionals to master difficult conversations through guided preparation, realistic simulations, and actionable feedback"
 readme = "README.md"
-requires-python = "==3.12.7"
+requires-python = ">=3.9,<4.0"
 dependencies = [
   "fastapi[standard]>=0.112.1",
   "sqlalchemy>=2.0.22",
@@ -17,6 +17,7 @@ dependencies = [
   "email-validator>=2.0.0",
   "pre-commit>=4.2.0",
   "sqlmodel>=0.0.24",
+  "prisma>=0.11.0",
   "twilio>=8.12.0",
   "python-dotenv>=1.0.0",
   "psycopg2-binary>=2.9.10",
@@ -29,6 +30,7 @@ dependencies = [
   "pypdf>=5.4.0",
   "pgvector>=0.2.5,<0.4",
   "langchain-huggingface>=0.2.0",
+  "langchain-openai>=0.3.19",
   "langchain-postgres>=0.0.14",
 ]
 
@@ -40,9 +42,11 @@ packages = [
   "routers",
   "schemas",
   "services",
-  "connections",
+  "connections"
 ]
 
+[tool.uv.workspace]
+members = ["backend"]
 
 [dependency-groups]
 dev = [
@@ -52,7 +56,7 @@ dev = [
   "pytest-asyncio",
   "pytest-postgresql",
   "httpx",
-  "respx",
+  "respx"
 ]
 
 lint = ["ruff"]
