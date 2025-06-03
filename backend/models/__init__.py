@@ -1,3 +1,5 @@
+from .app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
+from .confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from .conversation_category import (
     ConversationCategory,
     ConversationCategoryCreate,
@@ -12,14 +14,11 @@ from .difficulty_level import DifficultyLevel, DifficultyLevelCreate, Difficulty
 from .experience import Experience, ExperienceCreate, ExperienceRead
 from .goal import Goal, GoalCreate, GoalRead
 from .language import Language, LanguageCreate, LanguageRead
+from .learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
+from .personalization_option import PersonalizationOptionRead
 from .rating import Rating, RatingCreate, RatingRead
 from .role import Role, RoleCreate, RoleRead
-from .scenario_template import (
-    ScenarioTemplate,
-    ScenarioTemplateCreate,
-    ScenarioTemplateRead,
-    ScenarioTemplateStatus,
-)
+from .session_length import SessionLength, SessionLengthCreate, SessionLengthRead
 from .training_case import (
     TrainingCase,
     TrainingCaseCreate,
@@ -34,12 +33,21 @@ from .training_preparation import (
 )
 from .training_session import TrainingSession, TrainingSessionCreate, TrainingSessionRead
 from .training_session_feedback import (
+    NegativeExample,
+    PositiveExample,
+    Recommendation,
     TrainingSessionFeedback,
     TrainingSessionFeedbackCreate,
     TrainingSessionFeedbackRead,
 )
+from .user_confidence_score import (
+    ConfidenceScoreRead,
+    UserConfidenceScore,
+    UserConfidenceScoreCreate,
+    UserConfidenceScoreRead,
+)
 from .user_goal import UserGoal, UserGoalCreate, UserGoalRead
-from .user_profile import UserProfile, UserProfileCreate, UserProfileRead
+from .user_profile import UserProfile, UserProfileCreate, UserProfileExtendedRead, UserProfileRead
 
 __all__ = [
     'Language',
@@ -55,10 +63,6 @@ __all__ = [
     'TrainingSession',
     'TrainingSessionCreate',
     'TrainingSessionRead',
-    'ScenarioTemplate',
-    'ScenarioTemplateCreate',
-    'ScenarioTemplateRead',
-    'ScenarioTemplateStatus',
     'TrainingPreparation',
     'TrainingPreparationCreate',
     'TrainingPreparationRead',
@@ -90,4 +94,26 @@ __all__ = [
     'DifficultyLevel',
     'DifficultyLevelCreate',
     'DifficultyLevelRead',
+    'PositiveExample',
+    'NegativeExample',
+    'Recommendation',
+    'ConfidenceArea',
+    'ConfidenceAreaCreate',
+    'ConfidenceAreaRead',
+    'UserConfidenceScore',
+    'UserConfidenceScoreCreate',
+    'UserConfidenceScoreRead',
+    'LearningStyle',
+    'LearningStyleCreate',
+    'LearningStyleRead',
+    'SessionLength',
+    'SessionLengthCreate',
+    'SessionLengthRead',
+    'ConfidenceScoreRead',
+    'UserProfileExtendedRead',
+    'PersonalizationOptionRead',
+    'AppConfig',
+    'AppConfigCreate',
+    'AppConfigRead',
+    'ConfigType',
 ]

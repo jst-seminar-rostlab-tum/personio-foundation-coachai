@@ -15,9 +15,7 @@ if TYPE_CHECKING:
 class Rating(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
-    user_id: UUID = Field(
-        foreign_key='userprofile.id', nullable=False
-    )  # FK to UserProfile
+    user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     score: int
     comment: str
     created_at: datetime = Field(default_factory=datetime.utcnow)

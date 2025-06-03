@@ -23,6 +23,7 @@ const buttonVariants = cva(
         paginationIcon: 'size-9 rounded-md ',
         iconLarge:
           'w-14 h-14 max-h-14 aspect-square rounded-full flex items-center justify-center p-0',
+        icon: 'rounded-full p-2',
       },
     },
     defaultVariants: {

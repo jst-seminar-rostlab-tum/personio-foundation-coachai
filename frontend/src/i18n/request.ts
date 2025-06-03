@@ -18,6 +18,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     Preparation: (await import(`../../messages/${locale}/Preparation.json`)).default,
     Simulation: (await import(`../../messages/${locale}/Simulation.json`)).default,
     TrainingSettings: (await import(`../../messages/${locale}/TrainingSettings.json`)).default,
+    AppHeader: (await import(`../../messages/${locale}/AppHeader.json`)).default,
   };
 
   return {

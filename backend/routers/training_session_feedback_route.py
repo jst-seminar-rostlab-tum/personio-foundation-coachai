@@ -7,6 +7,7 @@ from sqlmodel import Session, select
 from ..database import get_session
 from ..models.training_session import TrainingSession
 from ..models.training_session_feedback import (
+    FeedbackStatusEnum,
     TrainingSessionFeedback,
     TrainingSessionFeedbackCreate,
     TrainingSessionFeedbackRead,
@@ -17,7 +18,7 @@ router = APIRouter(prefix='/training-session-feedback', tags=['Training Session 
 
 @router.get('/', response_model=list[TrainingSessionFeedbackRead])
 def get_training_session_feedbacks(
-    session: Annotated[Session, Depends(get_session)],
+        session: Annotated[Session, Depends(get_session)],
 ) -> list[TrainingSessionFeedback]:
     """
     Retrieve all training session feedbacks.
@@ -29,7 +30,7 @@ def get_training_session_feedbacks(
 
 @router.post('/', response_model=TrainingSessionFeedbackRead)
 def create_training_session_feedback(
-    feedback: TrainingSessionFeedbackCreate, session: Annotated[Session, Depends(get_session)]
+        feedback: TrainingSessionFeedbackCreate, session: Annotated[Session, Depends(get_session)]
 ) -> TrainingSessionFeedback:
     """
     Create a new training session feedback.
@@ -46,11 +47,32 @@ def create_training_session_feedback(
     return db_feedback
 
 
+@router.get('/{feedback_id}', response_model=TrainingSessionFeedbackRead)
+def get_training_session_feedback(
+        feedback_id: UUID, session: Annotated[Session, Depends(get_session)]
+) -> TrainingSessionFeedbackRead:
+    """
+    Retrieve a specific training feedback by ID.
+    """
+    feedback = session.get(TrainingSessionFeedback, feedback_id)
+
+    if not feedback:
+        raise HTTPException(status_code=404, detail='Session feedback not found')
+
+    if feedback.status == FeedbackStatusEnum.pending:
+        raise HTTPException(status_code=202, detail='Session feedback in progress.')
+
+    elif feedback.status == FeedbackStatusEnum.failed:
+        raise HTTPException(status_code=500, detail='Session feedback failed.')
+
+    return feedback
+
+
 @router.put('/{feedback_id}', response_model=TrainingSessionFeedbackRead)
 def update_training_session_feedback(
-    feedback_id: UUID,
-    updated_data: TrainingSessionFeedbackCreate,
-    session: Annotated[Session, Depends(get_session)],
+        feedback_id: UUID,
+        updated_data: dict,
+        session: Annotated[Session, Depends(get_session)],
 ) -> TrainingSessionFeedback:
     """
     Update an existing training session feedback.
@@ -59,15 +81,13 @@ def update_training_session_feedback(
     if not feedback:
         raise HTTPException(status_code=404, detail='Training session feedback not found')
 
-    # Validate foreign key
-    if updated_data.session_id:
-        training_session = session.get(TrainingSession, updated_data.session_id)
-        if not training_session:
-            raise HTTPException(status_code=404, detail='Training session not found')
-
-    for key, value in updated_data.dict().items():
-        setattr(feedback, key, value)
-
+    for key, value in updated_data.items():
+        if hasattr(feedback, key):  # Ensure the field exists in the model
+            setattr(
+                feedback,
+                key,
+                value if value is not None else getattr(TrainingSessionFeedback, key).default,
+            )
     session.add(feedback)
     session.commit()
     session.refresh(feedback)
@@ -76,7 +96,7 @@ def update_training_session_feedback(
 
 @router.delete('/{feedback_id}', response_model=dict)
 def delete_training_session_feedback(
-    feedback_id: UUID, session: Annotated[Session, Depends(get_session)]
+        feedback_id: UUID, session: Annotated[Session, Depends(get_session)]
 ) -> dict:
     """
     Delete a training session feedback.
