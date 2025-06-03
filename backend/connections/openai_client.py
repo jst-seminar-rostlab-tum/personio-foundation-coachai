@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from backend.config import Settings
 from dotenv import load_dotenv
@@ -16,7 +16,7 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 settings = Settings()
 ENABLE_AI = settings.ENABLE_AI
 FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
-DEFAULT_CHEAP_MODEL = "gpt-4o-mini"
+DEFAULT_CHEAP_MODEL = 'gpt-4o-mini'
 
 
 def get_client() -> OpenAI:
@@ -34,14 +34,14 @@ T = TypeVar('T', bound=BaseModel)
 
 
 def call_structured_llm(
-        request_prompt: str,
-        model: str,
-        output_model: type[T],
-        temperature: float = 1,
-        max_tokens: int = 500,
-        system_prompt: Optional[str] = None,
-        mock_response: Optional[T] = None
-) -> T:
+    request_prompt: str,
+    model: str,
+    output_model: type[T],
+    temperature: float = 1,
+    max_tokens: int = 500,
+    system_prompt: str | None = None,
+    mock_response: T | None = None,
+) -> T | None:
     """
     Call the LLM with a structured output request and parse the response.
     """
