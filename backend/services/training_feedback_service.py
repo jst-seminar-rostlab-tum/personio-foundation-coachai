@@ -1,4 +1,4 @@
-from backend.connections.openai_client import _call_structured_llm, call_ai_service
+from backend.connections.openai_client import call_ai_service, call_structured_llm
 from backend.schemas.training_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -88,7 +88,7 @@ def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesColl
     response = call_ai_service(
         mock_response=mock_response,
         model='gpt-4o-2024-08-06',
-        llm_function=_call_structured_llm,
+        llm_function=call_structured_llm,
         function_args={
             "request_prompt": user_prompt,
             "system_prompt": 'You are an expert communication coach analyzing training sessions.',
@@ -133,7 +133,7 @@ def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollect
     response = call_ai_service(
         mock_response=mock_response,
         model='gpt-4o-2024-08-06',
-        llm_function=_call_structured_llm,
+        llm_function=call_structured_llm,
         function_args={
             'request_prompt': user_prompt,
             'system_prompt': 'You are an expert communication coach analyzing training sessions.',
@@ -217,7 +217,7 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
     response = call_ai_service(
         mock_response=mock_response,
         model='gpt-4o-2024-08-06',
-        llm_function=_call_structured_llm,
+        llm_function=call_structured_llm,
         function_args={
             'request_prompt': user_prompt,
             'system_prompt': 'You are an expert communication coach analyzing training sessions.',

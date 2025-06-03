@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import os
-from typing import TypeVar, Callable, Any
+from typing import Any, Callable, Optional, TypeVar
 
+from backend.config import Settings
 from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
-from backend.config import Settings
 
 # Load environment variables from .env file
 load_dotenv()
@@ -33,13 +33,13 @@ def get_client() -> OpenAI:
 T = TypeVar('T', bound=BaseModel)
 
 
-def _call_structured_llm(
+def call_structured_llm(
         request_prompt: str,
         model: str,
         output_model: type[T],
         temperature: float = 1,
         max_tokens: int = 500,
-        system_prompt: str | None = None,
+        system_prompt: Optional[str] = None
 ) -> T:
     """
     Call the LLM with a structured output request and parse the response.
@@ -68,7 +68,7 @@ def call_ai_service(
         model: str = None,
         llm_function: Callable[..., Any] = None,
         function_args: dict = None,
-):
+)-> Optional[str]:
     """
     General entry point for calling an AI service.
 

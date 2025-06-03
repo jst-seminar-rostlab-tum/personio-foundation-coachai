@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from backend.connections.openai_client import _call_structured_llm, call_ai_service
+from backend.connections.openai_client import call_ai_service, call_structured_llm
 from backend.schemas.training_preparation_schema import (
     ChecklistRequest,
     KeyConceptOutput,
@@ -42,7 +42,7 @@ def generate_objectives(request: ObjectiveRequest) -> list[str]:
     result = call_ai_service(
         mock_response=mock_response,
         model='gpt-4o-2024-08-06',
-        llm_function=_call_structured_llm,
+        llm_function=call_structured_llm,
         function_args={
             'request_prompt': user_prompt,
             'system_prompt': 'You are a training expert generating learning objectives.',
@@ -84,7 +84,7 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
     result = call_ai_service(
         mock_response=mock_response,
         model='gpt-4o-2024-08-06',
-        llm_function=_call_structured_llm,
+        llm_function=call_structured_llm,
         function_args={
             'request_prompt': user_prompt,
             'system_prompt': 'You are a training expert generating preparation checklists.',
@@ -149,7 +149,7 @@ Ask questions like \"What do you think would help in this situation?\"
     result = call_ai_service(
         mock_response=mock_response,
         model='gpt-4o-2024-08-06',
-        llm_function=_call_structured_llm,
+        llm_function=call_structured_llm,
         function_args={
             'request_prompt': prompt,
             'output_model': KeyConceptOutput,
