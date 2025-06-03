@@ -4,6 +4,7 @@ from sqlalchemy import text
 from sqlmodel import Session, SQLModel
 
 from backend.data import (
+    get_dummy_app_configs,
     get_dummy_confidence_areas,
     get_dummy_conversation_categories,
     get_dummy_conversation_turns,
@@ -120,6 +121,9 @@ def populate_data() -> None:
         # Populate User Confidence Scores
         user_confidence_scores = get_dummy_user_confidence_scores(user_profiles, confidence_areas)
         session.add_all(user_confidence_scores)
+
+        app_configs = get_dummy_app_configs()
+        session.add_all(app_configs)
         session.commit()
 
         print('Dummy data populated successfully!')

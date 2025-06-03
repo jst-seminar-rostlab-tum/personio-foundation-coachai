@@ -1,3 +1,4 @@
+from .app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
 from .confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from .conversation_category import (
     ConversationCategory,
@@ -111,4 +112,8 @@ __all__ = [
     'ConfidenceScoreRead',
     'UserProfileExtendedRead',
     'PersonalizationOptionRead',
+    'AppConfig',
+    'AppConfigCreate',
+    'AppConfigRead',
+    'ConfigType',
 ]
