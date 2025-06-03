@@ -4,11 +4,74 @@ set -e
 cd "$(git rev-parse --show-toplevel)"
 
 # Run frontend lint-staged
-echo "🛠️- Running frontend pre-commit hooks..."
+echo "🛠️- Running linting and formatting checks..."
 cd ./frontend
 npx lint-staged
 
-# Run backend pre-commit
-echo "🛠️- Running backend pre-commit hooks..."
+# Run backend pre-commit linting
 cd ../backend
 uv run pre-commit run --config .pre-commit-config.yaml --hook-stage pre-commit
+
+echo "✅- Linting and formatting checks passed"
+
+# Run Alembic checks if model or migration files changed
+if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/versions/)"; then
+    echo "🗃️- Checking database migrations and models..."
+
+    # First check if we can connect to the database
+    if ! uv run alembic current >/dev/null 2>&1; then
+        echo "❌- Cannot connect to database! Make sure your database is running."
+        exit 1
+    fi
+
+    if ! uv run alembic upgrade head >/dev/null 2>&1; then
+        echo "❌- Failed to upgrade to migration head. One of your migration(s) has a broken upgrade() function."
+        exit 1
+    fi
+    
+    OLDEST_EDITED_MIGRATION=$(git diff --cached --diff-filter=AM --name-only | grep "alembic/versions/" | sort | head -n 1)
+    echo "🔍- Oldest edited migration file: $OLDEST_EDITED_MIGRATION"
+
+    if [[ -n "$OLDEST_EDITED_MIGRATION" ]]; then
+        # Extract the down_revision from the migration file
+        REVISION_ID=$(basename "$OLDEST_EDITED_MIGRATION" | cut -d'-' -f2 | cut -d'_' -f1)
+
+        if ! uv run alembic show "$REVISION_ID" >/dev/null 2>&1; then
+            echo "❌ Could not extract revision id from $OLDEST_EDITED_MIGRATION. Check if the filename follows the format <timestamp>-<revision_id>_<description>.py"
+            exit 1
+        fi
+
+        # Get the down_revision (parent) migration
+        DOWN_REV=$(uv run alembic show "$REVISION_ID" | grep "down_revision:" | awk '{print $2}')
+
+        if [[ -n "$DOWN_REV" && "$DOWN_REV" != "None" ]]; then
+            # Has a parent - downgrade to parent to test all new migrations
+            echo "🔄 Testing downgrade to parent of oldest edited migration with revision id $DOWN_REV"
+            TARGET_REV="$DOWN_REV"
+        else
+            # No parent (initial migration) - downgrade to this revision to test just this one
+            echo "🔄 Testing downgrade to oldest edited migration with revision id $REVISION_ID"
+            TARGET_REV="$REVISION_ID"
+        fi
+                
+        if ! uv run alembic downgrade "$TARGET_REV" >/dev/null 2>&1; then
+            echo "❌- Migration downgrade failed! One of your migration(s) has a broken downgrade() function."
+            uv run alembic upgrade head >/dev/null 2>&1
+            exit 1
+        fi  
+    fi
+
+    if ! uv run alembic upgrade head >/dev/null 2>&1; then
+        echo "❌- Failed to upgrade to migration head. One of your migration(s) has a broken upgrade() function."
+        exit 1
+    fi
+    
+    if ! uv run alembic check; then
+        echo "❌- Models don't match database after running latest migrations. This means either:"
+        echo "   - You changed models but didn't create a migration script"
+        echo "   - Your latest migration script doesn't actually reflect your current models"
+        exit 1
+    fi
+    
+    echo "✅ Checks for database migrations and models passed"
+fi
