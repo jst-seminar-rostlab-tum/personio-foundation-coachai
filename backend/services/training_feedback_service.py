@@ -178,7 +178,7 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
 
 
 def generate_and_store_feedback(
-    session_id: str, example_request: ExamplesRequest, db: Session
+        session_id: str, example_request: ExamplesRequest, db: Session
 ) -> TrainingSessionFeedback:
     """
     Generate feedback based on session_id and transcript data,
@@ -203,7 +203,6 @@ def generate_and_store_feedback(
     examples = generate_training_examples(examples_request)
     goals = get_achieved_goals(goals_request)
     recommendations = generate_recommendations(recommendations_request)
-    print(examples, goals, recommendations)
 
     feedback = TrainingSessionFeedback(
         id=str(uuid4()),
@@ -237,19 +236,19 @@ if __name__ == '__main__':
         context='Termination meeting with a team member on poor performance',
         other_party='Team member',
         transcript='User:  Hi, I have to talk to you.'
-        + "AI: Yes, what is it? Please don't fire me, I really need this job. "
-        + "I know I haven't been performing well lately, but I promise I can improve. "
-        + "I'll do whatever it takes."
-        + 'Response interrupted'
-        + "User:  I'm sorry but I'm not happy with your performance."
-        + 'AI: I understand, and I take full responsibility. '
-        + 'Could you please tell me specifically what areas I need to improve on?'
-        + "I'm willing to work late, come in early, take on extra tasks—anything "
-        + 'to meet your expectations. Just please give me a chance to prove myself.'
-        + "User:  You can't do anything it's too late to improve."
-        + "AI: Please, don't say that. I'm a hard worker, and I'm a quick learner."
-        + "If you give me another chance, I promise I won't let you down."
-        + 'Is there anything, anything at all, I can do to change your mind?',
+                   + "AI: Yes, what is it? Please don't fire me, I really need this job. "
+                   + "I know I haven't been performing well lately, but I promise I can improve. "
+                   + "I'll do whatever it takes."
+                   + 'Response interrupted'
+                   + "User:  I'm sorry but I'm not happy with your performance."
+                   + 'AI: I understand, and I take full responsibility. '
+                   + 'Could you please tell me specifically what areas I need to improve on?'
+                   + "I'm willing to work late, come in early, take on extra tasks—anything "
+                   + 'to meet your expectations. Just please give me a chance to prove myself.'
+                   + "User:  You can't do anything it's too late to improve."
+                   + "AI: Please, don't say that. I'm a hard worker, and I'm a quick learner."
+                   + "If you give me another chance, I promise I won't let you down."
+                   + 'Is there anything, anything at all, I can do to change your mind?',
         objectives=[
             'Bring clarity to the situation',
             'Encourage open dialogue',
