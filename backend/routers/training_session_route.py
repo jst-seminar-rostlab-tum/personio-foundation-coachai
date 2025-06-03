@@ -16,6 +16,7 @@ from backend.models.training_session import (
 )
 from backend.models.training_session_feedback import (
     TrainingSessionFeedback,
+    TrainingSessionFeedbackMetrics,
     TrainingSessionFeedbackRead,
 )
 
@@ -56,9 +57,7 @@ def get_training_session(
         )
     ).first()
     if feedback:
-        training_session_response.feedback = TrainingSessionFeedbackRead(
-            id=feedback.id,
-            session_id=feedback.session_id,
+        training_session_response.feedback = TrainingSessionFeedbackMetrics(
             scores=feedback.scores,
             tone_analysis=feedback.tone_analysis,
             overall_score=feedback.overall_score,
@@ -70,9 +69,6 @@ def get_training_session(
             example_positive=feedback.example_positive,
             example_negative=feedback.example_negative,
             recommendations=feedback.recommendations,
-            status=feedback.status,
-            created_at=feedback.created_at,
-            updated_at=feedback.updated_at,
         )
 
     # Fetch the associated conversation turns and their audio URIs

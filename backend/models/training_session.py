@@ -7,7 +7,7 @@ from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import JSON, Column, Field, Relationship, SQLModel
 
-from backend.models.training_session_feedback import TrainingSessionFeedbackRead
+from backend.models.training_session_feedback import TrainingSessionFeedbackMetrics
 
 if TYPE_CHECKING:
     from backend.models.conversation_turn import ConversationTurn
@@ -75,7 +75,7 @@ class TrainingSessionRead(SQLModel):
 class TrainingSessionDetailsRead(TrainingSessionRead):
     title: Optional[str] = None
     summary: Optional[str] = None
-    feedback: Optional['TrainingSessionFeedbackRead'] = None
+    feedback: Optional['TrainingSessionFeedbackMetrics'] = None
     # List of audio file URIs --> located in conversation_turns
     audio_uris: list[str] = Field(default_factory=list)
 
