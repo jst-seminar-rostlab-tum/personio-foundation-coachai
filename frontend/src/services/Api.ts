@@ -1,4 +1,5 @@
-import { SignInCredentials, UserProfileCreate } from '@/interfaces/Api';
+import { SignInCredentials } from '@/interfaces/SignInForm';
+import { UserProfileCreate } from '@/interfaces/SignUpForm';
 import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';

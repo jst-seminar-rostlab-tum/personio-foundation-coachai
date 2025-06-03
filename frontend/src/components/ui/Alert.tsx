@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { X } from 'lucide-react'; // <-- Add this
+import { X } from 'lucide-react';
 
 function cn(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -11,12 +11,9 @@ const alertVariants = cva(
   {
     variants: {
       variant: {
-        default: 'text-foreground',
+        default: 'font-dark',
         destructive: 'text-destructive',
       },
-    },
-    defaultVariants: {
-      variant: 'destructive',
     },
   }
 );

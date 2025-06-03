@@ -5,7 +5,7 @@ import { SignUpForm } from '@/components/common/SignUpForm';
 import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import { SignInCredentials } from '@/interfaces/Api';
+import { SignInCredentials } from '@/interfaces/SignInForm';
 import { userProfileApi } from '@/services/Api';
 import { AxiosError } from 'axios';
 import { AlertCircleIcon } from 'lucide-react';
@@ -66,7 +66,7 @@ export default function LoginPage() {
         </Card>
       </div>
       {error && (
-        <Alert>
+        <Alert variant="destructive">
           <AlertCircleIcon />
           <AlertTitle>{error}</AlertTitle>
         </Alert>
