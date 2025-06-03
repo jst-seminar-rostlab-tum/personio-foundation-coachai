@@ -1,22 +1,28 @@
 from sqlmodel import Session, SQLModel
 
 from backend.data import (
+    get_dummy_app_configs,
+    get_dummy_confidence_areas,
     get_dummy_conversation_categories,
     get_dummy_conversation_turns,
     get_dummy_difficulty_levels,
     get_dummy_experiences,
     get_dummy_goals,
     get_dummy_languages,
+    get_dummy_learning_styles,
     get_dummy_ratings,
     get_dummy_roles,
+    get_dummy_session_lengths,
     get_dummy_training_cases,
     get_dummy_training_preparations,
     get_dummy_training_session_feedback,
     get_dummy_training_sessions,
+    get_dummy_user_confidence_scores,
     get_dummy_user_goals,
     get_dummy_user_profiles,
 )
 from backend.database import engine
+from backend.models.hr_information import HrInformation
 
 
 def populate_data() -> None:
@@ -31,6 +37,7 @@ def populate_data() -> None:
         languages = get_dummy_languages()
         session.add_all(languages)
         session.commit()
+
         # Populate Roles
         roles = get_dummy_roles()
         session.add_all(roles)
@@ -46,12 +53,21 @@ def populate_data() -> None:
         # Populate Difficulty Levels
         difficulty_levels = get_dummy_difficulty_levels()
         session.add_all(difficulty_levels)
+        # Populate Learning Styles
+        learning_styles = get_dummy_learning_styles()
+        session.add_all(learning_styles)
 
-        # Commit roles, experiences, goals, and difficulty levels to get their IDs
+        # Populate Session Lengths
+        session_lengths = get_dummy_session_lengths()
+        session.add_all(session_lengths)
+
+        # Commit roles, experiences, goals, learning_styles, session_length and difficulty levels to get their IDs
         session.commit()
 
         # Populate User Profiles
-        user_profiles = get_dummy_user_profiles(roles, experiences)
+        user_profiles = get_dummy_user_profiles(
+            roles, experiences, learning_styles, session_lengths
+        )
         session.add_all(user_profiles)
 
         # Commit user profiles to get their IDs
@@ -97,8 +113,25 @@ def populate_data() -> None:
 
         # Commit all data
         session.commit()
+        # Populate Confidence Areas
+        confidence_areas = get_dummy_confidence_areas()
+        session.add_all(confidence_areas)
+        session.commit()
+        # Populate User Confidence Scores
+        user_confidence_scores = get_dummy_user_confidence_scores(user_profiles, confidence_areas)
+        session.add_all(user_confidence_scores)
 
+        app_configs = get_dummy_app_configs()
+        session.add_all(app_configs)
+        # Commit all data
+        session.commit()
         print('Dummy data populated successfully!')
+
+        print('Creating empty vector store')
+        empty_vector_data = HrInformation(content='', meta_data={}, embedding=[0.0] * 768)
+        session.add(empty_vector_data)
+        session.commit()
+        print('Vector store created successfully!')
 
 
 if __name__ == '__main__':

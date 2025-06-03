@@ -1,4 +1,22 @@
 {
   "metaTitle": "Preparation - Coach AI",
-  "metaDescription": "Prepare for your training session with Coach AI"
+  "metaDescription": "Prepare for your training session with Coach AI",
+  "title": "Check Your Training Setup",
+  "context": {
+    "title": "Giving Constructive Feedback",
+    "description": "You need to talk to Sarah, a team member who has missed several deadlines recently, affecting morale and timelines. Your goal is to address it constructively while keeping a positive relationship."
+  },
+  "objectives": {
+    "title": "Objectives"
+  },
+  "preparation": {
+    "title": "Preparation Checklist"
+  },
+  "resources": {
+    "title": "Resources"
+  },
+  "navigation": {
+    "back": "Go Back",
+    "start": "Start Training"
+  }
 }
