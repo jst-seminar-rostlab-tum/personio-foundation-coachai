@@ -1,8 +1,10 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session, select
+from starlette import status
+from starlette.responses import JSONResponse
 
 from ..database import get_session
 from ..models.conversation_category import ConversationCategory
@@ -12,6 +14,12 @@ from ..models.training_case import (
     TrainingCaseRead,
 )
 from ..models.training_preparation import TrainingPreparation, TrainingPreparationRead
+from ..schemas.training_preparation_schema import TrainingPreparationRequest
+from ..services.training_case_service import create_training_case
+from ..services.training_preparation_service import (
+    create_pending_preparation,
+    generate_training_preparation,
+)
 
 router = APIRouter(prefix='/training-case', tags=['Training Cases'])
 
@@ -28,28 +36,51 @@ def get_training_cases(
     return list(training_cases)
 
 
-# needed
 @router.post('/', response_model=TrainingCaseRead)
-def create_training_case(
-    training_case: TrainingCaseCreate, session: Annotated[Session, Depends(get_session)]
-) -> TrainingCase:
+def create_training_case_with_preparation(
+    training_case: TrainingCaseCreate,
+    session: Annotated[Session, Depends(get_session)],
+    background_tasks: BackgroundTasks,
+) -> JSONResponse:
     """
-    Create a new training case.
+    Create a new training case and start the preparation process in the background.
     """
-    # Validate foreign keys
+    category = None
+    # 1. Validate foreign keys
     if training_case.category_id:
         category = session.get(ConversationCategory, training_case.category_id)
         if not category:
             raise HTTPException(status_code=404, detail='Category not found')
 
-    db_training_case = TrainingCase(**training_case.dict())
-    session.add(db_training_case)
-    session.commit()
-    session.refresh(db_training_case)
-    return db_training_case
+    # 2. Create new TrainingCase
+    training_case = create_training_case(training_case, session)
+
+    # 3. Initialize preparation（status = pending）
+    prep = create_pending_preparation(training_case.id, session)
+
+    preparation_request = TrainingPreparationRequest(
+        category=category.name,
+        context=training_case.context,
+        goal=training_case.goal,
+        other_party=training_case.other_party,
+        num_objectives=3,  # Example value, adjust as needed
+        num_checkpoints=3,  # Example value, adjust as needed
+    )
+
+    # 4. Start background task to generate preparation
+    background_tasks.add_task(
+        generate_training_preparation, prep.id, preparation_request, get_session
+    )
+    # 5. Return response
+    return JSONResponse(
+        status_code=status.HTTP_202_ACCEPTED,
+        content={
+            'message': 'Training case created, preparation started.',
+            'case_id': str(training_case.id),
+        },
+    )
 
 
-@router.put('/{case_id}', response_model=TrainingCaseRead)
 def update_training_case(
     case_id: UUID,
     updated_data: TrainingCaseCreate,

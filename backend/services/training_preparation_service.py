@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Generator
+from uuid import UUID
+
 from backend.connections.openai_client import call_structured_llm
 from backend.schemas.training_preparation_schema import (
     ChecklistRequest,
@@ -7,7 +10,11 @@ from backend.schemas.training_preparation_schema import (
     KeyConceptRequest,
     ObjectiveRequest,
     StringListResponse,
+    TrainingPreparationRequest,
 )
+from sqlmodel import Session
+
+from ..models import TrainingPreparation, TrainingPreparationStatus
 
 
 def generate_objectives(request: ObjectiveRequest) -> list[str]:
@@ -127,3 +134,95 @@ def generate_key_concept(request: KeyConceptRequest) -> str:
         output_model=KeyConceptOutput,
     )
     return result.markdown
+
+
+def create_pending_preparation(case_id: UUID, session: Session) -> TrainingPreparation:
+    """
+    Create a new TrainingPreparation record with status 'pending'.
+    """
+    prep = TrainingPreparation(
+        case_id=case_id,
+        status=TrainingPreparationStatus.pending,
+        objectives=[],
+        key_concepts=[],
+        prep_checklist=[],
+    )
+    session.add(prep)
+    session.commit()
+    return prep
+
+
+def generate_training_preparation(
+    preparation_id: UUID,
+    request: TrainingPreparationRequest,
+    session_generator_func: Callable[[], Generator[Session, None, None]],
+    # Function to generate a new session
+) -> TrainingPreparation:
+    """
+    Generate training preparation data including objectives, checklist, and key concepts.
+    Updates the TrainingPreparation record and returns it.
+    """
+
+    # Ensure the session generator is called to get a new session
+    session_gen = session_generator_func()
+    session = next(session_gen)
+
+    try:
+        # 1. retrieve the preparation record
+        preparation = session.get(TrainingPreparation, preparation_id)
+        print(preparation)
+
+        if not preparation:
+            raise ValueError(f'Training preparation with ID {preparation_id} not found.')
+        if preparation.status != TrainingPreparationStatus.pending:
+            raise ValueError(f'Training preparation {preparation_id} is not in pending status.')
+
+        try:
+            # 2. generate objectives, checklist, and key concepts
+            objectives_request = ObjectiveRequest(
+                category=request.category,
+                goal=request.goal,
+                context=request.context,
+                other_party=request.other_party,
+                num_objectives=request.num_objectives,
+            )
+            checklist_request = ChecklistRequest(
+                category=request.category,
+                goal=request.goal,
+                context=request.context,
+                other_party=request.other_party,
+                num_checkpoints=request.num_checkpoints,
+            )
+            key_concept_request = KeyConceptRequest(
+                category=request.category,
+                goal=request.goal,
+                context=request.context,
+                other_party=request.other_party,
+            )
+
+            # 3. Generate the content using the LLM
+            objectives = generate_objectives(objectives_request)
+            checklist = generate_checklist(checklist_request)
+            key_concepts = generate_key_concept(key_concept_request)
+
+            # 4. update the preparation record
+            preparation.objectives = objectives
+            preparation.prep_checklist = checklist
+            preparation.key_concepts = key_concepts
+            preparation.status = TrainingPreparationStatus.completed
+
+        except Exception:
+            # 4. handle any errors during generation
+            preparation.status = TrainingPreparationStatus.failed
+
+        session.add(preparation)
+        session.commit()
+        session.refresh(preparation)
+        return preparation
+
+    finally:
+        # 5. ensure the session is closed properly
+        try:
+            session_gen.close()
+        except Exception as e:
+            print(f'[WARN] Failed to close session generator: {e}')

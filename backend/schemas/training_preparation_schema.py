@@ -26,3 +26,19 @@ class StringListResponse(BaseModel):
 
 class KeyConceptOutput(BaseModel):
     markdown: str
+
+
+class TrainingPreparationRequest(BaseModel):
+    category: str = Field(..., description='Training category')
+    goal: str = Field(..., description='Training goal')
+    context: str = Field(..., description='Training context')
+    other_party: str = Field(..., description='Persona to speak with')
+
+    num_objectives: int = Field(3, gt=0, description='Number of objectives to generate')
+    num_checkpoints: int = Field(5, gt=0, description='Number of checklist items to generate')
+
+
+class TrainingPreparationResponse(BaseModel):
+    objectives: StringListResponse = Field(..., description='List of training objectives')
+    checklist: StringListResponse = Field(..., description='List of training checklist items')
+    key_concept: KeyConceptOutput = Field(..., description='Key concepts for the training case')
