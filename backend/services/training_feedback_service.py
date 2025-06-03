@@ -1,5 +1,5 @@
 from datetime import datetime
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from backend.connections.openai_client import call_structured_llm
 from backend.schemas.training_feedback_schema import (
@@ -12,8 +12,7 @@ from backend.schemas.training_feedback_schema import (
 )
 from sqlmodel import Session
 
-from models import TrainingSessionFeedback
-from models.training_session_feedback import FeedbackStatusEnum
+from ..models import FeedbackStatusEnum, TrainingSessionFeedback
 
 
 def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesCollection:
@@ -178,7 +177,7 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
 
 
 def generate_and_store_feedback(
-        session_id: str, example_request: ExamplesRequest, db: Session
+        session_id: UUID, example_request: ExamplesRequest, db: Session
 ) -> TrainingSessionFeedback:
     """
     Generate feedback based on session_id and transcript data,
@@ -204,20 +203,24 @@ def generate_and_store_feedback(
     goals = get_achieved_goals(goals_request)
     recommendations = generate_recommendations(recommendations_request)
 
+    examples_positive_dicts = [ex.dict() for ex in examples.positive_examples]
+    examples_negative_dicts = [ex.dict() for ex in examples.negative_examples]
+    recommendations = [rec.dict() for rec in recommendations.recommendations]
+
     feedback = TrainingSessionFeedback(
-        id=str(uuid4()),
+        id=uuid4(),
         session_id=session_id,
         scores={},
         tone_analysis={},
-        overall_score=None,
-        transcript_uri=None,
-        speak_time_percent=None,
-        questions_asked=None,
-        session_length_s=None,
+        overall_score=0,
+        transcript_uri="",
+        speak_time_percent=0,
+        questions_asked=0,
+        session_length_s=0,
         goals_achieved=len(goals.goals_achieved),
-        examples_positive=examples.positive_examples,
-        examples_negative=examples.negative_examples,
-        recommendations=recommendations.recommendations,
+        example_positive=examples_positive_dicts,
+        example_negative=examples_negative_dicts,
+        recommendations=recommendations,
         status=FeedbackStatusEnum.pending,
         created_at=datetime.now(),
         updated_at=datetime.now(),

@@ -32,6 +32,7 @@ from .training_preparation import (
 )
 from .training_session import TrainingSession, TrainingSessionCreate, TrainingSessionRead
 from .training_session_feedback import (
+    FeedbackStatusEnum,
     NegativeExample,
     PositiveExample,
     Recommendation,
@@ -72,6 +73,7 @@ __all__ = [
     'TrainingSessionFeedback',
     'TrainingSessionFeedbackCreate',
     'TrainingSessionFeedbackRead',
+    'FeedbackStatusEnum',
     'Rating',
     'RatingCreate',
     'RatingRead',
