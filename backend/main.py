@@ -54,6 +54,7 @@ app.include_router(learning_style_route.router)
 app.include_router(session_length_route.router)
 app.include_router(personalization_options_route.router)
 app.include_router(app_config_route.router)
+app.include_router(user_profile_stats_route.router)
 
 
 # Create database tables on startup
