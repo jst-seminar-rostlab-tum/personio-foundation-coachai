@@ -40,6 +40,7 @@
   --color-bw-50: var(--bw-50);
   --color-bw-60: var(--bw-60);
   --color-bw-70: var(--bw-70);
+  --color-marigold-5: var(--marigold-5);
   --color-marigold-10: var(--marigold-10);
   --color-marigold-30: var(--marigold-30);
   --color-marigold-40: var(--marigold-40);
@@ -93,8 +94,8 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.barlow-condensed-medium {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 500;
-  font-style: normal;
+.bebas-neue {
+  font-family: 'Bebas Neue', 'Bebas Neue Fallback', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }

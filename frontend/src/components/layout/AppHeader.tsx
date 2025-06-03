@@ -67,7 +67,7 @@ export function AppHeader() {
               <Link
                 key={key}
                 href={href}
-                className="barlow-condensed-medium font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50"
+                className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {t(key)}

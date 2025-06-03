@@ -1,4 +1,5 @@
 from .dummy_data import (
+    get_dummy_app_configs,
     get_dummy_confidence_areas,
     get_dummy_conversation_categories,
     get_dummy_conversation_turns,
@@ -36,4 +37,5 @@ __all__ = [
     'get_dummy_user_confidence_scores',
     'get_dummy_learning_styles',
     'get_dummy_session_lengths',
+    'get_dummy_app_configs',
 ]

@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
+from backend.models.app_config import AppConfig, ConfigType
 from backend.models.confidence_area import ConfidenceArea
 from backend.models.conversation_category import ConversationCategory
 from backend.models.conversation_turn import ConversationTurn, SpeakerEnum
@@ -577,3 +578,12 @@ def get_dummy_user_confidence_scores(
                 )
             )
     return scores
+
+
+def get_dummy_app_configs() -> list[AppConfig]:
+    """
+    Generate dummy data for AppConfig.
+    """
+    return [
+        AppConfig(key='dailyUserTokenLimit', value='100', type=ConfigType.int),
+    ]

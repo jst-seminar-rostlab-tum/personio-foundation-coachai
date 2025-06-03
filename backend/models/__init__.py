@@ -1,3 +1,4 @@
+from .app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
 from .confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from .conversation_category import (
     ConversationCategory,
@@ -16,7 +17,6 @@ from .language import Language, LanguageCreate, LanguageRead
 from .learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from .personalization_option import PersonalizationOptionRead
 from .rating import Rating, RatingCreate, RatingRead
-from .scenario_template import ScenarioTemplate, ScenarioTemplateCreate, ScenarioTemplateRead
 from .session_length import SessionLength, SessionLengthCreate, SessionLengthRead
 from .training_case import (
     TrainingCase,
@@ -115,7 +115,8 @@ __all__ = [
     'UserProfileExtendedRead',
     'UserRole',
     'PersonalizationOptionRead',
-    'ScenarioTemplate',
-    'ScenarioTemplateCreate',
-    'ScenarioTemplateRead',
+    'AppConfig',
+    'AppConfigCreate',
+    'AppConfigRead',
+    'ConfigType',
 ]
