@@ -12,5 +12,10 @@
   "showAllReviews": "Alle Bewertungen anzeigen",
   "userManagement": "Benutzerverwaltung",
   "trainingCategories": "Trainingskategorien",
-  "trainingScenarios": "Trainingsszenarien"
+  "trainingScenarios": "Trainingsszenarien",
+  "search": "Suchen...",
+  "users": "Benutzer",
+  "actions": "Aktionen",
+  "deleteUser": "Benutzer löschen",
+  "loadMore": "Mehr laden"
 }

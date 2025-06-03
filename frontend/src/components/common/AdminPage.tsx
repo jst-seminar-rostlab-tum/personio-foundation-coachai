@@ -1,11 +1,15 @@
-import { ArrowRightIcon, Star } from 'lucide-react';
+'use client';
+
+import { ArrowRightIcon, ChevronDown, Search, Star, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import React from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/Accordion';
 import { Button } from '../ui/Button';
 import Progress from '../ui/Progress';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/Avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/Select';
 import StatCard from './StatCard';
+import Input from '../ui/Input';
 
 export default function Admin() {
   const t = useTranslations('Admin');
@@ -15,6 +19,21 @@ export default function Admin() {
     { value: '1.062', label: t('statReviews') },
     { value: '82%', label: t('statAverageScore') },
   ];
+  const [visibleUsers, setVisibleUsers] = React.useState(5);
+  const allUsers = [
+    'Sara P.',
+    'TheLegend27',
+    'Jackson Lopez',
+    'Maria Surname',
+    'Alex Kim',
+    'John Doe',
+    'Jane Roe',
+    'Chris Evans',
+    'Sam Lee',
+    'Patricia Surname',
+  ];
+  const canLoadMore = visibleUsers < allUsers.length;
+  const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
   return (
     <div className="px-2 sm:px-4 max-w-full">
       <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
@@ -130,7 +149,49 @@ export default function Admin() {
           <AccordionTrigger className="font-bw-70 cursor-pointer">
             {t('userManagement')}
           </AccordionTrigger>
-          <AccordionContent></AccordionContent>
+          <AccordionContent>
+            <div className="mb-4">
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-bw-40">
+                  <Search className="w-4 h-4" />
+                </span>
+                <Input
+                  type="text"
+                  placeholder={t('search')}
+                  className="w-full pl-10 pr-3 py-2 border border-bw-20 rounded text-sm text-bw-70 placeholder-bw-40"
+                />
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr>
+                    <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('users')}</th>
+                    <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('actions')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allUsers.slice(0, visibleUsers).map((user) => (
+                    <tr key={user} className="border-t border-bw-10">
+                      <td className="py-2 px-2">{user}</td>
+                      <td className="py-2 px-2">
+                        <Button variant="ghost" size="icon" aria-label={t('deleteUser')}>
+                          <Trash2 className="w-4 h-4 text-bw-40" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {canLoadMore && (
+              <div className="flex justify-center mt-4">
+                <Button variant="ghost" onClick={handleLoadMore}>
+                  {t('loadMore')} <ChevronDown className="ml-2 w-4 h-4" />
+                </Button>
+              </div>
+            )}
+          </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2" className="text-dark">
           <AccordionTrigger className="font-bw-70 cursor-pointer">

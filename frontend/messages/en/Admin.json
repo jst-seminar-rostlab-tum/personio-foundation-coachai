@@ -12,5 +12,10 @@
   "showAllReviews": "Show All Reviews",
   "userManagement": "User Management",
   "trainingCategories": "Training Categories",
-  "trainingScenarios": "Training Scenarios"
+  "trainingScenarios": "Training Scenarios",
+  "search": "Search...",
+  "users": "Users",
+  "actions": "Actions",
+  "deleteUser": "Delete user",
+  "loadMore": "Load More"
 }
