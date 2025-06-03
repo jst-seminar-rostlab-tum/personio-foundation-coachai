@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from backend.connections.openai_client import call_ai_service, call_structured_llm
+from backend.connections.openai_client import call_structured_llm
 from backend.schemas.training_preparation_schema import (
     ChecklistRequest,
     KeyConceptOutput,
@@ -39,15 +39,12 @@ def generate_objectives(request: ObjectiveRequest) -> list[str]:
         f'{example_items}'
     )
 
-    result = call_ai_service(
-        mock_response=mock_response,
+    result = call_structured_llm(
+        request_prompt=user_prompt,
+        system_prompt='You are a training expert generating learning objectives.',
         model='gpt-4o-2024-08-06',
-        llm_function=call_structured_llm,
-        function_args={
-            'request_prompt': user_prompt,
-            'system_prompt': 'You are a training expert generating learning objectives.',
-            'output_model': StringListResponse,
-        },
+        output_model=StringListResponse,
+        mock_response=mock_response
     )
     return result.items
 
@@ -81,16 +78,13 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
         f'Here are example checklist items(for style and length reference only):\n'
         f'{example_items}'
     )
-    result = call_ai_service(
-        mock_response=mock_response,
+    result = call_structured_llm(
+        request_prompt=user_prompt,
+        system_prompt='You are a training expert generating preparation checklists.',
         model='gpt-4o-2024-08-06',
-        llm_function=call_structured_llm,
-        function_args={
-            'request_prompt': user_prompt,
-            'system_prompt': 'You are a training expert generating preparation checklists.',
-            'output_model': StringListResponse,
-        })
-
+        output_model=StringListResponse,
+        mock_response=mock_response
+    )
     return result.items
 
 
@@ -146,14 +140,11 @@ Ask questions like \"What do you think would help in this situation?\"
 
     prompt = build_key_concept_prompt(request, mock_response.markdown)
 
-    result = call_ai_service(
-        mock_response=mock_response,
+    result = call_structured_llm(
+        request_prompt=prompt,
         model='gpt-4o-2024-08-06',
-        llm_function=call_structured_llm,
-        function_args={
-            'request_prompt': prompt,
-            'output_model': KeyConceptOutput,
-        }
+        output_model=KeyConceptOutput,
+        mock_response=mock_response
     )
     return result.markdown
 
