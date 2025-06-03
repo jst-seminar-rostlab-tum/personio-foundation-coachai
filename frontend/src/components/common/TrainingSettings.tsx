@@ -27,10 +27,12 @@ import UserPreferences from '@/components/common/UserPreferences';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
+import { deleteUser } from '@/lib/deleteUser';
 
 export default function TrainingSettings() {
   const [audioEnabled, setAudioEnabled] = useState(false);
   const t = useTranslations('TrainingSettings');
+  const userId = '12345';
 
   return (
     <div>
@@ -88,7 +90,9 @@ export default function TrainingSettings() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                        <AlertDialogAction>{t('confirm')}</AlertDialogAction>
+                        <AlertDialogAction onClick={() => deleteUser(userId)}>
+                          {t('confirm')}
+                        </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
