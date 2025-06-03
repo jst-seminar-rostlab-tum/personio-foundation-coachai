@@ -8,8 +8,6 @@ from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import Field, Relationship, SQLModel
 
-from backend.models.scenario_template import ScenarioTemplate
-
 if TYPE_CHECKING:
     from .conversation_category import ConversationCategory
     from .difficulty_level import DifficultyLevel
@@ -30,9 +28,6 @@ class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database ta
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
-    scenario_template_id: Optional[UUID] = Field(
-        default=None, foreign_key='scenariotemplate.id'
-    )  # FK to ScenarioTemplate
     custom_category_label: Optional[str] = None
     context: str
     goal: str
@@ -52,7 +47,6 @@ class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database ta
     )
     user: Optional['UserProfile'] = Relationship(back_populates='training_cases')
     difficulty_level: Optional['DifficultyLevel'] = Relationship(back_populates='training_cases')
-    scenario_template: Optional['ScenarioTemplate'] = Relationship(back_populates='training_cases')
 
 
 @event.listens_for(TrainingCase, 'before_update')
