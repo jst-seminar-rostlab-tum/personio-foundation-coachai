@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     TWILIO_PHONE_NUMBER: str = ''
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
-    ENABLE_AI: bool = True
+    ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
 
 
