@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import Progress from '../ui/Progress';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/Avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/Select';
+import StatCard from './StatCard';
 
 export default function Admin() {
   const t = useTranslations('Admin');
@@ -18,17 +19,9 @@ export default function Admin() {
     <div className="px-2 sm:px-4 max-w-full">
       <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
       <div className="text-sm text-bw-40 text-center mb-8">{t('dashboardSubtitle')}</div>
-      <div className="grid grid-cols-2 gap-4 w-full mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map((stat, i) => (
-          <div
-            key={i}
-            className="bg-bw-10 rounded-lg flex flex-col items-center justify-center h-40"
-          >
-            <div className="text-5xl font-bold text-bw-70 text-center break-words max-w-full">
-              {stat.value}
-            </div>
-            <div className="text-sm text-bw-70 text-center mt-2">{stat.label}</div>
-          </div>
+          <StatCard key={i} value={stat.value} label={stat.label} />
         ))}
       </div>
       <div className="w-full max-w-md mb-8 mx-auto">
