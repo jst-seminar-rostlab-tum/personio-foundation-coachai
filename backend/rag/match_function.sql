@@ -1,23 +1,21 @@
-CREATE OR REPLACE FUNCTION match_documents(
-  query_embedding vector,
-  match_count integer DEFAULT 5
+CREATE OR REPLACE FUNCTION match_documents (
+    query_embedding vector(768),
+    match_count int DEFAULT 5
 )
 RETURNS TABLE (
-  id uuid,
-  content text,
-  metadata jsonb,
-  embedding vector
+    id uuid,
+    content text,
+    metadata jsonb,
+    embedding vector
 )
+LANGUAGE sql STABLE
 AS $$
-BEGIN
-  RETURN QUERY
-  SELECT
-    hr.id,
-    hr.content::text,
-    hr.metadata,
-    hr.embedding
-  FROM hr_information AS hr
-  ORDER BY hr.embedding <-> query_embedding
-  LIMIT match_count;
-END;
-$$ LANGUAGE plpgsql;
+    SELECT
+        id,
+        content,
+        metadata,
+        embedding
+    FROM hr_information
+    ORDER BY embedding <#> query_embedding
+    LIMIT match_count;
+$$;

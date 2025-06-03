@@ -2,8 +2,6 @@
 
 ## Requirements
 
-#### Set up uv package manager
-
 Install [uv package and project manager](https://docs.astral.sh/uv/):
 
 - For Linux and MacOS:
@@ -17,17 +15,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ```bash
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
-
-#### Set up Supabase
-
-1. Create a supabse account (free tier) on [Supabase](https://supabase.com/dashboard/sign-in) and sign in.
-2. Create a new Project and copy your Password into the .env file under `SUPABASE_PASSWORD`
-3. Go to your Project -> Project Settings -> General
-4. Copy your `Project Id` into the .env file as `SUPABASE_PROJECT_ID`
-5. Go to API keys
-6. Copy your `anon public key` into the .env file as `SUPABASE_KEY`
-7. (optional but recommended): Go to Database, download the ssl certificate, and put it into the /backend/certs directory.
-8. Copy the other settings from the .env.example into the .env file
 
 ## Local Development
 
