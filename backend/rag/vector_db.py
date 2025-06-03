@@ -7,9 +7,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import SupabaseVectorStore
 from supabase import Client, create_client
 
-from backend.config import Settings
-
-settings = Settings()
+from backend.config import settings
 
 
 def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
@@ -36,8 +34,15 @@ def format_docs(docs: list[Document]) -> str:
 
 
 def get_supabase_client() -> Client:
+    url = (
+        f'https://{settings.supabase_project_id}.supabase.co'
+        if settings.supabase_environment == 'remote'
+        else 'http://localhost:8000'
+    )
+
     return create_client(
-        f'https://{settings.supabase_project_id}.supabase.co', settings.supabase_key
+        url,
+        settings.supabase_key,
     )
 
 

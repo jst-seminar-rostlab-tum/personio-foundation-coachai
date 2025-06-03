@@ -16,7 +16,10 @@ DATABASE_URL = (
     f'{settings.supabase_user}:{settings.supabase_password}'
     f'@db.{settings.supabase_project_id}.supabase.co:{settings.supabase_port}'
     f'/{settings.supabase_db}{ssl_suffix}'
+    if settings.supabase_environment == 'remote'
+    else f'postgresql://{settings.supabase_user}:{settings.supabase_password}@127.0.0.1:5432/postgres'
 )
+
 
 # Create the SQLAlchemy engine
 engine = create_engine(DATABASE_URL)

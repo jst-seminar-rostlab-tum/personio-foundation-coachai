@@ -7,8 +7,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     stage: Literal['dev', 'prod'] = 'dev'
 
-    supabase_project_id: str
-    supabase_password: str
+    supabase_environment: Literal['local', 'remote'] = 'remote'
+    supabase_project_id: str | None = None
+    supabase_password: str = ''
     supabase_port: int = 5432
     supabase_db: str = 'postgres'
     supabase_user: str = 'postgres'
@@ -16,9 +17,9 @@ class Settings(BaseSettings):
     supabase_key: str
     supabase_ssl_cert_path: str = str(Path(__file__).parent / 'certs' / 'prod-ca-2021.crt')
 
-    gemini_api_key: str
-    twilio_account_sid: str
-    twilio_auth_token: str
+    gemini_api_key: str = ''
+    twilio_account_sid: str = ''
+    twilio_auth_token: str = ''
     twilio_verify_service_sid: Optional[str] = None
     twilio_phone_number: Optional[str] = None
     test_phone_number: Optional[str] = None
