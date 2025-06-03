@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { userProfileApi } from '@/services/Api';
 import { RotateCcw } from 'lucide-react';
@@ -16,7 +16,7 @@ import { supabase } from '@/lib/supabase';
 export function VerificationPopup({
   isOpen,
   onClose,
-  phoneNumber,
+  recipientPhoneNumber,
   formData,
 }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
@@ -30,7 +30,7 @@ export function VerificationPopup({
     code: z.string().regex(/^\d{6}$/, t('codeInputError')),
   });
   const codeSize = 6;
-  const reciepientPhone = '+491753288376';
+  // const reciepientPhone = '+491753288376';
   // const reciepientPhone = '+4915730709306';
 
   const form = useForm({
@@ -41,13 +41,13 @@ export function VerificationPopup({
     },
   });
 
-  const signIn = async () => {
+  const signIn = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       // Supabase verification
       const { error: signInError } = await supabase.auth.signInWithOtp({
-        phone: reciepientPhone,
+        phone: recipientPhoneNumber,
       });
 
       if (signInError) {
@@ -56,14 +56,14 @@ export function VerificationPopup({
       }
 
       // Twilio verification (commented out but kept for reference)
-      // await userProfileApi.sendVerificationCode(reciepientPhone);
+      // await userProfileApi.sendVerificationCode(recipientPhoneNumber);
     } catch (err) {
       console.error('Error in sign in:', err);
       setError('Failed to send verification code. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [recipientPhoneNumber]);
 
   const verifyCode = async () => {
     setIsLoading(true);
@@ -71,7 +71,7 @@ export function VerificationPopup({
     try {
       // Supabase verification
       const { error: verifyError } = await supabase.auth.verifyOtp({
-        phone: reciepientPhone,
+        phone: recipientPhoneNumber,
         token: verificationCode,
         type: 'sms',
       });
@@ -82,7 +82,7 @@ export function VerificationPopup({
       }
 
       // Twilio verification (commented out but kept for reference)
-      // const result = await userProfileApi.verifyCode(reciepientPhone, verificationCode);
+      // const result = await userProfileApi.verifyCode(recipientPhoneNumber, verificationCode);
       // if (!result.valid) {
       //   throw new Error('Invalid verification code');
       // }
@@ -112,7 +112,7 @@ export function VerificationPopup({
     if (isOpen) {
       signIn();
     }
-  }, [isOpen]);
+  }, [isOpen, signIn]);
 
   const handleSubmit = async () => {
     try {
@@ -137,7 +137,7 @@ export function VerificationPopup({
             phone_number: formData.phoneNumber,
             password: formData.password,
             preferred_language: 'en',
-            preferred_learning_style: '',
+            preferred_learning_style_id: '',
             preferred_session_length: '',
             role_id: undefined,
             experience_id: undefined,
@@ -164,7 +164,7 @@ export function VerificationPopup({
   const handleResendCode = async () => {
     try {
       setError(null);
-      await userProfileApi.sendVerificationCode(phoneNumber);
+      await userProfileApi.sendVerificationCode(recipientPhoneNumber);
       setResendCooldown(30);
     } catch (err: unknown) {
       let errorMessage = t('resendError');
@@ -208,7 +208,7 @@ export function VerificationPopup({
               <h2 className="text-xl font-semibold text-center">{t('title')}</h2>
               <p className="text-sm text-center text-gray-600">
                 {t('descriptionPartOne')}
-                <strong>{phoneNumber}</strong>
+                <strong>{recipientPhoneNumber}</strong>
                 {t('descriptionPartTwo')}
               </p>
 

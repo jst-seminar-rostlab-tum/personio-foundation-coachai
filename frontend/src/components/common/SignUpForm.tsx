@@ -86,7 +86,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
         phone_number: values.phoneNumber,
         password: values.password,
         preferred_language: 'en', // Default language
-        preferred_learning_style: '',
+        preferred_learning_style_id: '',
         preferred_session_length: '',
       });
 
@@ -315,7 +315,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
       <VerificationPopup
         isOpen={showVerification}
         onClose={() => setShowVerification(false)}
-        phoneNumber={signedUpPhone}
+        recipientPhoneNumber={signedUpPhone}
         formData={signUpForm.getValues()}
       />
 
