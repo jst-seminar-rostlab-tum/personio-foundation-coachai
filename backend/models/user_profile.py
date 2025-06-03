@@ -47,6 +47,14 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
         back_populates='user_profiles'
     )
 
+    # User Statistics
+    total_sessions: int = Field(default=0)
+    training_time: float = Field(default=0)  # in hours
+    current_streak_days: int = Field(default=0)
+    average_score: int = Field(default=0)
+    goals_achieved: int = Field(default=0)
+    # TODO: Add performance_over_time and skills_performance
+
 
 # Automatically update `updated_at` before an update
 @event.listens_for(UserProfile, 'before_update')
@@ -93,3 +101,14 @@ class UserProfileExtendedRead(SQLModel):
 
 
 UserProfileExtendedRead.model_rebuild()
+
+
+# Schema for reading User Statistics
+class UserStatisticsRead(SQLModel):
+    total_sessions: int
+    training_time: float  # in hours
+    current_streak_days: int
+    average_score: int
+    goals_achieved: int
+    performance_over_time: list[int]
+    skills_performance: dict[str, int]
