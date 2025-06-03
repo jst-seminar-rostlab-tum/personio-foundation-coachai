@@ -7,7 +7,7 @@ from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import JSON, Column, Field, Relationship, SQLModel
 
-from backend.models.training_session_feedback import TrainingSessionFeedbackMetrics
+from app.models.training_session_feedback import TrainingSessionFeedbackMetrics
 
 if TYPE_CHECKING:
     from app.models.conversation_turn import ConversationTurn
