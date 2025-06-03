@@ -189,12 +189,12 @@ class WebSocketService:
     ) -> RTCSessionDescription:
         """
         Process SDP to ensure data channel is included in the answer.
-        
+
         Args:
             answer: The answer SDP to process
             offer_sdp: The original offer SDP
             peer_id: The peer ID for logging
-            
+
         Returns:
             The processed answer SDP with data channel included if necessary
         """
