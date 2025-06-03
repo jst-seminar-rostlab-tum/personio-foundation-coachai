@@ -57,9 +57,9 @@ def build_vector_db_retriever(populate_db: bool) -> VectorStoreRetriever:
 
 
 def get_llm() -> ChatGoogleGenerativeAI:
-    if not settings.gemini_api_key:
+    if not settings.GEMINI_API_KEY:
         raise ValueError('Missing GEMINI_API_KEY in environment')
-    return ChatGoogleGenerativeAI(model='gemini-2.0-flash', google_api_key=settings.gemini_api_key)
+    return ChatGoogleGenerativeAI(model='gemini-2.0-flash', google_api_key=settings.GEMINI_API_KEY)
 
 
 def rag_chain(

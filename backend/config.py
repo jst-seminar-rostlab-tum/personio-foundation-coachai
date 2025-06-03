@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Literal, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -6,22 +5,26 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     stage: Literal['dev', 'prod'] = 'dev'
+    postgres_host: str = 'localhost'
+    postgres_user: str = 'postgres'
+    postgres_password: str = 'postgres'
+    postgres_db: str = 'app_db'
+    postgres_port: str = '5432'
+    database_url: Optional[str] = None
 
-    supabase_project_id: str
-    supabase_password: str
-    supabase_port: int = 5432
-    supabase_db: str = 'postgres'
-    supabase_user: str = 'postgres'
+    SUPABASE_URL: str = ''
+    SUPABASE_KEY: str = ''
 
-    supabase_key: str
-    supabase_ssl_cert_path: str = str(Path(__file__).parent / 'certs' / 'prod-ca-2021.crt')
+    GEMINI_API_KEY: str = ''
 
-    gemini_api_key: str
-    twilio_account_sid: str
-    twilio_auth_token: str
-    twilio_verify_service_sid: Optional[str] = None
-    twilio_phone_number: Optional[str] = None
-    test_phone_number: Optional[str] = None
+    ssl_cert_url: str = 'https://test.com'
+    ssl_cert_dir: str = 'cert/'  # Must be either /tmp or relative
+    ssl_cert_name: str = 'prod-ca-2021.pem'
+
+    # Twilio settings
+    TWILIO_ACCOUNT_SID: str = ''
+    TWILIO_AUTH_TOKEN: str = ''
+    TWILIO_PHONE_NUMBER: str = ''
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 
