@@ -3,6 +3,7 @@ from __future__ import annotations
 from backend.connections.openai_client import call_structured_llm
 from backend.schemas.training_preparation_schema import (
     ChecklistRequest,
+    KeyConcept,
     KeyConceptOutput,
     KeyConceptRequest,
     ObjectiveRequest,
@@ -93,17 +94,31 @@ def build_key_concept_prompt(request: KeyConceptRequest, example: str) -> str:
 You are a training assistant. Based on the HR professionals training case below, 
 generate 3-4 key concepts for the conversation.
 
-Return them in a markdown format with the following structure:
-- Each concept begins with a heading: ### Title
-- Followed by a short descriptive paragraph
-- Follow the exact formatting style shown in the example below (use ###, **, etc.)
-- Do not return any introductory text or explanations, just the markdown content
-- Also include blank lines between sections for readability
-- The length of each concept should be similar to the example below,
-  each concept should be 2 sentences long, second sentence could be a example or explanation.
-  the second sentence should start on a **new line**.  
+Your output must strictly follow this JSON format representing a Pydantic model `KeyConceptOutput`:
 
-Example format:
+{{
+  "items": [
+    {{
+      "header": "Title of the key concept",
+      "value": "A short descriptive paragraph about the concept"
+    }},
+    {{
+      "header": "Another key concept",
+      "value": "Description for this concept"
+    }}
+  ]
+}}
+
+Instructions:
+- Do not include any text outside of the JSON structure.
+- Use exactly the field names: 'items', 'header', 'value'.
+- Extract up to 4 key concepts.
+- Each key concept must have a 'header' as a short title, and a 'value' as description.
+- Use proper JSON syntax, including double quotes.
+- Do not return any explanations, introductions, or markdown syntax.
+- Include blank lines for readability if you want, but only inside JSON string values.
+
+Example output:
 
 {example}
 ---
@@ -116,29 +131,24 @@ Training Case:
 """
 
 
-def generate_key_concept(request: KeyConceptRequest) -> str:
-    mock_response = KeyConceptOutput(
-        markdown=
-        """### The SBI Framework
-- **Situation:** Describe the specific situation  
-- **Behavior:** Address the specific behaviors observed  
-- **Impact:** Explain the impact of those behaviors
-        
-### Active Listening
-Show genuine interest in understanding the other person's perspective. 
-Paraphrase what you've heard to confirm understanding.
-        
-### Use \"I\" Statements
-Frame feedback in terms of your observations and feelings rather than accusations. 
-For example, \"I noticed...\" instead of \"You always...\"
-        
-### Collaborative Problem-Solving
-Work together to identify solutions rather than dictating next steps. 
-Ask questions like \"What do you think would help in this situation?\"
-        """
-    )
+def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
+    mock_key_concept = [
+        KeyConcept(
+            header='Clear Communication',
+            value='Express ideas clearly and listen actively to understand others.',
+        ),
+        KeyConcept(
+            header='Empathy',
+            value="Show understanding and concern for the other party's feelings."
+        ),
+        KeyConcept(
+            header='Effective Questioning',
+            value='Ask open-ended questions to encourage dialogue and exploration.',
+        ),
+    ]
+    mock_response = KeyConceptOutput(items=mock_key_concept)
 
-    prompt = build_key_concept_prompt(request, mock_response.markdown)
+    prompt = build_key_concept_prompt(request, mock_response.model_dump_json(indent=4))
 
     result = call_structured_llm(
         request_prompt=prompt,
@@ -146,7 +156,7 @@ Ask questions like \"What do you think would help in this situation?\"
         output_model=KeyConceptOutput,
         mock_response=mock_response
     )
-    return result.markdown
+    return result.items
 
 
 if __name__ == "__main__":
