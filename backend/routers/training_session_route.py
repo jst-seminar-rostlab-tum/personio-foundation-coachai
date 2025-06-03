@@ -3,7 +3,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from ..database import get_session
 from ..models.language import Language
@@ -84,8 +84,8 @@ def get_training_sessions(
     # Query sessions
     session_query = (
         select(TrainingSession)
-        .where(TrainingSession.case_id.in_(training_case_ids))
-        .order_by(TrainingSession.ended_at.desc())
+        .where(col(TrainingSession.case_id).in_(training_case_ids))
+        .order_by(col(TrainingSession.ended_at).desc())
     )
 
     total_sessions = len(session.exec(session_query).all())
