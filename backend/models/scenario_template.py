@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -30,8 +30,8 @@ class ScenarioTemplate(SQLModel, table=True):
     ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON))
     language_code: str = Field(foreign_key='language.code')
     status: ScenarioTemplateStatus = Field(default=ScenarioTemplateStatus.draft)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # Relationships
     category: Optional['ConversationCategory'] = Relationship(back_populates='scenario_templates')
@@ -47,7 +47,7 @@ class ScenarioTemplate(SQLModel, table=True):
 
 @event.listens_for(ScenarioTemplate, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioTemplate') -> None:
-    target.updated_at = datetime.now(datetime.timezone.utc)
+    target.updated_at = datetime.now(timezone.utc)
 
 
 # Schema for creating a new ScenarioTemplate

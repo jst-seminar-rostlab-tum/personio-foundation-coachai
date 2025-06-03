@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -32,8 +32,8 @@ class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a data
     key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: TrainingPreparationStatus = Field(default=TrainingPreparationStatus.pending)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # Relationships
     case: Optional['TrainingCase'] = Relationship(back_populates='preparations')
@@ -43,7 +43,7 @@ class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a data
 
 @event.listens_for(TrainingPreparation, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingPreparation') -> None:
-    target.updated_at = datetime.now(datetime.timezone.utc)
+    target.updated_at = datetime.now(timezone.utc)
 
 
 # Schema for creating a new TrainingPreparation

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -18,8 +18,8 @@ class Rating(SQLModel, table=True):  # `table=True` makes it a database table
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     score: int
     comment: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     # Relationships
     session: Optional['TrainingSession'] = Relationship(back_populates='ratings')
@@ -28,7 +28,7 @@ class Rating(SQLModel, table=True):  # `table=True` makes it a database table
 
 @event.listens_for(Rating, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'Rating') -> None:
-    target.updated_at = datetime.now(datetime.timezone.utc)
+    target.updated_at = datetime.now(timezone.utc)
 
 
 # Schema for creating a new Rating

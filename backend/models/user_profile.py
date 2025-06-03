@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -31,7 +31,7 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
     experience_id: UUID = Field(foreign_key='experience.id')  # FK to Experience
     preferred_learning_style_id: UUID = Field(foreign_key='learningstyle.id')
     preferred_session_length_id: UUID = Field(foreign_key='sessionlength.id')
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     store_conversations: bool = Field(default=True)
     # Relationships
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
@@ -55,7 +55,7 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
 # Automatically update `updated_at` before an update
 @event.listens_for(UserProfile, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfile') -> None:
-    target.updated_at = datetime.now(datetime.timezone.utc)
+    target.updated_at = datetime.now(timezone.utc)
 
 
 # Schema for creating a new UserProfile
