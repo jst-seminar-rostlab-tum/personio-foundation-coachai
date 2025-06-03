@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export default function FeedbackDetailPage() {
+export default function FeedbackDetailLoadingPage() {
   return (
     <div>
       {/* Header */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { FeedbackQuoteProps } from '@/interfaces/FeedbackQuoteProps';
+import { FeedbackQuoteProps } from '@/interfaces/Feedback';
 import { ChartNoAxesColumnIncreasingIcon, CheckCircle, CircleX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
