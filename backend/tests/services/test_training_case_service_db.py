@@ -1,4 +1,5 @@
 import unittest
+from uuid import uuid4
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -27,7 +28,7 @@ class TestCreateTrainingCase(unittest.TestCase):
     def test_create_training_case(self) -> None:
         # prepare test data
         training_case_data = TrainingCaseCreate(
-            category_id='43dbb640-f7dc-444a-a5ef-821cdfb99f66',
+            category_id=uuid4(),
             user_id='f5957372-7607-4628-be88-661896bd9eb7',
             custom_category_label='Custom Category',
             goal='Test Goal',

@@ -4,8 +4,10 @@ from collections.abc import Callable, Generator
 from uuid import UUID
 
 from backend.connections.openai_client import call_structured_llm
+from backend.models import TrainingPreparation, TrainingPreparationStatus
 from backend.schemas.training_preparation_schema import (
     ChecklistRequest,
+    KeyConcept,
     KeyConceptOutput,
     KeyConceptRequest,
     ObjectiveRequest,
@@ -13,8 +15,6 @@ from backend.schemas.training_preparation_schema import (
     TrainingPreparationRequest,
 )
 from sqlmodel import Session
-
-from ..models import TrainingPreparation, TrainingPreparationStatus
 
 
 def generate_objectives(request: ObjectiveRequest) -> list[str]:
@@ -85,36 +85,63 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
     return result.items
 
 
-def build_key_concept_prompt(request: KeyConceptRequest) -> str:
+def build_key_concept_prompt(
+    request: KeyConceptRequest,
+) -> str:
     return f"""
 You are a training assistant. Based on the HR professionals training case below, 
 generate 3-4 key concepts for the conversation.
 
-Return them in a markdown format with the following structure:
-- Each concept begins with a heading: ### Title
-- Followed by a short descriptive paragraph
-- Follow the exact formatting style shown in the example below (use `###`, `**`, etc.)
-- Do not return any introductory text or explanations, just the markdown content
-- Also include blank lines between sections for readability
+Your output must strictly follow this JSON format representing a Pydantic model `KeyConceptOutput`:
 
-Example format:
+{{
+  "items": [
+    {{
+      "header": "Title of the key concept",
+      "value": "A short descriptive paragraph about the concept"
+    }},
+    {{
+      "header": "Another key concept",
+      "value": "Description for this concept"
+    }}
+  ]
+}}
 
-### The SBI Framework
-- **Situation:** Describe the specific situation  
-- **Behavior:** Address the specific behaviors observed  
-- **Impact:** Explain the impact of those behaviors
+Instructions:
+- Do not include any text outside of the JSON structure.
+- Use exactly the field names: 'items', 'header', 'value'.
+- Extract up to 4 key concepts.
+- Each key concept must have a 'header' as a short title, and a 'value' as description.
+- Use proper JSON syntax, including double quotes.
+- Do not return any explanations, introductions, or markdown syntax.
+- Include blank lines for readability if you want, but only inside JSON string values.
 
-### Active Listening
-Show genuine interest in understanding the other person's perspective. 
-Paraphrase what you've heard to confirm understanding.
+Example output:
 
-### Use \"I\" Statements
-Frame feedback in terms of your observations and feelings rather than accusations. 
-For example, \"I noticed...\" instead of \"You always...\"
-
-### Collaborative Problem-Solving
-Work together to identify solutions rather than dictating next steps. 
-Ask questions like \"What do you think would help in this situation?\"
+{{
+  "items": [
+    {{
+      "header": "The SBI Framework",
+      "value": "Situation: Describe the specific situation. Behavior: Address the specific \n
+      behaviors observed. Impact: Explain the impact of those behaviors."
+    }},
+    {{
+      "header": "Active Listening",
+      "value": "Show genuine interest in understanding the other person's perspective.\n
+       Paraphrase what you've heard to confirm understanding."
+    }}
+    {{
+      "header": "Constructive Feedback",
+      "value": "Provide feedback that is specific, actionable, and focused on behaviors \n
+      rather than personal attributes."
+    }},
+    {{
+      "header": "Positive Closure",
+      "value": "End the conversation on a positive note, reinforcing the relationship \n
+      and future collaboration."
+    }}
+  ]
+}}
 
 ---
 
@@ -126,14 +153,14 @@ Training Case:
 """
 
 
-def generate_key_concept(request: KeyConceptRequest) -> str:
+def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
     prompt = build_key_concept_prompt(request)
     result = call_structured_llm(
         request_prompt=prompt,
         model='gpt-4o-2024-08-06',
         output_model=KeyConceptOutput,
     )
-    return result.markdown
+    return result.items
 
 
 def create_pending_preparation(case_id: UUID, session: Session) -> TrainingPreparation:
@@ -170,7 +197,6 @@ def generate_training_preparation(
     try:
         # 1. retrieve the preparation record
         preparation = session.get(TrainingPreparation, preparation_id)
-        print(preparation)
 
         if not preparation:
             raise ValueError(f'Training preparation with ID {preparation_id} not found.')
@@ -208,7 +234,7 @@ def generate_training_preparation(
             # 4. update the preparation record
             preparation.objectives = objectives
             preparation.prep_checklist = checklist
-            preparation.key_concepts = key_concepts
+            preparation.key_concepts = [ex.dict() for ex in key_concepts]
             preparation.status = TrainingPreparationStatus.completed
 
         except Exception:

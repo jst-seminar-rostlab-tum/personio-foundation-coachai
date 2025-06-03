@@ -24,8 +24,13 @@ class StringListResponse(BaseModel):
     items: list[str] = Field(..., description='List of generated text items')
 
 
+class KeyConcept(BaseModel):
+    header: str
+    value: str
+
+
 class KeyConceptOutput(BaseModel):
-    markdown: str
+    items: list[KeyConcept]
 
 
 class TrainingPreparationRequest(BaseModel):

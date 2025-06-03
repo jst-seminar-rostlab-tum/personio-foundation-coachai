@@ -1,5 +1,5 @@
 import os
-from typing import TypeVar
+from typing import Optional, TypeVar
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -30,7 +30,7 @@ def call_structured_llm(
     output_model: type[T],
     temperature: float = 1,
     max_tokens: int = 500,
-    system_prompt: str | None = None,
+    system_prompt: Optional[str] = None,
 ) -> T:
     """
     Call the LLM with a structured output request and parse the response.
