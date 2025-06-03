@@ -41,11 +41,14 @@ def call_structured_llm(
     max_tokens: int = 500,
     system_prompt: str | None = None,
     mock_response: T | None = None,
-) -> T | None:
+) -> T:
     """
     Call the LLM with a structured output request and parse the response.
     """
     if not ENABLE_AI:
+        if not mock_response:
+            raise ValueError('AI is disabled and no mock response provided')
+
         return mock_response
 
     selected_model = DEFAULT_CHEAP_MODEL if FORCE_CHEAP_MODEL else (model or DEFAULT_CHEAP_MODEL)
