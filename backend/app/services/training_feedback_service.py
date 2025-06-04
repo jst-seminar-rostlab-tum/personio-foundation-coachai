@@ -1,4 +1,10 @@
+from datetime import datetime
+from uuid import UUID, uuid4
+
+from sqlmodel import Session
+
 from app.connections.openai_client import call_structured_llm
+from app.models import FeedbackStatusEnum, TrainingSessionFeedback
 from app.schemas.training_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -218,6 +224,60 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
     )
 
     return response
+
+def generate_and_store_feedback(
+        session_id: UUID, example_request: ExamplesRequest, db: Session
+) -> TrainingSessionFeedback:
+    """
+    Generate feedback based on session_id and transcript data,
+    and write it to the training_session_feedback table
+    """
+
+    examples_request = example_request
+    goals_request = GoalsAchievementRequest(
+        transcript=example_request.transcript,
+        objectives=example_request.objectives,
+    )
+    recommendations_request = RecommendationsRequest(
+        category=example_request.category,
+        goal=example_request.goal,
+        context=example_request.context,
+        other_party=example_request.other_party,
+        transcript=example_request.transcript,
+        objectives=example_request.objectives,
+        key_concepts=example_request.key_concepts,
+    )
+
+    examples = generate_training_examples(examples_request)
+    goals = get_achieved_goals(goals_request)
+    recommendations = generate_recommendations(recommendations_request)
+
+    examples_positive_dicts = [ex.dict() for ex in examples.positive_examples]
+    examples_negative_dicts = [ex.dict() for ex in examples.negative_examples]
+    recommendations = [rec.dict() for rec in recommendations.recommendations]
+
+    feedback = TrainingSessionFeedback(
+        id=uuid4(),
+        session_id=session_id,
+        scores={},
+        tone_analysis={},
+        overall_score=0,
+        transcript_uri="",
+        speak_time_percent=0,
+        questions_asked=0,
+        session_length_s=0,
+        goals_achieved=len(goals.goals_achieved),
+        example_positive=examples_positive_dicts,
+        example_negative=examples_negative_dicts,
+        recommendations=recommendations,
+        status=FeedbackStatusEnum.pending,
+        created_at=datetime.now(),
+        updated_at=datetime.now(),
+    )
+
+    db.add(feedback)
+    db.commit()
+    return feedback
 
 
 if __name__ == '__main__':

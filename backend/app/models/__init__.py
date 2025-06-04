@@ -33,6 +33,7 @@ from app.models.training_preparation import (
 )
 from app.models.training_session import TrainingSession, TrainingSessionCreate, TrainingSessionRead
 from app.models.training_session_feedback import (
+    FeedbackStatusEnum,
     NegativeExample,
     PositiveExample,
     Recommendation,
@@ -47,7 +48,12 @@ from app.models.user_confidence_score import (
     UserConfidenceScoreRead,
 )
 from app.models.user_goal import UserGoal, UserGoalCreate, UserGoalRead
-from app.models.user_profile import UserProfile, UserProfileCreate, UserProfileExtendedRead, UserProfileRead
+from app.models.user_profile import (
+    UserProfile,
+    UserProfileCreate,
+    UserProfileExtendedRead,
+    UserProfileRead,
+)
 
 __all__ = [
     'Language',
@@ -95,6 +101,7 @@ __all__ = [
     'DifficultyLevelCreate',
     'DifficultyLevelRead',
     'PositiveExample',
+    'FeedbackStatusEnum',
     'NegativeExample',
     'Recommendation',
     'ConfidenceArea',
