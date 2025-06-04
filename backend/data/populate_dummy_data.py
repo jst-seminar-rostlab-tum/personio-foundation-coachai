@@ -61,7 +61,8 @@ def populate_data() -> None:
         session_lengths = get_dummy_session_lengths()
         session.add_all(session_lengths)
 
-        # Commit roles, experiences, goals, learning_styles, session_length and difficulty levels to get their IDs
+        # Commit roles, experiences, goals, learning_styles, session_length and difficulty levels
+        # to get their IDs
         session.commit()
 
         # Populate User Profiles

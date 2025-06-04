@@ -24,6 +24,7 @@ from .routers import (
     user_goals_route,
     user_profile_route,
     webrtc_signal_route,
+    user_profile_stats_route,
 )
 
 app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
@@ -46,6 +47,7 @@ app.include_router(conversation_turn_route.router)
 app.include_router(training_session_feedback_route.router)
 app.include_router(rating_route.router)
 app.include_router(user_profile_route.router)
+app.include_router(user_profile_stats_route.router)
 app.include_router(user_goals_route.router)
 app.include_router(goal_route.router)
 app.include_router(confidence_area_route.router)
