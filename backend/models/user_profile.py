@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
 class UserProfile(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
+    user_name: Optional[str] = None
     preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
     role_id: UUID = Field(foreign_key='role.id')  # FK to Role
     experience_id: UUID = Field(foreign_key='experience.id')  # FK to Experience
