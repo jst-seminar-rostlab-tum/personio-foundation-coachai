@@ -112,78 +112,15 @@ exclude = [
 
 # Add specific naming rules
 [tool.ruff.lint.naming]
-include = ["**/*.py"]
-exclude = [
-    ".venv",
-    ".git",
-    "__pycache__",
-    "__init__.py",
-    "build",
-    "dist",
-]
 # Function naming rules
 function-name = "camelCase"
-include = ["**/*.py"]
-exclude = [
-    ".venv",
-    ".git",
-    "__pycache__",
-    "__init__.py",
-    "build",
-    "dist",
-]
 # Variable naming rules
 variable-name = "camelCase"
-include = ["**/*.py"]
-exclude = [
-    ".venv",
-    ".git",
-    "__pycache__",
-    "__init__.py",
-    "build",
-    "dist",
-]
 # Class naming rules (keep snake_case for Python convention)
 class-name = "snake_case"
-include = ["**/*.py"]
-exclude = [
-    ".venv",
-    ".git",
-    "__pycache__",
-    "__init__.py",
-    "build",
-    "dist",
-]
 # Method naming rules
 method-name = "camelCase"
-include = ["**/*.py"]
-exclude = [
-    ".venv",
-    ".git",
-    "__pycache__",
-    "__init__.py",
-    "build",
-    "dist",
-]
 # Module naming rules
 module-name = "snake_case"
-include = ["**/*.py"]
-exclude = [
-    ".venv",
-    ".git",
-    "__pycache__",
-    "__init__.py",
-    "build",
-    "dist",
-]
 # Constant naming rules
 constant-name = "UPPER_CASE"
-include = ["**/*.py"]
-exclude = [
-    ".venv",
-    ".git",
-    "__pycache__",
-    "__init__.py",
-    "build",
-    "dist",
-]
