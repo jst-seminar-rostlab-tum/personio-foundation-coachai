@@ -46,6 +46,7 @@ from .user_confidence_score import (
     UserConfidenceScoreCreate,
     UserConfidenceScoreRead,
 )
+from .user_feedback import UserFeedback, UserFeedbackCreate, UserFeedbackRead
 from .user_goal import UserGoal, UserGoalCreate, UserGoalRead
 from .user_profile import UserProfile, UserProfileCreate, UserProfileExtendedRead, UserProfileRead
 
@@ -116,4 +117,7 @@ __all__ = [
     'AppConfigCreate',
     'AppConfigRead',
     'ConfigType',
+    'UserFeedback',
+    'UserFeedbackCreate',
+    'UserFeedbackRead',
 ]
