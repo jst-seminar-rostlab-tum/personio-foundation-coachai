@@ -29,48 +29,13 @@ import UserPreferences from '@/components/common/UserPreferences';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
-import { deleteUser } from '@/lib/deleteUser';
+import { useDeleteUser } from './DeleteUser';
 
 export default function TrainingSettings() {
   const [audioEnabled, setAudioEnabled] = useState(false);
   const t = useTranslations('TrainingSettings');
-  const [loading, setLoading] = useState(false);
+  const { handleDeleteUser, loading } = useDeleteUser();
   const userId = '12345';
-
-  async function handleDeleteUser() {
-    setLoading(true);
-    try {
-      await deleteUser(userId);
-      alert(t('userDeleted'));
-    } catch (error: unknown) {
-      if (typeof error === 'object' && error !== null && 'response' in error) {
-        const axiosError = error as { response?: { status: number } };
-        switch (axiosError.response?.status) {
-          case 400:
-            alert(t('invalidUserId'));
-            break;
-          case 401:
-            alert(t('authFailed'));
-            break;
-          case 403:
-            alert(t('notAuthorized'));
-            break;
-          case 404:
-            alert(t('userNotFound'));
-            break;
-          case 500:
-            alert(t('serverError'));
-            break;
-          default:
-            alert(t('deleteFailed'));
-        }
-      } else {
-        alert(t('deleteFailed'));
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <div>
@@ -128,7 +93,10 @@ export default function TrainingSettings() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteUser} disabled={loading}>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteUser(userId)}
+                          disabled={loading}
+                        >
                           {loading ? t('deleting') : t('confirm')}
                         </AlertDialogAction>
                       </AlertDialogFooter>

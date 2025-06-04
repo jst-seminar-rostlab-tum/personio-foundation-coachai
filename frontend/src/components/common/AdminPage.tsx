@@ -1,3 +1,5 @@
+/* eslint-disable no-alert */
+
 'use client';
 
 import { ArrowRightIcon, ChevronDown, Search, Star, Trash2 } from 'lucide-react';
@@ -21,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '../ui/AlertDialog';
+import { useDeleteUser } from './DeleteUser';
 
 export default function Admin() {
   const t = useTranslations('Admin');
@@ -46,6 +49,9 @@ export default function Admin() {
   ];
   const canLoadMore = visibleUsers < allUsers.length;
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
+  const { handleDeleteUser, loading } = useDeleteUser();
+  const userId = '12345';
+
   return (
     <div className="px-2 sm:px-4 max-w-full">
       <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
@@ -213,7 +219,12 @@ export default function Admin() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>{tr('cancel')}</AlertDialogCancel>
-                              <AlertDialogAction>{tr('confirm')}</AlertDialogAction>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteUser(userId)}
+                                disabled={loading}
+                              >
+                                {loading ? tr('deleting') : tr('confirm')}
+                              </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
