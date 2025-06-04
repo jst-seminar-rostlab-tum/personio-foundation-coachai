@@ -96,8 +96,8 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.barlow-condensed-medium {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 500;
-  font-style: normal;
+.bebas-neue {
+  font-family: 'Bebas Neue', 'Bebas Neue Fallback', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
