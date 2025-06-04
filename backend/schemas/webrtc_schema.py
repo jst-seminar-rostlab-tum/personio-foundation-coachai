@@ -46,13 +46,6 @@ class WebRTCIceCandidate(BaseModel):
     sdp_mid: str = Field(..., description='SDP m-id', alias='sdpMid')
 
 
-class WebRTCIceCandidateResponse(WebRTCSignalingBase):
-    """WebRTC ICE candidate response"""
-
-    type: Literal['candidate'] = Field(..., description="Type of the message, must be 'candidate'")
-    candidate: WebRTCIceCandidate = Field(..., description='ICE candidate')
-
-
 class WebRTCSignalingMessage(WebRTCSignalingBase):
     """WebRTC signaling message"""
 
