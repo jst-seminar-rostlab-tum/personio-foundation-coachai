@@ -62,7 +62,7 @@ class WebSocketService:
         peer_id = str(id(websocket))
 
         try:
-            if message.type == WebRTCSignalingType.OFFER:
+            if message.signal_type == WebRTCSignalingType.OFFER:
                 # always create/overwrite peer connection, ensure peer is the latest
                 try:
                     await self.webrtc_service.create_peer_connection(peer_id)
@@ -110,7 +110,7 @@ class WebSocketService:
                 try:
                     await websocket.send_json(
                         WebRTCSignalingMessage(
-                            type=WebRTCSignalingType.ANSWER,
+                            signal_type=WebRTCSignalingType.ANSWER,
                             sdp=answer.sdp,
                         ).model_dump()
                     )
@@ -132,7 +132,7 @@ class WebSocketService:
                             f'Error waiting for ICE gathering: {str(e)}', peer_id
                         ) from e
 
-            elif message.type == WebRTCSignalingType.CANDIDATE:
+            elif message.signal_type == WebRTCSignalingType.CANDIDATE:
                 peer = self.webrtc_service.peers.get(peer_id)
                 if not peer:
                     raise WebSocketSignalingError(
@@ -171,7 +171,7 @@ class WebSocketService:
                     )
 
             else:
-                logger.debug(f'Unknown signaling message type: {message.type}')
+                logger.debug(f'Unknown signaling message type: {message.signal_type}')
 
         except WebSocketError:
             raise

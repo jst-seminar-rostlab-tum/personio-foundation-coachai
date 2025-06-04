@@ -21,20 +21,20 @@ class WebRTCSignalingType(str, Enum):
 class WebRTCSignalingBase(BaseModel):
     """Base model for WebRTC signaling messages"""
 
-    type: WebRTCSignalingType = Field(..., description='Type of the signaling message')
+    signal_type: WebRTCSignalingType = Field(..., description='Type of the signaling message')
 
 
 class WebRTCOffer(WebRTCSignalingBase):
     """WebRTC offer signaling message"""
 
-    type: Literal['offer'] = Field(..., description="Type of the message, must be 'offer'")
+    signal_type: Literal['offer'] = Field(..., description="Type of the message, must be 'offer'")
     sdp: str = Field(..., description='Session Description Protocol (SDP) for the offer')
 
 
 class WebRTCAnswer(WebRTCSignalingBase):
     """WebRTC answer signaling message"""
 
-    type: Literal['answer'] = Field(..., description="Type of the message, must be 'answer'")
+    signal_type: Literal['answer'] = Field(..., description="Type of the message, must be 'answer'")
     sdp: str = Field(..., description='Session Description Protocol (SDP) for the answer')
 
 
@@ -49,7 +49,7 @@ class WebRTCIceCandidate(BaseModel):
 class WebRTCSignalingMessage(WebRTCSignalingBase):
     """WebRTC signaling message"""
 
-    type: WebRTCSignalingType = Field(..., description='Type of the message')
+    signal_type: WebRTCSignalingType = Field(..., description='Type of the message')
     sdp: str | None = None
     candidate: WebRTCIceCandidate | None = None
 
