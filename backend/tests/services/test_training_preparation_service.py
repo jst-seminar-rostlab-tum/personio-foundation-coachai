@@ -2,6 +2,7 @@ from unittest.mock import MagicMock, patch
 
 from backend.schemas.training_preparation_schema import (
     ChecklistRequest,
+    KeyConcept,
     KeyConceptOutput,
     KeyConceptRequest,
     ObjectiveRequest,
@@ -55,26 +56,21 @@ def test_generate_checklist_returns_correct_list(mock_llm: MagicMock) -> None:
 
 @patch('backend.services.training_preparation_service.call_structured_llm')
 def test_generate_key_concept_parses_json(mock_llm: MagicMock) -> None:
-    markdown_output = """
-   ### The SBI Framework
-- **Situation:** Describe the specific situation  
-- **Behavior:** Address the specific behaviors observed  
-- **Impact:** Explain the impact of those behaviors  
+    mock_key_concept_response = [
+        KeyConcept(
+            header='Clear Communication',
+            value='Express ideas clearly and listen actively to understand others.',
+        ),
+        KeyConcept(
+            header='Empathy', value="Show understanding and concern for the other party's feelings."
+        ),
+        KeyConcept(
+            header='Effective Questioning',
+            value='Ask open-ended questions to encourage dialogue and exploration.',
+        ),
+    ]
 
-### Active Listening
-Show genuine interest in understanding the other person's perspective. 
-Paraphrase what you've heard to confirm understanding.
-
-### Use "I" Statements
-Frame feedback in terms of your observations and feelings rather than accusations. 
-For example, "I noticed..." instead of "You always..."
-
-### Collaborative Problem-Solving
-Work together to identify solutions rather than dictating next steps. 
-Ask questions like "What do you think would help in this situation?"
-
-    """
-    mock_llm.return_value = KeyConceptOutput(markdown=markdown_output)
+    mock_llm.return_value = KeyConceptOutput(items=mock_key_concept_response)
 
     req = KeyConceptRequest(
         category='Feedback',
@@ -84,5 +80,5 @@ Ask questions like "What do you think would help in this situation?"
     )
 
     result = generate_key_concept(req)
-    assert isinstance(result, str)
-    assert result == markdown_output
+    assert all(isinstance(x, KeyConcept) for x in result)
+    assert result == mock_key_concept_response
