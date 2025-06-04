@@ -23,8 +23,8 @@ from .routers import (
     user_confidence_score_route,
     user_goals_route,
     user_profile_route,
-    webrtc_signal_route,
     user_profile_stats_route,
+    webrtc_signal_route,
 )
 
 app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')

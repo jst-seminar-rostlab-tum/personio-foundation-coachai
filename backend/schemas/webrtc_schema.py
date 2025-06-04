@@ -67,12 +67,12 @@ class WebRTCMessage(WebRTCSignalingMessage):
     model_config = ConfigDict(extra='allow')
 
 
-
 # ============================================================================
 #                           WEBSOCKET ERRORS
 # ============================================================================
 # These schemas define the error types and classes for WebSocket errors
 # ============================================================================
+
 
 class WebSocketErrorType(Enum):
     """WebSocket error types"""
@@ -81,7 +81,6 @@ class WebSocketErrorType(Enum):
     MESSAGE = 'message'
     SIGNALING = 'signaling'
     ICE = 'ice'
-
 
 
 class WebSocketErrorData(BaseModel):
