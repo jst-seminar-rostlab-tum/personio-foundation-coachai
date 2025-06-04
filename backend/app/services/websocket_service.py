@@ -4,9 +4,7 @@ import logging
 from aiortc import RTCIceCandidate, RTCSessionDescription
 from fastapi import WebSocket
 
-from app.services.webrtc_service import get_webrtc_service
-
-from ..schemas.webrtc_schema import (
+from app.schemas.webrtc_schema import (
     WebRTCError,
     WebRTCIceCandidate,
     WebRTCSignalingMessage,
@@ -17,6 +15,7 @@ from ..schemas.webrtc_schema import (
     WebSocketIceError,
     WebSocketSignalingError,
 )
+from app.services.webrtc_servce import get_webrtc_service
 
 logger = logging.getLogger(__name__)
 
