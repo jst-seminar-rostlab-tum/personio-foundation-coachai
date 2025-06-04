@@ -15,7 +15,7 @@ from ..schemas.webrtc_schema import (
     WebSocketIceError,
     WebSocketSignalingError,
 )
-from .webrtc_service import get_webrtc_service
+from app.services.webrtc_service import get_webrtc_service
 
 logger = logging.getLogger(__name__)
 

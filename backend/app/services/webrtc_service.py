@@ -11,7 +11,7 @@ from aiortc import (
 )
 from aiortc.mediastreams import MediaStreamTrack
 
-from ..schemas.webrtc_schema import (
+from app.schemas.webrtc_schema import (
     WebRTCConnectionError,
     WebRTCDataChannelError,
     WebRTCError,

@@ -3,8 +3,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 
-from ..schemas.webrtc_schema import WebRTCSignalingMessage
-from ..services.websocket_service import WebSocketService, get_websocket_service
+from app.schemas.webrtc_schema import WebRTCSignalingMessage
+from app.services.websocket_service import WebSocketService, get_websocket_service
 
 logging.basicConfig(level=logging.INFO)
 
