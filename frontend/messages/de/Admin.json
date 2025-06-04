@@ -1,4 +1,21 @@
 {
   "metaTitle": "Admin - Coach AI",
-  "metaDescription": "Verwalten Sie Benutzer, Trainingssitzungen und Systemeinstellungen"
+  "metaDescription": "Verwalten Sie Benutzer, Trainingssitzungen und Systemeinstellungen",
+  "dashboardTitle": "Admin-Dashboard",
+  "dashboardSubtitle": "Analysieren & Verwalten Sie Ihre Nutzer",
+  "statActiveUsers": "Aktive Nutzer",
+  "statTotalTrainings": "Trainings insgesamt",
+  "statReviews": "Bewertungen",
+  "statAverageScore": "Durchschnittliche Bewertung",
+  "tokensPerUserLabel": "Tokens/Benutzer/Tag",
+  "userFeedback": "Nutzerfeedback",
+  "showAllReviews": "Alle Bewertungen anzeigen",
+  "userManagement": "Benutzerverwaltung",
+  "trainingCategories": "Trainingskategorien",
+  "trainingScenarios": "Trainingsszenarien",
+  "search": "Suchen...",
+  "users": "Benutzer",
+  "actions": "Aktionen",
+  "deleteUser": "Benutzer löschen",
+  "loadMore": "Mehr laden"
 }
