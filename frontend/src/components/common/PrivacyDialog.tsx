@@ -85,7 +85,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
     [t]
   );
 
-  const DataProcessingCard = ({ dataProcessingTopic: item }: DataProcessingTopic) => (
+  const DataProcessingCard = ({ item }: DataProcessingTopic) => (
     <div className="border rounded-lg p-4" key={item.key}>
       <div className="font-semibold text-base sm:text-base mb-2">{item.title}</div>
       <div className="text-base sm:text-base text-gray-600 mb-3">{item.description}</div>
@@ -160,7 +160,10 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-sm sm:max-w-2xl lg:max-w-4xl max-h-[85vh] overflow-y-auto p-4">
+      <DialogContent
+        className="w-[95vw] max-w-sm sm:max-w-2xl lg:max-w-4xl max-h-[85vh] overflow-y-auto p-4"
+        aria-describedby={undefined}
+      >
         <DialogTitle>{t('title')}</DialogTitle>
 
         <div className="space-y-4 sm:space-y-6 mt-4" role="document">

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from services.twilio_service import send_verification_code, verify_code
+from ..services.twilio_service import send_verification_code, verify_code
 
 router = APIRouter(prefix='/twilio', tags=['Twilio'])
 

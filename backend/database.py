@@ -5,7 +5,9 @@ from typing import Any
 
 from sqlmodel import Session, SQLModel, create_engine
 
-from .config import settings
+from backend.config import Settings
+
+settings = Settings()
 
 if settings.stage == 'prod':
     os.makedirs(settings.ssl_cert_dir, exist_ok=True)
@@ -19,7 +21,10 @@ if settings.database_url:
         f'{settings.database_url}?sslmode=verify-full&sslrootcert={ssl_cert_path}'
     )
 else:
+    # Use this if your are working with production supabase account
     # SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
+
+    # Use this if your are working with your supabase account
     SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
 
 

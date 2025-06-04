@@ -6,4 +6,5 @@ export interface SignUpFormProps {
     password: string;
     terms: boolean;
   }) => void;
+  setError: (error: string | null) => void;
 }

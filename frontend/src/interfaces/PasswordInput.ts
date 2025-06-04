@@ -3,3 +3,9 @@ export interface PasswordRequirement {
   label: string;
   test: (password: string) => boolean;
 }
+
+export interface PasswordInputProps {
+  placeholder: string;
+  disabled: boolean;
+  requirements?: PasswordRequirement[];
+}

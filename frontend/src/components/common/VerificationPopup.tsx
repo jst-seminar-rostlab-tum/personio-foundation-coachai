@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { userProfileApi } from '@/services/Api';
 import { RotateCcw } from 'lucide-react';
 import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
-import { supabase } from '@/lib/supabase';
+// import { supabase } from '@/lib/supabase';
 
 export function VerificationPopup({
   isOpen,
@@ -22,9 +22,9 @@ export function VerificationPopup({
   const t = useTranslations('Login.VerificationPopup');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [verificationCode] = useState('');
 
   const verificationSchema = z.object({
     code: z.string().regex(/^\d{6}$/, t('codeInputError')),
@@ -45,18 +45,8 @@ export function VerificationPopup({
     setIsLoading(true);
     setError(null);
     try {
-      // Supabase verification
-      const { error: signInError } = await supabase.auth.signInWithOtp({
-        phone: recipientPhoneNumber,
-      });
-
-      if (signInError) {
-        console.error('Supabase verification error:', signInError);
-        throw signInError;
-      }
-
-      // Twilio verification (commented out but kept for reference)
-      // await userProfileApi.sendVerificationCode(recipientPhoneNumber);
+      // Send verification code using backend endpoint
+      await userProfileApi.sendVerificationCode(recipientPhoneNumber);
     } catch (err) {
       console.error('Error in sign in:', err);
       setError('Failed to send verification code. Please try again.');
@@ -69,30 +59,47 @@ export function VerificationPopup({
     setIsLoading(true);
     setError(null);
     try {
-      // Supabase verification
-      const { error: verifyError } = await supabase.auth.verifyOtp({
-        phone: recipientPhoneNumber,
-        token: verificationCode,
-        type: 'sms',
-      });
+      // Get the code from the form
+      const code = form.getValues('code');
+      // Verify code using backend endpoint
+      const result = await userProfileApi.verifyCode(recipientPhoneNumber, code);
 
-      if (verifyError) {
-        console.error('Supabase verification error:', verifyError);
-        throw verifyError;
+      if (!result.valid) {
+        throw new Error('Invalid verification code');
       }
 
-      // Twilio verification (commented out but kept for reference)
-      // const result = await userProfileApi.verifyCode(recipientPhoneNumber, verificationCode);
-      // if (!result.valid) {
-      //   throw new Error('Invalid verification code');
-      // }
+      // If verification successful and we have form data, create the user
+      if (formData) {
+        try {
+          await userProfileApi.create({
+            full_name: formData.fullName,
+            email: formData.email,
+            phone_number: formData.phoneNumber,
+            password: formData.password,
+            preferred_language: 'en',
+            role_id: undefined,
+            experience_id: undefined,
+            preferred_learning_style_id: undefined,
+            preferred_session_length_id: undefined,
+            store_conversations: true,
+          });
 
-      onClose();
-      router.push('/');
+          // If we get here, user was created successfully
+          onClose();
+          router.push('/');
+        } catch (err) {
+          console.error('Error creating user:', err);
+          setError(t('genericError'));
+          setIsLoading(false);
+        }
+      } else {
+        // If no form data (just verification), close and redirect
+        onClose();
+        router.push('/');
+      }
     } catch (err) {
       console.error('Error verifying code:', err);
       setError('Invalid verification code. Please try again.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -120,43 +127,11 @@ export function VerificationPopup({
       setError(null);
 
       // Verify the code
-      verifyCode();
-      const isVerified = true;
-
-      if (!isVerified) {
-        setError(t('invalidCode'));
-        return;
-      }
-
-      // If verification successful and we have form data, create the user
-      if (formData) {
-        try {
-          await userProfileApi.create({
-            full_name: formData.fullName,
-            email: formData.email,
-            phone_number: formData.phoneNumber,
-            password: formData.password,
-            preferred_language: 'en',
-            preferred_learning_style_id: '',
-            preferred_session_length: '',
-            role_id: undefined,
-            experience_id: undefined,
-          });
-
-          // If we get here, user was created successfully
-          onClose();
-          router.push('/');
-        } catch (err) {
-          console.error('Error creating user:', err);
-          setError(t('genericError'));
-        }
-      }
+      await verifyCode();
     } catch (err: unknown) {
       const errorMessage = t('genericError');
       console.error('Error verifying code:', err);
-
       setError(errorMessage);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -164,7 +139,8 @@ export function VerificationPopup({
   const handleResendCode = async () => {
     try {
       setError(null);
-      await userProfileApi.sendVerificationCode(recipientPhoneNumber);
+      setIsResending(true);
+      await signIn(); // Call signIn to resend the code
       setResendCooldown(30);
     } catch (err: unknown) {
       let errorMessage = t('resendError');
@@ -193,6 +169,8 @@ export function VerificationPopup({
       }
 
       setError(errorMessage);
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -205,25 +183,21 @@ export function VerificationPopup({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <CardContent className="space-y-4 p-4">
-              <h2 className="text-xl font-semibold text-center">{t('title')}</h2>
-              <p className="text-sm text-center text-gray-600">
+              <h2 className="text-xl text-center">{t('title')}</h2>
+              <p className="text-base text-center text-bw-50">
                 {t('descriptionPartOne')}
                 <strong>{recipientPhoneNumber}</strong>
                 {t('descriptionPartTwo')}
               </p>
 
-              {error && (
-                <div className="p-2 text-sm text-red-500 bg-red-50 rounded-md">{error}</div>
-              )}
+              {error && <div className="p-2 text-base text-destructive rounded-md">{error}</div>}
 
               <FormField
                 control={form.control}
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm flex justify-center">
-                      {t('codeInputLabel')}
-                    </FormLabel>
+                    <FormLabel className="text-center">{t('codeInputLabel')}</FormLabel>
 
                     <div className="flex justify-center gap-2">
                       {[...Array(codeSize)].map((_, idx) => (
@@ -273,17 +247,17 @@ export function VerificationPopup({
                   variant="ghost"
                   size="default"
                   onClick={handleResendCode}
-                  disabled={resendCooldown > 0 || isLoading}
-                  className={`text-sm p-0 h-auto font-normal transition-colors flex items-center gap-1 ${
-                    resendCooldown > 0 || isLoading
-                      ? 'text-gray-400 cursor-not-allowed hover:text-gray-400'
-                      : 'text-blue-600 hover:text-blue-700 cursor-pointer'
+                  disabled={resendCooldown > 0 || isResending}
+                  className={`text-base p-0 h-auto font-normal transition-colors flex items-center gap-1 ${
+                    resendCooldown > 0 || isResending
+                      ? 'text-bw-40 cursor-not-allowed'
+                      : 'text-marigold-50 cursor-pointer'
                   }`}
                 >
                   <RotateCcw
                     size={14}
-                    className={`${resendCooldown > 0 ? 'animate-spin' : ''} ${
-                      resendCooldown > 0 || isLoading ? 'text-gray-400' : 'text-blue-600'
+                    className={`${isResending ? 'animate-spin' : ''} ${
+                      resendCooldown > 0 || isResending ? 'text-bw-40' : 'text-marigold-50'
                     }`}
                   />
                   {`${t('resendButtonLabel')}${resendCooldown > 0 ? ` (${resendCooldown}s)` : ''}`}
@@ -292,14 +266,13 @@ export function VerificationPopup({
             </CardContent>
             <CardFooter className="flex-col gap-2 p-4">
               <Button
-                size={'full'}
+                size="full"
                 type="submit"
                 disabled={isLoading || resendCooldown > 0 || form.watch('code').length !== codeSize}
-                className="disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
               >
                 {isLoading ? t('verifyingButtonLabel') : t('verifyButtonLabel')}
               </Button>
-              <Button size={'full'} variant={'secondary'} onClick={onClose} disabled={isLoading}>
+              <Button size="full" variant="secondary" onClick={onClose} disabled={isLoading}>
                 {t('cancelButtonLabel')}
               </Button>
             </CardFooter>

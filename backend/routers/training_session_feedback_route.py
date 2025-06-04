@@ -49,7 +49,7 @@ def create_training_session_feedback(
 @router.put('/{feedback_id}', response_model=TrainingSessionFeedbackRead)
 def update_training_session_feedback(
     feedback_id: UUID,
-    updated_data: TrainingSessionFeedbackCreate,
+    updated_data: dict,
     session: Annotated[Session, Depends(get_session)],
 ) -> TrainingSessionFeedback:
     """
@@ -59,15 +59,13 @@ def update_training_session_feedback(
     if not feedback:
         raise HTTPException(status_code=404, detail='Training session feedback not found')
 
-    # Validate foreign key
-    if updated_data.session_id:
-        training_session = session.get(TrainingSession, updated_data.session_id)
-        if not training_session:
-            raise HTTPException(status_code=404, detail='Training session not found')
-
-    for key, value in updated_data.dict().items():
-        setattr(feedback, key, value)
-
+    for key, value in updated_data.items():
+        if hasattr(feedback, key):  # Ensure the field exists in the model
+            setattr(
+                feedback,
+                key,
+                value if value is not None else getattr(TrainingSessionFeedback, key).default,
+            )
     session.add(feedback)
     session.commit()
     session.refresh(feedback)

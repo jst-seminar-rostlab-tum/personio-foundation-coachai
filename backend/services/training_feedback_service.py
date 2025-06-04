@@ -1,8 +1,8 @@
 from backend.connections.openai_client import call_structured_llm
 from backend.schemas.training_feedback_schema import (
     ExamplesRequest,
-    GoalAchieved,
-    GoalAchievementRequest,
+    GoalsAchievedCollection,
+    GoalsAchievementRequest,
     RecommendationsCollection,
     RecommendationsRequest,
     TrainingExamplesCollection,
@@ -32,10 +32,25 @@ def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesColl
     Analyze the provided transcript and how you performed against the training guidelines. 
     Extract up to 3 positive and 3 negative examples comparing your performance to the 
     training guidelines. Only extract examples that are things you said (not the AI).
+    Try to find at least one positive and one negative example.
 
     Format your output as a Pydantic model with two fields:
-    - `positive_examples`: a Markdown string listing up to 3 positive examples.
-    - `negative_examples`: a Markdown string listing up to 3 negative examples.
+    - `positive_examples`: a list of up to 3 positive examples
+    - `negative_examples`: a list of up to 3 negative examples.
+
+    Each positive example represents a Pydantic model with the four fields:
+    - `heading`: A short title or summary of the positive example
+    - `text`: A short explanation of why this is a good example
+    - `quote`: A direct quote from the transcript that illustrates the example
+    - `guideline`: The specific guideline or concept this quote aligns with
+    
+    Each negative example represents a Pydantic model with the four fields:
+    - `heading`: A short title or summary of the negative example
+    - `text`: A short description or context of the example
+    - `quote`: A problematic or unhelpful quote mentioned by the user
+    - `improved_quote`: A suggested improved version of the quote
+    
+    Do not include markdown or ```json formatting.
 
     Each example should include:
     - A bolded heading
@@ -58,10 +73,10 @@ def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesColl
     return response
 
 
-def get_achieved_goals(request: GoalAchievementRequest) -> int:
+def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollection:
     user_prompt = f"""
     The following is a transcript of a training session.
-    Please evaluate how many of the listed goals were clearly achieved by the user 
+    Please evaluate which of the listed goals were clearly achieved by the user 
     in this conversation.
 
     Transcript:
@@ -74,17 +89,24 @@ def get_achieved_goals(request: GoalAchievementRequest) -> int:
     - For each goal, determine if the user’s speech aligns with 
         and fulfills the intention behind it.
     - Only count goals that are clearly demonstrated in the user's statements.
-    - Return the number of goals achieved as an integer.
+
+    - Format your output as a list of strings, where each string is a goal that was achieved.
+    - Do not include any additional commentary or formatting.
+    - Only return the list of achieved goals, not the entire transcript or any other text.
+    - If no goals were achieved, return an empty list.
+    - If some goals were achieved, return a list of those goals.
+    - If all goals were achieved, return the full list of goals.
+    - Do not include any markdown formatting or extra text.
     """
 
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt='You are an expert communication coach analyzing training sessions.',
         model='gpt-4o-2024-08-06',
-        output_model=GoalAchieved,
+        output_model=GoalsAchievedCollection,
     )
 
-    return response.goals_achieved
+    return response
 
 
 def generate_recommendations(request: RecommendationsRequest) -> RecommendationsCollection:
@@ -96,9 +118,6 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
     Each recommendation should:
     - Be based directly on how the user performed in the transcript
     - Be short, specific, and actionable
-    - Be written as a single Markdown string that includes:
-    - A header using the format #### Recommendation Title
-    - A short paragraph explaining what to improve and how
 
     Transcript:
     {request.transcript}
@@ -120,10 +139,25 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
     - You are practicing how to {request.goal}
     - The other party, the AI, is simulating a {request.other_party}
 
-    Format your output as a list of objects.
-    Do not include any markdown formatting outside of the recommendation strings. 
-    Only return the list of structured `Recommendation` objects, ready to be parsed into the 
-    `RecommendationsCollection` model.
+    Format your output as a list of 'Recommendation' objects.
+    Each recommendation represents a Pydantic model with two fields:
+    - `heading`: A short title or summary of the recommendation
+    - `text`: A description or elaboration of the recommendation
+
+    Do not include markdown, explanation, or code formatting.
+
+    Example Recommendations:
+    1. heading: "Practice the STAR method", 
+    text: "When giving feedback, use the Situation, Task, Action, Result framework to provide more 
+    concrete examples."
+    
+    2. heading: "Ask more diagnostic questions", 
+    text: "Spend more time understanding root causes before moving to solutions. 
+    This builds empathy and leads to more effective outcomes."
+
+    3. heading: "Define clear next steps",
+    text: "End feedback conversations with agreed-upon action items, timelines, and follow-up plans.
+
     """
 
     response = call_structured_llm(
@@ -170,18 +204,34 @@ if __name__ == '__main__':
 
     examples = generate_training_examples(example_request)
 
-    print(f'Positive Examples: {examples.positive_examples}')
+    if len(examples.positive_examples) == 0:
+        print('No positive examples found. Please check the transcript and guidelines.')
+    if len(examples.negative_examples) == 0:
+        print('No negative examples found. Please check the transcript and guidelines.')
 
-    print(f'Negative Examples: {examples.negative_examples}')
+    for example in examples.positive_examples:
+        print(f'Positive Example: {example.heading}')
+        print(f'Text: {example.text}')
+        print(f'Quote: {example.quote}')
+        print(f'Guideline: {example.guideline}\n')
+
+    for example in examples.negative_examples:
+        print(f'Negative Example: {example.heading}')
+        print(f'Text: {example.text}')
+        print(f'Quote: {example.quote}')
+        print(f'Improved Quote: {example.improved_quote}\n')
 
     print('Training examples generated successfully.')
 
-    goals_achievement_request = GoalAchievementRequest(
+    goals_achievement_request = GoalsAchievementRequest(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
     )
     goals_achieved = get_achieved_goals(goals_achievement_request)
-    print(f'Number of goals achieved: {goals_achieved} / {len(example_request.objectives)}')
+    print(
+        'Number of goals achieved: '
+        + f'{len(goals_achieved.goals_achieved)} / {len(example_request.objectives)}'
+    )
 
     recommendation_request = RecommendationsRequest(
         category=example_request.category,
@@ -194,4 +244,6 @@ if __name__ == '__main__':
     )
     recommendations = generate_recommendations(recommendation_request)
     for recommendation in recommendations.recommendations:
-        print(f'Recommendation: {recommendation.markdown}')
+        print(f'Recommendation: {recommendation.heading}')
+        print(f'Text: {recommendation.text}\n')
+    print('Recommendations generated successfully.')

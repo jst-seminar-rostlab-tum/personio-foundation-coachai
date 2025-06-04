@@ -19,3 +19,17 @@ export interface UserConfidenceField {
   maxValue: number;
   onChange?: (value: number[]) => void;
 }
+
+export interface UserOption {
+  id: string;
+  label: string;
+  labelHint?: string;
+}
+
+export interface UserRadioQuestion {
+  question: string;
+  options: UserOption[];
+  labelHintAlign?: 'vertical' | 'horizontal';
+  selectedValue?: string;
+  onValueChange?: (value: string) => void;
+}

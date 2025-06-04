@@ -11,7 +11,9 @@
     "passwordInputError": "Password ist ungültig",
     "stayLoggedInCheckboxLabel": "Angemeldet bleiben",
     "signInButtonLabel": "Anmelden",
-    "signInWithGoogleButtonLabel": "Oder mit Google anmelden"
+    "signInWithGoogleButtonLabel": "Oder mit Google anmelden",
+    "alertErrorTitle401": "Ungültige E-Mail oder Passwort",
+    "alertErrorTitleGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
   },
   "SignUpTab": {
     "title": "Registrieren",
@@ -33,7 +35,8 @@
     "readMoreOnGdprLink": "Mehr erfahren",
     "agreeToTermsCheckboxLabel": "Ich stimme den Nutzungsbedingungen und der Datenschutzrichtlinie zu",
     "signUpButtonLabel": "Registrieren",
-    "signUpWithGoogleButtonLabel": "Oder mit Google registrieren"
+    "signUpWithGoogleButtonLabel": "Oder mit Google registrieren",
+    "genericError": "Ein Fehler ist während der Registrierung aufgetreten"
   },
   "VerificationPopup": {
     "title": "Bestätige deine Telefonnummer",

@@ -2,9 +2,15 @@ import { useState } from 'react';
 import { EyeIcon, EyeOffIcon, CheckIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
+import { PasswordInputProps } from '@/interfaces/PasswordInput';
 import Input from '../ui/Input';
 
-export function PasswordInput({ placeholder, disabled, requirements, ...props }) {
+export function PasswordInput({
+  placeholder,
+  disabled,
+  requirements,
+  ...props
+}: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordValue, setPasswordValue] = useState('');
   const t = useTranslations('Login.PasswordInput');
@@ -16,7 +22,7 @@ export function PasswordInput({ placeholder, disabled, requirements, ...props })
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 text-base">
       <div className="relative">
         <Input
           placeholder={placeholder}
@@ -28,7 +34,7 @@ export function PasswordInput({ placeholder, disabled, requirements, ...props })
         />
         <button
           type="button"
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer"
+          className="absolute right-2 top-1/2 -translate-y-1/2 focus:outline-none cursor-pointer"
           onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
@@ -44,9 +50,13 @@ export function PasswordInput({ placeholder, disabled, requirements, ...props })
             {requirements.map((requirement) => {
               const isMet = requirement.test(passwordValue);
               return (
-                <li key={requirement.id} className="flex items-center gap-2 text-sm">
-                  <div className={cn(isMet ? 'bg-green-100' : 'bg-gray-100')}>
-                    {isMet ? <CheckIcon className="w-3 h-3" /> : <XIcon className="w-3 h-3" />}
+                <li key={requirement.id} className="flex items-center gap-2">
+                  <div className={cn(isMet ? 'text-forest-50' : 'text-flame-50')}>
+                    {isMet ? (
+                      <CheckIcon className="w-3 h-3" color="currentColor" strokeWidth={4} />
+                    ) : (
+                      <XIcon className="w-3 h-3" color="currentColor" strokeWidth={4} />
+                    )}
                   </div>
                   <span>{requirement.label}</span>
                 </li>
