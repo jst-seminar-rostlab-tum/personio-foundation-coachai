@@ -1,4 +1,4 @@
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session, SQLModel, text
 
 from app.data import (
     get_dummy_app_configs,
@@ -22,16 +22,20 @@ from app.data import (
     get_dummy_user_profiles,
 )
 from app.database import engine
+from app.models.hr_information import HrInformation
 
 
 def populate_data() -> None:
-    print('Dropping tables...')
-    SQLModel.metadata.drop_all(engine)
-
-    print('Creating tables...')
-    SQLModel.metadata.create_all(engine)
-
     with Session(engine) as session:
+        session.exec(text('CREATE EXTENSION IF NOT EXISTS vector'))  # type: ignore
+        session.commit()
+
+        print('Dropping tables...')
+        SQLModel.metadata.drop_all(engine)
+
+        print('Creating tables...')
+        SQLModel.metadata.create_all(engine)
+
         # Populate Languages
         languages = get_dummy_languages()
         session.add_all(languages)
@@ -128,9 +132,9 @@ def populate_data() -> None:
         print('Dummy data populated successfully!')
 
         print('Creating empty vector store')
-        # empty_vector_data = HrInformation(content='', meta_data={}, embedding=[0.0] * 768)
-        # session.add(empty_vector_data)
-        # session.commit()
+        empty_vector_data = HrInformation(content='', meta_data={}, embedding=[0.0] * 768)
+        session.add(empty_vector_data)
+        session.commit()
         print('Vector store created successfully!')
 
 

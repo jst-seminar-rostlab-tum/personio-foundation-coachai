@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     postgres_password: str = 'postgres'
     postgres_db: str = 'app_db'
     postgres_port: str = '5432'
-    database_url: Optional[str] = None
+    database_url: str | None = None
 
     SUPABASE_URL: str = ''
     SUPABASE_KEY: str = ''
@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     TWILIO_ACCOUNT_SID: str = ''
     TWILIO_AUTH_TOKEN: str = ''
     TWILIO_PHONE_NUMBER: str = ''
+
+    ENABLE_AI: bool = False
+    FORCE_CHEAP_MODEL: bool = True
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 

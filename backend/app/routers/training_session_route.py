@@ -1,8 +1,9 @@
+from math import ceil
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from sqlmodel import Session, col, select
 
 from app.database import get_session
 from app.models.language import Language
@@ -15,6 +16,11 @@ from app.models.training_session import (
 from app.models.training_session_feedback import (
     TrainingSessionFeedback,
     TrainingSessionFeedbackRead,
+)
+from app.models.training_sessions_paginated import (
+    PaginatedTrainingSessionsResponse,
+    SkillScores,
+    TrainingSessionItem,
 )
 
 router = APIRouter(prefix='/training-session', tags=['Training Sessions'])
@@ -44,16 +50,71 @@ def get_training_session_feedback(
     return training_session_feedback
 
 
-@router.get('/', response_model=list[TrainingSessionRead])
+@router.get('/', response_model=PaginatedTrainingSessionsResponse)
 def get_training_sessions(
     session: Annotated[Session, Depends(get_session)],
-) -> list[TrainingSession]:
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1),
+    x_user_id: str = Header(...),  # Auth via header
+    # TODO: Adjust to the authentication token in the header
+) -> PaginatedTrainingSessionsResponse:
     """
-    Retrieve all training sessions.
+    Return paginated list of completed training sessions for a user.
     """
-    statement = select(TrainingSession)
-    sessions = session.exec(statement).all()
-    return list(sessions)
+    # Get all training cases for the user
+    try:
+        user_id = UUID(x_user_id)
+    except ValueError as err:
+        raise HTTPException(
+            status_code=401, detail='Invalid or missing authentication token'
+        ) from err
+
+    statement = select(TrainingCase.id).where(TrainingCase.user_id == user_id)
+    training_case_ids = session.exec(statement).all()
+
+    if not training_case_ids:
+        return PaginatedTrainingSessionsResponse(
+            page=page,
+            limit=page_size,
+            total_pages=0,
+            total_sessions=0,
+            sessions=[],
+        )
+
+    # Query sessions
+    session_query = (
+        select(TrainingSession)
+        .where(col(TrainingSession.case_id).in_(training_case_ids))
+        .order_by(col(TrainingSession.ended_at).desc())
+    )
+
+    total_sessions = len(session.exec(session_query).all())
+    sessions = session.exec(session_query.offset((page - 1) * page_size).limit(page_size)).all()
+
+    session_list = [
+        TrainingSessionItem(
+            session_id=sess.id,
+            title='Negotiating Job Offers',  # mocked
+            summary='Practice salary negotiation with a potential candidate',  # mocked
+            date=sess.ended_at,
+            score=82,  # mocked
+            skills=SkillScores(
+                structure=85,
+                empathy=70,
+                solution_focus=75,
+                clarity=70,
+            ),  # mocked
+        )
+        for sess in sessions
+    ]
+
+    return PaginatedTrainingSessionsResponse(
+        page=page,
+        limit=page_size,
+        total_pages=ceil(total_sessions / page_size),
+        total_sessions=total_sessions,
+        sessions=session_list,
+    )
 
 
 @router.post('/', response_model=TrainingSessionRead)
