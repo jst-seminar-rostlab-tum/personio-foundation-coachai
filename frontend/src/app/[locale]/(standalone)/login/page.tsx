@@ -6,34 +6,17 @@ import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { SignInCredentials } from '@/interfaces/SignInForm';
-import { userProfileApi } from '@/services/Api';
-import { AxiosError } from 'axios';
 import { AlertCircleIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function LoginPage() {
   const t = useTranslations('Login');
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
   const onClickSignIn = async (values: SignInCredentials) => {
-    try {
-      await userProfileApi.signIn(values);
-      router.push('/dashboard');
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        if (err.response?.status === 401) {
-          setError(t('SignInTab.alertErrorTitle401'));
-        } else {
-          setError(t('SignInTab.alertErrorTitleGeneric'));
-        }
-      } else {
-        setError(t('SignInTab.alertErrorTitleGeneric'));
-      }
-      console.error('Sign in failed:', err);
-    }
+    console.warn('LoginPage: onClickSignIn called with values:', values);
+    // TODO: Call sign-in API
   };
 
   const onClickSignUp = () => {};

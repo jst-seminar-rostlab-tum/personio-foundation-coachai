@@ -5,24 +5,15 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { userProfileApi } from '@/services/Api';
 import { RotateCcw } from 'lucide-react';
 import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 
-export function VerificationPopup({
-  isOpen,
-  onClose,
-  phoneNumber,
-  formData,
-}: VerificationPopupProps) {
+export function VerificationPopup({ isOpen, onClose, formData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
-  const [error, setError] = useState<string | null>(null);
 
   const verificationSchema = z.object({
     code: z.string().regex(/^\d{6}$/, t('codeInputError')),
@@ -47,87 +38,18 @@ export function VerificationPopup({
     return () => clearTimeout(timer);
   }, [resendCooldown]);
 
-  //   const handleSubmit = async (values: z.infer<typeof verificationSchema>) => {
   const handleSubmit = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
+    setIsLoading(true);
+    setError(null);
 
-      // Verify the code
-      //   const isVerified = await userProfileApi.verifyCode(phoneNumber, values.code);
-      const isVerified = true;
+    // TODO: Call API to verify code and to sign up the user
 
-      if (!isVerified) {
-        setError(t('invalidCode'));
-        return;
-      }
-
-      // If verification successful and we have form data, create the user
-      if (formData) {
-        try {
-          await userProfileApi.create({
-            full_name: formData.fullName,
-            email: formData.email,
-            phone_number: formData.phoneNumber,
-            password: formData.password,
-            preferred_language: 'en',
-            role_id: undefined,
-            experience_id: undefined,
-            preferred_learning_style_id: undefined,
-            preferred_session_length_id: undefined,
-            store_conversations: true,
-          });
-
-          // If we get here, user was created successfully
-          onClose();
-          router.push('/');
-        } catch (err) {
-          console.error('Error creating user:', err);
-          setError(t('genericError'));
-        }
-      }
-    } catch (err: unknown) {
-      const errorMessage = t('genericError');
-      console.error('Error creating user:', err);
-
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(false);
   };
 
   const handleResendCode = async () => {
-    try {
-      setError(null);
-      setResendCooldown(30);
-    } catch (err: unknown) {
-      let errorMessage = t('resendError');
-
-      if (
-        err &&
-        typeof err === 'object' &&
-        'response' in err &&
-        err.response &&
-        typeof err.response === 'object' &&
-        'data' in err.response &&
-        err.response.data &&
-        typeof err.response.data === 'object' &&
-        'detail' in err.response.data
-      ) {
-        const { detail } = err.response.data;
-        if (typeof detail === 'string') {
-          errorMessage = detail;
-        } else if (Array.isArray(detail)) {
-          errorMessage = detail[0]?.msg || t('resendError');
-        } else if (typeof detail === 'object' && detail !== null && 'msg' in detail) {
-          errorMessage = String(detail.msg);
-        }
-      } else if (err instanceof Error) {
-        errorMessage = err.message;
-      }
-
-      setError(errorMessage);
-    }
+    setResendCooldown(30);
+    // TODO: Call API to resend verification code
   };
 
   if (!isOpen) return null;
@@ -142,11 +64,9 @@ export function VerificationPopup({
               <h2 className="text-xl text-center">{t('title')}</h2>
               <p className="text-base text-center text-bw-50">
                 {t('descriptionPartOne')}
-                <strong>{phoneNumber}</strong>
+                <strong>{formData?.phoneNumber}</strong>
                 {t('descriptionPartTwo')}
               </p>
-
-              {error && <div className="p-2 text-base text-flame-50 rounded-md">{error}</div>}
 
               <FormField
                 control={form.control}

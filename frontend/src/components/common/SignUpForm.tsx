@@ -5,6 +5,12 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Checkbox from '@/components/ui/Checkbox';
+import { useState } from 'react';
+import { PasswordRequirement } from '@/interfaces/PasswordInput';
+import GoogleIcon from '@/../public/icons/google-icon.svg';
+import Image from 'next/image';
+import { SignUpFormProps } from '@/interfaces/SignUpForm';
 import {
   Form,
   FormControl,
@@ -13,23 +19,15 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/Form';
-import Checkbox from '@/components/ui/Checkbox';
-import { useState } from 'react';
-import { userProfileApi } from '@/services/Api';
-import { PasswordRequirement } from '@/interfaces/PasswordInput';
-import GoogleIcon from '@/../public/icons/google-icon.svg';
-import Image from 'next/image';
-import { SignUpFormProps } from '@/interfaces/SignUpForm';
 import { PasswordInput } from './PasswordInput';
 import PrivacyDialog from './PrivacyDialog';
 import { VerificationPopup } from './VerificationPopup';
 
-export function SignUpForm({ onSubmit, setError }: SignUpFormProps) {
+export function SignUpForm({ setError }: SignUpFormProps) {
   const t = useTranslations('Login.SignUpTab');
   const [isLoading, setIsLoading] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
-  const [signedUpPhone, setSignedUpPhone] = useState('');
 
   const signUpFormSchema = z.object({
     fullName: z.string().min(1, t('fullNameInputError')),
@@ -74,89 +72,15 @@ export function SignUpForm({ onSubmit, setError }: SignUpFormProps) {
   ];
 
   const handleSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
-    // Clear any existing errors at the start of a new submission
+    console.warn('SignUpForm: handleSubmit called with values:', values);
     setError(null);
+    setIsLoading(true);
 
-    try {
-      setIsLoading(true);
+    // TODO: Api call to backend for data validation
 
-      // First validate the user data
-      const validationResponse = await userProfileApi.validate({
-        full_name: values.fullName,
-        email: values.email,
-        phone_number: values.phoneNumber,
-        password: values.password,
-        preferred_language: 'en', // Default language
-        role_id: undefined,
-        experience_id: undefined,
-        preferred_learning_style_id: undefined,
-        preferred_session_length_id: undefined,
-        store_conversations: true,
-      });
+    setShowVerification(true);
 
-      if (!validationResponse.is_valid && validationResponse.errors) {
-        // Set field-specific errors
-        Object.entries(validationResponse.errors).forEach(([field, message]) => {
-          const errorMessage = String(message);
-          switch (field) {
-            case 'email':
-              signUpForm.setError('email', { message: errorMessage });
-              break;
-            case 'phone_number':
-              signUpForm.setError('phoneNumber', { message: errorMessage });
-              break;
-            case 'full_name':
-              signUpForm.setError('fullName', { message: errorMessage });
-              break;
-            default:
-              setError(errorMessage);
-          }
-        });
-        return;
-      }
-
-      // If validation passes, show verification popup
-      setSignedUpPhone(values.phoneNumber);
-      setShowVerification(true);
-
-      // Call the parent onSubmit handler with the form data
-      onSubmit({
-        fullName: values.fullName,
-        email: values.email,
-        phoneNumber: values.phoneNumber,
-        password: values.password,
-        terms: values.terms,
-      });
-    } catch (err: unknown) {
-      let errorMessage = t('genericError');
-
-      if (
-        err &&
-        typeof err === 'object' &&
-        'response' in err &&
-        err.response &&
-        typeof err.response === 'object' &&
-        'data' in err.response &&
-        err.response.data &&
-        typeof err.response.data === 'object' &&
-        'detail' in err.response.data
-      ) {
-        const { detail } = err.response.data;
-        if (typeof detail === 'string') {
-          errorMessage = detail;
-        } else if (Array.isArray(detail)) {
-          errorMessage = detail[0]?.msg || t('genericError');
-        } else if (typeof detail === 'object' && detail !== null && 'msg' in detail) {
-          errorMessage = String(detail.msg);
-        }
-      } else if (err instanceof Error) {
-        errorMessage = err.message;
-      }
-
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(false);
   };
 
   return (
@@ -294,7 +218,6 @@ export function SignUpForm({ onSubmit, setError }: SignUpFormProps) {
       <VerificationPopup
         isOpen={showVerification}
         onClose={() => setShowVerification(false)}
-        phoneNumber={signedUpPhone}
         formData={signUpForm.getValues()}
       />
 

@@ -5,6 +5,10 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { SignInFormProps } from '@/interfaces/SignInForm';
+import Image from 'next/image';
+import GoogleIcon from '@/../public/icons/google-icon.svg';
 import {
   Form,
   FormControl,
@@ -13,10 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/Form';
-import { useState } from 'react';
-import { SignInFormProps } from '@/interfaces/SignInForm';
-import Image from 'next/image';
-import GoogleIcon from '@/../public/icons/google-icon.svg';
 import { PasswordInput } from './PasswordInput';
 
 export function SignInForm({ onSubmit }: SignInFormProps) {
