@@ -40,6 +40,16 @@ def get_training_session(
     if not training_session:
         raise HTTPException(status_code=404, detail='No session found with the given ID')
 
+    # Get training session title from the training case
+    training_case = session.get(TrainingCase, training_session.case_id)
+    if training_case:
+        if training_case.category:
+            training_title = training_case.category.name
+        else:
+            training_title = training_case.custom_category_label
+    else:
+        training_title = 'Unknown'
+
     training_session_response = TrainingSessionDetailsRead(
         id=training_session.id,
         case_id=training_session.case_id,
@@ -50,7 +60,7 @@ def get_training_session(
         ai_persona=training_session.ai_persona,
         created_at=training_session.created_at,
         updated_at=training_session.updated_at,
-        title='Giving Constructive Feedback',  # mocked
+        title=training_title,
         summary=(
             'The person giving feedback was rude but the person receiving feedback took it well.'
         ),  # mocked
