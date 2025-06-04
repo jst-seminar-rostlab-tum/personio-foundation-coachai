@@ -41,7 +41,7 @@ services:
     command: uv run fastapi dev --host 0.0.0.0 --port 8000 --reload
 
   db:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg17
     ports:
       - "5432:5432"
     volumes:

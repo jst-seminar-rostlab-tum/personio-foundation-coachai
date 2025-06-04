@@ -3,6 +3,9 @@ from app.schemas.training_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
     GoalsAchievementRequest,
+    NegativeExample,
+    PositiveExample,
+    Recommendation,
     RecommendationsCollection,
     RecommendationsRequest,
     TrainingExamplesCollection,
@@ -10,6 +13,25 @@ from app.schemas.training_feedback_schema import (
 
 
 def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesCollection:
+    mock_response = TrainingExamplesCollection(
+        positive_examples=[
+            PositiveExample(
+                heading='Clear Objective Addressed',
+                text='The user successfully summarized the objective.',
+                quote='I want to make sure we both feel heard and find a solution together.',
+                guideline='Collaborative Problem-Solving',
+            )
+        ],
+        negative_examples=[
+            NegativeExample(
+                heading='Missed Empathy',
+                text="The user dismissed the other party's concern.",
+                quote="That's not important right now.",
+                improved_quote="I understand your concern—let's come back to it in a moment.",
+            )
+        ],
+    )
+
     user_prompt = f"""
     The following is a training session transcript, in which you are practicing 
     communication skills in the context of {request.category}. 
@@ -68,12 +90,19 @@ def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesColl
         system_prompt='You are an expert communication coach analyzing training sessions.',
         model='gpt-4o-2024-08-06',
         output_model=TrainingExamplesCollection,
+        mock_response=mock_response,
     )
 
     return response
 
 
 def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollection:
+    mock_response = GoalsAchievedCollection(
+        goals_achieved=[
+            'Clearly communicate the impact of the missed deadlines',
+            'Understand potential underlying causes',
+        ]
+    )
     user_prompt = f"""
     The following is a transcript of a training session.
     Please evaluate which of the listed goals were clearly achieved by the user 
@@ -104,12 +133,33 @@ def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollect
         system_prompt='You are an expert communication coach analyzing training sessions.',
         model='gpt-4o-2024-08-06',
         output_model=GoalsAchievedCollection,
+        mock_response=mock_response,
     )
 
     return response
 
 
 def generate_recommendations(request: RecommendationsRequest) -> RecommendationsCollection:
+    mock_response = RecommendationsCollection(
+        recommendations=[
+            Recommendation(
+                heading='Practice the STAR method',
+                text='When giving feedback, use the Situation, Task, Action, Result framework to '
+                + 'provide more concrete examples.',
+            ),
+            Recommendation(
+                heading='Ask more diagnostic questions',
+                text='Spend more time understanding root causes before moving to solutions. '
+                + 'This builds empathy and leads to more effective outcomes.',
+            ),
+            Recommendation(
+                heading='Define clear next steps',
+                text='End feedback conversations with agreed-upon action items, timelines, and'
+                + ' follow-up plans.',
+            ),
+        ]
+    )
+
     user_prompt = f"""
     Analyze the following transcript from a training session.
     Based on the goal, objectives, and key concepts, suggest 3 to 5 specific, actionable 
@@ -159,12 +209,12 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
     text: "End feedback conversations with agreed-upon action items, timelines, and follow-up plans.
 
     """
-
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt='You are an expert communication coach analyzing training sessions.',
         model='gpt-4o-2024-08-06',
         output_model=RecommendationsCollection,
+        mock_response=mock_response,
     )
 
     return response
