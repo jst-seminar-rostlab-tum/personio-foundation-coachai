@@ -1,6 +1,5 @@
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 from aiortc import (
     RTCConfiguration,
@@ -41,8 +40,8 @@ class Peer:
 
     peer_id: str
     connection: RTCPeerConnection
-    transceiver: Optional[RTCRtpTransceiver] = None
-    data_channel: Optional[RTCDataChannel] = None
+    transceiver: RTCRtpTransceiver | None = None
+    data_channel: RTCDataChannel | None = None
 
     async def cleanup(self) -> None:
         """Cleanup all resources associated with this peer"""

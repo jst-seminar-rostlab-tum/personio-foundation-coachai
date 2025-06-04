@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -50,8 +50,8 @@ class WebRTCSignalingMessage(WebRTCSignalingBase):
     """WebRTC signaling message"""
 
     type: WebRTCSignalingType = Field(..., description='Type of the message')
-    sdp: Optional[str] = None
-    candidate: Optional[WebRTCIceCandidate] = None
+    sdp: str | None = None
+    candidate: WebRTCIceCandidate | None = None
 
 
 class WebRTCMessage(WebRTCSignalingMessage):
@@ -81,14 +81,14 @@ class WebSocketErrorData(BaseModel):
 
     message: str = Field(..., description='Error message')
     error_type: WebSocketErrorType = Field(..., description='Error type')
-    peer_id: Optional[str] = Field(None, description='Peer ID')
+    peer_id: str | None = Field(None, description='Peer ID')
 
 
 class WebSocketError(Exception):
     """Base WebSocket error class"""
 
     def __init__(
-        self, message: str, error_type: WebSocketErrorType, peer_id: Optional[str] = None
+        self, message: str, error_type: WebSocketErrorType, peer_id: str | None = None
     ) -> None:
         self.error_data = WebSocketErrorData(
             message=message, error_type=error_type, peer_id=peer_id
@@ -105,28 +105,28 @@ class WebSocketError(Exception):
 class WebSocketConnectionError(WebSocketError):
     """Connection related errors"""
 
-    def __init__(self, message: str, peer_id: Optional[str] = None) -> None:
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, WebSocketErrorType.CONNECTION, peer_id)
 
 
 class WebSocketMessageError(WebSocketError):
     """Message handling related errors"""
 
-    def __init__(self, message: str, peer_id: Optional[str] = None) -> None:
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, WebSocketErrorType.MESSAGE, peer_id)
 
 
 class WebSocketSignalingError(WebSocketError):
     """Signaling related errors"""
 
-    def __init__(self, message: str, peer_id: Optional[str] = None) -> None:
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, WebSocketErrorType.SIGNALING, peer_id)
 
 
 class WebSocketIceError(WebSocketError):
     """ICE related errors"""
 
-    def __init__(self, message: str, peer_id: Optional[str] = None) -> None:
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, WebSocketErrorType.ICE, peer_id)
 
 
@@ -153,7 +153,7 @@ class WebRTCErrorData(BaseModel):
 
     message: str = Field(..., description='Error message')
     error_type: WebRTCErrorType = Field(..., description='Error type')
-    peer_id: Optional[str] = Field(None, description='Peer ID')
+    peer_id: str | None = Field(None, description='Peer ID')
 
 
 class WebRTCError(Exception):
@@ -163,7 +163,7 @@ class WebRTCError(Exception):
         self,
         message: str,
         error_type: WebRTCErrorType,
-        peer_id: Optional[str] = None,
+        peer_id: str | None = None,
     ) -> None:
         self.error_data = WebRTCErrorData(message=message, error_type=error_type, peer_id=peer_id)
         super().__init__(message)
@@ -178,42 +178,42 @@ class WebRTCError(Exception):
 class WebRTCConnectionError(WebRTCError):
     """Connection related errors"""
 
-    def __init__(self, message: str, peer_id: Optional[str] = None) -> None:
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, WebRTCErrorType.CONNECTION, peer_id)
 
 
 class WebRTCDataChannelError(WebRTCError):
     """Data channel related errors"""
 
-    def __init__(self, message: str, peer_id: Optional[str] = None) -> None:
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, WebRTCErrorType.DATA_CHANNEL, peer_id)
 
 
 class WebRTCIceError(WebRTCError):
     """ICE related errors"""
 
-    def __init__(self, message: str, peer_id: Optional[str] = None) -> None:
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, WebRTCErrorType.ICE, peer_id)
 
 
 class WebRTCSignalingError(WebRTCError):
     """Signaling related errors"""
 
-    def __init__(self, message: str, peer_id: Optional[str] = None) -> None:
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, WebRTCErrorType.SIGNALING, peer_id)
 
 
 class WebRTCMediaError(WebRTCError):
     """Media related errors"""
 
-    def __init__(self, message: str, peer_id: Optional[str] = None) -> None:
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, WebRTCErrorType.MEDIA, peer_id)
 
 
 class WebRTCPeerError(WebRTCError):
     """Peer related errors"""
 
-    def __init__(self, message: str, peer_id: Optional[str] = None) -> None:
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, WebRTCErrorType.PEER, peer_id)
 
 

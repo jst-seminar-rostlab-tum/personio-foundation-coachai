@@ -27,14 +27,14 @@ class TrainingCaseStatus(str, Enum):
 class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
-    category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
-    custom_category_label: Optional[str] = None
+    category_id: UUID | None = Field(default=None, foreign_key='conversationcategory.id')
+    custom_category_label: str | None = None
     context: str
     goal: str
     other_party: str
     difficulty_id: UUID = Field(default=None, foreign_key='difficultylevel.id')
-    tone: Optional[str] = None
-    complexity: Optional[str] = None
+    tone: str | None = None
+    complexity: str | None = None
     status: TrainingCaseStatus = Field(default=TrainingCaseStatus.draft)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -57,14 +57,14 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingCa
 # Schema for creating a new TrainingCase
 class TrainingCaseCreate(SQLModel):
     user_id: UUID
-    category_id: Optional[UUID] = None
-    custom_category_label: Optional[str] = None
+    category_id: UUID | None = None
+    custom_category_label: str | None = None
     context: str
     goal: str
     other_party: str
     difficulty_id: UUID
-    tone: Optional[str] = None
-    complexity: Optional[str] = None
+    tone: str | None = None
+    complexity: str | None = None
     status: TrainingCaseStatus = TrainingCaseStatus.draft
 
 
@@ -72,14 +72,14 @@ class TrainingCaseCreate(SQLModel):
 class TrainingCaseRead(SQLModel):
     id: UUID
     user_id: UUID
-    category_id: Optional[UUID]
-    custom_category_label: Optional[str]
+    category_id: UUID | None
+    custom_category_label: str | None
     context: str
     goal: str
     other_party: str
     difficulty_id: UUID
-    tone: Optional[str]
-    complexity: Optional[str]
+    tone: str | None
+    complexity: str | None
     status: TrainingCaseStatus
     created_at: datetime
     updated_at: datetime
