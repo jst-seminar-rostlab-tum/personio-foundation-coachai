@@ -37,45 +37,21 @@ def get_reviews(
     if limit is not None:
         statement = statement.limit(limit)
         feedbacks = session.exec(statement).all()
+    else:
+        # Pagination
+        total_count = len(session.exec(select(UserFeedback)).all())
+        total_pages = (total_count + page_size - 1) // page_size
+        offset = (page - 1) * page_size if page else 0
 
-        # Getting the user profiles for the reviews to get user names
-        if not feedbacks:
-            return []
-        user_ids = [feedback.user_id for feedback in feedbacks]
-        user_profiles = session.exec(select(UserProfile).where(UserProfile.id.in_(user_ids))).all()
+        statement = statement.offset(offset).limit(page_size)
+        feedbacks = session.exec(statement).all()
 
-        user_profiles_dict = {profile.id: profile for profile in user_profiles}
-
-        # Constructing the review items
-        reviews = []
-        for feedback in feedbacks:
-            user_profile = user_profiles_dict.get(feedback.user_id)
-            if user_profile:
-                reviews.append(
-                    ReviewItem(
-                        id=feedback.id,
-                        user_name=user_profile.user_name,
-                        rating=feedback.rating,
-                        comment=feedback.comment,
-                        date=feedback.created_at.date(),
-                    )
-                )
-        return reviews
-
-    # For pagination
-    total_count = len(session.exec(select(UserFeedback)).all())
-    total_pages = (total_count + page_size - 1) // page_size
-    offset = (page - 1) * page_size if page else 0
-
-    statement = statement.offset(offset).limit(page_size)
-    feedbacks = session.exec(statement).all()
-
-    # Getting the user profiles for the reviews to get user names
     if not feedbacks:
         return []
+
+    # Getting the user profiles for the reviews to get user names
     user_ids = [feedback.user_id for feedback in feedbacks]
     user_profiles = session.exec(select(UserProfile).where(UserProfile.id.in_(user_ids))).all()
-
     user_profiles_dict = {profile.id: profile for profile in user_profiles}
 
     # Constructing the review items
@@ -93,10 +69,13 @@ def get_reviews(
                 )
             )
 
+    if limit is not None:
+        return reviews
+
     return PaginatedReviewsResponse(
         reviews=reviews,
         pagination={
-            'currentPage': page,
+            'currentPage': page if page else 1,
             'totalPages': total_pages,
             'totalCount': total_count,
         },
