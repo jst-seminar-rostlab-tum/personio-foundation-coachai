@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     supabase_port: int = 5432
     supabase_db: str = 'postgres'
     supabase_user: str = 'postgres'
+    supabase_host: str = '127.0.0.1'
 
     supabase_key: str
     supabase_ssl_cert_path: str = str(Path(__file__).parent / 'certs' / 'prod-ca-2021.crt')
