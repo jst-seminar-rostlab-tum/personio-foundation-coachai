@@ -199,9 +199,9 @@ export default function Admin() {
                               variant="ghost"
                               size="icon"
                               aria-label={t('deleteUser')}
-                              className="hover:bg-flame-50"
+                              className="group"
                             >
-                              <Trash2 className="w-4 h-4 text-bw-40" />
+                              <Trash2 className="w-4 h-4 text-bw-40 group-hover:text-flame-50" />
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
