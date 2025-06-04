@@ -6,6 +6,7 @@ from .config import settings
 # from .database import engine
 from .database import create_db_and_tables
 from .routers import (
+    admin_dashboard_stats_route,
     app_config_route,
     confidence_area_route,
     conversation_category_route,
@@ -58,6 +59,7 @@ app.include_router(personalization_options_route.router)
 app.include_router(app_config_route.router)
 app.include_router(user_feedback_route.router)
 app.include_router(reviews_route.router)
+app.include_router(admin_dashboard_stats_route.router)
 
 
 # Create database tables on startup

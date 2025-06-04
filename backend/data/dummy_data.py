@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
+from backend.models.admin_dashboard_stats import AdminDashboardStats
 from backend.models.app_config import AppConfig, ConfigType
 from backend.models.confidence_area import ConfidenceArea
 from backend.models.conversation_category import ConversationCategory
@@ -625,4 +626,18 @@ def get_dummy_app_configs() -> list[AppConfig]:
     """
     return [
         AppConfig(key='dailyUserTokenLimit', value='100', type=ConfigType.int),
+    ]
+
+
+def get_dummy_admin_stats() -> list[AdminDashboardStats]:
+    """
+    Generate dummy admin stats data.
+    """
+    return [
+        AdminDashboardStats(
+            id=uuid4(),
+            total_trainings=34533,
+            average_score=86,
+            daily_token_limit=100,
+        )
     ]
