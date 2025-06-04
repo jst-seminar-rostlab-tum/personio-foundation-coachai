@@ -146,7 +146,7 @@ export function VerificationPopup({
                 {t('descriptionPartTwo')}
               </p>
 
-              {error && <div className="p-2 text-base text-destructive rounded-md">{error}</div>}
+              {error && <div className="p-2 text-base text-flame-50 rounded-md">{error}</div>}
 
               <FormField
                 control={form.control}

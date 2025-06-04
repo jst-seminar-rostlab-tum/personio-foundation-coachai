@@ -86,7 +86,7 @@ function FormLabel({ className, ...props }: React.ComponentProps<typeof LabelPri
     <Label
       data-slot="form-label"
       data-error={!!error}
-      className={cn('data-[error=true]:text-destructive text-lg', className)}
+      className={cn('data-[error=true]:text-flame-50 text-lg', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -132,7 +132,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn('text-destructive text-base', className)}
+      className={cn('text-flame-50 text-base', className)}
       {...props}
     >
       {body}

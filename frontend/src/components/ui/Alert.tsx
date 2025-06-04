@@ -12,7 +12,7 @@ const alertVariants = cva(
     variants: {
       variant: {
         default: 'font-dark',
-        destructive: 'text-destructive',
+        destructive: 'text-flame-50',
       },
     },
   }
