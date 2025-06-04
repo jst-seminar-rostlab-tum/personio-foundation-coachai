@@ -28,6 +28,7 @@ from backend.models.hr_information import HrInformation
 def populate_data() -> None:
     with Session(engine) as session:
         session.exec(text('CREATE EXTENSION IF NOT EXISTS vector'))
+        session.commit()
 
         print('Dropping tables...')
         SQLModel.metadata.drop_all(engine)
