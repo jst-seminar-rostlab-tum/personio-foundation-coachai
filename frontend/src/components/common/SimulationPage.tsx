@@ -16,13 +16,13 @@ function useWebRTC() {
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
 
-  const localAudioRef = useRef(null);
-  const remoteAudioRef = useRef(null);
-  const peerConnectionRef = useRef(null);
-  const localStreamRef = useRef(null);
-  const wsRef = useRef(null);
-  const cleanupRef = useRef(null);
-  const dataChannelRef = useRef(null);
+  const localAudioRef = useRef<HTMLAudioElement | null>(null);
+  const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
+  const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+  const cleanupRef = useRef<boolean | null>(null);
+  const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const cleanup = useCallback(() => {
     if (cleanupRef.current) return;
     cleanupRef.current = true;
@@ -53,7 +53,7 @@ function useWebRTC() {
   }, []);
 
   const disconnect = useCallback(() => {
-    console.log('[WebRTC] Disconnecting...');
+    console.info('[WebRTC] Disconnecting...');
     cleanup();
     cleanupRef.current = false;
   }, [cleanup]);
@@ -87,7 +87,7 @@ function useWebRTC() {
       wsRef.current = ws;
 
       ws.onopen = async () => {
-        console.log('[WebRTC] WebSocket connected');
+        console.info('[WebRTC] WebSocket connected');
 
         // Add local audio track
         localStream.getTracks().forEach((track) => {
@@ -105,7 +105,7 @@ function useWebRTC() {
 
         // Set up data channel event handlers
         dataChannel.onopen = () => {
-          console.log('[WebRTC] Data channel opened, state:', dataChannel.readyState);
+          console.info('[WebRTC] Data channel opened, state:', dataChannel.readyState);
           try {
             dataChannel.send('test message from client');
             console.debug('[WebRTC] Test message sent');
@@ -115,7 +115,7 @@ function useWebRTC() {
         };
 
         dataChannel.onclose = () => {
-          console.log('[WebRTC] Data channel closed, state:', dataChannel.readyState);
+          console.info('[WebRTC] Data channel closed, state:', dataChannel.readyState);
           dataChannelRef.current = null;
         };
 
@@ -135,42 +135,42 @@ function useWebRTC() {
 
         // Handle incoming data channels
         peerConnection.ondatachannel = (event) => {
-          console.log('[WebRTC] Received data channel:', event.channel.label);
+          console.info('[WebRTC] Received data channel:', event.channel.label);
           const receivedChannel = event.channel;
           dataChannelRef.current = receivedChannel;
 
           receivedChannel.onopen = () => {
-            console.log('[WebRTC] Received channel opened');
+            console.info('[WebRTC] Received channel opened');
           };
 
           receivedChannel.onclose = () => {
-            console.log('[WebRTC] Received channel closed');
+            console.info('[WebRTC] Received channel closed');
             dataChannelRef.current = null;
           };
 
-          receivedChannel.onmessage = (event) => {
-            console.debug('[WebRTC] Received message:', event.data);
+          receivedChannel.onmessage = (msgEvent) => {
+            console.debug('[WebRTC] Received message:', msgEvent.data);
           };
         };
 
         // Set up connection state handlers
         peerConnection.onconnectionstatechange = () => {
-          console.log('[WebRTC] Connection state changed:', peerConnection.connectionState);
+          console.info('[WebRTC] Connection state changed:', peerConnection.connectionState);
           if (peerConnection.connectionState === 'connected') {
-            console.log('[WebRTC] Connection established');
+            console.info('[WebRTC] Connection established');
             setIsConnected(true);
           } else if (
             peerConnection.connectionState === 'disconnected' ||
             peerConnection.connectionState === 'failed' ||
             peerConnection.connectionState === 'closed'
           ) {
-            console.log('[WebRTC] Connection lost');
+            console.info('[WebRTC] Connection lost');
             disconnect();
           }
         };
 
         peerConnection.oniceconnectionstatechange = () => {
-          console.log('[WebRTC] ICE connection state changed:', peerConnection.iceConnectionState);
+          console.info('[WebRTC] ICE connection state changed:', peerConnection.iceConnectionState);
         };
 
         // Add ICE candidate handler
@@ -187,12 +187,12 @@ function useWebRTC() {
             });
             ws.send(
               JSON.stringify({
-                type: 'candidate',
+                signal_type: 'candidate',
                 candidate: event.candidate,
               })
             );
           } else {
-            console.log('[WebRTC] ICE candidate gathering completed');
+            console.info('[WebRTC] ICE candidate gathering completed');
           }
         };
 
@@ -202,9 +202,10 @@ function useWebRTC() {
 
         // Handle incoming tracks
         peerConnection.ontrack = (event) => {
-          console.log('[WebRTC] Received remote track:', event.track.kind);
+          console.info('[WebRTC] Received remote track:', event.track.kind);
           if (event.track.kind === 'audio' && remoteAudioRef.current) {
-            remoteAudioRef.current.srcObject = event.streams[0];
+            const [firstStream] = event.streams;
+            remoteAudioRef.current.srcObject = firstStream;
           }
         };
 
@@ -222,7 +223,7 @@ function useWebRTC() {
         await peerConnection.setLocalDescription(offer);
         ws.send(
           JSON.stringify({
-            type: 'offer',
+            signal_type: 'offer',
             sdp: offer.sdp,
           })
         );
@@ -232,8 +233,8 @@ function useWebRTC() {
       ws.onmessage = async (event) => {
         const message = JSON.parse(event.data);
 
-        if (message.type === 'answer') {
-          console.log('[WebRTC] Received answer:', message);
+        if (message.signal_type === 'answer') {
+          console.info('[WebRTC] Received answer:', message);
           console.debug('[WebRTC] Answer SDP:', message.sdp);
           await peerConnection.setRemoteDescription(
             new RTCSessionDescription({
@@ -241,8 +242,8 @@ function useWebRTC() {
               sdp: message.sdp,
             })
           );
-        } else if (message.type === 'candidate') {
-          console.debug('[WebRTC] Received ICE candidate');
+        } else if (message.signal_type === 'candidate') {
+          console.info('[WebRTC] Received ICE candidate');
           try {
             await peerConnection.addIceCandidate(new RTCIceCandidate(message.candidate));
           } catch (error) {
@@ -252,7 +253,7 @@ function useWebRTC() {
       };
 
       ws.onclose = () => {
-        console.log('[WebRTC] WebSocket closed');
+        console.info('[WebRTC] WebSocket closed');
         disconnect();
       };
 
@@ -315,6 +316,7 @@ export default function SimulationPageComponent() {
   const toggleMic = () => {
     if (localStreamRef.current) {
       localStreamRef.current.getAudioTracks().forEach((track) => {
+        // eslint-disable-next-line no-param-reassign
         track.enabled = !isMicActive;
       });
       setIsMicActive(!isMicActive);
@@ -337,7 +339,7 @@ export default function SimulationPageComponent() {
         isPaused={isPaused}
         setIsPaused={setIsPaused}
         isMicActive={isMicActive}
-        toggleMic={toggleMic}
+        toggleMicrophone={toggleMic}
         isConnected={isConnected}
         onDisconnect={disconnect}
       />
