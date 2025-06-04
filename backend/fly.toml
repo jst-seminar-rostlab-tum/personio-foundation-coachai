@@ -7,7 +7,7 @@ app = 'coach-ai'
 primary_region = 'fra'
 
 [build]
-dockerfile = "backend/Dockerfile"
+dockerfile = "Dockerfile"
 
 
 [http_service]
