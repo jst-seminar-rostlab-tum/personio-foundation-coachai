@@ -4,6 +4,7 @@ from collections.abc import Callable, Generator
 from uuid import UUID
 
 from sqlmodel import Session
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
@@ -16,6 +17,21 @@ from app.schemas.training_preparation_schema import (
     StringListResponse,
     TrainingPreparationRequest,
 )
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+def safe_generate_objectives(request: ObjectiveRequest) -> list[str]:
+    return generate_objectives(request)
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+def safe_generate_checklist(request: ChecklistRequest) -> list[str]:
+    return generate_checklist(request)
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+def safe_generate_key_concepts(request: KeyConceptRequest) -> list[KeyConcept]:
+    return generate_key_concept(request)
 
 
 def generate_objectives(request: ObjectiveRequest) -> list[str]:
@@ -233,14 +249,14 @@ def generate_training_preparation(
             )
 
             # 3. Generate the content using the LLM
-            objectives = generate_objectives(objectives_request)
-            checklist = generate_checklist(checklist_request)
-            key_concepts = generate_key_concept(key_concept_request)
+            objectives = safe_generate_objectives(objectives_request)
+            checklist = safe_generate_checklist(checklist_request)
+            key_concepts = safe_generate_key_concepts(key_concept_request)
 
             # 4. update the preparation record
             preparation.objectives = objectives
             preparation.prep_checklist = checklist
-            preparation.key_concepts = [ex.dict() for ex in key_concepts]
+            preparation.key_concepts = [ex.model_dump() for ex in key_concepts]
             preparation.status = TrainingPreparationStatus.completed
 
         except Exception as e:

@@ -7,7 +7,7 @@ def create_training_case(training_case_data: TrainingCaseCreate, session: Sessio
     """
     Create TrainingCase
     """
-    db_case = TrainingCase(**training_case_data.dict())
+    db_case = TrainingCase(**training_case_data.model_dump())
     session.add(db_case)
     session.commit()
     session.refresh(db_case)
