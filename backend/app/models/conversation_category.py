@@ -5,13 +5,15 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.base import BaseModel
 
 if TYPE_CHECKING:
     from app.models.training_case import TrainingCase
 
 
-class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a database table
+class ConversationCategory(BaseModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(unique=True)
     icon_uri: str
@@ -40,7 +42,7 @@ def update_timestamp(
 
 
 # Schema for creating a new ConversationCategory
-class ConversationCategoryCreate(SQLModel):
+class ConversationCategoryCreate(BaseModel):
     name: Optional[str] = None
     icon_uri: Optional[str] = None
     system_prompt: Optional[str] = None
@@ -54,7 +56,7 @@ class ConversationCategoryCreate(SQLModel):
 
 
 # Schema for reading ConversationCategory data
-class ConversationCategoryRead(SQLModel):
+class ConversationCategoryRead(BaseModel):
     id: UUID
     name: str
     icon_uri: str

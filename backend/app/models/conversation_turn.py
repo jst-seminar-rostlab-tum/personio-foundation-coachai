@@ -3,7 +3,9 @@ from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
+
+from app.models.base import BaseModel
 
 if TYPE_CHECKING:
     from app.models.training_session import TrainingSession
@@ -14,7 +16,7 @@ class SpeakerEnum(str, Enum):
     ai = 'ai'
 
 
-class ConversationTurn(SQLModel, table=True):  # `table=True` makes it a database table
+class ConversationTurn(BaseModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
     speaker: SpeakerEnum
@@ -30,7 +32,7 @@ class ConversationTurn(SQLModel, table=True):  # `table=True` makes it a databas
 
 
 # Schema for creating a new ConversationTurn
-class ConversationTurnCreate(SQLModel):
+class ConversationTurnCreate(BaseModel):
     session_id: UUID
     speaker: SpeakerEnum
     start_offset_ms: int
@@ -41,7 +43,7 @@ class ConversationTurnCreate(SQLModel):
 
 
 # Schema for reading ConversationTurn data
-class ConversationTurnRead(SQLModel):
+class ConversationTurnRead(BaseModel):
     id: UUID
     session_id: UUID
     speaker: SpeakerEnum

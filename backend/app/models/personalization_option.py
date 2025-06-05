@@ -1,5 +1,4 @@
-from sqlmodel import SQLModel
-
+from app.models.base import BaseModel
 from app.models.confidence_area import ConfidenceAreaRead
 from app.models.experience import ExperienceRead
 from app.models.goal import GoalRead
@@ -9,7 +8,7 @@ from app.models.session_length import SessionLengthRead
 from app.models.user_profile import UserRole
 
 
-class PersonalizationOptionRead(SQLModel):
+class PersonalizationOptionRead(BaseModel):
     roles: list[UserRole]
     experiences: list[ExperienceRead]
     goals: list[GoalRead]

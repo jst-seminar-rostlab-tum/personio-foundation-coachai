@@ -1,18 +1,20 @@
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field
+
+from app.models.base import BaseModel
 
 
-class Language(SQLModel, table=True):  # `table=True` makes it a database table
+class Language(BaseModel, table=True):  # `table=True` makes it a database table
     code: str = Field(default=None, primary_key=True)
     name: str
 
 
 # Schema for creating a new Language
-class LanguageCreate(SQLModel):
+class LanguageCreate(BaseModel):
     code: str
     name: str
 
 
 # Schema for reading Language data
-class LanguageRead(SQLModel):
+class LanguageRead(BaseModel):
     code: str
     name: str

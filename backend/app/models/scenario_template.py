@@ -4,9 +4,11 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import event
-from sqlalchemy.engine import Connection
-from sqlalchemy.orm import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlalchemy.engine.base import Connection
+from sqlalchemy.orm.mapper import Mapper
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.base import BaseModel
 
 if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
@@ -20,7 +22,7 @@ class ScenarioTemplateStatus(str, Enum):
     archived = 'archived'
 
 
-class ScenarioTemplate(SQLModel, table=True):
+class ScenarioTemplate(BaseModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
     title: str
@@ -30,14 +32,14 @@ class ScenarioTemplate(SQLModel, table=True):
     ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON))
     language_code: str = Field(foreign_key='language.code')
     status: ScenarioTemplateStatus = Field(default=ScenarioTemplateStatus.draft)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC), alias='createdAt')
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC), alias='updatedAt')
 
     # Relationships
     category: Optional['ConversationCategory'] = Relationship(back_populates='scenario_templates')
     language: Optional['Language'] = Relationship()
     training_cases: list['TrainingCase'] = Relationship(
-        back_populates='scenario_template', cascade_delete=True
+        back_populates='scenario_template', cascade_delete=True, alias='trainingCases'
     )
 
     # Needed for Column(JSON)
@@ -46,12 +48,12 @@ class ScenarioTemplate(SQLModel, table=True):
 
 
 @event.listens_for(ScenarioTemplate, 'before_update')
-def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioTemplate') -> None:
+def update_timestamp(mapper: Mapper, connection: Connection, target: ScenarioTemplate) -> None:
     target.updated_at = datetime.now(UTC)
 
 
 # Schema for creating a new ScenarioTemplate
-class ScenarioTemplateCreate(SQLModel):
+class ScenarioTemplateCreate(BaseModel):
     category_id: Optional[UUID] = None
     title: str
     description: str
@@ -63,7 +65,7 @@ class ScenarioTemplateCreate(SQLModel):
 
 
 # Schema for reading ScenarioTemplate data
-class ScenarioTemplateRead(SQLModel):
+class ScenarioTemplateRead(BaseModel):
     id: UUID
     category_id: Optional[UUID]
     title: str
@@ -73,5 +75,5 @@ class ScenarioTemplateRead(SQLModel):
     ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON))
     language_code: str
     status: ScenarioTemplateStatus
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime = Field(alias='createdAt')
+    updated_at: datetime = Field(alias='updatedAt')

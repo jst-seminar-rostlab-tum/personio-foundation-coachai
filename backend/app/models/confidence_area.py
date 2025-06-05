@@ -1,13 +1,15 @@
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
+
+from app.models.base import BaseModel
 
 if TYPE_CHECKING:
     from app.models.user_confidence_score import UserConfidenceScore
 
 
-class ConfidenceArea(SQLModel, table=True):
+class ConfidenceArea(BaseModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     label: str
     description: str
@@ -20,7 +22,7 @@ class ConfidenceArea(SQLModel, table=True):
     )
 
 
-class ConfidenceAreaCreate(SQLModel):
+class ConfidenceAreaCreate(BaseModel):
     label: str
     description: str
     min_value: int
@@ -29,7 +31,7 @@ class ConfidenceAreaCreate(SQLModel):
     max_label: str
 
 
-class ConfidenceAreaRead(SQLModel):
+class ConfidenceAreaRead(BaseModel):
     id: UUID
     label: str
     description: str

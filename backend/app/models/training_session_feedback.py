@@ -6,7 +6,9 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.base import BaseModel
 
 if TYPE_CHECKING:
     from app.models.training_session import TrainingSession
@@ -18,27 +20,27 @@ class FeedbackStatusEnum(str, Enum):
     failed = 'failed'
 
 
-class PositiveExample(SQLModel):
+class PositiveExample(BaseModel):
     heading: str
     feedback: str
     quote: str
 
 
-class NegativeExample(SQLModel):
+class NegativeExample(BaseModel):
     heading: str
     feedback: str
     quote: str
     improved_quote: str
 
 
-class Recommendation(SQLModel):
+class Recommendation(BaseModel):
     heading: str
     recommendation: str
 
 
-class TrainingSessionFeedback(SQLModel, table=True):  # `table=True` makes it a database table
+class TrainingSessionFeedback(BaseModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
+    session_id: UUID = Field(foreign_key='trainingsession.id', alias='sessionId')
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: int
@@ -51,15 +53,14 @@ class TrainingSessionFeedback(SQLModel, table=True):  # `table=True` makes it a 
     example_negative: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     recommendations: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     status: FeedbackStatusEnum = Field(default=FeedbackStatusEnum.pending)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC), alias='createdAt')
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC), alias='updatedAt')
 
     # Relationships
     session: Optional['TrainingSession'] = Relationship(back_populates='feedback')
 
-    # Automatically update `updated_at` before an update
 
-
+# Automatically update `updated_at` before an update
 @event.listens_for(TrainingSessionFeedback, 'before_update')
 def update_timestamp(
     mapper: Mapper, connection: Connection, target: 'TrainingSessionFeedback'
@@ -68,7 +69,7 @@ def update_timestamp(
 
 
 # Schema for creating a new TrainingSessionFeedback
-class TrainingSessionFeedbackCreate(SQLModel):
+class TrainingSessionFeedbackCreate(BaseModel):
     session_id: UUID
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
@@ -85,7 +86,7 @@ class TrainingSessionFeedbackCreate(SQLModel):
 
 
 # Schema for reading TrainingSessionFeedback data
-class TrainingSessionFeedbackRead(SQLModel):
+class TrainingSessionFeedbackRead(BaseModel):
     id: UUID
     session_id: UUID
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))

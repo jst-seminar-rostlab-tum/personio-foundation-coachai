@@ -1,7 +1,11 @@
 from enum import Enum as PyEnum
 from typing import Optional
 
-from sqlmodel import Column, Enum, Field, SQLModel
+from sqlalchemy import Column
+from sqlalchemy import Enum as SQLEnum
+from sqlmodel import Field
+
+from app.models.base import BaseModel
 
 
 # Enum for the type column
@@ -12,21 +16,21 @@ class ConfigType(PyEnum):
 
 
 # Main AppConfig model
-class AppConfig(SQLModel, table=True):
+class AppConfig(BaseModel, table=True):
     key: str = Field(primary_key=True)
     value: str = Field(nullable=False)
-    type: ConfigType = Field(sa_column=Column(Enum(ConfigType)))
+    type: ConfigType = Field(sa_column=Column(SQLEnum(ConfigType)))
 
 
 # Schema for creating a new AppConfig
-class AppConfigCreate(SQLModel):
+class AppConfigCreate(BaseModel):
     key: str
     value: str
     type: Optional[ConfigType] = None
 
 
 # Schema for reading AppConfig data
-class AppConfigRead(SQLModel):
+class AppConfigRead(BaseModel):
     key: str
     value: str
     type: ConfigType
