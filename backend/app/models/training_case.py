@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -36,8 +36,8 @@ class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database ta
     tone: str | None = None
     complexity: str | None = None
     status: TrainingCaseStatus = Field(default=TrainingCaseStatus.draft)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
     category: Optional['ConversationCategory'] = Relationship(back_populates='training_cases')
@@ -51,7 +51,7 @@ class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database ta
 
 @event.listens_for(TrainingCase, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingCase') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(UTC)
 
 
 # Schema for creating a new TrainingCase

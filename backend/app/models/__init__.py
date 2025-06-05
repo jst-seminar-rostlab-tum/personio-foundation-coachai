@@ -17,7 +17,6 @@ from .language import Language, LanguageCreate, LanguageRead
 from .learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from .personalization_option import PersonalizationOptionRead
 from .rating import Rating, RatingCreate, RatingRead
-from .role import Role, RoleCreate, RoleRead
 from .session_length import SessionLength, SessionLengthCreate, SessionLengthRead
 from .training_case import (
     TrainingCase,
@@ -47,7 +46,13 @@ from .user_confidence_score import (
     UserConfidenceScoreRead,
 )
 from .user_goal import UserGoal, UserGoalCreate, UserGoalRead
-from .user_profile import UserProfile, UserProfileCreate, UserProfileExtendedRead, UserProfileRead
+from .user_profile import (
+    UserProfile,
+    UserProfileCreate,
+    UserProfileExtendedRead,
+    UserProfileRead,
+    UserRole,
+)
 
 __all__ = [
     'Language',
@@ -85,9 +90,6 @@ __all__ = [
     'UserGoal',
     'UserGoalCreate',
     'UserGoalRead',
-    'Role',
-    'RoleCreate',
-    'RoleRead',
     'Experience',
     'ExperienceCreate',
     'ExperienceRead',
@@ -111,6 +113,7 @@ __all__ = [
     'SessionLengthRead',
     'ConfidenceScoreRead',
     'UserProfileExtendedRead',
+    'UserRole',
     'PersonalizationOptionRead',
     'AppConfig',
     'AppConfigCreate',
