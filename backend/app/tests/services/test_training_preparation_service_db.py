@@ -110,7 +110,20 @@ class TestTrainingPreparationService(unittest.TestCase):
 
     @patch(
         'app.services.training_preparation_service.generate_key_concept',
-        return_value='Key Concept Summary',
+        return_value=[
+            KeyConcept(
+                header='Clear Communication',
+                value='Express ideas clearly and listen actively to understand others.',
+            ),
+            KeyConcept(
+                header='Empathy',
+                value="Show understanding and concern for the other party's feelings."
+            ),
+            KeyConcept(
+                header='Effective Questioning',
+                value='Ask open-ended questions to encourage dialogue and exploration.',
+            ),
+        ],
     )
     @patch(
         'app.services.training_preparation_service.generate_checklist',
@@ -140,6 +153,19 @@ class TestTrainingPreparationService(unittest.TestCase):
 
         # Assert that the preparation status is failed due to LLM error
         self.assertEqual(result.status, TrainingPreparationStatus.failed)
+        self.assertEqual(result.prep_checklist, ['Item A', 'Item B'])
+        self.assertEqual(
+            result.key_concepts,
+            [
+                {'header': 'Clear Communication',
+                 'value': 'Express ideas clearly and listen actively to understand others.'},
+                {'header': 'Empathy',
+                 'value': "Show understanding and concern for the other party's feelings."},
+                {'header': 'Effective Questioning',
+                 'value': 'Ask open-ended questions to encourage dialogue and exploration.'},
+            ]
+        )
+        self.assertEqual(result.objectives, [])
 
 
 if __name__ == '__main__':
