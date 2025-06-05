@@ -15,11 +15,11 @@ class TestModel(BaseModel):
 
 
 @router.post('/test-camel', response_model=TestModel)
-async def test_camel_case(data: TestModel) -> TestModel:
+async def test_camel_case(test_data: TestModel) -> TestModel:
     # This will print the internal snake_case representation
-    print('Internal representation:', data.model_dump())
+    print('Internal representation:', test_data.model_dump())
     # This will return the camelCase representation
-    return data
+    return test_data
 
 
 @router.get('/test-camel', response_model=TestModel)
