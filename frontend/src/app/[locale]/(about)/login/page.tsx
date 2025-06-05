@@ -1,10 +1,16 @@
-'use client';
-
+import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import type { Metadata } from 'next';
+import { MetadataProps } from '@/interfaces/MetadataProps';
 import { SignInForm } from '@/components/common/SignInForm';
 import { SignUpForm } from '@/components/common/SignUpForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { useTranslations } from 'next-intl';
+
+export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '/login', true);
+}
 
 export default function LoginPage() {
   const t = useTranslations('Login');

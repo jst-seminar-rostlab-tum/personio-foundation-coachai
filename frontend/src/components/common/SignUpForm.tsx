@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { Card, CardContent, CardFooter } from '@/components/ui/Card';
@@ -87,7 +89,7 @@ export function SignUpForm() {
 
   return (
     <>
-      <Card className="border-0 shadow-none">
+      <Card className="shadow-none">
         <Form {...signUpForm}>
           <form onSubmit={signUpForm.handleSubmit(handleSubmit)}>
             <CardContent className="space-y-6 p-0">
@@ -161,6 +163,7 @@ export function SignUpForm() {
                         placeholder={t('passwordInputPlaceholder')}
                         disabled={isLoading}
                         requirements={passwordRequirements}
+                        onChange={field.onChange}
                         {...field}
                       />
                     </FormControl>

@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { Card, CardContent, CardFooter } from '@/components/ui/Card';
@@ -49,7 +51,7 @@ export function SignInForm() {
   };
 
   return (
-    <Card>
+    <Card className="shadow-none">
       <Form {...signInForm}>
         <form onSubmit={signInForm.handleSubmit(handleSubmit)}>
           <CardContent className="space-y-6 p-0">
@@ -88,6 +90,7 @@ export function SignInForm() {
                       className="w-full"
                       disabled={isLoading}
                       requirements={[]}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
