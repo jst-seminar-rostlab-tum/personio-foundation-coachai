@@ -1,7 +1,7 @@
 from typing import Any, TypedDict, TypeVar, Union
 
 from pydantic import ConfigDict
-from sqlmodel import SQLModel
+from sqlmodel import Field, SQLModel
 
 T = TypeVar('T', bound='BaseModel')
 
@@ -32,3 +32,6 @@ class BaseModel(SQLModel):
     def model_dump(self, **kwargs: ModelDumpKwargs) -> dict[str, Any]:
         """Convert camelCase to snake_case when serializing."""
         return super().model_dump(by_alias=True, **kwargs)
+
+
+__all__ = ['BaseModel', 'Field']
