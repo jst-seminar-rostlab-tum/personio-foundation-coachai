@@ -252,8 +252,8 @@ def generate_and_store_feedback(
     goals = get_achieved_goals(goals_request)
     recommendations = generate_recommendations(recommendations_request)
 
-    examples_positive_dicts = [ex.dict() for ex in examples.positive_examples]
-    examples_negative_dicts = [ex.dict() for ex in examples.negative_examples]
+    examples_positive_dicts = [ex.model_dump() for ex in examples.positive_examples]
+    examples_negative_dicts = [ex.model_dump() for ex in examples.negative_examples]
     recommendations = [rec.dict() for rec in recommendations.recommendations]
 
     feedback = TrainingSessionFeedback(
