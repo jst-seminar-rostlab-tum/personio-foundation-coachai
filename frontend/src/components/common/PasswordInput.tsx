@@ -9,7 +9,6 @@ export function PasswordInput({
   placeholder,
   disabled,
   requirements,
-  onChange,
   ...props
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +18,7 @@ export function PasswordInput({
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setPasswordValue(newValue);
-    onChange(e);
+    props.onChange?.(e);
   };
 
   return (

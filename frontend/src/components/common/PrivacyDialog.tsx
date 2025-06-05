@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
 import {
+  DataProcessingCardProps,
+  DataProcessingTableProps,
   DataProcessingTopic,
   ExternalService,
   PrivacyDialogProps,
@@ -84,7 +86,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
     [t]
   );
 
-  const DataProcessingCard = ({ item }: DataProcessingTopic) => (
+  const DataProcessingCard = ({ item }: DataProcessingCardProps) => (
     <div className="border rounded-lg p-4" key={item.key}>
       <div className="font-semibold text-base sm:text-base mb-2">{item.title}</div>
       <div className="text-base sm:text-base text-gray-600 mb-3">{item.description}</div>
@@ -113,7 +115,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
     </div>
   );
 
-  const DataProcessingTable = ({ items }: DataProcessingTopic[]) => (
+  const DataProcessingTable = ({ items }: DataProcessingTableProps) => (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse" role="table">
         <thead>
