@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MessageSquare, Video, BrainCircuit, TrendingUp, Award, Target } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import api from '@/services/Api';
+import { HttpStatusCode } from 'axios';
 
 export default function AboutPageComponent() {
   const t = useTranslations('HomePage');
@@ -12,6 +14,25 @@ export default function AboutPageComponent() {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex-1">
+        <button
+          className="mt-4 w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
+          onClick={async () => {
+            try {
+              const response = await api.get('/user-profiles');
+              if (response.status !== HttpStatusCode.Ok) {
+                throw new Error('Backend call failed');
+              }
+              // eslint-disable-next-line no-alert
+              alert('Backend called successfully!');
+            } catch (error) {
+              // eslint-disable-next-line no-alert
+              alert(`Error calling backend: ${error}`);
+            }
+          }}
+        >
+          Call Backend
+        </button>
+
         <section className="pb-16 pt-8 md:pt-16 md:pb-24 bg-gradient-to-br from-white to-primary/5">
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">

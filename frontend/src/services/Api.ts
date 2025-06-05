@@ -1,9 +1,12 @@
+import { createClient } from '@/utils/supabase/client';
 import axios from 'axios';
+
+const supabase = createClient();
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
-  baseURL: `${API_URL}/api/v1`,
+  baseURL: `${API_URL}`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,11 +14,26 @@ const api = axios.create({
 
 // Request interceptor for adding auth token
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers?.set?.('Authorization', `Bearer ${token}`);
+  async (config) => {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session) {
+      return Promise.reject(error);
     }
+
+    // Check if the session is expired and refresh it if necessary
+    let accessToken = data.session.access_token;
+    const currentTime = Math.floor(Date.now() / 1000);
+    const sessionExpiry = data.session.expires_at;
+    if (!sessionExpiry || sessionExpiry < currentTime) {
+      const { data: refreshedData, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError || !refreshedData.session) {
+        return Promise.reject(refreshError || new Error('Session refresh failed'));
+      }
+      accessToken = refreshedData.session.access_token;
+    }
+
+    config.headers.set('Authorization', `Bearer ${accessToken}`);
+
     return config;
   },
   (error) => Promise.reject(error)

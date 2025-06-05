@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     TWILIO_ACCOUNT_SID: str = ''
     TWILIO_AUTH_TOKEN: str = ''
     TWILIO_PHONE_NUMBER: str = ''
+    SUPABASE_URL: str = ''
+    SUPABASE_KEY: str = ''
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 

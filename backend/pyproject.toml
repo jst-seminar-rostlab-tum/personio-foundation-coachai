@@ -22,6 +22,7 @@ dependencies = [
   "python-dotenv>=1.0.0",
   "psycopg2-binary>=2.9.10",
   "openai>=1.81.0",
+  "supabase>=2.15.2",
 ]
 
 [tool.uv.workspace]

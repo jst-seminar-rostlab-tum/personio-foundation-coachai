@@ -1,7 +1,15 @@
 import createMiddleware from 'next-intl/middleware';
+import { NextRequest } from 'next/server';
 import routing from './i18n/routing';
+import { updateSession } from './utils/supabase/middleware';
 
-export default createMiddleware(routing);
+const i18nMiddleware = createMiddleware(routing);
+
+export default async function middleware(request: NextRequest) {
+  const response = i18nMiddleware(request);
+
+  return updateSession(request, response);
+}
 
 export const config = {
   // Match all pathnames except for

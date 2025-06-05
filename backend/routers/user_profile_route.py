@@ -4,6 +4,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
+from backend.dependencies import verify_jwt
+
 from ..database import get_session
 from ..models.language import Language
 from ..models.user_profile import (
@@ -12,7 +14,9 @@ from ..models.user_profile import (
     UserProfileRead,
 )
 
-router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
+router = APIRouter(
+    prefix='/user-profiles', tags=['User Profiles'], dependencies=[Depends(verify_jwt)]
+)
 
 
 @router.get('/', response_model=list[UserProfileRead])
