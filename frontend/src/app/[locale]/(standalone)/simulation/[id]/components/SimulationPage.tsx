@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import SimulationHeader from '@/components/layout/SimulationHeader';
 import SimulationFooter from '@/components/layout/SimulationFooter';
-import SimulationRealtimeSuggestions from '@/components/common/SimulationRealtimeSuggestions';
-import SimulationMessages from '@/components/common/SimulationMessages';
+import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
+import SimulationMessages from './SimulationMessages';
 
 export default function SimulationPageComponent() {
   const [time, setTime] = useState(0);
