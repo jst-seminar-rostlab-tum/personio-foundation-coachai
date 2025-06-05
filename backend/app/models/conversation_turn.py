@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -23,7 +23,7 @@ class ConversationTurn(SQLModel, table=True):  # `table=True` makes it a databas
     text: str
     audio_uri: str
     ai_emotion: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
     session: Optional['TrainingSession'] = Relationship(back_populates='conversation_turns')

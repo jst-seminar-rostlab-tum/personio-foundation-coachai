@@ -45,7 +45,7 @@ def get_user_profile_ids(
             UserProfileRead(
                 id=user.id,
                 preferred_language=user.preferred_language,
-                role_id=user.role_id,
+                role=user.role,
                 experience_id=user.experience_id,
                 preferred_learning_style_id=user.preferred_learning_style_id,
                 preferred_session_length_id=user.preferred_session_length_id,
@@ -82,7 +82,7 @@ def get_user_profile_by_id(
     user_data = UserProfileExtendedRead(
         user_id=user.id,
         preferred_language=user.preferred_language,
-        role=user.role.label if user.role else None,
+        role=user.role if user.role else None,
         experience=user.experience.label if user.experience else None,
         preferred_learning_style=user.preferred_learning_style.label
         if user.preferred_learning_style
@@ -122,7 +122,7 @@ def get_user_profiles(
             user_map[uid] = {
                 'user_id': uid,
                 'preferred_language': user.preferred_language,
-                'role': user.role.label if user.role else None,
+                'role': user.role if user.role else None,
                 'experience': user.experience.label if user.experience else None,
                 'preferred_learning_style': user.preferred_learning_style.label
                 if user.preferred_learning_style
@@ -175,7 +175,7 @@ def get_user_profiles(
 
 @router.post('/', response_model=UserProfile)
 def create_user_profile(
-    user_data: dict,
+    user_data: UserProfileCreate,
     session: Annotated[Session, Depends(get_session)],
 ) -> UserProfile:
     """
@@ -183,11 +183,11 @@ def create_user_profile(
     Accepts user data as input.
     """
     new_user = UserProfile(
-        role_id=user_data['role_id'],
-        experience_id=user_data['experience_id'],
-        preferred_language=user_data['preferred_language'],
-        preferred_learning_style_id=user_data['preferred_learning_style_id'],
-        preferred_session_length_id=user_data['preferred_session_length_id'],
+        role=user_data.role,
+        experience_id=user_data.experience_id,
+        preferred_language=user_data.preferred_language,
+        preferred_learning_style_id=user_data.preferred_learning_style_id,
+        preferred_session_length_id=user_data.preferred_session_length_id,
     )
     session.add(new_user)
     session.commit()
@@ -228,7 +228,7 @@ def update_user_profile(
         raise HTTPException(status_code=404, detail='User not found')
 
     # Update UserProfile fields
-    user.role_id = user_data.role_id
+    user.role = user_data.role
     user.experience_id = user_data.experience_id
     user.preferred_language = user_data.preferred_language
     user.preferred_learning_style_id = user_data.preferred_learning_style_id
@@ -281,8 +281,8 @@ def patch_user_profile(
         raise HTTPException(status_code=404, detail='User profile not found')
 
     # Update UserProfile fields if provided
-    if 'role_id' in user_data:
-        user.role_id = user_data['role_id']
+    if 'role' in user_data:
+        user.role = user_data['role']
     if 'experience_id' in user_data:
         user.experience_id = user_data['experience_id']
     if 'preferred_language' in user_data:

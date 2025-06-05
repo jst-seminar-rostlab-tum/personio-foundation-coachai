@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.models.app_config import AppConfig, ConfigType
@@ -11,7 +11,6 @@ from app.models.goal import Goal
 from app.models.language import Language  # Import the Language model
 from app.models.learning_style import LearningStyle
 from app.models.rating import Rating
-from app.models.role import Role
 from app.models.session_length import SessionLength
 from app.models.training_case import TrainingCase, TrainingCaseStatus
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
@@ -22,7 +21,7 @@ from app.models.training_session_feedback import (
 )
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import UserGoal
-from app.models.user_profile import UserProfile
+from app.models.user_profile import UserProfile, UserRole
 
 
 def get_dummy_learning_styles() -> list[LearningStyle]:
@@ -78,13 +77,6 @@ def get_dummy_languages() -> list[Language]:
     ]
 
 
-def get_dummy_roles() -> list[Role]:
-    return [
-        Role(id=uuid4(), label='Admin', description='Administrator role'),
-        Role(id=uuid4(), label='User', description='Regular user role'),
-    ]
-
-
 def get_dummy_experiences() -> list[Experience]:
     return [
         Experience(id=uuid4(), label='Beginner', description='New to the field'),
@@ -117,7 +109,6 @@ def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
 
 
 def get_dummy_user_profiles(
-    roles: list[Role],
     experiences: list[Experience],
     learning_styles: list[LearningStyle],
     session_lengths: list[SessionLength],
@@ -129,7 +120,7 @@ def get_dummy_user_profiles(
         UserProfile(
             id=uuid4(),
             preferred_language='en',
-            role_id=roles[0].id,
+            role=UserRole.user,
             experience_id=experiences[0].id,
             preferred_learning_style_id=learning_styles[0].id,
             preferred_session_length_id=session_lengths[0].id,
@@ -143,7 +134,7 @@ def get_dummy_user_profiles(
         UserProfile(
             id=uuid4(),
             preferred_language='de',
-            role_id=roles[1].id,
+            role=UserRole.admin,
             experience_id=experiences[1].id,
             preferred_learning_style_id=learning_styles[1].id,
             preferred_session_length_id=session_lengths[1].id,
@@ -180,8 +171,8 @@ def get_dummy_training_cases(
             tone='Friendly',
             complexity='Low',
             status=TrainingCaseStatus.draft,  # Use the enum instead of a string
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
         TrainingCase(
             id=uuid4(),
@@ -195,8 +186,8 @@ def get_dummy_training_cases(
             tone='Professional',
             complexity='Medium',
             status=TrainingCaseStatus.draft,  # Use the enum instead of a string
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
     ]
 
@@ -216,8 +207,8 @@ def get_dummy_ratings(
             ],  # Get user_id from the training case
             score=5,
             comment='Excellent session!',
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
         Rating(
             id=uuid4(),
@@ -227,8 +218,8 @@ def get_dummy_ratings(
             ],  # Get user_id from the training case
             score=4,
             comment='Good session, but room for improvement.',
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
     ]
 
@@ -247,8 +238,8 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_other_party='Stakeholders',
             is_custom=False,
             language_code='en',
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
             id=uuid4(),
@@ -262,8 +253,8 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_other_party='Friend',
             is_custom=False,
             language_code='en',
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
             id=uuid4(),
@@ -277,8 +268,8 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_other_party='Developer',
             is_custom=False,
             language_code='en',
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
             id=uuid4(),
@@ -292,8 +283,8 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_other_party='',
             is_custom=True,
             language_code='en',
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
     ]
 
@@ -311,7 +302,7 @@ def get_dummy_conversation_turns(
             text='Hello, how can I help you?',
             audio_uri='https://example.com/audio/user_hello.mp3',
             ai_emotion='neutral',
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
         ),
         ConversationTurn(
             id=uuid4(),
@@ -322,7 +313,7 @@ def get_dummy_conversation_turns(
             text='I need assistance with my account.',
             audio_uri='https://example.com/audio/system_assistance.mp3',
             ai_emotion='concerned',
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
         ),
     ]
 
@@ -332,24 +323,24 @@ def get_dummy_training_sessions(training_cases: list[TrainingCase]) -> list[Trai
         TrainingSession(
             id=uuid4(),
             case_id=training_cases[0].id,
-            scheduled_at=datetime.utcnow(),
-            started_at=datetime.utcnow(),
-            ended_at=datetime.utcnow(),
+            scheduled_at=datetime.now(UTC),
+            started_at=datetime.now(UTC),
+            ended_at=datetime.now(UTC),
             language_code='en',  # Assuming "en" is a valid language code in the LanguageModel table
             ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
         TrainingSession(
             id=uuid4(),
             case_id=training_cases[1].id,
-            scheduled_at=datetime.utcnow(),
-            started_at=datetime.utcnow(),
-            ended_at=datetime.utcnow(),
+            scheduled_at=datetime.now(UTC),
+            started_at=datetime.now(UTC),
+            ended_at=datetime.now(UTC),
             language_code='de',  # Assuming "fr" is a valid language code in the LanguageModel table
             ai_persona={'persona_name': 'AI Mentor', 'persona_role': 'Guide'},
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
     ]
 
@@ -424,8 +415,8 @@ def get_dummy_training_session_feedback(
                 },
             ],
             status=FeedbackStatusEnum.pending,  # Use the enum for status
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
         TrainingSessionFeedback(
             id=uuid4(),
@@ -493,8 +484,8 @@ def get_dummy_training_session_feedback(
                 },
             ],
             status=FeedbackStatusEnum.pending,  # Use the enum for status
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
     ]
 
@@ -519,8 +510,8 @@ def get_dummy_training_preparations(
                 'Prepare presentation slides',
             ],
             status=TrainingPreparationStatus.pending,  # Use the enum for status
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
         TrainingPreparation(
             id=uuid4(),
@@ -538,8 +529,8 @@ def get_dummy_training_preparations(
                 'Review deliverables checklist',
             ],
             status=TrainingPreparationStatus.pending,  # Use the enum for status
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         ),
     ]
 
@@ -593,7 +584,7 @@ def get_dummy_user_confidence_scores(
                     area_id=area.id,
                     user_id=user.id,
                     score=50,  # Default score for demonstration
-                    updated_at=datetime.utcnow(),
+                    updated_at=datetime.now(UTC),
                 )
             )
     return scores

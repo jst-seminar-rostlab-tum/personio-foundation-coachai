@@ -10,8 +10,8 @@ from app.models.goal import Goal, GoalRead
 from app.models.language import Language, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
-from app.models.role import Role, RoleRead
 from app.models.session_length import SessionLength, SessionLengthRead
+from app.models.user_profile import UserRole
 
 router = APIRouter(prefix='/personalization-options', tags=['Personalization Options'])
 
@@ -23,7 +23,6 @@ def get_personalization_options(
     """
     Retrieve all personalization options related to the user.
     """
-    roles = session.exec(select(Role)).all()
     experiences = session.exec(select(Experience)).all()
     goals = session.exec(select(Goal)).all()
     confidence_areas = session.exec(select(ConfidenceArea)).all()
@@ -32,9 +31,7 @@ def get_personalization_options(
     session_lengths = session.exec(select(SessionLength)).all()
 
     return PersonalizationOptionRead(
-        roles=[
-            RoleRead(id=role.id, label=role.label, description=role.description) for role in roles
-        ],
+        roles=list(UserRole),
         experiences=[
             ExperienceRead(
                 id=experience.id, label=experience.label, description=experience.description

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
@@ -16,7 +16,7 @@ class UserConfidenceScore(SQLModel, table=True):
     area_id: UUID = Field(foreign_key='confidencearea.id', primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)
     score: int
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
     confidence_area: Optional['ConfidenceArea'] = Relationship(
@@ -27,7 +27,7 @@ class UserConfidenceScore(SQLModel, table=True):
 
 @event.listens_for(UserConfidenceScore, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserConfidenceScore') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(UTC)
 
 
 class UserConfidenceScoreCreate(SQLModel):

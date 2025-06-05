@@ -12,7 +12,9 @@ select = [
     "UP",  # pyupgrade
     "N",   # pep8-naming
 ]
-ignore = []
+ignore = [
+    "UP007", # pyupgrade: suggests Optional[Enum] to be replaced with Enum | None
+]
 
 [lint.pydocstyle]
 convention = "google"
