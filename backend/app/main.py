@@ -16,7 +16,6 @@ from app.routers import (
     personalization_options_route,
     rating_route,
     session_length_route,
-    test_route,
     training_case_route,
     training_preparation_route,
     training_session_feedback_route,
@@ -55,7 +54,6 @@ app.include_router(learning_style_route.router)
 app.include_router(session_length_route.router)
 app.include_router(personalization_options_route.router)
 app.include_router(app_config_route.router)
-app.include_router(test_route.router, prefix='/api/test', tags=['test'])
 
 
 # Create database tables on startup
