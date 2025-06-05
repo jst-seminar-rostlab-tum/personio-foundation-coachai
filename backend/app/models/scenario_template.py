@@ -22,7 +22,7 @@ class ScenarioTemplateStatus(str, Enum):
 
 class ScenarioTemplate(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    category_id: UUID | None = Field(default=None, foreign_key='conversationcategory.id')
+    category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
     title: str
     description: str
     system_prompt: str
@@ -52,7 +52,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioTe
 
 # Schema for creating a new ScenarioTemplate
 class ScenarioTemplateCreate(SQLModel):
-    category_id: UUID | None = None
+    category_id: Optional[UUID] = None
     title: str
     description: str
     system_prompt: str
@@ -65,7 +65,7 @@ class ScenarioTemplateCreate(SQLModel):
 # Schema for reading ScenarioTemplate data
 class ScenarioTemplateRead(SQLModel):
     id: UUID
-    category_id: UUID | None
+    category_id: Optional[UUID]
     title: str
     description: str
     system_prompt: str

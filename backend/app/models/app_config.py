@@ -1,4 +1,5 @@
 from enum import Enum as PyEnum
+from typing import Optional
 
 from sqlmodel import Column, Enum, Field, SQLModel
 
@@ -21,7 +22,7 @@ class AppConfig(SQLModel, table=True):
 class AppConfigCreate(SQLModel):
     key: str
     value: str
-    type: ConfigType | None = None
+    type: Optional[ConfigType] = None
 
 
 # Schema for reading AppConfig data

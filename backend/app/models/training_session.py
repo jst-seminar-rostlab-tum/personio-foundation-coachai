@@ -18,9 +18,9 @@ if TYPE_CHECKING:
 class TrainingSession(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     case_id: UUID = Field(foreign_key='trainingcase.id')  # Foreign key to TrainingCase
-    scheduled_at: datetime | None = None
-    started_at: datetime | None = None
-    ended_at: datetime | None = None
+    scheduled_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    ended_at: Optional[datetime] = None
     language_code: str = Field(foreign_key='language.code')  # Foreign key to LanguageModel
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -48,9 +48,9 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingSe
 # Schema for creating a new TrainingSession
 class TrainingSessionCreate(SQLModel):
     case_id: UUID
-    scheduled_at: datetime | None = None
-    started_at: datetime | None = None
-    ended_at: datetime | None = None
+    scheduled_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    ended_at: Optional[datetime] = None
     language_code: str
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
 
@@ -59,9 +59,9 @@ class TrainingSessionCreate(SQLModel):
 class TrainingSessionRead(SQLModel):
     id: UUID
     case_id: UUID
-    scheduled_at: datetime | None
-    started_at: datetime | None
-    ended_at: datetime | None
+    scheduled_at: Optional[datetime]
+    started_at: Optional[datetime]
+    ended_at: Optional[datetime]
     language_code: str
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime
