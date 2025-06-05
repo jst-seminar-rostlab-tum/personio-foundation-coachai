@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -23,8 +23,8 @@ class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a dat
     default_other_party: str = Field(default='')
     is_custom: bool = Field(default=False)
     language_code: str = Field(foreign_key='language.code')  # FK to Language model
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
     training_cases: list['TrainingCase'] = Relationship(
@@ -36,7 +36,7 @@ class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a dat
 def update_timestamp(
     mapper: Mapper, connection: Connection, target: 'ConversationCategory'
 ) -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(UTC)
 
 
 # Schema for creating a new ConversationCategory

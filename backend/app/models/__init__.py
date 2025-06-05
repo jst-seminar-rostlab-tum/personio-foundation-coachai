@@ -10,6 +10,7 @@ from app.models.conversation_turn import (
     ConversationTurnCreate,
     ConversationTurnRead,
 )
+
 from app.models.difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
 from app.models.experience import Experience, ExperienceCreate, ExperienceRead
 from app.models.goal import Goal, GoalCreate, GoalRead
@@ -20,6 +21,7 @@ from app.models.rating import Rating, RatingCreate, RatingRead
 from app.models.role import Role, RoleCreate, RoleRead
 from app.models.session_length import SessionLength, SessionLengthCreate, SessionLengthRead
 from app.models.training_case import (
+
     TrainingCase,
     TrainingCaseCreate,
     TrainingCaseRead,
@@ -46,8 +48,10 @@ from app.models.user_confidence_score import (
     UserConfidenceScoreCreate,
     UserConfidenceScoreRead,
 )
+
 from app.models.user_goal import UserGoal, UserGoalCreate, UserGoalRead
 from app.models.user_profile import UserProfile, UserProfileCreate, UserProfileExtendedRead, UserProfileRead
+
 
 __all__ = [
     'Language',
@@ -85,9 +89,6 @@ __all__ = [
     'UserGoal',
     'UserGoalCreate',
     'UserGoalRead',
-    'Role',
-    'RoleCreate',
-    'RoleRead',
     'Experience',
     'ExperienceCreate',
     'ExperienceRead',
@@ -111,6 +112,7 @@ __all__ = [
     'SessionLengthRead',
     'ConfidenceScoreRead',
     'UserProfileExtendedRead',
+    'UserRole',
     'PersonalizationOptionRead',
     'AppConfig',
     'AppConfigCreate',
