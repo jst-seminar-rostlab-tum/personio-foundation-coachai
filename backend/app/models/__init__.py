@@ -18,7 +18,6 @@ from app.models.language import Language, LanguageCreate, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
-from app.models.role import Role, RoleCreate, RoleRead
 from app.models.session_length import SessionLength, SessionLengthCreate, SessionLengthRead
 from app.models.training_case import (
 
@@ -112,7 +111,6 @@ __all__ = [
     'SessionLengthRead',
     'ConfidenceScoreRead',
     'UserProfileExtendedRead',
-    'UserRole',
     'PersonalizationOptionRead',
     'AppConfig',
     'AppConfigCreate',
