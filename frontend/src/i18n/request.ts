@@ -13,7 +13,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     Dashboard: (await import(`../../messages/${locale}/Dashboard.json`)).default,
     Feedback: (await import(`../../messages/${locale}/Feedback.json`)).default,
     History: (await import(`../../messages/${locale}/History.json`)).default,
-    Login: (await import(`../../messages/${locale}/LoginPage.json`)).default,
+    Login: (await import(`../../messages/${locale}/Login.json`)).default,
     Onboarding: (await import(`../../messages/${locale}/Onboarding.json`)).default,
     Preparation: (await import(`../../messages/${locale}/Preparation.json`)).default,
     Simulation: (await import(`../../messages/${locale}/Simulation.json`)).default,
