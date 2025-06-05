@@ -173,7 +173,7 @@ export function SignUpForm() {
                   <p className="text-base">
                     {t('gdprAdherenceText')}
                     <Button
-                      variant="ghost"
+                      variant="link"
                       type="button"
                       className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
                       onClick={() => setShowPrivacyDialog(true)}

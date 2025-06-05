@@ -49,7 +49,7 @@ export function SignInForm() {
   };
 
   return (
-    <Card className="shadow-none">
+    <Card>
       <Form {...signInForm}>
         <form onSubmit={signInForm.handleSubmit(handleSubmit)}>
           <CardContent className="space-y-6 p-0">

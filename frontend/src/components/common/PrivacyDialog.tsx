@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Shield, Download, Trash2, Server, Lock } from 'lucide-react';
+import { Download, Trash2, Server, Lock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
@@ -12,7 +12,6 @@ import {
 export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps) {
   const t = useTranslations('Login.PrivacyPolicyDialog');
 
-  // Memoize data structure to avoid recreation on each render
   const dataProcessingTopics = useMemo<DataProcessingTopic[]>(
     () => [
       {
@@ -167,21 +166,18 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
         <DialogTitle>{t('title')}</DialogTitle>
 
         <div className="space-y-4 sm:space-y-6 mt-4" role="document">
-          {/* Data Processing Section */}
           <section aria-labelledby="data-processing-title">
             <Card>
               <CardHeader>
                 <CardTitle id="data-processing-title">{t('dataProcessing.title')}</CardTitle>
               </CardHeader>
               <CardContent className="p-4">
-                {/* Mobile Layout */}
                 <div className="block lg:hidden space-y-4">
                   {dataProcessingTopics.map((item) => (
                     <DataProcessingCard key={item.key} item={item} />
                   ))}
                 </div>
 
-                {/* Desktop Table Layout */}
                 <div className="hidden lg:block">
                   <DataProcessingTable items={dataProcessingTopics} />
                 </div>
@@ -189,13 +185,11 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
             </Card>
           </section>
 
-          {/* Security Section */}
           <section aria-labelledby="security-title">
             <Card>
               <CardHeader>
                 <CardTitle id="security-title">
                   <div className="flex items-center justify-center gap-2">
-                    <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" aria-hidden="true" />
                     {t('security.title')}
                   </div>
                 </CardTitle>
@@ -259,7 +253,6 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
             </Card>
           </section>
 
-          {/* User Rights Section */}
           <section aria-labelledby="user-rights-title">
             <Card>
               <CardHeader>
