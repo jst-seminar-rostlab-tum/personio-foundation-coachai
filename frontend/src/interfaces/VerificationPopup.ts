@@ -1,7 +1,7 @@
 export interface VerificationPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  formData?: {
+  signUpFormData: {
     fullName: string;
     email: string;
     phoneNumber: string;

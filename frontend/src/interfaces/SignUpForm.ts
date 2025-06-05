@@ -1,14 +1,3 @@
-export interface SignUpFormProps {
-  onSubmit: (values: {
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
-    terms: boolean;
-  }) => void;
-  setError: (error: string | null) => void;
-}
-
 export interface UserProfileCreate {
   email: string;
   full_name: string;

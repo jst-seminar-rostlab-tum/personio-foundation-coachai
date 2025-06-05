@@ -10,7 +10,6 @@ import { useState } from 'react';
 import { PasswordRequirement } from '@/interfaces/PasswordInput';
 import GoogleIcon from '@/../public/icons/google-icon.svg';
 import Image from 'next/image';
-import { SignUpFormProps } from '@/interfaces/SignUpForm';
 import {
   Form,
   FormControl,
@@ -19,15 +18,18 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/Form';
+import { AlertCircleIcon } from 'lucide-react';
 import { PasswordInput } from './PasswordInput';
 import PrivacyDialog from './PrivacyDialog';
 import { VerificationPopup } from './VerificationPopup';
+import { Alert, AlertTitle } from '../ui/Alert';
 
-export function SignUpForm({ setError }: SignUpFormProps) {
+export function SignUpForm() {
   const t = useTranslations('Login.SignUpTab');
   const [isLoading, setIsLoading] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const signUpFormSchema = z.object({
     fullName: z.string().min(1, t('fullNameInputError')),
@@ -71,15 +73,15 @@ export function SignUpForm({ setError }: SignUpFormProps) {
     },
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
-    console.warn('SignUpForm: handleSubmit called with values:', values);
     setError(null);
     setIsLoading(true);
 
-    // TODO: Api call to backend for data validation
+    // TODO: Api call to backend for data validation (services/Api.ts)
+    // TODO: setErrors if Api call failed and return
 
     setShowVerification(true);
-
     setIsLoading(false);
   };
 
@@ -218,10 +220,17 @@ export function SignUpForm({ setError }: SignUpFormProps) {
       <VerificationPopup
         isOpen={showVerification}
         onClose={() => setShowVerification(false)}
-        formData={signUpForm.getValues()}
+        signUpFormData={signUpForm.getValues()}
       />
 
       <PrivacyDialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}></PrivacyDialog>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircleIcon />
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
+      )}
     </>
   );
 }

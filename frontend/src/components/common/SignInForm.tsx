@@ -6,7 +6,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { SignInFormProps } from '@/interfaces/SignInForm';
 import Image from 'next/image';
 import GoogleIcon from '@/../public/icons/google-icon.svg';
 import {
@@ -17,9 +16,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/Form';
+import { AlertCircleIcon } from 'lucide-react';
 import { PasswordInput } from './PasswordInput';
+import { Alert, AlertTitle } from '../ui/Alert';
 
-export function SignInForm({ onSubmit }: SignInFormProps) {
+export function SignInForm() {
   const t = useTranslations('Login.SignInTab');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,10 +39,12 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
     },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmit = async (values: z.infer<typeof signInFormSchema>) => {
     setError(null);
     setIsLoading(true);
-    await onSubmit(values);
+    // TODO: Call API to sign in the user with email and password (services/Api.ts)
+    // TODO: Reroute if Api call successfull and setErrors if failed
     setIsLoading(false);
   };
 
@@ -105,6 +108,13 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
           </CardFooter>
         </form>
       </Form>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircleIcon />
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
+      )}
     </Card>
   );
 }

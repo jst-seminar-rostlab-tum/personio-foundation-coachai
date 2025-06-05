@@ -6,14 +6,16 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
-import { RotateCcw } from 'lucide-react';
+import { AlertCircleIcon, RotateCcw } from 'lucide-react';
 import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
+import { Alert, AlertTitle } from '../ui/Alert';
 
-export function VerificationPopup({ isOpen, onClose, formData }: VerificationPopupProps) {
+export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
   const [isLoading, setIsLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [error, setError] = useState<string | null>();
 
   const verificationSchema = z.object({
     code: z.string().regex(/^\d{6}$/, t('codeInputError')),
@@ -42,14 +44,17 @@ export function VerificationPopup({ isOpen, onClose, formData }: VerificationPop
     setIsLoading(true);
     setError(null);
 
-    // TODO: Call API to verify code and to sign up the user
+    // TODO: Call API to verify code and to sign up the user (services/Api.ts)
+    // TODO: setError if Api call failed
+    // TODO: Reroute if Api call successful
 
     setIsLoading(false);
   };
 
   const handleResendCode = async () => {
     setResendCooldown(30);
-    // TODO: Call API to resend verification code
+    // TODO: Call API to resend verification code (services/Api.ts)
+    // TODO: setError if Api call failed
   };
 
   if (!isOpen) return null;
@@ -64,7 +69,7 @@ export function VerificationPopup({ isOpen, onClose, formData }: VerificationPop
               <h2 className="text-xl text-center">{t('title')}</h2>
               <p className="text-base text-center text-bw-50">
                 {t('descriptionPartOne')}
-                <strong>{formData?.phoneNumber}</strong>
+                <strong>{signUpFormData?.phoneNumber}</strong>
                 {t('descriptionPartTwo')}
               </p>
 
@@ -155,6 +160,13 @@ export function VerificationPopup({ isOpen, onClose, formData }: VerificationPop
           </form>
         </Form>
       </Card>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircleIcon />
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
+      )}
     </div>
   );
 }
