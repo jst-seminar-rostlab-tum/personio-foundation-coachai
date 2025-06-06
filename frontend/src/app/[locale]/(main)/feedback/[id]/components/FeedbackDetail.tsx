@@ -139,7 +139,7 @@ export default function FeedbackDetail() {
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
 
-      <div className="grid grid-cols-2 gap-y-4 w-full md:w-fit md:gap-x-48 px-1">
+      <div className="grid grid-cols-2 gap-y-4 w-full px-1 md:flex md:justify-between">
         {roundCardStats.map((stat) => (
           <div className="flex gap-2 items-center" key={stat.key}>
             <div className="rounded-full size-11 border-1 border-bw-30 bg-bw-10 flex items-center justify-center">
