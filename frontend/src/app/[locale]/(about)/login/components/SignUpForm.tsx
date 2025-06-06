@@ -21,9 +21,9 @@ import {
 } from '@/components/ui/Form';
 import { AlertCircleIcon } from 'lucide-react';
 import { Alert, AlertTitle } from '@/components/ui/Alert';
-import PrivacyDialog from '@/components/common/PrivacyDialog';
 import { VerificationPopup } from '@/app/[locale]/(about)/login/components/VerificationPopup';
 import { PasswordInput } from '@/app/[locale]/(about)/login/components/PasswordInput';
+import PrivacyDialog from '@/app/[locale]/(about)/login/components/PrivacyDialog';
 
 export function SignUpForm() {
   const t = useTranslations('Login.SignUpTab');
