@@ -15,6 +15,7 @@ const buttonVariants = cva(
         disabled: 'bg-bw-10 text-bw-40',
         destructive: 'bg-flame-50 text-white shadow-xs hover:bg-flame-50/80',
         ghost: 'hover:bg-bw-10',
+        link: 'text-blue-600 underline hover:text-blue-800',
       },
       size: {
         default: 'rounded-md px-4 py-3',

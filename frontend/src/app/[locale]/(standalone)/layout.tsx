@@ -1,11 +1,11 @@
 import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
-import { Props } from '@/interfaces/LayoutProps';
+import { LayoutProps } from '@/interfaces/LayoutProps';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export default async function StandaloneLayout({ children, params }: Props) {
+export default async function StandaloneLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
 
   return (

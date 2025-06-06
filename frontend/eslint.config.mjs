@@ -18,6 +18,8 @@ const eslintConfig = [
       'eslint.config.mjs',
       'jest.setup.ts',
       'package.json',
+      'postcss.config.mjs',
+      '**/coverage/**',
     ],
   },
   ...compat.extends(

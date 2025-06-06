@@ -70,7 +70,7 @@ docker compose up db -d
 4. Populate local PostgreSQL with dummy data. From the backend folder, run the following:
 
 ```bash
-cd .. && uv run -m backend.data.populate_dummy_data && cd backend
+uv run -m app.data.populate_dummy_data
 ```
 
 5. Start the FastAPI development server:

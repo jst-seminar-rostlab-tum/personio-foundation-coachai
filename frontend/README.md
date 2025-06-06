@@ -43,11 +43,12 @@ The following environment variables can be configured:
 - **Next.js**: For server-side rendering and routing
 - **TailwindCSS**: For styling
 - **ESLint**: For code linting
+- **Prettier**: For auto formatting
 - **SWR**: For data fetching
 
 ## Code Style
 
-The project uses ESLint for code linting and formatting. To check code style:
+This project uses ESLint to enforce linting rules and Prettier to automatically format your code.
 
 ## Deployment
 
