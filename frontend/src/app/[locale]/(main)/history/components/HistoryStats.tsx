@@ -5,6 +5,7 @@ const mockStats = [
   { key: 'structure', value: 85 },
   { key: 'empathy', value: 70 },
   { key: 'solutionFocus', value: 75 },
+  { key: 'clarity', value: 90 },
 ];
 
 export default function HistoryStats() {

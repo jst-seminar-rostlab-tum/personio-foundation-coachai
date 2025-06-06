@@ -24,8 +24,9 @@ const mockFeedback = {
   topic: 'Giving Constructive Feedback',
   time: '16.04.2025, 12:24',
   structure: 85,
-  empathy: 85,
-  focus: 85,
+  empathy: 89,
+  focus: 91,
+  clarity: 89,
   overall: 82,
   speakingTime: 62,
   questionAsked: 6,
@@ -40,6 +41,7 @@ export default function FeedbackDetail() {
     { key: t('progressBars.structure'), value: mockFeedback.structure },
     { key: t('progressBars.empathy'), value: mockFeedback.empathy },
     { key: t('progressBars.focus'), value: mockFeedback.focus },
+    { key: t('progressBars.clarity'), value: mockFeedback.clarity },
   ];
 
   const roundCardStats = [
