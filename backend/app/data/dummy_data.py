@@ -497,6 +497,7 @@ def get_dummy_training_preparations(
         TrainingPreparation(
             id=uuid4(),
             case_id=training_cases[0].id,
+            context='You need to have conversation with Sarah...',
             objectives=[
                 "Understand the client's needs",
                 'Prepare a solution proposal',
@@ -516,6 +517,7 @@ def get_dummy_training_preparations(
         TrainingPreparation(
             id=uuid4(),
             case_id=training_cases[1].id,
+            context='You need to prepare for a team meeting...',
             objectives=[
                 'Discuss project timeline',
                 'Finalize deliverables',
