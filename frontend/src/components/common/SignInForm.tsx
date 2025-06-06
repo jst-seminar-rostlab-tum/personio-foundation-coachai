@@ -88,6 +88,7 @@ export function SignInForm() {
                       {...field}
                       disabled={isLoading}
                       requirements={[]}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />

@@ -10,4 +10,5 @@ export interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputEl
   placeholder: string;
   disabled: boolean;
   requirements?: PasswordRequirement[];
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }

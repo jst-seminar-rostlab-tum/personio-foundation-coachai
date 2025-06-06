@@ -162,6 +162,7 @@ export function SignUpForm() {
                         placeholder={t('passwordInputPlaceholder')}
                         disabled={isLoading}
                         requirements={passwordRequirements}
+                        onChange={field.onChange}
                         {...field}
                       />
                     </FormControl>
