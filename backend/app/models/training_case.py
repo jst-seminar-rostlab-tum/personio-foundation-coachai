@@ -47,7 +47,7 @@ class TrainingCase(CamelModel, table=True):  # `table=True` makes it a database 
     preparations: list['TrainingPreparation'] = Relationship(
         back_populates='case', cascade_delete=True
     )
-    user: Optional['UserProfile'] = Relationship(back_populates='training_cases')
+    user_profile: Optional['UserProfile'] = Relationship(back_populates='training_cases')
     difficulty_level: Optional['DifficultyLevel'] = Relationship(back_populates='training_cases')
 
 
