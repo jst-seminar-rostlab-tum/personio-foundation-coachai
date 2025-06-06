@@ -1,7 +1,7 @@
-import NewTrainingForm from '@/components/common/NewTrainingForm';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
+import NewTrainingForm from './components/NewTrainingForm';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;

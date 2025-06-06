@@ -2,11 +2,11 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { ArrowLeftIcon, Play } from 'lucide-react';
 import Link from 'next/link';
-import PreparationChecklist from '@/components/common/PreparationChecklist';
-import ObjectivesList from '@/components/common/ObjectivesList';
 import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
 import { MetadataProps } from '@/interfaces/MetadataProps';
+import ObjectivesList from './components/ObjectivesList';
+import PreparationChecklist from './components/PreparationChecklist';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;

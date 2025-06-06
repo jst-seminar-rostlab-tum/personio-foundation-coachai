@@ -6,8 +6,8 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
 import { Button } from '@/components/ui/Button';
-import HistoryItem from '@/components/common/HistoryItem';
 import StatCard from '@/components/common/StatCard';
+import HistoryItem from './components/HistoryItem';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;

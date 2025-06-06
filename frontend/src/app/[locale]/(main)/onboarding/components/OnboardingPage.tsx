@@ -7,11 +7,11 @@ import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { UserOption } from '@/interfaces/UserInputFields';
 import Checkbox from '@/components/ui/Checkbox';
 import Label from '@/components/ui/Label';
-import { UserRadioComponent } from '@/components/common/UserRadioComponent';
 import { useTranslations } from 'next-intl';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Link from 'next/link';
 import { confidenceFields } from '@/configs/UserConfidenceFields.config';
+import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
   const roleQuestion: UserOption[] = [

@@ -1,4 +1,4 @@
-import AboutPageComponent from '@/components/common/AboutPage';
+import AboutPageComponent from './components/AboutPage';
 
 export default function AboutPage() {
   return <AboutPageComponent />;

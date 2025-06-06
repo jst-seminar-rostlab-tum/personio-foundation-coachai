@@ -1,7 +1,7 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import OnboardingPageComponent from '@/components/common/OnboardingPage';
+import OnboardingPageComponent from './components/OnboardingPage';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;

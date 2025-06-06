@@ -1,9 +1,9 @@
 'use client';
 
-import { CategoryButton } from '@/components/common/CategoryButton';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { CategoryStepProps } from '@/interfaces/CategoryStepProps';
+import { CategoryButton } from './CategoryButton';
 
 export function CategoryStep({ selectedCategory, onCategorySelect }: CategoryStepProps) {
   const t = useTranslations('NewTraining.category');

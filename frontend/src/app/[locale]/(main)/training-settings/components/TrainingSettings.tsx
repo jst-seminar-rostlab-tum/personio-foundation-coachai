@@ -23,10 +23,10 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/AlertDialog';
-import UserPreferences from '@/components/common/UserPreferences';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
+import UserPreferences from './UserPreferences';
 
 export default function TrainingSettings() {
   const [audioEnabled, setAudioEnabled] = useState(false);
