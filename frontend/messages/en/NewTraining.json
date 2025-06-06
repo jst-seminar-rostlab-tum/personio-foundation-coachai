@@ -8,7 +8,7 @@
     "customize": "Customize"
   },
   "category": {
-    "title": "Choose a Conversation Category",
+    "title": "Choose a Conversation Category *",
     "options": {
       "feedback": "Giving Feedback",
       "conflict": "Conflict Resolution",
@@ -17,12 +17,12 @@
       "custom": "Custom"
     },
     "customPlaceholder": "E.g., Promotion discussion, Onboarding new team member...",
-    "customInput": "Define your own conversation topic:"
+    "customInput": "Define your own conversation topic *"
   },
   "situation": {
     "title": "Describe your Situation",
     "party": {
-      "title": "Who is the other party?",
+      "title": "Who is the other party? *",
       "options": {
         "employee": "Employee",
         "manager": "Manager",
@@ -33,18 +33,18 @@
       "otherPlaceholder": "Other name"
     },
     "context": {
-      "title": "What is the context?",
+      "title": "What is the context? *",
       "placeholder": "Please specify the context of the conversation here."
     },
     "goal": {
-      "title": "What is your goal?",
+      "title": "What is your goal? *",
       "placeholder": "What outcome do you hope to achieve?"
     }
   },
   "customize": {
     "title": "Customize your Training",
     "difficulty": {
-      "title": "Difficulty Level",
+      "title": "Difficulty Level *",
       "options": {
         "easy": "Easy",
         "medium": "Medium",
@@ -52,7 +52,7 @@
       }
     },
     "emotionalTone": {
-      "title": "Emotional Tone",
+      "title": "Emotional Tone *",
       "options": {
         "positive": "Positive",
         "neutral": "Neutral",
@@ -60,7 +60,7 @@
       }
     },
     "complexity": {
-      "title": "Response Complexity",
+      "title": "Response Complexity *",
       "options": {
         "simple": "Simple",
         "medium": "Medium",
