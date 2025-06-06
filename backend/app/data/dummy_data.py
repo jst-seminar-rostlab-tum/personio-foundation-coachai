@@ -20,6 +20,7 @@ from app.models.training_session_feedback import (
     TrainingSessionFeedback,
 )
 from app.models.user_confidence_score import UserConfidenceScore
+from app.models.user_feedback import UserFeedback
 from app.models.user_goal import UserGoal
 from app.models.user_profile import UserProfile, UserRole
 
@@ -152,6 +153,23 @@ def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) ->
     return [
         UserGoal(goal_id=goals[0].id, user_id=user_profiles[0].id),
         UserGoal(goal_id=goals[1].id, user_id=user_profiles[1].id),
+    ]
+
+
+def get_dummy_user_feedbacks(user_profiles: list[UserProfile]) -> list[UserFeedback]:
+    return [
+        UserFeedback(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            rating=5,
+            comment='Excellent service!',
+        ),
+        UserFeedback(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            rating=2,
+            comment='I found the sessions a bit too fast-paced.',
+        ),
     ]
 
 
