@@ -6,11 +6,11 @@ import { useTranslations } from 'next-intl';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
-  return generateDynamicMetadata(locale, '/privacy', true);
+  return generateDynamicMetadata(locale, '/privacy', false);
 }
 
-export default function PrivacyPage() {
-  const t = useTranslations('Privacy');
+export default function PrivacyPolicyPage() {
+  const t = useTranslations('PrivacyPolicy');
 
   return (
     <div className="flex flex-col justify-between min-h-screen">

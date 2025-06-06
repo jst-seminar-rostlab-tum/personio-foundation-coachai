@@ -6,11 +6,11 @@ import { useTranslations } from 'next-intl';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
-  return generateDynamicMetadata(locale, '/terms', true);
+  return generateDynamicMetadata(locale, '/terms', false);
 }
 
-export default function TermsPage() {
-  const t = useTranslations('Terms');
+export default function TermsOfServicePage() {
+  const t = useTranslations('TermsOfService');
 
   return (
     <div className="flex flex-col justify-between min-h-screen">

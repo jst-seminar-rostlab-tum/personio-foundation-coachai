@@ -19,8 +19,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     Simulation: (await import(`../../messages/${locale}/Simulation.json`)).default,
     TrainingSettings: (await import(`../../messages/${locale}/TrainingSettings.json`)).default,
     AppHeader: (await import(`../../messages/${locale}/AppHeader.json`)).default,
-    Privacy: (await import(`../../messages/${locale}/Privacy.json`)).default,
-    Terms: (await import(`../../messages/${locale}/Terms.json`)).default,
+    PrivacyPolicy: (await import(`../../messages/${locale}/PrivacyPolicy.json`)).default,
+    TermsOfService: (await import(`../../messages/${locale}/TermsOfService.json`)).default,
   };
 
   return {
