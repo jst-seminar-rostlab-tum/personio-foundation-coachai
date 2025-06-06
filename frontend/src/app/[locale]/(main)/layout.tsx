@@ -1,13 +1,13 @@
 import { Inter, Bebas_Neue as BebasNeue } from 'next/font/google';
 import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
-import { Props } from '@/interfaces/LayoutProps';
+import { LayoutProps } from '@/interfaces/LayoutProps';
 import { AppHeader } from '@/components/layout/AppHeader';
 
 const inter = Inter({ subsets: ['latin'] });
 const bebasNeue = BebasNeue({ subsets: ['latin'], weight: '400' });
 
-export default async function RootLayout({ children, params }: Props) {
+export default async function RootLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
 
   return (
