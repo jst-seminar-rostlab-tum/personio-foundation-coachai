@@ -1,7 +1,6 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import AboutFooter from '@/components/layout/AboutFooter';
 import { useTranslations } from 'next-intl';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -19,7 +18,6 @@ export default function TermsOfServicePage() {
         <h2 className="text-xl font-semibold">{t('sections.limitationOfLiability.title')}</h2>
         <p className="text-base leading-loose">{t('sections.limitationOfLiability.content')}</p>
       </section>
-      <AboutFooter />
     </div>
   );
 }
