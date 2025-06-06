@@ -1,0 +1,11 @@
+{
+  "metaTitle": "Privacy Policy - Coach AI",
+  "metaDescription": "Learn how Coach AI protects your data",
+  "title": "Privacy Policy",
+  "sections": {
+    "dataCollection": {
+      "title": "Data Collection",
+      "content": "Personio Foundation collects personal data in accordance with applicable data protection laws and only for legitimate, clearly defined purposes. Collected data may include, but is not limited to, name, email address, IP address, usage data, and other information necessary to provide and improve our services. Data is collected transparently, purposefully, and with appropriate technical and organizational safeguards in place."
+    }
+  }
+}

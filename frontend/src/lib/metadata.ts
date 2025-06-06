@@ -22,8 +22,10 @@ function getNamespaceFromPath(path: string): string {
     'new-training': 'NewTraining',
     onboarding: 'Onboarding',
     preparation: 'Preparation',
+    privacy: 'PrivacyPolicy',
     simulation: 'Simulation',
     'training-settings': 'TrainingSettings',
+    terms: 'TermsOfService',
   };
 
   return pathMap[pathSegment] || 'HomePage';
