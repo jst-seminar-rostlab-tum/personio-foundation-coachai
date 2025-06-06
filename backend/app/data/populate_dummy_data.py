@@ -1,6 +1,7 @@
 from sqlmodel import Session, SQLModel, text
 
 from app.data import (
+    get_dummy_admin_stats,
     get_dummy_app_configs,
     get_dummy_confidence_areas,
     get_dummy_conversation_categories,
@@ -112,6 +113,10 @@ def populate_data() -> None:
             training_sessions, training_cases
         )  # Pass both sessions and cases
         session.add_all(ratings)
+
+        # Populate Admin Dashboard Stats
+        admin_stats = get_dummy_admin_stats()
+        session.add_all(admin_stats)
 
         # Commit all data
         session.commit()

@@ -1,3 +1,4 @@
+from app.models.admin_dashboard_stats import AdminDashboardStats, AdminDashboardStatsRead
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from app.models.conversation_category import (
@@ -123,4 +124,6 @@ __all__ = [
     'UserFeedback',
     'UserFeedbackCreate',
     'UserFeedbackRead',
+    'AdminDashboardStats',
+    'AdminDashboardStatsRead',
 ]
