@@ -6,7 +6,9 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
@@ -24,7 +26,7 @@ class TrainingCaseStatus(str, Enum):
 
 
 # Database model
-class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database table
+class TrainingCase(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
@@ -55,7 +57,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingCa
 
 
 # Schema for creating a new TrainingCase
-class TrainingCaseCreate(SQLModel):
+class TrainingCaseCreate(CamelModel):
     user_id: UUID
     category_id: Optional[UUID] = None
     custom_category_label: Optional[str] = None
@@ -69,7 +71,7 @@ class TrainingCaseCreate(SQLModel):
 
 
 # Schema for reading TrainingCase data
-class TrainingCaseRead(SQLModel):
+class TrainingCaseRead(CamelModel):
     id: UUID
     user_id: UUID
     category_id: Optional[UUID]

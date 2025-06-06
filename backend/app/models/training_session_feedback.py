@@ -6,7 +6,9 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
     from app.models.training_session import TrainingSession
@@ -18,25 +20,25 @@ class FeedbackStatusEnum(str, Enum):
     failed = 'failed'
 
 
-class PositiveExample(SQLModel):
+class PositiveExample(CamelModel):
     heading: str
     feedback: str
     quote: str
 
 
-class NegativeExample(SQLModel):
+class NegativeExample(CamelModel):
     heading: str
     feedback: str
     quote: str
     improved_quote: str
 
 
-class Recommendation(SQLModel):
+class Recommendation(CamelModel):
     heading: str
     recommendation: str
 
 
-class TrainingSessionFeedback(SQLModel, table=True):  # `table=True` makes it a database table
+class TrainingSessionFeedback(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
@@ -68,7 +70,7 @@ def update_timestamp(
 
 
 # Schema for creating a new TrainingSessionFeedback
-class TrainingSessionFeedbackCreate(SQLModel):
+class TrainingSessionFeedbackCreate(CamelModel):
     session_id: UUID
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
@@ -85,7 +87,7 @@ class TrainingSessionFeedbackCreate(SQLModel):
 
 
 # Schema for reading TrainingSessionFeedback data
-class TrainingSessionFeedbackRead(SQLModel):
+class TrainingSessionFeedbackRead(CamelModel):
     id: UUID
     session_id: UUID
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))

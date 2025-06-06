@@ -22,7 +22,18 @@ if settings.database_url:
     )
 else:
     SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+
+# Configure engine with connection pooling and prepared statement settings
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    pool_pre_ping=True,  # Enable connection health checks
+    pool_size=5,  # Set a reasonable pool size
+    max_overflow=10,  # Allow some overflow connections
+    pool_recycle=3600,  # Recycle connections after 1 hour
+    echo=False,  # Set to True for SQL query logging
+    # Disable prepared statements to avoid the duplicate statement error
+    connect_args={'prepare_threshold': None},
+)
 
 
 # Create the database tables
@@ -33,4 +44,7 @@ def create_db_and_tables() -> None:
 # Dependency to get the database session
 def get_session() -> Generator[Session, Any, None]:
     with Session(engine) as session:
-        yield session
+        try:
+            yield session
+        finally:
+            session.close()

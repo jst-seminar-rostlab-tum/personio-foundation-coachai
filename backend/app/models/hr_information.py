@@ -1,13 +1,18 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import Column as SAColumn
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field
+
+from app.models.camel_case import CamelModel
+
+if TYPE_CHECKING:
+    pass
 
 
-class HrInformation(SQLModel, table=True):
+class HrInformation(CamelModel, table=True):
     __tablename__ = 'hr_information'
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)

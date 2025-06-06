@@ -6,7 +6,9 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
@@ -20,7 +22,7 @@ class ScenarioTemplateStatus(str, Enum):
     archived = 'archived'
 
 
-class ScenarioTemplate(SQLModel, table=True):
+class ScenarioTemplate(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
     title: str
@@ -51,7 +53,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioTe
 
 
 # Schema for creating a new ScenarioTemplate
-class ScenarioTemplateCreate(SQLModel):
+class ScenarioTemplateCreate(CamelModel):
     category_id: Optional[UUID] = None
     title: str
     description: str
@@ -63,7 +65,7 @@ class ScenarioTemplateCreate(SQLModel):
 
 
 # Schema for reading ScenarioTemplate data
-class ScenarioTemplateRead(SQLModel):
+class ScenarioTemplateRead(CamelModel):
     id: UUID
     category_id: Optional[UUID]
     title: str
