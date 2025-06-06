@@ -3,11 +3,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session, select
-from starlette.responses import JSONResponse
 from starlette import status
+from starlette.responses import JSONResponse
 
-from app.services.training_preparation_service import generate_training_preparation, \
-    create_pending_preparation
 from app.database import get_session
 from app.models.conversation_category import ConversationCategory
 from app.models.training_case import (
@@ -18,6 +16,11 @@ from app.models.training_case import (
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationRead
 from app.schemas.training_preparation_schema import TrainingPreparationRequest
 from app.services.training_case_service import create_training_case
+from app.services.training_preparation_service import (
+    create_pending_preparation,
+    generate_training_preparation,
+)
+
 router = APIRouter(prefix='/training-case', tags=['Training Cases'])
 
 

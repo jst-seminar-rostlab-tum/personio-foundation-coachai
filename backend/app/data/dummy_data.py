@@ -86,16 +86,35 @@ def get_dummy_experiences() -> list[Experience]:
 
 
 def get_dummy_goals() -> list[Goal]:
+    goal1_id = uuid4()
+    goal2_id = uuid4()
     return [
+        # Goal 1: Improve Communication
         Goal(
-            id=uuid4(),
+            id=goal1_id,
+            language_code='en',
             label='Improve Communication',
             description='Focus on verbal and non-verbal communication skills.',
         ),
         Goal(
-            id=uuid4(),
+            id=goal1_id,
+            language_code='de',
+            label='Kommunikation verbessern',
+            description='Konzentriere dich auf verbale und nonverbale Kommunikation.',
+        ),
+
+        # Goal 2: Time Management
+        Goal(
+            id=goal2_id,
+            language_code='en',
             label='Time Management',
             description='Improve productivity and manage time effectively.',
+        ),
+        Goal(
+            id=goal2_id,
+            language_code='de',
+            label='Zeitmanagement',
+            description='Produktivität verbessern und Zeit effektiv nutzen.',
         ),
     ]
 

@@ -13,12 +13,18 @@ if TYPE_CHECKING:
 
 
 class UserGoal(SQLModel, table=True):  # `table=True` makes it a database table
-    goal_id: UUID = Field(foreign_key='goal.id', primary_key=True)  # FK to Goal
+    # Cannot be a foreign key because (id, language_code) is a composite primary key in Goal
+    goal_id: UUID = Field(primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)  # FK to UserProfileModel
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    goal: Optional['Goal'] = Relationship(back_populates='user_goals')
+    goal: Optional["Goal"] = Relationship(
+        back_populates="user_goals",
+        sa_relationship_kwargs={
+            "primaryjoin": "foreign(UserGoal.goal_id) == Goal.id"
+        }
+    )
     user: Optional['UserProfile'] = Relationship(back_populates='user_goals')
 
 
