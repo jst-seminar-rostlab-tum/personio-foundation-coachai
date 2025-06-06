@@ -1,7 +1,7 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import HistoryHeader from '@/components/layout/HistoryHeader';
+import HistoryHeader from './components/HistoryHeader';
 import HistoryStats from './components/HistoryStats';
 import PreviousSessions from './components/PreviousSessions';
 

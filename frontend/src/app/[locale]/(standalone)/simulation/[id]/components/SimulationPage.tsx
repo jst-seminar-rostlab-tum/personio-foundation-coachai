@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import SimulationHeader from '@/components/layout/SimulationHeader';
-import SimulationFooter from '@/components/layout/SimulationFooter';
+import SimulationHeader from './SimulationHeader';
+import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages from './SimulationMessages';
 
