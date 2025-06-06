@@ -29,6 +29,7 @@ class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a data
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     case_id: UUID = Field(foreign_key='trainingcase.id')
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
+    context: str
     key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: TrainingPreparationStatus = Field(default=TrainingPreparationStatus.pending)
@@ -50,6 +51,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingPr
 class TrainingPreparationCreate(SQLModel):
     case_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
+    context: str
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: TrainingPreparationStatus = Field(default=TrainingPreparationStatus.pending)
@@ -60,6 +62,7 @@ class TrainingPreparationRead(SQLModel):
     id: UUID
     case_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
+    context: str
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: TrainingPreparationStatus
