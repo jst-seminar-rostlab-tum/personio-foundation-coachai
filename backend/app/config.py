@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     SUPABASE_KEY: str = ''
 
     GEMINI_API_KEY: str = ''
+    OPENAI_API_KEY: str = ''
 
     ssl_cert_url: str = 'https://test.com'
     ssl_cert_dir: str = 'cert/'  # Must be either /tmp or relative
