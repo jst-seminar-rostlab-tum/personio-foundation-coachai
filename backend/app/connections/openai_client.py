@@ -11,13 +11,29 @@ from app.config import Settings
 
 # Load environment variables from .env file
 load_dotenv()
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+openai_api_key = os.getenv('OPENAI_API_KEY')
 
 # Load settings from the config.py
 settings = Settings()
-ENABLE_AI = settings.ENABLE_AI
 FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
 DEFAULT_CHEAP_MODEL = 'gpt-4o-mini'
+
+
+# Check for API key and handle edge cases
+def _is_valid_api_key(key: str | None) -> bool:
+    return bool(key and isinstance(key, str) and key.strip())
+
+
+if not _is_valid_api_key(openai_api_key):
+    print(
+        '[WARNING] OPENAI_API_KEY is missing or invalid. '
+        'AI features will be disabled and mock responses will be used.'
+    )
+    ENABLE_AI = False
+    client = None
+else:
+    ENABLE_AI = settings.ENABLE_AI
+    client = OpenAI(api_key=openai_api_key)
 
 
 def get_client() -> OpenAI:
@@ -27,6 +43,10 @@ def get_client() -> OpenAI:
     returns:
     - OpenAI client instance
     """
+    if not ENABLE_AI or client is None:
+        raise RuntimeError(
+            'OpenAI client is not available because ENABLE_AI is False or client is None.'
+        )
     return client
 
 
@@ -46,10 +66,9 @@ def call_structured_llm(
     """
     Call the LLM with a structured output request and parse the response.
     """
-    if not ENABLE_AI:
+    if not ENABLE_AI or client is None:
         if not mock_response:
             raise ValueError('AI is disabled and no mock response provided')
-
         return mock_response
 
     selected_model = DEFAULT_CHEAP_MODEL if FORCE_CHEAP_MODEL else (model or DEFAULT_CHEAP_MODEL)
