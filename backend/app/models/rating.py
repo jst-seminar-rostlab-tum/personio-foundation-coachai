@@ -27,7 +27,7 @@ class Rating(CamelModel, table=True):  # `table=True` makes it a database table
 
     # Relationships
     session: Optional['TrainingSession'] = Relationship(back_populates='ratings')
-    user_profile: Optional['UserProfile'] = Relationship(back_populates='ratings')
+    user: Optional['UserProfile'] = Relationship(back_populates='ratings')
 
 
 # Automatically update `updated_at` before an update
