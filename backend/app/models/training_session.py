@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -23,8 +23,8 @@ class TrainingSession(SQLModel, table=True):  # `table=True` makes it a database
     ended_at: datetime | None = None
     language_code: str = Field(foreign_key='language.code')  # Foreign key to LanguageModel
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
     case: Optional['TrainingCase'] = Relationship(back_populates='sessions')
@@ -42,7 +42,7 @@ class TrainingSession(SQLModel, table=True):  # `table=True` makes it a database
 
 @event.listens_for(TrainingSession, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingSession') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(UTC)
 
 
 # Schema for creating a new TrainingSession

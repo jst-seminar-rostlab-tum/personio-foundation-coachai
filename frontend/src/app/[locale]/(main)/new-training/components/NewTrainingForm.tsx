@@ -6,9 +6,9 @@ import Stepper from '@/components/common/Stepper';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FormState } from '@/interfaces/NewTrainingFormState';
-import { CategoryStep } from './NewTrainingCategoryStep';
-import { SituationStep } from './NewTrainingSituationStep';
-import { CustomizeStep } from './NewTrainingCustomizeStep';
+import { CategoryStep } from './CategoryStep';
+import { SituationStep } from './SituationStep';
+import { CustomizeStep } from './CustomizeStep';
 
 const initialFormState: FormState = {
   category: '',

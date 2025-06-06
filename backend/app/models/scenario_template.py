@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -20,8 +20,7 @@ class ScenarioTemplateStatus(str, Enum):
     archived = 'archived'
 
 
-# Database model
-class ScenarioTemplate(SQLModel, table=True):  # `table=True` makes it a database table
+class ScenarioTemplate(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     category_id: UUID | None = Field(default=None, foreign_key='conversationcategory.id')
     title: str
@@ -31,8 +30,8 @@ class ScenarioTemplate(SQLModel, table=True):  # `table=True` makes it a databas
     ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON))
     language_code: str = Field(foreign_key='language.code')
     status: ScenarioTemplateStatus = Field(default=ScenarioTemplateStatus.draft)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
     category: Optional['ConversationCategory'] = Relationship(back_populates='scenario_templates')
@@ -48,7 +47,7 @@ class ScenarioTemplate(SQLModel, table=True):  # `table=True` makes it a databas
 
 @event.listens_for(ScenarioTemplate, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioTemplate') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(UTC)
 
 
 # Schema for creating a new ScenarioTemplate

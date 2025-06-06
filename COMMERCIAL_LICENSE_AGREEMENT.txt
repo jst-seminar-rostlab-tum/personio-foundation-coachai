@@ -1,6 +1,6 @@
 COMMERCIAL LICENSE AGREEMENT
 
-Software Name: HungerMapLive CSEE
+Software Name: CoachAI CSEE
 Version: 1.0
 Copyright: © 2025 Center for Software Engineering Excellence (CSEE)
 Authors:

@@ -20,7 +20,7 @@ export default function SimulationFooter({
   onDisconnect: () => void;
 }) {
   return (
-    <footer className="flex items-center justify-between md:justify-center md:gap-16 px-6 pt-4 pb-6 bg-white z-10">
+    <div className="flex items-center justify-between md:justify-center md:gap-16 px-6 pt-4 pb-6 bg-white z-10">
       <Button
         size="iconLarge"
         variant="outline"
@@ -43,6 +43,6 @@ export default function SimulationFooter({
           <Phone className="!w-6 !h-6" />
         </Button>
       </Link>
-    </footer>
+    </div>
   );
 }
