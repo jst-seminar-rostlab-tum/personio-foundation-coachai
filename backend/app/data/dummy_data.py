@@ -120,6 +120,7 @@ def get_dummy_user_profiles(
     return [
         UserProfile(
             id=uuid4(),
+            user_name='TheLegend27',
             preferred_language='en',
             role=UserRole.user,
             experience_id=experiences[0].id,
@@ -134,6 +135,7 @@ def get_dummy_user_profiles(
         ),
         UserProfile(
             id=uuid4(),
+            user_name='Sarah P.',
             preferred_language='de',
             role=UserRole.admin,
             experience_id=experiences[1].id,
