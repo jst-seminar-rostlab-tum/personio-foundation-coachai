@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import SimulationHeader from '@/components/layout/SimulationHeader';
-import SimulationFooter from '@/components/layout/SimulationFooter';
-import SimulationRealtimeSuggestions from '@/components/common/SimulationRealtimeSuggestions';
-import SimulationMessages from '@/components/common/SimulationMessages';
+import SimulationHeader from './SimulationHeader';
+import SimulationFooter from './SimulationFooter';
+import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
+import SimulationMessages from './SimulationMessages';
 
 export default function SimulationPageComponent() {
   const [time, setTime] = useState(0);
