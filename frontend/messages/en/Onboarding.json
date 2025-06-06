@@ -4,8 +4,8 @@
   "title": "Personalize Your Experience",
   "subtitle": "Tailor your leadership training to your needs",
   "steps": {
-    "step1": "What’s Your Role?",
-    "step2": "What Are Your Primary Goals?",
+    "step1": "What’s Your Role? *",
+    "step2": "What Are Your Primary Goals? *",
     "step2Subtitle": "Select up to 3 areas you'd like to focus on.",
     "step3": "Rate Your Confidence In These Areas"
   },
