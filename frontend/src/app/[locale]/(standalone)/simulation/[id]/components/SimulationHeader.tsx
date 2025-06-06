@@ -26,7 +26,7 @@ export default function SimulationHeader({
   time = 0,
 }: SimulationHeaderProps & { time: number }) {
   return (
-    <header className="px-6 pt-4 pb-2 ">
+    <div className="px-6 pt-4 pb-2 ">
       <div className="flex items-center justify-between mb-4">
         <Badge variant="default" className="bg-marigold-30/40 text-marigold-90">
           {sessionLabel}
@@ -50,6 +50,6 @@ export default function SimulationHeader({
           <div className="text-xs text-bw-40 leading-tight">{characterDescription}</div>
         </div>
       </div>
-    </header>
+    </div>
   );
 }
