@@ -13,9 +13,8 @@ from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.config import Settings
-
-from .embeddings import get_embedding_model
-from .vector_db import format_docs, load_vector_db, prepare_vector_db_docs
+from app.rag.embeddings import get_embedding_model
+from app.rag.vector_db import format_docs, load_vector_db, prepare_vector_db_docs
 
 BASE_DIR = Path(__file__).parent
 DOC_FOLDER = BASE_DIR / 'documents'
@@ -132,7 +131,7 @@ if __name__ == '__main__':
     query = 'What are barriers to effective feedback?'
     chain = rag_chain(
         # Uncomment to populate db (if vector db is emtpy)
-        populate_db=True,
+        # populate_db=True,
     )
     result = chain.invoke({'query': query})
     print(result.content)
