@@ -1,11 +1,11 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
-import type { Props } from '@/interfaces/LayoutProps';
+import { MetadataProps } from '@/interfaces/MetadataProps';
 import HistoryHeader from '@/components/layout/HistoryHeader';
 import HistoryStats from '@/components/common/HistoryStats';
 import PreviousSessions from '@/components/common/PreviousSessions';
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/history', true);
 }
