@@ -1,13 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Generator
-from uuid import UUID
-
-from sqlmodel import Session
-from tenacity import retry, stop_after_attempt, wait_fixed
-
 from app.connections.openai_client import call_structured_llm
-from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
 from app.schemas.training_preparation_schema import (
     ChecklistRequest,
     KeyConcept,
@@ -15,23 +8,7 @@ from app.schemas.training_preparation_schema import (
     KeyConceptRequest,
     ObjectiveRequest,
     StringListResponse,
-    TrainingPreparationRequest,
 )
-
-
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_objectives(request: ObjectiveRequest) -> list[str]:
-    return generate_objectives(request)
-
-
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_checklist(request: ChecklistRequest) -> list[str]:
-    return generate_checklist(request)
-
-
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_key_concepts(request: KeyConceptRequest) -> list[KeyConcept]:
-    return generate_key_concept(request)
 
 
 def generate_objectives(request: ObjectiveRequest) -> list[str]:
@@ -183,107 +160,6 @@ def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
         mock_response=mock_response,
     )
     return result.items
-
-
-def create_pending_preparation(case_id: UUID, session: Session) -> TrainingPreparation:
-    """
-    Create a new TrainingPreparation record with status 'pending'.
-    """
-    prep = TrainingPreparation(
-        case_id=case_id,
-        status=TrainingPreparationStatus.pending,
-        objectives=[],
-        key_concepts=[],
-        prep_checklist=[],
-    )
-    session.add(prep)
-    session.commit()
-    return prep
-
-def generate_training_preparation(
-        preparation_id: UUID,
-        request: TrainingPreparationRequest,
-        session_generator_func: Callable[[], Generator[Session, None, None]],
-) -> TrainingPreparation:
-    """
-    Generate training preparation data including objectives, checklist, and key concepts.
-    Updates the TrainingPreparation record and returns it.
-    """
-
-    session_gen = session_generator_func()
-    session = next(session_gen)
-
-    try:
-        # 1. retrieve the preparation record
-        preparation = session.get(TrainingPreparation, preparation_id)
-
-        if not preparation:
-            raise ValueError(f'Training preparation with ID {preparation_id} not found.')
-        if preparation.status != TrainingPreparationStatus.pending:
-            raise ValueError(f'Training preparation {preparation_id} is not in pending status.')
-
-        # 2. build request objects
-        objectives_request = ObjectiveRequest(
-            category=request.category,
-            goal=request.goal,
-            context=request.context,
-            other_party=request.other_party,
-            num_objectives=request.num_objectives,
-        )
-        checklist_request = ChecklistRequest(
-            category=request.category,
-            goal=request.goal,
-            context=request.context,
-            other_party=request.other_party,
-            num_checkpoints=request.num_checkpoints,
-        )
-        key_concept_request = KeyConceptRequest(
-            category=request.category,
-            goal=request.goal,
-            context=request.context,
-            other_party=request.other_party,
-        )
-
-        has_error = False
-
-        # 3. Generate each part with individual retry and error handling
-        try:
-            objectives = safe_generate_objectives(objectives_request)
-            preparation.objectives = objectives
-        except Exception as e:
-            has_error = True
-            print("[ERROR] Failed to generate objectives:", e)
-
-        try:
-            checklist = safe_generate_checklist(checklist_request)
-            preparation.prep_checklist = checklist
-        except Exception as e:
-            has_error = True
-            print("[ERROR] Failed to generate checklist:", e)
-
-        try:
-            key_concepts = safe_generate_key_concepts(key_concept_request)
-            preparation.key_concepts = [ex.model_dump() for ex in key_concepts]
-        except Exception as e:
-            has_error = True
-            print("[ERROR] Failed to generate key concepts:", e)
-
-        # 4. Update status depending on error presence
-        if has_error:
-            preparation.status = TrainingPreparationStatus.failed
-        else:
-            preparation.status = TrainingPreparationStatus.completed
-
-        session.add(preparation)
-        session.commit()
-        session.refresh(preparation)
-        return preparation
-
-    finally:
-        try:
-            session_gen.close()
-        except Exception as e:
-            print(f'[WARN] Failed to close session generator: {e}')
 
 
 if __name__ == '__main__':
