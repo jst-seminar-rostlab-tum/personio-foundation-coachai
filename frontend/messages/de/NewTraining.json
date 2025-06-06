@@ -8,7 +8,7 @@
     "customize": "Anpassen"
   },
   "category": {
-    "title": "Wählen Sie eine Gesprächskategorie",
+    "title": "Wählen Sie eine Gesprächskategorie *",
     "options": {
       "feedback": "Feedback geben",
       "conflict": "Konfliktlösung",
@@ -17,12 +17,12 @@
       "custom": "Individuell"
     },
     "customPlaceholder": "Z. B. Beförderungsdiskussion, Onboarding neuer Teammitglieder ...",
-    "customInput": "Definieren Sie Ihren eigenen Gesprächsgegenstand:"
+    "customInput": "Definieren Sie Ihren eigenen Gesprächsgegenstand *"
   },
   "situation": {
     "title": "Beschreiben Sie Ihre Situation",
     "party": {
-      "title": "Wer ist der Gesprächspartner?",
+      "title": "Wer ist der Gesprächspartner? *",
       "options": {
         "employee": "Mitarbeiter",
         "manager": "Vorgesetzter",
@@ -33,18 +33,18 @@
       "otherPlaceholder": "Name eingeben"
     },
     "context": {
-      "title": "Was ist der Kontext?",
+      "title": "Was ist der Kontext? *",
       "placeholder": "Bitte beschreiben Sie hier den Kontext des Gesprächs."
     },
     "goal": {
-      "title": "Was ist Ihr Ziel?",
+      "title": "Was ist Ihr Ziel? *",
       "placeholder": "Welches Ergebnis möchten Sie erreichen?"
     }
   },
   "customize": {
     "title": "Passen Sie Ihr Training an",
     "difficulty": {
-      "title": "Schwierigkeitsgrad",
+      "title": "Schwierigkeitsgrad *",
       "options": {
         "easy": "Einfach",
         "medium": "Mittel",
@@ -52,7 +52,7 @@
       }
     },
     "emotionalTone": {
-      "title": "Emotionaler Ton",
+      "title": "Emotionaler Ton *",
       "options": {
         "positive": "Positiv",
         "neutral": "Neutral",
@@ -60,7 +60,7 @@
       }
     },
     "complexity": {
-      "title": "Antwortkomplexität",
+      "title": "Antwortkomplexität *",
       "options": {
         "simple": "Einfach",
         "medium": "Mittel",

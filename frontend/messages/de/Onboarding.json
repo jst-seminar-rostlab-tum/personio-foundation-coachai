@@ -4,8 +4,8 @@
   "title": "Personalisiertes Führungstraining",
   "subtitle": "Passen Sie Ihr Training an Ihre Bedürfnisse an",
   "steps": {
-    "step1": "Was ist Ihre Rolle?",
-    "step2": "Was sind Ihre Hauptziele?",
+    "step1": "Was ist Ihre Rolle? *",
+    "step2": "Was sind Ihre Hauptziele? *",
     "step2Subtitle": "Wählen Sie bis zu 3 Bereiche",
     "step3": "Bewerten Sie Ihr Vertrauen in diese Bereiche"
   },
