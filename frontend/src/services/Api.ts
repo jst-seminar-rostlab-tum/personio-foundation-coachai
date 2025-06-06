@@ -1,5 +1,5 @@
-import { SignInCredentials } from '@/interfaces/SignInForm';
-import { UserProfileCreate } from '@/interfaces/SignUpForm';
+// import { SignInCredentials } from '@/interfaces/SignInForm';
+// import { UserProfileCreate } from '@/interfaces/SignUpForm';
 import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -34,7 +34,7 @@ api.interceptors.response.use(
   }
 );
 
-export const userProfileApi = {
+/* export const userProfileApi = {
   create: async (data: UserProfileCreate) => {
     const response = await api.post('/user-profiles/', data);
     return response.data;
@@ -47,4 +47,4 @@ export const userProfileApi = {
     const response = await api.post('/user-profiles/sign-in', credentials);
     return response.data;
   },
-};
+}; */
