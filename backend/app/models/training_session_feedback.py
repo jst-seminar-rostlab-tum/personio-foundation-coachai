@@ -102,3 +102,18 @@ class TrainingSessionFeedbackRead(SQLModel):
     status: FeedbackStatusEnum
     created_at: datetime
     updated_at: datetime
+
+
+# Schema for reading a training session's feedback metrics
+class TrainingSessionFeedbackMetrics(SQLModel):
+    scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    overall_score: int
+    transcript_uri: str
+    speak_time_percent: float
+    questions_asked: int
+    session_length_s: int
+    goals_achieved: int
+    example_positive: list[PositiveExample] = Field(default_factory=list)
+    example_negative: list[NegativeExample] = Field(default_factory=list)
+    recommendations: list[Recommendation] = Field(default_factory=list)
