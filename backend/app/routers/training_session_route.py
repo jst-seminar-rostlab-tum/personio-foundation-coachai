@@ -82,9 +82,9 @@ def get_training_session(
             questions_asked=feedback.questions_asked,
             session_length_s=feedback.session_length_s,
             goals_achieved=feedback.goals_achieved,
-            example_positive=feedback.example_positive,
-            example_negative=feedback.example_negative,
-            recommendations=feedback.recommendations,
+            example_positive=feedback.example_positive,  # type: ignore
+            example_negative=feedback.example_negative,  # type: ignore
+            recommendations=feedback.recommendations,  # type: ignore
         )
 
     # Fetch the associated conversation turns and their audio URIs
