@@ -43,6 +43,18 @@ export async function generateMetadata(
   const baseMetadata = {
     title: t('metaTitle') || 'Coach AI',
     description: t('metaDescription') || 'AI-powered coaching platform for leadership development',
+    keywords: [
+      'Center for Software Engineering Excellence',
+      'Personio Foundation',
+      'CSEE',
+      'leadership',
+      'coaching',
+      'AI',
+      'training',
+      'development',
+      'feedback',
+      'management',
+    ],
     metadataBase: new URL(BASE_URL),
     alternates: {
       canonical: localizedUrl,
@@ -62,6 +74,26 @@ export async function generateMetadata(
       ],
       shortcut: '/icons/personio_foundation_favicon.png',
       apple: '/icons/personio_foundation_favicon.png',
+    },
+    openGraph: {
+      type: 'website',
+      title: t('metaTitle') || 'Coach AI',
+      description:
+        t('metaDescription') || 'AI-powered coaching platform for leadership development',
+      url: localizedUrl,
+      siteName: 'Coach AI',
+    },
+    twitter: {
+      card: 'summary',
+      title: t('metaTitle') || 'Coach AI',
+      description:
+        t('metaDescription') || 'AI-powered coaching platform for leadership development',
+      site: '@personio',
+    },
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
+      maximumScale: 1,
     },
   };
 
