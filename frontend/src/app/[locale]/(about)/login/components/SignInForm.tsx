@@ -18,8 +18,8 @@ import {
   FormMessage,
 } from '@/components/ui/Form';
 import { AlertCircleIcon } from 'lucide-react';
-import { PasswordInput } from './PasswordInput';
-import { Alert, AlertTitle } from '../ui/Alert';
+import { Alert, AlertTitle } from '@/components/ui/Alert';
+import { PasswordInput } from '@/app/[locale]/(about)/login/components/PasswordInput';
 
 export function SignInForm() {
   const t = useTranslations('Login.SignInTab');
@@ -88,7 +88,6 @@ export function SignInForm() {
                       {...field}
                       disabled={isLoading}
                       requirements={[]}
-                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />

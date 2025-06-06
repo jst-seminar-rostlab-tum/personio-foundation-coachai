@@ -20,10 +20,10 @@ import {
   FormMessage,
 } from '@/components/ui/Form';
 import { AlertCircleIcon } from 'lucide-react';
-import { PasswordInput } from './PasswordInput';
-import PrivacyDialog from './PrivacyDialog';
-import { VerificationPopup } from './VerificationPopup';
-import { Alert, AlertTitle } from '../ui/Alert';
+import { Alert, AlertTitle } from '@/components/ui/Alert';
+import PrivacyDialog from '@/components/common/PrivacyDialog';
+import { VerificationPopup } from '@/app/[locale]/(about)/login/components/VerificationPopup';
+import { PasswordInput } from '@/app/[locale]/(about)/login/components/PasswordInput';
 
 export function SignUpForm() {
   const t = useTranslations('Login.SignUpTab');
@@ -162,7 +162,6 @@ export function SignUpForm() {
                         placeholder={t('passwordInputPlaceholder')}
                         disabled={isLoading}
                         requirements={passwordRequirements}
-                        onChange={field.onChange}
                         {...field}
                       />
                     </FormControl>

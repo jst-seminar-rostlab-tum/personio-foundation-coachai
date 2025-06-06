@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { AlertCircleIcon, RotateCcw } from 'lucide-react';
 import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
-import { Alert, AlertTitle } from '../ui/Alert';
+import { Alert, AlertTitle } from '@/components/ui/Alert';
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');

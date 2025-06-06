@@ -1,8 +1,8 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import { SignInForm } from '@/components/common/SignInForm';
-import { SignUpForm } from '@/components/common/SignUpForm';
+import { SignInForm } from '@/app/[locale]/(about)/login/components/SignInForm';
+import { SignUpForm } from '@/app/[locale]/(about)/login/components/SignUpForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { useTranslations } from 'next-intl';
