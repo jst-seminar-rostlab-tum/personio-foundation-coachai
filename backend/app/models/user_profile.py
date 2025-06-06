@@ -36,7 +36,9 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     store_conversations: bool = Field(default=True)
     # Relationships
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
-    training_cases: list['TrainingCase'] = Relationship(back_populates='user', cascade_delete=True)
+    training_cases: list['TrainingCase'] = Relationship(
+        back_populates='user_profile', cascade_delete=True
+    )
     role: Optional[UserRole] = Field(default=UserRole.user)
     experience: Optional['Experience'] = Relationship(back_populates='user')
     user_goals: list['UserGoal'] = Relationship(

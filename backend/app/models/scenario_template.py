@@ -32,14 +32,14 @@ class ScenarioTemplate(CamelModel, table=True):
     ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON))
     language_code: str = Field(foreign_key='language.code')
     status: ScenarioTemplateStatus = Field(default=ScenarioTemplateStatus.draft)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC), alias='createdAt')
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC), alias='updatedAt')
 
     # Relationships
     category: Optional['ConversationCategory'] = Relationship(back_populates='scenario_templates')
     language: Optional['Language'] = Relationship()
     training_cases: list['TrainingCase'] = Relationship(
-        back_populates='scenario_template', cascade_delete=True
+        back_populates='scenario_template', cascade_delete=True, alias='trainingCases'
     )
 
     # Needed for Column(JSON)
@@ -48,7 +48,7 @@ class ScenarioTemplate(CamelModel, table=True):
 
 
 @event.listens_for(ScenarioTemplate, 'before_update')
-def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioTemplate') -> None:
+def update_timestamp(mapper: Mapper, connection: Connection, target: ScenarioTemplate) -> None:
     target.updated_at = datetime.now(UTC)
 
 
@@ -75,5 +75,5 @@ class ScenarioTemplateRead(CamelModel):
     ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON))
     language_code: str
     status: ScenarioTemplateStatus
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime = Field(alias='createdAt')
+    updated_at: datetime = Field(alias='updatedAt')

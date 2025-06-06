@@ -17,5 +17,7 @@ class HrInformation(CamelModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     content: str
-    meta_data: Optional[dict] = Field(default=None, sa_column=SAColumn('metadata', JSONB))
+    meta_data: Optional[dict] = Field(
+        default=None, sa_column=SAColumn('metadata', JSONB), alias='metaData'
+    )
     embedding: list[float] = Field(sa_column=SAColumn(Vector(768)))

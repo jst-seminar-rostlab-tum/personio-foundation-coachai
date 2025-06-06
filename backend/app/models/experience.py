@@ -15,7 +15,7 @@ class Experience(CamelModel, table=True):  # `table=True` makes it a database ta
     description: str
 
     # Relationships
-    user: list['UserProfile'] = Relationship(back_populates='experience')
+    user_profiles: list['UserProfile'] = Relationship(back_populates='experiences')
 
 
 # Schema for creating a new Experience

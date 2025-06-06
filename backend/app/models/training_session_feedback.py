@@ -40,7 +40,7 @@ class Recommendation(CamelModel):
 
 class TrainingSessionFeedback(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
+    session_id: UUID = Field(foreign_key='trainingsession.id', alias='sessionId')
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: int
@@ -53,15 +53,14 @@ class TrainingSessionFeedback(CamelModel, table=True):  # `table=True` makes it 
     example_negative: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     recommendations: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     status: FeedbackStatusEnum = Field(default=FeedbackStatusEnum.pending)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC), alias='createdAt')
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC), alias='updatedAt')
 
     # Relationships
     session: Optional['TrainingSession'] = Relationship(back_populates='feedback')
 
-    # Automatically update `updated_at` before an update
 
-
+# Automatically update `updated_at` before an update
 @event.listens_for(TrainingSessionFeedback, 'before_update')
 def update_timestamp(
     mapper: Mapper, connection: Connection, target: 'TrainingSessionFeedback'

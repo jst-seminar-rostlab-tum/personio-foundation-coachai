@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import event
-from sqlalchemy.engine import Connection
+from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import Field, Relationship
 
@@ -16,7 +16,9 @@ if TYPE_CHECKING:
 
 class Rating(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
+    session_id: UUID = Field(
+        foreign_key='trainingsession.id', alias='sessionId'
+    )  # FK to TrainingSession
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     score: int
     comment: str
@@ -25,9 +27,10 @@ class Rating(CamelModel, table=True):  # `table=True` makes it a database table
 
     # Relationships
     session: Optional['TrainingSession'] = Relationship(back_populates='ratings')
-    user: Optional['UserProfile'] = Relationship(back_populates='ratings')
+    user_profile: Optional['UserProfile'] = Relationship(back_populates='ratings')
 
 
+# Automatically update `updated_at` before an update
 @event.listens_for(Rating, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'Rating') -> None:
     target.updated_at = datetime.now(UTC)

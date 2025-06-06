@@ -38,8 +38,8 @@ class TrainingCase(CamelModel, table=True):  # `table=True` makes it a database 
     tone: Optional[str] = None
     complexity: Optional[str] = None
     status: TrainingCaseStatus = Field(default=TrainingCaseStatus.draft)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC), alias='createdAt')
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC), alias='updatedAt')
 
     # Relationships
     category: Optional['ConversationCategory'] = Relationship(back_populates='training_cases')

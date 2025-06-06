@@ -27,6 +27,7 @@ class UserConfidenceScore(CamelModel, table=True):
     user: Optional['UserProfile'] = Relationship(back_populates='user_confidence_scores')
 
 
+# Automatically update `updated_at` before an update
 @event.listens_for(UserConfidenceScore, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserConfidenceScore') -> None:
     target.updated_at = datetime.now(UTC)

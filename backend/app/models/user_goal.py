@@ -24,6 +24,7 @@ class UserGoal(CamelModel, table=True):  # `table=True` makes it a database tabl
     user: Optional['UserProfile'] = Relationship(back_populates='user_goals')
 
 
+# Automatically update `updated_at` before an update
 @event.listens_for(UserGoal, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserGoal') -> None:
     target.updated_at = datetime.now(UTC)
