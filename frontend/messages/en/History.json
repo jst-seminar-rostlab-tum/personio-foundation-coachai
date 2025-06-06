@@ -14,5 +14,14 @@
   "previousSessions": "Previous Sessions",
   "exportHistory": "Export History",
   "clearAll": "Clear All",
-  "loadMore": "Load More"
+  "loadMore": "Load More",
+  "deleteAllConfirmTitle": "Delete All Sessions?",
+  "deleteAllConfirmDesc": "This will permanently delete all your training sessions and related data. This action cannot be undone.",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "deleting": "Deleting...",
+  "deleteError": "Failed to delete sessions. Please try again.",
+  "unauthorizedError": "Please sign in to delete sessions.",
+  "forbiddenError": "You don't have permission to delete sessions.",
+  "serverError": "An error occurred while deleting sessions. Please try again later."
 }

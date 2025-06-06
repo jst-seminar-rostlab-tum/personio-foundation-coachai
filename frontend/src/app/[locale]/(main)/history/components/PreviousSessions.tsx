@@ -4,6 +4,19 @@ import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/AlertDialog';
+import { Alert, AlertDescription } from '@/components/ui/Alert';
+import api from '@/services/Api';
 
 const mockSessions = [
   {
@@ -58,6 +71,8 @@ const mockSessions = [
 
 export default function PreviousSessions() {
   const [visibleCount, setVisibleCount] = useState(3);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const t = useTranslations('History');
 
   const visibleSessions = mockSessions.slice(0, visibleCount);
@@ -65,6 +80,47 @@ export default function PreviousSessions() {
 
   const handleLoadMore = () => {
     setVisibleCount((prev) => Math.min(prev + 3, mockSessions.length));
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      setIsDeleting(true);
+      setError(null);
+      // TODO: Get user auth context in future
+      const userId = '123456789';
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+      const response = await api.delete(`/training-session/clear-all/${userId}`);
+      if (response.status === 200) {
+        setVisibleCount(0);
+        // TODO: Reset the sessions state in future
+      } else {
+        throw new Error('Failed to delete sessions');
+      }
+    } catch (err) {
+      let errorMessage = t('deleteError');
+      if (err.response) {
+        switch (err.response.status) {
+          case 401:
+            errorMessage = t('unauthorizedError');
+            break;
+          case 403:
+            errorMessage = t('forbiddenError');
+            break;
+          case 500:
+            errorMessage = t('serverError');
+            break;
+          default:
+            errorMessage = t('deleteError');
+            break;
+        }
+      }
+      setError(errorMessage);
+      console.error('Error deleting sessions:', err);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -75,11 +131,32 @@ export default function PreviousSessions() {
           <Button variant="ghost">
             {t('exportHistory')} <Download />
           </Button>
-          <Button variant="ghost" className="hover:text-flame-50">
-            {t('clearAll')} <Trash2 />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" className="hover:text-flame-50" disabled={isDeleting}>
+                {t('clearAll')} <Trash2 />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t('deleteAllConfirmTitle')}</AlertDialogTitle>
+                <AlertDialogDescription>{t('deleteAllConfirmDesc')}</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteAll} disabled={isDeleting}>
+                  {isDeleting ? t('deleting') : t('confirm')}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
       <div className="flex flex-col gap-4">
         {visibleSessions.map((session, idx) => (
           <div
