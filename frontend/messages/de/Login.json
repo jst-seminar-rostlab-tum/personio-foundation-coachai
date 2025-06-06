@@ -123,7 +123,7 @@
         "description": "Alle Daten werden auf Servern innerhalb der Europäischen Union gespeichert und verarbeitet"
       },
       "encryption": {
-        "title": "Ende-zu-Ende-Verschlüsselung",
+        "title": "Verschlüsselung",
         "description": "Daten werden sowohl während der Übertragung als auch im Ruhezustand verschlüsselt"
       },
       "externalServices": {
@@ -131,8 +131,7 @@
         "vercel": "Vercel – EU-Server und globales CDN",
         "supabase": "Supabase – EU-Server",
         "fly": "Fly.io – EU-Server",
-        "gcp": "GCP – EU-Server",
-        "dpaLinkText": "ADV"
+        "gcp": "GCP – EU-Server"
       }
     },
     "userRights": {

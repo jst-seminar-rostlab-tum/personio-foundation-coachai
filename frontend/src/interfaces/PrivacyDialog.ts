@@ -8,7 +8,6 @@ export interface DataProcessingTopic {
 
 export interface ExternalService {
   name: string;
-  url: string;
 }
 
 export interface PrivacyDialogProps {

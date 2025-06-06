@@ -75,13 +75,10 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
 
   const externalServices = useMemo<ExternalService[]>(
     () => [
-      { name: t('security.externalServices.vercel'), url: 'https://vercel.com/legal/dpa' },
-      { name: t('security.externalServices.supabase'), url: 'https://supabase.com/legal/dpa' },
-      { name: t('security.externalServices.fly'), url: 'https://fly.io/documents' },
-      {
-        name: t('security.externalServices.gcp'),
-        url: 'https://cloud.google.com/terms/data-processing-addendum',
-      },
+      { name: t('security.externalServices.vercel') },
+      { name: t('security.externalServices.supabase') },
+      { name: t('security.externalServices.fly') },
+      { name: t('security.externalServices.gcp') },
     ],
     [t]
   );
@@ -236,17 +233,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
                   <div className="text-base sm:text-base text-gray-600 space-y-2">
                     {externalServices.map((service, idx) => (
                       <p key={idx}>
-                        • <strong>{service.name}</strong> (
-                        <a
-                          href={service.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded"
-                          aria-label={`${service.name} Data Processing Agreement - opens in new tab`}
-                        >
-                          {t('security.externalServices.dpaLinkText')}
-                        </a>
-                        )
+                        • <strong>{service.name}</strong>
                       </p>
                     ))}
                   </div>
