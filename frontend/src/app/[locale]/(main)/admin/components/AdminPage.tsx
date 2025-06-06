@@ -3,13 +3,24 @@
 import { ArrowRightIcon, ChevronDown, Search, Star, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/Accordion';
-import { Button } from '../ui/Button';
-import Progress from '../ui/Progress';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/Avatar';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/Select';
-import StatCard from './StatCard';
-import Input from '../ui/Input';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/Accordion';
+import { Button } from '@/components/ui/Button';
+import Progress from '@/components/ui/Progress';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select';
+import StatCard from '@/components/common/StatCard';
+import Input from '@/components/ui/Input';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,7 +31,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '../ui/AlertDialog';
+} from '@/components/ui/AlertDialog';
 
 export default function Admin() {
   const t = useTranslations('Admin');
