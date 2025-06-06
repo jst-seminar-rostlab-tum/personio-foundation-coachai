@@ -16,9 +16,8 @@ if TYPE_CHECKING:
 
 class TrainingPreparationStatus(str, Enum):
     pending = 'pending'
-    in_progress = 'in_progress'
     completed = 'completed'
-    cancelled = 'cancelled'
+    failed = 'failed'
 
 
 class KeyConcept(CamelModel):
@@ -30,7 +29,6 @@ class KeyConcept(CamelModel):
 class TrainingPreparation(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     case_id: UUID = Field(foreign_key='trainingcase.id', alias='caseId')
-    case_id: UUID = Field(foreign_key='trainingcase.id', alias='caseId')
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
@@ -40,9 +38,6 @@ class TrainingPreparation(CamelModel, table=True):
 
     # Relationships
     case: Optional['TrainingCase'] = Relationship(back_populates='preparations')
-
-
-# Automatically update `updated_at` before an update
 
 
 # Automatically update `updated_at` before an update
