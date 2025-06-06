@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from sqlmodel import Session
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
 from app.models import FeedbackStatusEnum, TrainingSessionFeedback
@@ -16,6 +17,21 @@ from app.schemas.training_feedback_schema import (
     RecommendationsRequest,
     TrainingExamplesCollection,
 )
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+def safe_generate_training_examples(request: ExamplesRequest) -> TrainingExamplesCollection:
+    return generate_training_examples(request)
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+def safe_get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollection:
+    return get_achieved_goals(request)
+
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+def safe_generate_recommendations(request: RecommendationsRequest) -> RecommendationsCollection:
+    return generate_recommendations(request)
 
 
 def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesCollection:
@@ -151,17 +167,17 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
             Recommendation(
                 heading='Practice the STAR method',
                 text='When giving feedback, use the Situation, Task, Action, Result framework to '
-                + 'provide more concrete examples.',
+                     + 'provide more concrete examples.',
             ),
             Recommendation(
                 heading='Ask more diagnostic questions',
                 text='Spend more time understanding root causes before moving to solutions. '
-                + 'This builds empathy and leads to more effective outcomes.',
+                     + 'This builds empathy and leads to more effective outcomes.',
             ),
             Recommendation(
                 heading='Define clear next steps',
                 text='End feedback conversations with agreed-upon action items, timelines, and'
-                + ' follow-up plans.',
+                     + ' follow-up plans.',
             ),
         ]
     )
@@ -225,6 +241,7 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
 
     return response
 
+
 def generate_and_store_feedback(
         session_id: UUID, example_request: ExamplesRequest, db: Session
 ) -> TrainingSessionFeedback:
@@ -232,6 +249,8 @@ def generate_and_store_feedback(
     Generate feedback based on session_id and transcript data,
     and write it to the training_session_feedback table
     """
+
+    has_error = False
 
     examples_request = example_request
     goals_request = GoalsAchievementRequest(
@@ -248,13 +267,35 @@ def generate_and_store_feedback(
         key_concepts=example_request.key_concepts,
     )
 
-    examples = generate_training_examples(examples_request)
-    goals = get_achieved_goals(goals_request)
-    recommendations = generate_recommendations(recommendations_request)
+    # initialize fallback values
+    examples_positive_dicts = []
+    examples_negative_dicts = []
+    goals = GoalsAchievedCollection(goals_achieved=[])
+    recommendations = []
 
-    examples_positive_dicts = [ex.model_dump() for ex in examples.positive_examples]
-    examples_negative_dicts = [ex.model_dump() for ex in examples.negative_examples]
-    recommendations = [rec.dict() for rec in recommendations.recommendations]
+    try:
+        examples = safe_generate_training_examples(examples_request)
+        examples_positive_dicts = [ex.model_dump() for ex in examples.positive_examples]
+        examples_negative_dicts = [ex.model_dump() for ex in examples.negative_examples]
+    except Exception as e:
+        has_error = True
+        print("[ERROR] Failed to generate examples:", e)
+
+    try:
+        goals = safe_get_achieved_goals(goals_request)
+    except Exception as e:
+        has_error = True
+        print("[ERROR] Failed to generate goals:", e)
+
+    try:
+        recs = safe_generate_recommendations(recommendations_request)
+        recommendations = [rec.model_dump() for rec in recs.recommendations]
+    except Exception as e:
+        has_error = True
+        print("[ERROR] Failed to generate key recommendations:", e)
+
+    # correct placement
+    status = FeedbackStatusEnum.failed if has_error else FeedbackStatusEnum.completed
 
     feedback = TrainingSessionFeedback(
         id=uuid4(),
@@ -270,7 +311,7 @@ def generate_and_store_feedback(
         example_positive=examples_positive_dicts,
         example_negative=examples_negative_dicts,
         recommendations=recommendations,
-        status=FeedbackStatusEnum.pending,
+        status=status,
         created_at=datetime.now(),
         updated_at=datetime.now(),
     )
@@ -288,19 +329,19 @@ if __name__ == '__main__':
         context='Termination meeting with a team member on poor performance',
         other_party='Team member',
         transcript='User:  Hi, I have to talk to you.'
-        + "AI: Yes, what is it? Please don't fire me, I really need this job. "
-        + "I know I haven't been performing well lately, but I promise I can improve. "
-        + "I'll do whatever it takes."
-        + 'Response interrupted'
-        + "User:  I'm sorry but I'm not happy with your performance."
-        + 'AI: I understand, and I take full responsibility. '
-        + 'Could you please tell me specifically what areas I need to improve on?'
-        + "I'm willing to work late, come in early, take on extra tasks—anything "
-        + 'to meet your expectations. Just please give me a chance to prove myself.'
-        + "User:  You can't do anything it's too late to improve."
-        + "AI: Please, don't say that. I'm a hard worker, and I'm a quick learner."
-        + "If you give me another chance, I promise I won't let you down."
-        + 'Is there anything, anything at all, I can do to change your mind?',
+                   + "AI: Yes, what is it? Please don't fire me, I really need this job. "
+                   + "I know I haven't been performing well lately, but I promise I can improve. "
+                   + "I'll do whatever it takes."
+                   + 'Response interrupted'
+                   + "User:  I'm sorry but I'm not happy with your performance."
+                   + 'AI: I understand, and I take full responsibility. '
+                   + 'Could you please tell me specifically what areas I need to improve on?'
+                   + "I'm willing to work late, come in early, take on extra tasks—anything "
+                   + 'to meet your expectations. Just please give me a chance to prove myself.'
+                   + "User:  You can't do anything it's too late to improve."
+                   + "AI: Please, don't say that. I'm a hard worker, and I'm a quick learner."
+                   + "If you give me another chance, I promise I won't let you down."
+                   + 'Is there anything, anything at all, I can do to change your mind?',
         objectives=[
             'Bring clarity to the situation',
             'Encourage open dialogue',

@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from sqlmodel import Session, SQLModel, create_engine
 
+from app.models import FeedbackStatusEnum
 from app.schemas.training_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -121,6 +122,62 @@ class TestTrainingFeedbackService(unittest.TestCase):
         self.assertEqual(feedback.recommendations[2]["text"],
                          'End feedback conversations with agreed-upon action'
                          ' items, timelines, and follow-up plans.')
-        self.assertEqual(feedback.status, 'pending')
+        self.assertEqual(feedback.status, FeedbackStatusEnum.completed)
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
+
+    @patch("app.services.training_feedback_service.generate_training_examples")
+    @patch("app.services.training_feedback_service.get_achieved_goals")
+    @patch("app.services.training_feedback_service.generate_recommendations")
+    def test_generate_and_store_feedback_with_errors(
+            self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
+    ) -> None:
+        mock_examples.side_effect = Exception("Failed to generate examples")
+
+        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=["G1"])
+        mock_recommendations.return_value = RecommendationsCollection(
+            recommendations=[
+                Recommendation(
+                    heading='Some heading',
+                    text='Some text',
+                )
+            ]
+        )
+
+        example_request = ExamplesRequest(
+            transcript="Error case transcript...",
+            objectives=["ObjX"],
+            goal="Goal",
+            context="Context",
+            other_party="Other",
+            category="Category",
+            key_concepts="KeyConcept"
+        )
+
+        session_id = uuid4()
+
+        feedback = generate_and_store_feedback(
+            session_id=session_id,
+            example_request=example_request,
+            db=self.session
+        )
+
+        self.assertEqual(feedback.status, FeedbackStatusEnum.failed)
+        self.assertEqual(feedback.goals_achieved, 1)
+        self.assertEqual(len(feedback.example_positive), 0)
+        self.assertEqual(len(feedback.recommendations), 1)
+        self.assertEqual(feedback.goals_achieved, 1)
+        self.assertEqual(len(feedback.example_positive), 0)
+        self.assertEqual(len(feedback.recommendations), 1)
+        self.assertEqual(feedback.recommendations[0]["heading"], 'Some heading')
+        self.assertEqual(feedback.recommendations[0]["text"], 'Some text')
+
+        self.assertIsNotNone(feedback.created_at)
+        self.assertIsNotNone(feedback.updated_at)
+
+        self.assertEqual(feedback.overall_score, 0)
+        self.assertEqual(feedback.transcript_uri, "")
+
+
+if __name__ == '__main__':
+    unittest.main()
