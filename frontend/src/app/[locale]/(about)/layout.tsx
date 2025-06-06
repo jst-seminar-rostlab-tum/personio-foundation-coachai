@@ -5,16 +5,17 @@ import { NextIntlClientProvider } from 'next-intl';
 import AboutHeader from '@/components/layout/AboutHeader';
 import AboutFooter from '@/components/layout/AboutFooter';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
-import type { Props } from '@/interfaces/LayoutProps';
+import type { LayoutProps } from '@/interfaces/LayoutProps';
+import { MetadataProps } from '@/interfaces/MetadataProps';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '', false);
 }
 
-export default async function RootLayout({ children, params }: Props) {
+export default async function RootLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
 
   return (
@@ -33,11 +34,11 @@ export default async function RootLayout({ children, params }: Props) {
         />
       </head>
       <body className={inter.className}>
-        <AboutHeader />
-        <main className="container mx-auto px-4">
-          <NextIntlClientProvider>{children}</NextIntlClientProvider>
-        </main>
-        <AboutFooter />
+        <NextIntlClientProvider>
+          <AboutHeader />
+          <main className="container mx-auto px-4">{children}</main>
+          <AboutFooter />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -1,10 +1,9 @@
 from typing import Annotated
 from uuid import UUID
 
+from backend.dependencies import verify_jwt
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-
-from backend.dependencies import verify_jwt
 
 from ..database import get_session
 from ..models.language import Language

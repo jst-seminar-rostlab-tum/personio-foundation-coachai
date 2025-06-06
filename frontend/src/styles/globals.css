@@ -3,7 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --background-light: #F0F0F0;
+  --background-light: #f0f0f0;
   --flame-50: #ff3700;
   --bw-10: #f4f4f5;
   --bw-20: #e4e4e7;
@@ -19,6 +19,8 @@
   --marigold-50: #ff9500;
   --marigold-90: #4d2d00;
   --marigold-95: #291800;
+  --forest-50: #33cc7b;
+  --forest-60: #21ab63;
   --font-dark: #262626;
   --radius-md: 8px;
 }
@@ -38,25 +40,62 @@
   --color-bw-50: var(--bw-50);
   --color-bw-60: var(--bw-60);
   --color-bw-70: var(--bw-70);
+  --color-marigold-5: var(--marigold-5);
+  --color-marigold-10: var(--marigold-10);
   --color-marigold-30: var(--marigold-30);
   --color-marigold-40: var(--marigold-40);
   --color-marigold-50: var(--marigold-50);
   --color-marigold-90: var(--marigold-90);
   --color-marigold-95: var(--marigold-95);
+  --color-forest-50: var(--forest-50);
+  --color-forest-60: var(--forest-60);
   --color-font-dark: var(--font-dark);
   /* typography */
   --text-2xl: 24px;
   --text-2xl--font-weight: 700;
   --text-xl: 18px;
   --text-xl--font-weight: 600;
+  --text-md: 16px;
+  --text-md--font-weight: 600;
   --text-lg: 13px;
   --text-lg--font-weight: 600;
   --text-base: 13px;
   --text-base--font-weight: 400;
 }
 
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+.accordionContent[data-state='open'] {
+  animation: slideDown 700ms ease-out;
+}
+.accordionContent[data-state='closed'] {
+  animation: slideUp 700ms ease-out;
+}
+
 body {
   background: var(--background);
-  color: var(--foreground);
+  color: var(--font-dark);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.bebas-neue {
+  font-family: 'Bebas Neue', 'Bebas Neue Fallback', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }

@@ -1,4 +1,18 @@
 {
   "metaTitle": "Onboarding - Coach AI",
-  "metaDescription": "Start your leadership development journey with Coach AI"
+  "metaDescription": "Start your leadership development journey with Coach AI",
+  "title": "Personalize Your Experience",
+  "subtitle": "Tailor your leadership training to your needs",
+  "steps": {
+    "step1": "What’s Your Role? *",
+    "step2": "What Are Your Primary Goals? *",
+    "step2Subtitle": "Select up to 3 areas you'd like to focus on.",
+    "step3": "Rate Your Confidence In These Areas"
+  },
+  "navigation": {
+    "back": "Go Back",
+    "next": "Next Step",
+    "finish": "Finish Setup",
+    "skip": "Skip for now"
+  }
 }

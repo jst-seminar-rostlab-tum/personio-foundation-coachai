@@ -7,7 +7,7 @@ const UserConfidenceFields: React.FC<{ fields: UserConfidenceField[]; className?
   className,
 }) => {
   return (
-    <div className={cn('flex flex-col gap-10 w-full', className)}>
+    <div className={cn('flex flex-col gap-4 w-full h-63', className)}>
       {fields.map((field) => (
         <div key={field.title} className="flex flex-col gap-2">
           <span className="text-lg">{field.title}</span>
