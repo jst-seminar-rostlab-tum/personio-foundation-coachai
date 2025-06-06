@@ -51,5 +51,13 @@
       "coaching": "Coaching & Mentoring",
       "coping": "Coping Mechanisms"
     }
-  }
+  },
+  "deleting": "Deleting...",
+  "userDeleted": "User deleted successfully",
+  "invalidUserId": "Invalid or missing user ID",
+  "authFailed": "Authentication failed",
+  "notAuthorized": "User not authorized to delete this profile",
+  "userNotFound": "No user found with the given ID",
+  "serverError": "Unexpected server error",
+  "deleteFailed": "Failed to delete user."
 }
