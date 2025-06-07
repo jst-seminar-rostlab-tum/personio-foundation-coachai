@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy.sql.schema import PrimaryKeyConstraint
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:

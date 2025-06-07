@@ -10,7 +10,7 @@ from app.models.goal import Goal, GoalCreate, GoalRead
 router = APIRouter(prefix='/goals', tags=['Goals'])
 
 
-@router.get('', response_model=list[GoalRead])
+@router.get('/', response_model=list[GoalRead])
 def get_goals(session: Annotated[Session, Depends(get_session)],
               lang: str = Query(default="en",
                                 description="Requested language code (e.g. 'en', 'de')")) \
@@ -32,7 +32,7 @@ def get_goals(session: Annotated[Session, Depends(get_session)],
     return list(goals_by_id.values())
 
 
-@router.post('', response_model=GoalRead)
+@router.post('/', response_model=GoalRead)
 def create_goal(goal: GoalCreate, session: Annotated[Session, Depends(get_session)]) -> Goal:
     """
     Create a new goal.
