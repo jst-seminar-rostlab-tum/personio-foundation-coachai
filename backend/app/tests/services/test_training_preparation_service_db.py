@@ -17,9 +17,9 @@ class TestTrainingPreparationService(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.engine = create_engine('sqlite:///:memory:')
-        print("creating in-memory SQLite database for testing")
+        print('creating in-memory SQLite database for testing')
         SQLModel.metadata.create_all(cls.engine)
-        print("Database schema created")
+        print('Database schema created')
         cls.SessionLocal = Session(cls.engine)
 
     def setUp(self) -> None:
@@ -68,7 +68,7 @@ class TestTrainingPreparationService(unittest.TestCase):
             ),
             KeyConcept(
                 header='Empathy',
-                value="Show understanding and concern for the other party's feelings."
+                value="Show understanding and concern for the other party's feelings.",
             ),
             KeyConcept(
                 header='Effective Questioning',
@@ -77,7 +77,7 @@ class TestTrainingPreparationService(unittest.TestCase):
         ],
     )
     def test_generate_training_preparation_completed(
-            self, mock_objectives: MagicMock, mock_checklist: MagicMock, mock_key_concept: MagicMock
+        self, mock_objectives: MagicMock, mock_checklist: MagicMock, mock_key_concept: MagicMock
     ) -> None:
         case_id = uuid4()
         prep = create_pending_preparation(case_id, self.session)
@@ -99,13 +99,19 @@ class TestTrainingPreparationService(unittest.TestCase):
         self.assertEqual(
             result.key_concepts,
             [
-                {'header': 'Clear Communication',
-                 'value': 'Express ideas clearly and listen actively to understand others.'},
-                {'header': 'Empathy',
-                 'value': "Show understanding and concern for the other party's feelings."},
-                {'header': 'Effective Questioning',
-                 'value': 'Ask open-ended questions to encourage dialogue and exploration.'},
-            ]
+                {
+                    'header': 'Clear Communication',
+                    'value': 'Express ideas clearly and listen actively to understand others.',
+                },
+                {
+                    'header': 'Empathy',
+                    'value': "Show understanding and concern for the other party's feelings.",
+                },
+                {
+                    'header': 'Effective Questioning',
+                    'value': 'Ask open-ended questions to encourage dialogue and exploration.',
+                },
+            ],
         )
 
     @patch(
@@ -117,7 +123,7 @@ class TestTrainingPreparationService(unittest.TestCase):
             ),
             KeyConcept(
                 header='Empathy',
-                value="Show understanding and concern for the other party's feelings."
+                value="Show understanding and concern for the other party's feelings.",
             ),
             KeyConcept(
                 header='Effective Questioning',
@@ -134,9 +140,10 @@ class TestTrainingPreparationService(unittest.TestCase):
         side_effect=RuntimeError('LLM error'),
     )
     def test_generate_training_preparation_failed(
-            self, mock_key_concept: MagicMock,
-            mock_checklist: MagicMock,
-            mock_objectives: MagicMock,
+        self,
+        mock_key_concept: MagicMock,
+        mock_checklist: MagicMock,
+        mock_objectives: MagicMock,
     ) -> None:
         prep = create_pending_preparation(uuid4(), self.session)
 
@@ -157,13 +164,19 @@ class TestTrainingPreparationService(unittest.TestCase):
         self.assertEqual(
             result.key_concepts,
             [
-                {'header': 'Clear Communication',
-                 'value': 'Express ideas clearly and listen actively to understand others.'},
-                {'header': 'Empathy',
-                 'value': "Show understanding and concern for the other party's feelings."},
-                {'header': 'Effective Questioning',
-                 'value': 'Ask open-ended questions to encourage dialogue and exploration.'},
-            ]
+                {
+                    'header': 'Clear Communication',
+                    'value': 'Express ideas clearly and listen actively to understand others.',
+                },
+                {
+                    'header': 'Empathy',
+                    'value': "Show understanding and concern for the other party's feelings.",
+                },
+                {
+                    'header': 'Effective Questioning',
+                    'value': 'Ask open-ended questions to encourage dialogue and exploration.',
+                },
+            ],
         )
         self.assertEqual(result.objectives, [])
 
