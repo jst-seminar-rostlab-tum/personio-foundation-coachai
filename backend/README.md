@@ -84,6 +84,10 @@ Once the server is running, you can access:
 - Interactive API documentation: http://localhost:8000/docs
 - Alternative API documentation: http://localhost:8000/redoc
 
+### Database Migrations
+
+This project uses Alembic for database migration management. For detailed information about working with database migrations, see the Database Migrations Guide under /backend/alembic/README.
+
 ### Twilio Setup
 
 Twilio is used for phone number verification by sending verification codes via SMS.

@@ -21,9 +21,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 ENV PYTHONPATH=/app
 
 # Copy the application into the container.
-COPY ./pyproject.toml ./uv.lock  /app/
+COPY ./pyproject.toml ./uv.lock ./alembic.ini  /app/
 
 COPY ./app /app/app
+
+COPY ./alembic /app/alembic
 
 # Sync the project
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers

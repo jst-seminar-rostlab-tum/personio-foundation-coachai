@@ -4,11 +4,36 @@ set -e
 cd "$(git rev-parse --show-toplevel)"
 
 # Run frontend lint-staged
-echo "🛠️- Running frontend pre-commit hooks..."
+echo "🛠️- Running linting and formatting checks..."
 cd ./frontend
 npx lint-staged
 
-# Run backend pre-commit
-echo "🛠️- Running backend pre-commit hooks..."
+# Run backend pre-commit linting
 cd ../backend
 uv run pre-commit run --config .pre-commit-config.yaml --hook-stage pre-commit
+
+echo "✅- Linting and formatting checks passed"
+
+# Run Alembic checks if model or migration files changed
+if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/versions/)"; then
+    echo "🗃️- Checking database migrations and models..."
+
+    if ! timeout 10 uv run alembic current >/dev/null 2>&1; then
+        echo "❌- Cannot connect to database! Make sure your database is running."
+        exit 1
+    fi
+
+    if ! uv run alembic upgrade head >/dev/null 2>&1; then
+        echo "❌- Failed to upgrade to latest migration. One of your migration(s) has a broken upgrade() function."
+        exit 1
+    fi
+
+    if ! uv run alembic check; then
+        echo "❌- Models don't match database after running latest migrations. This means either:"
+        echo "   - You changed models but didn't create a migration script"
+        echo "   - Your latest migration script doesn't actually reflect your current models"
+        exit 1
+    fi
+
+    echo "✅ Checks for database migrations and models passed"
+fi
