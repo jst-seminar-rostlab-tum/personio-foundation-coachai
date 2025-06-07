@@ -87,7 +87,7 @@ export default function PreviousSessions() {
       setIsDeleting(true);
       setError(null);
       // TODO: Get user auth context in future
-      const userId = '123456789';
+      const userId = '0b222f0b-c7e5-4140-9049-35620fee8009'; // TODO: Remove this after getting auth context
       if (!userId) {
         throw new Error('User ID not found');
       }
@@ -108,6 +108,9 @@ export default function PreviousSessions() {
           case 403:
             errorMessage = t('forbiddenError');
             break;
+          case 404:
+            errorMessage = t('noSessionsFound');
+            break;
           case 500:
             errorMessage = t('serverError');
             break;
@@ -117,7 +120,6 @@ export default function PreviousSessions() {
         }
       }
       setError(errorMessage);
-      console.error('Error deleting sessions:', err);
     } finally {
       setIsDeleting(false);
     }

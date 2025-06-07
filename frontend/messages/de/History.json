@@ -24,5 +24,6 @@
   "deleteError": "Sitzungen konnten nicht gelöscht werden. Bitte versuchen Sie es erneut.",
   "unauthorizedError": "Bitte melden Sie sich an, um Sitzungen zu löschen.",
   "forbiddenError": "Sie haben keine Berechtigung, Sitzungen zu löschen.",
-  "serverError": "Beim Löschen der Sitzungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+  "serverError": "Ein Fehler ist beim Löschen der Sitzungen aufgetreten. Bitte versuchen Sie es erneut.",
+  "noSessionsFound": "Keine Sitzungen gefunden, die gelöscht werden können."
 }

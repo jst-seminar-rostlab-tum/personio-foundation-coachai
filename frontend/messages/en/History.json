@@ -24,5 +24,6 @@
   "deleteError": "Failed to delete sessions. Please try again.",
   "unauthorizedError": "Please sign in to delete sessions.",
   "forbiddenError": "You don't have permission to delete sessions.",
-  "serverError": "An error occurred while deleting sessions. Please try again later."
+  "serverError": "An error occurred while deleting sessions. Please try again later.",
+  "noSessionsFound": "No training sessions found to delete."
 }
