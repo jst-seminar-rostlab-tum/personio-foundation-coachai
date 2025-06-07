@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from app.models.experience import Experience
     from app.models.learning_style import LearningStyle
     from app.models.rating import Rating
+    from app.models.role import Role
     from app.models.session_length import SessionLength
     from app.models.training_case import TrainingCase
     from app.models.user_confidence_score import UserConfidenceScore
@@ -28,16 +29,28 @@ class UserRole(str, Enum):
 class UserProfile(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
-    experience_id: UUID = Field(foreign_key='experience.id')  # FK to Experience
-    preferred_learning_style_id: UUID = Field(foreign_key='learningstyle.id')
-    preferred_session_length_id: UUID = Field(foreign_key='sessionlength.id')
+    role_id: UUID = Field()
+    experience_id: UUID = Field()
+    preferred_learning_style_id: UUID = Field()
+    preferred_session_length_id: UUID = Field()
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     store_conversations: bool = Field(default=True)
+    user_role: UserRole = Field(default=UserRole.user)
     # Relationships
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
     training_cases: list['TrainingCase'] = Relationship(back_populates='user', cascade_delete=True)
-    role: Optional[UserRole] = Field(default=UserRole.user)
-    experience: Optional['Experience'] = Relationship(back_populates='user')
+    role: Optional['Role'] = Relationship(
+        back_populates="user_profiles",
+        sa_relationship_kwargs={
+            "primaryjoin": "foreign(UserProfile.role_id) == Role.id"
+        }
+    )
+    experience: Optional['Experience'] = Relationship(
+        back_populates='user_profiles',
+        sa_relationship_kwargs={
+            "primaryjoin": "foreign(UserProfile.experience_id) == Experience.id"
+        }
+    )
     user_goals: list['UserGoal'] = Relationship(
         back_populates='user', cascade_delete=True
     )  # Add this line
@@ -45,10 +58,16 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
         back_populates='user', cascade_delete=True
     )
     preferred_learning_style: Optional['LearningStyle'] = Relationship(
-        back_populates='user_profiles'
+        back_populates='user_profiles',
+        sa_relationship_kwargs={
+            "primaryjoin": "foreign(UserProfile.preferred_learning_style_id) == LearningStyle.id"
+        }
     )
     preferred_session_length: Optional['SessionLength'] = Relationship(
-        back_populates='user_profiles'
+        back_populates='user_profiles',
+        sa_relationship_kwargs={
+            "primaryjoin": "foreign(UserProfile.preferred_session_length_id) == SessionLength.id"
+        }
     )
 
     # User Statistics

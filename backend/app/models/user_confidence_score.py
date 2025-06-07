@@ -13,14 +13,17 @@ if TYPE_CHECKING:
 
 
 class UserConfidenceScore(SQLModel, table=True):
-    area_id: UUID = Field(foreign_key='confidencearea.id', primary_key=True)
+    area_id: UUID = Field(primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)
     score: int
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
     confidence_area: Optional['ConfidenceArea'] = Relationship(
-        back_populates='user_confidence_scores'
+        back_populates='user_confidence_scores',
+        sa_relationship_kwargs={
+            "primaryjoin": "foreign(UserConfidenceScore.area_id) == ConfidenceArea.id"
+        }
     )
     user: Optional['UserProfile'] = Relationship(back_populates='user_confidence_scores')
 
