@@ -218,7 +218,90 @@ class WebRTCPeerError(WebRTCError):
 
 
 # ============================================================================
+#                           GEMINI SCHEMAS
+# ============================================================================
+# These schemas define the schemas for Gemini
+# ============================================================================
+
+
+class GeminiStreamErrorType(Enum):
+    """Gemini stream error types"""
+
+    AUTH = 'authentication'
+    CONNECTION = 'connection'
+    SEND = 'send'
+    RECEIVE = 'receive'
+
+
+class GeminiStreamErrorData(BaseModel):
+    """Gemini stream error data"""
+
+    message: str = Field(..., description='Error message')
+    error_type: GeminiStreamErrorType = Field(..., description='Error type')
+    peer_id: str | None = Field(None, description='Peer ID')
+
+
+class GeminiStreamError(Exception):
+    """Gemini stream error"""
+
+    def __init__(
+        self, message: str, error_type: GeminiStreamErrorType, peer_id: str | None = None
+    ) -> None:
+        self.error_data = GeminiStreamErrorData(
+            message=message, error_type=error_type, peer_id=peer_id
+        )
+        super().__init__(message)
+
+
+class GeminiStreamAuthenticationError(GeminiStreamError):
+    """Gemini stream authentication error"""
+
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
+        super().__init__(message, GeminiStreamErrorType.AUTH, peer_id)
+
+
+class GeminiStreamConnectionError(GeminiStreamError):
+    """Gemini stream connection error"""
+
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
+        super().__init__(message, GeminiStreamErrorType.CONNECTION, peer_id)
+
+
+class GeminiStreamSendError(GeminiStreamError):
+    """Gemini stream send error"""
+
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
+        super().__init__(message, GeminiStreamErrorType.SEND, peer_id)
+
+
+class GeminiStreamReceiveError(GeminiStreamError):
+    """Gemini stream receive error"""
+
+    def __init__(self, message: str, peer_id: str | None = None) -> None:
+        super().__init__(message, GeminiStreamErrorType.RECEIVE, peer_id)
+
+
+# ============================================================================
 #                           BUSINESS LOGIC SCHEMAS
 # ============================================================================
 # These schemas define the business-specific message formats and data structures
 # ============================================================================
+
+
+GEMINI_SAMPLE_RATE = 16000  # Default sample rate for Gemini
+
+
+class GeminiAudioChunk(BaseModel):
+    """Gemini audio chunk"""
+
+    data: bytes = Field(..., description='Audio chunk data')
+    timestamp: float = Field(..., description='Audio chunk timestamp')
+    sample_rate: int = Field(
+        default=GEMINI_SAMPLE_RATE, description='Audio chunk sample rate'
+    )  # 16kHz is standard for voice
+
+
+class GeminiAudioResponse(BaseModel):
+    audio_data: bytes | None = Field(None, description='Audio data')
+    transcript: str | None = Field(None, description='Text data')
+    is_final: bool = Field(False, description='Whether this is the final response')
