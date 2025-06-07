@@ -2,23 +2,67 @@ name: Deploy Backend to Fly.io
 
 on:
   push:
-    branches: [ main ]
+    branches: [ ci/add-alembic ]
     paths: [ 'backend/**' ]
 
 
 jobs:
-#  Add test and linting when ready
-  deploy-production:
-    name: Deploy (Production)
+  lint:
+    name: Lint
     runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: ./backend
-
     steps:
       - uses: actions/checkout@v4
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - name: Deploy with Fly.io
-        run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Install uv
+        run: pipx install uv
+      - name: Install dependencies
+        run: uv sync
+        working-directory: ./backend
+      - name: Run Ruff Linter
+        run: uv run pre-commit run --config .pre-commit-config.yaml --hook-stage manual --all-files
+        working-directory: ./backend
+
+  test:
+    name: Test
+    needs: lint
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: pipx install uv
+      - name: Install dependencies
+        run: uv sync
+        working-directory: ./backend
+      - name: Run Tests
+        run: uv run pytest --exitfirst --disable-warnings || [[ $? -eq 5 ]]
+        working-directory: ./backend
+  
+  migrate-db:
+    name: Migrate Database
+    needs: test
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: pipx install uv
+      - name: Install dependencies
+        run: uv sync
+        working-directory: ./backend
+      - name: Upgrade database to head version
+        run: uv run alembic upgrade head
+        working-directory: ./backend
+
+  #deploy-production:
+   # name: Deploy (Production)
+    #needs: migrate-db
+    #runs-on: ubuntu-22.04
+    #defaults:
+    #  run:
+    #    working-directory: ./backend
+
+    #steps:
+    #  - uses: actions/checkout@v4
+    #  - uses: superfly/flyctl-actions/setup-flyctl@master
+    #  - name: Deploy with Fly.io
+    #    run: flyctl deploy --remote-only
+    #    env:
+    #      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

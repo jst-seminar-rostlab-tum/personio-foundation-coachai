@@ -18,7 +18,7 @@ echo "✅- Linting and formatting checks passed"
 if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/versions/)"; then
     echo "🗃️- Checking database migrations and models..."
 
-    if ! uv run alembic current >/dev/null 2>&1; then
+    if ! timeout 10 uv run alembic current >/dev/null 2>&1; then
         echo "❌- Cannot connect to database! Make sure your database is running."
         exit 1
     fi
