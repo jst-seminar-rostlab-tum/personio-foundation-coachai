@@ -30,7 +30,7 @@ def get_client() -> OpenAI:
     return client
 
 
-# This is a type variable for the output model, which must be a subclass of BaseModelTEST
+# This is a type variable for the output model, which must be a subclass of BaseModel
 T = TypeVar('T', bound=BaseModel)
 
 
