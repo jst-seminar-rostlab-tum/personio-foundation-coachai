@@ -1,0 +1,28 @@
+{
+  "metaTitle": "Dashboard - Coach AI",
+  "metaDescription": "View your training progress, start new sessions, and track your performance",
+  "header": {
+    "greeting": "Hello, ",
+    "cta": "New Training Session"
+  },
+  "currentSession": {
+    "title": "Current Session",
+    "subtitle": "Continue your active training session",
+    "sessionCard": {
+      "title": "Giving Constructive Feedback",
+      "subtitle": "Practice giving feedback to a team member about missed deadlines",
+      "cta": "Continue"
+    }
+  },
+  "userStats": {
+    "totalSessions": "Total Sessions",
+    "trainingTime": "Training Time",
+    "currentStreak": "Current Streak",
+    "avgScore": "Avg Score"
+  },
+  "recentSessions": {
+    "title": "Recent Training History",
+    "subtitle": "Your last completed training sessions",
+    "cta": "Show Entire History"
+  }
+}

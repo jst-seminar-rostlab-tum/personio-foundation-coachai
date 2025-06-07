@@ -1,0 +1,76 @@
+{
+  "metaTitle": "Neues Training - Coach AI",
+  "metaDescription": "Starten Sie eine neue Trainingssitzung mit persönlichem Coaching",
+  "title": "Neue Trainingssession",
+  "steps": {
+    "category": "Kategorie",
+    "situation": "Situation",
+    "customize": "Anpassen"
+  },
+  "category": {
+    "title": "Wählen Sie eine Gesprächskategorie *",
+    "options": {
+      "feedback": "Feedback geben",
+      "conflict": "Konfliktlösung",
+      "performance": "Leistungsbeurteilung",
+      "salary": "Gehaltsgespräch",
+      "custom": "Individuell"
+    },
+    "customPlaceholder": "Z. B. Beförderungsdiskussion, Onboarding neuer Teammitglieder ...",
+    "customInput": "Definieren Sie Ihren eigenen Gesprächsgegenstand *"
+  },
+  "situation": {
+    "title": "Beschreiben Sie Ihre Situation",
+    "party": {
+      "title": "Wer ist der Gesprächspartner? *",
+      "options": {
+        "employee": "Mitarbeiter",
+        "manager": "Vorgesetzter",
+        "peer": "Kollege",
+        "stakeholder": "Stakeholder",
+        "other": "Andere"
+      },
+      "otherPlaceholder": "Name eingeben"
+    },
+    "context": {
+      "title": "Was ist der Kontext? *",
+      "placeholder": "Bitte beschreiben Sie hier den Kontext des Gesprächs."
+    },
+    "goal": {
+      "title": "Was ist Ihr Ziel? *",
+      "placeholder": "Welches Ergebnis möchten Sie erreichen?"
+    }
+  },
+  "customize": {
+    "title": "Passen Sie Ihr Training an",
+    "difficulty": {
+      "title": "Schwierigkeitsgrad *",
+      "options": {
+        "easy": "Einfach",
+        "medium": "Mittel",
+        "hard": "Schwer"
+      }
+    },
+    "emotionalTone": {
+      "title": "Emotionaler Ton *",
+      "options": {
+        "positive": "Positiv",
+        "neutral": "Neutral",
+        "negative": "Negativ"
+      }
+    },
+    "complexity": {
+      "title": "Antwortkomplexität *",
+      "options": {
+        "simple": "Einfach",
+        "medium": "Mittel",
+        "complex": "Komplex"
+      }
+    }
+  },
+  "navigation": {
+    "back": "Zurück",
+    "next": "Weiter",
+    "create": "Training erstellen"
+  }
+}

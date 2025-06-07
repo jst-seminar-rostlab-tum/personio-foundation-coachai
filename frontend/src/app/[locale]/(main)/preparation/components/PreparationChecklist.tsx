@@ -1,0 +1,19 @@
+import Checkbox from '@/components/ui/Checkbox';
+
+export default function PreparationChecklist({ checklist }: { checklist: string[] }) {
+  return (
+    <div className="space-y-4">
+      {checklist.map((label, index) => (
+        <div key={index} className="flex items-center gap-3">
+          <Checkbox id={`check-${index}`} />
+          <label
+            htmlFor={`check-${index}`}
+            className="text-base text-bw-70 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {label}
+          </label>
+        </div>
+      ))}
+    </div>
+  );
+}

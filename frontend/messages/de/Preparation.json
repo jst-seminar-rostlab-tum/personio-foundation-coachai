@@ -1,0 +1,22 @@
+{
+  "metaTitle": "Vorbereitung - Coach AI",
+  "metaDescription": "Bereiten Sie Ihre Trainingssitzung optimal vor",
+  "title": "Prüfen Sie Ihr Trainingssetup",
+  "context": {
+    "title": "Konstruktives Feedback geben",
+    "description": "Sie müssen mit Sarah sprechen, einem Teammitglied, das in letzter Zeit mehrere Deadlines verpasst hat. Das wirkt sich auf die Teamstimmung und den Zeitplan aus. Ihr Ziel ist es, das Thema konstruktiv anzusprechen und gleichzeitig eine positive Arbeitsbeziehung aufrechtzuerhalten."
+  },
+  "objectives": {
+    "title": "Ziele"
+  },
+  "preparation": {
+    "title": "Vorbereitungs Checkliste"
+  },
+  "resources": {
+    "title": "Ressourcen"
+  },
+  "navigation": {
+    "back": "Zurück",
+    "start": "Training starten"
+  }
+}

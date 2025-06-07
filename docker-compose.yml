@@ -20,30 +20,56 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        stage: dev
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
+      - /app/.venv
     environment:
-      - POSTGRES_HOST=db
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres_prod
-      - POSTGRES_DB=app_db
-      - POSTGRES_PORT=5432
+      STAGE: dev
+      POSTGRES_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app_db
+      POSTGRES_PORT: 5432
     depends_on:
       - db
     networks:
       - app-network
+    command: uv run fastapi dev --host 0.0.0.0 --port 8000 --reload
 
+  init-db:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        stage: dev
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+    environment:
+      STAGE: dev
+      POSTGRES_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app_db
+      POSTGRES_PORT: 5432
+    entrypoint: ["uv", "run", "-m", "app.data.populate_dummy_data"]
+    networks:
+      - app-network
   db:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg17
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_prod
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: app_db
     networks:
       - app-network
