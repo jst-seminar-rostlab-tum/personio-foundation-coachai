@@ -2,18 +2,16 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-function Input({ className, type, disabled, ...props }: React.ComponentProps<'input'>) {
+function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   return (
     <input
       type={type}
       data-slot="input"
-      disabled={disabled}
       className={cn(
-        'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-        'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-        'aria-invalid:ring-destructive/20 aria-invalid:border-destructive',
+        'file:text-base placeholder:text-muted-base selection:bg-primary selection:text-base border-input flex h-9 w-full min-w-0 rounded-md border border-bw-30 bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-base',
+        'focus-visible:ring-[1px] focus-visible:ring-bw-40',
+        'aria-invalid:ring-flame-50/20 aria-invalid:border-flame-50',
         'w-64 h-9',
-        disabled && 'bg-gray-100 text-gray-400',
         className
       )}
       {...props}
