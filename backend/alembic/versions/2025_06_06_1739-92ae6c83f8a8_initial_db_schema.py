@@ -1,8 +1,8 @@
-"""Initial schema
+"""initial_db_schema
 
-Revision ID: 9884cb2c02a9
+Revision ID: 92ae6c83f8a8
 Revises:
-Create Date: 2025-06-03 15:19:30.598189
+Create Date: 2025-06-06 17:39:11.778173
 
 """
 
@@ -15,7 +15,7 @@ import sqlmodel
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '9884cb2c02a9'
+revision: str = '92ae6c83f8a8'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -76,13 +76,6 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
     op.create_table(
-        'role',
-        sa.Column('id', sa.Uuid(), nullable=False),
-        sa.Column('label', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column('description', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.PrimaryKeyConstraint('id'),
-    )
-    op.create_table(
         'sessionlength',
         sa.Column('id', sa.Uuid(), nullable=False),
         sa.Column('label', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -115,12 +108,17 @@ def upgrade() -> None:
         'userprofile',
         sa.Column('id', sa.Uuid(), nullable=False),
         sa.Column('preferred_language', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column('role_id', sa.Uuid(), nullable=False),
         sa.Column('experience_id', sa.Uuid(), nullable=False),
         sa.Column('preferred_learning_style_id', sa.Uuid(), nullable=False),
         sa.Column('preferred_session_length_id', sa.Uuid(), nullable=False),
         sa.Column('updated_at', sa.DateTime(), nullable=False),
         sa.Column('store_conversations', sa.Boolean(), nullable=False),
+        sa.Column('role', sa.Enum('user', 'admin', name='userrole'), nullable=True),
+        sa.Column('total_sessions', sa.Integer(), nullable=False),
+        sa.Column('training_time', sa.Float(), nullable=False),
+        sa.Column('current_streak_days', sa.Integer(), nullable=False),
+        sa.Column('average_score', sa.Integer(), nullable=False),
+        sa.Column('goals_achieved', sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ['experience_id'],
             ['experience.id'],
@@ -136,10 +134,6 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(
             ['preferred_session_length_id'],
             ['sessionlength.id'],
-        ),
-        sa.ForeignKeyConstraint(
-            ['role_id'],
-            ['role.id'],
         ),
         sa.PrimaryKeyConstraint('id'),
     )
@@ -329,7 +323,6 @@ def downgrade() -> None:
     op.drop_table('userprofile')
     op.drop_table('conversationcategory')
     op.drop_table('sessionlength')
-    op.drop_table('role')
     op.drop_table('learningstyle')
     op.drop_table('language')
     op.drop_table('goal')
@@ -338,8 +331,10 @@ def downgrade() -> None:
     op.drop_table('confidencearea')
     op.drop_table('appconfig')
     # ### end Alembic commands ###
-    op.execute('DROP TYPE IF EXISTS configtype CASCADE;')
-    op.execute('DROP TYPE IF EXISTS trainingcasestatus CASCADE;')
-    op.execute('DROP TYPE IF EXISTS trainingpreparationstatus CASCADE;')
-    op.execute('DROP TYPE IF EXISTS speakerenum CASCADE;')
-    op.execute('DROP TYPE IF EXISTS feedbackstatusenum CASCADE;')
+    # Drop all custom ENUM types
+    op.execute('DROP TYPE IF EXISTS configtype CASCADE')
+    op.execute('DROP TYPE IF EXISTS userrole CASCADE')
+    op.execute('DROP TYPE IF EXISTS trainingcasestatus CASCADE')
+    op.execute('DROP TYPE IF EXISTS trainingpreparationstatus CASCADE')
+    op.execute('DROP TYPE IF EXISTS speakerenum CASCADE')
+    op.execute('DROP TYPE IF EXISTS feedbackstatusenum CASCADE')

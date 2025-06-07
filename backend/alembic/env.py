@@ -1,18 +1,11 @@
-import sys
-from pathlib import Path
-
-# Add the parent directory to Python path so 'backend' module can be found
-# This goes up one level from backend/ to the project root
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
 from logging.config import fileConfig
 
-from backend import models  # noqa: F401  # required to register SQLModel metadata
-from backend.database import SQLALCHEMY_DATABASE_URL
 from sqlalchemy import create_engine
 from sqlmodel import SQLModel
 
+import app.models  # noqa: F401  # required to register SQLModel metadata
 from alembic import context
+from app.database import SQLALCHEMY_DATABASE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

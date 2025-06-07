@@ -1,1 +1,30 @@
-Generic single-database configuration.
+Hey guys,
+I’ve integrated Alembic (a database migration tool) into our backend on my feature branch ci/add-alembic. It helps manage schema changes in a controlled way, especially for production deployments.
+Full details on the issue: https://github.com/jst-seminar-rostlab-tum/personio-foundation-coachai/issues/169
+What I've done so far:
+
+- Alembic integrated with /backend/models and our DB config in database.py
+- Pre-commit hook checks consistency between models and migration scripts, and tests functionality of the edited/added migration scripts
+  New workflow:
+
+1. Create a feature branch
+2. Modify the models, then run:
+   `uv run alembic revision --autogenerate -m "description"` (generates migration script)
+3. Review the generated `upgrade()` and `downgrade()` functions in the script
+4. Test locally:
+   `uv run alembic upgrade head`
+   `uv run alembic downgrade -1`
+5. Run model/schema check:
+   `uv run alembic check`
+   (also runs automatically in the pre-commit hook)
+   Notes:
+
+- Once a migration script is on `dev`, don't edit it — create a follow-up migration if needed
+- Migration filenames must follow `<timestamp>-<revision_id>_description.py`
+- A local database must be running for the checks and pre-commit hook to work
+  On merge to `main`:
+- Run `uv run alembic upgrade head`
+- Run `uv run alembic check`
+  (deployment should fail if models and DB schema don’t match)
+  I’ll document all of this in `/backend/alembic/README.md` soon. Also I think we should keep track of the migration scripts on dev and main together with their execution status in a separate document.
+  Let me know if you have any questions or suggestions. (bearbeitet)
