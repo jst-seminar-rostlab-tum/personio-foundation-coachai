@@ -1,14 +1,13 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from dotenv import load_dotenv
-from google.genai.types import Content, Part
-
-from app.services.gemini_stream_service import (
+from backend.app.connections.gemnini_client import (
     DEFAULT_MODEL,
     GeminiStreamConnectionError,
     get_client,
 )
+from dotenv import load_dotenv
+from google.genai.types import Content, Part
 
 load_dotenv()
 
@@ -25,7 +24,7 @@ def test_gemini_client_connection() -> None:
     )
 
 
-@patch('app.services.gemini_stream_service.genai.Client', side_effect=Exception('Invalid key'))
+@patch('app.connections.gemnini_client.genai.Client', side_effect=Exception('Invalid key'))
 @patch.dict('os.environ', {'GEMINI_API_KEY': 'invalid_api_key'})
 def test_gemini_client_connection_error(mock_client: MagicMock) -> None:
     """Test if Gemini client connection error is raised correctly"""
