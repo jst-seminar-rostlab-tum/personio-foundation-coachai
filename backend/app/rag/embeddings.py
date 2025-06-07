@@ -10,7 +10,7 @@ settings = Settings()
 def get_embedding_model(model_type: str = 'huggingface') -> Embeddings:
     if model_type == 'gemini':
         return GoogleGenerativeAIEmbeddings(
-            model='models/embedding-001', google_api_key=settings.GEMINI_API_KEY
+            model='models/embedding-001', google_api_key=settings.gemini_api_key
         )
     elif model_type == 'huggingface':
         return HuggingFaceEmbeddings(model_name='sentence-transformers/all-mpnet-base-v2')

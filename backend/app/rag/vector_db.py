@@ -36,7 +36,16 @@ def format_docs(docs: list[Document]) -> str:
 
 
 def get_supabase_client() -> Client:
-    return create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+    url = (
+        f'https://{settings.supabase_project_id}.supabase.co'
+        if settings.supabase_environment == 'remote'
+        else 'http://localhost:8000'
+    )
+
+    return create_client(
+        url,
+        settings.supabase_key,
+    )
 
 
 def load_vector_db(
