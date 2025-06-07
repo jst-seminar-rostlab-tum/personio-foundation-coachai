@@ -1,4 +1,3 @@
-from typing import Optional
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
@@ -12,5 +11,5 @@ class HrInformation(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     content: str
-    meta_data: Optional[dict] = Field(default=None, sa_column=SAColumn('metadata', JSONB))
+    meta_data: dict | None = Field(default=None, sa_column=SAColumn('metadata', JSONB))
     embedding: list[float] = Field(sa_column=SAColumn(Vector(768)))

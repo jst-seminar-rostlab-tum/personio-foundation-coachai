@@ -95,10 +95,10 @@ class UserProfileRead(SQLModel):
 class UserProfileExtendedRead(SQLModel):
     user_id: UUID
     preferred_language: str
-    role: Optional[UserRole]
-    experience: Optional[str]
-    preferred_learning_style: Optional[str]
-    preferred_session_length: Optional[str]
+    role: str | None
+    experience: str | None
+    preferred_learning_style: str | None
+    preferred_session_length: str | None
     goal: list[str]
     confidence_scores: list[ConfidenceScoreRead]
     store_conversations: bool

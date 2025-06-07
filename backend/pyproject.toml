@@ -30,6 +30,9 @@ dependencies = [
   "pgvector>=0.2.5,<0.4",
   "langchain-huggingface>=0.2.0",
   "langchain-postgres>=0.0.14",
+  "aiortc>=1.13.0",
+  "google-cloud-aiplatform>=1.96.0",
+  "av>=14.4.0",
 ]
 
 [tool.setuptools]
