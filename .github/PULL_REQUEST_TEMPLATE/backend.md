@@ -37,7 +37,7 @@ Please include:
 - [ ] I ran `docker compose down -v` to removing all volumes and then `docker compose up --build` to build and start the app.
 - [ ] I confirmed that all new or changed **environment variables** are:
 
-  - [ ] I've tested how the app behaves when the new **environment variables** is not present (remove from .env, run app from new terminal)
+  - [ ] I've tested how the app behaves when the new **environment variables** are not present (remove from .env, run app from new terminal)
   - [ ] Documented clearly in `.env.example` or a config file.
   - [ ] Defaulted sensibly (or fail-fast if truly required).
   - [ ] Communicated to other stakeholders (if needed).
