@@ -1,30 +1,106 @@
-Hey guys,
-I’ve integrated Alembic (a database migration tool) into our backend on my feature branch ci/add-alembic. It helps manage schema changes in a controlled way, especially for production deployments.
-Full details on the issue: https://github.com/jst-seminar-rostlab-tum/personio-foundation-coachai/issues/169
-What I've done so far:
+# Database Migrations with Alembic
 
-- Alembic integrated with /backend/models and our DB config in database.py
-- Pre-commit hook checks consistency between models and migration scripts, and tests functionality of the edited/added migration scripts
-  New workflow:
+This project uses [Alembic](https://alembic.sqlalchemy.org/) for database migration management. Alembic helps us track, version, and deploy database schema changes in a controlled and reproducible way, especially important for production deployments.
 
-1. Create a feature branch
-2. Modify the models, then run:
-   `uv run alembic revision --autogenerate -m "description"` (generates migration script)
-3. Review the generated `upgrade()` and `downgrade()` functions in the script
-4. Test locally:
-   `uv run alembic upgrade head`
-   `uv run alembic downgrade -1`
-5. Run model/schema check:
-   `uv run alembic check`
-   (also runs automatically in the pre-commit hook)
-   Notes:
+## Overview
 
-- Once a migration script is on `dev`, don't edit it — create a follow-up migration if needed
-- Migration filenames must follow `<timestamp>-<revision_id>_description.py`
-- A local database must be running for the checks and pre-commit hook to work
-  On merge to `main`:
-- Run `uv run alembic upgrade head`
-- Run `uv run alembic check`
-  (deployment should fail if models and DB schema don’t match)
-  I’ll document all of this in `/backend/alembic/README.md` soon. Also I think we should keep track of the migration scripts on dev and main together with their execution status in a separate document.
-  Let me know if you have any questions or suggestions. (bearbeitet)
+Alembic has been integrated with our backend models (`/backend/app/models`) and database configuration (`backend/app/database.py`). A pre-commit hook automatically checks consistency between models and migration scripts, ensuring database integrity.
+
+## Prerequisites
+
+- A local database must be running for migration checks and pre-commit hooks to work
+- UV package manager installed and configured
+
+## Development Workflow
+
+### 1. Create Feature Branch
+```bash
+git checkout -b feature/your-feature-name
+```
+
+### 2. Modify Models and Generate Migration
+After making changes to your database models:
+
+```bash
+# Generate migration script automatically
+uv run alembic revision --autogenerate -m "descriptive message about changes"
+```
+
+This creates a new migration file in the `alembic/versions/` directory with the format:
+`<timestamp>-<revision_id>_description.py`
+
+### 3. Review Generated Migration
+**Important:** Always review the generated migration script before committing:
+
+- Check the `upgrade()` function for correctness
+- Verify the `downgrade()` function properly reverses changes
+- Ensure data migration logic is included if needed
+- Test edge cases and data integrity
+
+### 4. Test Migration Locally
+
+```bash
+# Apply the migration
+uv run alembic upgrade head
+
+# Test rollback functionality
+uv run alembic downgrade -1
+
+# Verify model/schema consistency
+uv run alembic check
+```
+
+### 5. Commit and Push
+The pre-commit hook will automatically run `alembic check` to ensure consistency between models and migration scripts.
+
+## Important Rules
+
+### Migration Script Management
+- **Never edit migration scripts once they're merged to `dev`**
+- If changes are needed, create a follow-up migration instead
+- Migration filenames must follow the format: `<timestamp>-<revision_id>_description.py`
+
+### Best Practices
+- Write descriptive migration messages
+- Always test both `upgrade` and `downgrade` functions
+- Review auto-generated migrations carefully
+- Include data migrations when changing column types or constraints
+- Keep migrations atomic and reversible when possible
+
+## Common Commands
+
+```bash
+# Check current migration status
+uv run alembic current
+
+# Show migration history
+uv run alembic history
+
+# Upgrade to specific revision
+uv run alembic upgrade <revision_id>
+
+# Downgrade to specific revision
+uv run alembic downgrade <revision_id>
+
+# Show pending migrations
+uv run alembic show <revision_id>
+```
+
+## Troubleshooting
+
+### Migration Conflicts
+If you encounter merge conflicts in migration files:
+1. Resolve conflicts in the migration history
+2. May need to create a merge migration
+3. Test thoroughly before pushing
+
+### Schema Inconsistencies
+If `alembic check` fails:
+1. Ensure your local database is up to date
+2. Check for uncommitted model changes
+3. Verify migration scripts match your model definitions
+
+### Pre-commit Hook Failures
+- Ensure local database is running
+- Run `uv run alembic check` manually to debug
+- Check that all model changes have corresponding migrations
