@@ -2,27 +2,27 @@ name: Deploy Backend to Fly.io
 
 on:
   push:
-    branches: [ ci/add-alembic ]
+    branches: [ main ]
     paths: [ 'backend/**' ]
 
 jobs:
-  #lint:
-  #  name: Lint
-  #  runs-on: ubuntu-22.04
-  #  steps:
-  #    - uses: actions/checkout@v4
-  #    - name: Install uv
-  #      run: pipx install uv
-  #    - name: Install dependencies
-  #      run: uv sync
-  #      working-directory: ./backend
-  #    - name: Run Ruff Linter
-  #      run: uv run pre-commit run --config .pre-commit-config.yaml --hook-stage manual --all-files
-  #      working-directory: ./backend
+  lint:
+    name: Lint
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: pipx install uv
+      - name: Install dependencies
+        run: uv sync
+        working-directory: ./backend
+      - name: Run Ruff Linter
+        run: uv run pre-commit run --config .pre-commit-config.yaml --hook-stage manual --all-files
+        working-directory: ./backend
 
   test:
     name: Test
-    #needs: lint
+    needs: lint
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -35,17 +35,17 @@ jobs:
         run: uv run pytest --exitfirst --disable-warnings || [[ $? -eq 5 ]]
         working-directory: ./backend
 
-  #deploy-production:
-  #  name: Deploy (Production)
-  #  needs: test
-  #  runs-on: ubuntu-22.04
-  #  defaults:
-  #    run:
-  #      working-directory: ./backend
-  #  steps:
-  #    - uses: actions/checkout@v4
-  #    - uses: superfly/flyctl-actions/setup-flyctl@master
-  #    - name: Deploy with Fly.io
-  #      run: flyctl deploy --remote-only
-  #      env:
-  #        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  deploy-production:
+    name: Deploy (Production)
+    needs: test
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy with Fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
