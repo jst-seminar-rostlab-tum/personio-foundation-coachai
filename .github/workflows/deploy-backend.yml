@@ -7,7 +7,6 @@ on:
 
 jobs:
   lint:
-    if: false
     name: Lint
     runs-on: ubuntu-22.04
     steps:
@@ -22,7 +21,6 @@ jobs:
         working-directory: ./backend
 
   test:
-    if: false
     name: Test
     needs: lint
     runs-on: ubuntu-22.04
@@ -39,7 +37,7 @@ jobs:
 
   deploy-production:
     name: Deploy (Production)
-    #needs: test
+    needs: test
     runs-on: ubuntu-22.04
     defaults:
       run:
