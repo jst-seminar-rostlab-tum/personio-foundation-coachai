@@ -24,8 +24,9 @@ const mockFeedback = {
   topic: 'Giving Constructive Feedback',
   time: '16.04.2025, 12:24',
   structure: 85,
-  empathy: 85,
-  focus: 85,
+  empathy: 89,
+  focus: 91,
+  clarity: 89,
   overall: 82,
   speakingTime: 62,
   questionAsked: 6,
@@ -40,6 +41,7 @@ export default function FeedbackDetail() {
     { key: t('progressBars.structure'), value: mockFeedback.structure },
     { key: t('progressBars.empathy'), value: mockFeedback.empathy },
     { key: t('progressBars.focus'), value: mockFeedback.focus },
+    { key: t('progressBars.clarity'), value: mockFeedback.clarity },
   ];
 
   const roundCardStats = [
@@ -139,7 +141,7 @@ export default function FeedbackDetail() {
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
 
-      <div className="grid grid-cols-2 gap-y-4 w-full md:w-fit md:gap-x-48 px-1">
+      <div className="grid grid-cols-2 gap-y-4 w-full px-1 md:flex md:justify-between">
         {roundCardStats.map((stat) => (
           <div className="flex gap-2 items-center" key={stat.key}>
             <div className="rounded-full size-11 border-1 border-bw-30 bg-bw-10 flex items-center justify-center">
