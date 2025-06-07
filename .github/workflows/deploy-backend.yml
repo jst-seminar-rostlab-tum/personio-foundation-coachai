@@ -2,7 +2,7 @@ name: Deploy Backend to Fly.io
 
 on:
   push:
-    branches: [ ci/add-alembic ]
+    branches: [ main ]
     paths: [ 'backend/**' ]
 
 jobs:
