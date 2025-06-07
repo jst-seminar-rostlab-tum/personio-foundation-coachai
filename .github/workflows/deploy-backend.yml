@@ -2,7 +2,7 @@ name: Deploy Backend to Fly.io
 
 on:
   push:
-    branches: [ ci/add-alembic ]
+    branches: [ main ]
     paths: [ 'backend/**' ]
 
 
@@ -51,18 +51,18 @@ jobs:
         run: uv run alembic upgrade head
         working-directory: ./backend
 
-  #deploy-production:
-   # name: Deploy (Production)
-    #needs: migrate-db
-    #runs-on: ubuntu-22.04
-    #defaults:
-    #  run:
-    #    working-directory: ./backend
+  deploy-production:
+    name: Deploy (Production)
+    needs: migrate-db
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./backend
 
-    #steps:
-    #  - uses: actions/checkout@v4
-    #  - uses: superfly/flyctl-actions/setup-flyctl@master
-    #  - name: Deploy with Fly.io
-    #    run: flyctl deploy --remote-only
-    #    env:
-    #      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy with Fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
