@@ -1,31 +1,73 @@
+from typing import Annotated
+
+import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from supabase import Client, create_client
+from sqlmodel import Session, select
 
 from app.config import Settings
+from app.database import get_session
+from app.models import UserProfile
+from app.models.user_profile import UserRole
 
 settings = Settings()
-
-
-supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
 security = HTTPBearer()
 
 
-def verify_jwt(credentials: HTTPAuthorizationCredentials = Depends(security)):  # noqa: ANN201, B008
+def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)]):  # noqa: ANN201
     """
-    Checks the validity of the JWT token and retrieves the user information.
+    Checks the validity of the JWT token and retrieves its information.
     """
-
-    print(f'Verifying JWT: {credentials.credentials}')
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail='Authentication required'
+        )
 
     token = credentials.credentials
     try:
-        user = supabase.auth.get_user(token)
-        if not user:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid token')
-
-        print(f'User verified: {user}')
-
-        return user
+        payload = jwt.decode(
+            token, settings.SUPABASE_JWT_SECRET, algorithms=['HS256'], audience='authenticated'
+        )
+        return payload
+    except jwt.ExpiredSignatureError as err:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail='Token has expired'
+        ) from err
+    except jwt.InvalidTokenError as err:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid token'
+        ) from err
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e)) from e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Internal server error'
+        ) from e
+
+
+def require_user(
+    token: Annotated[any, Depends(verify_jwt)], db: Annotated[Session, Depends(get_session)]
+) -> bool:
+    """
+    Checks if the user is authenticated and has the role of 'user' or 'admin'.
+    """
+    user_id = token['sub']
+    statement = select(UserProfile).where(UserProfile.id == user_id)
+    user = db.exec(statement).first()
+    if not user or user.role not in [UserRole.user, UserRole.admin]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail='User does not have access'
+        )
+    return user
+
+
+def require_admin(
+    token: Annotated[any, Depends(verify_jwt)], db: Annotated[Session, Depends(get_session)]
+) -> bool:
+    """
+    Checks if the user is authenticated and has the role of 'admin'.
+    """
+    user_id = token['sub']
+    statement = select(UserProfile).where(UserProfile.id == user_id)
+    user = db.exec(statement).first()
+    if not user or user.role != UserRole.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Admin access required')
+    return user

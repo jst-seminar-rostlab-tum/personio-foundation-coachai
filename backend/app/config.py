@@ -14,6 +14,7 @@ class Settings(BaseSettings):
 
     SUPABASE_URL: str = ''
     SUPABASE_KEY: str = ''
+    SUPABASE_JWT_SECRET: str = ''
 
     GEMINI_API_KEY: str = ''
 
@@ -25,8 +26,6 @@ class Settings(BaseSettings):
     TWILIO_ACCOUNT_SID: str = ''
     TWILIO_AUTH_TOKEN: str = ''
     TWILIO_PHONE_NUMBER: str = ''
-    SUPABASE_URL: str = ''
-    SUPABASE_KEY: str = ''
 
     ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
