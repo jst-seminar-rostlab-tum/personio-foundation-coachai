@@ -5,7 +5,8 @@
   "progressBars": {
     "structure": "Structure",
     "empathy": "Empathy",
-    "focus": "Focus"
+    "focus": "Focus",
+    "clarity": "Clarity"
   },
   "stats": {
     "speakingTime": "Speaking Time",
