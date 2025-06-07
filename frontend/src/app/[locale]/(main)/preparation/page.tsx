@@ -41,7 +41,7 @@ export default function PreparationPage() {
   };
 
   return (
-    <div className="flex flex-col gap-8 p-8">
+    <div className="flex flex-col gap-8">
       <h1 className="text-2xl text-center">{t('title')}</h1>
 
       <section className="flex flex-col gap-4 bg-marigold-5 border border-marigold-30 rounded-lg p-8 text-marigold-95">
