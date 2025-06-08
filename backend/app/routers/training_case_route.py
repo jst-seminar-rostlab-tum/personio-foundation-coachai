@@ -2,7 +2,8 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 from starlette import status
 from starlette.responses import JSONResponse
 
@@ -26,20 +27,20 @@ router = APIRouter(prefix='/training-case', tags=['Training Cases'])
 
 @router.get('/', response_model=list[TrainingCaseRead])
 def get_training_cases(
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> list[TrainingCase]:
     """
     Retrieve all training cases.
     """
     statement = select(TrainingCase)
-    training_cases = session.exec(statement).all()
+    training_cases = db_session.exec(statement).all()
     return list(training_cases)
 
 
 @router.post('/', response_model=TrainingCaseRead)
 def create_training_case_with_preparation(
     training_case: TrainingCaseCreate,
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
     background_tasks: BackgroundTasks,
 ) -> JSONResponse:
     """
@@ -48,15 +49,15 @@ def create_training_case_with_preparation(
     category = None
     # 1. Validate foreign keys
     if training_case.category_id:
-        category = session.get(ConversationCategory, training_case.category_id)
+        category = db_session.get(ConversationCategory, training_case.category_id)
         if not category:
             raise HTTPException(status_code=404, detail='Category not found')
 
     # 2. Create new TrainingCase
-    training_case = create_training_case(training_case, session)
+    training_case = create_training_case(training_case, db_session)
 
     # 3. Initialize preparation（status = pending）
-    prep = create_pending_preparation(training_case.id, session)
+    prep = create_pending_preparation(training_case.id, db_session)
 
     preparation_request = TrainingPreparationRequest(
         category=category.name,
@@ -85,59 +86,61 @@ def create_training_case_with_preparation(
 def update_training_case(
     case_id: UUID,
     updated_data: TrainingCaseCreate,
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> TrainingCase:
     """
     Update an existing training case.
     """
-    training_case = session.get(TrainingCase, case_id)
+    training_case = db_session.get(TrainingCase, case_id)
     if not training_case:
         raise HTTPException(status_code=404, detail='Training case not found')
 
     # Validate foreign keys
     if updated_data.category_id:
-        category = session.get(ConversationCategory, updated_data.category_id)
+        category = db_session.get(ConversationCategory, updated_data.category_id)
         if not category:
             raise HTTPException(status_code=404, detail='Category not found')
 
     for key, value in updated_data.dict().items():
         setattr(training_case, key, value)
 
-    session.add(training_case)
-    session.commit()
-    session.refresh(training_case)
+    db_session.add(training_case)
+    db_session.commit()
+    db_session.refresh(training_case)
     return training_case
 
 
 @router.delete('/{case_id}', response_model=dict)
-def delete_training_case(case_id: UUID, session: Annotated[Session, Depends(get_session)]) -> dict:
+def delete_training_case(
+    case_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+) -> dict:
     """
     Delete a training case.
     """
-    training_case = session.get(TrainingCase, case_id)
+    training_case = db_session.get(TrainingCase, case_id)
     if not training_case:
         raise HTTPException(status_code=404, detail='Training case not found')
 
-    session.delete(training_case)
-    session.commit()
+    db_session.delete(training_case)
+    db_session.commit()
     return {'message': 'Training case deleted successfully'}
 
 
 @router.get('/{id_training_case}/preparation', response_model=TrainingPreparationRead)
 def get_training_preparation_by_case_id(
-    id_training_case: UUID, session: Annotated[Session, Depends(get_session)]
+    id_training_case: UUID, db_session: Annotated[DBSession, Depends(get_session)]
 ) -> TrainingPreparation:
     """
     Retrieve the training preparation data for a given training case ID.
     """
     # Validate that the training case exists
-    training_case = session.get(TrainingCase, id_training_case)
+    training_case = db_session.get(TrainingCase, id_training_case)
     if not training_case:
         raise HTTPException(status_code=404, detail='Training case not found')
 
     # Fetch the associated training preparation
     statement = select(TrainingPreparation).where(TrainingPreparation.case_id == id_training_case)
-    training_preparation = session.exec(statement).first()
+    training_preparation = db_session.exec(statement).first()
 
     if not training_preparation:
         raise HTTPException(status_code=404, detail='Training preparation not found')

@@ -1,9 +1,11 @@
 import unittest
+from collections.abc import Generator
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
 from sqlalchemy import create_engine
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session as DBSession
+from sqlmodel import SQLModel
 
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
 from app.schemas.training_preparation_schema import KeyConcept, TrainingPreparationRequest
@@ -20,7 +22,7 @@ class TestTrainingPreparationService(unittest.TestCase):
         print('creating in-memory SQLite database for testing')
         SQLModel.metadata.create_all(cls.engine)
         print('Database schema created')
-        cls.SessionLocal = Session(cls.engine)
+        cls.SessionLocal = DBSession(cls.engine)
 
     def setUp(self) -> None:
         self.session = self.SessionLocal
@@ -28,7 +30,7 @@ class TestTrainingPreparationService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    def fake_session_gen(self) -> Session:
+    def fake_session_gen(self) -> Generator[DBSession, None, None]:
         yield self.session
 
     def test_create_pending_preparation(self) -> None:

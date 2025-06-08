@@ -2,7 +2,8 @@ import unittest
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session as DBSession
+from sqlmodel import SQLModel, create_engine
 
 from app.models import FeedbackStatusEnum
 from app.schemas.training_feedback_schema import (
@@ -22,7 +23,7 @@ class TestTrainingFeedbackService(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.engine = create_engine('sqlite:///:memory:')
         SQLModel.metadata.create_all(cls.engine)
-        cls.SessionLocal = Session(cls.engine)
+        cls.SessionLocal = DBSession(cls.engine)
 
     def setUp(self) -> None:
         self.session = self.SessionLocal

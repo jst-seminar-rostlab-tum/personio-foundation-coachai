@@ -2,7 +2,8 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 
 from app.database import get_session
 from app.models.training_session import TrainingSession
@@ -18,43 +19,43 @@ router = APIRouter(prefix='/training-session-feedback', tags=['Training Session 
 
 @router.get('/', response_model=list[TrainingSessionFeedbackRead])
 def get_training_session_feedbacks(
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> list[TrainingSessionFeedback]:
     """
     Retrieve all training session feedbacks.
     """
     statement = select(TrainingSessionFeedback)
-    feedbacks = session.exec(statement).all()
+    feedbacks = db_session.exec(statement).all()
     return list(feedbacks)
 
 
 @router.post('/', response_model=TrainingSessionFeedbackRead)
 def create_training_session_feedback(
-    feedback: TrainingSessionFeedbackCreate, session: Annotated[Session, Depends(get_session)]
+    feedback: TrainingSessionFeedbackCreate, db_session: Annotated[DBSession, Depends(get_session)]
 ) -> TrainingSessionFeedback:
     """
     Create a new training session feedback.
     """
     # Validate foreign key
-    training_session = session.get(TrainingSession, feedback.session_id)
+    training_session = db_session.get(TrainingSession, feedback.session_id)
     if not training_session:
         raise HTTPException(status_code=404, detail='Training session not found')
 
     db_feedback = TrainingSessionFeedback(**feedback.dict())
-    session.add(db_feedback)
-    session.commit()
-    session.refresh(db_feedback)
+    db_session.add(db_feedback)
+    db_session.commit()
+    db_session.refresh(db_feedback)
     return db_feedback
 
 
 @router.get('/{feedback_id}', response_model=TrainingSessionFeedbackRead)
 def get_training_session_feedback(
-    feedback_id: UUID, session: Annotated[Session, Depends(get_session)]
+    feedback_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
 ) -> TrainingSessionFeedbackRead:
     """
     Retrieve a specific training feedback by ID.
     """
-    feedback = session.get(TrainingSessionFeedback, feedback_id)
+    feedback = db_session.get(TrainingSessionFeedback, feedback_id)
 
     if not feedback:
         raise HTTPException(status_code=404, detail='Session feedback not found')
@@ -72,12 +73,12 @@ def get_training_session_feedback(
 def update_training_session_feedback(
     feedback_id: UUID,
     updated_data: dict,
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> TrainingSessionFeedback:
     """
     Update an existing training session feedback.
     """
-    feedback = session.get(TrainingSessionFeedback, feedback_id)
+    feedback = db_session.get(TrainingSessionFeedback, feedback_id)
     if not feedback:
         raise HTTPException(status_code=404, detail='Training session feedback not found')
 
@@ -88,23 +89,23 @@ def update_training_session_feedback(
                 key,
                 value if value is not None else getattr(TrainingSessionFeedback, key).default,
             )
-    session.add(feedback)
-    session.commit()
-    session.refresh(feedback)
+    db_session.add(feedback)
+    db_session.commit()
+    db_session.refresh(feedback)
     return feedback
 
 
 @router.delete('/{feedback_id}', response_model=dict)
 def delete_training_session_feedback(
-    feedback_id: UUID, session: Annotated[Session, Depends(get_session)]
+    feedback_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
 ) -> dict:
     """
     Delete a training session feedback.
     """
-    feedback = session.get(TrainingSessionFeedback, feedback_id)
+    feedback = db_session.get(TrainingSessionFeedback, feedback_id)
     if not feedback:
         raise HTTPException(status_code=404, detail='Training session feedback not found')
 
-    session.delete(feedback)
-    session.commit()
+    db_session.delete(feedback)
+    db_session.commit()
     return {'message': 'Training session feedback deleted successfully'}

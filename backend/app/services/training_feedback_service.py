@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlmodel import Session
+from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
@@ -243,7 +243,7 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
 
 
 def generate_and_store_feedback(
-    session_id: UUID, example_request: ExamplesRequest, db: Session
+    session_id: UUID, example_request: ExamplesRequest, db_session: DBSession
 ) -> TrainingSessionFeedback:
     """
     Generate feedback based on session_id and transcript data,
@@ -316,8 +316,8 @@ def generate_and_store_feedback(
         updated_at=datetime.now(),
     )
 
-    db.add(feedback)
-    db.commit()
+    db_session.add(feedback)
+    db_session.commit()
     return feedback
 
 

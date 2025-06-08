@@ -2,7 +2,8 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 
 from app.database import get_session
 from app.models.training_case import TrainingCase
@@ -18,24 +19,24 @@ router = APIRouter(prefix='/training-preparations', tags=['Training Preparations
 
 @router.get('/', response_model=list[TrainingPreparationRead])
 def get_training_preparations(
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> list[TrainingPreparation]:
     """
     Retrieve all training preparations.
     """
     statement = select(TrainingPreparation)
-    preparations = session.exec(statement).all()
+    preparations = db_session.exec(statement).all()
     return list(preparations)
 
 
 @router.get('/{preparation_id}', response_model=TrainingPreparationRead)
 def get_training_preparation(
-    preparation_id: UUID, session: Annotated[Session, Depends(get_session)]
+    preparation_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
 ) -> TrainingPreparation:
     """
     Retrieve a specific training preparation by ID.
     """
-    preparation = session.get(TrainingPreparation, preparation_id)
+    preparation = db_session.get(TrainingPreparation, preparation_id)
 
     if not preparation:
         raise HTTPException(status_code=404, detail='Session preparation not found')
@@ -51,20 +52,20 @@ def get_training_preparation(
 
 @router.post('/', response_model=TrainingPreparationRead)
 def create_training_preparation(
-    preparation: TrainingPreparationCreate, session: Annotated[Session, Depends(get_session)]
+    preparation: TrainingPreparationCreate, db_session: Annotated[DBSession, Depends(get_session)]
 ) -> TrainingPreparation:
     """
     Create a new training preparation.
     """
     # Validate foreign key
-    case = session.get(TrainingCase, preparation.case_id)
+    case = db_session.get(TrainingCase, preparation.case_id)
     if not case:
         raise HTTPException(status_code=404, detail='Training case not found')
 
     db_preparation = TrainingPreparation(**preparation.dict())
-    session.add(db_preparation)
-    session.commit()
-    session.refresh(db_preparation)
+    db_session.add(db_preparation)
+    db_session.commit()
+    db_session.refresh(db_preparation)
     return db_preparation
 
 
@@ -72,41 +73,41 @@ def create_training_preparation(
 def update_training_preparation(
     preparation_id: UUID,
     updated_data: TrainingPreparationCreate,
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> TrainingPreparation:
     """
     Update an existing training preparation.
     """
-    preparation = session.get(TrainingPreparation, preparation_id)
+    preparation = db_session.get(TrainingPreparation, preparation_id)
     if not preparation:
         raise HTTPException(status_code=404, detail='Training preparation not found')
 
     # Validate foreign key
     if updated_data.case_id:
-        case = session.get(TrainingCase, updated_data.case_id)
+        case = db_session.get(TrainingCase, updated_data.case_id)
         if not case:
             raise HTTPException(status_code=404, detail='Training case not found')
 
     for key, value in updated_data.dict().items():
         setattr(preparation, key, value)
 
-    session.add(preparation)
-    session.commit()
-    session.refresh(preparation)
+    db_session.add(preparation)
+    db_session.commit()
+    db_session.refresh(preparation)
     return preparation
 
 
 @router.delete('/{preparation_id}', response_model=dict)
 def delete_training_preparation(
-    preparation_id: UUID, session: Annotated[Session, Depends(get_session)]
+    preparation_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
 ) -> dict:
     """
     Delete a training preparation.
     """
-    preparation = session.get(TrainingPreparation, preparation_id)
+    preparation = db_session.get(TrainingPreparation, preparation_id)
     if not preparation:
         raise HTTPException(status_code=404, detail='Training preparation not found')
 
-    session.delete(preparation)
-    session.commit()
+    db_session.delete(preparation)
+    db_session.commit()
     return {'message': 'Training preparation deleted successfully'}

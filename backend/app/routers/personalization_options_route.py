@@ -1,7 +1,8 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from sqlmodel import Session, select
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 
 from app.database import get_session
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaRead
@@ -18,17 +19,17 @@ router = APIRouter(prefix='/personalization-options', tags=['Personalization Opt
 
 @router.get('/', response_model=PersonalizationOptionRead)
 def get_personalization_options(
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> PersonalizationOptionRead:
     """
     Retrieve all personalization options related to the user.
     """
-    experiences = session.exec(select(Experience)).all()
-    goals = session.exec(select(Goal)).all()
-    confidence_areas = session.exec(select(ConfidenceArea)).all()
-    languages = session.exec(select(Language)).all()
-    learning_styles = session.exec(select(LearningStyle)).all()
-    session_lengths = session.exec(select(SessionLength)).all()
+    experiences = db_session.exec(select(Experience)).all()
+    goals = db_session.exec(select(Goal)).all()
+    confidence_areas = db_session.exec(select(ConfidenceArea)).all()
+    languages = db_session.exec(select(Language)).all()
+    learning_styles = db_session.exec(select(LearningStyle)).all()
+    session_lengths = db_session.exec(select(SessionLength)).all()
 
     return PersonalizationOptionRead(
         roles=list(UserRole),

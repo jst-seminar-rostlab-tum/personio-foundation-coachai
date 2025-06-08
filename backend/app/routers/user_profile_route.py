@@ -2,7 +2,8 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 
 from app.database import get_session
 from app.models.user_confidence_score import ConfidenceScoreRead, UserConfidenceScore
@@ -19,26 +20,26 @@ router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
 
 @router.get('/user_ids', response_model=list[UserProfileRead])
 def get_user_profile_ids(
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> list[UserProfileRead]:
     """
     Retrieve all user profiles with their associated goals and confidence scores. (IDS)
     Returns a list of user profiles in a simplified format.
     """
     statement = select(UserProfile)
-    users = session.exec(statement).all()
+    users = db_session.exec(statement).all()
 
     user_profiles = []
     for user in users:
         # Retrieve goal IDs for the user
         goal_statement = select(UserGoal.goal_id).where(UserGoal.user_id == user.id)
-        goals = session.exec(goal_statement).all()
+        goals = db_session.exec(goal_statement).all()
 
         # Retrieve confidence score IDs for the user
         confidence_statement = select(UserConfidenceScore.area_id).where(
             UserConfidenceScore.user_id == user.id
         )
-        confidence_scores = session.exec(confidence_statement).all()
+        confidence_scores = db_session.exec(confidence_statement).all()
 
         # Serialize the UserProfile object into UserProfileRead schema
         user_profiles.append(
@@ -61,14 +62,14 @@ def get_user_profile_ids(
 
 @router.get('/{user_id}', response_model=UserProfileExtendedRead)
 def get_user_profile_by_id(
-    user_id: str, session: Annotated[Session, Depends(get_session)]
+    user_id: str, db_session: Annotated[DBSession, Depends(get_session)]
 ) -> UserProfileExtendedRead:
     """
     Retrieve a single user profile by its unique user ID.
     Includes detailed information such as goals and confidence scores. (VALUES)
     """
     statement = select(UserProfile).where(UserProfile.id == user_id)
-    user = session.exec(statement).first()
+    user = db_session.exec(statement).first()
 
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
@@ -104,14 +105,14 @@ def get_user_profile_by_id(
 
 @router.get('/', response_model=list[UserProfileExtendedRead])
 def get_user_profiles(
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> list[UserProfileExtendedRead]:
     """
     Retrieve all user profiles with detailed information.
     Includes goals and confidence scores for each user profile. (VALUES)
     """
     statement = select(UserProfile)
-    results = session.exec(statement).all()
+    results = db_session.exec(statement).all()
 
     user_map = {}
 
@@ -176,7 +177,7 @@ def get_user_profiles(
 @router.post('/', response_model=UserProfile)
 def create_user_profile(
     user_data: UserProfileCreate,
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> UserProfile:
     """
     Create a new user profile with associated goals and confidence scores.
@@ -189,14 +190,14 @@ def create_user_profile(
         preferred_learning_style_id=user_data.preferred_learning_style_id,
         preferred_session_length_id=user_data.preferred_session_length_id,
     )
-    session.add(new_user)
-    session.commit()
-    session.refresh(new_user)
+    db_session.add(new_user)
+    db_session.commit()
+    db_session.refresh(new_user)
 
     # Add goals
     for goal_id in user_data['goal_ids']:
         user_goal = UserGoal(user_id=new_user.id, goal_id=goal_id)
-        session.add(user_goal)
+        db_session.add(user_goal)
 
     # Add confidence scores
     for confidence_score in user_data['confidence_scores']:
@@ -205,9 +206,9 @@ def create_user_profile(
             area_id=confidence_score['area_id'],
             score=confidence_score['score'],
         )
-        session.add(user_confidence_score)
+        db_session.add(user_confidence_score)
 
-    session.commit()
+    db_session.commit()
 
     return new_user
 
@@ -216,13 +217,13 @@ def create_user_profile(
 def update_user_profile(
     user_id: UUID,
     user_data: UserProfileCreate,  # Expect full data for PUT
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> UserProfile:
     """
     Fully update an existing user profile with new data.
     Requires all fields to be provided.
     """
-    user = session.get(UserProfile, user_id)
+    user = db_session.get(UserProfile, user_id)
 
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
@@ -235,34 +236,34 @@ def update_user_profile(
     user.preferred_session_length_id = user_data.preferred_session_length_id
     user.store_conversations = user_data.store_conversations
 
-    session.add(user)
+    db_session.add(user)
 
     # Update goals
     statement = select(UserGoal).where(UserGoal.user_id == user_id)
-    user_goals = session.exec(statement)
+    user_goals = db_session.exec(statement)
     for user_goal in user_goals:
-        session.delete(user_goal)
-    session.commit()  # Commit to remove old goals
+        db_session.delete(user_goal)
+    db_session.commit()  # Commit to remove old goals
     for goal_id in user_data.goal_ids:
         user_goal = UserGoal(user_id=user.id, goal_id=goal_id)
-        session.add(user_goal)
+        db_session.add(user_goal)
 
     # Update confidence scores
     statement = select(UserConfidenceScore).where(UserConfidenceScore.user_id == user_id)
-    user_confidence_scores = session.exec(statement)
+    user_confidence_scores = db_session.exec(statement)
     for user_confidence_score in user_confidence_scores:
-        session.delete(user_confidence_score)
-    session.commit()
+        db_session.delete(user_confidence_score)
+    db_session.commit()
     for confidence_score in user_data.confidence_scores:
         user_confidence_score = UserConfidenceScore(
             user_id=user.id,
             area_id=confidence_score['area_id'],
             score=confidence_score['score'],
         )
-        session.add(user_confidence_score)
+        db_session.add(user_confidence_score)
 
-    session.commit()
-    session.refresh(user)
+    db_session.commit()
+    db_session.refresh(user)
 
     return user
 
@@ -271,12 +272,12 @@ def update_user_profile(
 def patch_user_profile(
     user_id: UUID,
     user_data: dict,  # Expect partial data for PATCH
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
 ) -> UserProfile:
     """
     Update an existing user profile.
     """
-    user = session.get(UserProfile, user_id)
+    user = db_session.get(UserProfile, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User profile not found')
 
@@ -294,50 +295,52 @@ def patch_user_profile(
     if 'store_conversations' in user_data:
         user.store_conversations = user_data['store_conversations']
 
-    session.add(user)
+    db_session.add(user)
 
     # Update goals if provided
     if 'goal_ids' in user_data:
         statement = select(UserGoal).where(UserGoal.user_id == user_id)
-        user_goals = session.exec(statement)
+        user_goals = db_session.exec(statement)
         for user_goal in user_goals:
-            session.delete(user_goal)
-        session.commit()  # Commit to remove old goals
+            db_session.delete(user_goal)
+        db_session.commit()  # Commit to remove old goals
         for goal_id in user_data['goal_ids']:
             user_goal = UserGoal(user_id=user.id, goal_id=goal_id)
-            session.add(user_goal)
+            db_session.add(user_goal)
 
     # Update confidence scores if provided
     if 'confidence_scores' in user_data:
         statement = select(UserConfidenceScore).where(UserConfidenceScore.user_id == user_id)
-        user_confidence_scores = session.exec(statement)
+        user_confidence_scores = db_session.exec(statement)
         for user_confidence_score in user_confidence_scores:
-            session.delete(user_confidence_score)
-        session.commit()
+            db_session.delete(user_confidence_score)
+        db_session.commit()
         for confidence_score in user_data['confidence_scores']:
             user_confidence_score = UserConfidenceScore(
                 user_id=user.id,
                 area_id=confidence_score['area_id'],
                 score=confidence_score['score'],
             )
-            session.add(user_confidence_score)
+            db_session.add(user_confidence_score)
 
-    session.commit()
-    session.refresh(user)
+    db_session.commit()
+    db_session.refresh(user)
 
     return user
 
 
 @router.delete('/{user_id}', response_model=dict)
-def delete_user_profile(user_id: UUID, session: Annotated[Session, Depends(get_session)]) -> dict:
+def delete_user_profile(
+    user_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+) -> dict:
     """
     Delete a user profile by its unique user ID.
     Cascades the deletion to related goals and confidence scores.
     """
-    user_profile = session.get(UserProfile, user_id)
+    user_profile = db_session.get(UserProfile, user_id)
     if not user_profile:
         raise HTTPException(status_code=404, detail='User profile not found')
 
-    session.delete(user_profile)
-    session.commit()
+    db_session.delete(user_profile)
+    db_session.commit()
     return {'message': 'User profile deleted successfully'}

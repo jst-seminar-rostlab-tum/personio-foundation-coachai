@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Generator
 from uuid import UUID
 
-from sqlmodel import Session
+from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
@@ -185,7 +185,7 @@ def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
     return result.items
 
 
-def create_pending_preparation(case_id: UUID, session: Session) -> TrainingPreparation:
+def create_pending_preparation(case_id: UUID, db_session: DBSession) -> TrainingPreparation:
     """
     Create a new TrainingPreparation record with status 'pending'.
     """
@@ -196,15 +196,15 @@ def create_pending_preparation(case_id: UUID, session: Session) -> TrainingPrepa
         key_concepts=[],
         prep_checklist=[],
     )
-    session.add(prep)
-    session.commit()
+    db_session.add(prep)
+    db_session.commit()
     return prep
 
 
 def generate_training_preparation(
     preparation_id: UUID,
     request: TrainingPreparationRequest,
-    session_generator_func: Callable[[], Generator[Session, None, None]],
+    session_generator_func: Callable[[], Generator[DBSession, None, None]],
 ) -> TrainingPreparation:
     """
     Generate training preparation data including objectives, checklist, and key concepts.
@@ -212,11 +212,11 @@ def generate_training_preparation(
     """
 
     session_gen = session_generator_func()
-    session = next(session_gen)
+    db_session = next(session_gen)
 
     try:
         # 1. retrieve the preparation record
-        preparation = session.get(TrainingPreparation, preparation_id)
+        preparation = db_session.get(TrainingPreparation, preparation_id)
 
         if not preparation:
             raise ValueError(f'Training preparation with ID {preparation_id} not found.')
@@ -275,9 +275,9 @@ def generate_training_preparation(
         else:
             preparation.status = TrainingPreparationStatus.completed
 
-        session.add(preparation)
-        session.commit()
-        session.refresh(preparation)
+        db_session.add(preparation)
+        db_session.commit()
+        db_session.refresh(preparation)
         return preparation
 
     finally:

@@ -2,7 +2,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, HTTPException
-from sqlmodel import Session
+from sqlmodel import Session as DBSession
 
 from app.database import get_session
 from app.models.user_profile import UserProfile, UserStatisticsRead
@@ -12,7 +12,7 @@ router = APIRouter(prefix='/user', tags=['User Stats'])
 
 @router.get('/', response_model=UserStatisticsRead)
 def get_user_stats(
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_session)],
     x_user_id: str = Header(...),  # Auth via header
     # TODO: Adjust to the authentication token in the header
 ) -> UserStatisticsRead:
@@ -23,7 +23,7 @@ def get_user_stats(
             status_code=401, detail='Invalid or missing authentication token'
         ) from err
 
-    user = session.get(UserProfile, user_id)
+    user = db_session.get(UserProfile, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
 
