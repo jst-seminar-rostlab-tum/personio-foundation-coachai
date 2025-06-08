@@ -30,7 +30,6 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
     id: UUID = Field(
         default_factory=uuid4, sa_column=Column(PG_UUID(as_uuid=True), primary_key=True)
     )
-    user_name: Optional[str] = None
     preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
     experience_id: UUID = Field(foreign_key='experience.id')  # FK to Experience
     preferred_learning_style_id: UUID = Field(foreign_key='learningstyle.id')

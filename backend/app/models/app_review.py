@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, SQLModel
@@ -25,7 +25,12 @@ class AppReviewRead(SQLModel):
     user_id: UUID
     rating: int
     comment: str
-    created_at: datetime
+    date: date
+
+
+class PaginatedReviewsResponse(SQLModel):
+    reviews: list[AppReviewRead]
+    pagination: dict
 
 
 class AppReviewResponse(SQLModel):
