@@ -12,14 +12,14 @@ class AppReview(SQLModel, table=True):  # `table=True` makes it a database table
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
-# Schema for creating a new user feedback
+# Schema for creating a new app review
 class AppReviewCreate(SQLModel):
     user_id: UUID
     rating: int
     comment: str
 
 
-# Schema for reading user feedback data
+# Schema for reading app review data
 class AppReviewRead(SQLModel):
     id: UUID
     user_id: UUID
@@ -30,4 +30,4 @@ class AppReviewRead(SQLModel):
 
 class AppReviewResponse(SQLModel):
     message: str = 'Feedback submitted successfully'
-    feedback_id: UUID
+    app_review_id: UUID

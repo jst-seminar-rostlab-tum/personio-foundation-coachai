@@ -75,7 +75,7 @@ def populate_data() -> None:
         user_goals = get_dummy_user_goals(user_profiles, goals)
         session.add_all(user_goals)
 
-        # Populate User Feedbacks
+        # Populate App Reviews
         app_reviews = get_dummy_app_reviews(user_profiles)
         session.add_all(app_reviews)
 

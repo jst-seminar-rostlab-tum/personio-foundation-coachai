@@ -12,13 +12,13 @@ from app.models.app_review import (
 )
 from app.models.user_profile import UserProfile
 
-router = APIRouter(prefix='/feedback', tags=['User Feedback'])
+router = APIRouter(prefix='/app-review', tags=['User App Review'])
 
 
 @router.get('/', response_model=list[AppReviewRead])
 def get_app_reviews(session: Annotated[Session, Depends(get_session)]) -> list[AppReview]:
     """
-    Retrieve all user feedbacks.
+    Retrieve all app reviews.
     """
     statement = select(AppReview)
     app_reviews = session.exec(statement).all()
@@ -30,18 +30,18 @@ def create_app_review(
     app_review: AppReviewCreate, session: Annotated[Session, Depends(get_session)]
 ) -> AppReviewResponse:
     """
-    Create a new user feedback.
+    Create a new app review.
     """
     user = session.get(UserProfile, app_review.user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
 
-    db_feedback = AppReview(**app_review.dict())
-    session.add(db_feedback)
+    db_app_review = AppReview(**app_review.dict())
+    session.add(db_app_review)
     session.commit()
-    session.refresh(db_feedback)
+    session.refresh(db_app_review)
 
     return AppReviewResponse(
         message='Feedback submitted successfully',
-        feedback_id=db_feedback.id,
+        app_review_id=db_app_review.id,
     )
