@@ -3,8 +3,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import Column, event
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
 from sqlmodel import Field, Relationship, SQLModel
@@ -27,10 +26,7 @@ class UserRole(str, Enum):
 
 
 class UserProfile(SQLModel, table=True):  # `table=True` makes it a database table
-    id: UUID = Field(
-        default_factory=uuid4, sa_column=Column(PG_UUID(as_uuid=True), primary_key=True)
-    )
-    user_name: Optional[str] = None
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
     experience_id: UUID = Field(foreign_key='experience.id')  # FK to Experience
     preferred_learning_style_id: UUID = Field(foreign_key='learningstyle.id')
@@ -86,7 +82,7 @@ class UserProfileCreate(SQLModel):
 class UserProfileRead(SQLModel):
     id: UUID
     preferred_language: str
-    role: UserRole | None
+    role: UserRole
     experience_id: UUID
     preferred_learning_style_id: UUID
     preferred_session_length_id: UUID

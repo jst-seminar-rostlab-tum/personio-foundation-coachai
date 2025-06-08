@@ -1,5 +1,6 @@
 from app.models.admin_dashboard_stats import AdminDashboardStats, AdminDashboardStatsRead
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
+from app.models.app_review import AppReview, AppReviewCreate, AppReviewRead
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from app.models.conversation_category import (
     ConversationCategory,
@@ -31,7 +32,12 @@ from app.models.training_preparation import (
     TrainingPreparationRead,
     TrainingPreparationStatus,
 )
-from app.models.training_session import TrainingSession, TrainingSessionCreate, TrainingSessionRead
+from app.models.training_session import (
+    TrainingSession,
+    TrainingSessionCreate,
+    TrainingSessionDetailsRead,
+    TrainingSessionRead,
+)
 from app.models.training_session_feedback import (
     FeedbackStatusEnum,
     NegativeExample,
@@ -47,7 +53,6 @@ from app.models.user_confidence_score import (
     UserConfidenceScoreCreate,
     UserConfidenceScoreRead,
 )
-from app.models.user_feedback import UserFeedback, UserFeedbackCreate, UserFeedbackRead
 from app.models.user_goal import UserGoal, UserGoalCreate, UserGoalRead
 from app.models.user_profile import (
     UserProfile,
@@ -70,6 +75,7 @@ __all__ = [
     'TrainingSession',
     'TrainingSessionCreate',
     'TrainingSessionRead',
+    'TrainingSessionDetailsRead',
     'TrainingPreparation',
     'TrainingPreparationCreate',
     'TrainingPreparationRead',
@@ -121,9 +127,9 @@ __all__ = [
     'AppConfigCreate',
     'AppConfigRead',
     'ConfigType',
-    'UserFeedback',
-    'UserFeedbackCreate',
-    'UserFeedbackRead',
     'AdminDashboardStats',
     'AdminDashboardStatsRead',
+    'AppReview',
+    'AppReviewCreate',
+    'AppReviewRead',
 ]

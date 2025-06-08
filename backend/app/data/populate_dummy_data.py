@@ -3,6 +3,7 @@ from sqlmodel import Session, SQLModel, text
 from app.data import (
     get_dummy_admin_stats,
     get_dummy_app_configs,
+    get_dummy_app_reviews,
     get_dummy_confidence_areas,
     get_dummy_conversation_categories,
     get_dummy_conversation_turns,
@@ -18,7 +19,6 @@ from app.data import (
     get_dummy_training_session_feedback,
     get_dummy_training_sessions,
     get_dummy_user_confidence_scores,
-    get_dummy_user_feedbacks,
     get_dummy_user_goals,
     get_dummy_user_profiles,
 )
@@ -76,9 +76,9 @@ def populate_data() -> None:
         user_goals = get_dummy_user_goals(user_profiles, goals)
         session.add_all(user_goals)
 
-        # Populate User Feedbacks
-        user_feedbacks = get_dummy_user_feedbacks(user_profiles)
-        session.add_all(user_feedbacks)
+        # Populate App Reviews
+        app_reviews = get_dummy_app_reviews(user_profiles)
+        session.add_all(app_reviews)
 
         # Populate Training Cases
         training_cases = get_dummy_training_cases(user_profiles, difficulty_levels)
