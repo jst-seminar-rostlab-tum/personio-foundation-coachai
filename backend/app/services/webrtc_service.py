@@ -22,7 +22,7 @@ from app.schemas.webrtc_schema import (
     WebRTCMediaError,
     WebRTCPeerError,
 )
-from app.services.audio_processor import pcm_to_opus, resample_audio
+from app.services.audio_processor import pcm_to_opus, resample_audio, AudioStreamTrack
 
 logger = logging.getLogger(__name__)
 
@@ -141,9 +141,8 @@ class WebRTCService:
                     # convert pcm data to opus
                     opus_data = pcm_to_opus(pcm_data)
                     # send opus data to client
-                    # TODO: fix MediaStreamTrack with av
                     self.peers[peer_id].transceiver.sender.replaceTrack(
-                        MediaStreamTrack(opus_data, sample_rate=track.sample_rate)
+                        AudioStreamTrack(opus_data, sample_rate=track.sample_rate)
                     )
                 if response.text:
                     transcript = response.text
@@ -175,14 +174,15 @@ class WebRTCService:
                 # Receive audio frame
                 frame = await track.recv()
 
-                # Convert frame to bytes (this depends on your audio processing implementation)
-                audio_bytes = frame.to_bytes()  # You'll need to implement this
+                # Convert frame to bytes
+                audio_array = frame.to_ndarray()
+                audio_bytes = audio_array.tobytes()
 
                 # Resample if needed
-                if frame.sample_rate != GEMINI_SAMPLE_RATE:
-                    audio_bytes = resample_audio(audio_bytes, frame.sample_rate, GEMINI_SAMPLE_RATE)
+                if frame.rate != GEMINI_SAMPLE_RATE:
+                    audio_bytes = resample_audio(audio_bytes, frame.rate, GEMINI_SAMPLE_RATE)
 
-                # Convert to format expected by Gemini (Opus or PCM)
+                # Convert to format expected by Gemini (Opus)
                 processed_audio = pcm_to_opus(audio_bytes)
 
                 # Send to Gemini

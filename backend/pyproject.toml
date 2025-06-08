@@ -33,6 +33,7 @@ dependencies = [
   "aiortc>=1.13.0",
   "google-cloud-aiplatform>=1.96.0",
   "av>=14.4.0",
+  "numpy>=1.26.4",
 ]
 
 [tool.setuptools]
