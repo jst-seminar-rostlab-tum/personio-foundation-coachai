@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import event
-from sqlalchemy.engine.base import Connection
+from sqlalchemy.engine import Connection
 from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import Field, Relationship
 
