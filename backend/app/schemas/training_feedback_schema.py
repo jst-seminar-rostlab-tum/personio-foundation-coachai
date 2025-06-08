@@ -1,7 +1,9 @@
-from app.models.base import BaseModel, Field
+from pydantic import Field
+
+from app.models.camel_case import CamelModel
 
 
-class ExamplesRequest(BaseModel):
+class ExamplesRequest(CamelModel):
     transcript: str  # Full transcript of the training session
     objectives: list[str] = Field(
         ..., description='List of training objectives the user is expected to achieve'
@@ -9,36 +11,30 @@ class ExamplesRequest(BaseModel):
     category: str = Field(..., description='Training category')
     goal: str = Field(..., description='Training goal')
     context: str = Field(..., description='Training context')
-    other_party: str = Field(..., description='Persona spoken with', alias='otherParty')
-    key_concepts: str = Field(alias='keyConcepts')  # Can be markdown or plain text
+    other_party: str = Field(..., description='Persona spoken with')
+    key_concepts: str  # Can be markdown or plain text
 
 
-class PositiveExample(BaseModel):
+class PositiveExample(CamelModel):
     heading: str = Field(..., description='Title or summary of the positive example')
     text: str = Field(..., description='Explanation of why this is a good example')
     quote: str = Field(..., description='Direct quote from the transcript')
     guideline: str = Field(..., description='Specific guideline or concept this quote aligns with')
 
 
-class NegativeExample(BaseModel):
+class NegativeExample(CamelModel):
     heading: str = Field(..., description='Title or summary of the negative example')
     text: str = Field(..., description='Description or context of the example')
     quote: str = Field(..., description='Problematic or unhelpful quote mentioned by the user')
-    improved_quote: str = Field(
-        ..., description='Suggested improved version of the quote', alias='improvedQuote'
-    )
+    improved_quote: str = Field(..., description='Suggested improved version of the quote')
 
 
-class TrainingExamplesCollection(BaseModel):
-    positive_examples: list[PositiveExample] = Field(
-        ..., description='List of positive examples', alias='positiveExamples'
-    )
-    negative_examples: list[NegativeExample] = Field(
-        ..., description='List of negative examples', alias='negativeExamples'
-    )
+class TrainingExamplesCollection(CamelModel):
+    positive_examples: list[PositiveExample] = Field(..., description='List of positive examples')
+    negative_examples: list[NegativeExample] = Field(..., description='List of negative examples')
 
 
-class GoalsAchievementRequest(BaseModel):
+class GoalsAchievementRequest(CamelModel):
     """Request to evaluate the training objectives that were achieved in the transcript."""
 
     transcript: str  # Full transcript of the training session
@@ -47,13 +43,11 @@ class GoalsAchievementRequest(BaseModel):
     )
 
 
-class GoalsAchievedCollection(BaseModel):
+class GoalsAchievedCollection(CamelModel):
     """Response indicating the training goals that were achieved."""
 
     goals_achieved: list[str] = Field(
-        ...,
-        description='List of training objectives achieved in the session',
-        alias='goalsAchieved',
+        ..., description='List of training objectives achieved in the session'
     )
 
 
@@ -65,12 +59,12 @@ class RecommendationsRequest(ExamplesRequest):
     pass
 
 
-class Recommendation(BaseModel):
+class Recommendation(CamelModel):
     heading: str = Field(..., description='Title or summary of the recommendation')
     text: str = Field(..., description='Description or elaboration of the recommendation')
 
 
-class RecommendationsCollection(BaseModel):
+class RecommendationsCollection(CamelModel):
     recommendations: list[Recommendation] = Field(
         ..., description='List of improvement recommendations'
     )

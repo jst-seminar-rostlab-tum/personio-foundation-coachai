@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from app.models.base import BaseModel
+from app.models.camel_case import CamelModel
 
 
-class MessageBaseSchema(BaseModel):
+class MessageBaseSchema(CamelModel):
     content: str
 
 
