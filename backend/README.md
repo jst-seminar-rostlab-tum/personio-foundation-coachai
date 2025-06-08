@@ -41,7 +41,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 SUPABASE_ENVIRONMENT=local
 SUPABASE_USER=postgres.your-tenant-id
 SUPABASE_PASSWORD=your-super-secret-and-long-postgres-password
-SUPABASE_KEY=super-secret-key
+SUPABASE_ANON_KEY=super-secret-key
 ```
 
 ## Local Development

@@ -2,3 +2,6 @@
 /.ruff_cache/
 /.idea/
 /.env
+
+# MacOs
+.DS_Store
