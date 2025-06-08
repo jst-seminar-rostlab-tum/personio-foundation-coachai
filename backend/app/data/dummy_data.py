@@ -170,6 +170,42 @@ def get_dummy_app_reviews(user_profiles: list[UserProfile]) -> list[AppReview]:
             rating=2,
             comment='I found the sessions a bit too fast-paced.',
         ),
+        AppReview(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            rating=4,
+            comment='Great experience overall, but could use more examples.',
+        ),
+        AppReview(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            rating=3,
+            comment='Good, but I expected more personalized feedback.',
+        ),
+        AppReview(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            rating=5,
+            comment='Loved the interactive sessions and practical exercises!',
+        ),
+        AppReview(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            rating=1,
+            comment='Did not meet my expectations, too basic.',
+        ),
+        AppReview(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            rating=4,
+            comment='Very informative, but the pace was a bit slow.',
+        ),
+        AppReview(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
     ]
 
 
