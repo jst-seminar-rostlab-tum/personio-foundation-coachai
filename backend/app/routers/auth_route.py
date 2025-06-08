@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
 from gotrue import (
-    SignInWithPasswordCredentials,
     SignUpWithPasswordCredentials,
 )
 from pydantic import BaseModel
@@ -64,29 +63,3 @@ def create_user(req: CreateUserRequest) -> None:
         ) from e
 
     return 'User created successfully'
-
-
-# TODO: Only for testing purposes, remove later
-@router.post('/login', response_model=dict, status_code=status.HTTP_200_OK)
-def login_user(req: LoginUserRequest) -> None:
-    try:
-        LoginUserRequest.model_validate(req)
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(e),
-        ) from e
-
-    credentials: SignInWithPasswordCredentials = {
-        'phone': req.phone,
-        'password': req.password,
-    }
-    try:
-        response = supabase.auth.sign_in_with_password(credentials)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        ) from e
-
-    return {'access_token': response.session.access_token}
