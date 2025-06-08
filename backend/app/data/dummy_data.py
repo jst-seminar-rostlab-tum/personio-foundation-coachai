@@ -663,6 +663,5 @@ def get_dummy_admin_stats() -> list[AdminDashboardStats]:
             id=uuid4(),
             total_trainings=34533,
             average_score=86,
-            daily_token_limit=100,
         )
     ]
