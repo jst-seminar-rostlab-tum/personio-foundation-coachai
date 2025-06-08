@@ -33,7 +33,7 @@ export async function updateSession(
   } = await supabase.auth.getUser();
 
   if (!user) {
-    if (request.nextUrl.pathname.startsWith('/confirm')) {
+    if (['/confirm', '/check-email'].some((path) => request.nextUrl.pathname.startsWith(path))) {
       return response;
     }
 
@@ -44,7 +44,7 @@ export async function updateSession(
     }
   }
 
-  const authUrls = ['/login', '/confirm'];
+  const authUrls = ['/login', '/confirm', '/check-email'];
   if (user && authUrls.some((path) => request.nextUrl.pathname.startsWith(path))) {
     const url = request.nextUrl.clone();
     if (request.nextUrl.pathname.startsWith('/login')) {

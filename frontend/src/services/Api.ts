@@ -1,3 +1,6 @@
+import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
+import { SignInCredentials } from '@/interfaces/SignInForm';
+import { UserProfileCreate } from '@/interfaces/SignUpForm';
 import { createClient } from '@/utils/supabase/client';
 import axios from 'axios';
 
@@ -15,6 +18,10 @@ const api = axios.create({
 // Request interceptor for adding auth token
 api.interceptors.request.use(
   async (config) => {
+    if (config.url?.startsWith('/auth/')) {
+      return config;
+    }
+
     const { data, error } = await supabase.auth.getSession();
     if (error || !data.session) {
       return Promise.reject(error);
@@ -50,7 +57,14 @@ api.interceptors.response.use(
   }
 );
 
-/* export const userProfileApi = {
+export const authApi = {
+  create: async (data: CreateUserRequest) => {
+    const response = await api.post('/auth/', data);
+    return response.data;
+  },
+};
+
+export const userProfileApi = {
   create: async (data: UserProfileCreate) => {
     const response = await api.post('/user-profiles/', data);
     return response.data;
@@ -63,4 +77,4 @@ api.interceptors.response.use(
     const response = await api.post('/user-profiles/sign-in', credentials);
     return response.data;
   },
-}; */
+};
