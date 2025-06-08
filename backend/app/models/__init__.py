@@ -1,4 +1,5 @@
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
+from app.models.app_review import AppReview, AppReviewCreate, AppReviewRead
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from app.models.conversation_category import (
     ConversationCategory,
@@ -46,7 +47,6 @@ from app.models.user_confidence_score import (
     UserConfidenceScoreCreate,
     UserConfidenceScoreRead,
 )
-from app.models.user_feedback import UserFeedback, UserFeedbackCreate, UserFeedbackRead
 from app.models.user_goal import UserGoal, UserGoalCreate, UserGoalRead
 from app.models.user_profile import (
     UserProfile,
@@ -120,7 +120,7 @@ __all__ = [
     'AppConfigCreate',
     'AppConfigRead',
     'ConfigType',
-    'UserFeedback',
-    'UserFeedbackCreate',
-    'UserFeedbackRead',
+    'AppReview',
+    'AppReviewCreate',
+    'AppReviewRead',
 ]

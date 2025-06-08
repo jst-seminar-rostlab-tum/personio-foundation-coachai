@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.models.app_config import AppConfig, ConfigType
+from app.models.app_review import AppReview
 from app.models.confidence_area import ConfidenceArea
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_turn import ConversationTurn, SpeakerEnum
@@ -20,7 +21,6 @@ from app.models.training_session_feedback import (
     TrainingSessionFeedback,
 )
 from app.models.user_confidence_score import UserConfidenceScore
-from app.models.user_feedback import UserFeedback
 from app.models.user_goal import UserGoal
 from app.models.user_profile import UserProfile, UserRole
 
@@ -156,15 +156,15 @@ def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) ->
     ]
 
 
-def get_dummy_user_feedbacks(user_profiles: list[UserProfile]) -> list[UserFeedback]:
+def get_dummy_app_reviews(user_profiles: list[UserProfile]) -> list[AppReview]:
     return [
-        UserFeedback(
+        AppReview(
             id=uuid4(),
             user_id=user_profiles[0].id,
             rating=5,
             comment='Excellent service!',
         ),
-        UserFeedback(
+        AppReview(
             id=uuid4(),
             user_id=user_profiles[1].id,
             rating=2,
