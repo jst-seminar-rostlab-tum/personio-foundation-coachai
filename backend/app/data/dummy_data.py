@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.models.app_config import AppConfig, ConfigType
+from app.models.app_review import AppReview
 from app.models.confidence_area import ConfidenceArea
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_turn import ConversationTurn, SpeakerEnum
@@ -20,7 +21,6 @@ from app.models.training_session_feedback import (
     TrainingSessionFeedback,
 )
 from app.models.user_confidence_score import UserConfidenceScore
-from app.models.user_feedback import UserFeedback
 from app.models.user_goal import UserGoal
 from app.models.user_profile import UserProfile, UserRole
 
@@ -158,15 +158,15 @@ def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) ->
     ]
 
 
-def get_dummy_user_feedbacks(user_profiles: list[UserProfile]) -> list[UserFeedback]:
+def get_dummy_app_reviews(user_profiles: list[UserProfile]) -> list[AppReview]:
     return [
-        UserFeedback(
+        AppReview(
             id=uuid4(),
             user_id=user_profiles[0].id,
             rating=5,
             comment='Excellent service!',
         ),
-        UserFeedback(
+        AppReview(
             id=uuid4(),
             user_id=user_profiles[1].id,
             rating=2,
@@ -372,7 +372,7 @@ def get_dummy_training_session_feedback(
         TrainingSessionFeedback(
             id=uuid4(),
             session_id=training_sessions[0].id,  # Link to the first training session
-            scores={'clarity': 8, 'engagement': 7, 'accuracy': 9},
+            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=85,
             transcript_uri='https://example.com/transcripts/session1.txt',
@@ -441,7 +441,7 @@ def get_dummy_training_session_feedback(
         TrainingSessionFeedback(
             id=uuid4(),
             session_id=training_sessions[1].id,  # Link to the second training session
-            scores={'clarity': 9, 'engagement': 8, 'accuracy': 8},
+            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=90,
             transcript_uri='https://example.com/transcripts/session2.txt',

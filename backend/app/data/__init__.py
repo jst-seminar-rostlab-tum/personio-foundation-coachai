@@ -1,5 +1,6 @@
 from .dummy_data import (
     get_dummy_app_configs,
+    get_dummy_app_reviews,
     get_dummy_confidence_areas,
     get_dummy_conversation_categories,
     get_dummy_conversation_turns,
@@ -15,7 +16,6 @@ from .dummy_data import (
     get_dummy_training_session_feedback,
     get_dummy_training_sessions,
     get_dummy_user_confidence_scores,
-    get_dummy_user_feedbacks,
     get_dummy_user_goals,
     get_dummy_user_profiles,
 )
@@ -39,5 +39,5 @@ __all__ = [
     'get_dummy_learning_styles',
     'get_dummy_session_lengths',
     'get_dummy_app_configs',
-    'get_dummy_user_feedbacks',
+    'get_dummy_app_reviews',
 ]
