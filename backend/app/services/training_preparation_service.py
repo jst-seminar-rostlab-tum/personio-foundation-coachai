@@ -200,10 +200,11 @@ def create_pending_preparation(case_id: UUID, session: Session) -> TrainingPrepa
     session.commit()
     return prep
 
+
 def generate_training_preparation(
-        preparation_id: UUID,
-        request: TrainingPreparationRequest,
-        session_generator_func: Callable[[], Generator[Session, None, None]],
+    preparation_id: UUID,
+    request: TrainingPreparationRequest,
+    session_generator_func: Callable[[], Generator[Session, None, None]],
 ) -> TrainingPreparation:
     """
     Generate training preparation data including objectives, checklist, and key concepts.
@@ -252,21 +253,21 @@ def generate_training_preparation(
             preparation.objectives = objectives
         except Exception as e:
             has_error = True
-            print("[ERROR] Failed to generate objectives:", e)
+            print('[ERROR] Failed to generate objectives:', e)
 
         try:
             checklist = safe_generate_checklist(checklist_request)
             preparation.prep_checklist = checklist
         except Exception as e:
             has_error = True
-            print("[ERROR] Failed to generate checklist:", e)
+            print('[ERROR] Failed to generate checklist:', e)
 
         try:
             key_concepts = safe_generate_key_concepts(key_concept_request)
             preparation.key_concepts = [ex.model_dump() for ex in key_concepts]
         except Exception as e:
             has_error = True
-            print("[ERROR] Failed to generate key concepts:", e)
+            print('[ERROR] Failed to generate key concepts:', e)
 
         # 4. Update status depending on error presence
         if has_error:

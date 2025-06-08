@@ -1,6 +1,7 @@
+import io
+
 import av
 import numpy as np
-import io
 from aiortc.mediastreams import MediaStreamTrack
 
 

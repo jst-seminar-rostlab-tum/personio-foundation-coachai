@@ -22,7 +22,7 @@ from app.schemas.webrtc_schema import (
     WebRTCMediaError,
     WebRTCPeerError,
 )
-from app.services.audio_processor import pcm_to_opus, resample_audio, AudioStreamTrack
+from app.services.audio_processor import AudioStreamTrack, pcm_to_opus, resample_audio
 
 logger = logging.getLogger(__name__)
 
