@@ -1,11 +1,6 @@
-from typing import TYPE_CHECKING
-
 from sqlmodel import Field
 
 from app.models.camel_case import CamelModel
-
-if TYPE_CHECKING:
-    pass
 
 
 class Language(CamelModel, table=True):  # `table=True` makes it a database table
