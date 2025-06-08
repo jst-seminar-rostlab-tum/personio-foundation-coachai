@@ -30,8 +30,8 @@ if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/version
 
     if ! uv run alembic check; then
         echo "❌- Models don't match database after running latest migrations. This means either:"
-        echo "   - You changed models but didn't create a migration script"
-        echo "   - Your latest migration script doesn't actually reflect your current models"
+        echo "   - You changed models but didn't create a migration script. Run 'uv run alembic revision --autogenerate -m \"<message>\"' to create a new migration script."
+        echo "   - Your latest migration script doesn't actually reflect your current models. Make sure the latest migration script has the correct changes in the upgrade() function."
         exit 1
     fi
 
