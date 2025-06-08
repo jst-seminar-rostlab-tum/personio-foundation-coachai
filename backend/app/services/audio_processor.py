@@ -1,3 +1,4 @@
+import fractions
 import io
 
 import av
@@ -33,7 +34,7 @@ class AudioStreamTrack(MediaStreamTrack):
         )
         frame.pts = self._timestamp
         frame.rate = self.sample_rate
-        frame.time_base = f'1/{self.sample_rate}'
+        frame.time_base = fractions.Fraction(1, self.sample_rate)
 
         # Update timestamp
         self._timestamp += len(audio_array)
