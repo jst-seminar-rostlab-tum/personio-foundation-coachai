@@ -10,6 +10,8 @@ from sqlmodel import JSON, Column, Field, Relationship
 from app.models.camel_case import CamelModel
 from app.models.training_session_feedback import TrainingSessionFeedbackMetrics
 
+from app.models.training_session_feedback import TrainingSessionFeedbackMetrics
+
 if TYPE_CHECKING:
     from app.models.conversation_turn import ConversationTurn
     from app.models.language import Language
