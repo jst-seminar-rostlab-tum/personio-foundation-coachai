@@ -7,7 +7,7 @@ from sqlmodel import Field, SQLModel
 class AppReview(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
-    rating: int
+    rating: int = Field(ge=1, le=5)
     comment: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -19,6 +19,11 @@ class AppReviewCreate(SQLModel):
     comment: str
 
 
+class AppReviewResponse(SQLModel):
+    message: str = 'Feedback submitted successfully'
+    app_review_id: UUID
+
+
 # Schema for reading app review data
 class AppReviewRead(SQLModel):
     id: UUID
@@ -28,11 +33,16 @@ class AppReviewRead(SQLModel):
     date: date
 
 
+class ReviewStatistics(SQLModel):
+    average: float
+    num_five_star: int
+    num_four_star: int
+    num_three_star: int
+    num_two_star: int
+    num_one_star: int
+
+
 class PaginatedReviewsResponse(SQLModel):
     reviews: list[AppReviewRead]
     pagination: dict
-
-
-class AppReviewResponse(SQLModel):
-    message: str = 'Feedback submitted successfully'
-    app_review_id: UUID
+    rating_statistics: ReviewStatistics

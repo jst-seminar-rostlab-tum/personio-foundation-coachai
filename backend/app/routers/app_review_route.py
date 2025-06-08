@@ -10,6 +10,7 @@ from app.models.app_review import (
     AppReviewRead,
     AppReviewResponse,
     PaginatedReviewsResponse,
+    ReviewStatistics,
 )
 from app.models.user_profile import UserProfile
 
@@ -84,6 +85,14 @@ def get_app_reviews(
             'totalPages': total_pages,
             'totalCount': total_count,
         },
+        rating_statistics=ReviewStatistics(
+            average=round(sum(review.rating for review in app_reviews) / len(app_reviews), 2),
+            num_five_star=sum(1 for review in app_reviews if review.rating == 5),
+            num_four_star=sum(1 for review in app_reviews if review.rating == 4),
+            num_three_star=sum(1 for review in app_reviews if review.rating == 3),
+            num_two_star=sum(1 for review in app_reviews if review.rating == 2),
+            num_one_star=sum(1 for review in app_reviews if review.rating == 1),
+        ),
     )
 
 
@@ -97,6 +106,9 @@ def create_app_review(
     user = session.get(UserProfile, app_review.user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
+
+    if app_review.rating < 1 or app_review.rating > 5:
+        raise HTTPException(status_code=400, detail='Rating must be between 1 and 5')
 
     db_app_review = AppReview(**app_review.dict())
     session.add(db_app_review)
