@@ -158,34 +158,75 @@ def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) ->
 def get_dummy_training_cases(
     user_profiles: list[UserProfile], difficulty_levels: list[DifficultyLevel]
 ) -> list[TrainingCase]:
+    common_id_1 = uuid4()
+    common_id_2 = uuid4()
+
     return [
+        # First case - English
         TrainingCase(
-            id=uuid4(),
+            id=common_id_1,
+            language_code="en",
             user_id=user_profiles[0].id,
             category_id=None,
             custom_category_label='Custom Category 1',
-            context='Context 1',
-            goal='Goal 1',
-            other_party='Other Party 1',
+            context='English Context 1',
+            goal='English Goal 1',
+            other_party='English Other Party 1',
             difficulty_id=difficulty_levels[0].id,
             tone='Friendly',
             complexity='Low',
-            status=TrainingCaseStatus.draft,  # Use the enum instead of a string
+            status=TrainingCaseStatus.draft,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
+        # First case - German
         TrainingCase(
-            id=uuid4(),
+            id=common_id_1,
+            language_code="de",
+            user_id=user_profiles[0].id,
+            category_id=None,
+            custom_category_label='Benutzerdefinierte Kategorie 1',
+            context='Deutscher Kontext 1',
+            goal='Deutsches Ziel 1',
+            other_party='Deutscher Gesprächspartner 1',
+            difficulty_id=difficulty_levels[0].id,
+            tone='Freundlich',
+            complexity='Niedrig',
+            status=TrainingCaseStatus.draft,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        # Second case - English
+        TrainingCase(
+            id=common_id_2,
+            language_code="en",
             user_id=user_profiles[1].id,
             category_id=None,
             custom_category_label='Custom Category 2',
-            context='Context 2',
-            goal='Goal 2',
-            other_party='Other Party 2',
+            context='English Context 2',
+            goal='English Goal 2',
+            other_party='English Other Party 2',
             difficulty_id=difficulty_levels[1].id,
             tone='Professional',
             complexity='Medium',
-            status=TrainingCaseStatus.draft,  # Use the enum instead of a string
+            status=TrainingCaseStatus.draft,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        # Second case - German
+        TrainingCase(
+            id=common_id_2,
+            language_code="de",
+            user_id=user_profiles[1].id,
+            category_id=None,
+            custom_category_label='Benutzerdefinierte Kategorie 2',
+            context='Deutscher Kontext 2',
+            goal='Deutsches Ziel 2',
+            other_party='Deutscher Gesprächspartner 2',
+            difficulty_id=difficulty_levels[1].id,
+            tone='Professionell',
+            complexity='Mittel',
+            status=TrainingCaseStatus.draft,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),

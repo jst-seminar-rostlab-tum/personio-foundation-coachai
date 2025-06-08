@@ -26,6 +26,7 @@ class TrainingCaseStatus(str, Enum):
 # Database model
 class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
+    language_code: str = Field(primary_key=True)  # e.g., 'en', 'fr', 'de'
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
     custom_category_label: Optional[str] = None
@@ -41,9 +42,17 @@ class TrainingCase(SQLModel, table=True):  # `table=True` makes it a database ta
 
     # Relationships
     category: Optional['ConversationCategory'] = Relationship(back_populates='training_cases')
-    sessions: list['TrainingSession'] = Relationship(back_populates='case', cascade_delete=True)
+    sessions: list['TrainingSession'] = Relationship(
+        back_populates='case',
+        sa_relationship_kwargs={
+            "primaryjoin": "foreign(TrainingSession.case_id) == TrainingCase.id"
+        }
+    )
     preparations: list['TrainingPreparation'] = Relationship(
-        back_populates='case', cascade_delete=True
+        back_populates='case',
+        sa_relationship_kwargs={
+            "primaryjoin": "foreign(TrainingPreparation.case_id) == TrainingCase.id"
+        }
     )
     user: Optional['UserProfile'] = Relationship(back_populates='training_cases')
     difficulty_level: Optional['DifficultyLevel'] = Relationship(back_populates='training_cases')
@@ -56,6 +65,8 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingCa
 
 # Schema for creating a new TrainingCase
 class TrainingCaseCreate(SQLModel):
+    id: Optional[UUID] = None
+    language_code: str
     user_id: UUID
     category_id: Optional[UUID] = None
     custom_category_label: Optional[str] = None
@@ -71,6 +82,7 @@ class TrainingCaseCreate(SQLModel):
 # Schema for reading TrainingCase data
 class TrainingCaseRead(SQLModel):
     id: UUID
+    language_code: str
     user_id: UUID
     category_id: Optional[UUID]
     custom_category_label: Optional[str]

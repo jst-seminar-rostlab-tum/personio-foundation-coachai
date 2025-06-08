@@ -1,13 +1,11 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlmodel import Session, select
-from starlette.responses import JSONResponse
 from starlette import status
+from starlette.responses import JSONResponse
 
-from app.services.training_preparation_service import generate_training_preparation, \
-    create_pending_preparation
 from app.database import get_session
 from app.models.conversation_category import ConversationCategory
 from app.models.training_case import (
@@ -18,26 +16,41 @@ from app.models.training_case import (
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationRead
 from app.schemas.training_preparation_schema import TrainingPreparationRequest
 from app.services.training_case_service import create_training_case
+from app.services.training_preparation_service import (
+    create_pending_preparation,
+    generate_training_preparation,
+)
+
 router = APIRouter(prefix='/training-case', tags=['Training Cases'])
 
 
 @router.get('/', response_model=list[TrainingCaseRead])
 def get_training_cases(
-    session: Annotated[Session, Depends(get_session)],
+        session: Annotated[Session, Depends(get_session)],
+        lang: str = Query(default="en",
+                          description="Requested language code (e.g. 'en', 'de')")
 ) -> list[TrainingCase]:
     """
-    Retrieve all training cases.
+    Retrieve all training cases by language code.
     """
-    statement = select(TrainingCase)
-    training_cases = session.exec(statement).all()
-    return list(training_cases)
+
+    statement = select(TrainingCase).where(TrainingCase.language_code.in_([lang, "en"]))
+    results = session.exec(statement).all()
+
+    # Create a dictionary to hold goals by ID, preferring the requested language
+    training_case_by_id = {}
+    for training_case in results:
+        if training_case.id not in training_case_by_id or training_case.language_code == lang:
+            training_case_by_id[training_case.id] = training_case
+
+    return list(training_case_by_id.values())
 
 
 @router.post('/', response_model=TrainingCaseRead)
 def create_training_case_with_preparation(
-    training_case: TrainingCaseCreate,
-    session: Annotated[Session, Depends(get_session)],
-    background_tasks: BackgroundTasks,
+        training_case: TrainingCaseCreate,
+        session: Annotated[Session, Depends(get_session)],
+        background_tasks: BackgroundTasks,
 ) -> JSONResponse:
     """
     Create a new training case and start the preparation process in the background.
@@ -78,17 +91,17 @@ def create_training_case_with_preparation(
     )
 
 
-
 @router.put('/{case_id}', response_model=TrainingCaseRead)
 def update_training_case(
-    case_id: UUID,
-    updated_data: TrainingCaseCreate,
-    session: Annotated[Session, Depends(get_session)],
+        case_id: UUID,
+        updated_data: TrainingCaseCreate,
+        session: Annotated[Session, Depends(get_session)],
+        lang: str = Query(default="en", description="Requested language code (e.g. 'en', 'de')"),
 ) -> TrainingCase:
     """
     Update an existing training case.
     """
-    training_case = session.get(TrainingCase, case_id)
+    training_case = session.get(TrainingCase, (case_id, lang))
     if not training_case:
         raise HTTPException(status_code=404, detail='Training case not found')
 
@@ -98,7 +111,8 @@ def update_training_case(
         if not category:
             raise HTTPException(status_code=404, detail='Category not found')
 
-    for key, value in updated_data.dict().items():
+    # Update fields
+    for key, value in updated_data.model_dump(exclude_unset=True).items():
         setattr(training_case, key, value)
 
     session.add(training_case)
@@ -108,11 +122,13 @@ def update_training_case(
 
 
 @router.delete('/{case_id}', response_model=dict)
-def delete_training_case(case_id: UUID, session: Annotated[Session, Depends(get_session)]) -> dict:
+def delete_training_case(case_id: UUID,
+                         session: Annotated[Session, Depends(get_session)],
+                         lang: str = Query(escription="Language code (e.g. 'en', 'de')")) -> dict:
     """
-    Delete a training case.
+    Delete a training case by ID and language code.
     """
-    training_case = session.get(TrainingCase, case_id)
+    training_case = session.get(TrainingCase, (case_id, lang))
     if not training_case:
         raise HTTPException(status_code=404, detail='Training case not found')
 

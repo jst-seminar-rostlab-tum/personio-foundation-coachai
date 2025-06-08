@@ -27,7 +27,8 @@ class KeyConcept(BaseModel):
 # Database model
 class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    case_id: UUID = Field(foreign_key='trainingcase.id')
+    # Cannot be a foreign key because (id, language_code) is a composite primary key in Goal
+    case_id: UUID = Field()
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
@@ -36,7 +37,13 @@ class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a data
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    case: Optional['TrainingCase'] = Relationship(back_populates='preparations')
+    case: Optional['TrainingCase'] = Relationship(
+        back_populates='preparations',
+        sa_relationship_kwargs={
+            "primaryjoin": "foreign(TrainingPreparation.case_id) == TrainingCase.id"
+        }
+    )
+
 
     # Automatically update `updated_at` before an update
 

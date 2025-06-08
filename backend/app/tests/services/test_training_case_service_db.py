@@ -1,10 +1,9 @@
 import unittest
 from uuid import uuid4
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlmodel import SQLModel
 
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import Session, create_engine, SQLModel
 from app.models.training_case import TrainingCase, TrainingCaseCreate
 from app.services.training_case_service import create_training_case
 
@@ -12,17 +11,13 @@ from app.services.training_case_service import create_training_case
 class TestCreateTrainingCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        # initial setup for the db
         cls.engine = create_engine('sqlite:///:memory:', echo=False)
-        cls.Session = sessionmaker(bind=cls.engine)
         SQLModel.metadata.create_all(bind=cls.engine)
 
     def setUp(self) -> None:
-        # create a new session for each test
-        self.session = self.Session()
+        self.session = Session(self.engine)
 
     def tearDown(self) -> None:
-        # close the session after each test
         self.session.close()
 
     def test_create_training_case(self) -> None:
@@ -30,6 +25,7 @@ class TestCreateTrainingCase(unittest.TestCase):
         training_case_data = TrainingCaseCreate(
             category_id=uuid4(),
             user_id='f5957372-7607-4628-be88-661896bd9eb7',
+            language_code='en',
             custom_category_label='Custom Category',
             goal='Test Goal',
             other_party='Test Other Party',
@@ -42,9 +38,10 @@ class TestCreateTrainingCase(unittest.TestCase):
 
         created = create_training_case(training_case_data, self.session)
 
-        db_obj = self.session.get(TrainingCase, created.id)
+        db_obj = self.session.get(TrainingCase, (created.id, created.language_code))
         self.assertIsNotNone(db_obj)
         self.assertEqual(db_obj.category_id, training_case_data.category_id)
+        self.assertEqual(db_obj.language_code, training_case_data.language_code)
         self.assertEqual(db_obj.user_id, training_case_data.user_id)
         self.assertEqual(db_obj.custom_category_label, training_case_data.custom_category_label)
         self.assertEqual(db_obj.goal, training_case_data.goal)
