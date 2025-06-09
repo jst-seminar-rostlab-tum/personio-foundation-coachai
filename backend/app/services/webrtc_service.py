@@ -18,7 +18,7 @@ from aiortc.mediastreams import MediaStreamTrack
 from google import genai
 from google.genai.live import AsyncSession
 
-from app.connections.gemnini_client import LIVE_CONFIG, MODEL, get_client
+from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_client
 from app.schemas.webrtc_schema import (
     GEMINI_SAMPLE_RATE,
     WebRTCDataChannelError,

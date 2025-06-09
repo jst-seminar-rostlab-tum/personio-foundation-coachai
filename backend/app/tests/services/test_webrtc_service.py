@@ -87,6 +87,11 @@ def mock_transceiver() -> RTCRtpTransceiver:
 
 
 @pytest.fixture
+def mock_audio_loop() -> WebRTCAudioLoop:
+    return AsyncMock(spec=WebRTCAudioLoop)
+
+
+@pytest.fixture
 def service() -> WebRTCService:
     with patch('app.services.webrtc_service.get_client'):
         return WebRTCService()
@@ -121,9 +126,10 @@ class TestPeer:
     ) -> None:
         """Test Peer object creation"""
         peer = Peer(
-            peer_id='test_peer', connection=mock_peer_connection, transceiver=mock_transceiver
+            peer_id='test_peer',
+            connection=mock_peer_connection,
+            transceiver=mock_transceiver,
         )
-
         assert peer.peer_id == 'test_peer'
         assert peer.connection == mock_peer_connection
         assert peer.transceiver == mock_transceiver
@@ -133,6 +139,7 @@ class TestPeer:
     async def test_peer_cleanup_closes_resources(
         self,
         mock_peer_connection: RTCPeerConnection,
+        mock_audio_loop: WebRTCAudioLoop,
         mock_transceiver: RTCRtpTransceiver,
         mock_data_channel: RTCDataChannel,
     ) -> None:
@@ -142,10 +149,11 @@ class TestPeer:
             connection=mock_peer_connection,
             transceiver=mock_transceiver,
             data_channel=mock_data_channel,
+            audio_loop=mock_audio_loop,
         )
-
         await peer.cleanup()
-
+        mock_audio_loop.stop.assert_awaited_once()
+        assert peer.audio_loop is None
         mock_transceiver.stop.assert_called_once()
         mock_data_channel.close.assert_called_once()
         mock_peer_connection.close.assert_awaited_once()
