@@ -1,47 +1,48 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 
 from app.database import get_session
 from app.models.app_review import (
-    AppReview,
-    AppReviewCreate,
-    AppReviewRead,
-    AppReviewResponse,
+    Review,
+    ReviewCreate,
+    ReviewRead,
+    ReviewResponse,
 )
 from app.models.user_profile import UserProfile
 
-router = APIRouter(prefix='/app-review', tags=['User App Review'])
+router = APIRouter(prefix='/review', tags=['User Review'])
 
 
-@router.get('/', response_model=list[AppReviewRead])
-def get_app_reviews(session: Annotated[Session, Depends(get_session)]) -> list[AppReview]:
+@router.get('/', response_model=list[ReviewRead])
+def get_reviews(db_session: Annotated[DBSession, Depends(get_session)]) -> list[Review]:
     """
-    Retrieve all app reviews.
+    Retrieve all reviews.
     """
-    statement = select(AppReview)
-    app_reviews = session.exec(statement).all()
-    return list(app_reviews)
+    statement = select(Review)
+    reviews = db_session.exec(statement).all()
+    return list(reviews)
 
 
-@router.post('/', response_model=AppReviewResponse)
-def create_app_review(
-    app_review: AppReviewCreate, session: Annotated[Session, Depends(get_session)]
-) -> AppReviewResponse:
+@router.post('/', response_model=ReviewResponse)
+def create_review(
+    review: ReviewCreate, db_session: Annotated[DBSession, Depends(get_session)]
+) -> ReviewResponse:
     """
-    Create a new app review.
+    Create a new review.
     """
-    user = session.get(UserProfile, app_review.user_id)
+    user = db_session.get(UserProfile, review.user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
 
-    db_app_review = AppReview(**app_review.dict())
-    session.add(db_app_review)
-    session.commit()
-    session.refresh(db_app_review)
+    new_review = Review(**review.dict())
+    db_session.add(new_review)
+    db_session.commit()
+    db_session.refresh(new_review)
 
-    return AppReviewResponse(
-        message='Feedback submitted successfully',
-        app_review_id=db_app_review.id,
+    return ReviewResponse(
+        message='Review submitted successfully',
+        review_id=new_review.id,
     )

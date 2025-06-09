@@ -1,5 +1,5 @@
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
-from app.models.app_review import AppReview, AppReviewCreate, AppReviewRead
+from app.models.app_review import Review, ReviewCreate, ReviewRead
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from app.models.conversation_category import (
     ConversationCategory,
@@ -126,7 +126,7 @@ __all__ = [
     'AppConfigCreate',
     'AppConfigRead',
     'ConfigType',
-    'AppReview',
-    'AppReviewCreate',
-    'AppReviewRead',
+    'Review',
+    'ReviewCreate',
+    'ReviewRead',
 ]

@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 from sqlmodel import Field, SQLModel
 
 
-class AppReview(SQLModel, table=True):  # `table=True` makes it a database table
+class Review(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     rating: int
@@ -13,14 +13,14 @@ class AppReview(SQLModel, table=True):  # `table=True` makes it a database table
 
 
 # Schema for creating a new app review
-class AppReviewCreate(SQLModel):
+class ReviewCreate(SQLModel):
     user_id: UUID
     rating: int
     comment: str
 
 
 # Schema for reading app review data
-class AppReviewRead(SQLModel):
+class ReviewRead(SQLModel):
     id: UUID
     user_id: UUID
     rating: int
@@ -28,6 +28,6 @@ class AppReviewRead(SQLModel):
     created_at: datetime
 
 
-class AppReviewResponse(SQLModel):
+class ReviewResponse(SQLModel):
     message: str = 'Feedback submitted successfully'
-    app_review_id: UUID
+    review_id: UUID
