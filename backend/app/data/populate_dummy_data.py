@@ -75,10 +75,6 @@ def populate_data() -> None:
         user_goals = get_dummy_user_goals(user_profiles, goals)
         session.add_all(user_goals)
 
-        # Populate Reviews
-        reviews = get_dummy_reviews(user_profiles)
-        session.add_all(reviews)
-
         # Populate Training Cases
         training_cases = get_dummy_training_cases(user_profiles, difficulty_levels)
         session.add_all(training_cases)
@@ -112,6 +108,10 @@ def populate_data() -> None:
             training_sessions, training_cases
         )  # Pass both sessions and cases
         session.add_all(ratings)
+
+        # Populate Reviews
+        reviews = get_dummy_reviews(user_profiles, training_sessions)
+        session.add_all(reviews)
 
         # Commit all data
         session.commit()

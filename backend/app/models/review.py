@@ -7,6 +7,9 @@ from sqlmodel import Field, SQLModel
 class Review(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
+    session_id: UUID = Field(
+        foreign_key='trainingsession.id', nullable=True
+    )  # FK to TrainingSession
     rating: int
     comment: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -15,6 +18,7 @@ class Review(SQLModel, table=True):  # `table=True` makes it a database table
 # Schema for creating a new app review
 class ReviewCreate(SQLModel):
     user_id: UUID
+    session_id: UUID | None = None  # Optional, can be None if not related to a session
     rating: int
     comment: str
 
@@ -23,6 +27,7 @@ class ReviewCreate(SQLModel):
 class ReviewRead(SQLModel):
     id: UUID
     user_id: UUID
+    session_id: UUID | None = None  # Optional, can be None if not related to a session
     rating: int
     comment: str
     created_at: datetime

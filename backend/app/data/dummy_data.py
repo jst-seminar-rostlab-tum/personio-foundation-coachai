@@ -156,19 +156,29 @@ def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) ->
     ]
 
 
-def get_dummy_reviews(user_profiles: list[UserProfile]) -> list[Review]:
+def get_dummy_reviews(
+    user_profiles: list[UserProfile], training_sessions: list[TrainingSession]
+) -> list[Review]:
     return [
         Review(
             id=uuid4(),
             user_id=user_profiles[0].id,
+            session_id=training_sessions[0].id,  # Link to the first training session
             rating=5,
             comment='Excellent service!',
         ),
         Review(
             id=uuid4(),
             user_id=user_profiles[1].id,
+            session_id=training_sessions[1].id,  # Link to a second training session
             rating=2,
             comment='I found the sessions a bit too fast-paced.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            rating=4,
+            comment='Good overall, but could use more examples.',
         ),
     ]
 
