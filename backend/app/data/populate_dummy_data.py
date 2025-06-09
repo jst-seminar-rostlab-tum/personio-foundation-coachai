@@ -1,4 +1,6 @@
-from sqlmodel import Session, SQLModel, text
+import subprocess
+
+from sqlmodel import Session
 
 from app.data import (
     get_dummy_app_configs,
@@ -25,16 +27,13 @@ from app.models.hr_information import HrInformation
 
 
 def populate_data() -> None:
+    print('Downgrading to base...')
+    subprocess.run(['uv', 'run', 'alembic', 'downgrade', 'base'], check=True)
+
+    print('Upgrading to head...')
+    subprocess.run(['uv', 'run', 'alembic', 'upgrade', 'head'], check=True)
+
     with Session(engine) as session:
-        session.exec(text('CREATE EXTENSION IF NOT EXISTS vector'))  # type: ignore
-        session.commit()
-
-        print('Dropping tables...')
-        SQLModel.metadata.drop_all(engine)
-
-        print('Creating tables...')
-        SQLModel.metadata.create_all(engine)
-
         # Populate Languages
         languages = get_dummy_languages()
         session.add_all(languages)

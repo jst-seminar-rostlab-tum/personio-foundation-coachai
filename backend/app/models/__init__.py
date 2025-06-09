@@ -13,6 +13,9 @@ from app.models.conversation_turn import (
 from app.models.difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
 from app.models.experience import Experience, ExperienceCreate, ExperienceRead
 from app.models.goal import Goal, GoalCreate, GoalRead
+from app.models.hr_information import (
+    HrInformation,
+)
 from app.models.language import Language, LanguageCreate, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
@@ -125,4 +128,5 @@ __all__ = [
     'AppConfigCreate',
     'AppConfigRead',
     'ConfigType',
+    'HrInformation',
 ]

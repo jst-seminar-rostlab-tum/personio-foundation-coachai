@@ -92,21 +92,22 @@ This project uses [Alembic](https://alembic.sqlalchemy.org/) for database migrat
 
 Alembic has been integrated with our backend models (`/backend/app/models`) and database configuration (`backend/app/database.py`). A pre-commit hook automatically checks consistency between models and migration scripts, ensuring database integrity.
 
-#### Prerequisites
-
-- A local database must be running for migration checks and pre-commit hooks to work
-- Backend dependencies have been synced with the environment: 
-```bash 
-uv sync 
-```
-
 #### Development Workflow
 ##### 1. Create Feature Branch
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
-##### 2. Modify Models and Generate Migration
+##### 2. Start and initialize the local database
+```bash
+# Start the database
+docker compose up db -d
+
+# Initialize the database
+uv run alembic upgrade head
+```
+
+##### 3. Modify Models and Generate Migration
 After making changes to your database models under `backend/app/models`:
 
 ```bash
@@ -115,17 +116,16 @@ uv run alembic revision --autogenerate -m "descriptive message about changes"
 ```
 
 This creates a new migration file in the `backend/alembic/versions/` directory with the format:
-`<timestamp>-<revision_id>_description.py`
+`<timestamp>-<revision_id>_descriptive_message_about_changes.py`
 
-##### 3. Review Generated Migration
+##### 4. Review Generated Migration
 **Important:** Always review the generated migration script before committing:
 
 - Check the `upgrade()` function for correctness
 - Verify the `downgrade()` function properly reverses changes
 - Ensure data migration logic is included if needed
-- Test edge cases and data integrity
 
-##### 4. Test Migration Locally
+##### 5. Test Migration Locally
 
 ```bash
 # Apply the migration
@@ -138,7 +138,13 @@ uv run alembic check
 uv run alembic downgrade -1
 ```
 
-##### 5. Commit and Push
+##### 6. Update Dummy Data for Database
+Update `backend/app/data/dummy_data` with your model changes. To see if everything works, populate the database with the dummy data:
+```bash
+docker compose up init-db -d
+```
+
+##### 6. Commit and Push
 The pre-commit hook will automatically run `alembic check` to ensure consistency between models and migration scripts.
 
 ##### Important Rule
