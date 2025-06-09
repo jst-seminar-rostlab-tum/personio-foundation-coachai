@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from google.genai.types import Content, Part
 
 from app.connections.gemnini_client import (
-    DEFAULT_MODEL,
+    MODEL,
     GeminiStreamConnectionError,
     get_client,
 )
@@ -20,7 +20,7 @@ def test_gemini_client_connection() -> None:
     # Try to trigger the API call to verify the connection
     print(
         client.models.generate_content(
-            model=DEFAULT_MODEL, contents=[Content(role='user', parts=[Part(text='Who are you?')])]
+            model=MODEL, contents=[Content(role='user', parts=[Part(text='Who are you?')])]
         )
     )
 
