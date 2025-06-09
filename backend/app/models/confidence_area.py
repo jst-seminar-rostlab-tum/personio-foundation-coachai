@@ -1,13 +1,15 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
     from app.models.user_confidence_score import UserConfidenceScore
 
 
-class ConfidenceArea(SQLModel, table=True):
+class ConfidenceArea(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     language_code: str = Field(primary_key=True)
     label: str
@@ -24,6 +26,7 @@ class ConfidenceArea(SQLModel, table=True):
     )
 
 
+
 class ConfidenceAreaCreate(SQLModel):
     id: Optional[UUID] = None
     language_code: str
@@ -35,7 +38,7 @@ class ConfidenceAreaCreate(SQLModel):
     max_label: str
 
 
-class ConfidenceAreaRead(SQLModel):
+class ConfidenceAreaRead(CamelModel):
     id: UUID
     language_code: str
     label: str

@@ -1,13 +1,15 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
     from app.models.user_profile import UserProfile
 
 
-class LearningStyle(SQLModel, table=True):
+class LearningStyle(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     language_code: str = Field(primary_key=True)
     label: str
@@ -21,14 +23,15 @@ class LearningStyle(SQLModel, table=True):
     )
 
 
-class LearningStyleCreate(SQLModel):
+
+class LearningStyleCreate(CamelModel):
     id: Optional[UUID] = None
     language_code: str
     label: str
     description: str
 
 
-class LearningStyleRead(SQLModel):
+class LearningStyleRead(CamelModel):
     id: UUID
     language_code: str
     label: str

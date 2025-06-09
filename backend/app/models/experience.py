@@ -1,13 +1,15 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
     from app.models.user_profile import UserProfile
 
 
-class Experience(SQLModel, table=True):  # `table=True` makes it a database table
+class Experience(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     language_code: str = Field(primary_key=True)
     label: str
@@ -22,7 +24,7 @@ class Experience(SQLModel, table=True):  # `table=True` makes it a database tabl
 
 
 # Schema for creating a new Experience
-class ExperienceCreate(SQLModel):
+class ExperienceCreate(CamelModel):
     id: Optional[UUID] = None
     language_code: str
     label: str
@@ -30,7 +32,7 @@ class ExperienceCreate(SQLModel):
 
 
 # Schema for reading Experience data
-class ExperienceRead(SQLModel):
+class ExperienceRead(CamelModel):
     id: UUID
     language_code: str
     label: str

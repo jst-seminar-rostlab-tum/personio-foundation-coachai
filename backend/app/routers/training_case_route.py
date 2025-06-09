@@ -81,7 +81,6 @@ def create_training_case_with_preparation(
     )
 
 
-
 @router.put('/{case_id}', response_model=TrainingCaseRead)
 def update_training_case(
     case_id: UUID,
