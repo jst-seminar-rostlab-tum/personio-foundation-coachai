@@ -2,7 +2,6 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.models.app_config import AppConfig, ConfigType
-from app.models.app_review import Review
 from app.models.confidence_area import ConfidenceArea
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_turn import ConversationTurn, SpeakerEnum
@@ -12,6 +11,7 @@ from app.models.goal import Goal
 from app.models.language import Language  # Import the Language model
 from app.models.learning_style import LearningStyle
 from app.models.rating import Rating
+from app.models.review import Review
 from app.models.session_length import SessionLength
 from app.models.training_case import TrainingCase, TrainingCaseStatus
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus

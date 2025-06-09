@@ -5,7 +5,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.database import get_session
-from app.models.app_review import (
+from app.models.review import (
     Review,
     ReviewCreate,
     ReviewRead,
