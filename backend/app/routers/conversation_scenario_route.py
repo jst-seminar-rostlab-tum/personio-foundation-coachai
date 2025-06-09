@@ -16,7 +16,6 @@ from app.models.conversation_scenario import (
 )
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationRead
 from app.schemas.training_preparation_schema import TrainingPreparationRequest
-from app.services.conversation_scenario_service import create_conversation_scenario
 from app.services.training_preparation_service import (
     create_pending_preparation,
     generate_training_preparation,
@@ -54,16 +53,19 @@ def create_conversation_scenario_with_preparation(
             raise HTTPException(status_code=404, detail='Category not found')
 
     # 2. Create new ConversationScenario
-    conversation_scenario = create_conversation_scenario(conversation_scenario, db_session)
+    new_conversation_scenario = ConversationScenario(**conversation_scenario.model_dump())
+    db_session.add(new_conversation_scenario)
+    db_session.commit()
+    db_session.refresh(new_conversation_scenario)
 
     # 3. Initialize preparation（status = pending）
-    prep = create_pending_preparation(conversation_scenario.id, db_session)
+    prep = create_pending_preparation(new_conversation_scenario.id, db_session)
 
     preparation_request = TrainingPreparationRequest(
         category=category.name,
-        context=conversation_scenario.context,
-        goal=conversation_scenario.goal,
-        other_party=conversation_scenario.other_party,
+        context=new_conversation_scenario.context,
+        goal=new_conversation_scenario.goal,
+        other_party=new_conversation_scenario.other_party,
         num_objectives=3,  # Example value, adjust as needed
         num_checkpoints=3,  # Example value, adjust as needed
     )
@@ -77,7 +79,7 @@ def create_conversation_scenario_with_preparation(
         status_code=status.HTTP_202_ACCEPTED,
         content={
             'message': 'Conversation scenario created, preparation started.',
-            'scenario_id': str(conversation_scenario.id),
+            'scenario_id': str(new_conversation_scenario.id),
         },
     )
 
