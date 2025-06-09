@@ -17,7 +17,7 @@ from aiortc.mediastreams import MediaStreamTrack
 from google import genai
 from google.genai.live import AsyncSession
 
-from app.connections.gemnini_client import DEFAULT_MODEL, LIVE_CONFIG, get_client
+from app.connections.gemnini_client import LIVE_CONFIG, MODEL, get_client
 from app.schemas.webrtc_schema import (
     GEMINI_SAMPLE_RATE,
     WebRTCDataChannelError,
@@ -290,9 +290,7 @@ class GeminiSessionManager:
             await self.close_session(peer_id)
 
         # Establish connection, inspired by AudioLoop
-        session = await self.client.aio.live.connect(
-            model=DEFAULT_MODEL, config=LIVE_CONFIG
-        ).__aenter__()
+        session = await self.client.aio.live.connect(model=MODEL, config=LIVE_CONFIG).__aenter__()
         self.sessions[peer_id] = session
         self.session_tasks[peer_id] = []
         self.audio_loops[peer_id] = audio_loop
