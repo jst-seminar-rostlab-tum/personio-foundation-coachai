@@ -4,6 +4,7 @@ import asyncio
 import contextlib
 import json
 import logging
+import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Union
@@ -174,28 +175,13 @@ class WebRTCAudioLoop:
 
         # Callback for transcript handling
         self.on_transcript_callback: TranscriptCallback | None = None
-        # Callback for sending audio to Gemini
-        self._send_to_gemini_callback: SendToGeminiCallback | None = None
+
+        self.last_voice_time = time.time()
+        self.silence_timeout = 1.0  # 1秒无声自动结束
 
     def set_transcript_callback(self, callback: TranscriptCallback) -> None:
         """Set callback for transcript handling"""
         self.on_transcript_callback = callback
-
-    def set_send_to_gemini_callback(self, callback: SendToGeminiCallback) -> None:
-        self._send_to_gemini_callback = callback
-
-    async def _send_to_gemini_callback(self, msg: SendToGeminiType) -> None:
-        """Callback for sending audio to Gemini session"""
-        if not self.gemini_session:
-            logger.error(f'[Gemini] No session available for peer {self.peer_id}')
-            return
-
-        if isinstance(msg, WebRTCAudioEvent):
-            if msg.type == WebRTCAudioEventType.AUDIO_STREAM_END:
-                await self.gemini_session.send_realtime_input(audio_stream_end=True)
-        elif isinstance(msg, types.Blob):
-            logger.debug(f'[Gemini] Sending audio to Gemini for peer {self.peer_id}')
-            await self.gemini_session.send_realtime_input(audio=msg)
 
     async def start(
         self, webrtc_track: MediaStreamTrack, peer: Peer, server_audio_track: AudioStreamTrack
@@ -226,9 +212,6 @@ class WebRTCAudioLoop:
                 self.gemini_session = session
                 logger.info(f'[Gemini] Session started for peer {self.peer_id}')
 
-                # Set the callback to use our class method
-                self.set_send_to_gemini_callback(self._send_to_gemini_callback)
-
                 # Start all tasks within the TaskGroup
                 tg.create_task(self._listen_webrtc_audio())
                 tg.create_task(self._send_realtime())
@@ -241,7 +224,7 @@ class WebRTCAudioLoop:
         except asyncio.CancelledError:
             logger.info(f'[Gemini] Session cancelled for peer {self.peer_id}')
         except Exception as e:
-            logger.error(f'[Gemini] Session error for peer {self.peer_id}: {e}')
+            logger.error(f'[Gemini] Session error for peer {self.peer_id}: {e}', exc_info=True)
         finally:
             self.gemini_session = None
             logger.info(f'[Gemini] Session ended for peer {self.peer_id}')
@@ -269,9 +252,17 @@ class WebRTCAudioLoop:
             frame = await self.webrtc_track.recv()
             audio_array = frame.to_ndarray()
             audio_bytes = audio_array.tobytes()
-            # Drop empty or too short audio frame or silence audio frame
             if not audio_bytes or len(audio_bytes) < 320 or is_silence(audio_bytes):
+                if (
+                    self.gemini_session
+                    and time.time() - self.last_voice_time > self.silence_timeout
+                ):
+                    await self._send_to_gemini(
+                        WebRTCAudioEvent(type=WebRTCAudioEventType.AUDIO_STREAM_END)
+                    )
+                    self.last_voice_time = time.time()  # Reset the last voice time
                 continue
+            self.last_voice_time = time.time()
             # Resample to Gemini required sample rate
             if frame.rate != GEMINI_SAMPLE_RATE:
                 logger.debug(
@@ -294,9 +285,8 @@ class WebRTCAudioLoop:
         try:
             while self.audio_out_queue:
                 audio_msg = await self.audio_out_queue.get()
-                if self._send_to_gemini_callback:
-                    await self._send_to_gemini_callback(audio_msg)
-                    logger.debug(f'[WebRTC] Audio sent to Gemini callback for peer {self.peer_id}')
+                await self._send_to_gemini(audio_msg)
+                logger.debug(f'[WebRTC] Audio sent to Gemini callback for peer {self.peer_id}')
         except Exception as e:
             logger.error(f'Error in sending audio to Gemini for peer {self.peer_id}: {e}')
 
@@ -348,14 +338,18 @@ class WebRTCAudioLoop:
                 # Signal the track to stop
                 await self.server_audio_track.add_frame(None)
 
-    async def receive_audio_from_gemini(self, audio_data: bytes) -> None:
-        """Receive audio data from Gemini"""
-        if self.audio_in_queue:
-            logger.info(
-                f'[WebRTC] Received audio from Gemini for peer {self.peer_id}, '
-                f'putting to audio_in_queue'
-            )
-            await self.audio_in_queue.put(types.Blob(data=audio_data, mime_type='audio/pcm'))
+    async def _send_to_gemini(self, msg: SendToGeminiType) -> None:
+        """Callback for sending audio to Gemini session"""
+        if not self.gemini_session:
+            logger.error(f'[Gemini] No session available for peer {self.peer_id}')
+            return
+
+        if isinstance(msg, WebRTCAudioEvent):
+            if msg.type == WebRTCAudioEventType.AUDIO_STREAM_END:
+                await self.gemini_session.send_realtime_input(audio_stream_end=True)
+        elif isinstance(msg, types.Blob):
+            logger.debug(f'[Gemini] Sending audio to Gemini for peer {self.peer_id}')
+            await self.gemini_session.send_realtime_input(audio=msg)
 
     async def handle_transcript(self, transcript: str) -> None:
         """Handle transcript text"""
@@ -384,7 +378,11 @@ class WebRTCAudioLoop:
                             logger.info(
                                 f'[Gemini] Received audio data from Gemini for peer {self.peer_id}'
                             )
-                            await self.receive_audio_from_gemini(data)
+                            # Put audio data directly into the queue (sync, like working version)
+                            if self.audio_in_queue:
+                                self.audio_in_queue.put_nowait(
+                                    types.Blob(data=data, mime_type='audio/pcm')
+                                )
                             continue
 
                         # Handle transcript text
