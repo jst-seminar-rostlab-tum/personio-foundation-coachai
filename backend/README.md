@@ -123,6 +123,7 @@ This creates a new migration file in the `backend/alembic/versions/` directory w
 
 - Check the `upgrade()` function for correctness
 - Verify the `downgrade()` function properly reverses changes
+- Check imports and formatting
 - Ensure data migration logic is included if needed
 
 ##### 5. Test Migration Locally
