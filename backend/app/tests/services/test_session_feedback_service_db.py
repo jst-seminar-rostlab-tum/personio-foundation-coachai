@@ -89,7 +89,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         session_id = uuid4()
 
         feedback = generate_and_store_feedback(
-            session_id=session_id, example_request=example_request, db=self.session
+            session_id=session_id, example_request=example_request, db_session=self.session
         )
 
         self.assertEqual(feedback.session_id, session_id)
@@ -161,7 +161,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         session_id = uuid4()
 
         feedback = generate_and_store_feedback(
-            session_id=session_id, example_request=example_request, db=self.session
+            session_id=session_id, example_request=example_request, db_session=self.session
         )
 
         self.assertEqual(feedback.status, FeedbackStatusEnum.failed)
