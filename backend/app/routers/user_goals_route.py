@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.goal import UUID, Goal, GoalRead
 from app.models.user_goal import UserGoal, UserGoalCreate, UserGoalRead
 from app.models.user_profile import UserProfile
@@ -14,7 +14,7 @@ router = APIRouter(prefix='/user-goals', tags=['User Goals'])
 
 @router.post('/', response_model=UserGoalRead)
 def create_user_goal(
-    user_goal: UserGoalCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    user_goal: UserGoalCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> UserGoal:
     """
     Create a new user-goal relationship.
@@ -38,7 +38,7 @@ def create_user_goal(
 
 @router.get('/{user_id}', response_model=list[GoalRead])
 def get_user_goals(
-    user_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    user_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> list[Goal]:
     """
     Retrieve all goals associated with a specific user.

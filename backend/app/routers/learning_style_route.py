@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 
 router = APIRouter(prefix='/learning-styles', tags=['Learning Styles'])
@@ -13,7 +13,7 @@ router = APIRouter(prefix='/learning-styles', tags=['Learning Styles'])
 
 @router.get('/', response_model=list[LearningStyleRead])
 def get_learning_styles(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[LearningStyle]:
     """
     Retrieve all learning styles.
@@ -25,7 +25,7 @@ def get_learning_styles(
 
 @router.post('/', response_model=LearningStyleRead)
 def create_learning_style(
-    learning_style: LearningStyleCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    learning_style: LearningStyleCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> LearningStyle:
     """
     Create a new learning style.
@@ -41,7 +41,7 @@ def create_learning_style(
 def update_learning_style(
     learning_style_id: UUID,
     updated_data: LearningStyleCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> LearningStyle:
     """
     Update an existing learning style.
@@ -59,7 +59,7 @@ def update_learning_style(
 
 @router.delete('/{learning_style_id}', response_model=dict)
 def delete_learning_style(
-    learning_style_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    learning_style_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a learning style.

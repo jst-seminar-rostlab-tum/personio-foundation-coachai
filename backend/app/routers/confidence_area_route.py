@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 
 router = APIRouter(prefix='/confidence-areas', tags=['Confidence Areas'])
@@ -13,7 +13,7 @@ router = APIRouter(prefix='/confidence-areas', tags=['Confidence Areas'])
 
 @router.get('/', response_model=list[ConfidenceAreaRead])
 def get_confidence_areas(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[ConfidenceArea]:
     """
     Retrieve all confidence areas.
@@ -25,7 +25,7 @@ def get_confidence_areas(
 
 @router.post('/', response_model=ConfidenceAreaRead)
 def create_confidence_area(
-    confidence_area: ConfidenceAreaCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    confidence_area: ConfidenceAreaCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> ConfidenceArea:
     """
     Create a new confidence area.
@@ -41,7 +41,7 @@ def create_confidence_area(
 def update_confidence_area(
     area_id: UUID,
     updated_data: ConfidenceAreaCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> ConfidenceArea:
     """
     Update an existing confidence area.
@@ -59,7 +59,7 @@ def update_confidence_area(
 
 @router.delete('/{area_id}', response_model=dict)
 def delete_confidence_area(
-    area_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    area_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a confidence area.

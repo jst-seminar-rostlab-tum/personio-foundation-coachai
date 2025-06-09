@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.user_confidence_score import ConfidenceScoreRead, UserConfidenceScore
 from app.models.user_goal import UserGoal
 from app.models.user_profile import (
@@ -20,7 +20,7 @@ router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
 
 @router.get('/user_ids', response_model=list[UserProfileRead])
 def get_user_profile_ids(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[UserProfileRead]:
     """
     Retrieve all user profiles with their associated goals and confidence scores. (IDS)
@@ -62,7 +62,7 @@ def get_user_profile_ids(
 
 @router.get('/{user_id}', response_model=UserProfileExtendedRead)
 def get_user_profile_by_id(
-    user_id: str, db_session: Annotated[DBSession, Depends(get_session)]
+    user_id: str, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> UserProfileExtendedRead:
     """
     Retrieve a single user profile by its unique user ID.
@@ -105,7 +105,7 @@ def get_user_profile_by_id(
 
 @router.get('/', response_model=list[UserProfileExtendedRead])
 def get_user_profiles(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[UserProfileExtendedRead]:
     """
     Retrieve all user profiles with detailed information.
@@ -177,7 +177,7 @@ def get_user_profiles(
 @router.post('/', response_model=UserProfile)
 def create_user_profile(
     user_data: UserProfileCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserProfile:
     """
     Create a new user profile with associated goals and confidence scores.
@@ -217,7 +217,7 @@ def create_user_profile(
 def update_user_profile(
     user_id: UUID,
     user_data: UserProfileCreate,  # Expect full data for PUT
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserProfile:
     """
     Fully update an existing user profile with new data.
@@ -272,7 +272,7 @@ def update_user_profile(
 def patch_user_profile(
     user_id: UUID,
     user_data: dict,  # Expect partial data for PATCH
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserProfile:
     """
     Update an existing user profile.
@@ -331,7 +331,7 @@ def patch_user_profile(
 
 @router.delete('/{user_id}', response_model=dict)
 def delete_user_profile(
-    user_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    user_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a user profile by its unique user ID.

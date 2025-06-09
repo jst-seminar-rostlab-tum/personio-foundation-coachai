@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.session import Session
 from app.models.session_feedback import (
     FeedbackStatusEnum,
@@ -19,7 +19,7 @@ router = APIRouter(prefix='/session-feedback', tags=['Session Feedback'])
 
 @router.get('/', response_model=list[SessionFeedbackRead])
 def get_session_feedbacks(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[SessionFeedback]:
     """
     Retrieve all session feedbacks.
@@ -31,7 +31,7 @@ def get_session_feedbacks(
 
 @router.post('/', response_model=SessionFeedbackRead)
 def create_session_feedback(
-    feedback: SessionFeedbackCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    feedback: SessionFeedbackCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> SessionFeedback:
     """
     Create a new Session feedback.
@@ -50,7 +50,7 @@ def create_session_feedback(
 
 @router.get('/{feedback_id}', response_model=SessionFeedbackRead)
 def get_session_feedback(
-    feedback_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    feedback_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> SessionFeedbackRead:
     """
     Retrieve a specific session feedback by ID.
@@ -73,7 +73,7 @@ def get_session_feedback(
 def update_session_feedback(
     feedback_id: UUID,
     updated_data: dict,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> SessionFeedback:
     """
     Update an existing session feedback.
@@ -97,7 +97,7 @@ def update_session_feedback(
 
 @router.delete('/{feedback_id}', response_model=dict)
 def delete_session_feedback(
-    feedback_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    feedback_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a session feedback.

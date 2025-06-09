@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaRead
 from app.models.experience import Experience, ExperienceRead
 from app.models.goal import Goal, GoalRead
@@ -19,7 +19,7 @@ router = APIRouter(prefix='/personalization-options', tags=['Personalization Opt
 
 @router.get('/', response_model=PersonalizationOptionRead)
 def get_personalization_options(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> PersonalizationOptionRead:
     """
     Retrieve all personalization options related to the user.

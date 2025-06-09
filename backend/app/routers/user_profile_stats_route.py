@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlmodel import Session as DBSession
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.user_profile import UserProfile, UserStatisticsRead
 
 router = APIRouter(prefix='/user', tags=['User Stats'])
@@ -12,7 +12,7 @@ router = APIRouter(prefix='/user', tags=['User Stats'])
 
 @router.get('/', response_model=UserStatisticsRead)
 def get_user_stats(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
     x_user_id: str = Header(...),  # Auth via header
     # TODO: Adjust to the authentication token in the header
 ) -> UserStatisticsRead:

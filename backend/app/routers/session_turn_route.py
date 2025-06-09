@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.session import Session
 from app.models.session_turn import (
     SessionTurn,
@@ -18,7 +18,7 @@ router = APIRouter(prefix='/session-turns', tags=['Session Turns'])
 
 @router.get('/', response_model=list[SessionTurnRead])
 def get_session_turns(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[SessionTurn]:
     """
     Retrieve all session turns.
@@ -30,7 +30,7 @@ def get_session_turns(
 
 @router.post('/', response_model=SessionTurnRead)
 def create_session_turn(
-    turn: SessionTurnCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    turn: SessionTurnCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> SessionTurn:
     """
     Create a new session turn.
@@ -51,7 +51,7 @@ def create_session_turn(
 def update_session_turn(
     turn_id: UUID,
     updated_data: SessionTurnCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> SessionTurn:
     """
     Update an existing session turn.
@@ -77,7 +77,7 @@ def update_session_turn(
 
 @router.delete('/{turn_id}', response_model=dict)
 def delete_session_turn(
-    turn_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    turn_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a session turn.

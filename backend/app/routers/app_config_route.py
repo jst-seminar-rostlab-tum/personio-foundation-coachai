@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
 
 router = APIRouter(prefix='/app-config', tags=['App Config'])
@@ -12,7 +12,7 @@ router = APIRouter(prefix='/app-config', tags=['App Config'])
 
 @router.get('/', response_model=list[AppConfigRead])
 def get_app_configs(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[AppConfig]:
     """
     Retrieve all app configurations.
@@ -24,7 +24,7 @@ def get_app_configs(
 
 @router.post('/', response_model=AppConfigRead)
 def create_app_config(
-    app_config: AppConfigCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    app_config: AppConfigCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> AppConfig:
     """
     Create a new app configuration.
@@ -53,7 +53,7 @@ def create_app_config(
 @router.put('/', response_model=AppConfigRead)
 def update_app_config(
     updated_data: AppConfigCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> AppConfig:
     """
     Update an existing app configuration.
@@ -84,7 +84,7 @@ def update_app_config(
 @router.patch('/', response_model=list[AppConfigRead])
 def patch_app_config(
     updated_data: list[dict],  # Expect partial data for PATCH
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[AppConfig]:
     """
     Partially update an existing app configuration.
@@ -131,7 +131,7 @@ def patch_app_config(
 
 
 @router.delete('/{key}', response_model=dict)
-def delete_app_config(key: str, db_session: Annotated[DBSession, Depends(get_session)]) -> dict:
+def delete_app_config(key: str, db_session: Annotated[DBSession, Depends(get_db_session)]) -> dict:
     """
     Delete an app configuration.
     """

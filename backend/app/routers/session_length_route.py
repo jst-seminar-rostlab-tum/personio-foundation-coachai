@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.session_length import SessionLength, SessionLengthCreate, SessionLengthRead
 
 router = APIRouter(prefix='/session-lengths', tags=['Session Lengths'])
@@ -13,7 +13,7 @@ router = APIRouter(prefix='/session-lengths', tags=['Session Lengths'])
 
 @router.get('/', response_model=list[SessionLengthRead])
 def get_session_lengths(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[SessionLength]:
     """
     Retrieve all session lengths.
@@ -25,7 +25,7 @@ def get_session_lengths(
 
 @router.post('/', response_model=SessionLengthRead)
 def create_session_length(
-    session_length: SessionLengthCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    session_length: SessionLengthCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> SessionLength:
     """
     Create a new session length.
@@ -41,7 +41,7 @@ def create_session_length(
 def update_session_length(
     session_length_id: UUID,
     updated_data: SessionLengthCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> SessionLength:
     """
     Update an existing session length.
@@ -59,7 +59,7 @@ def update_session_length(
 
 @router.delete('/{session_length_id}', response_model=dict)
 def delete_session_length(
-    session_length_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    session_length_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a session length.

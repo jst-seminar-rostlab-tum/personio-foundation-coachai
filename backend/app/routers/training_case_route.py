@@ -7,7 +7,7 @@ from sqlmodel import select
 from starlette import status
 from starlette.responses import JSONResponse
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.conversation_category import ConversationCategory
 from app.models.training_case import (
     TrainingCase,
@@ -27,7 +27,7 @@ router = APIRouter(prefix='/training-case', tags=['Training Cases'])
 
 @router.get('/', response_model=list[TrainingCaseRead])
 def get_training_cases(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[TrainingCase]:
     """
     Retrieve all training cases.
@@ -40,7 +40,7 @@ def get_training_cases(
 @router.post('/', response_model=TrainingCaseRead)
 def create_training_case_with_preparation(
     training_case: TrainingCaseCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
     background_tasks: BackgroundTasks,
 ) -> JSONResponse:
     """
@@ -70,7 +70,7 @@ def create_training_case_with_preparation(
 
     # 4. Start background task to generate preparation
     background_tasks.add_task(
-        generate_training_preparation, prep.id, preparation_request, get_session
+        generate_training_preparation, prep.id, preparation_request, get_db_session
     )
     # 5. Return response
     return JSONResponse(
@@ -86,7 +86,7 @@ def create_training_case_with_preparation(
 def update_training_case(
     case_id: UUID,
     updated_data: TrainingCaseCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> TrainingCase:
     """
     Update an existing training case.
@@ -112,7 +112,7 @@ def update_training_case(
 
 @router.delete('/{case_id}', response_model=dict)
 def delete_training_case(
-    case_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    case_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a training case.
@@ -128,7 +128,7 @@ def delete_training_case(
 
 @router.get('/{id_training_case}/preparation', response_model=TrainingPreparationRead)
 def get_training_preparation_by_case_id(
-    id_training_case: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    id_training_case: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> TrainingPreparation:
     """
     Retrieve the training preparation data for a given training case ID.

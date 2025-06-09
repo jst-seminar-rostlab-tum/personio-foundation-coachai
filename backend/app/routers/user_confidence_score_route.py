@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.user_confidence_score import (
     UserConfidenceScore,
     UserConfidenceScoreCreate,
@@ -17,7 +17,7 @@ router = APIRouter(prefix='/user-confidence-scores', tags=['User Confidence Scor
 
 @router.get('/', response_model=list[UserConfidenceScoreRead])
 def get_user_confidence_scores(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[UserConfidenceScore]:
     """
     Retrieve all user confidence scores.
@@ -30,7 +30,7 @@ def get_user_confidence_scores(
 @router.post('/', response_model=UserConfidenceScoreRead)
 def create_user_confidence_score(
     user_confidence_score: UserConfidenceScoreCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserConfidenceScore:
     """
     Create a new user confidence score.
@@ -46,7 +46,7 @@ def create_user_confidence_score(
 def update_user_confidence_score(
     score_id: UUID,
     updated_data: UserConfidenceScoreCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserConfidenceScore:
     """
     Update an existing user confidence score.
@@ -64,7 +64,7 @@ def update_user_confidence_score(
 
 @router.delete('/{score_id}', response_model=dict)
 def delete_user_confidence_score(
-    score_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    score_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a user confidence score.

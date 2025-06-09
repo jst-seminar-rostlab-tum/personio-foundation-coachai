@@ -34,7 +34,7 @@ def create_db_and_tables() -> None:
 
 
 # Dependency to get the database session
-def get_session() -> Generator[DBSession, Any, None]:
+def get_db_session() -> Generator[DBSession, Any, None]:
     with DBSession(engine) as db_session:
         try:
             yield db_session

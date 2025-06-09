@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
-from app.database import get_session as get_db_session
+from app.database import get_db_session
 from app.models.language import Language
 from app.models.session import (
     Session,

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.conversation_category import (
     ConversationCategory,
     ConversationCategoryCreate,
@@ -17,7 +17,7 @@ router = APIRouter(prefix='/conversation-categories', tags=['Conversation Catego
 
 @router.get('/', response_model=list[ConversationCategoryRead])
 def get_conversation_categories(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[ConversationCategory]:
     """
     Retrieve all conversation categories.
@@ -29,7 +29,7 @@ def get_conversation_categories(
 
 @router.post('/', response_model=ConversationCategoryRead)
 def create_conversation_category(
-    category: ConversationCategoryCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    category: ConversationCategoryCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> ConversationCategory:
     """
     Create a new conversation category.
@@ -45,7 +45,7 @@ def create_conversation_category(
 def update_conversation_category(
     category_id: UUID,
     updated_data: dict,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> ConversationCategory:
     """
     Update an existing conversation category.
@@ -70,7 +70,7 @@ def update_conversation_category(
 
 @router.delete('/{category_id}', response_model=dict)
 def delete_conversation_category(
-    category_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    category_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a conversation category.

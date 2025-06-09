@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.rating import Rating, RatingCreate, RatingRead
 from app.models.session import Session
 
@@ -13,7 +13,7 @@ router = APIRouter(prefix='/ratings', tags=['Ratings'])
 
 
 @router.get('/', response_model=list[RatingRead])
-def get_ratings(db_session: Annotated[DBSession, Depends(get_session)]) -> list[Rating]:
+def get_ratings(db_session: Annotated[DBSession, Depends(get_db_session)]) -> list[Rating]:
     """
     Retrieve all ratings.
     """
@@ -24,7 +24,7 @@ def get_ratings(db_session: Annotated[DBSession, Depends(get_session)]) -> list[
 
 @router.post('/', response_model=RatingRead)
 def create_rating(
-    rating: RatingCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    rating: RatingCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> Rating:
     """
     Create a new rating.
@@ -45,7 +45,7 @@ def create_rating(
 def update_rating(
     rating_id: UUID,
     updated_data: RatingCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> Rating:
     """
     Update an existing rating.
@@ -70,7 +70,9 @@ def update_rating(
 
 
 @router.delete('/{rating_id}', response_model=dict)
-def delete_rating(rating_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]) -> dict:
+def delete_rating(
+    rating_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+) -> dict:
     """
     Delete a rating.
     """

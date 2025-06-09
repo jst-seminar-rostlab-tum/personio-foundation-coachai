@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.training_case import TrainingCase
 from app.models.training_preparation import (
     TrainingPreparation,
@@ -19,7 +19,7 @@ router = APIRouter(prefix='/training-preparations', tags=['Training Preparations
 
 @router.get('/', response_model=list[TrainingPreparationRead])
 def get_training_preparations(
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[TrainingPreparation]:
     """
     Retrieve all training preparations.
@@ -31,7 +31,7 @@ def get_training_preparations(
 
 @router.get('/{preparation_id}', response_model=TrainingPreparationRead)
 def get_training_preparation(
-    preparation_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    preparation_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> TrainingPreparation:
     """
     Retrieve a specific training preparation by ID.
@@ -52,7 +52,8 @@ def get_training_preparation(
 
 @router.post('/', response_model=TrainingPreparationRead)
 def create_training_preparation(
-    preparation: TrainingPreparationCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    preparation: TrainingPreparationCreate,
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> TrainingPreparation:
     """
     Create a new training preparation.
@@ -73,7 +74,7 @@ def create_training_preparation(
 def update_training_preparation(
     preparation_id: UUID,
     updated_data: TrainingPreparationCreate,
-    db_session: Annotated[DBSession, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> TrainingPreparation:
     """
     Update an existing training preparation.
@@ -99,7 +100,7 @@ def update_training_preparation(
 
 @router.delete('/{preparation_id}', response_model=dict)
 def delete_training_preparation(
-    preparation_id: UUID, db_session: Annotated[DBSession, Depends(get_session)]
+    preparation_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a training preparation.

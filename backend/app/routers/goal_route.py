@@ -4,14 +4,14 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.goal import Goal, GoalCreate, GoalRead
 
 router = APIRouter(prefix='/goals', tags=['Goals'])
 
 
 @router.get('/', response_model=list[GoalRead])
-def get_goals(db_session: Annotated[DBSession, Depends(get_session)]) -> list[Goal]:
+def get_goals(db_session: Annotated[DBSession, Depends(get_db_session)]) -> list[Goal]:
     """
     Retrieve all goals.
     """
@@ -21,7 +21,9 @@ def get_goals(db_session: Annotated[DBSession, Depends(get_session)]) -> list[Go
 
 
 @router.post('/', response_model=GoalRead)
-def create_goal(goal: GoalCreate, db_session: Annotated[DBSession, Depends(get_session)]) -> Goal:
+def create_goal(
+    goal: GoalCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
+) -> Goal:
     """
     Create a new goal.
     """

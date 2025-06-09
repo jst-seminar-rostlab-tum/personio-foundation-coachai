@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.language import Language, LanguageCreate, LanguageRead
 
 router = APIRouter(prefix='/language', tags=['Language'])
@@ -12,7 +12,7 @@ router = APIRouter(prefix='/language', tags=['Language'])
 
 @router.post('/', response_model=LanguageRead)
 def create_language(
-    language: LanguageCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    language: LanguageCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> Language:
     """
     Create a new language.
@@ -34,7 +34,7 @@ def create_language(
 
 @router.get('/', response_model=list[LanguageRead])
 def read_languages(
-    db_session: Annotated[DBSession, Depends(get_session)], skip: int = 0, limit: int = 100
+    db_session: Annotated[DBSession, Depends(get_db_session)], skip: int = 0, limit: int = 100
 ) -> list[Language]:
     """
     Retrieve a list of languages.
