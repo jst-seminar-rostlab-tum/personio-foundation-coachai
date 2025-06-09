@@ -12,7 +12,7 @@ export default function AboutPageComponent() {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex-1">
-        <section className="pb-16 pt-8 md:pt-16 md:pb-24 bg-gradient-to-br from-white to-primary/5">
+        <section className="pb-16 lg:pt-8 md:pb-24 bg-gradient-to-br from-white to-primary/5">
           <div className="container">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
