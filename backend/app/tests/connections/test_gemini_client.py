@@ -1,3 +1,4 @@
+import os
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -10,6 +11,9 @@ from app.connections.gemini_client import (
 )
 
 load_dotenv()
+
+AUDIO_SAMPLE_DIR = os.path.join(os.path.dirname(__file__), 'audio_samples')
+FIRING_EXAMPLE_PCM_PATH = os.path.join(AUDIO_SAMPLE_DIR, 'short-firing-example.wav')
 
 
 def test_gemini_client_connection() -> None:

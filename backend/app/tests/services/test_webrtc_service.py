@@ -10,7 +10,7 @@ from aiortc.mediastreams import MediaStreamTrack
 from app.services.webrtc_service import (
     GeminiSessionManager,
     Peer,
-    PeerManager,
+    PeerSessionManager,
     WebRTCAudioLoop,
     WebRTCService,
     get_webrtc_service,
@@ -87,19 +87,14 @@ def mock_transceiver() -> RTCRtpTransceiver:
 
 
 @pytest.fixture
-def mock_audio_loop() -> WebRTCAudioLoop:
-    return AsyncMock(spec=WebRTCAudioLoop)
-
-
-@pytest.fixture
 def service() -> WebRTCService:
     with patch('app.services.webrtc_service.get_client'):
         return WebRTCService()
 
 
 @pytest.fixture
-def peer_manager() -> PeerManager:
-    return PeerManager()
+def peer_session_manager() -> PeerSessionManager:
+    return PeerSessionManager()
 
 
 @pytest.fixture
@@ -139,7 +134,6 @@ class TestPeer:
     async def test_peer_cleanup_closes_resources(
         self,
         mock_peer_connection: RTCPeerConnection,
-        mock_audio_loop: WebRTCAudioLoop,
         mock_transceiver: RTCRtpTransceiver,
         mock_data_channel: RTCDataChannel,
     ) -> None:
@@ -149,10 +143,8 @@ class TestPeer:
             connection=mock_peer_connection,
             transceiver=mock_transceiver,
             data_channel=mock_data_channel,
-            audio_loop=mock_audio_loop,
         )
         await peer.cleanup()
-        mock_audio_loop.stop.assert_awaited_once()
         assert peer.audio_loop is None
         mock_transceiver.stop.assert_called_once()
         mock_data_channel.close.assert_called_once()
@@ -165,23 +157,23 @@ class TestPeer:
 
 
 class TestPeerManager:
-    def test_callback_setting(self, peer_manager: PeerManager) -> None:
+    def test_callback_setting(self, peer_session_manager: PeerSessionManager) -> None:
         """Test callback setting"""
         track_callback = AsyncMock()
         datachannel_callback = AsyncMock()
 
-        peer_manager.set_track_callback(track_callback)
-        peer_manager.set_datachannel_callback(datachannel_callback)
+        peer_session_manager.set_track_callback(track_callback)
+        peer_session_manager.set_datachannel_callback(datachannel_callback)
 
-        assert peer_manager.on_track_callback == track_callback
-        assert peer_manager.on_datachannel_callback == datachannel_callback
+        assert peer_session_manager.on_track_callback == track_callback
+        assert peer_session_manager.on_datachannel_callback == datachannel_callback
 
     @pytest.mark.asyncio
     @patch('app.services.webrtc_service.RTCPeerConnection')
     async def test_create_peer(
         self,
         mock_rtc_peer_connection: MagicMock,
-        peer_manager: PeerManager,
+        peer_session_manager: PeerSessionManager,
         mock_transceiver: RTCRtpTransceiver,
     ) -> None:
         """Test creating a Peer"""
@@ -189,33 +181,33 @@ class TestPeerManager:
         mock_pc.addTransceiver.return_value = mock_transceiver
         mock_rtc_peer_connection.return_value = mock_pc
 
-        peer = await peer_manager.create_peer('test_peer')
+        peer = await peer_session_manager.create_peer('test_peer')
 
         assert peer.peer_id == 'test_peer'
         assert peer.connection == mock_pc
         assert peer.transceiver == mock_transceiver
-        assert 'test_peer' in peer_manager.peers
+        assert 'test_peer' in peer_session_manager.peers
 
     @pytest.mark.asyncio
-    async def test_close_peer(self, peer_manager: PeerManager) -> None:
+    async def test_close_peer(self, peer_session_manager: PeerSessionManager) -> None:
         """Test closing a Peer"""
         mock_peer = AsyncMock(spec=Peer)
-        peer_manager.peers['test_peer'] = mock_peer
+        peer_session_manager.peers['test_peer'] = mock_peer
 
-        await peer_manager.close_peer('test_peer')
+        await peer_session_manager.close_peer('test_peer')
 
         mock_peer.cleanup.assert_called_once()
-        assert 'test_peer' not in peer_manager.peers
+        assert 'test_peer' not in peer_session_manager.peers
 
-    def test_get_peer(self, peer_manager: PeerManager) -> None:
+    def test_get_peer(self, peer_session_manager: PeerSessionManager) -> None:
         """Test getting a Peer"""
         mock_peer = MagicMock(spec=Peer)
-        peer_manager.peers['test_peer'] = mock_peer
+        peer_session_manager.peers['test_peer'] = mock_peer
 
-        result = peer_manager.get_peer('test_peer')
+        result = peer_session_manager.get_peer('test_peer')
         assert result == mock_peer
 
-        result = peer_manager.get_peer('non_existent')
+        result = peer_session_manager.get_peer('non_existent')
         assert result is None
 
     @pytest.mark.asyncio
@@ -223,17 +215,17 @@ class TestPeerManager:
     async def test_create_peer_duplicate(
         self,
         mock_rtc_peer_connection: MagicMock,
-        peer_manager: PeerManager,
+        peer_session_manager: PeerSessionManager,
         mock_transceiver: RTCRtpTransceiver,
     ) -> None:
         """test PeerManager duplicate create peer"""
         mock_pc = AsyncMock(spec=RTCPeerConnection)
         mock_pc.addTransceiver.return_value = mock_transceiver
         mock_rtc_peer_connection.return_value = mock_pc
-        peer1 = await peer_manager.create_peer('dup_peer')
-        peer2 = await peer_manager.create_peer('dup_peer')
+        peer1 = await peer_session_manager.create_peer('dup_peer')
+        peer2 = await peer_session_manager.create_peer('dup_peer')
         assert peer1 is not peer2
-        assert peer_manager.peers['dup_peer'] == peer2
+        assert peer_session_manager.peers['dup_peer'] == peer2
 
 
 # =============================================================================
@@ -335,15 +327,11 @@ class TestGeminiSessionManager:
         mock_get_client.return_value = mock_client
 
         gemini_session_manager.client = mock_client
-        mock_audio_loop = MagicMock(spec=WebRTCAudioLoop)
-        # Use regular MagicMock instead of AsyncMock for non-async method
-        mock_audio_loop.set_send_to_gemini_callback = MagicMock()
-        session = await gemini_session_manager.create_session('test_peer', mock_audio_loop)
+        session = await gemini_session_manager.create_session('test_peer')
 
         assert session == mock_session
         assert 'test_peer' in gemini_session_manager.sessions
         assert 'test_peer' in gemini_session_manager.audio_loops
-        mock_audio_loop.set_send_to_gemini_callback.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_close_session(self, gemini_session_manager: GeminiSessionManager) -> None:
@@ -354,12 +342,10 @@ class TestGeminiSessionManager:
 
         mock_task = asyncio.Future()
         mock_task.set_result(None)
-        mock_audio_loop = MagicMock()
 
         # Set state
         gemini_session_manager.sessions['test_peer'] = mock_session
         gemini_session_manager.session_tasks['test_peer'] = [mock_task]
-        gemini_session_manager.audio_loops['test_peer'] = mock_audio_loop
 
         await gemini_session_manager.close_session('test_peer')
 

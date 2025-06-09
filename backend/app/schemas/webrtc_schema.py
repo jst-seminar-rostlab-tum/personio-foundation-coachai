@@ -281,27 +281,23 @@ class GeminiStreamReceiveError(GeminiStreamError):
         super().__init__(message, GeminiStreamErrorType.RECEIVE, peer_id)
 
 
-# ============================================================================
-#                           BUSINESS LOGIC SCHEMAS
-# ============================================================================
-# These schemas define the business-specific message formats and data structures
-# ============================================================================
-
-
 GEMINI_SAMPLE_RATE = 16000  # Default sample rate for Gemini
 
 
-class GeminiAudioChunk(BaseModel):
-    """Gemini audio chunk"""
-
-    data: bytes = Field(..., description='Audio chunk data')
-    timestamp: float = Field(..., description='Audio chunk timestamp')
-    sample_rate: int = Field(
-        default=GEMINI_SAMPLE_RATE, description='Audio chunk sample rate'
-    )  # 16kHz is standard for voice
+# =========================================================================
+#                           AUDIO CONTROL EVENTS
+# =========================================================================
 
 
-class GeminiAudioResponse(BaseModel):
-    audio_data: bytes | None = Field(None, description='Audio data')
-    transcript: str | None = Field(None, description='Text data')
-    is_final: bool = Field(False, description='Whether this is the final response')
+class WebRTCAudioEventType(str, Enum):
+    # Explicit activity control is not supported
+    # When automatic activity detection is enabled
+    # ACTIVITY_END = 'activity_end'
+    # ACTIVITY_START = 'activity_start'
+    AUDIO_STREAM_END = 'audio_stream_end'
+
+
+class WebRTCAudioEvent(BaseModel):
+    type: WebRTCAudioEventType
+    timestamp: float | None = None
+    payload: dict | None = None

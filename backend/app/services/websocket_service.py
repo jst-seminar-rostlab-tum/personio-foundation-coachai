@@ -71,7 +71,7 @@ class WebSocketService:
                         f'Failed to create peer connection: {str(e)}', peer_id
                     ) from e
 
-                pc = self.webrtc_service.peer_manager.get_peer(peer_id).connection
+                pc = self.webrtc_service.peer_session_manager.get_peer(peer_id).connection
 
                 # set remote description
                 try:
@@ -133,7 +133,7 @@ class WebSocketService:
                         ) from e
 
             elif message.signal_type == WebRTCSignalingType.CANDIDATE:
-                peer = self.webrtc_service.peer_manager.get_peer(peer_id)
+                peer = self.webrtc_service.peer_session_manager.get_peer(peer_id)
                 if not peer:
                     raise WebSocketSignalingError(
                         f'No peer found for candidate, peer_id={peer_id}', peer_id

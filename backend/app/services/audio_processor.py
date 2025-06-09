@@ -1,4 +1,4 @@
-import fractions
+import asyncio
 import io
 
 import av
@@ -7,39 +7,29 @@ from aiortc.mediastreams import MediaStreamTrack
 
 
 class AudioStreamTrack(MediaStreamTrack):
-    """Audio stream track that can be used to send audio data"""
+    """
+    Audio stream track that can be used to send audio data.
+    This version is adapted for live streaming by using an internal queue.
+    """
 
     kind = 'audio'
 
-    def __init__(self, audio_data: bytes, sample_rate: int = 48000) -> None:
-        """
-        :param audio_data: PCM audio data
-        :param sample_rate: Sample rate, default 48000Hz (WebRTC standard)
-        """
+    def __init__(self) -> None:
         super().__init__()
-        self.audio_data = audio_data
-        self.sample_rate = sample_rate
-        self._timestamp = 0
+        self.queue: asyncio.Queue[av.AudioFrame | None] = asyncio.Queue()
 
     async def recv(self) -> av.AudioFrame:
-        """Receive audio frame"""
-        # Create audio frame from bytes
-        audio_array = np.frombuffer(self.audio_data, dtype=np.int16)
-
-        # Create frame
-        frame = av.AudioFrame.from_ndarray(
-            audio_array.reshape(-1, 1),  # Reshape to (samples, channels=1)
-            format='s16',
-            layout='mono',
-        )
-        frame.pts = self._timestamp
-        frame.rate = self.sample_rate
-        frame.time_base = fractions.Fraction(1, self.sample_rate)
-
-        # Update timestamp
-        self._timestamp += len(audio_array)
-
+        """Pulls an audio frame from the queue to be sent to the client."""
+        frame = await self.queue.get()
+        if frame is None:
+            # This is a signal to stop the track
+            self.stop()
+            raise asyncio.CancelledError
         return frame
+
+    async def add_frame(self, frame: av.AudioFrame | None) -> None:
+        """Adds a new audio frame (or a stop signal) to the queue."""
+        await self.queue.put(frame)
 
 
 def opus_to_pcm(opus_data: bytes, sample_rate: int = 48000) -> bytes:
@@ -96,19 +86,19 @@ def pcm_to_opus(pcm_data: bytes, sample_rate: int = 48000) -> bytes:
     return output_buffer.getvalue()
 
 
-def resample_audio(
+def resample_wav_audio(
     audio_data: bytes, source_sample_rate: int, target_sample_rate: int = 48000
 ) -> bytes:
     """
-    Resample audio data to a different sample rate
+    Resample WAV format audio data to a different sample rate
 
     Args:
-        audio_data: Raw PCM audio data
+        audio_data: WAV format audio data
         source_sample_rate: Original sample rate
         target_sample_rate: Target sample rate, default 48000Hz (WebRTC standard)
 
     Returns:
-        Resampled PCM audio data as bytes
+        Resampled WAV format audio data as bytes
     """
     if source_sample_rate == target_sample_rate:
         return audio_data
@@ -127,3 +117,71 @@ def resample_audio(
 
     output_container.close()
     return output_buffer.getvalue()
+
+
+def resample_pcm_audio(
+    pcm_data: bytes, source_sample_rate: int, target_sample_rate: int = 48000, channels: int = 1
+) -> bytes:
+    """
+    Resample raw PCM audio data to a different sample rate
+
+    Args:
+        pcm_data: Raw PCM audio data (16-bit signed integers)
+        source_sample_rate: Original sample rate
+        target_sample_rate: Target sample rate, default 48000Hz (WebRTC standard)
+        channels: Number of audio channels, default 1 (mono)
+
+    Returns:
+        Resampled raw PCM audio data as bytes
+    """
+    if source_sample_rate == target_sample_rate:
+        return pcm_data
+
+    # Convert bytes to numpy array
+    audio_array = np.frombuffer(pcm_data, dtype=np.int16)
+
+    # Calculate number of samples per channel
+    samples_per_channel = len(audio_array) // channels
+
+    # Reshape correctly: (channels, samples_per_channel)
+    if channels > 1:
+        audio_array = audio_array.reshape(channels, samples_per_channel)
+    else:
+        # For mono, ensure we have the right shape (1, samples_per_channel)
+        audio_array = audio_array.reshape(1, samples_per_channel)
+
+    # Create audio frame
+    input_frame = av.AudioFrame.from_ndarray(
+        audio_array, format='s16', layout='mono' if channels == 1 else f'{channels}c'
+    )
+    input_frame.rate = source_sample_rate
+
+    # Create resampler
+    resampler = av.AudioResampler(
+        format='s16', layout='mono' if channels == 1 else f'{channels}c', rate=target_sample_rate
+    )
+
+    # Resample
+    output_frames = resampler.resample(input_frame)
+
+    # Convert back to bytes
+    if output_frames:
+        output_array = output_frames[0].to_ndarray()
+        return output_array.astype(np.int16).tobytes()
+    else:
+        return b''
+
+
+def is_silence(audio_data: bytes, threshold: int = 500) -> bool:
+    """
+    Check if audio data is silence
+    """
+    if not audio_data:
+        return True
+    audio_array = np.frombuffer(audio_data, dtype=np.int16).astype(np.float64)
+    if not np.isfinite(audio_array).all():
+        return True
+    rms = np.sqrt(np.mean(audio_array**2))
+    if not np.isfinite(rms):
+        return True
+    return rms < threshold

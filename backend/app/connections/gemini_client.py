@@ -10,7 +10,9 @@ from google.genai.types import (
     Content,
     ContextWindowCompressionConfig,
     EndSensitivity,
+    HttpOptions,
     LiveConnectConfig,
+    MediaResolution,
     Modality,
     Part,
     PrebuiltVoiceConfig,
@@ -48,6 +50,7 @@ LIVE_CONFIG = LiveConnectConfig(
             )
         ]
     ),
+    media_resolution=MediaResolution.MEDIA_RESOLUTION_MEDIUM,
     response_modalities=[Modality.AUDIO],
     speech_config=SpeechConfig(
         voice_config=VoiceConfig(prebuilt_voice_config=PrebuiltVoiceConfig(voice_name='Fenrir')),
@@ -75,7 +78,10 @@ LIVE_CONFIG = LiveConnectConfig(
 def get_client() -> genai.Client:
     if not hasattr(get_client, '_client'):
         try:
-            get_client._client = genai.Client(api_key=GEMINI_API_KEY)
+            get_client._client = genai.Client(
+                api_key=GEMINI_API_KEY,
+                http_options=HttpOptions(api_version='v1beta'),
+            )
         except Exception as e:
             logger.error(f'Failed to create Gemini client: {e}')
             raise GeminiStreamConnectionError(f'Failed to create Gemini client: {e}') from e
