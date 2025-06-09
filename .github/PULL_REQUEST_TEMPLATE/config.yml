@@ -1,7 +1,0 @@
-# .github/PULL_REQUEST_TEMPLATE/config.yml
-blank_issues_enabled: false
-templates:
-  - name: Backend PR Template
-    path: backend.md
-  - name: Default PR Template
-    path: default.md
