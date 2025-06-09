@@ -8,7 +8,6 @@ from app.database import create_db_and_tables
 from app.routers import (
     admin_dashboard_stats_route,
     app_config_route,
-    app_review_route,
     confidence_area_route,
     conversation_category_route,
     conversation_turn_route,
@@ -17,6 +16,7 @@ from app.routers import (
     learning_style_route,
     personalization_options_route,
     rating_route,
+    review_route,
     session_length_route,
     training_case_route,
     training_preparation_route,
@@ -57,7 +57,7 @@ app.include_router(session_length_route.router)
 app.include_router(personalization_options_route.router)
 app.include_router(app_config_route.router)
 app.include_router(admin_dashboard_stats_route.router)
-app.include_router(app_review_route.router)
+app.include_router(review_route.router)
 
 
 # Create database tables on startup
