@@ -7,7 +7,7 @@ from sqlmodel import select
 
 from app.database import get_session
 from app.models.rating import Rating, RatingCreate, RatingRead
-from app.models.training_session import TrainingSession
+from app.models.session import Session
 
 router = APIRouter(prefix='/ratings', tags=['Ratings'])
 
@@ -30,9 +30,9 @@ def create_rating(
     Create a new rating.
     """
     # Validate foreign key
-    training_session = db_session.get(TrainingSession, rating.session_id)
-    if not training_session:
-        raise HTTPException(status_code=404, detail='Training session not found')
+    session = db_session.get(Session, rating.session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail='Session not found')
 
     db_rating = Rating(**rating.dict())
     db_session.add(db_rating)
@@ -56,9 +56,9 @@ def update_rating(
 
     # Validate foreign key
     if updated_data.session_id:
-        training_session = db_session.get(TrainingSession, updated_data.session_id)
-        if not training_session:
-            raise HTTPException(status_code=404, detail='Training session not found')
+        session = db_session.get(Session, updated_data.session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail='Session not found')
 
     for key, value in updated_data.dict().items():
         setattr(rating, key, value)

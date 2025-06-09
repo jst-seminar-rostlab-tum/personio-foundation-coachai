@@ -5,7 +5,7 @@ from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
-from app.models import FeedbackStatusEnum, TrainingSessionFeedback
+from app.models import FeedbackStatusEnum, SessionFeedback
 from app.schemas.training_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -244,10 +244,10 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
 
 def generate_and_store_feedback(
     session_id: UUID, example_request: ExamplesRequest, db_session: DBSession
-) -> TrainingSessionFeedback:
+) -> SessionFeedback:
     """
     Generate feedback based on session_id and transcript data,
-    and write it to the training_session_feedback table
+    and write it to the session_feedback table
     """
 
     has_error = False
@@ -297,7 +297,7 @@ def generate_and_store_feedback(
     # correct placement
     status = FeedbackStatusEnum.failed if has_error else FeedbackStatusEnum.completed
 
-    feedback = TrainingSessionFeedback(
+    feedback = SessionFeedback(
         id=uuid4(),
         session_id=session_id,
         scores={},

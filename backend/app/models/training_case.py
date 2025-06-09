@@ -13,8 +13,8 @@ from app.models.camel_case import CamelModel
 if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
     from app.models.difficulty_level import DifficultyLevel
+    from app.models.session import Session
     from app.models.training_preparation import TrainingPreparation
-    from app.models.training_session import TrainingSession
     from app.models.user_profile import UserProfile
 
 
@@ -43,7 +43,7 @@ class TrainingCase(CamelModel, table=True):  # `table=True` makes it a database 
 
     # Relationships
     category: Optional['ConversationCategory'] = Relationship(back_populates='training_cases')
-    sessions: list['TrainingSession'] = Relationship(back_populates='case', cascade_delete=True)
+    sessions: list['Session'] = Relationship(back_populates='case', cascade_delete=True)
     preparations: list['TrainingPreparation'] = Relationship(
         back_populates='case', cascade_delete=True
     )

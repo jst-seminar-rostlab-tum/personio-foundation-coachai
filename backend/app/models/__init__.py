@@ -5,11 +5,6 @@ from app.models.conversation_category import (
     ConversationCategoryCreate,
     ConversationCategoryRead,
 )
-from app.models.conversation_turn import (
-    ConversationTurn,
-    ConversationTurnCreate,
-    ConversationTurnRead,
-)
 from app.models.difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
 from app.models.experience import Experience, ExperienceCreate, ExperienceRead
 from app.models.goal import Goal, GoalCreate, GoalRead
@@ -17,7 +12,27 @@ from app.models.language import Language, LanguageCreate, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
+from app.models.session import (
+    Session,
+    SessionCreate,
+    SessionDetailsRead,
+    SessionRead,
+)
+from app.models.session_feedback import (
+    FeedbackStatusEnum,
+    NegativeExample,
+    PositiveExample,
+    Recommendation,
+    SessionFeedback,
+    SessionFeedbackCreate,
+    SessionFeedbackRead,
+)
 from app.models.session_length import SessionLength, SessionLengthCreate, SessionLengthRead
+from app.models.session_turn import (
+    SessionTurn,
+    SessionTurnCreate,
+    SessionTurnRead,
+)
 from app.models.training_case import (
     TrainingCase,
     TrainingCaseCreate,
@@ -29,21 +44,6 @@ from app.models.training_preparation import (
     TrainingPreparationCreate,
     TrainingPreparationRead,
     TrainingPreparationStatus,
-)
-from app.models.training_session import (
-    TrainingSession,
-    TrainingSessionCreate,
-    TrainingSessionDetailsRead,
-    TrainingSessionRead,
-)
-from app.models.training_session_feedback import (
-    FeedbackStatusEnum,
-    NegativeExample,
-    PositiveExample,
-    Recommendation,
-    TrainingSessionFeedback,
-    TrainingSessionFeedbackCreate,
-    TrainingSessionFeedbackRead,
 )
 from app.models.user_confidence_score import (
     ConfidenceScoreRead,
@@ -70,20 +70,20 @@ __all__ = [
     'TrainingCaseCreate',
     'TrainingCaseRead',
     'TrainingCaseStatus',
-    'TrainingSession',
-    'TrainingSessionCreate',
-    'TrainingSessionRead',
-    'TrainingSessionDetailsRead',
+    'Session',
+    'SessionCreate',
+    'SessionRead',
+    'SessionDetailsRead',
     'TrainingPreparation',
     'TrainingPreparationCreate',
     'TrainingPreparationRead',
     'TrainingPreparationStatus',
-    'ConversationTurn',
-    'ConversationTurnCreate',
-    'ConversationTurnRead',
-    'TrainingSessionFeedback',
-    'TrainingSessionFeedbackCreate',
-    'TrainingSessionFeedbackRead',
+    'SessionTurn',
+    'SessionTurnCreate',
+    'SessionTurnRead',
+    'SessionFeedback',
+    'SessionFeedbackCreate',
+    'SessionFeedbackRead',
     'Rating',
     'RatingCreate',
     'RatingRead',
