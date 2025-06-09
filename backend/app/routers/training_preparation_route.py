@@ -6,7 +6,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.database import get_db_session
-from app.models.training_case import TrainingCase
+from app.models.conversation_scenario import ConversationScenario
 from app.models.training_preparation import (
     TrainingPreparation,
     TrainingPreparationCreate,
@@ -59,9 +59,9 @@ def create_training_preparation(
     Create a new training preparation.
     """
     # Validate foreign key
-    case = db_session.get(TrainingCase, preparation.case_id)
-    if not case:
-        raise HTTPException(status_code=404, detail='Training case not found')
+    conversation_scenario = db_session.get(ConversationScenario, preparation.scenario_id)
+    if not conversation_scenario:
+        raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
     db_preparation = TrainingPreparation(**preparation.dict())
     db_session.add(db_preparation)
@@ -84,10 +84,10 @@ def update_training_preparation(
         raise HTTPException(status_code=404, detail='Training preparation not found')
 
     # Validate foreign key
-    if updated_data.case_id:
-        case = db_session.get(TrainingCase, updated_data.case_id)
-        if not case:
-            raise HTTPException(status_code=404, detail='Training case not found')
+    if updated_data.scenario_id:
+        conversation_scenario = db_session.get(ConversationScenario, updated_data.scenario_id)
+        if not conversation_scenario:
+            raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
     for key, value in updated_data.dict().items():
         setattr(preparation, key, value)

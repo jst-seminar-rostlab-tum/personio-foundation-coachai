@@ -5,6 +5,7 @@ from app.data import (
     get_dummy_app_configs,
     get_dummy_confidence_areas,
     get_dummy_conversation_categories,
+    get_dummy_conversation_scenarios,
     get_dummy_difficulty_levels,
     get_dummy_experiences,
     get_dummy_goals,
@@ -15,7 +16,6 @@ from app.data import (
     get_dummy_session_lengths,
     get_dummy_session_turns,
     get_dummy_sessions,
-    get_dummy_training_cases,
     get_dummy_training_preparations,
     get_dummy_user_confidence_scores,
     get_dummy_user_goals,
@@ -75,9 +75,9 @@ def populate_data() -> None:
         user_goals = get_dummy_user_goals(user_profiles, goals)
         db_session.add_all(user_goals)
 
-        # Populate Training Cases
-        training_cases = get_dummy_training_cases(user_profiles, difficulty_levels)
-        db_session.add_all(training_cases)
+        # Populate Conversation Scenarios
+        conversation_scenarios = get_dummy_conversation_scenarios(user_profiles, difficulty_levels)
+        db_session.add_all(conversation_scenarios)
         db_session.commit()
 
         # Populate Conversation Categories
@@ -85,7 +85,7 @@ def populate_data() -> None:
         db_session.add_all(conversation_categories)
 
         # Populate Training Sessions
-        sessions = get_dummy_sessions(training_cases)
+        sessions = get_dummy_sessions(conversation_scenarios)
         db_session.add_all(sessions)
 
         # Commit training sessions to get their IDs
@@ -100,11 +100,13 @@ def populate_data() -> None:
         db_session.add_all(session_feedback)
 
         # Populate Training Preparations
-        training_preparations = get_dummy_training_preparations(training_cases)
+        training_preparations = get_dummy_training_preparations(conversation_scenarios)
         db_session.add_all(training_preparations)
 
         # Populate Ratings
-        ratings = get_dummy_ratings(sessions, training_cases)  # Pass both sessions and cases
+        ratings = get_dummy_ratings(
+            sessions, conversation_scenarios
+        )  # Pass both sessions and scenarios
         db_session.add_all(ratings)
 
         # Commit all data

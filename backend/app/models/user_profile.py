@@ -12,11 +12,11 @@ from app.models.camel_case import CamelModel
 from app.models.user_confidence_score import ConfidenceScoreRead
 
 if TYPE_CHECKING:
+    from app.models.conversation_scenario import ConversationScenario
     from app.models.experience import Experience
     from app.models.learning_style import LearningStyle
     from app.models.rating import Rating
     from app.models.session_length import SessionLength
-    from app.models.training_case import TrainingCase
     from app.models.user_confidence_score import UserConfidenceScore
     from app.models.user_goal import UserGoal
 
@@ -36,7 +36,7 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     store_conversations: bool = Field(default=True)
     # Relationships
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
-    training_cases: list['TrainingCase'] = Relationship(
+    conversation_scenarios: list['ConversationScenario'] = Relationship(
         back_populates='user_profile', cascade_delete=True
     )
     role: Optional[UserRole] = Field(default=UserRole.user)

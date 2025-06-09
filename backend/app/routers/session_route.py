@@ -7,6 +7,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
 from app.database import get_db_session
+from app.models.conversation_scenario import ConversationScenario
 from app.models.language import Language
 from app.models.session import (
     Session,
@@ -25,7 +26,6 @@ from app.models.sessions_paginated import (
     SessionItem,
     SkillScores,
 )
-from app.models.training_case import TrainingCase
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
 
@@ -41,19 +41,19 @@ def get_session_by_id(
     if not session:
         raise HTTPException(status_code=404, detail='No session found with the given ID')
 
-    # Get session title from the training case
-    training_case = db_session.get(TrainingCase, session.case_id)
-    if training_case:
-        if training_case.category:
-            training_title = training_case.category.name
+    # Get session title from the conversation scenario
+    conversation_scenario = db_session.get(ConversationScenario, session.scenario_id)
+    if conversation_scenario:
+        if conversation_scenario.category:
+            training_title = conversation_scenario.category.name
         else:
-            training_title = training_case.custom_category_label
+            training_title = conversation_scenario.custom_category_label
     else:
         training_title = 'Unknown'
 
     session_response = SessionDetailsRead(
         id=session.id,
-        case_id=session.case_id,
+        scenario_id=session.scenario_id,
         scheduled_at=session.scheduled_at,
         started_at=session.started_at,
         ended_at=session.ended_at,
@@ -129,7 +129,6 @@ def get_sessions(
     """
     Return paginated list of completed sessions for a user.
     """
-    # Get all training cases for the user
     try:
         user_id = UUID(x_user_id)
     except ValueError as err:
@@ -137,10 +136,10 @@ def get_sessions(
             status_code=401, detail='Invalid or missing authentication token'
         ) from err
 
-    statement = select(TrainingCase.id).where(TrainingCase.user_id == user_id)
-    training_case_ids = db_session.exec(statement).all()
+    statement = select(ConversationScenario.id).where(ConversationScenario.user_id == user_id)
+    scenario_ids = db_session.exec(statement).all()
 
-    if not training_case_ids:
+    if not scenario_ids:
         return PaginatedSessionsResponse(
             page=page,
             limit=page_size,
@@ -152,7 +151,7 @@ def get_sessions(
     # Query sessions
     session_query = (
         select(Session)
-        .where(col(Session.case_id).in_(training_case_ids))
+        .where(col(Session.scenario_id).in_(scenario_ids))
         .order_by(col(Session.ended_at).desc())
     )
 
@@ -193,9 +192,9 @@ def create_session(
     Create a new session.
     """
     # Validate foreign keys
-    case = db_session.get(TrainingCase, session_data.case_id)
-    if not case:
-        raise HTTPException(status_code=404, detail='Training case not found')
+    conversation_scenario = db_session.get(ConversationScenario, session_data.scenario_id)
+    if not conversation_scenario:
+        raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
     language = db_session.exec(
         select(Language).where(Language.code == session_data.language_code)
@@ -224,10 +223,10 @@ def update_session(
         raise HTTPException(status_code=404, detail='Session not found')
 
     # Validate foreign keys
-    if updated_data.case_id:
-        case = db_session.get(TrainingCase, updated_data.case_id)
-        if not case:
-            raise HTTPException(status_code=404, detail='Training case not found')
+    if updated_data.scenario_id:
+        conversation_scenario = db_session.get(ConversationScenario, updated_data.scenario_id)
+        if not conversation_scenario:
+            raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
     if updated_data.language_code:
         language = db_session.exec(
@@ -266,21 +265,21 @@ def delete_sessions_by_user(
     user_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
-    Delete all sessions related to training cases for a given user ID.
+    Delete all sessions related to conversation scenarios for a given user ID.
     """
-    # Retrieve all training cases for the given user ID
-    statement = select(TrainingCase).where(TrainingCase.user_id == user_id)
-    training_cases = db_session.exec(statement).all()
-    print(f'Training cases for user ID {user_id}: {training_cases}')
-    if not training_cases:
+    # Retrieve all conversation scenarios for the given user ID
+    statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
+    conversation_scenarios = db_session.exec(statement).all()
+    print(f'Conversation scenarios for user ID {user_id}: {conversation_scenarios}')
+    if not conversation_scenarios:
         raise HTTPException(status_code=404, detail='No sessions found for the given user ID')
     count_of_deleted_sessions = 0
     audios = []
     # Print all audio_uri values from SessionTurn for each session
-    for training_case in training_cases:
-        count_of_deleted_sessions += len(training_case.sessions)
+    for conversation_scenario in conversation_scenarios:
+        count_of_deleted_sessions += len(conversation_scenario.sessions)
 
-        for session in training_case.sessions:
+        for session in conversation_scenario.sessions:
             for session_turn in session.session_turns:
                 audios.append(session_turn.audio_uri)
             db_session.delete(session)

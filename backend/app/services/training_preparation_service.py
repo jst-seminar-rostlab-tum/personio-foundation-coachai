@@ -92,7 +92,7 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
     )
     example_items = '\n'.join(mock_response.items)
     user_prompt = (
-        f'Generate {request.num_checkpoints} checklist items for the following training case:\n'
+        f'Generate {request.num_checkpoints} checklist items for the following conversation scenario:\n'
         f'Each item should be a single, concise sentence,'
         f' similar in length and style to the examples below.\n'
         f'Return the result strictly as a JSON object like:\n'
@@ -118,7 +118,7 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
 
 def build_key_concept_prompt(request: KeyConceptRequest, example: str) -> str:
     return f"""
-You are a training assistant. Based on the HR professionals training case below, 
+You are a training assistant. Based on the HR professionals conversation scenario below, 
 generate 3-4 key concepts for the conversation.
 
 Your output must strictly follow this JSON format representing a Pydantic model `KeyConceptOutput`:
@@ -150,7 +150,7 @@ Example output:
 {example}
 ---
 
-Training Case:
+Conversation scenario:
 - Category: {request.category}
 - Goal: {request.goal}
 - Context: {request.context}
@@ -185,12 +185,12 @@ def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
     return result.items
 
 
-def create_pending_preparation(case_id: UUID, db_session: DBSession) -> TrainingPreparation:
+def create_pending_preparation(scenario_id: UUID, db_session: DBSession) -> TrainingPreparation:
     """
     Create a new TrainingPreparation record with status 'pending'.
     """
     prep = TrainingPreparation(
-        case_id=case_id,
+        scenario_id=scenario_id,
         status=TrainingPreparationStatus.pending,
         objectives=[],
         key_concepts=[],

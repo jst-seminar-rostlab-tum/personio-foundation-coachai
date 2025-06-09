@@ -4,6 +4,7 @@ from uuid import uuid4
 from app.models.app_config import AppConfig, ConfigType
 from app.models.confidence_area import ConfidenceArea
 from app.models.conversation_category import ConversationCategory
+from app.models.conversation_scenario import ConversationScenario, ConversationScenarioStatus
 from app.models.difficulty_level import DifficultyLevel  # Assuming this is the new model
 from app.models.experience import Experience
 from app.models.goal import Goal
@@ -17,7 +18,6 @@ from app.models.session_feedback import (
 )
 from app.models.session_length import SessionLength
 from app.models.session_turn import SessionTurn, SpeakerEnum
-from app.models.training_case import TrainingCase, TrainingCaseStatus
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import UserGoal
@@ -155,11 +155,11 @@ def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) ->
     ]
 
 
-def get_dummy_training_cases(
+def get_dummy_conversation_scenarios(
     user_profiles: list[UserProfile], difficulty_levels: list[DifficultyLevel]
-) -> list[TrainingCase]:
+) -> list[ConversationScenario]:
     return [
-        TrainingCase(
+        ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=None,
@@ -170,11 +170,11 @@ def get_dummy_training_cases(
             difficulty_id=difficulty_levels[0].id,
             tone='Friendly',
             complexity='Low',
-            status=TrainingCaseStatus.draft,  # Use the enum instead of a string
+            status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
-        TrainingCase(
+        ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[1].id,
             category_id=None,
@@ -185,22 +185,26 @@ def get_dummy_training_cases(
             difficulty_id=difficulty_levels[1].id,
             tone='Professional',
             complexity='Medium',
-            status=TrainingCaseStatus.draft,  # Use the enum instead of a string
+            status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
     ]
 
 
-def get_dummy_ratings(sessions: list[Session], training_cases: list[TrainingCase]) -> list[Rating]:
-    # Create a mapping of case_id to user_id from the training_cases
-    case_to_user_map = {case.id: case.user_id for case in training_cases}
+def get_dummy_ratings(
+    sessions: list[Session], conversation_scenarios: list[ConversationScenario]
+) -> list[Rating]:
+    # Create a mapping of scenario_id to user_id from the conversation_scenarios
+    scenario_to_user_map = {scenario.id: scenario.user_id for scenario in conversation_scenarios}
 
     return [
         Rating(
             id=uuid4(),
             session_id=sessions[0].id,  # Link to the first session
-            user_id=case_to_user_map[sessions[0].case_id],  # Get user_id from the training case
+            user_id=scenario_to_user_map[
+                sessions[0].scenario_id
+            ],  # Get user_id from the conversation scenario
             score=5,
             comment='Excellent session!',
             created_at=datetime.now(UTC),
@@ -209,7 +213,9 @@ def get_dummy_ratings(sessions: list[Session], training_cases: list[TrainingCase
         Rating(
             id=uuid4(),
             session_id=sessions[1].id,  # Link to the second session
-            user_id=case_to_user_map[sessions[1].case_id],  # Get user_id from the training case
+            user_id=scenario_to_user_map[
+                sessions[1].scenario_id
+            ],  # Get user_id from the conversation scenario
             score=4,
             comment='Good session, but room for improvement.',
             created_at=datetime.now(UTC),
@@ -312,11 +318,11 @@ def get_dummy_session_turns(
     ]
 
 
-def get_dummy_sessions(training_cases: list[TrainingCase]) -> list[Session]:
+def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> list[Session]:
     return [
         Session(
             id=uuid4(),
-            case_id=training_cases[0].id,
+            scenario_id=conversation_scenarios[0].id,
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
@@ -327,7 +333,7 @@ def get_dummy_sessions(training_cases: list[TrainingCase]) -> list[Session]:
         ),
         Session(
             id=uuid4(),
-            case_id=training_cases[1].id,
+            scenario_id=conversation_scenarios[1].id,
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
@@ -485,12 +491,12 @@ def get_dummy_session_feedback(
 
 
 def get_dummy_training_preparations(
-    training_cases: list[TrainingCase],
+    conversation_scenarios: list[ConversationScenario],
 ) -> list[TrainingPreparation]:
     return [
         TrainingPreparation(
             id=uuid4(),
-            case_id=training_cases[0].id,
+            scenario_id=conversation_scenarios[0].id,
             objectives=[
                 "Understand the client's needs",
                 'Prepare a solution proposal',
@@ -509,7 +515,7 @@ def get_dummy_training_preparations(
         ),
         TrainingPreparation(
             id=uuid4(),
-            case_id=training_cases[1].id,
+            scenario_id=conversation_scenarios[1].id,
             objectives=[
                 'Discuss project timeline',
                 'Finalize deliverables',

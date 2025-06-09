@@ -5,6 +5,12 @@ from app.models.conversation_category import (
     ConversationCategoryCreate,
     ConversationCategoryRead,
 )
+from app.models.conversation_scenario import (
+    ConversationScenario,
+    ConversationScenarioCreate,
+    ConversationScenarioRead,
+    ConversationScenarioStatus,
+)
 from app.models.difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
 from app.models.experience import Experience, ExperienceCreate, ExperienceRead
 from app.models.goal import Goal, GoalCreate, GoalRead
@@ -33,12 +39,6 @@ from app.models.session_turn import (
     SessionTurnCreate,
     SessionTurnRead,
 )
-from app.models.training_case import (
-    TrainingCase,
-    TrainingCaseCreate,
-    TrainingCaseRead,
-    TrainingCaseStatus,
-)
 from app.models.training_preparation import (
     TrainingPreparation,
     TrainingPreparationCreate,
@@ -66,10 +66,10 @@ __all__ = [
     'ConversationCategory',
     'ConversationCategoryCreate',
     'ConversationCategoryRead',
-    'TrainingCase',
-    'TrainingCaseCreate',
-    'TrainingCaseRead',
-    'TrainingCaseStatus',
+    'ConversationScenario',
+    'ConversationScenarioCreate',
+    'ConversationScenarioRead',
+    'ConversationScenarioStatus',
     'Session',
     'SessionCreate',
     'SessionRead',

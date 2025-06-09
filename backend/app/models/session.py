@@ -11,16 +11,18 @@ from app.models.camel_case import CamelModel
 from app.models.session_feedback import SessionFeedbackMetrics
 
 if TYPE_CHECKING:
+    from app.models.conversation_scenario import ConversationScenario
     from app.models.language import Language
     from app.models.rating import Rating
     from app.models.session_feedback import SessionFeedback
     from app.models.session_turn import SessionTurn
-    from app.models.training_case import TrainingCase
 
 
 class Session(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    case_id: UUID = Field(foreign_key='trainingcase.id')  # Foreign key to TrainingCase
+    scenario_id: UUID = Field(
+        foreign_key='conversationscenario.id'
+    )  # Foreign key to ConversationScenario
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
@@ -30,7 +32,7 @@ class Session(CamelModel, table=True):  # `table=True` makes it a database table
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    case: Optional['TrainingCase'] = Relationship(back_populates='sessions')
+    scenario: Optional['ConversationScenario'] = Relationship(back_populates='sessions')
     language: Optional['Language'] = Relationship()  # Relationship to Language
     session_turns: list['SessionTurn'] = Relationship(back_populates='session', cascade_delete=True)
     feedback: Optional['SessionFeedback'] = Relationship(
@@ -48,7 +50,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'Session') 
 
 # Schema for creating a new Session
 class SessionCreate(CamelModel):
-    case_id: UUID
+    scenario_id: UUID
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
@@ -59,7 +61,7 @@ class SessionCreate(CamelModel):
 # Schema for reading Session data
 class SessionRead(CamelModel):
     id: UUID
-    case_id: UUID
+    scenario_id: UUID
     scheduled_at: datetime | None
     started_at: datetime | None
     ended_at: datetime | None

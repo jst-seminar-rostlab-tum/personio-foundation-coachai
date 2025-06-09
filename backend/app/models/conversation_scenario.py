@@ -19,14 +19,14 @@ if TYPE_CHECKING:
 
 
 # Enum for status
-class TrainingCaseStatus(str, Enum):
+class ConversationScenarioStatus(str, Enum):
     draft = 'draft'
     ready = 'ready'
     archived = 'archived'
 
 
 # Database model
-class TrainingCase(CamelModel, table=True):  # `table=True` makes it a database table
+class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
@@ -37,27 +37,33 @@ class TrainingCase(CamelModel, table=True):  # `table=True` makes it a database 
     difficulty_id: UUID = Field(default=None, foreign_key='difficultylevel.id')
     tone: Optional[str] = None
     complexity: Optional[str] = None
-    status: TrainingCaseStatus = Field(default=TrainingCaseStatus.draft)
+    status: ConversationScenarioStatus = Field(default=ConversationScenarioStatus.draft)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    category: Optional['ConversationCategory'] = Relationship(back_populates='training_cases')
-    sessions: list['Session'] = Relationship(back_populates='case', cascade_delete=True)
-    preparations: list['TrainingPreparation'] = Relationship(
-        back_populates='case', cascade_delete=True
+    category: Optional['ConversationCategory'] = Relationship(
+        back_populates='conversation_scenarios'
     )
-    user_profile: Optional['UserProfile'] = Relationship(back_populates='training_cases')
-    difficulty_level: Optional['DifficultyLevel'] = Relationship(back_populates='training_cases')
+    sessions: list['Session'] = Relationship(back_populates='scenario', cascade_delete=True)
+    preparations: list['TrainingPreparation'] = Relationship(
+        back_populates='scenario', cascade_delete=True
+    )
+    user_profile: Optional['UserProfile'] = Relationship(back_populates='conversation_scenarios')
+    difficulty_level: Optional['DifficultyLevel'] = Relationship(
+        back_populates='conversation_scenarios'
+    )
 
 
-@event.listens_for(TrainingCase, 'before_update')
-def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingCase') -> None:
+@event.listens_for(ConversationScenario, 'before_update')
+def update_timestamp(
+    mapper: Mapper, connection: Connection, target: 'ConversationScenario'
+) -> None:
     target.updated_at = datetime.now(UTC)
 
 
-# Schema for creating a new TrainingCase
-class TrainingCaseCreate(CamelModel):
+# Schema for creating a new ConversationScenario
+class ConversationScenarioCreate(CamelModel):
     user_id: UUID
     category_id: Optional[UUID] = None
     custom_category_label: Optional[str] = None
@@ -67,11 +73,11 @@ class TrainingCaseCreate(CamelModel):
     difficulty_id: UUID
     tone: Optional[str] = None
     complexity: Optional[str] = None
-    status: TrainingCaseStatus = TrainingCaseStatus.draft
+    status: ConversationScenarioStatus = ConversationScenarioStatus.draft
 
 
-# Schema for reading TrainingCase data
-class TrainingCaseRead(CamelModel):
+# Schema for reading ConversationScenario data
+class ConversationScenarioRead(CamelModel):
     id: UUID
     user_id: UUID
     category_id: Optional[UUID]
@@ -82,6 +88,6 @@ class TrainingCaseRead(CamelModel):
     difficulty_id: UUID
     tone: Optional[str]
     complexity: Optional[str]
-    status: TrainingCaseStatus
+    status: ConversationScenarioStatus
     created_at: datetime
     updated_at: datetime

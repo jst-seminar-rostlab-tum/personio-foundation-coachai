@@ -1,22 +1,22 @@
 from pydantic import BaseModel, Field
 
 
-class TrainingCaseBase(BaseModel):
+class ConversationScenarioBase(BaseModel):
     category: str = Field(..., description='Training category')
     goal: str = Field(..., description='Training goal')
     context: str = Field(..., description='Training context')
     other_party: str = Field(..., description='Persona to speak with')
 
 
-class ObjectiveRequest(TrainingCaseBase):
+class ObjectiveRequest(ConversationScenarioBase):
     num_objectives: int = Field(..., gt=0, description='Number of objectives to generate')
 
 
-class KeyConceptRequest(TrainingCaseBase):
-    pass  # Request for generating key concepts, inherits all fields from TrainingCaseBase
+class KeyConceptRequest(ConversationScenarioBase):
+    pass  # Request for generating key concepts, inherits all fields from ConversationScenarioBase
 
 
-class ChecklistRequest(TrainingCaseBase):
+class ChecklistRequest(ConversationScenarioBase):
     num_checkpoints: int = Field(..., gt=0, description='Number of checklist items to return')
 
 
@@ -46,4 +46,6 @@ class TrainingPreparationRequest(BaseModel):
 class TrainingPreparationResponse(BaseModel):
     objectives: StringListResponse = Field(..., description='List of training objectives')
     checklist: StringListResponse = Field(..., description='List of training checklist items')
-    key_concept: KeyConceptOutput = Field(..., description='Key concepts for the training case')
+    key_concept: KeyConceptOutput = Field(
+        ..., description='Key concepts for the conversation scenario'
+    )
