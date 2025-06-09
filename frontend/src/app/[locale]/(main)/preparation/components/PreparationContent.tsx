@@ -25,22 +25,36 @@ type TrainingPreparation = {
 export default function PreparationPage() {
   const t = useTranslations('Preparation');
   const [preparationData, setPreparationData] = useState<TrainingPreparation | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getTrainingPreparation = async () => {
     try {
-      // TODO: Determine the training case ID dynamically in the future:q
+      // TODO: Determine the training case ID dynamically in the future
       const trainingCase = '454cdf80-7937-4844-89bc-dae1edc2da81';
       const response = await api.get(`/training-case/${trainingCase}/preparation`);
 
-      if (response.status !== 200) {
-        throw new Error('Failed to get training case preparation data');
+      if (response.status === 202) {
+        // If status is 202, wait for 2 seconds and try again
+        setTimeout(() => {
+          getTrainingPreparation();
+        }, 2000);
+        return;
       }
 
-      setPreparationData(response.data);
-    } catch (err) {
+      if (response.status === 200) {
+        setPreparationData(response.data);
+        setIsLoading(false);
+        return;
+      }
+
+      throw new Error('Failed to get training case preparation data');
+    } catch (error: unknown) {
+      setIsLoading(false);
       let errorMessage = 'ERROR';
-      if (err.response) {
-        switch (err.response.status) {
+
+      if (error && typeof error === 'object' && 'response' in error) {
+        const err = error as { response?: { status?: number } };
+        switch (err.response?.status) {
           case 401:
             errorMessage = '401';
             break;
@@ -64,7 +78,18 @@ export default function PreparationPage() {
 
   useEffect(() => {
     getTrainingPreparation();
-  }, []);
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center w-full min-h-[400px]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="text-lg">{t('loadingText')}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col md:flex-row gap-4 items-stretch">

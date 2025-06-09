@@ -18,5 +18,6 @@
   "navigation": {
     "back": "Go Back",
     "start": "Start Training"
-  }
+  },
+  "loadingText": "Preparing Objectives and Checklist..."
 }
