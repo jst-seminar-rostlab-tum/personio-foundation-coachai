@@ -11,18 +11,18 @@ export function SituationStep({
   party,
   context,
   goal,
-  category,
   onPartyChange,
   onContextChange,
   onGoalChange,
   onCustomCategoryInput,
   customCategory,
+  isCustom,
 }: SituationStepProps) {
   const t = useTranslations('NewTraining');
   return (
     <div>
       <div className="text-xl text-font-dark text-center w-full mb-8">{t('situation.title')}</div>
-      {category === 'custom' && (
+      {isCustom && (
         <>
           <div className="text-lg text-font-dark mb-4">{t('category.customInput')}</div>
           <Input

@@ -1,7 +1,10 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
+import { Suspense } from 'react';
+import { getConversationCategories } from '@/services/GetCategories';
 import NewTrainingForm from './components/NewTrainingForm';
+import NewTrainingPageLoading from './loading';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -9,5 +12,10 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default function NewTrainingPage() {
-  return <NewTrainingForm />;
+  const categories = getConversationCategories();
+  return (
+    <Suspense fallback={<NewTrainingPageLoading />}>
+      <NewTrainingForm categories={categories} />
+    </Suspense>
+  );
 }
