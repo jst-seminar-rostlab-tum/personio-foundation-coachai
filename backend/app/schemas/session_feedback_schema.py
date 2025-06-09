@@ -29,7 +29,7 @@ class NegativeExample(CamelModel):
     improved_quote: str = Field(..., description='Suggested improved version of the quote')
 
 
-class TrainingExamplesCollection(CamelModel):
+class SessionExamplesCollection(CamelModel):
     positive_examples: list[PositiveExample] = Field(..., description='List of positive examples')
     negative_examples: list[NegativeExample] = Field(..., description='List of negative examples')
 

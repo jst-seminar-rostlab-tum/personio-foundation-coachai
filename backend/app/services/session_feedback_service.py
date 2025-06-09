@@ -6,7 +6,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
 from app.models import FeedbackStatusEnum, SessionFeedback
-from app.schemas.training_feedback_schema import (
+from app.schemas.session_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
     GoalsAchievementRequest,
@@ -15,12 +15,12 @@ from app.schemas.training_feedback_schema import (
     Recommendation,
     RecommendationsCollection,
     RecommendationsRequest,
-    TrainingExamplesCollection,
+    SessionExamplesCollection,
 )
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_training_examples(request: ExamplesRequest) -> TrainingExamplesCollection:
+def safe_generate_training_examples(request: ExamplesRequest) -> SessionExamplesCollection:
     return generate_training_examples(request)
 
 
@@ -34,8 +34,8 @@ def safe_generate_recommendations(request: RecommendationsRequest) -> Recommenda
     return generate_recommendations(request)
 
 
-def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesCollection:
-    mock_response = TrainingExamplesCollection(
+def generate_training_examples(request: ExamplesRequest) -> SessionExamplesCollection:
+    mock_response = SessionExamplesCollection(
         positive_examples=[
             PositiveExample(
                 heading='Clear Objective Addressed',
@@ -111,7 +111,7 @@ def generate_training_examples(request: ExamplesRequest) -> TrainingExamplesColl
         request_prompt=user_prompt,
         system_prompt='You are an expert communication coach analyzing training sessions.',
         model='gpt-4o-2024-08-06',
-        output_model=TrainingExamplesCollection,
+        output_model=SessionExamplesCollection,
         mock_response=mock_response,
     )
 

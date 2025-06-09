@@ -6,19 +6,19 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine
 
 from app.models import FeedbackStatusEnum
-from app.schemas.training_feedback_schema import (
+from app.schemas.session_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
     NegativeExample,
     PositiveExample,
     Recommendation,
     RecommendationsCollection,
-    TrainingExamplesCollection,
+    SessionExamplesCollection,
 )
-from app.services.training_feedback_service import generate_and_store_feedback
+from app.services.session_feedback_service import generate_and_store_feedback
 
 
-class TestTrainingFeedbackService(unittest.TestCase):
+class TestSessionFeedbackService(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.engine = create_engine('sqlite:///:memory:')
@@ -31,13 +31,13 @@ class TestTrainingFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    @patch('app.services.training_feedback_service.generate_training_examples')
-    @patch('app.services.training_feedback_service.get_achieved_goals')
-    @patch('app.services.training_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback_service.generate_training_examples')
+    @patch('app.services.session_feedback_service.get_achieved_goals')
+    @patch('app.services.session_feedback_service.generate_recommendations')
     def test_generate_and_store_feedback(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
-        mock_examples.return_value = TrainingExamplesCollection(
+        mock_examples.return_value = SessionExamplesCollection(
             positive_examples=[
                 PositiveExample(
                     heading='Clear Objective Addressed',
@@ -130,9 +130,9 @@ class TestTrainingFeedbackService(unittest.TestCase):
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
 
-    @patch('app.services.training_feedback_service.generate_training_examples')
-    @patch('app.services.training_feedback_service.get_achieved_goals')
-    @patch('app.services.training_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback_service.generate_training_examples')
+    @patch('app.services.session_feedback_service.get_achieved_goals')
+    @patch('app.services.session_feedback_service.generate_recommendations')
     def test_generate_and_store_feedback_with_errors(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
