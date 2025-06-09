@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from app.models.experience import Experience
     from app.models.learning_style import LearningStyle
     from app.models.rating import Rating
-    from app.models.session_length import SessionLength
     from app.models.user_confidence_score import UserConfidenceScore
     from app.models.user_goal import UserGoal
 
@@ -31,7 +30,6 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
     experience_id: UUID = Field(foreign_key='experience.id')  # FK to Experience
     preferred_learning_style_id: UUID = Field(foreign_key='learningstyle.id')
-    preferred_session_length_id: UUID = Field(foreign_key='sessionlength.id')
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     store_conversations: bool = Field(default=True)
     # Relationships
@@ -48,9 +46,6 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
         back_populates='user', cascade_delete=True
     )
     preferred_learning_style: Optional['LearningStyle'] = Relationship(
-        back_populates='user_profiles'
-    )
-    preferred_session_length: Optional['SessionLength'] = Relationship(
         back_populates='user_profiles'
     )
 
@@ -75,7 +70,6 @@ class UserProfileCreate(CamelModel):
     role: UserRole
     experience_id: UUID
     preferred_learning_style_id: UUID
-    preferred_session_length_id: UUID
     store_conversations: bool
     goal_ids: list[UUID]
     confidence_scores: list[dict]
@@ -88,7 +82,6 @@ class UserProfileRead(CamelModel):
     role: UserRole
     experience_id: UUID
     preferred_learning_style_id: UUID
-    preferred_session_length_id: UUID
     goal: list[UUID]
     confidence_scores: list[UUID]
     store_conversations: bool
@@ -101,7 +94,6 @@ class UserProfileExtendedRead(CamelModel):
     role: Optional[UserRole]
     experience: Optional[str]
     preferred_learning_style: Optional[str]
-    preferred_session_length: Optional[str]
     goal: list[str]
     confidence_scores: list[ConfidenceScoreRead]
     store_conversations: bool

@@ -17,7 +17,6 @@ from app.models.session_feedback import (
     FeedbackStatusEnum,
     SessionFeedback,
 )
-from app.models.session_length import SessionLength
 from app.models.session_turn import SessionTurn, SpeakerEnum
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import UserGoal
@@ -43,29 +42,6 @@ def get_dummy_learning_styles() -> list[LearningStyle]:
             id=uuid4(),
             label='Kinesthetic',
             description='Prefers learning through hands-on activities and physical engagement.',
-        ),
-    ]
-
-
-def get_dummy_session_lengths() -> list[SessionLength]:
-    """
-    Generate dummy SessionLength data.
-    """
-    return [
-        SessionLength(
-            id=uuid4(),
-            label='30 minutes',
-            description='Short session length for quick learning.',
-        ),
-        SessionLength(
-            id=uuid4(),
-            label='1 hour',
-            description='Standard session length for detailed learning.',
-        ),
-        SessionLength(
-            id=uuid4(),
-            label='2 hours',
-            description='Extended session length for in-depth learning.',
         ),
     ]
 
@@ -111,7 +87,6 @@ def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
 def get_dummy_user_profiles(
     experiences: list[Experience],
     learning_styles: list[LearningStyle],
-    session_lengths: list[SessionLength],
 ) -> list[UserProfile]:
     """
     Generate dummy UserProfile data.
@@ -123,7 +98,6 @@ def get_dummy_user_profiles(
             role=UserRole.user,
             experience_id=experiences[0].id,
             preferred_learning_style_id=learning_styles[0].id,
-            preferred_session_length_id=session_lengths[0].id,
             store_conversations=False,
             total_sessions=32,
             training_time=4.5,
@@ -137,7 +111,6 @@ def get_dummy_user_profiles(
             role=UserRole.admin,
             experience_id=experiences[1].id,
             preferred_learning_style_id=learning_styles[1].id,
-            preferred_session_length_id=session_lengths[1].id,
             store_conversations=True,
             total_sessions=5,
             training_time=4.2,

@@ -39,7 +39,6 @@ from app.models.session_feedback import (
     SessionFeedbackCreate,
     SessionFeedbackRead,
 )
-from app.models.session_length import SessionLength, SessionLengthCreate, SessionLengthRead
 from app.models.session_turn import (
     SessionTurn,
     SessionTurnCreate,
@@ -115,9 +114,6 @@ __all__ = [
     'LearningStyle',
     'LearningStyleCreate',
     'LearningStyleRead',
-    'SessionLength',
-    'SessionLengthCreate',
-    'SessionLengthRead',
     'ConfidenceScoreRead',
     'UserProfileExtendedRead',
     'PersonalizationOptionRead',

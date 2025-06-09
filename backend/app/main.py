@@ -17,7 +17,6 @@ from app.routers import (
     rating_route,
     scenario_preparation_route,
     session_feedback_route,
-    session_length_route,
     session_route,
     session_turn_route,
     user_confidence_score_route,
@@ -51,7 +50,6 @@ app.include_router(goal_route.router)
 app.include_router(confidence_area_route.router)
 app.include_router(user_confidence_score_route.router)
 app.include_router(learning_style_route.router)
-app.include_router(session_length_route.router)
 app.include_router(personalization_options_route.router)
 app.include_router(app_config_route.router)
 

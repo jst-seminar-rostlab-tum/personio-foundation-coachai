@@ -11,7 +11,6 @@ from app.models.goal import Goal, GoalRead
 from app.models.language import Language, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
-from app.models.session_length import SessionLength, SessionLengthRead
 from app.models.user_profile import UserRole
 
 router = APIRouter(prefix='/personalization-options', tags=['Personalization Options'])
@@ -29,7 +28,6 @@ def get_personalization_options(
     confidence_areas = db_session.exec(select(ConfidenceArea)).all()
     languages = db_session.exec(select(Language)).all()
     learning_styles = db_session.exec(select(LearningStyle)).all()
-    session_lengths = db_session.exec(select(SessionLength)).all()
 
     return PersonalizationOptionRead(
         roles=list(UserRole),
@@ -62,13 +60,5 @@ def get_personalization_options(
                 description=learning_style.description,
             )
             for learning_style in learning_styles
-        ],
-        session_lengths=[
-            SessionLengthRead(
-                id=session_length.id,
-                label=session_length.label,
-                description=session_length.description,
-            )
-            for session_length in session_lengths
         ],
     )

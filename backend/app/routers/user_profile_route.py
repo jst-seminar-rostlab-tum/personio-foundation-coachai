@@ -49,7 +49,6 @@ def get_user_profile_ids(
                 role=user.role,
                 experience_id=user.experience_id,
                 preferred_learning_style_id=user.preferred_learning_style_id,
-                preferred_session_length_id=user.preferred_session_length_id,
                 goal=list(goals),
                 confidence_scores=list(confidence_scores),
                 updated_at=user.updated_at,
@@ -88,9 +87,6 @@ def get_user_profile_by_id(
         preferred_learning_style=user.preferred_learning_style.label
         if user.preferred_learning_style
         else None,
-        preferred_session_length=user.preferred_session_length.label
-        if user.preferred_session_length
-        else None,
         goal=[
             user_goal.goal.label
             for user_goal in user.user_goals
@@ -128,9 +124,6 @@ def get_user_profiles(
                 'preferred_learning_style': user.preferred_learning_style.label
                 if user.preferred_learning_style
                 else None,
-                'preferred_session_length': user.preferred_session_length.label
-                if user.preferred_session_length
-                else None,
                 'goal': set(),
                 'confidence_scores': set(),
             }
@@ -164,7 +157,6 @@ def get_user_profiles(
                 role=user_data['role'],
                 experience=user_data['experience'],
                 preferred_learning_style=user_data['preferred_learning_style'],
-                preferred_session_length=user_data['preferred_session_length'],
                 goal=list(user_data['goal']),
                 confidence_scores=confidence_scores,
                 store_conversations=user_data['store_conversations'],
@@ -188,7 +180,6 @@ def create_user_profile(
         experience_id=user_data.experience_id,
         preferred_language=user_data.preferred_language,
         preferred_learning_style_id=user_data.preferred_learning_style_id,
-        preferred_session_length_id=user_data.preferred_session_length_id,
     )
     db_session.add(new_user)
     db_session.commit()
@@ -233,7 +224,6 @@ def update_user_profile(
     user.experience_id = user_data.experience_id
     user.preferred_language = user_data.preferred_language
     user.preferred_learning_style_id = user_data.preferred_learning_style_id
-    user.preferred_session_length_id = user_data.preferred_session_length_id
     user.store_conversations = user_data.store_conversations
 
     db_session.add(user)
@@ -290,8 +280,6 @@ def patch_user_profile(
         user.preferred_language = user_data['preferred_language']
     if 'preferred_learning_style_id' in user_data:
         user.preferred_learning_style_id = user_data['preferred_learning_style_id']
-    if 'preferred_session_length_id' in user_data:
-        user.preferred_session_length_id = user_data['preferred_session_length_id']
     if 'store_conversations' in user_data:
         user.store_conversations = user_data['store_conversations']
 

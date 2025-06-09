@@ -14,7 +14,6 @@ from app.data import (
     get_dummy_ratings,
     get_dummy_scenario_preparations,
     get_dummy_session_feedback,
-    get_dummy_session_lengths,
     get_dummy_session_turns,
     get_dummy_sessions,
     get_dummy_user_confidence_scores,
@@ -56,16 +55,12 @@ def populate_data() -> None:
         learning_styles = get_dummy_learning_styles()
         db_session.add_all(learning_styles)
 
-        # Populate Session Lengths
-        session_lengths = get_dummy_session_lengths()
-        db_session.add_all(session_lengths)
-
-        # Commit roles, experiences, goals, learning_styles, session_length and difficulty levels
+        # Commit roles, experiences, goals, learning_styles and difficulty levels
         # to get their IDs
         db_session.commit()
 
         # Populate User Profiles
-        user_profiles = get_dummy_user_profiles(experiences, learning_styles, session_lengths)
+        user_profiles = get_dummy_user_profiles(experiences, learning_styles)
         db_session.add_all(user_profiles)
 
         # Commit user profiles to get their IDs
