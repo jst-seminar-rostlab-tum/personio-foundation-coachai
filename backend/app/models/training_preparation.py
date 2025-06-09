@@ -7,7 +7,9 @@ from pydantic import BaseModel
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
     from app.models.training_case import TrainingCase
@@ -25,7 +27,7 @@ class KeyConcept(BaseModel):
 
 
 # Database model
-class TrainingPreparation(SQLModel, table=True):  # `table=True` makes it a database table
+class TrainingPreparation(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     # Cannot be a foreign key because (id, language_code) is a composite primary key in Goal
     case_id: UUID = Field()
@@ -54,7 +56,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingPr
 
 
 # Schema for creating a new TrainingPreparation
-class TrainingPreparationCreate(SQLModel):
+class TrainingPreparationCreate(CamelModel):
     case_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
@@ -63,7 +65,7 @@ class TrainingPreparationCreate(SQLModel):
 
 
 # Schema for reading TrainingPreparation data
-class TrainingPreparationRead(SQLModel):
+class TrainingPreparationRead(CamelModel):
     id: UUID
     case_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))

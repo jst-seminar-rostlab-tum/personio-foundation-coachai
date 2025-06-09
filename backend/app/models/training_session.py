@@ -5,8 +5,15 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
+
 from sqlalchemy.sql.schema import ForeignKeyConstraint
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.camel_case import CamelModel
+from app.models.training_session_feedback import TrainingSessionFeedbackMetrics
+
+from app.models.training_session_feedback import TrainingSessionFeedbackMetrics
+
 
 if TYPE_CHECKING:
     from app.models.conversation_turn import ConversationTurn
@@ -15,13 +22,13 @@ if TYPE_CHECKING:
     from app.models.training_session_feedback import TrainingSessionFeedback
 
 
-class TrainingSession(SQLModel, table=True):  # `table=True` makes it a database table
+class TrainingSession(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     case_id: UUID = Field()  # Foreign key to TrainingCase
     language_code: str = Field()  # Foreign key to TrainingCase
-    scheduled_at: Optional[datetime] = None
-    started_at: Optional[datetime] = None
-    ended_at: Optional[datetime] = None
+    scheduled_at: datetime | None = None
+    started_at: datetime | None = None
+    ended_at: datetime | None = None
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -61,23 +68,36 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingSe
 
 
 # Schema for creating a new TrainingSession
-class TrainingSessionCreate(SQLModel):
+class TrainingSessionCreate(CamelModel):
     case_id: UUID
-    scheduled_at: Optional[datetime] = None
-    started_at: Optional[datetime] = None
-    ended_at: Optional[datetime] = None
+    scheduled_at: datetime | None = None
+    started_at: datetime | None = None
+    ended_at: datetime | None = None
     language_code: str
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
 
 
 # Schema for reading TrainingSession data
-class TrainingSessionRead(SQLModel):
+class TrainingSessionRead(CamelModel):
     id: UUID
     case_id: UUID
-    scheduled_at: Optional[datetime]
-    started_at: Optional[datetime]
-    ended_at: Optional[datetime]
+    scheduled_at: datetime | None
+    started_at: datetime | None
+    ended_at: datetime | None
     language_code: str
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime
     updated_at: datetime
+
+
+# Schema for reading TrainingSession data with details including skill scores, goals achieved,
+# session metrics, and feedback insights
+class TrainingSessionDetailsRead(TrainingSessionRead):
+    title: str | None = None
+    summary: str | None = None
+    feedback: Optional['TrainingSessionFeedbackMetrics'] = None
+    # List of audio file URIs --> located in conversation_turns
+    audio_uris: list[str] = Field(default_factory=list)
+
+
+TrainingSessionDetailsRead.model_rebuild()
