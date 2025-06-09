@@ -14,11 +14,11 @@ from app.models.conversation_scenario import (
     ConversationScenarioCreate,
     ConversationScenarioRead,
 )
-from app.models.training_preparation import TrainingPreparation, TrainingPreparationRead
-from app.schemas.training_preparation_schema import TrainingPreparationRequest
+from app.models.training_preparation import ScenarioPreparation, ScenarioPreparationRead
+from app.schemas.training_preparation_schema import ScenarioPreparationRequest
 from app.services.training_preparation_service import (
     create_pending_preparation,
-    generate_training_preparation,
+    generate_scenario_preparation,
 )
 
 router = APIRouter(prefix='/conversation-scenario', tags=['Conversation Scenarios'])
@@ -61,7 +61,7 @@ def create_conversation_scenario_with_preparation(
     # 3. Initialize preparation（status = pending）
     prep = create_pending_preparation(new_conversation_scenario.id, db_session)
 
-    preparation_request = TrainingPreparationRequest(
+    preparation_request = ScenarioPreparationRequest(
         category=category.name,
         context=new_conversation_scenario.context,
         goal=new_conversation_scenario.goal,
@@ -72,7 +72,7 @@ def create_conversation_scenario_with_preparation(
 
     # 4. Start background task to generate preparation
     background_tasks.add_task(
-        generate_training_preparation, prep.id, preparation_request, get_db_session
+        generate_scenario_preparation, prep.id, preparation_request, get_db_session
     )
     # 5. Return response
     return JSONResponse(
@@ -128,23 +128,23 @@ def delete_conversation_scenario(
     return {'message': 'Conversation scenario deleted successfully'}
 
 
-@router.get('/{scenario_id}/preparation', response_model=TrainingPreparationRead)
-def get_training_preparation_by_scenario_id(
+@router.get('/{scenario_id}/preparation', response_model=ScenarioPreparationRead)
+def get_scenario_preparation_by_scenario_id(
     scenario_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
-) -> TrainingPreparation:
+) -> ScenarioPreparation:
     """
-    Retrieve the training preparation data for a given conversation scenario ID.
+    Retrieve the scenario preparation data for a given conversation scenario ID.
     """
     # Validate that the conversation scenario exists
     conversation_scenario = db_session.get(ConversationScenario, scenario_id)
     if not conversation_scenario:
         raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
-    # Fetch the associated training preparation
-    statement = select(TrainingPreparation).where(TrainingPreparation.scenario_id == scenario_id)
-    training_preparation = db_session.exec(statement).first()
+    # Fetch the associated scenario preparation
+    statement = select(ScenarioPreparation).where(ScenarioPreparation.scenario_id == scenario_id)
+    scenario_preparation = db_session.exec(statement).first()
 
-    if not training_preparation:
-        raise HTTPException(status_code=404, detail='Training preparation not found')
+    if not scenario_preparation:
+        raise HTTPException(status_code=404, detail='Scenario preparation not found')
 
-    return training_preparation
+    return scenario_preparation

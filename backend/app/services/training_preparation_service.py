@@ -7,15 +7,15 @@ from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
-from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
+from app.models.training_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.schemas.training_preparation_schema import (
     ChecklistRequest,
     KeyConcept,
     KeyConceptOutput,
     KeyConceptRequest,
     ObjectiveRequest,
+    ScenarioPreparationRequest,
     StringListResponse,
-    TrainingPreparationRequest,
 )
 
 
@@ -185,13 +185,13 @@ def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
     return result.items
 
 
-def create_pending_preparation(scenario_id: UUID, db_session: DBSession) -> TrainingPreparation:
+def create_pending_preparation(scenario_id: UUID, db_session: DBSession) -> ScenarioPreparation:
     """
-    Create a new TrainingPreparation record with status 'pending'.
+    Create a new ScenarioPreparation record with status 'pending'.
     """
-    prep = TrainingPreparation(
+    prep = ScenarioPreparation(
         scenario_id=scenario_id,
-        status=TrainingPreparationStatus.pending,
+        status=ScenarioPreparationStatus.pending,
         objectives=[],
         key_concepts=[],
         prep_checklist=[],
@@ -201,14 +201,14 @@ def create_pending_preparation(scenario_id: UUID, db_session: DBSession) -> Trai
     return prep
 
 
-def generate_training_preparation(
+def generate_scenario_preparation(
     preparation_id: UUID,
-    request: TrainingPreparationRequest,
+    request: ScenarioPreparationRequest,
     session_generator_func: Callable[[], Generator[DBSession, None, None]],
-) -> TrainingPreparation:
+) -> ScenarioPreparation:
     """
-    Generate training preparation data including objectives, checklist, and key concepts.
-    Updates the TrainingPreparation record and returns it.
+    Generate scenario preparation data including objectives, checklist, and key concepts.
+    Updates the ScenarioPreparation record and returns it.
     """
 
     session_gen = session_generator_func()
@@ -216,12 +216,12 @@ def generate_training_preparation(
 
     try:
         # 1. retrieve the preparation record
-        preparation = db_session.get(TrainingPreparation, preparation_id)
+        preparation = db_session.get(ScenarioPreparation, preparation_id)
 
         if not preparation:
-            raise ValueError(f'Training preparation with ID {preparation_id} not found.')
-        if preparation.status != TrainingPreparationStatus.pending:
-            raise ValueError(f'Training preparation {preparation_id} is not in pending status.')
+            raise ValueError(f'Scenario preparation with ID {preparation_id} not found.')
+        if preparation.status != ScenarioPreparationStatus.pending:
+            raise ValueError(f'Scenario preparation {preparation_id} is not in pending status.')
 
         # 2. build request objects
         objectives_request = ObjectiveRequest(
@@ -271,9 +271,9 @@ def generate_training_preparation(
 
         # 4. Update status depending on error presence
         if has_error:
-            preparation.status = TrainingPreparationStatus.failed
+            preparation.status = ScenarioPreparationStatus.failed
         else:
-            preparation.status = TrainingPreparationStatus.completed
+            preparation.status = ScenarioPreparationStatus.completed
 
         db_session.add(preparation)
         db_session.commit()

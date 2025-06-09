@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
 
 
-class TrainingPreparationStatus(str, Enum):
+class ScenarioPreparationStatus(str, Enum):
     pending = 'pending'
     completed = 'completed'
     failed = 'failed'
@@ -27,13 +27,13 @@ class KeyConcept(BaseModel):
 
 
 # Database model
-class TrainingPreparation(CamelModel, table=True):  # `table=True` makes it a database table
+class ScenarioPreparation(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     scenario_id: UUID = Field(foreign_key='conversationscenario.id')
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    status: TrainingPreparationStatus = Field(default=TrainingPreparationStatus.pending)
+    status: ScenarioPreparationStatus = Field(default=ScenarioPreparationStatus.pending)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
@@ -43,27 +43,27 @@ class TrainingPreparation(CamelModel, table=True):  # `table=True` makes it a da
     # Automatically update `updated_at` before an update
 
 
-@event.listens_for(TrainingPreparation, 'before_update')
-def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingPreparation') -> None:
+@event.listens_for(ScenarioPreparation, 'before_update')
+def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioPreparation') -> None:
     target.updated_at = datetime.now(UTC)
 
 
-# Schema for creating a new TrainingPreparation
-class TrainingPreparationCreate(CamelModel):
+# Schema for creating a new ScenarioPreparation
+class ScenarioPreparationCreate(CamelModel):
     scenario_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    status: TrainingPreparationStatus = Field(default=TrainingPreparationStatus.pending)
+    status: ScenarioPreparationStatus = Field(default=ScenarioPreparationStatus.pending)
 
 
-# Schema for reading TrainingPreparation data
-class TrainingPreparationRead(CamelModel):
+# Schema for reading ScenarioPreparation data
+class ScenarioPreparationRead(CamelModel):
     id: UUID
     scenario_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    status: TrainingPreparationStatus
+    status: ScenarioPreparationStatus
     created_at: datetime
     updated_at: datetime

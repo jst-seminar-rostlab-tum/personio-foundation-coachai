@@ -33,7 +33,7 @@ class KeyConceptOutput(BaseModel):
     items: list[KeyConcept]
 
 
-class TrainingPreparationRequest(BaseModel):
+class ScenarioPreparationRequest(BaseModel):
     category: str = Field(..., description='Training category')
     goal: str = Field(..., description='Training goal')
     context: str = Field(..., description='Training context')
@@ -43,7 +43,7 @@ class TrainingPreparationRequest(BaseModel):
     num_checkpoints: int = Field(5, gt=0, description='Number of checklist items to generate')
 
 
-class TrainingPreparationResponse(BaseModel):
+class ScenarioPreparationResponse(BaseModel):
     objectives: StringListResponse = Field(..., description='List of training objectives')
     checklist: StringListResponse = Field(..., description='List of training checklist items')
     key_concept: KeyConceptOutput = Field(

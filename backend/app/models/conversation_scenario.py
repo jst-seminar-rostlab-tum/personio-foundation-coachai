@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
     from app.models.difficulty_level import DifficultyLevel
     from app.models.session import Session
-    from app.models.training_preparation import TrainingPreparation
+    from app.models.training_preparation import ScenarioPreparation
     from app.models.user_profile import UserProfile
 
 
@@ -46,7 +46,7 @@ class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a d
         back_populates='conversation_scenarios'
     )
     sessions: list['Session'] = Relationship(back_populates='scenario', cascade_delete=True)
-    preparations: list['TrainingPreparation'] = Relationship(
+    preparations: list['ScenarioPreparation'] = Relationship(
         back_populates='scenario', cascade_delete=True
     )
     user_profile: Optional['UserProfile'] = Relationship(back_populates='conversation_scenarios')

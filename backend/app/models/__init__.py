@@ -40,10 +40,10 @@ from app.models.session_turn import (
     SessionTurnRead,
 )
 from app.models.training_preparation import (
-    TrainingPreparation,
-    TrainingPreparationCreate,
-    TrainingPreparationRead,
-    TrainingPreparationStatus,
+    ScenarioPreparation,
+    ScenarioPreparationCreate,
+    ScenarioPreparationRead,
+    ScenarioPreparationStatus,
 )
 from app.models.user_confidence_score import (
     ConfidenceScoreRead,
@@ -74,10 +74,10 @@ __all__ = [
     'SessionCreate',
     'SessionRead',
     'SessionDetailsRead',
-    'TrainingPreparation',
-    'TrainingPreparationCreate',
-    'TrainingPreparationRead',
-    'TrainingPreparationStatus',
+    'ScenarioPreparation',
+    'ScenarioPreparationCreate',
+    'ScenarioPreparationRead',
+    'ScenarioPreparationStatus',
     'SessionTurn',
     'SessionTurnCreate',
     'SessionTurnRead',

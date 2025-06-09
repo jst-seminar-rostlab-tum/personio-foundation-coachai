@@ -12,11 +12,11 @@ from app.data import (
     get_dummy_languages,
     get_dummy_learning_styles,
     get_dummy_ratings,
+    get_dummy_scenario_preparations,
     get_dummy_session_feedback,
     get_dummy_session_lengths,
     get_dummy_session_turns,
     get_dummy_sessions,
-    get_dummy_training_preparations,
     get_dummy_user_confidence_scores,
     get_dummy_user_goals,
     get_dummy_user_profiles,
@@ -95,13 +95,13 @@ def populate_data() -> None:
         session_turns = get_dummy_session_turns(sessions)
         db_session.add_all(session_turns)
 
-        # Populate Training Session Feedback
+        # Populate Session Feedback
         session_feedback = get_dummy_session_feedback(sessions)
         db_session.add_all(session_feedback)
 
-        # Populate Training Preparations
-        training_preparations = get_dummy_training_preparations(conversation_scenarios)
-        db_session.add_all(training_preparations)
+        # Populate Scenario Preparations
+        scenario_preparations = get_dummy_scenario_preparations(conversation_scenarios)
+        db_session.add_all(scenario_preparations)
 
         # Populate Ratings
         ratings = get_dummy_ratings(

@@ -18,7 +18,7 @@ from app.models.session_feedback import (
 )
 from app.models.session_length import SessionLength
 from app.models.session_turn import SessionTurn, SpeakerEnum
-from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
+from app.models.training_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import UserGoal
 from app.models.user_profile import UserProfile, UserRole
@@ -490,11 +490,11 @@ def get_dummy_session_feedback(
     ]
 
 
-def get_dummy_training_preparations(
+def get_dummy_scenario_preparations(
     conversation_scenarios: list[ConversationScenario],
-) -> list[TrainingPreparation]:
+) -> list[ScenarioPreparation]:
     return [
-        TrainingPreparation(
+        ScenarioPreparation(
             id=uuid4(),
             scenario_id=conversation_scenarios[0].id,
             objectives=[
@@ -509,11 +509,11 @@ def get_dummy_training_preparations(
                 'Review client history',
                 'Prepare presentation slides',
             ],
-            status=TrainingPreparationStatus.pending,  # Use the enum for status
+            status=ScenarioPreparationStatus.pending,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
-        TrainingPreparation(
+        ScenarioPreparation(
             id=uuid4(),
             scenario_id=conversation_scenarios[1].id,
             objectives=[
@@ -528,7 +528,7 @@ def get_dummy_training_preparations(
                 'Prepare project timeline',
                 'Review deliverables checklist',
             ],
-            status=TrainingPreparationStatus.pending,  # Use the enum for status
+            status=ScenarioPreparationStatus.pending,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
