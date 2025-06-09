@@ -25,7 +25,7 @@ def test_gemini_client_connection() -> None:
     )
 
 
-@patch('app.connections.gemnini_client.genai.Client', side_effect=Exception('Invalid key'))
+@patch('app.connections.gemini_client.genai.Client', side_effect=Exception('Invalid key'))
 @patch.dict('os.environ', {'GEMINI_API_KEY': 'invalid_api_key'})
 def test_gemini_client_connection_error(mock_client: MagicMock) -> None:
     """Test if Gemini client connection error is raised correctly"""
