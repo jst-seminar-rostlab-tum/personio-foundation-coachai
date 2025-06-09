@@ -34,6 +34,7 @@ dependencies = [
   "google-cloud-aiplatform>=1.96.0",
   "av>=14.4.0",
   "numpy>=1.26.4",
+  "pyaudio>=0.2.14",
 ]
 
 [tool.setuptools]

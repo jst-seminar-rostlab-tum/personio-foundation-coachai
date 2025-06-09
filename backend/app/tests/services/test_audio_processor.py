@@ -8,7 +8,6 @@ AUDIO_SAMPLE_DIR = os.path.join(os.path.dirname(__file__), 'audio_samples')
 DUMMY_PCM_PATH = os.path.join(AUDIO_SAMPLE_DIR, 'dummy_pcm.wav')
 DUMMY_OPUS_PATH = os.path.join(AUDIO_SAMPLE_DIR, 'dummy_opus.opus')
 DUMMY_PCM_RECOVERED_PATH = os.path.join(AUDIO_SAMPLE_DIR, 'dummy_pcm_recovered.wav')
-DUMMY_PCM_STREAMING_PATH = os.path.join(AUDIO_SAMPLE_DIR, 'dummy_pcm_streaming.wav')
 
 
 def test_opus_to_pcm() -> None:
