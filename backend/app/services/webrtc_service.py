@@ -473,7 +473,7 @@ class WebRTCService:
         """Handle transcript text"""
         try:
             peer = self.peer_manager.get_peer(peer_id)
-            if peer and peer.data_channel:
+            if peer and peer.data_channel and peer.data_channel.readyState == 'open':
                 peer.data_channel.send(json.dumps({'transcript': transcript}))
                 logger.info(f'Sent transcript to peer {peer_id}: {transcript}')
         except Exception as e:

@@ -35,6 +35,7 @@ dependencies = [
   "av>=14.4.0",
   "numpy>=1.26.4",
   "pyaudio>=0.2.14",
+  "coverage>=7.8.2",
 ]
 
 [tool.setuptools]

@@ -210,6 +210,23 @@ class TestPeerManager:
         result = peer_manager.get_peer('non_existent')
         assert result is None
 
+    @pytest.mark.asyncio
+    @patch('app.services.webrtc_service.RTCPeerConnection')
+    async def test_create_peer_duplicate(
+        self,
+        mock_rtc_peer_connection: MagicMock,
+        peer_manager: PeerManager,
+        mock_transceiver: RTCRtpTransceiver,
+    ) -> None:
+        """test PeerManager duplicate create peer"""
+        mock_pc = AsyncMock(spec=RTCPeerConnection)
+        mock_pc.addTransceiver.return_value = mock_transceiver
+        mock_rtc_peer_connection.return_value = mock_pc
+        peer1 = await peer_manager.create_peer('dup_peer')
+        peer2 = await peer_manager.create_peer('dup_peer')
+        assert peer1 is not peer2
+        assert peer_manager.peers['dup_peer'] == peer2
+
 
 # =============================================================================
 # WebRTCAudioLoop class tests
@@ -282,6 +299,11 @@ class TestWebRTCAudioLoop:
 
         await audio_loop.stop()
         await asyncio.sleep(0.1)
+
+    @pytest.mark.asyncio
+    async def test_handle_transcript_no_callback(self, audio_loop: WebRTCAudioLoop) -> None:
+        """test WebRTCAudioLoop handle_transcript when no callback is set"""
+        await audio_loop.handle_transcript('no callback')
 
 
 # =============================================================================
@@ -457,6 +479,34 @@ class TestWebRTCService:
 
         # Verify data channel is stored in peer
         assert mock_peer.data_channel == mock_data_channel
+
+    @pytest.mark.asyncio
+    async def test_handle_transcript_peer_not_found(self, service: WebRTCService) -> None:
+        """test _handle_transcript when peer is not found"""
+        if 'ghost_peer' in service.peer_manager.peers:
+            del service.peer_manager.peers['ghost_peer']
+        await service._handle_transcript('hello', 'ghost_peer')
+
+    @pytest.mark.asyncio
+    async def test_handle_transcript_data_channel_closed(
+        self, service: WebRTCService, mock_data_channel: RTCDataChannel
+    ) -> None:
+        """test _handle_transcript when data_channel is closed"""
+        mock_data_channel.readyState = 'closed'
+        mock_peer = MagicMock(spec=Peer)
+        mock_peer.data_channel = mock_data_channel
+        service.peer_manager.peers['test_peer'] = mock_peer
+        await service._handle_transcript('hello', 'test_peer')
+        mock_data_channel.send.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_handle_data_channel_peer_not_found(
+        self, service: WebRTCService, mock_data_channel: RTCDataChannel
+    ) -> None:
+        """test _handle_data_channel when peer is not found"""
+        if 'ghost_peer' in service.peer_manager.peers:
+            del service.peer_manager.peers['ghost_peer']
+        await service._handle_data_channel(mock_data_channel, 'ghost_peer')
 
 
 # =============================================================================
