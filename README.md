@@ -1,15 +1,16 @@
-# Next.js + FastAPI Message Board
+# CoachAI
 
-A simple full-stack application built with Next.js, FastAPI, and PostgreSQL.
-
+A smart, voice-based training app for HR professionals to master difficult conversations through guided preparation, realistic simulations, and actionable feedback
 
 ### Frontend
+
 - Next.js 15.3.2
 - TypeScript
 - TailwindCSS
 - SWR for data fetching
 
 ### Backend
+
 - FastAPI
 - SQLAlchemy
 - PostgreSQL
@@ -24,17 +25,20 @@ A simple full-stack application built with Next.js, FastAPI, and PostgreSQL.
 ## Getting Started
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd <repository-name>
 ```
 
 2. Start the application using Docker Compose:
+
 ```bash
 docker compose up --build
 ```
 
 The application will be available at:
+
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
 - API Documentation: http://localhost:8000/docs
@@ -46,11 +50,13 @@ Find our dev guidelines [here](https://docs.google.com/document/d/170R8l0su_jjK_
 ### Frontend Development
 
 The frontend is a Next.js application with TypeScript. Key features:
+
 - Type-safe API calls
 - Real-time updates
 - Responsive design with TailwindCSS
 
 Directory structure:
+
 - `src/app/`: Next.js app directory with pages
 - `src/components/`: Components directory
 - `src/interfaces/`: TypeScript interfaces for type safety
@@ -58,9 +64,10 @@ Directory structure:
 
 ### Backend Development
 
-The backend is a FastAPI application with PostgreSQL. 
+The backend is a FastAPI application with PostgreSQL.
 
 Directory structure:
+
 - `app/main.py`: FastAPI application and routes
 - `app/models.py`: SQLAlchemy database models
 - `app/schemas.py`: Pydantic schemas for request/response validation
@@ -72,13 +79,12 @@ Directory structure:
 - `GET /messages/`: List all messages
 - `POST /messages/`: Create a new message
 
-
 ## Docker Configuration
 
 The application uses Docker Compose to manage three services:
+
 1. Frontend (Next.js)
 2. Backend (FastAPI)
 3. Database (PostgreSQL)
 
 Each service has its own Dockerfile and is configured to work together through Docker networking.
-
