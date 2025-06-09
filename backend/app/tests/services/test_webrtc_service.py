@@ -47,7 +47,7 @@ class MockAudioFrame:
     def __init__(
         self,
         rate: int = 48000,
-        sample_data: bytes = b'\x00\x00' * 1024,  # 1024 bytes of 0x0000
+        sample_data: bytes = b'\x00\x01' * 100,  # 200 bytes, 100 int16 samples
     ) -> None:
         self.rate = rate
         self._sample_data = sample_data
@@ -72,7 +72,8 @@ def mock_data_channel() -> RTCDataChannel:
     channel.close = MagicMock()
     channel.readyState = 'open'
     channel.label = 'transcript'
-    channel.send = AsyncMock()
+    # Use regular MagicMock for send method to avoid warnings
+    channel.send = MagicMock()
     return channel
 
 
@@ -219,7 +220,6 @@ class TestWebRTCAudioLoop:
     def test_audio_loop_creation(self, audio_loop: WebRTCAudioLoop) -> None:
         """Test AudioLoop creation"""
         assert audio_loop.peer_id == 'test_peer'
-        assert audio_loop.is_running is False
         assert audio_loop.audio_in_queue is None
         assert audio_loop.audio_out_queue is None
 
@@ -243,18 +243,16 @@ class TestWebRTCAudioLoop:
         # Test start
         await audio_loop.start(mock_track, mock_peer)
 
-        assert audio_loop.is_running is True
+        assert audio_loop._main_task is not None
+        assert not audio_loop._main_task.done()
         assert audio_loop.webrtc_track == mock_track
         assert audio_loop.peer == mock_peer
         assert audio_loop.audio_in_queue is not None
         assert audio_loop.audio_out_queue is not None
-        assert len(audio_loop._tasks) == 3  # Three async tasks
 
         # Test stop
         await audio_loop.stop()
-
-        assert audio_loop.is_running is False
-        assert len(audio_loop._tasks) == 0
+        await asyncio.sleep(0.1)
 
     @pytest.mark.asyncio
     async def test_receive_audio_from_gemini(self, audio_loop: WebRTCAudioLoop) -> None:
@@ -270,6 +268,7 @@ class TestWebRTCAudioLoop:
         assert received_data == test_audio_data
 
         await audio_loop.stop()
+        await asyncio.sleep(0.1)
 
     @pytest.mark.asyncio
     async def test_handle_transcript(self, audio_loop: WebRTCAudioLoop) -> None:
@@ -295,13 +294,17 @@ class TestGeminiSessionManager:
     ) -> None:
         """Test creating a session"""
         mock_client = MagicMock()
-        mock_session = AsyncMock()
-        mock_client.aio.live.connect.return_value.__aenter__.return_value = mock_session
+        # Create a proper mock session that doesn't leave coroutines hanging
+        mock_session = MagicMock()
+        mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+        mock_session.__aexit__ = AsyncMock(return_value=None)
+        mock_client.aio.live.connect.return_value = mock_session
         mock_get_client.return_value = mock_client
 
         gemini_session_manager.client = mock_client
         mock_audio_loop = MagicMock(spec=WebRTCAudioLoop)
-
+        # Use regular MagicMock instead of AsyncMock for non-async method
+        mock_audio_loop.set_send_to_gemini_callback = MagicMock()
         session = await gemini_session_manager.create_session('test_peer', mock_audio_loop)
 
         assert session == mock_session
@@ -405,11 +408,16 @@ class TestWebRTCService:
         service.peer_manager.peers['test_peer'] = mock_peer
 
         with patch.object(service.gemini_manager, 'create_session') as mock_create_session:
-            await service._handle_audio_track(mock_track, 'test_peer')
+            audio_loop = WebRTCAudioLoop('test_peer')
+            audio_loop.set_send_to_gemini_callback(MagicMock())
+            with patch('app.services.webrtc_service.WebRTCAudioLoop', return_value=audio_loop):
+                await service._handle_audio_track(mock_track, 'test_peer')
 
             # Verify audio loop is created
             assert hasattr(mock_peer, 'audio_loop')
             assert isinstance(mock_peer.audio_loop, WebRTCAudioLoop)
+            assert mock_peer.audio_loop._main_task is not None
+            assert not mock_peer.audio_loop._main_task.done()
 
             # Verify Gemini session is created
             mock_create_session.assert_called_once()
@@ -484,7 +492,8 @@ class TestIntegration:
         mock_sender = MagicMock()
         mock_transceiver.sender = mock_sender
         mock_peer.transceiver = mock_transceiver
-        mock_peer.data_channel = AsyncMock()
+        # Use regular MagicMock for data_channel to avoid warnings
+        mock_peer.data_channel = MagicMock()
 
         service.peer_manager.peers['test_peer'] = mock_peer
 
@@ -495,7 +504,8 @@ class TestIntegration:
             # Verify audio loop is created and started
             assert hasattr(mock_peer, 'audio_loop')
             assert isinstance(mock_peer.audio_loop, WebRTCAudioLoop)
-            assert mock_peer.audio_loop.is_running
+            assert mock_peer.audio_loop._main_task is not None
+            assert not mock_peer.audio_loop._main_task.done()
 
             # Cleanup
             await service.close_peer_connection('test_peer')
@@ -514,19 +524,33 @@ class TestIntegration:
         mock_resample_audio.return_value = b'resampled_data'
 
         mock_track = MockMediaStreamTrack()
-        mock_frame = MockAudioFrame(rate=44100)  # Test resampling with different sample rate
+        mock_frame = MockAudioFrame(rate=44100, sample_data=b'\x01\x02' * 100)
         mock_track.add_frame(mock_frame)
 
         mock_peer = MagicMock(spec=Peer)
         mock_transceiver = MagicMock()
+        mock_sender = MagicMock()
+        mock_transceiver.sender = mock_sender
         mock_peer.transceiver = mock_transceiver
 
-        await audio_loop.start(mock_track, mock_peer)
+        # mock send_to_gemini_callback
+        send_to_gemini_callback = AsyncMock()
+        audio_loop.set_send_to_gemini_callback(send_to_gemini_callback)
 
-        # Wait a short time for tasks to run
+        await audio_loop.start(mock_track, mock_peer)
+        await asyncio.sleep(0.2)
+
+        # assert audio processing pipeline
+        mock_resample_audio.assert_called()
+        send_to_gemini_callback.assert_called()
+
+        # mock Gemini return audio
+        await audio_loop.receive_audio_from_gemini(b'some_pcm_data')
         await asyncio.sleep(0.1)
 
-        # Verify audio processing
-        assert not audio_loop.audio_out_queue.empty()
+        # assert Gemini->WebRTC pipeline
+        mock_pcm_to_opus.assert_called()
+        mock_sender.replaceTrack.assert_called()
 
         await audio_loop.stop()
+        await asyncio.sleep(0.1)

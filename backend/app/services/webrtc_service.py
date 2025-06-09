@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 
 from aiortc import (
@@ -138,9 +139,9 @@ class WebRTCAudioLoop:
         self.audio_in_queue: asyncio.Queue | None = None  # Audio received from Gemini
         self.audio_out_queue: asyncio.Queue | None = None  # Audio to send to Gemini
 
-        # Task management, inspired by AudioLoop
-        self.is_running = False
-        self._tasks: list[asyncio.Task] = []
+        # TaskGroup for managing tasks
+        self._tg: asyncio.TaskGroup | None = None
+        self._main_task: asyncio.Task | None = None
 
         # WebRTC specific attributes
         self.webrtc_track: MediaStreamTrack | None = None
@@ -154,46 +155,34 @@ class WebRTCAudioLoop:
         self.on_transcript_callback = callback
 
     async def start(self, webrtc_track: MediaStreamTrack, peer: Peer) -> None:
-        """Start audio stream processing, similar to AudioLoop.run()"""
-        if self.is_running:
-            return
+        """Start audio stream processing, use TaskGroup"""
 
         self.webrtc_track = webrtc_track
         self.peer = peer
 
-        # Initialize queues, inspired by AudioLoop
+        # Initialize queues
         self.audio_in_queue = asyncio.Queue()
-        self.audio_out_queue = asyncio.Queue(
-            maxsize=5
-        )  # Limit queue size to prevent memory buildup
+        self.audio_out_queue = asyncio.Queue(maxsize=5)
 
-        self.is_running = True
-
-        # Start audio processing tasks, similar to AudioLoop
-        self._tasks = [
-            asyncio.create_task(self._listen_webrtc_audio()),  # Like AudioLoop.listen_audio()
-            asyncio.create_task(self._send_realtime()),  # Like AudioLoop.send_realtime()
-            asyncio.create_task(self._play_webrtc_audio()),  # Like AudioLoop.play_audio()
-        ]
+        self._main_task = asyncio.create_task(self._run_tasks())
 
         logger.info(f'WebRTC Audio Loop started for peer {self.peer_id}')
 
+    async def _run_tasks(self) -> None:
+        try:
+            async with asyncio.TaskGroup() as tg:
+                tg.create_task(self._listen_webrtc_audio())
+                tg.create_task(self._send_realtime())
+                tg.create_task(self._play_webrtc_audio())
+        except Exception as e:
+            logger.error(f'WebRTCAudioLoop main task error for peer {self.peer_id}: {e}')
+
     async def stop(self) -> None:
-        """Stop audio stream processing, similar to AudioLoop cleanup logic"""
-        self.is_running = False
+        """Stop audio stream processing, TaskGroup cleanup"""
 
-        # Cancel all tasks
-        for task in self._tasks:
-            if not task.done():
-                task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await self._main_task
 
-        # Wait for all tasks to finish
-        if self._tasks:
-            await asyncio.gather(*self._tasks, return_exceptions=True)
-
-        self._tasks.clear()
-
-        # Clear queues (similar to AudioLoop interruption cleanup)
         if self.audio_in_queue:
             while not self.audio_in_queue.empty():
                 try:
@@ -206,28 +195,34 @@ class WebRTCAudioLoop:
     async def _listen_webrtc_audio(self) -> None:
         """Capture audio from WebRTC, replaces AudioLoop.listen_audio()"""
         try:
-            while self.is_running and self.webrtc_track:
-                # Receive audio frame
-                frame = await self.webrtc_track.recv()
+            while True:
+                try:
+                    # Receive audio frame
+                    frame = await self.webrtc_track.recv()
+                    print('Received frame:', frame)
 
-                # Convert to bytes
-                audio_array = frame.to_ndarray()
-                audio_bytes = audio_array.tobytes()
+                    # Convert to bytes
+                    audio_array = frame.to_ndarray()
+                    audio_bytes = audio_array.tobytes()
 
-                # Resample to Gemini required sample rate
-                if frame.rate != GEMINI_SAMPLE_RATE:
-                    audio_bytes = resample_audio(audio_bytes, frame.rate, GEMINI_SAMPLE_RATE)
+                    # Resample to Gemini required sample rate
+                    if frame.rate != GEMINI_SAMPLE_RATE:
+                        audio_bytes = resample_audio(audio_bytes, frame.rate, GEMINI_SAMPLE_RATE)
 
-                # Put into queue, similar to AudioLoop
-                await self.audio_out_queue.put({'data': audio_bytes, 'mime_type': 'audio/pcm'})
+                    # Put into queue, similar to AudioLoop
+                    await self.audio_out_queue.put({'data': audio_bytes, 'mime_type': 'audio/pcm'})
 
-        except Exception as e:
-            logger.error(f'Error in WebRTC audio listening for peer {self.peer_id}: {e}')
+                except StopAsyncIteration:
+                    logger.info(f'Audio track ended for peer {self.peer_id}')
+                    break
+        except asyncio.CancelledError:
+            logger.info(f'Audio track ended for peer {self.peer_id}')
+            raise
 
     async def _send_realtime(self) -> None:
         """Send audio to Gemini, inspired by AudioLoop.send_realtime()"""
         try:
-            while self.is_running and self.audio_out_queue:
+            while self.audio_out_queue:
                 # Get audio data from queue
                 audio_msg = await self.audio_out_queue.get()
 
@@ -241,7 +236,7 @@ class WebRTCAudioLoop:
     async def _play_webrtc_audio(self) -> None:
         """Play audio to WebRTC, replaces AudioLoop.play_audio()"""
         try:
-            while self.is_running and self.audio_in_queue and self.peer:
+            while self.audio_in_queue and self.peer:
                 # Get PCM data from queue
                 pcm_data = await self.audio_in_queue.get()
 
@@ -260,13 +255,13 @@ class WebRTCAudioLoop:
         except Exception as e:
             logger.error(f'Error in playing WebRTC audio for peer {self.peer_id}: {e}')
 
-    def set_send_to_gemini_callback(self, callback: Callable) -> None:
+    def set_send_to_gemini_callback(self, callback: Callable[[dict], Awaitable[None]]) -> None:
         """Set callback for sending audio to Gemini"""
         self._send_to_gemini_callback = callback
 
     async def receive_audio_from_gemini(self, audio_data: bytes) -> None:
         """Receive audio data from Gemini"""
-        if self.audio_in_queue and self.is_running:
+        if self.audio_in_queue:
             await self.audio_in_queue.put(audio_data)
 
     async def handle_transcript(self, transcript: str) -> None:
@@ -296,9 +291,10 @@ class GeminiSessionManager:
         self.audio_loops[peer_id] = audio_loop
 
         # Set callback
-        audio_loop.set_send_to_gemini_callback(
-            lambda audio_msg: self._send_audio_to_gemini(session, audio_msg)
-        )
+        async def send_to_gemini_callback(audio_msg: dict) -> None:
+            await self._send_audio_to_gemini(session, audio_msg)
+
+        audio_loop.set_send_to_gemini_callback(send_to_gemini_callback)
 
         # Start receiving task, inspired by AudioLoop.receive_audio()
         receive_task = asyncio.create_task(
@@ -475,7 +471,7 @@ class WebRTCService:
         try:
             peer = self.peer_manager.get_peer(peer_id)
             if peer and peer.data_channel:
-                await peer.data_channel.send(json.dumps({'transcript': transcript}))
+                peer.data_channel.send(json.dumps({'transcript': transcript}))
                 logger.info(f'Sent transcript to peer {peer_id}: {transcript}')
         except Exception as e:
             logger.error(f'Error sending transcript to peer {peer_id}: {e}')
