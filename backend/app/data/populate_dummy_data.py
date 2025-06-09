@@ -2,7 +2,6 @@ from sqlmodel import Session, SQLModel, text
 
 from app.data import (
     get_dummy_app_configs,
-    get_dummy_app_reviews,
     get_dummy_confidence_areas,
     get_dummy_conversation_categories,
     get_dummy_conversation_turns,
@@ -12,6 +11,7 @@ from app.data import (
     get_dummy_languages,
     get_dummy_learning_styles,
     get_dummy_ratings,
+    get_dummy_reviews,
     get_dummy_session_lengths,
     get_dummy_training_cases,
     get_dummy_training_preparations,
@@ -75,10 +75,6 @@ def populate_data() -> None:
         user_goals = get_dummy_user_goals(user_profiles, goals)
         session.add_all(user_goals)
 
-        # Populate App Reviews
-        app_reviews = get_dummy_app_reviews(user_profiles)
-        session.add_all(app_reviews)
-
         # Populate Training Cases
         training_cases = get_dummy_training_cases(user_profiles, difficulty_levels)
         session.add_all(training_cases)
@@ -112,6 +108,10 @@ def populate_data() -> None:
             training_sessions, training_cases
         )  # Pass both sessions and cases
         session.add_all(ratings)
+
+        # Populate Reviews
+        reviews = get_dummy_reviews(user_profiles, training_sessions)
+        session.add_all(reviews)
 
         # Commit all data
         session.commit()

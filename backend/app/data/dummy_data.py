@@ -2,7 +2,6 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.models.app_config import AppConfig, ConfigType
-from app.models.app_review import AppReview
 from app.models.confidence_area import ConfidenceArea
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_turn import ConversationTurn, SpeakerEnum
@@ -12,6 +11,7 @@ from app.models.goal import Goal
 from app.models.language import Language  # Import the Language model
 from app.models.learning_style import LearningStyle
 from app.models.rating import Rating
+from app.models.review import Review
 from app.models.session_length import SessionLength
 from app.models.training_case import TrainingCase, TrainingCaseStatus
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
@@ -156,51 +156,62 @@ def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) ->
     ]
 
 
-def get_dummy_app_reviews(user_profiles: list[UserProfile]) -> list[AppReview]:
+def get_dummy_reviews(
+    user_profiles: list[UserProfile], training_sessions: list[TrainingSession]
+) -> list[Review]:
     return [
-        AppReview(
+        Review(
             id=uuid4(),
             user_id=user_profiles[0].id,
+            session_id=training_sessions[0].id,  # Link to the first training session
             rating=5,
             comment='Excellent service!',
         ),
-        AppReview(
+        Review(
             id=uuid4(),
             user_id=user_profiles[1].id,
+            session_id=training_sessions[1].id,  # Link to a second training session
             rating=2,
             comment='I found the sessions a bit too fast-paced.',
         ),
-        AppReview(
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            rating=4,
+            comment='Good overall, but could use more examples.',
+        ),
+        Review(
             id=uuid4(),
             user_id=user_profiles[0].id,
             rating=4,
             comment='Great experience overall, but could use more examples.',
         ),
-        AppReview(
+        Review(
             id=uuid4(),
             user_id=user_profiles[1].id,
             rating=3,
             comment='Good, but I expected more personalized feedback.',
         ),
-        AppReview(
+        Review(
             id=uuid4(),
             user_id=user_profiles[0].id,
+            session_id=training_sessions[1].id,  # Link to a second training session
             rating=5,
-            comment='Loved the interactive sessions and practical exercises!',
+            comment='Loved the interactive session and practical exercise!',
         ),
-        AppReview(
+        Review(
             id=uuid4(),
             user_id=user_profiles[1].id,
             rating=1,
             comment='Did not meet my expectations, too basic.',
         ),
-        AppReview(
+        Review(
             id=uuid4(),
             user_id=user_profiles[0].id,
             rating=4,
             comment='Very informative, but the pace was a bit slow.',
         ),
-        AppReview(
+        Review(
             id=uuid4(),
             user_id=user_profiles[1].id,
             rating=3,

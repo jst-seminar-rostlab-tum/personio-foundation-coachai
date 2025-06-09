@@ -1,5 +1,4 @@
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
-from app.models.app_review import AppReview, AppReviewCreate, AppReviewRead
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from app.models.conversation_category import (
     ConversationCategory,
@@ -18,6 +17,7 @@ from app.models.language import Language, LanguageCreate, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
+from app.models.review import Review, ReviewCreate, ReviewRead
 from app.models.session_length import SessionLength, SessionLengthCreate, SessionLengthRead
 from app.models.training_case import (
     TrainingCase,
@@ -126,7 +126,7 @@ __all__ = [
     'AppConfigCreate',
     'AppConfigRead',
     'ConfigType',
-    'AppReview',
-    'AppReviewCreate',
-    'AppReviewRead',
+    'Review',
+    'ReviewCreate',
+    'ReviewRead',
 ]
