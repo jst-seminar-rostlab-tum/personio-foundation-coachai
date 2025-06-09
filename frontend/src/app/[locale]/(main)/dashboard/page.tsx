@@ -54,7 +54,7 @@ export default function DashboardPage() {
       </section>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard value={56} label={t('userStats.totalSessions')} />
+        <StatCard value={57} label={t('userStats.totalSessions')} />
         <StatCard value="17.2h" label={t('userStats.trainingTime')} />
         <StatCard value="37d" label={t('userStats.currentStreak')} />
         <StatCard value="89%" label={t('userStats.avgScore')} />
