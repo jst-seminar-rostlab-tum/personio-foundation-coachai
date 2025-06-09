@@ -5,7 +5,10 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.camel_case import CamelModel
+from app.models.training_session_feedback import TrainingSessionFeedbackMetrics
 
 from app.models.training_session_feedback import TrainingSessionFeedbackMetrics
 
@@ -17,7 +20,7 @@ if TYPE_CHECKING:
     from app.models.training_session_feedback import TrainingSessionFeedback
 
 
-class TrainingSession(SQLModel, table=True):  # `table=True` makes it a database table
+class TrainingSession(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     case_id: UUID = Field(foreign_key='trainingcase.id')  # Foreign key to TrainingCase
     scheduled_at: datetime | None = None
@@ -48,7 +51,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingSe
 
 
 # Schema for creating a new TrainingSession
-class TrainingSessionCreate(SQLModel):
+class TrainingSessionCreate(CamelModel):
     case_id: UUID
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
@@ -58,7 +61,7 @@ class TrainingSessionCreate(SQLModel):
 
 
 # Schema for reading TrainingSession data
-class TrainingSessionRead(SQLModel):
+class TrainingSessionRead(CamelModel):
     id: UUID
     case_id: UUID
     scheduled_at: datetime | None
