@@ -280,6 +280,9 @@ class TestWebRTCAudioLoop:
 
         callback.assert_called_once_with('test transcript', 'test_peer')
 
+        await audio_loop.stop()
+        await asyncio.sleep(0.1)
+
 
 # =============================================================================
 # GeminiSessionManager class tests
@@ -422,6 +425,11 @@ class TestWebRTCService:
             # Verify Gemini session is created
             mock_create_session.assert_called_once()
 
+            # stop audio_loop
+            if hasattr(service.peer_manager.peers['test_peer'], 'audio_loop'):
+                await service.peer_manager.peers['test_peer'].audio_loop.stop()
+                await asyncio.sleep(0.1)
+
     @pytest.mark.asyncio
     async def test_handle_transcript(
         self, service: WebRTCService, mock_data_channel: RTCDataChannel
@@ -509,6 +517,12 @@ class TestIntegration:
 
             # Cleanup
             await service.close_peer_connection('test_peer')
+            # stop audio_loop
+            if 'test_peer' in service.peer_manager.peers:
+                peer = service.peer_manager.peers['test_peer']
+                if hasattr(peer, 'audio_loop'):
+                    await peer.audio_loop.stop()
+                    await asyncio.sleep(0.1)
 
     @pytest.mark.asyncio
     @patch('app.services.webrtc_service.resample_audio')

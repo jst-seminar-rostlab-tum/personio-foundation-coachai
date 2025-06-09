@@ -180,8 +180,11 @@ class WebRTCAudioLoop:
     async def stop(self) -> None:
         """Stop audio stream processing, TaskGroup cleanup"""
 
-        with contextlib.suppress(asyncio.CancelledError):
-            await self._main_task
+        if self._main_task:
+            self._main_task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await self._main_task
+            self._main_task = None
 
         if self.audio_in_queue:
             while not self.audio_in_queue.empty():
