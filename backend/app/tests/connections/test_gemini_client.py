@@ -1,13 +1,14 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from backend.app.connections.gemini_client import (
+from dotenv import load_dotenv
+from google.genai.types import Content, Part
+
+from app.connections.gemini_client import (
     MODEL,
     GeminiStreamConnectionError,
     get_client,
 )
-from dotenv import load_dotenv
-from google.genai.types import Content, Part
 
 load_dotenv()
 
