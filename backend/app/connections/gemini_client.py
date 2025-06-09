@@ -35,7 +35,7 @@ ENABLE_AI = settings.ENABLE_AI
 FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
 
 
-MODEL = 'gemini-2.0-flash-001'
+MODEL = 'models/gemini-2.0-flash-live-001'
 
 LIVE_CONFIG = LiveConnectConfig(
     system_instruction=Content(
