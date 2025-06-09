@@ -7,7 +7,7 @@ from sqlmodel import select
 
 from app.database import get_db_session
 from app.models.conversation_scenario import ConversationScenario
-from app.models.training_preparation import (
+from app.models.scenario_preparation import (
     ScenarioPreparation,
     ScenarioPreparationCreate,
     ScenarioPreparationRead,

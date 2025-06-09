@@ -14,9 +14,9 @@ from app.models.conversation_scenario import (
     ConversationScenarioCreate,
     ConversationScenarioRead,
 )
-from app.models.training_preparation import ScenarioPreparation, ScenarioPreparationRead
-from app.schemas.training_preparation_schema import ScenarioPreparationRequest
-from app.services.training_preparation_service import (
+from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationRead
+from app.schemas.scenario_preparation_schema import ScenarioPreparationRequest
+from app.services.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,
 )

@@ -84,11 +84,11 @@ def populate_data() -> None:
         conversation_categories = get_dummy_conversation_categories()
         db_session.add_all(conversation_categories)
 
-        # Populate Training Sessions
+        # Populate Sessions
         sessions = get_dummy_sessions(conversation_scenarios)
         db_session.add_all(sessions)
 
-        # Commit training sessions to get their IDs
+        # Commit sessions to get their IDs
         db_session.commit()
 
         # Populate Conversation Turns

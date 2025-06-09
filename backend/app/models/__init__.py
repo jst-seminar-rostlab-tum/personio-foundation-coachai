@@ -18,6 +18,12 @@ from app.models.language import Language, LanguageCreate, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
+from app.models.scenario_preparation import (
+    ScenarioPreparation,
+    ScenarioPreparationCreate,
+    ScenarioPreparationRead,
+    ScenarioPreparationStatus,
+)
 from app.models.session import (
     Session,
     SessionCreate,
@@ -38,12 +44,6 @@ from app.models.session_turn import (
     SessionTurn,
     SessionTurnCreate,
     SessionTurnRead,
-)
-from app.models.training_preparation import (
-    ScenarioPreparation,
-    ScenarioPreparationCreate,
-    ScenarioPreparationRead,
-    ScenarioPreparationStatus,
 )
 from app.models.user_confidence_score import (
     ConfidenceScoreRead,

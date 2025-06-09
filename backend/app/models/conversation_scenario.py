@@ -13,8 +13,8 @@ from app.models.camel_case import CamelModel
 if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
     from app.models.difficulty_level import DifficultyLevel
+    from app.models.scenario_preparation import ScenarioPreparation
     from app.models.session import Session
-    from app.models.training_preparation import ScenarioPreparation
     from app.models.user_profile import UserProfile
 
 

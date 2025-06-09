@@ -15,11 +15,11 @@ from app.routers import (
     learning_style_route,
     personalization_options_route,
     rating_route,
+    scenario_preparation_route,
     session_feedback_route,
     session_length_route,
     session_route,
     session_turn_route,
-    training_preparation_route,
     user_confidence_score_route,
     user_goals_route,
     user_profile_route,
@@ -40,7 +40,7 @@ app.include_router(language_route.router)
 app.include_router(conversation_category_route.router)
 app.include_router(conversation_scenario_route.router)
 app.include_router(session_route.router)
-app.include_router(training_preparation_route.router)
+app.include_router(scenario_preparation_route.router)
 app.include_router(session_turn_route.router)
 app.include_router(session_feedback_route.router)
 app.include_router(rating_route.router)

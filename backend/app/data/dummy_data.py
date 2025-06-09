@@ -11,6 +11,7 @@ from app.models.goal import Goal
 from app.models.language import Language  # Import the Language model
 from app.models.learning_style import LearningStyle
 from app.models.rating import Rating
+from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
 from app.models.session_feedback import (
     FeedbackStatusEnum,
@@ -18,7 +19,6 @@ from app.models.session_feedback import (
 )
 from app.models.session_length import SessionLength
 from app.models.session_turn import SessionTurn, SpeakerEnum
-from app.models.training_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import UserGoal
 from app.models.user_profile import UserProfile, UserRole

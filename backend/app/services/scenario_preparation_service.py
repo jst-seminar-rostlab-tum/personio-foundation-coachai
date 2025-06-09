@@ -7,8 +7,8 @@ from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
-from app.models.training_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.schemas.training_preparation_schema import (
+from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
+from app.schemas.scenario_preparation_schema import (
     ChecklistRequest,
     KeyConcept,
     KeyConceptOutput,
