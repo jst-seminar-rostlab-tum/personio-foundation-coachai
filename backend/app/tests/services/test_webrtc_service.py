@@ -47,7 +47,7 @@ class MockAudioFrame:
     def __init__(
         self,
         rate: int = 48000,
-        sample_data: bytes = b'mock_audio_data',
+        sample_data: bytes = b'\x00\x00' * 1024,  # 1024 bytes of 0x0000
     ) -> None:
         self.rate = rate
         self._sample_data = sample_data
