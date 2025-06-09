@@ -132,11 +132,14 @@ This creates a new migration file in the `backend/alembic/versions/` directory w
 # Apply the migration
 uv run alembic upgrade head
 
-# Verify model/migration consistency
-uv run alembic check
-
 # Test rollback functionality
 uv run alembic downgrade -1
+
+# Apply the migration again
+uv run alembic upgrade head
+
+# Verify model/migration consistency
+uv run alembic check
 ```
 
 ##### 6. Update Dummy Data for Database
