@@ -1,9 +1,10 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from sqlmodel import Session, func, select
+from sqlmodel import Session as DBSession
+from sqlmodel import func, select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.admin_dashboard_stats import AdminDashboardStats, AdminDashboardStatsRead
 from app.models.app_config import AppConfig
 from app.models.review import Review
@@ -14,26 +15,26 @@ router = APIRouter(prefix='/admin-stats', tags=['Admin Dashboard'])
 
 @router.get('/', response_model=AdminDashboardStatsRead)
 def get_admin_dashboard_stats(
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> AdminDashboardStatsRead:
     # Get total users
-    total_users = session.exec(select(func.count()).select_from(UserProfile)).one()
+    total_users = db_session.exec(select(func.count()).select_from(UserProfile)).one()
 
     # Get total reviews
-    total_reviews = session.exec(select(func.count()).select_from(Review)).one()
+    total_reviews = db_session.exec(select(func.count()).select_from(Review)).one()
 
     # Get daily token limit from app_config with key 'dailyUserTokenLimit'
-    daily_token_limit = session.exec(
+    daily_token_limit = db_session.exec(
         select(AppConfig.value).where(AppConfig.key == 'dailyUserTokenLimit')
     ).first()
 
     # Get admin stats
-    stats = session.exec(select(AdminDashboardStats)).first()
+    stats = db_session.exec(select(AdminDashboardStats)).first()
     if not stats:
         stats = AdminDashboardStats()
-        session.add(stats)
-        session.commit()
-        session.refresh(stats)
+        db_session.add(stats)
+        db_session.commit()
+        db_session.refresh(stats)
 
     return AdminDashboardStatsRead(
         total_users=total_users,
