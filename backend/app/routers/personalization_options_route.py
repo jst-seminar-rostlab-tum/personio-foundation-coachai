@@ -1,9 +1,10 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from sqlmodel import Session, select
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaRead
 from app.models.experience import Experience, ExperienceRead
 from app.models.goal import Goal, GoalRead
@@ -11,25 +12,23 @@ from app.models.language import Language, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.role import Role, RoleRead
-from app.models.session_length import SessionLength, SessionLengthRead
 
 router = APIRouter(prefix='/personalization-options', tags=['Personalization Options'])
 
 
 @router.get('/', response_model=PersonalizationOptionRead)
 def get_personalization_options(
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> PersonalizationOptionRead:
     """
     Retrieve all personalization options related to the user.
     """
-    experiences = session.exec(select(Experience)).all()
-    roles = session.exec(select(Role)).all()
-    goals = session.exec(select(Goal)).all()
-    confidence_areas = session.exec(select(ConfidenceArea)).all()
-    languages = session.exec(select(Language)).all()
-    learning_styles = session.exec(select(LearningStyle)).all()
-    session_lengths = session.exec(select(SessionLength)).all()
+    experiences = db_session.exec(select(Experience)).all()
+    roles = db_session.exec(select(Role)).all()
+    goals = db_session.exec(select(Goal)).all()
+    confidence_areas = db_session.exec(select(ConfidenceArea)).all()
+    languages = db_session.exec(select(Language)).all()
+    learning_styles = db_session.exec(select(LearningStyle)).all()
 
     return PersonalizationOptionRead(
         roles=[RoleRead(**roles.dict()) for roles in roles],
@@ -62,13 +61,5 @@ def get_personalization_options(
                 description=learning_style.description,
             )
             for learning_style in learning_styles
-        ],
-        session_lengths=[
-            SessionLengthRead(
-                id=session_length.id,
-                label=session_length.label,
-                description=session_length.description,
-            )
-            for session_length in session_lengths
         ],
     )

@@ -4,7 +4,7 @@ from uuid import uuid4
 from app.models.app_config import AppConfig, ConfigType
 from app.models.confidence_area import ConfidenceArea
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_turn import ConversationTurn, SpeakerEnum
+from app.models.conversation_scenario import ConversationScenario, ConversationScenarioStatus
 from app.models.difficulty_level import DifficultyLevel  # Assuming this is the new model
 from app.models.experience import Experience
 from app.models.goal import Goal
@@ -12,14 +12,10 @@ from app.models.language import Language  # Import the Language model
 from app.models.learning_style import LearningStyle
 from app.models.rating import Rating
 from app.models.role import Role
-from app.models.session_length import SessionLength
-from app.models.training_case import TrainingCase, TrainingCaseStatus
-from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
-from app.models.training_session import TrainingSession
-from app.models.training_session_feedback import (
-    FeedbackStatusEnum,
-    TrainingSessionFeedback,
-)
+from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
+from app.models.session import Session
+from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
+from app.models.session_turn import SessionTurn, SpeakerEnum
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import UserGoal
 from app.models.user_profile import UserProfile
@@ -59,29 +55,6 @@ def get_dummy_learning_styles() -> list[LearningStyle]:
             id=uuid4(),
             label='Kinesthetic',
             description='Prefers learning through hands-on activities and physical engagement.',
-        ),
-    ]
-
-
-def get_dummy_session_lengths() -> list[SessionLength]:
-    """
-    Generate dummy SessionLength data.
-    """
-    return [
-        SessionLength(
-            id=uuid4(),
-            label='30 minutes',
-            description='Short session length for quick learning.',
-        ),
-        SessionLength(
-            id=uuid4(),
-            label='1 hour',
-            description='Standard session length for detailed learning.',
-        ),
-        SessionLength(
-            id=uuid4(),
-            label='2 hours',
-            description='Extended session length for in-depth learning.',
         ),
     ]
 
@@ -127,7 +100,6 @@ def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
 def get_dummy_user_profiles(
     experiences: list[Experience],
     learning_styles: list[LearningStyle],
-    session_lengths: list[SessionLength],
     roles: list[Role],
 ) -> list[UserProfile]:
     """
@@ -140,7 +112,6 @@ def get_dummy_user_profiles(
             role_id=roles[0].id,
             experience_id=experiences[0].id,
             preferred_learning_style_id=learning_styles[0].id,
-            preferred_session_length_id=session_lengths[0].id,
             store_conversations=False,
             total_sessions=32,
             training_time=4.5,
@@ -154,7 +125,6 @@ def get_dummy_user_profiles(
             role_id=roles[1].id,
             experience_id=experiences[1].id,
             preferred_learning_style_id=learning_styles[1].id,
-            preferred_session_length_id=session_lengths[1].id,
             store_conversations=True,
             total_sessions=5,
             training_time=4.2,
@@ -172,11 +142,11 @@ def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) ->
     ]
 
 
-def get_dummy_training_cases(
+def get_dummy_conversation_scenarios(
     user_profiles: list[UserProfile], difficulty_levels: list[DifficultyLevel]
-) -> list[TrainingCase]:
+) -> list[ConversationScenario]:
     return [
-        TrainingCase(
+        ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=None,
@@ -187,11 +157,11 @@ def get_dummy_training_cases(
             difficulty_id=difficulty_levels[0].id,
             tone='Friendly',
             complexity='Low',
-            status=TrainingCaseStatus.draft,  # Use the enum instead of a string
+            status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
-        TrainingCase(
+        ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[1].id,
             category_id=None,
@@ -202,7 +172,7 @@ def get_dummy_training_cases(
             difficulty_id=difficulty_levels[1].id,
             tone='Professional',
             complexity='Medium',
-            status=TrainingCaseStatus.draft,  # Use the enum instead of a string
+            status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -210,18 +180,18 @@ def get_dummy_training_cases(
 
 
 def get_dummy_ratings(
-    training_sessions: list[TrainingSession], training_cases: list[TrainingCase]
+    sessions: list[Session], conversation_scenarios: list[ConversationScenario]
 ) -> list[Rating]:
-    # Create a mapping of case_id to user_id from the training_cases
-    case_to_user_map = {case.id: case.user_id for case in training_cases}
+    # Create a mapping of scenario_id to user_id from the conversation_scenarios
+    scenario_to_user_map = {scenario.id: scenario.user_id for scenario in conversation_scenarios}
 
     return [
         Rating(
             id=uuid4(),
-            session_id=training_sessions[0].id,  # Link to the first training session
-            user_id=case_to_user_map[
-                training_sessions[0].case_id
-            ],  # Get user_id from the training case
+            session_id=sessions[0].id,  # Link to the first session
+            user_id=scenario_to_user_map[
+                sessions[0].scenario_id
+            ],  # Get user_id from the conversation scenario
             score=5,
             comment='Excellent session!',
             created_at=datetime.now(UTC),
@@ -229,10 +199,10 @@ def get_dummy_ratings(
         ),
         Rating(
             id=uuid4(),
-            session_id=training_sessions[1].id,  # Link to the second training session
-            user_id=case_to_user_map[
-                training_sessions[1].case_id
-            ],  # Get user_id from the training case
+            session_id=sessions[1].id,  # Link to the second session
+            user_id=scenario_to_user_map[
+                sessions[1].scenario_id
+            ],  # Get user_id from the conversation scenario
             score=4,
             comment='Good session, but room for improvement.',
             created_at=datetime.now(UTC),
@@ -321,13 +291,13 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
     ]
 
 
-def get_dummy_conversation_turns(
-    training_sessions: list[TrainingSession],
-) -> list[ConversationTurn]:
+def get_dummy_session_turns(
+    sessions: list[Session],
+) -> list[SessionTurn]:
     return [
-        ConversationTurn(
+        SessionTurn(
             id=uuid4(),
-            session_id=training_sessions[0].id,  # Link to the first training session
+            session_id=sessions[0].id,  # Link to the first session
             speaker=SpeakerEnum.user,  # Use the SpeakerEnum for the speaker
             start_offset_ms=0,
             end_offset_ms=5000,
@@ -336,9 +306,9 @@ def get_dummy_conversation_turns(
             ai_emotion='neutral',
             created_at=datetime.now(UTC),
         ),
-        ConversationTurn(
+        SessionTurn(
             id=uuid4(),
-            session_id=training_sessions[1].id,  # Link to the second training session
+            session_id=sessions[1].id,  # Link to the second session
             speaker=SpeakerEnum.ai,  # Use the SpeakerEnum for the speaker
             start_offset_ms=5000,
             end_offset_ms=10000,
@@ -350,11 +320,11 @@ def get_dummy_conversation_turns(
     ]
 
 
-def get_dummy_training_sessions(training_cases: list[TrainingCase]) -> list[TrainingSession]:
+def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> list[Session]:
     return [
-        TrainingSession(
+        Session(
             id=uuid4(),
-            case_id=training_cases[0].id,
+            scenario_id=conversation_scenarios[0].id,
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
@@ -363,9 +333,9 @@ def get_dummy_training_sessions(training_cases: list[TrainingCase]) -> list[Trai
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
-        TrainingSession(
+        Session(
             id=uuid4(),
-            case_id=training_cases[1].id,
+            scenario_id=conversation_scenarios[1].id,
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
@@ -377,13 +347,13 @@ def get_dummy_training_sessions(training_cases: list[TrainingCase]) -> list[Trai
     ]
 
 
-def get_dummy_training_session_feedback(
-    training_sessions: list[TrainingSession],
-) -> list[TrainingSessionFeedback]:
+def get_dummy_session_feedback(
+    sessions: list[Session],
+) -> list[SessionFeedback]:
     return [
-        TrainingSessionFeedback(
+        SessionFeedback(
             id=uuid4(),
-            session_id=training_sessions[0].id,  # Link to the first training session
+            session_id=sessions[0].id,  # Link to the first session
             scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=85,
@@ -450,9 +420,9 @@ def get_dummy_training_session_feedback(
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
-        TrainingSessionFeedback(
+        SessionFeedback(
             id=uuid4(),
-            session_id=training_sessions[1].id,  # Link to the second training session
+            session_id=sessions[1].id,  # Link to the second session
             scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=90,
@@ -522,13 +492,13 @@ def get_dummy_training_session_feedback(
     ]
 
 
-def get_dummy_training_preparations(
-    training_cases: list[TrainingCase],
-) -> list[TrainingPreparation]:
+def get_dummy_scenario_preparations(
+    conversation_scenarios: list[ConversationScenario],
+) -> list[ScenarioPreparation]:
     return [
-        TrainingPreparation(
+        ScenarioPreparation(
             id=uuid4(),
-            case_id=training_cases[0].id,
+            scenario_id=conversation_scenarios[0].id,
             objectives=[
                 "Understand the client's needs",
                 'Prepare a solution proposal',
@@ -541,13 +511,13 @@ def get_dummy_training_preparations(
                 'Review client history',
                 'Prepare presentation slides',
             ],
-            status=TrainingPreparationStatus.pending,  # Use the enum for status
+            status=ScenarioPreparationStatus.pending,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
-        TrainingPreparation(
+        ScenarioPreparation(
             id=uuid4(),
-            case_id=training_cases[1].id,
+            scenario_id=conversation_scenarios[1].id,
             objectives=[
                 'Discuss project timeline',
                 'Finalize deliverables',
@@ -560,7 +530,7 @@ def get_dummy_training_preparations(
                 'Prepare project timeline',
                 'Review deliverables checklist',
             ],
-            status=TrainingPreparationStatus.pending,  # Use the enum for status
+            status=ScenarioPreparationStatus.pending,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),

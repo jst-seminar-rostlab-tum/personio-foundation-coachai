@@ -5,7 +5,6 @@ from app.models.goal import GoalRead
 from app.models.language import LanguageRead
 from app.models.learning_style import LearningStyleRead
 from app.models.role import RoleRead
-from app.models.session_length import SessionLengthRead
 
 
 class PersonalizationOptionRead(CamelModel):
@@ -15,4 +14,3 @@ class PersonalizationOptionRead(CamelModel):
     confidence_areas: list[ConfidenceAreaRead]
     languages: list[LanguageRead]
     learning_styles: list[LearningStyleRead]
-    session_lengths: list[SessionLengthRead]
