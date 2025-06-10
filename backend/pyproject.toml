@@ -30,6 +30,8 @@ dependencies = [
   "pgvector>=0.2.5,<0.4",
   "langchain-huggingface>=0.2.0",
   "langchain-postgres>=0.0.14",
+  "langchain-openai>=0.3.21",
+  "google-genai>=1.19.0",
 ]
 
 [tool.setuptools]

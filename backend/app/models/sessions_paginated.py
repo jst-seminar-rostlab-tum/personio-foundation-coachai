@@ -1,17 +1,17 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from app.models.camel_case import CamelModel
 
 
-class SkillScores(BaseModel):
+class SkillScores(CamelModel):
     structure: int
     empathy: int
     solution_focus: int
     clarity: int
 
 
-class TrainingSessionItem(BaseModel):
+class SessionItem(CamelModel):
     session_id: UUID
     title: str
     summary: str
@@ -20,9 +20,9 @@ class TrainingSessionItem(BaseModel):
     skills: SkillScores
 
 
-class PaginatedTrainingSessionsResponse(BaseModel):
+class PaginatedSessionsResponse(CamelModel):
     page: int
     limit: int
     total_pages: int
     total_sessions: int
-    sessions: list[TrainingSessionItem]
+    sessions: list[SessionItem]

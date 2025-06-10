@@ -5,21 +5,24 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
 
-from app.models.training_session_feedback import TrainingSessionFeedbackMetrics
+from app.models.camel_case import CamelModel
+from app.models.session_feedback import SessionFeedbackMetrics
 
 if TYPE_CHECKING:
-    from app.models.conversation_turn import ConversationTurn
+    from app.models.conversation_scenario import ConversationScenario
     from app.models.language import Language
     from app.models.rating import Rating
-    from app.models.training_case import TrainingCase
-    from app.models.training_session_feedback import TrainingSessionFeedback
+    from app.models.session_feedback import SessionFeedback
+    from app.models.session_turn import SessionTurn
 
 
-class TrainingSession(SQLModel, table=True):  # `table=True` makes it a database table
+class Session(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    case_id: UUID = Field(foreign_key='trainingcase.id')  # Foreign key to TrainingCase
+    scenario_id: UUID = Field(
+        foreign_key='conversationscenario.id'
+    )  # Foreign key to ConversationScenario
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
@@ -29,12 +32,10 @@ class TrainingSession(SQLModel, table=True):  # `table=True` makes it a database
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    case: Optional['TrainingCase'] = Relationship(back_populates='sessions')
+    scenario: Optional['ConversationScenario'] = Relationship(back_populates='sessions')
     language: Optional['Language'] = Relationship()  # Relationship to Language
-    conversation_turns: list['ConversationTurn'] = Relationship(
-        back_populates='session', cascade_delete=True
-    )
-    feedback: Optional['TrainingSessionFeedback'] = Relationship(
+    session_turns: list['SessionTurn'] = Relationship(back_populates='session', cascade_delete=True)
+    feedback: Optional['SessionFeedback'] = Relationship(
         back_populates='session', cascade_delete=True
     )
     ratings: list['Rating'] = Relationship(back_populates='session', cascade_delete=True)
@@ -42,14 +43,14 @@ class TrainingSession(SQLModel, table=True):  # `table=True` makes it a database
     # Automatically update `updated_at` before an update
 
 
-@event.listens_for(TrainingSession, 'before_update')
-def update_timestamp(mapper: Mapper, connection: Connection, target: 'TrainingSession') -> None:
+@event.listens_for(Session, 'before_update')
+def update_timestamp(mapper: Mapper, connection: Connection, target: 'Session') -> None:
     target.updated_at = datetime.now(UTC)
 
 
-# Schema for creating a new TrainingSession
-class TrainingSessionCreate(SQLModel):
-    case_id: UUID
+# Schema for creating a new Session
+class SessionCreate(CamelModel):
+    scenario_id: UUID
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
@@ -57,10 +58,10 @@ class TrainingSessionCreate(SQLModel):
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
 
 
-# Schema for reading TrainingSession data
-class TrainingSessionRead(SQLModel):
+# Schema for reading Session data
+class SessionRead(CamelModel):
     id: UUID
-    case_id: UUID
+    scenario_id: UUID
     scheduled_at: datetime | None
     started_at: datetime | None
     ended_at: datetime | None
@@ -70,14 +71,14 @@ class TrainingSessionRead(SQLModel):
     updated_at: datetime
 
 
-# Schema for reading TrainingSession data with details including skill scores, goals achieved,
+# Schema for reading Session data with details including skill scores, goals achieved,
 # session metrics, and feedback insights
-class TrainingSessionDetailsRead(TrainingSessionRead):
+class SessionDetailsRead(SessionRead):
     title: str | None = None
     summary: str | None = None
-    feedback: Optional['TrainingSessionFeedbackMetrics'] = None
-    # List of audio file URIs --> located in conversation_turns
+    feedback: Optional['SessionFeedbackMetrics'] = None
+    # List of audio file URIs --> located in session_turns
     audio_uris: list[str] = Field(default_factory=list)
 
 
-TrainingSessionDetailsRead.model_rebuild()
+SessionDetailsRead.model_rebuild()
