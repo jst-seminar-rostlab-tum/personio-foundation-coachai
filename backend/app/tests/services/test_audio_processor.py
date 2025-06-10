@@ -155,18 +155,18 @@ def test_is_silence() -> None:
     """Test silence detection"""
     # Test with actual silence (zeros)
     silence_data = np.zeros(1000, dtype=np.int16).tobytes()
-    assert audio_processor.is_silence(silence_data) is True
+    assert audio_processor.is_silence(silence_data)
 
     # Test with quiet audio (below threshold)
     quiet_data = (np.random.random(1000) * 100).astype(np.int16).tobytes()
-    assert audio_processor.is_silence(quiet_data) is True
+    assert audio_processor.is_silence(quiet_data)
 
     # Test with loud audio (above threshold)
     loud_data = (np.random.random(1000) * 5000 + 1000).astype(np.int16).tobytes()
-    assert audio_processor.is_silence(loud_data) is False
+    assert not audio_processor.is_silence(loud_data)
 
     # Test with empty data
-    assert audio_processor.is_silence(b'') is True
+    assert audio_processor.is_silence(b'')
 
 
 async def test_audio_stream_track_async() -> None:
