@@ -5,6 +5,7 @@ import wave
 
 import av
 import numpy as np
+import pytest
 
 from app.services import audio_processor
 
@@ -169,6 +170,7 @@ def test_is_silence() -> None:
     assert audio_processor.is_silence(b'')
 
 
+@pytest.mark.asyncio
 async def test_audio_stream_track_async() -> None:
     """Test AudioStreamTrack async functionality"""
     track = audio_processor.AudioStreamTrack()
