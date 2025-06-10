@@ -20,11 +20,8 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 ### Set up Supabase
 Copy all Supabase `.env.example` variables into your `.env` file.
-The `SUPABASE_ANON_KEY` must be signed with JWT. For this, run: 
-```bash
-uv run -m backend.app.rag.anon_key_jwt_generator
+No further setup needed, it should work out of the box.
 ```
-and put the resulting code as `SUPABASE_ANON_KEY`.
 
 **Option B: Create a Free Account**
 
