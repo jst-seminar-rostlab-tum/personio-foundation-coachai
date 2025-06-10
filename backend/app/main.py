@@ -9,17 +9,16 @@ from app.routers import (
     app_config_route,
     confidence_area_route,
     conversation_category_route,
-    conversation_turn_route,
+    conversation_scenario_route,
     goal_route,
     language_route,
     learning_style_route,
     personalization_options_route,
     rating_route,
-    session_length_route,
-    training_case_route,
-    training_preparation_route,
-    training_session_feedback_route,
-    training_session_route,
+    scenario_preparation_route,
+    session_feedback_route,
+    session_route,
+    session_turn_route,
     user_confidence_score_route,
     user_goals_route,
     user_profile_route,
@@ -38,11 +37,11 @@ app.add_middleware(
 
 app.include_router(language_route.router)
 app.include_router(conversation_category_route.router)
-app.include_router(training_case_route.router)
-app.include_router(training_session_route.router)
-app.include_router(training_preparation_route.router)
-app.include_router(conversation_turn_route.router)
-app.include_router(training_session_feedback_route.router)
+app.include_router(conversation_scenario_route.router)
+app.include_router(session_route.router)
+app.include_router(scenario_preparation_route.router)
+app.include_router(session_turn_route.router)
+app.include_router(session_feedback_route.router)
 app.include_router(rating_route.router)
 app.include_router(user_profile_route.router)
 app.include_router(user_profile_stats_route.router)
@@ -51,7 +50,6 @@ app.include_router(goal_route.router)
 app.include_router(confidence_area_route.router)
 app.include_router(user_confidence_score_route.router)
 app.include_router(learning_style_route.router)
-app.include_router(session_length_route.router)
 app.include_router(personalization_options_route.router)
 app.include_router(app_config_route.router)
 
