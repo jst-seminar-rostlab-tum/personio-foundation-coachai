@@ -62,6 +62,7 @@ class TrainingPreparationRead(CamelModel):
     id: UUID
     case_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
+    context: str | None = None
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: TrainingPreparationStatus

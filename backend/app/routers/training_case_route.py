@@ -126,9 +126,10 @@ def delete_training_case(case_id: UUID, session: Annotated[Session, Depends(get_
 @router.get('/{id_training_case}/preparation', response_model=TrainingPreparationRead)
 def get_training_preparation_by_case_id(
     id_training_case: UUID, session: Annotated[Session, Depends(get_session)]
-) -> TrainingPreparation:
+) -> TrainingPreparationRead:
     """
     Retrieve the training preparation data for a given training case ID.
+    The context is extracted from the associated training case.
     """
     # Validate that the training case exists
     training_case = session.get(TrainingCase, id_training_case)
@@ -141,5 +142,9 @@ def get_training_preparation_by_case_id(
 
     if not training_preparation:
         raise HTTPException(status_code=404, detail='Training preparation not found')
+
+    # Update the context in the training preparation with the context from the training case
+    training_preparation = TrainingPreparationRead.from_orm(training_preparation)
+    training_preparation.context = training_case.context
 
     return training_preparation
