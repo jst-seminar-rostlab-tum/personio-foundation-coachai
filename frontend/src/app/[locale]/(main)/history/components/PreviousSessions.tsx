@@ -16,7 +16,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 import { Alert, AlertDescription } from '@/components/ui/Alert';
-import api from '@/services/Api';
+import { sessionService } from '@/services/SessionService';
 
 const mockSessions = [
   {
@@ -73,56 +73,36 @@ export default function PreviousSessions() {
   const [visibleCount, setVisibleCount] = useState(3);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessions, setSessions] = useState(mockSessions);
   const t = useTranslations('History');
 
-  const visibleSessions = mockSessions.slice(0, visibleCount);
-  const canLoadMore = visibleCount < mockSessions.length;
+  const visibleSessions = sessions.slice(0, visibleCount);
+  const canLoadMore = visibleCount < sessions.length;
 
   const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 3, mockSessions.length));
+    setVisibleCount((prev) => Math.min(prev + 3, sessions.length));
   };
 
   const handleDeleteAll = async () => {
-    try {
-      setIsDeleting(true);
-      setError(null);
-      // TODO: Get user auth context in future
-      const userId = '0b222f0b-c7e5-4140-9049-35620fee8009'; // TODO: Remove this after getting auth context
-      if (!userId) {
-        throw new Error('User ID not found');
-      }
-      const response = await api.delete(`/training-session/clear-all/${userId}`);
-      if (response.status === 200) {
-        setVisibleCount(0);
-        // TODO: Reset the sessions state in future
-      } else {
-        throw new Error('Failed to delete sessions');
-      }
-    } catch (err) {
-      let errorMessage = t('deleteError');
-      if (err.response) {
-        switch (err.response.status) {
-          case 401:
-            errorMessage = t('unauthorizedError');
-            break;
-          case 403:
-            errorMessage = t('forbiddenError');
-            break;
-          case 404:
-            errorMessage = t('noSessionsFound');
-            break;
-          case 500:
-            errorMessage = t('serverError');
-            break;
-          default:
-            errorMessage = t('deleteError');
-            break;
-        }
-      }
-      setError(errorMessage);
-    } finally {
+    setIsDeleting(true);
+    setError(null);
+
+    // TODO: Get user auth context in future
+    const userId = '0b222f0b-c7e5-4140-9049-35620fee8009'; // TODO: Remove this after getting auth context
+    if (!userId) {
+      setError(t('deleteError'));
       setIsDeleting(false);
+      return;
     }
+
+    const result = await sessionService.clearAllSessions(userId);
+    if (result.success) {
+      setSessions([]);
+      setVisibleCount(0);
+    } else {
+      setError(t(result.error?.translationKey || 'deleteError'));
+    }
+    setIsDeleting(false);
   };
 
   return (
