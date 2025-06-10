@@ -5,12 +5,12 @@ from app.models.conversation_category import (
     ConversationCategoryCreate,
     ConversationCategoryRead,
 )
-from app.models.conversation_turn import (
-    ConversationTurn,
-    ConversationTurnCreate,
-    ConversationTurnRead,
+from app.models.conversation_scenario import (
+    ConversationScenario,
+    ConversationScenarioCreate,
+    ConversationScenarioRead,
+    ConversationScenarioStatus,
 )
-
 from app.models.difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
 from app.models.experience import Experience, ExperienceCreate, ExperienceRead
 from app.models.goal import Goal, GoalCreate, GoalRead
@@ -18,29 +18,31 @@ from app.models.language import Language, LanguageCreate, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
-from app.models.session_length import SessionLength, SessionLengthCreate, SessionLengthRead
-from app.models.training_case import (
-
-    TrainingCase,
-    TrainingCaseCreate,
-    TrainingCaseRead,
-    TrainingCaseStatus,
+from app.models.scenario_preparation import (
+    ScenarioPreparation,
+    ScenarioPreparationCreate,
+    ScenarioPreparationRead,
+    ScenarioPreparationStatus,
 )
-from app.models.training_preparation import (
-    TrainingPreparation,
-    TrainingPreparationCreate,
-    TrainingPreparationRead,
-    TrainingPreparationStatus,
+from app.models.session import (
+    Session,
+    SessionCreate,
+    SessionDetailsRead,
+    SessionRead,
 )
-from app.models.training_session import TrainingSession, TrainingSessionCreate, TrainingSessionRead
-from app.models.training_session_feedback import (
+from app.models.session_feedback import (
     FeedbackStatusEnum,
     NegativeExample,
     PositiveExample,
     Recommendation,
-    TrainingSessionFeedback,
-    TrainingSessionFeedbackCreate,
-    TrainingSessionFeedbackRead,
+    SessionFeedback,
+    SessionFeedbackCreate,
+    SessionFeedbackRead,
+)
+from app.models.session_turn import (
+    SessionTurn,
+    SessionTurnCreate,
+    SessionTurnRead,
 )
 from app.models.user_confidence_score import (
     ConfidenceScoreRead,
@@ -48,7 +50,6 @@ from app.models.user_confidence_score import (
     UserConfidenceScoreCreate,
     UserConfidenceScoreRead,
 )
-
 from app.models.user_goal import UserGoal, UserGoalCreate, UserGoalRead
 from app.models.user_profile import (
     UserProfile,
@@ -57,7 +58,6 @@ from app.models.user_profile import (
     UserProfileRead,
 )
 
-
 __all__ = [
     'Language',
     'LanguageCreate',
@@ -65,23 +65,24 @@ __all__ = [
     'ConversationCategory',
     'ConversationCategoryCreate',
     'ConversationCategoryRead',
-    'TrainingCase',
-    'TrainingCaseCreate',
-    'TrainingCaseRead',
-    'TrainingCaseStatus',
-    'TrainingSession',
-    'TrainingSessionCreate',
-    'TrainingSessionRead',
-    'TrainingPreparation',
-    'TrainingPreparationCreate',
-    'TrainingPreparationRead',
-    'TrainingPreparationStatus',
-    'ConversationTurn',
-    'ConversationTurnCreate',
-    'ConversationTurnRead',
-    'TrainingSessionFeedback',
-    'TrainingSessionFeedbackCreate',
-    'TrainingSessionFeedbackRead',
+    'ConversationScenario',
+    'ConversationScenarioCreate',
+    'ConversationScenarioRead',
+    'ConversationScenarioStatus',
+    'Session',
+    'SessionCreate',
+    'SessionRead',
+    'SessionDetailsRead',
+    'ScenarioPreparation',
+    'ScenarioPreparationCreate',
+    'ScenarioPreparationRead',
+    'ScenarioPreparationStatus',
+    'SessionTurn',
+    'SessionTurnCreate',
+    'SessionTurnRead',
+    'SessionFeedback',
+    'SessionFeedbackCreate',
+    'SessionFeedbackRead',
     'Rating',
     'RatingCreate',
     'RatingRead',
@@ -113,9 +114,6 @@ __all__ = [
     'LearningStyle',
     'LearningStyleCreate',
     'LearningStyleRead',
-    'SessionLength',
-    'SessionLengthCreate',
-    'SessionLengthRead',
     'ConfidenceScoreRead',
     'UserProfileExtendedRead',
     'PersonalizationOptionRead',

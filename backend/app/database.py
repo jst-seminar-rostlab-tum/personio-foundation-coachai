@@ -3,7 +3,8 @@ import urllib.request
 from collections.abc import Generator
 from typing import Any
 
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session as DBSession
+from sqlmodel import SQLModel, create_engine
 
 from app.config import Settings
 
@@ -22,6 +23,8 @@ if settings.database_url:
     )
 else:
     SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
+
+# Configure engine with connection pooling and prepared statement settings
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 
@@ -31,6 +34,9 @@ def create_db_and_tables() -> None:
 
 
 # Dependency to get the database session
-def get_session() -> Generator[Session, Any, None]:
-    with Session(engine) as session:
-        yield session
+def get_db_session() -> Generator[DBSession, Any, None]:
+    with DBSession(engine) as db_session:
+        try:
+            yield db_session
+        finally:
+            db_session.close()
