@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from enum import Enum
 from uuid import uuid4
 
 from app.models.app_config import AppConfig, ConfigType
@@ -22,6 +23,17 @@ from app.models.training_session_feedback import (
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import UserGoal
 from app.models.user_profile import UserProfile, UserRole
+
+
+class MockUserIdsEnum(Enum):
+    """
+    Enum for mock user IDs to be used in dummy data generation.
+    This enum is used to ensure that the IDs are consistent across
+    different parts of the application.
+    """
+
+    USER = '3a9a8970-afbe-4ee1-bc11-9dcad7875ddf'
+    ADMIN = '763c76f3-e5a4-479c-8b53-e3418d5e2ef5'
 
 
 def get_dummy_learning_styles() -> list[LearningStyle]:
@@ -118,7 +130,7 @@ def get_dummy_user_profiles(
     """
     return [
         UserProfile(
-            id=uuid4(),
+            id=MockUserIdsEnum.USER.value,
             preferred_language='en',
             role=UserRole.user,
             experience_id=experiences[0].id,
@@ -132,7 +144,7 @@ def get_dummy_user_profiles(
             goals_achieved=4,
         ),
         UserProfile(
-            id=uuid4(),
+            id=MockUserIdsEnum.ADMIN.value,
             preferred_language='de',
             role=UserRole.admin,
             experience_id=experiences[1].id,

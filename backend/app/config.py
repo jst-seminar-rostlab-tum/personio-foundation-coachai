@@ -1,6 +1,9 @@
 from typing import Literal
+from uuid import UUID
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from app.data.dummy_data import MockUserIdsEnum
 
 
 class Settings(BaseSettings):
@@ -30,6 +33,9 @@ class Settings(BaseSettings):
 
     ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
+
+    DEV_MODE_SKIP_AUTH: bool = False
+    DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.USER.value
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 

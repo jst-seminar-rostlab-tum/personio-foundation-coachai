@@ -18,6 +18,9 @@ def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(secu
     """
     Checks the validity of the JWT token and retrieves its information.
     """
+    if settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH:
+        return {'sub': settings.DEV_MODE_MOCK_USER_ID}
+
     if not credentials:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail='Authentication required'
@@ -45,7 +48,7 @@ def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(secu
 
 def require_user(
     token: Annotated[any, Depends(verify_jwt)], db: Annotated[Session, Depends(get_session)]
-) -> bool:
+) -> UserProfile:
     """
     Checks if the user is authenticated and has the role of 'user' or 'admin'.
     """
@@ -61,7 +64,7 @@ def require_user(
 
 def require_admin(
     token: Annotated[any, Depends(verify_jwt)], db: Annotated[Session, Depends(get_session)]
-) -> bool:
+) -> UserProfile:
     """
     Checks if the user is authenticated and has the role of 'admin'.
     """
