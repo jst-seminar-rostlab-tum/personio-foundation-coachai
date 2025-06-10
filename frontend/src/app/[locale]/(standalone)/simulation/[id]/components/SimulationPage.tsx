@@ -5,6 +5,7 @@ import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages from './SimulationMessages';
+import { WebVoiceProcessor } from '@picovoice/web-voice-processor';
 
 const RTC_CONFIG = {
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
@@ -17,6 +18,7 @@ function useWebRTC() {
   const [isConnected, setIsConnected] = useState(false);
   const [isDataChannelReady, setIsDataChannelReady] = useState(false);
   const [receivedTranscripts, setReceivedTranscripts] = useState<string[]>([]);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -26,6 +28,8 @@ function useWebRTC() {
   const cleanupRef = useRef<boolean | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const pendingMessagesRef = useRef<string[]>([]);
+  const voiceProcessorRef = useRef<WebVoiceProcessor | null>(null);
+
   const cleanup = useCallback(() => {
     if (cleanupRef.current) return;
     cleanupRef.current = true;
@@ -51,11 +55,17 @@ function useWebRTC() {
       remoteAudioRef.current.srcObject = null;
     }
 
+    if (voiceProcessorRef.current) {
+      voiceProcessorRef.current.stop();
+      voiceProcessorRef.current = null;
+    }
+
     setIsMicActive(false);
     setIsConnected(false);
     setIsDataChannelReady(false);
     setReceivedTranscripts([]);
     pendingMessagesRef.current = [];
+    setIsSpeaking(false);
   }, []);
 
   const disconnect = useCallback(() => {
@@ -99,6 +109,30 @@ function useWebRTC() {
     }
   }, []);
 
+  const initVAD = useCallback(async (stream: MediaStream) => {
+    try {
+      const voiceProcessor = await WebVoiceProcessor.create({
+        stream,
+        frameLength: 512,
+        sampleRate: 16000,
+        threshold: 0.5, // Voice detection threshold
+        onVoiceStart: () => {
+          console.debug('[VAD] Voice detected');
+          setIsSpeaking(true);
+        },
+        onVoiceEnd: () => {
+          console.debug('[VAD] Voice ended');
+          setIsSpeaking(false);
+        },
+      });
+      voiceProcessorRef.current = voiceProcessor;
+      await voiceProcessor.start();
+      console.info('[VAD] Voice processor started');
+    } catch (error) {
+      console.error('[VAD] Failed to initialize voice processor:', error);
+    }
+  }, []);
+
   const initWebRTC = useCallback(async () => {
     try {
       cleanupRef.current = false;
@@ -114,6 +148,9 @@ function useWebRTC() {
 
       localStreamRef.current = localStream;
       setIsMicActive(true);
+
+      // Initialize VAD
+      await initVAD(localStream);
 
       if (localAudioRef.current) {
         localAudioRef.current.srcObject = localStream;
@@ -346,13 +383,14 @@ function useWebRTC() {
       setIsMicActive(false);
       disconnect();
     }
-  }, [disconnect, sendPendingMessages, sendDataChannelMessage]);
+  }, [disconnect, sendPendingMessages, sendDataChannelMessage, initVAD]);
 
   return {
     isMicActive,
     setIsMicActive,
     isConnected,
     isDataChannelReady,
+    isSpeaking,
     initWebRTC,
     cleanup,
     disconnect,
@@ -373,6 +411,7 @@ export default function SimulationPageComponent() {
     setIsMicActive,
     isConnected,
     isDataChannelReady,
+    isSpeaking,
     initWebRTC,
     cleanup,
     disconnect,
@@ -433,6 +472,7 @@ export default function SimulationPageComponent() {
         toggleMicrophone={toggleMic}
         isConnected={isConnected && isDataChannelReady}
         onDisconnect={disconnect}
+        isSpeaking={isSpeaking}
       />
       <audio ref={remoteAudioRef} autoPlay playsInline />
     </div>

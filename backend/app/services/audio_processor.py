@@ -148,13 +148,13 @@ def resample_pcm_audio(
         return b''
 
 
-def is_silence(audio_data: bytes, threshold: int = 500) -> bool:
+def is_silence(audio_data: bytes, threshold: int = 1000) -> bool:
     """
     Check if audio data is silence
     """
     if not audio_data:
         return True
-    audio_array = np.frombuffer(audio_data, dtype=np.int16).astype(np.float64)
+    audio_array = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32)
     if not np.isfinite(audio_array).all():
         return True
     rms = np.sqrt(np.mean(audio_array**2))
