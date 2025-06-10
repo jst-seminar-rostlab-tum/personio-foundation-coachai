@@ -55,7 +55,7 @@ RTC_CONFIG = RTCConfiguration(
 )
 
 # Callback type definitions
-SendToGeminiType = Union[types.Blob, WebRTCAudioEvent]
+SendToGeminiType = Union[types.Blob, WebRTCAudioEvent, types.Content]
 SendToGeminiCallback = Callable[[SendToGeminiType], Awaitable[None]]
 
 # Transcript callback: (transcript, peer_id) -> None
@@ -218,6 +218,13 @@ class WebRTCAudioLoop:
                 self.gemini_session = session
                 logger.info(f'[Gemini] Session started for peer {self.peer_id}')
 
+                await self._send_to_gemini(
+                    types.Content(
+                        role='user',
+                        parts=[types.Part(text='Hello welcome, have a seat please!')],
+                    )
+                )
+
                 # Start all tasks within the TaskGroup
                 tg.create_task(self._listen_webrtc_audio())
                 tg.create_task(self._send_realtime())
@@ -276,7 +283,7 @@ class WebRTCAudioLoop:
                     f'from {frame.rate} to {SEND_SAMPLE_RATE}'
                 )
                 try:
-                    audio_bytes = resample_pcm_audio(audio_bytes, frame.rate, SEND_SAMPLE_RATE)
+                    audio_bytes = resample_pcm_audio(audio_bytes, frame.rate)
                     logger.debug(
                         f'[WebRTC] Audio resampled successfully, new length: {len(audio_bytes)}'
                     )
@@ -352,11 +359,16 @@ class WebRTCAudioLoop:
         try:
             if isinstance(msg, WebRTCAudioEvent):
                 if msg.type == WebRTCAudioEventType.AUDIO_STREAM_END:
-                    await self.gemini_session.send_realtime_input(audio_stream_end=True)
+                    # await self.gemini_session.send(input=None, end_of_turn=True)
+                    pass
             elif isinstance(msg, types.Blob):
                 logger.debug(f'[Gemini] Sending audio to Gemini for peer {self.peer_id}')
-                await self.gemini_session.send_realtime_input(
-                    audio=msg, activity_end=types.ActivityEnd()
+                await self.gemini_session.send_realtime_input(audio=msg)
+            elif isinstance(msg, types.Content):
+                await self.gemini_session.send_client_content(
+                    turns=[
+                        msg,
+                    ]
                 )
             else:
                 logger.error(f'[Gemini] Invalid message type: {type(msg)}')
@@ -371,8 +383,6 @@ class WebRTCAudioLoop:
     async def _receive_audio_from_gemini(self) -> None:
         """Receive audio from Gemini, inspired by AudioLoop.receive_audio()"""
         try:
-            logger.info(f'[Gemini] Starting to receive audio from Gemini for peer {self.peer_id}')
-
             # Process turns from the session in a loop (like original live_agent_stream.py)
             while True:
                 input_transcription = []
@@ -434,12 +444,12 @@ class WebRTCAudioLoop:
                     # Log transcription results at the end of each turn
                     if input_transcription:
                         logger.info(
-                            f'Input transcript for peer {self.peer_id}: '
+                            f'[Gemini] Input transcript for peer {self.peer_id}: '
                             f'{"".join(input_transcription)}'
                         )
                     if output_transcription:
                         logger.info(
-                            f'Output transcript for peer {self.peer_id}: '
+                            f'[Gemini] Output transcript for peer {self.peer_id}: '
                             f'{"".join(output_transcription)}'
                         )
                         await self.handle_transcript(''.join(output_transcription))

@@ -28,14 +28,6 @@ def test_pcm_to_opus() -> None:
     assert len(opus_data) > 0
 
 
-def test_resample_wav_audio() -> None:
-    with open(DUMMY_PCM_PATH, 'rb') as f:
-        pcm_data = f.read()
-    resampled = audio_processor.resample_wav_audio(pcm_data, 8000, 16000)
-    assert isinstance(resampled, bytes)
-    assert len(resampled) > 0
-
-
 def test_audio_stream_track() -> None:
     with open(DUMMY_PCM_PATH, 'rb') as f:
         pcm_data = f.read()

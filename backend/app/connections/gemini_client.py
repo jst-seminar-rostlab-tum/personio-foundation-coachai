@@ -59,8 +59,8 @@ LIVE_CONFIG = LiveConnectConfig(
     ),
     realtime_input_config=RealtimeInputConfig(
         automatic_activity_detection=AutomaticActivityDetection(
-            disabled=True,  # default
-            start_of_speech_sensitivity=StartSensitivity.START_SENSITIVITY_LOW,
+            disabled=False,  # default
+            start_of_speech_sensitivity=StartSensitivity.START_SENSITIVITY_HIGH,
             end_of_speech_sensitivity=EndSensitivity.END_SENSITIVITY_HIGH,
             prefix_padding_ms=20,
             silence_duration_ms=100,

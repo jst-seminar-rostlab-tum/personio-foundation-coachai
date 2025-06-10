@@ -59,6 +59,7 @@ class AudioLoop:
     async def send_realtime(self) -> None:
         while True:
             msg = await self.out_queue.get()
+            # await self.session.send(input=msg)
             await self.session.send_realtime_input(audio=msg)
 
     async def listen_audio(self) -> None:

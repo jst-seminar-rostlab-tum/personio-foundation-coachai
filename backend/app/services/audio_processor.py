@@ -92,46 +92,10 @@ def pcm_to_opus(pcm_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
     return output_buffer.getvalue()
 
 
-def resample_wav_audio(
-    audio_data: bytes,
-    source_sample_rate: int,
-    target_sample_rate: int = OPUS_SAMPLE_RATE,
-    channels: int = CHANNELS,
-) -> bytes:
-    """
-    Resample WAV format audio data to a different sample rate
-
-    Args:
-        audio_data: WAV format audio data
-        source_sample_rate: Original sample rate
-        target_sample_rate: Target sample rate, default 48000Hz (WebRTC standard)
-
-    Returns:
-        Resampled WAV format audio data as bytes
-    """
-    if source_sample_rate == target_sample_rate:
-        return audio_data
-
-    # Create memory file objects
-    input_container = av.open(io.BytesIO(audio_data), format='wav')
-    output_buffer = io.BytesIO()
-    output_container = av.open(output_buffer, format='wav', mode='w')
-    # Set output stream parameters
-    stream = output_container.add_stream('pcm_s16le', rate=target_sample_rate)
-
-    # Resample and write
-    for frame in input_container.decode(audio=0):
-        for packet in stream.encode(frame):
-            output_container.mux(packet)
-
-    output_container.close()
-    return output_buffer.getvalue()
-
-
 def resample_pcm_audio(
     pcm_data: bytes,
     source_sample_rate: int,
-    target_sample_rate: int = OPUS_SAMPLE_RATE,
+    target_sample_rate: int = SEND_SAMPLE_RATE,
     channels: int = CHANNELS,
 ) -> bytes:
     """
@@ -140,7 +104,7 @@ def resample_pcm_audio(
     Args:
         pcm_data: Raw PCM audio data (16-bit signed integers)
         source_sample_rate: Original sample rate
-        target_sample_rate: Target sample rate, default 48000Hz (WebRTC standard)
+        target_sample_rate: Target sample rate, default 16000Hz (Gemini standard)
         channels: Number of audio channels, default 1 (mono)
 
     Returns:
