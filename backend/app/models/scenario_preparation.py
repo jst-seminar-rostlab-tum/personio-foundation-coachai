@@ -29,7 +29,8 @@ class KeyConcept(BaseModel):
 # Database model
 class ScenarioPreparation(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    scenario_id: UUID = Field(foreign_key='conversationscenario.id')
+    # Cannot be a foreign key because (id, language_code) is a composite primary key in Goal
+    scenario_id: UUID = Field()
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
@@ -38,7 +39,13 @@ class ScenarioPreparation(CamelModel, table=True):  # `table=True` makes it a da
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    scenario: Optional['ConversationScenario'] = Relationship(back_populates='preparations')
+    scenario: Optional['ConversationScenario'] = Relationship(
+        back_populates='preparations',
+        sa_relationship_kwargs={
+            "primaryjoin": "foreign(ScenarioPreparation.scenario_id) == ConversationScenario.id"
+        }
+    )
+
 
     # Automatically update `updated_at` before an update
 

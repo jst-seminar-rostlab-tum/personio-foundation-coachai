@@ -4,13 +4,17 @@ from uuid import uuid4
 from app.models.app_config import AppConfig, ConfigType
 from app.models.confidence_area import ConfidenceArea
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import ConversationScenario, ConversationScenarioStatus
-from app.models.difficulty_level import DifficultyLevel  # Assuming this is the new model
+from app.models.conversation_scenario import (
+    ConversationScenario,
+    ConversationScenarioStatus,
+    DifficultyLevelEnum,
+)
 from app.models.experience import Experience
 from app.models.goal import Goal
 from app.models.language import Language  # Import the Language model
 from app.models.learning_style import LearningStyle
 from app.models.rating import Rating
+from app.models.role import Role
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
 from app.models.session_feedback import (
@@ -25,25 +29,56 @@ from app.models.user_profile import UserProfile, UserRole
 
 def get_dummy_learning_styles() -> list[LearningStyle]:
     """
-    Generate dummy LearningStyle data.
-    """
+      Generate dummy LearningStyle data with multi-language support.
+      """
+    visual_id = uuid4()
+    auditory_id = uuid4()
+    kinesthetic_id = uuid4()
+
     return [
+        # Visual
         LearningStyle(
-            id=uuid4(),
-            label='Visual',
-            description='Prefers learning through visual aids like diagrams and charts.',
+            id=visual_id,
+            language_code="en",
+            label="Visual",
+            description="Prefers learning through visual aids like diagrams and charts."
         ),
         LearningStyle(
-            id=uuid4(),
-            label='Auditory',
-            description='Prefers learning through listening to explanations and discussions.',
+            id=visual_id,
+            language_code="de",
+            label="Visuell",
+            description="Lernt bevorzugt mit visuellen Hilfsmitteln wie Diagrammen und Grafiken."
+        ),
+
+        # Auditory
+        LearningStyle(
+            id=auditory_id,
+            language_code="en",
+            label="Auditory",
+            description="Prefers learning through listening to explanations and discussions."
         ),
         LearningStyle(
-            id=uuid4(),
-            label='Kinesthetic',
-            description='Prefers learning through hands-on activities and physical engagement.',
+            id=auditory_id,
+            language_code="de",
+            label="Auditiv",
+            description="Lernt bevorzugt durch Zuhören von Erklärungen und Diskussionen."
+        ),
+
+        # Kinesthetic
+        LearningStyle(
+            id=kinesthetic_id,
+            language_code="en",
+            label="Kinesthetic",
+            description="Prefers learning through hands-on activities and physical engagement."
+        ),
+        LearningStyle(
+            id=kinesthetic_id,
+            language_code="de",
+            label="Kinästhetisch",
+            description="Lernt bevorzugt durch praktische Aktivitäten und körperliches Engagement."
         ),
     ]
+
 
 
 def get_dummy_languages() -> list[Language]:
@@ -54,39 +89,69 @@ def get_dummy_languages() -> list[Language]:
 
 
 def get_dummy_experiences() -> list[Experience]:
+    beginner_id = uuid4()
+    intermediate_id = uuid4()
+    expert_id = uuid4()
+
     return [
-        Experience(id=uuid4(), label='Beginner', description='New to the field'),
-        Experience(id=uuid4(), label='Intermediate', description='Some experience'),
-        Experience(id=uuid4(), label='Expert', description='Highly experienced'),
+        # Beginner
+        Experience(id=beginner_id, language_code="en", label="Beginner",
+                   description="New to the field"),
+        Experience(id=beginner_id, language_code="de", label="Anfänger",
+                   description="Neu auf dem Gebiet"),
+
+        # Intermediate
+        Experience(id=intermediate_id, language_code="en", label="Intermediate",
+                   description="Some experience"),
+        Experience(id=intermediate_id, language_code="de", label="Fortgeschritten",
+                   description="Etwas Erfahrung"),
+
+        # Expert
+        Experience(id=expert_id, language_code="en", label="Expert",
+                   description="Highly experienced"),
+        Experience(id=expert_id, language_code="de", label="Experte", description="Sehr erfahren"),
     ]
 
 
+
 def get_dummy_goals() -> list[Goal]:
+    goal1_id = uuid4()
+    goal2_id = uuid4()
     return [
+        # Goal 1: Improve Communication
         Goal(
-            id=uuid4(),
+            id=goal1_id,
+            language_code='en',
             label='Improve Communication',
             description='Focus on verbal and non-verbal communication skills.',
         ),
         Goal(
-            id=uuid4(),
+            id=goal1_id,
+            language_code='de',
+            label='Kommunikation verbessern',
+            description='Konzentriere dich auf verbale und nonverbale Kommunikation.',
+        ),
+
+        # Goal 2: Time Management
+        Goal(
+            id=goal2_id,
+            language_code='en',
             label='Time Management',
             description='Improve productivity and manage time effectively.',
         ),
-    ]
-
-
-def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
-    return [
-        DifficultyLevel(id=uuid4(), label='Easy'),
-        DifficultyLevel(id=uuid4(), label='Medium'),
-        DifficultyLevel(id=uuid4(), label='Hard'),
+        Goal(
+            id=goal2_id,
+            language_code='de',
+            label='Zeitmanagement',
+            description='Produktivität verbessern und Zeit effektiv nutzen.',
+        ),
     ]
 
 
 def get_dummy_user_profiles(
     experiences: list[Experience],
     learning_styles: list[LearningStyle],
+    roles: list[Role]
 ) -> list[UserProfile]:
     """
     Generate dummy UserProfile data.
@@ -95,9 +160,10 @@ def get_dummy_user_profiles(
         UserProfile(
             id=uuid4(),
             preferred_language='en',
-            role=UserRole.user,
+            user_role=UserRole.user,
             experience_id=experiences[0].id,
             preferred_learning_style_id=learning_styles[0].id,
+            role_id=roles[0].id,
             store_conversations=False,
             total_sessions=32,
             training_time=4.5,
@@ -108,9 +174,10 @@ def get_dummy_user_profiles(
         UserProfile(
             id=uuid4(),
             preferred_language='de',
-            role=UserRole.admin,
+            user_role=UserRole.admin,
             experience_id=experiences[1].id,
             preferred_learning_style_id=learning_styles[1].id,
+            role_id=roles[0].id,
             store_conversations=True,
             total_sessions=5,
             training_time=4.2,
@@ -120,7 +187,41 @@ def get_dummy_user_profiles(
         ),
     ]
 
+def get_dummy_roles() -> list[Role]:
+    """
+    Generate multilingual dummy Role data for both English and German.
+    Each role has the same UUID across languages.
+    """
+    hr_id = uuid4()
+    leader_id = uuid4()
+    exec_id = uuid4()
+    other_id = uuid4()
 
+    return [
+        # HR Professional
+        Role(id=hr_id, language_code="en", label="HR Professional",
+             description="I work in human resources or people operations."),
+        Role(id=hr_id, language_code="de", label="HR-Fachkraft",
+             description="Ich arbeite im Bereich Personalwesen oder Personalmanagement."),
+
+        # Team Leader
+        Role(id=leader_id, language_code="en", label="Team Leader",
+             description="I manage a team or department."),
+        Role(id=leader_id, language_code="de", label="Teamleiter:in",
+             description="Ich leite ein Team oder eine Abteilung."),
+
+        # Executive
+        Role(id=exec_id, language_code="en", label="Executive",
+             description="I’m a director, VP, or C-level executive."),
+        Role(id=exec_id, language_code="de", label="Führungskraft",
+             description="Ich bin Direktor:in, VP oder Teil der Geschäftsleitung."),
+
+        # Other
+        Role(id=other_id, language_code="en", label="Other",
+             description="None of them above"),
+        Role(id=other_id, language_code="de", label="Andere",
+             description="Keine der oben genannten Optionen."),
+    ]
 def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) -> list[UserGoal]:
     return [
         UserGoal(goal_id=goals[0].id, user_id=user_profiles[0].id),
@@ -129,36 +230,77 @@ def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) ->
 
 
 def get_dummy_conversation_scenarios(
-    user_profiles: list[UserProfile], difficulty_levels: list[DifficultyLevel]
+    user_profiles: list[UserProfile]
 ) -> list[ConversationScenario]:
+    common_id_1 = uuid4()
+    common_id_2 = uuid4()
+
     return [
+        # First case - English
         ConversationScenario(
-            id=uuid4(),
+            id=common_id_1,
+            language_code="en",
             user_id=user_profiles[0].id,
             category_id=None,
             custom_category_label='Custom Category 1',
-            context='Context 1',
-            goal='Goal 1',
-            other_party='Other Party 1',
-            difficulty_id=difficulty_levels[0].id,
+            context='English Context 1',
+            goal='English Goal 1',
+            other_party='English Other Party 1',
+            difficulty_level=DifficultyLevelEnum.easy,
             tone='Friendly',
             complexity='Low',
-            status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
+            status=ConversationScenarioStatus.draft,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
+        # First case - German
         ConversationScenario(
-            id=uuid4(),
+            id=common_id_1,
+            language_code="de",
+            user_id=user_profiles[0].id,
+            category_id=None,
+            custom_category_label='Benutzerdefinierte Kategorie 1',
+            context='Deutscher Kontext 1',
+            goal='Deutsches Ziel 1',
+            other_party='Deutscher Gesprächspartner 1',
+            difficulty_level=DifficultyLevelEnum.easy,
+            tone='Freundlich',
+            complexity='Niedrig',
+            status=ConversationScenarioStatus.draft,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        # Second case - English
+        ConversationScenario(
+            id=common_id_2,
+            language_code="en",
             user_id=user_profiles[1].id,
             category_id=None,
             custom_category_label='Custom Category 2',
-            context='Context 2',
-            goal='Goal 2',
-            other_party='Other Party 2',
-            difficulty_id=difficulty_levels[1].id,
+            context='English Context 2',
+            goal='English Goal 2',
+            other_party='English Other Party 2',
+            difficulty_level=DifficultyLevelEnum.hard,
             tone='Professional',
             complexity='Medium',
-            status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
+            status=ConversationScenarioStatus.draft,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        # Second case - German
+        ConversationScenario(
+            id=common_id_2,
+            language_code="de",
+            user_id=user_profiles[1].id,
+            category_id=None,
+            custom_category_label='Benutzerdefinierte Kategorie 2',
+            context='Deutscher Kontext 2',
+            goal='Deutsches Ziel 2',
+            other_party='Deutscher Gesprächspartner 2',
+            difficulty_level=DifficultyLevelEnum.hard,
+            tone='Professionell',
+            complexity='Mittel',
+            status=ConversationScenarioStatus.draft,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -525,11 +667,17 @@ def get_dummy_scenario_preparations(
 
 def get_dummy_confidence_areas() -> list[ConfidenceArea]:
     """
-    Generate dummy ConfidenceArea data.
-    """
+      Generate dummy ConfidenceArea data.
+      """
+    common_id_1 = uuid4()
+    common_id_2 = uuid4()
+    common_id_3 = uuid4()
+
     return [
+        # English Versions
         ConfidenceArea(
-            id=uuid4(),
+            id=common_id_1,
+            language_code='en',
             label='Giving difficult feedback',
             description='Confidence in providing constructive feedback in challenging situations.',
             min_value=0,
@@ -538,7 +686,8 @@ def get_dummy_confidence_areas() -> list[ConfidenceArea]:
             max_label='Very confident',
         ),
         ConfidenceArea(
-            id=uuid4(),
+            id=common_id_2,
+            language_code='en',
             label='Managing team conflicts',
             description='Confidence in resolving conflicts within a team effectively.',
             min_value=0,
@@ -547,13 +696,48 @@ def get_dummy_confidence_areas() -> list[ConfidenceArea]:
             max_label='Very confident',
         ),
         ConfidenceArea(
-            id=uuid4(),
+            id=common_id_3,
+            language_code='en',
             label='Leading challenging conversations',
             description='Confidence in leading conversations that require tact and diplomacy.',
             min_value=0,
             max_value=100,
             min_label='Not confident',
             max_label='Very confident',
+        ),
+
+        # German Versions
+        ConfidenceArea(
+            id=common_id_1,
+            language_code='de',
+            label='Schwieriges Feedback geben',
+            description='Selbstvertrauen beim Geben von konstruktivem Feedback in '
+                        'herausfordernden Situationen.',
+            min_value=0,
+            max_value=100,
+            min_label='Nicht selbstbewusst',
+            max_label='Sehr selbstbewusst',
+        ),
+        ConfidenceArea(
+            id=common_id_2,
+            language_code='de',
+            label='Konflikte im Team managen',
+            description='Selbstvertrauen im effektiven Lösen von Konflikten innerhalb eines Teams.',
+            min_value=0,
+            max_value=100,
+            min_label='Nicht selbstbewusst',
+            max_label='Sehr selbstbewusst',
+        ),
+        ConfidenceArea(
+            id=common_id_3,
+            language_code='de',
+            label='Herausfordernde Gespräche führen',
+            description='Selbstvertrauen beim Führen von Gesprächen, die Taktgefühl '
+                        'und Diplomatie erfordern.',
+            min_value=0,
+            max_value=100,
+            min_label='Nicht selbstbewusst',
+            max_label='Sehr selbstbewusst',
         ),
     ]
 
@@ -564,9 +748,15 @@ def get_dummy_user_confidence_scores(
     """
     Generate dummy UserConfidenceScore data.
     """
+    # To filter out different languages for the same case
+    unique_areas_by_id = {}
+    for area in confidence_areas:
+        if area.id not in unique_areas_by_id:
+            unique_areas_by_id[area.id] = area
+
     scores = []
     for user in user_profiles:
-        for area in confidence_areas:
+        for area in unique_areas_by_id.values():
             scores.append(
                 UserConfidenceScore(
                     area_id=area.id,

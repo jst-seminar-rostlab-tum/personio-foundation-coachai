@@ -6,12 +6,12 @@ from app.data import (
     get_dummy_confidence_areas,
     get_dummy_conversation_categories,
     get_dummy_conversation_scenarios,
-    get_dummy_difficulty_levels,
     get_dummy_experiences,
     get_dummy_goals,
     get_dummy_languages,
     get_dummy_learning_styles,
     get_dummy_ratings,
+    get_dummy_roles,
     get_dummy_scenario_preparations,
     get_dummy_session_feedback,
     get_dummy_session_turns,
@@ -44,23 +44,24 @@ def populate_data() -> None:
         experiences = get_dummy_experiences()
         db_session.add_all(experiences)
 
+        # Populate Roles
+        roles = get_dummy_roles()
+        db_session.add_all(roles)
+
         # Populate Goals
         goals = get_dummy_goals()
         db_session.add_all(goals)
 
-        # Populate Difficulty Levels
-        difficulty_levels = get_dummy_difficulty_levels()
-        db_session.add_all(difficulty_levels)
         # Populate Learning Styles
         learning_styles = get_dummy_learning_styles()
         db_session.add_all(learning_styles)
 
-        # Commit roles, experiences, goals, learning_styles and difficulty levels
+        # Commit roles, experiences, goals, learning_styles
         # to get their IDs
         db_session.commit()
 
         # Populate User Profiles
-        user_profiles = get_dummy_user_profiles(experiences, learning_styles)
+        user_profiles = get_dummy_user_profiles(experiences, learning_styles, roles)
         db_session.add_all(user_profiles)
 
         # Commit user profiles to get their IDs
@@ -71,7 +72,7 @@ def populate_data() -> None:
         db_session.add_all(user_goals)
 
         # Populate Conversation Scenarios
-        conversation_scenarios = get_dummy_conversation_scenarios(user_profiles, difficulty_levels)
+        conversation_scenarios = get_dummy_conversation_scenarios(user_profiles)
         db_session.add_all(conversation_scenarios)
         db_session.commit()
 

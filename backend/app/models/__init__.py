@@ -11,13 +11,13 @@ from app.models.conversation_scenario import (
     ConversationScenarioRead,
     ConversationScenarioStatus,
 )
-from app.models.difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
 from app.models.experience import Experience, ExperienceCreate, ExperienceRead
 from app.models.goal import Goal, GoalCreate, GoalRead
 from app.models.language import Language, LanguageCreate, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
+from app.models.role import Role, RoleCreate, RoleRead
 from app.models.scenario_preparation import (
     ScenarioPreparation,
     ScenarioPreparationCreate,
@@ -98,9 +98,6 @@ __all__ = [
     'Experience',
     'ExperienceCreate',
     'ExperienceRead',
-    'DifficultyLevel',
-    'DifficultyLevelCreate',
-    'DifficultyLevelRead',
     'PositiveExample',
     'FeedbackStatusEnum',
     'NegativeExample',
@@ -121,4 +118,7 @@ __all__ = [
     'AppConfigCreate',
     'AppConfigRead',
     'ConfigType',
+    'Role',
+    'RoleCreate',
+    'RoleRead',
 ]

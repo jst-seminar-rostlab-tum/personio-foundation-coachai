@@ -12,7 +12,6 @@ from app.models.session_feedback import SessionFeedbackMetrics
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
-    from app.models.language import Language
     from app.models.rating import Rating
     from app.models.session_feedback import SessionFeedback
     from app.models.session_turn import SessionTurn
@@ -20,20 +19,26 @@ if TYPE_CHECKING:
 
 class Session(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    scenario_id: UUID = Field(
-        foreign_key='conversationscenario.id'
-    )  # Foreign key to ConversationScenario
+    # Cannot be a foreign key because (id, language_code) is a composite primary key in Goal
+    scenario_id: UUID = Field()  # Foreign key to conversation scenario
+    language_code: str = Field()  # Foreign key to conversation scenario
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
-    language_code: str = Field(foreign_key='language.code')  # Foreign key to LanguageModel
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    scenario: Optional['ConversationScenario'] = Relationship(back_populates='sessions')
-    language: Optional['Language'] = Relationship()  # Relationship to Language
+    scenario: Optional['ConversationScenario'] = Relationship(
+        back_populates='sessions',
+        sa_relationship_kwargs={
+            "primaryjoin": "and_("
+                           "foreign(Session.scenario_id) == ConversationScenario.id, "
+                           "foreign(Session.language_code) == ConversationScenario.language_code)"
+        }
+    )
+    # language: Optional['Language'] = Relationship()  # Relationship to Language
     session_turns: list['SessionTurn'] = Relationship(back_populates='session', cascade_delete=True)
     feedback: Optional['SessionFeedback'] = Relationship(
         back_populates='session', cascade_delete=True
