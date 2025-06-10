@@ -5,12 +5,12 @@ from app.models.experience import ExperienceRead
 from app.models.goal import GoalRead
 from app.models.language import LanguageRead
 from app.models.learning_style import LearningStyleRead
+from app.models.role import RoleRead
 from app.models.session_length import SessionLengthRead
-from app.models.user_profile import UserRole
 
 
 class PersonalizationOptionRead(SQLModel):
-    roles: list[UserRole]
+    roles: list[RoleRead]
     experiences: list[ExperienceRead]
     goals: list[GoalRead]
     confidence_areas: list[ConfidenceAreaRead]

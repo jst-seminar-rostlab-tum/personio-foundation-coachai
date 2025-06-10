@@ -45,7 +45,7 @@ def get_user_profile_ids(
             UserProfileRead(
                 id=user.id,
                 preferred_language=user.preferred_language,
-                role=user.role,
+                role_id=user.role_id,
                 experience_id=user.experience_id,
                 preferred_learning_style_id=user.preferred_learning_style_id,
                 preferred_session_length_id=user.preferred_session_length_id,
@@ -82,7 +82,7 @@ def get_user_profile_by_id(
     user_data = UserProfileExtendedRead(
         user_id=user.id,
         preferred_language=user.preferred_language,
-        role=user.role if user.role else None,
+        role=user.role.label if user.role else None,
         experience=user.experience.label if user.experience else None,
         preferred_learning_style=user.preferred_learning_style.label
         if user.preferred_learning_style
@@ -122,7 +122,7 @@ def get_user_profiles(
             user_map[uid] = {
                 'user_id': uid,
                 'preferred_language': user.preferred_language,
-                'role': user.role if user.role else None,
+                'role': user.role.label if user.role else None,
                 'experience': user.experience.label if user.experience else None,
                 'preferred_learning_style': user.preferred_learning_style.label
                 if user.preferred_learning_style
@@ -132,6 +132,7 @@ def get_user_profiles(
                 else None,
                 'goal': set(),
                 'confidence_scores': set(),
+                'store_conversations': user.store_conversations,
             }
 
         # Add goal if present
@@ -183,7 +184,7 @@ def create_user_profile(
     Accepts user data as input.
     """
     new_user = UserProfile(
-        role=user_data.role,
+        role_id=user_data.role_id,
         experience_id=user_data.experience_id,
         preferred_language=user_data.preferred_language,
         preferred_learning_style_id=user_data.preferred_learning_style_id,
@@ -194,12 +195,12 @@ def create_user_profile(
     session.refresh(new_user)
 
     # Add goals
-    for goal_id in user_data['goal_ids']:
+    for goal_id in user_data.goal_ids:
         user_goal = UserGoal(user_id=new_user.id, goal_id=goal_id)
         session.add(user_goal)
 
     # Add confidence scores
-    for confidence_score in user_data['confidence_scores']:
+    for confidence_score in user_data.confidence_scores:
         user_confidence_score = UserConfidenceScore(
             user_id=new_user.id,
             area_id=confidence_score['area_id'],
@@ -228,7 +229,7 @@ def update_user_profile(
         raise HTTPException(status_code=404, detail='User not found')
 
     # Update UserProfile fields
-    user.role = user_data.role
+    user.role_id = user_data.role_id
     user.experience_id = user_data.experience_id
     user.preferred_language = user_data.preferred_language
     user.preferred_learning_style_id = user_data.preferred_learning_style_id
@@ -281,8 +282,8 @@ def patch_user_profile(
         raise HTTPException(status_code=404, detail='User profile not found')
 
     # Update UserProfile fields if provided
-    if 'role' in user_data:
-        user.role = user_data['role']
+    if 'role_id' in user_data:
+        user.role_id = user_data['role_id']
     if 'experience_id' in user_data:
         user.experience_id = user_data['experience_id']
     if 'preferred_language' in user_data:

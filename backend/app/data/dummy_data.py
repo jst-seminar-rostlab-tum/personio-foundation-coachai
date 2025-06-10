@@ -11,6 +11,7 @@ from app.models.goal import Goal
 from app.models.language import Language  # Import the Language model
 from app.models.learning_style import LearningStyle
 from app.models.rating import Rating
+from app.models.role import Role
 from app.models.session_length import SessionLength
 from app.models.training_case import TrainingCase, TrainingCaseStatus
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
@@ -21,7 +22,22 @@ from app.models.training_session_feedback import (
 )
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import UserGoal
-from app.models.user_profile import UserProfile, UserRole
+from app.models.user_profile import UserProfile
+
+
+def get_dummy_roles() -> list[Role]:
+    return [
+        Role(
+            id=uuid4(),
+            label='HR Professional',
+            description='I work in human resources or people operations.',
+        ),
+        Role(id=uuid4(), label='Team Leader', description='I manage a team or a department.'),
+        Role(
+            id=uuid4(), label='Executive', description='I am a director, VP, or C-level executive.'
+        ),
+        Role(id=uuid4(), label='Other', description='None of the above.'),
+    ]
 
 
 def get_dummy_learning_styles() -> list[LearningStyle]:
@@ -112,6 +128,7 @@ def get_dummy_user_profiles(
     experiences: list[Experience],
     learning_styles: list[LearningStyle],
     session_lengths: list[SessionLength],
+    roles: list[Role],
 ) -> list[UserProfile]:
     """
     Generate dummy UserProfile data.
@@ -120,7 +137,7 @@ def get_dummy_user_profiles(
         UserProfile(
             id=uuid4(),
             preferred_language='en',
-            role=UserRole.user,
+            role_id=roles[0].id,
             experience_id=experiences[0].id,
             preferred_learning_style_id=learning_styles[0].id,
             preferred_session_length_id=session_lengths[0].id,
@@ -134,7 +151,7 @@ def get_dummy_user_profiles(
         UserProfile(
             id=uuid4(),
             preferred_language='de',
-            role=UserRole.admin,
+            role_id=roles[1].id,
             experience_id=experiences[1].id,
             preferred_learning_style_id=learning_styles[1].id,
             preferred_session_length_id=session_lengths[1].id,

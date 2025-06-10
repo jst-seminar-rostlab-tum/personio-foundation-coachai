@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -14,21 +13,18 @@ if TYPE_CHECKING:
     from app.models.experience import Experience
     from app.models.learning_style import LearningStyle
     from app.models.rating import Rating
+    from app.models.role import Role
     from app.models.session_length import SessionLength
     from app.models.training_case import TrainingCase
     from app.models.user_confidence_score import UserConfidenceScore
     from app.models.user_goal import UserGoal
 
 
-class UserRole(str, Enum):
-    user = 'user'
-    admin = 'admin'
-
-
 class UserProfile(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
     experience_id: UUID = Field(foreign_key='experience.id')  # FK to Experience
+    role_id: UUID = Field(foreign_key='role.id')  # FK to Role
     preferred_learning_style_id: UUID = Field(foreign_key='learningstyle.id')
     preferred_session_length_id: UUID = Field(foreign_key='sessionlength.id')
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -36,7 +32,7 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
     # Relationships
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
     training_cases: list['TrainingCase'] = Relationship(back_populates='user', cascade_delete=True)
-    role: Optional[UserRole] = Field(default=UserRole.user)
+    role: Optional['Role'] = Relationship(back_populates='user_profiles')
     experience: Optional['Experience'] = Relationship(back_populates='user')
     user_goals: list['UserGoal'] = Relationship(
         back_populates='user', cascade_delete=True
@@ -69,7 +65,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfil
 # Schema for creating a new UserProfile
 class UserProfileCreate(SQLModel):
     preferred_language: str
-    role: UserRole
+    role_id: UUID
     experience_id: UUID
     preferred_learning_style_id: UUID
     preferred_session_length_id: UUID
@@ -82,7 +78,7 @@ class UserProfileCreate(SQLModel):
 class UserProfileRead(SQLModel):
     id: UUID
     preferred_language: str
-    role: UserRole
+    role_id: UUID
     experience_id: UUID
     preferred_learning_style_id: UUID
     preferred_session_length_id: UUID
@@ -95,7 +91,7 @@ class UserProfileRead(SQLModel):
 class UserProfileExtendedRead(SQLModel):
     user_id: UUID
     preferred_language: str
-    role: Optional[UserRole]
+    role: Optional[str]
     experience: Optional[str]
     preferred_learning_style: Optional[str]
     preferred_session_length: Optional[str]
