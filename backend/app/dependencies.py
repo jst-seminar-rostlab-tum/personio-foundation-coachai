@@ -11,7 +11,7 @@ from app.models import UserProfile
 from app.models.user_profile import UserRole
 
 settings = Settings()
-security = HTTPBearer()
+security = HTTPBearer(auto_error=not (settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH))
 
 
 def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)]):  # noqa: ANN201
