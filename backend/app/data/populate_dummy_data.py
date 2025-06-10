@@ -108,7 +108,7 @@ def populate_data() -> None:
 
         # Populate Admin Dashboard Stats
         admin_stats = get_dummy_admin_stats()
-        session.add_all(admin_stats)
+        db_session.add_all(admin_stats)
 
         # Populate Reviews
         reviews = get_dummy_reviews(user_profiles, sessions)
