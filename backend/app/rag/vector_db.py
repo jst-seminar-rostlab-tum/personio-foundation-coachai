@@ -42,7 +42,7 @@ def get_supabase_client() -> Client:
     elif settings.supabase_environment == 'remote':
         url = f'https://{settings.supabase_project_id}.supabase.co'
     else:
-        url = 'http://rest:3000'
+        url = 'http://kong:8000'
 
     api_key = getattr(settings, 'supabase_service_key', None) or settings.supabase_anon_key
 

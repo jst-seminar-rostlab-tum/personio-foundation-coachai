@@ -93,7 +93,7 @@ services:
       SUPABASE_DB: ${SUPABASE_DB}
       SUPABASE_PORT: ${SUPABASE_PORT}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
-      SUPABASE_URL: http://rest:3000
+      SUPABASE_URL: http://kong:8000
       GEMINI_API_KEY: ${GEMINI_API_KEY}
     command: uv run -m app.rag.rag
 

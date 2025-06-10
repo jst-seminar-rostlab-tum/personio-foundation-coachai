@@ -19,8 +19,14 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 ```
 
 ### Set up Supabase
+Copy all Supabase `.env.example` variables into your `.env` file.
+The `SUPABASE_ANON_KEY` must be signed with JWT. For this, run: 
+```bash
+uv run -m backend.app.rag.anon_key_with_jwt
+```
+and put the resulting code as `SUPABASE_ANON_KEY`.
 
-**Option A: Create a Free Account**
+**Option B: Create a Free Account**
 
 1. Create a supabse account (free tier) on [Supabase](https://supabase.com/dashboard/sign-in) and sign in.
 2. Create a new Project and copy your Password into the .env file under `SUPABASE_PASSWORD`
@@ -30,19 +36,6 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 6. Copy your `anon public key` into the .env file as `SUPABASE_KEY`
 7. (optional but recommended): Go to Database, download the ssl certificate, and put it into the /backend/certs directory.
 8. Copy the other settings from the .env.example into the .env file
-
-**Option B: Docker Locally**
-
-1. In your terminal to `./supabase` folder
-2. Run `docker compose up -d` in the console (make sure no other postgres is running)
-3. Add these environment variables to your .env file
-
-```
-SUPABASE_ENVIRONMENT=local
-SUPABASE_USER=postgres.your-tenant-id
-SUPABASE_PASSWORD=your-super-secret-and-long-postgres-password
-SUPABASE_ANON_KEY=super-secret-key
-```
 
 ## Local Development
 
