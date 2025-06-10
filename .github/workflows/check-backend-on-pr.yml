@@ -1,9 +1,9 @@
-name: Deploy Backend to Fly.io
+name: Check Backend on PR
 
 on:
-  push:
-    branches: [ main ]
-    paths: [ 'backend/**' ]
+  pull_request:
+    paths:
+      - 'backend/**'
 
 jobs:
   lint:
@@ -22,7 +22,6 @@ jobs:
 
   test:
     name: Test
-    needs: lint
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -34,10 +33,9 @@ jobs:
       - name: Run Tests
         run: uv run pytest --exitfirst --disable-warnings || [[ $? -eq 5 ]]
         working-directory: ./backend
-  
+
   build:
     name: Build
-    needs: test
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -49,18 +47,3 @@ jobs:
       - name: Build app
         run: uv run python -c "import app.main"
         working-directory: ./backend
-
-  deploy-production:
-    name: Deploy (Production)
-    needs: build
-    runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: ./backend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - name: Deploy with Fly.io
-        run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
