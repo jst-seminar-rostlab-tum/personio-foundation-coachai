@@ -20,7 +20,7 @@ import {
 import { AlertCircleIcon } from 'lucide-react';
 import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordInput';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 

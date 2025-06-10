@@ -1,7 +1,7 @@
 import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
 import { SignInCredentials } from '@/interfaces/SignInForm';
 import { UserProfileCreate } from '@/interfaces/SignUpForm';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 import axios from 'axios';
 
 const supabase = createClient();
