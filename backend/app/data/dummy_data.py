@@ -134,14 +134,14 @@ def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session])
         Review(
             id=uuid4(),
             user_id=user_profiles[0].id,
-            session_id=sessions[0].id,  # Link to the first training session
+            session_id=sessions[0].id,  # Link to the first session
             rating=5,
             comment='Excellent service!',
         ),
         Review(
             id=uuid4(),
             user_id=user_profiles[1].id,
-            session_id=sessions[1].id,  # Link to a second training session
+            session_id=sessions[1].id,  # Link to a second session
             rating=2,
             comment='I found the sessions a bit too fast-paced.',
         ),
