@@ -61,7 +61,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
       };
       await authService.create(data);
       setIsLoading(false);
-      router.push('/check-email');
+      router.push(`/confirm?email=${encodeURIComponent(signUpFormData.email)}`);
     } catch (err) {
       setError(err instanceof z.ZodError ? err.errors[0].message : t('genericError'));
       setIsLoading(false);

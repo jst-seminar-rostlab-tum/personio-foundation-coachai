@@ -38,7 +38,7 @@ export async function authMiddleware(
   } = await supabase.auth.getUser();
 
   if (!user) {
-    if (['/confirm', '/check-email'].some((path) => request.nextUrl.pathname.startsWith(path))) {
+    if (['/confirm'].some((path) => request.nextUrl.pathname.startsWith(path))) {
       return response;
     }
 
@@ -49,7 +49,7 @@ export async function authMiddleware(
     }
   }
 
-  const authUrls = ['/login', '/confirm', '/check-email'];
+  const authUrls = ['/login', '/confirm'];
   if (user && authUrls.some((path) => request.nextUrl.pathname.startsWith(path))) {
     const url = request.nextUrl.clone();
     if (request.nextUrl.pathname.startsWith('/login')) {
