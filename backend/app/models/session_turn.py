@@ -3,10 +3,12 @@ from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
-    from app.models.training_session import TrainingSession
+    from app.models.session import Session
 
 
 class SpeakerEnum(str, Enum):
@@ -14,9 +16,9 @@ class SpeakerEnum(str, Enum):
     ai = 'ai'
 
 
-class ConversationTurn(SQLModel, table=True):  # `table=True` makes it a database table
+class SessionTurn(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
+    session_id: UUID = Field(foreign_key='session.id')  # FK to Session
     speaker: SpeakerEnum
     start_offset_ms: int
     end_offset_ms: int
@@ -26,11 +28,11 @@ class ConversationTurn(SQLModel, table=True):  # `table=True` makes it a databas
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    session: Optional['TrainingSession'] = Relationship(back_populates='conversation_turns')
+    session: Optional['Session'] = Relationship(back_populates='session_turns')
 
 
-# Schema for creating a new ConversationTurn
-class ConversationTurnCreate(SQLModel):
+# Schema for creating a new SessionTurn
+class SessionTurnCreate(CamelModel):
     session_id: UUID
     speaker: SpeakerEnum
     start_offset_ms: int
@@ -40,8 +42,8 @@ class ConversationTurnCreate(SQLModel):
     ai_emotion: str
 
 
-# Schema for reading ConversationTurn data
-class ConversationTurnRead(SQLModel):
+# Schema for reading SessionTurn data
+class SessionTurnRead(CamelModel):
     id: UUID
     session_id: UUID
     speaker: SpeakerEnum

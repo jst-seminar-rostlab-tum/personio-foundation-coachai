@@ -3,19 +3,19 @@ from __future__ import annotations
 from collections.abc import Callable, Generator
 from uuid import UUID
 
-from sqlmodel import Session
+from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
-from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
-from app.schemas.training_preparation_schema import (
+from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
+from app.schemas.scenario_preparation_schema import (
     ChecklistRequest,
     KeyConcept,
     KeyConceptOutput,
     KeyConceptRequest,
     ObjectiveRequest,
+    ScenarioPreparationRequest,
     StringListResponse,
-    TrainingPreparationRequest,
 )
 
 
@@ -92,7 +92,7 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
     )
     example_items = '\n'.join(mock_response.items)
     user_prompt = (
-        f'Generate {request.num_checkpoints} checklist items for the following training case:\n'
+        f'Generate {request.num_checkpoints} checklist items for the following conversation scenario:\n'
         f'Each item should be a single, concise sentence,'
         f' similar in length and style to the examples below.\n'
         f'Return the result strictly as a JSON object like:\n'
@@ -118,7 +118,7 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
 
 def build_key_concept_prompt(request: KeyConceptRequest, example: str) -> str:
     return f"""
-You are a training assistant. Based on the HR professionals training case below, 
+You are a training assistant. Based on the HR professionals conversation scenario below, 
 generate 3-4 key concepts for the conversation.
 
 Your output must strictly follow this JSON format representing a Pydantic model `KeyConceptOutput`:
@@ -150,7 +150,7 @@ Example output:
 {example}
 ---
 
-Training Case:
+Conversation scenario:
 - Category: {request.category}
 - Goal: {request.goal}
 - Context: {request.context}
@@ -185,42 +185,43 @@ def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
     return result.items
 
 
-def create_pending_preparation(case_id: UUID, session: Session) -> TrainingPreparation:
+def create_pending_preparation(scenario_id: UUID, db_session: DBSession) -> ScenarioPreparation:
     """
-    Create a new TrainingPreparation record with status 'pending'.
+    Create a new ScenarioPreparation record with status 'pending'.
     """
-    prep = TrainingPreparation(
-        case_id=case_id,
-        status=TrainingPreparationStatus.pending,
+    prep = ScenarioPreparation(
+        scenario_id=scenario_id,
+        status=ScenarioPreparationStatus.pending,
         objectives=[],
         key_concepts=[],
         prep_checklist=[],
     )
-    session.add(prep)
-    session.commit()
+    db_session.add(prep)
+    db_session.commit()
     return prep
 
-def generate_training_preparation(
-        preparation_id: UUID,
-        request: TrainingPreparationRequest,
-        session_generator_func: Callable[[], Generator[Session, None, None]],
-) -> TrainingPreparation:
+
+def generate_scenario_preparation(
+    preparation_id: UUID,
+    request: ScenarioPreparationRequest,
+    session_generator_func: Callable[[], Generator[DBSession, None, None]],
+) -> ScenarioPreparation:
     """
-    Generate training preparation data including objectives, checklist, and key concepts.
-    Updates the TrainingPreparation record and returns it.
+    Generate scenario preparation data including objectives, checklist, and key concepts.
+    Updates the ScenarioPreparation record and returns it.
     """
 
     session_gen = session_generator_func()
-    session = next(session_gen)
+    db_session = next(session_gen)
 
     try:
         # 1. retrieve the preparation record
-        preparation = session.get(TrainingPreparation, preparation_id)
+        preparation = db_session.get(ScenarioPreparation, preparation_id)
 
         if not preparation:
-            raise ValueError(f'Training preparation with ID {preparation_id} not found.')
-        if preparation.status != TrainingPreparationStatus.pending:
-            raise ValueError(f'Training preparation {preparation_id} is not in pending status.')
+            raise ValueError(f'Scenario preparation with ID {preparation_id} not found.')
+        if preparation.status != ScenarioPreparationStatus.pending:
+            raise ValueError(f'Scenario preparation {preparation_id} is not in pending status.')
 
         # 2. build request objects
         objectives_request = ObjectiveRequest(
@@ -252,31 +253,31 @@ def generate_training_preparation(
             preparation.objectives = objectives
         except Exception as e:
             has_error = True
-            print("[ERROR] Failed to generate objectives:", e)
+            print('[ERROR] Failed to generate objectives:', e)
 
         try:
             checklist = safe_generate_checklist(checklist_request)
             preparation.prep_checklist = checklist
         except Exception as e:
             has_error = True
-            print("[ERROR] Failed to generate checklist:", e)
+            print('[ERROR] Failed to generate checklist:', e)
 
         try:
             key_concepts = safe_generate_key_concepts(key_concept_request)
             preparation.key_concepts = [ex.model_dump() for ex in key_concepts]
         except Exception as e:
             has_error = True
-            print("[ERROR] Failed to generate key concepts:", e)
+            print('[ERROR] Failed to generate key concepts:', e)
 
         # 4. Update status depending on error presence
         if has_error:
-            preparation.status = TrainingPreparationStatus.failed
+            preparation.status = ScenarioPreparationStatus.failed
         else:
-            preparation.status = TrainingPreparationStatus.completed
+            preparation.status = ScenarioPreparationStatus.completed
 
-        session.add(preparation)
-        session.commit()
-        session.refresh(preparation)
+        db_session.add(preparation)
+        db_session.commit()
+        db_session.refresh(preparation)
         return preparation
 
     finally:
