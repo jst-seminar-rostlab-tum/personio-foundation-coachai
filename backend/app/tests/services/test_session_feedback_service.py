@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from app.schemas.training_feedback_schema import (
+from app.schemas.session_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
     GoalsAchievementRequest,
@@ -9,18 +9,18 @@ from app.schemas.training_feedback_schema import (
     Recommendation,
     RecommendationsCollection,
     RecommendationsRequest,
-    TrainingExamplesCollection,
+    SessionExamplesCollection,
 )
-from app.services.training_feedback_service import (
+from app.services.session_feedback_service import (
     generate_recommendations,
     generate_training_examples,
     get_achieved_goals,
 )
 
 
-@patch('app.services.training_feedback_service.call_structured_llm')
+@patch('app.services.session_feedback_service.call_structured_llm')
 def test_generate_training_examples(mock_client: MagicMock) -> None:
-    mock_client.return_value = TrainingExamplesCollection(
+    mock_client.return_value = SessionExamplesCollection(
         positive_examples=[
             PositiveExample(
                 heading='Clear Objective Addressed',
@@ -52,14 +52,14 @@ def test_generate_training_examples(mock_client: MagicMock) -> None:
     )
 
     result = generate_training_examples(request)
-    assert isinstance(result, TrainingExamplesCollection)
+    assert isinstance(result, SessionExamplesCollection)
     assert len(result.positive_examples) == 1
     assert len(result.negative_examples) == 1
     assert result.positive_examples[0].heading == 'Clear Objective Addressed'
     assert result.negative_examples[0].quote == "That's not important right now."
 
 
-@patch('app.services.training_feedback_service.call_structured_llm')
+@patch('app.services.session_feedback_service.call_structured_llm')
 def test_get_achieved_goals(mock_client: MagicMock) -> None:
     mock_client.return_value = GoalsAchievedCollection(
         goals_achieved=[
@@ -84,7 +84,7 @@ def test_get_achieved_goals(mock_client: MagicMock) -> None:
     assert isinstance(result, GoalsAchievedCollection)
 
 
-@patch('app.services.training_feedback_service.call_structured_llm')
+@patch('app.services.session_feedback_service.call_structured_llm')
 def test_generate_recommendations(mock_client: MagicMock) -> None:
     transcript = "User: Let's explore what might be causing these delays."
     objectives = ['Understand root causes', 'Collaboratively develop a solution']

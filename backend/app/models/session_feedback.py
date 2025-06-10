@@ -6,10 +6,12 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
-    from app.models.training_session import TrainingSession
+    from app.models.session import Session
 
 
 class FeedbackStatusEnum(str, Enum):
@@ -18,27 +20,27 @@ class FeedbackStatusEnum(str, Enum):
     failed = 'failed'
 
 
-class PositiveExample(SQLModel):
+class PositiveExample(CamelModel):
     heading: str
     feedback: str
     quote: str
 
 
-class NegativeExample(SQLModel):
+class NegativeExample(CamelModel):
     heading: str
     feedback: str
     quote: str
     improved_quote: str
 
 
-class Recommendation(SQLModel):
+class Recommendation(CamelModel):
     heading: str
     recommendation: str
 
 
-class TrainingSessionFeedback(SQLModel, table=True):  # `table=True` makes it a database table
+class SessionFeedback(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
+    session_id: UUID = Field(foreign_key='session.id')  # FK to Session
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: int
@@ -55,20 +57,18 @@ class TrainingSessionFeedback(SQLModel, table=True):  # `table=True` makes it a 
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    session: Optional['TrainingSession'] = Relationship(back_populates='feedback')
+    session: Optional['Session'] = Relationship(back_populates='feedback')
 
     # Automatically update `updated_at` before an update
 
 
-@event.listens_for(TrainingSessionFeedback, 'before_update')
-def update_timestamp(
-    mapper: Mapper, connection: Connection, target: 'TrainingSessionFeedback'
-) -> None:
+@event.listens_for(SessionFeedback, 'before_update')
+def update_timestamp(mapper: Mapper, connection: Connection, target: 'SessionFeedback') -> None:
     target.updated_at = datetime.now(UTC)
 
 
-# Schema for creating a new TrainingSessionFeedback
-class TrainingSessionFeedbackCreate(SQLModel):
+# Schema for creating a new SessionFeedback
+class SessionFeedbackCreate(CamelModel):
     session_id: UUID
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
@@ -84,8 +84,8 @@ class TrainingSessionFeedbackCreate(SQLModel):
     status: FeedbackStatusEnum = FeedbackStatusEnum.pending
 
 
-# Schema for reading TrainingSessionFeedback data
-class TrainingSessionFeedbackRead(SQLModel):
+# Schema for reading SessionFeedback data
+class SessionFeedbackRead(CamelModel):
     id: UUID
     session_id: UUID
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
@@ -104,8 +104,8 @@ class TrainingSessionFeedbackRead(SQLModel):
     updated_at: datetime
 
 
-# Schema for reading a training session's feedback metrics
-class TrainingSessionFeedbackMetrics(SQLModel):
+# Schema for reading a session's feedback metrics
+class SessionFeedbackMetrics(CamelModel):
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: int
