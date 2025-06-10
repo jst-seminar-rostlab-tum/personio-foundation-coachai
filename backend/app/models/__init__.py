@@ -31,7 +31,12 @@ from app.models.training_preparation import (
     TrainingPreparationRead,
     TrainingPreparationStatus,
 )
-from app.models.training_session import TrainingSession, TrainingSessionCreate, TrainingSessionRead
+from app.models.training_session import (
+    TrainingSession,
+    TrainingSessionCreate,
+    TrainingSessionDetailsRead,
+    TrainingSessionRead,
+)
 from app.models.training_session_feedback import (
     FeedbackStatusEnum,
     NegativeExample,
@@ -69,6 +74,7 @@ __all__ = [
     'TrainingSession',
     'TrainingSessionCreate',
     'TrainingSessionRead',
+    'TrainingSessionDetailsRead',
     'TrainingPreparation',
     'TrainingPreparationCreate',
     'TrainingPreparationRead',

@@ -5,8 +5,9 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
 
+from app.models.camel_case import CamelModel
 from app.models.user_confidence_score import ConfidenceScoreRead
 
 if TYPE_CHECKING:
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
     from app.models.user_goal import UserGoal
 
 
-class UserProfile(SQLModel, table=True):  # `table=True` makes it a database table
+class UserProfile(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
     experience_id: UUID = Field(foreign_key='experience.id')  # FK to Experience
@@ -33,6 +34,9 @@ class UserProfile(SQLModel, table=True):  # `table=True` makes it a database tab
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
     training_cases: list['TrainingCase'] = Relationship(back_populates='user', cascade_delete=True)
     role: Optional['Role'] = Relationship(back_populates='user_profiles')
+    training_cases: list['TrainingCase'] = Relationship(
+        back_populates='user_profile', cascade_delete=True
+    )
     experience: Optional['Experience'] = Relationship(back_populates='user')
     user_goals: list['UserGoal'] = Relationship(
         back_populates='user', cascade_delete=True
@@ -63,7 +67,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfil
 
 
 # Schema for creating a new UserProfile
-class UserProfileCreate(SQLModel):
+class UserProfileCreate(CamelModel):
     preferred_language: str
     role_id: UUID
     experience_id: UUID
@@ -75,7 +79,7 @@ class UserProfileCreate(SQLModel):
 
 
 # Schema for reading UserProfile data
-class UserProfileRead(SQLModel):
+class UserProfileRead(CamelModel):
     id: UUID
     preferred_language: str
     role_id: UUID
@@ -88,7 +92,7 @@ class UserProfileRead(SQLModel):
     updated_at: datetime
 
 
-class UserProfileExtendedRead(SQLModel):
+class UserProfileExtendedRead(CamelModel):
     user_id: UUID
     preferred_language: str
     role: Optional[str]
@@ -104,7 +108,7 @@ UserProfileExtendedRead.model_rebuild()
 
 
 # Schema for reading User Statistics
-class UserStatisticsRead(SQLModel):
+class UserStatisticsRead(CamelModel):
     total_sessions: int
     training_time: float  # in hours
     current_streak_days: int

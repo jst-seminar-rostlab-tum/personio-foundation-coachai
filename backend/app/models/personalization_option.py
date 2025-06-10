@@ -1,5 +1,4 @@
-from sqlmodel import SQLModel
-
+from app.models.camel_case import CamelModel
 from app.models.confidence_area import ConfidenceAreaRead
 from app.models.experience import ExperienceRead
 from app.models.goal import GoalRead
@@ -9,7 +8,7 @@ from app.models.role import RoleRead
 from app.models.session_length import SessionLengthRead
 
 
-class PersonalizationOptionRead(SQLModel):
+class PersonalizationOptionRead(CamelModel):
     roles: list[RoleRead]
     experiences: list[ExperienceRead]
     goals: list[GoalRead]

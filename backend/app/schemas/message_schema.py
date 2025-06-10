@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from app.models.camel_case import CamelModel
 
 
-class MessageBaseSchema(BaseModel):
+class MessageBaseSchema(CamelModel):
     content: str
 
 
