@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/client';
 import axios from 'axios';
+import { redirect } from 'next/navigation';
 
 const supabase = createClient();
 
@@ -31,7 +32,7 @@ apiService.interceptors.request.use(
     if (!sessionExpiry || sessionExpiry < currentTime) {
       const { data: refreshedData, error: refreshError } = await supabase.auth.refreshSession();
       if (refreshError || !refreshedData.session) {
-        return Promise.reject(refreshError || new Error('Session refresh failed'));
+        redirect('/login');
       }
       accessToken = refreshedData.session.access_token;
     }
