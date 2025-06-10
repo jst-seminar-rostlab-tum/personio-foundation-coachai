@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
 from app.models.review import (
     Review,
     ReviewCreate,
@@ -17,7 +17,7 @@ router = APIRouter(prefix='/review', tags=['User Review'])
 
 
 @router.get('/', response_model=list[ReviewRead])
-def get_reviews(db_session: Annotated[DBSession, Depends(get_session)]) -> list[Review]:
+def get_reviews(db_session: Annotated[DBSession, Depends(get_db_session)]) -> list[Review]:
     """
     Retrieve all reviews.
     """
@@ -28,7 +28,7 @@ def get_reviews(db_session: Annotated[DBSession, Depends(get_session)]) -> list[
 
 @router.post('/', response_model=ReviewResponse)
 def create_review(
-    review: ReviewCreate, db_session: Annotated[DBSession, Depends(get_session)]
+    review: ReviewCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> ReviewResponse:
     """
     Create a new review.
