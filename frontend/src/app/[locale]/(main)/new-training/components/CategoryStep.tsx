@@ -21,13 +21,13 @@ export function CategoryStep({
             onClick={() => onCategorySelect(category)}
             selected={selectedCategory === category.id}
           >
-            {/* <Image
-              src={category.icon_uri}
+            <Image
+              src={category.iconUri}
               alt={category.name}
               width={56}
               height={56}
               className="mb-4"
-            /> */}
+            />
             {category.name}
           </CategoryButton>
         ))}
