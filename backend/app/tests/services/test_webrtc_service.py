@@ -337,17 +337,40 @@ class TestWebRTCAudioLoop:
 
     @pytest.mark.asyncio
     async def test_handle_transcript_calls_callback(self, audio_loop: WebRTCAudioLoop) -> None:
-        """Test handle_transcript calls callback if set"""
+        """Test handle_transcript calls callback if data channel is ready"""
         callback = AsyncMock()
         audio_loop.set_transcript_callback(callback)
+
+        # Mark data channel as ready
+        audio_loop.mark_data_channel_ready()
 
         await audio_loop.handle_transcript('test transcript')
 
         callback.assert_awaited_once_with('test transcript', 'test_peer')
 
     @pytest.mark.asyncio
+    async def test_handle_transcript_queues_when_not_ready(
+        self, audio_loop: WebRTCAudioLoop
+    ) -> None:
+        """Test handle_transcript queues transcript when data channel is not ready"""
+        callback = AsyncMock()
+        audio_loop.set_transcript_callback(callback)
+
+        # Don't mark data channel as ready
+        await audio_loop.handle_transcript('test transcript')
+
+        # Callback should not be called
+        callback.assert_not_awaited()
+
+        # Transcript should be queued
+        assert 'test transcript' in audio_loop._pending_transcripts
+
+    @pytest.mark.asyncio
     async def test_handle_transcript_no_callback(self, audio_loop: WebRTCAudioLoop) -> None:
         """Test handle_transcript when no callback is set"""
+        # Mark data channel as ready
+        audio_loop.mark_data_channel_ready()
+
         # Should not raise an exception
         await audio_loop.handle_transcript('test transcript')
 
