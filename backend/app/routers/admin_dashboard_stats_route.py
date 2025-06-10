@@ -6,7 +6,7 @@ from sqlmodel import Session, func, select
 from app.database import get_session
 from app.models.admin_dashboard_stats import AdminDashboardStats, AdminDashboardStatsRead
 from app.models.app_config import AppConfig
-from app.models.app_review import AppReview
+from app.models.review import Review
 from app.models.user_profile import UserProfile
 
 router = APIRouter(prefix='/admin-stats', tags=['Admin Dashboard'])
@@ -20,7 +20,7 @@ def get_admin_dashboard_stats(
     total_users = session.exec(select(func.count()).select_from(UserProfile)).one()
 
     # Get total reviews
-    total_reviews = session.exec(select(func.count()).select_from(AppReview)).one()
+    total_reviews = session.exec(select(func.count()).select_from(Review)).one()
 
     # Get daily token limit from app_config with key 'dailyUserTokenLimit'
     daily_token_limit = session.exec(
