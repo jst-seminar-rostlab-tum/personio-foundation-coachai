@@ -281,9 +281,6 @@ class GeminiStreamReceiveError(GeminiStreamError):
         super().__init__(message, GeminiStreamErrorType.RECEIVE, peer_id)
 
 
-GEMINI_SAMPLE_RATE = 16000  # Default sample rate for Gemini
-
-
 # =========================================================================
 #                           AUDIO CONTROL EVENTS
 # =========================================================================

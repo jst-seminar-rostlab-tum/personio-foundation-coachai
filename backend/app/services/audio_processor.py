@@ -5,6 +5,12 @@ import av
 import numpy as np
 from aiortc.mediastreams import MediaStreamTrack
 
+OPUS_SAMPLE_RATE = 48000
+SEND_SAMPLE_RATE = 16000
+RECEIVE_SAMPLE_RATE = 24000
+CHUNK_SIZE = 1024
+CHANNELS = 1
+
 
 class AudioStreamTrack(MediaStreamTrack):
     """
@@ -32,7 +38,7 @@ class AudioStreamTrack(MediaStreamTrack):
         await self.queue.put(frame)
 
 
-def opus_to_pcm(opus_data: bytes, sample_rate: int = 48000) -> bytes:
+def opus_to_pcm(opus_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
     """
     Convert Opus data to PCM data
 
@@ -59,7 +65,7 @@ def opus_to_pcm(opus_data: bytes, sample_rate: int = 48000) -> bytes:
     return output_buffer.getvalue()
 
 
-def pcm_to_opus(pcm_data: bytes, sample_rate: int = 48000) -> bytes:
+def pcm_to_opus(pcm_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
     """
     Convert PCM data to Opus data
 
@@ -87,7 +93,10 @@ def pcm_to_opus(pcm_data: bytes, sample_rate: int = 48000) -> bytes:
 
 
 def resample_wav_audio(
-    audio_data: bytes, source_sample_rate: int, target_sample_rate: int = 48000
+    audio_data: bytes,
+    source_sample_rate: int,
+    target_sample_rate: int = OPUS_SAMPLE_RATE,
+    channels: int = CHANNELS,
 ) -> bytes:
     """
     Resample WAV format audio data to a different sample rate
@@ -120,7 +129,10 @@ def resample_wav_audio(
 
 
 def resample_pcm_audio(
-    pcm_data: bytes, source_sample_rate: int, target_sample_rate: int = 48000, channels: int = 1
+    pcm_data: bytes,
+    source_sample_rate: int,
+    target_sample_rate: int = OPUS_SAMPLE_RATE,
+    channels: int = CHANNELS,
 ) -> bytes:
     """
     Resample raw PCM audio data to a different sample rate

@@ -48,8 +48,12 @@ class AudioLoop:
             if text.lower() == 'q':
                 break
             await self.session.send_client_content(
-                {'role': 'user', 'parts': [{'text': text or '.'}]},
-                turn_complete=True,
+                turns=[
+                    {
+                        'role': 'user',
+                        'parts': [{'text': text or '.'}],
+                    },
+                ]
             )
 
     async def send_realtime(self) -> None:

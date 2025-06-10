@@ -125,12 +125,6 @@ function useWebRTC() {
 
         dataChannel.onmessage = (event) => {
           console.debug('[WebRTC] Received message:', event.data);
-          try {
-            dataChannel.send(`Echo: ${event.data}`);
-            console.debug('[WebRTC] Echo message sent');
-          } catch (error) {
-            console.error('[WebRTC] Error sending echo message:', error);
-          }
         };
 
         // Handle incoming data channels

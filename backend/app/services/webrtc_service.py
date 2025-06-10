@@ -25,14 +25,20 @@ from google.genai.live import AsyncSession
 
 from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_client
 from app.schemas.webrtc_schema import (
-    GEMINI_SAMPLE_RATE,
     WebRTCAudioEvent,
     WebRTCAudioEventType,
     WebRTCDataChannelError,
     WebRTCMediaError,
     WebRTCPeerError,
 )
-from app.services.audio_processor import AudioStreamTrack, is_silence, resample_pcm_audio
+from app.services.audio_processor import (
+    OPUS_SAMPLE_RATE,
+    RECEIVE_SAMPLE_RATE,
+    SEND_SAMPLE_RATE,
+    AudioStreamTrack,
+    is_silence,
+    resample_pcm_audio,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -177,7 +183,7 @@ class WebRTCAudioLoop:
         self.on_transcript_callback: TranscriptCallback | None = None
 
         self.last_voice_time = time.time()
-        self.silence_timeout = 1.0  # 1秒无声自动结束
+        self.silence_timeout = 1.0
 
     def set_transcript_callback(self, callback: TranscriptCallback) -> None:
         """Set callback for transcript handling"""
@@ -264,13 +270,13 @@ class WebRTCAudioLoop:
                 continue
             self.last_voice_time = time.time()
             # Resample to Gemini required sample rate
-            if frame.rate != GEMINI_SAMPLE_RATE:
+            if frame.rate != SEND_SAMPLE_RATE:
                 logger.debug(
                     f'[WebRTC] Resampling audio for peer {self.peer_id} '
-                    f'from {frame.rate} to {GEMINI_SAMPLE_RATE}'
+                    f'from {frame.rate} to {SEND_SAMPLE_RATE}'
                 )
                 try:
-                    audio_bytes = resample_pcm_audio(audio_bytes, frame.rate, GEMINI_SAMPLE_RATE)
+                    audio_bytes = resample_pcm_audio(audio_bytes, frame.rate, SEND_SAMPLE_RATE)
                     logger.debug(
                         f'[WebRTC] Audio resampled successfully, new length: {len(audio_bytes)}'
                     )
@@ -286,7 +292,7 @@ class WebRTCAudioLoop:
             while self.audio_out_queue:
                 audio_msg = await self.audio_out_queue.get()
                 await self._send_to_gemini(audio_msg)
-                logger.debug(f'[WebRTC] Audio sent to Gemini callback for peer {self.peer_id}')
+                logger.debug(f'[WebRTC] Audio sent to Gemini for peer {self.peer_id}')
         except Exception as e:
             logger.error(f'Error in sending audio to Gemini for peer {self.peer_id}: {e}')
 
@@ -294,9 +300,8 @@ class WebRTCAudioLoop:
         """Play audio to WebRTC by pushing frames to the streaming track."""
         try:
             # WebRTC Opus encoders work best with 20ms frames
-            track_sample_rate = 48000
             frame_duration_ms = 20
-            samples_per_frame = int(track_sample_rate * frame_duration_ms / 1000)
+            samples_per_frame = int(OPUS_SAMPLE_RATE * frame_duration_ms / 1000)
             # 16-bit PCM has 2 bytes per sample
             bytes_per_frame = samples_per_frame * 2
             timestamp = 0
@@ -307,7 +312,7 @@ class WebRTCAudioLoop:
 
                 # Resample from Gemini's output rate to the track's rate
                 resampled_pcm = resample_pcm_audio(
-                    pcm_data.data, GEMINI_SAMPLE_RATE, track_sample_rate
+                    pcm_data.data, RECEIVE_SAMPLE_RATE, OPUS_SAMPLE_RATE
                 )
 
                 # Chunk the resampled data into 20ms frames
@@ -322,7 +327,7 @@ class WebRTCAudioLoop:
                         format='s16',
                         layout='mono',
                     )
-                    frame.sample_rate = track_sample_rate
+                    frame.sample_rate = OPUS_SAMPLE_RATE
                     # Timestamps are crucial for smooth playback
                     frame.pts = timestamp
                     timestamp += samples_per_frame
@@ -344,12 +349,19 @@ class WebRTCAudioLoop:
             logger.error(f'[Gemini] No session available for peer {self.peer_id}')
             return
 
-        if isinstance(msg, WebRTCAudioEvent):
-            if msg.type == WebRTCAudioEventType.AUDIO_STREAM_END:
-                await self.gemini_session.send_realtime_input(audio_stream_end=True)
-        elif isinstance(msg, types.Blob):
-            logger.debug(f'[Gemini] Sending audio to Gemini for peer {self.peer_id}')
-            await self.gemini_session.send_realtime_input(audio=msg)
+        try:
+            if isinstance(msg, WebRTCAudioEvent):
+                if msg.type == WebRTCAudioEventType.AUDIO_STREAM_END:
+                    await self.gemini_session.send_realtime_input(audio_stream_end=True)
+            elif isinstance(msg, types.Blob):
+                logger.debug(f'[Gemini] Sending audio to Gemini for peer {self.peer_id}')
+                await self.gemini_session.send_realtime_input(
+                    audio=msg, activity_end=types.ActivityEnd()
+                )
+            else:
+                logger.error(f'[Gemini] Invalid message type: {type(msg)}')
+        except Exception as e:
+            logger.error(f'Error sending audio to Gemini for peer {self.peer_id}: {e}')
 
     async def handle_transcript(self, transcript: str) -> None:
         """Handle transcript text"""
@@ -374,6 +386,9 @@ class WebRTCAudioLoop:
                     turn = self.gemini_session.receive()
                     async for response in turn:
                         # Handle audio data
+                        logger.debug(
+                            f'[Gemini] Received response from Gemini for peer {self.peer_id}'
+                        )
                         if data := response.data:
                             logger.info(
                                 f'[Gemini] Received audio data from Gemini for peer {self.peer_id}'
