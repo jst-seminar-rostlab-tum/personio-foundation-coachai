@@ -30,7 +30,12 @@ dependencies = [
   "pgvector>=0.2.5,<0.4",
   "langchain-huggingface>=0.2.0",
   "langchain-postgres>=0.0.14",
-  "google-genai>=1.19.0",
+  "aiortc>=1.13.0",
+  "google-cloud-aiplatform>=1.96.0",
+  "av>=14.4.0",
+  "numpy>=1.26.4",
+  "coverage>=7.8.2",
+  "pyaudio>=0.2.14",
 ]
 
 [tool.setuptools]
