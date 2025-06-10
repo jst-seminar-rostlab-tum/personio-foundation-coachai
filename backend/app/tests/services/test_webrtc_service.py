@@ -391,7 +391,7 @@ class TestWebRTCAudioLoop:
         audio_loop.last_voice_time = asyncio.get_event_loop().time()
 
         # Mock resample function
-        mock_resample.return_value = b'x' * 400  # 长度大于320
+        mock_resample.return_value = b'x' * 400
 
         # Run the method until cancelled
         with pytest.raises(asyncio.CancelledError):
@@ -675,12 +675,13 @@ class TestIntegration:
         await service.close_peer_connection(peer_id)
 
     @pytest.mark.asyncio
+    @patch('app.services.webrtc_service.is_silence', return_value=False)
     @patch('app.services.webrtc_service.resample_pcm_audio')
     async def test_audio_resampling_integration(
-        self, mock_resample: MagicMock, audio_loop: WebRTCAudioLoop
+        self, mock_resample: MagicMock, mock_is_silence: MagicMock, audio_loop: WebRTCAudioLoop
     ) -> None:
         """Test audio resampling integration"""
-        mock_resample.return_value = b'resampled_audio_data'
+        mock_resample.return_value = b'x' * 400
 
         # Setup frame with different sample rate
         mock_frame = MockAudioFrame(rate=44100, channels=1, samples=441)  # 10ms at 44.1kHz
@@ -705,4 +706,4 @@ class TestIntegration:
         queued_item = await audio_loop.audio_out_queue.get()
         assert isinstance(queued_item, types.Blob)
         assert queued_item.mime_type == 'audio/pcm'
-        assert queued_item.data == b'resampled_audio_data'
+        assert queued_item.data == b'x' * 400
