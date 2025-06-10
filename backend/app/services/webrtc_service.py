@@ -263,8 +263,8 @@ class WebRTCAudioLoop:
 
                 await self._send_to_gemini(
                     types.Content(
-                        role='user',
-                        parts=[types.Part(text='Hello welcome, have a seat please!')],
+                        role='assistant',
+                        parts=[types.Part(text='Hello! I am ready to chat.')],
                     )
                 )
 
@@ -308,18 +308,8 @@ class WebRTCAudioLoop:
             frame = await self.webrtc_track.recv()
             audio_array = frame.to_ndarray()
             audio_bytes = audio_array.tobytes()
-            if not audio_bytes or len(audio_bytes) < 320 or is_silence(audio_bytes):
-                if (
-                    self.gemini_session
-                    and time.time() - self.last_voice_time > self.silence_timeout
-                ):
-                    await self._send_to_gemini(
-                        WebRTCAudioEvent(type=WebRTCAudioEventType.AUDIO_STREAM_END)
-                    )
-                    self.last_voice_time = time.time()  # Reset the last voice time
-                continue
-            self.last_voice_time = time.time()
-            # Resample to Gemini required sample rate
+
+            # Resample to Gemini required sample rate first (before silence detection)
             if frame.rate != SEND_SAMPLE_RATE:
                 logger.debug(
                     f'[WebRTC] Resampling audio for peer {self.peer_id} '
@@ -333,6 +323,20 @@ class WebRTCAudioLoop:
                 except Exception as e:
                     logger.error(f'[WebRTC] Failed to resample audio for peer {self.peer_id}: {e}')
                     continue
+
+            # Now check for silence on the resampled audio
+            if not audio_bytes or len(audio_bytes) < 320 or is_silence(audio_bytes):
+                if (
+                    self.gemini_session
+                    and time.time() - self.last_voice_time > self.silence_timeout
+                ):
+                    await self._send_to_gemini(
+                        WebRTCAudioEvent(type=WebRTCAudioEventType.AUDIO_STREAM_END)
+                    )
+                    self.last_voice_time = time.time()  # Reset the last voice time
+                continue
+
+            self.last_voice_time = time.time()
             if self.audio_out_queue:
                 await self.audio_out_queue.put(types.Blob(data=audio_bytes, mime_type='audio/pcm'))
 

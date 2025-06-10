@@ -3,6 +3,7 @@ import io
 
 import av
 import numpy as np
+import webrtcvad
 from aiortc.mediastreams import MediaStreamTrack
 
 OPUS_SAMPLE_RATE = 48000
@@ -10,6 +11,9 @@ SEND_SAMPLE_RATE = 16000
 RECEIVE_SAMPLE_RATE = 24000
 CHUNK_SIZE = 1024
 CHANNELS = 1
+
+# VAD instance (global shared)
+vad = webrtcvad.Vad(1)  # 0-3, 1 is medium sensitivity
 
 
 class AudioStreamTrack(MediaStreamTrack):
@@ -148,16 +152,68 @@ def resample_pcm_audio(
         return b''
 
 
-def is_silence(audio_data: bytes, threshold: int = 1000) -> bool:
+def is_silence(audio_data: bytes, sample_rate: int = SEND_SAMPLE_RATE) -> bool:
     """
-    Check if audio data is silence
+    Check if audio data contains speech using WebRTC VAD
+
+    Args:
+        audio_data: Raw PCM audio data (16-bit signed integers)
+        sample_rate: Sample rate of the audio data (8000, 16000, 32000, or 48000)
+
+    Returns:
+        True if no speech detected (silence), False if speech detected
     """
     if not audio_data:
         return True
-    audio_array = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32)
-    if not np.isfinite(audio_array).all():
+
+    # webrtcvad only supports specific sample rates
+    supported_rates = [8000, 16000, 32000, 48000]
+    # if the sample rate is not supported, use energy detection
+    if sample_rate not in supported_rates:
+        audio_array = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32)
+        if not np.isfinite(audio_array).all():
+            return True
+        rms = np.sqrt(np.mean(audio_array**2))
+        if not np.isfinite(rms):
+            return True
+        return rms < 500
+
+    # webrtcvad 需要特定长度的音频帧 (10ms, 20ms, or 30ms)
+    frame_duration_ms = 20  # 使用 20ms 帧
+    frame_size = int(sample_rate * frame_duration_ms / 1000)
+    bytes_per_frame = frame_size * 2  # 16-bit = 2 bytes per sample
+
+    # 如果数据长度不够一帧，认为是静音
+    if len(audio_data) < bytes_per_frame:
         return True
-    rms = np.sqrt(np.mean(audio_array**2))
-    if not np.isfinite(rms):
-        return True
-    return rms < threshold
+
+    # 只处理第一帧（如果有多帧可以循环处理）
+    frame_data = audio_data[:bytes_per_frame]
+
+    try:
+        # webrtcvad.is_speech 返回 True 表示有语音，False 表示静音
+        has_speech = vad.is_speech(frame_data, sample_rate)
+        return not has_speech  # is_silence 返回 True 表示静音
+    except Exception:
+        # 如果 VAD 处理失败，回退到简单的能量检测
+        audio_array = np.frombuffer(frame_data, dtype=np.int16).astype(np.float32)
+        if not np.isfinite(audio_array).all():
+            return True
+        rms = np.sqrt(np.mean(audio_array**2))
+        if not np.isfinite(rms):
+            return True
+        return rms < 500
+
+
+def has_voice(audio_data: bytes, sample_rate: int = SEND_SAMPLE_RATE) -> bool:
+    """
+    Check if audio data contains speech using WebRTC VAD
+
+    Args:
+        audio_data: Raw PCM audio data (16-bit signed integers)
+        sample_rate: Sample rate of the audio data
+
+    Returns:
+        True if speech detected, False if silence
+    """
+    return not is_silence(audio_data, sample_rate)

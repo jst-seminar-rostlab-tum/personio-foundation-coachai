@@ -1,6 +1,13 @@
 """
 ## Documentation
-本地模拟 WebRTC 音频流的测试脚本，参照 WebRTC 服务架构但使用 pyaudio
+
+Local WebRTC audio stream simulator,
+based on WebRTC service architecture but using pyaudio
+
+Includes comprehensive event system for monitoring:
+- Audio events: stream start/end, voice activity, silence detection
+- Session events: session lifecycle, Gemini connection status
+- Data channel events: transcript handling, message passing
 
 ## Setup
 
@@ -9,15 +16,47 @@ To install the dependencies for this script, run:
 ```
 pip install google-genai pyaudio
 ```
+
+## Event System Usage
+
+The local audio loop supports event handlers for monitoring various aspects:
+
+```python
+# Create audio loop
+audio_loop = (
+    LocalAudioLoop(
+        peer_id
+    )
+)
+
+# Add event handlers
+audio_loop.add_audio_event_handler(
+    my_audio_handler
+)
+audio_loop.add_session_event_handler(
+    my_session_handler
+)
+audio_loop.add_data_channel_event_handler(
+    my_data_handler
+)
+```
+
+Event types include:
+- LocalAudioEventType: AUDIO_STREAM_START, AUDIO_STREAM_END,
+    VOICE_ACTIVITY_DETECTED, SILENCE_DETECTED, AUDIO_QUALITY_CHANGED
+- LocalSessionEventType: SESSION_STARTED, SESSION_ENDED, GEMINI_CONNECTED,
+    GEMINI_DISCONNECTED, SESSION_ERROR
+- LocalDataChannelEventType: CHANNEL_READY, TRANSCRIPT_SENT, MESSAGE_RECEIVED
 """
 
 import asyncio
 import contextlib
-import json
 import logging
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from enum import Enum
+from typing import Generic, TypeVar
 
 import pyaudio
 from dotenv import load_dotenv
@@ -25,7 +64,7 @@ from google import genai
 from google.genai import types
 from google.genai.live import AsyncSession
 
-from app.connections.gemini_client import LIVE_CONFIG, MODEL, SendToGeminiType, get_client
+from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_client
 from app.services.audio_processor import (
     CHANNELS,
     CHUNK_SIZE,
@@ -34,6 +73,7 @@ from app.services.audio_processor import (
     is_silence,
     resample_pcm_audio,
 )
+from app.services.webrtc_service import SendToGeminiType
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -46,6 +86,145 @@ TranscriptCallback = Callable[[str, str], Awaitable[None]]
 
 client = get_client()
 pya = pyaudio.PyAudio()
+
+
+# Event System
+class LocalAudioEventType(Enum):
+    """Local audio event types"""
+
+    AUDIO_STREAM_START = 'audio_stream_start'
+    AUDIO_STREAM_END = 'audio_stream_end'
+    VOICE_ACTIVITY_DETECTED = 'voice_activity_detected'
+    SILENCE_DETECTED = 'silence_detected'
+    AUDIO_QUALITY_CHANGED = 'audio_quality_changed'
+
+
+class LocalSessionEventType(Enum):
+    """Local session event types"""
+
+    SESSION_STARTED = 'session_started'
+    SESSION_ENDED = 'session_ended'
+    SESSION_ERROR = 'session_error'
+    GEMINI_CONNECTED = 'gemini_connected'
+    GEMINI_DISCONNECTED = 'gemini_disconnected'
+
+
+class LocalDataChannelEventType(Enum):
+    """Local data channel event types (simulated)"""
+
+    CHANNEL_READY = 'channel_ready'
+    CHANNEL_CLOSED = 'channel_closed'
+    TRANSCRIPT_SENT = 'transcript_sent'
+    MESSAGE_RECEIVED = 'message_received'
+
+
+T = TypeVar('T')
+
+
+@dataclass
+class LocalAudioEvent(Generic[T]):
+    """Local audio event"""
+
+    type: LocalAudioEventType
+    peer_id: str
+    data: T | None = None
+    timestamp: float = None
+
+    def __post_init__(self) -> None:
+        if self.timestamp is None:
+            self.timestamp = time.time()
+
+
+@dataclass
+class LocalSessionEvent(Generic[T]):
+    """Local session event"""
+
+    type: LocalSessionEventType
+    peer_id: str
+    data: T = None  # type: ignore
+    timestamp: float = None
+
+    def __post_init__(self) -> None:
+        if self.timestamp is None:
+            self.timestamp = time.time()
+
+
+@dataclass
+class LocalDataChannelEvent(Generic[T]):
+    """Local data channel event (simulated)"""
+
+    type: LocalDataChannelEventType
+    peer_id: str
+    data: T = None  # type: ignore
+    timestamp: float = None
+
+    def __post_init__(self) -> None:
+        if self.timestamp is None:
+            self.timestamp = time.time()
+
+
+# Event callbacks
+LocalAudioEventCallback = Callable[[LocalAudioEvent[T]], Awaitable[None]]
+LocalSessionEventCallback = Callable[[LocalSessionEvent[T]], Awaitable[None]]
+LocalDataChannelEventCallback = Callable[[LocalDataChannelEvent[T]], Awaitable[None]]
+
+
+class LocalEventManager(Generic[T]):
+    """Local event manager for handling audio, session, and data channel events"""
+
+    def __init__(self, peer_id: str) -> None:
+        self.peer_id = peer_id
+        self.audio_event_handlers: list[LocalAudioEventCallback[T]] = []
+        self.session_event_handlers: list[LocalSessionEventCallback[T]] = []
+        self.data_channel_event_handlers: list[LocalDataChannelEventCallback[T]] = []
+
+    def add_audio_event_handler(self, handler: LocalAudioEventCallback[T]) -> None:
+        self.audio_event_handlers.append(handler)
+
+    def add_session_event_handler(self, handler: LocalSessionEventCallback[T]) -> None:
+        self.session_event_handlers.append(handler)
+
+    def add_data_channel_event_handler(self, handler: LocalDataChannelEventCallback[T]) -> None:
+        self.data_channel_event_handlers.append(handler)
+
+    async def emit_audio_event(
+        self, event_type: LocalAudioEventType, data: T | None = None
+    ) -> None:
+        event = LocalAudioEvent(type=event_type, peer_id=self.peer_id, data=data)
+        logger.debug(
+            f'[EventManager] Emitting audio event {event_type.value} for peer {self.peer_id}'
+        )
+        for handler in self.audio_event_handlers:
+            try:
+                await handler(event)
+            except Exception as e:
+                logger.error(f'[EventManager] Error in audio event handler: {e}')
+
+    async def emit_session_event(
+        self, event_type: LocalSessionEventType, data: T | None = None
+    ) -> None:
+        event = LocalSessionEvent(type=event_type, peer_id=self.peer_id, data=data)
+        logger.debug(
+            f'[EventManager] Emitting session event {event_type.value} for peer {self.peer_id}'
+        )
+        for handler in self.session_event_handlers:
+            try:
+                await handler(event)
+            except Exception as e:
+                logger.error(f'[EventManager] Error in session event handler: {e}')
+
+    async def emit_data_channel_event(
+        self, event_type: LocalDataChannelEventType, data: T | None = None
+    ) -> None:
+        event = LocalDataChannelEvent(type=event_type, peer_id=self.peer_id, data=data)
+        logger.debug(
+            f'[EventManager] Emitting data channel event {event_type.value} for peer {self.peer_id}'
+        )
+        for handler in self.data_channel_event_handlers:
+            try:
+                await handler(event)
+            except Exception as e:
+                logger.error(f'[EventManager] Error in data channel event handler: {e}')
 
 
 @dataclass
@@ -106,19 +285,43 @@ class LocalAudioLoop:
         # Voice activity detection
         self.last_voice_time = time.time()
         self.silence_timeout = 1.0
+        self._is_voice_active = False  # Track voice activity state
 
         # Simulated data channel ready state
         self._data_channel_ready = asyncio.Event()
         self._pending_transcripts: list[str] = []
 
+        # Event management
+        self.event_manager = LocalEventManager(peer_id)
+
     def set_transcript_callback(self, callback: TranscriptCallback) -> None:
         """Set the transcript callback."""
         self.on_transcript_callback = callback
+
+    def add_audio_event_handler(self, handler: LocalAudioEventCallback) -> None:
+        """Add audio event handler"""
+        self.event_manager.add_audio_event_handler(handler)
+
+    def add_session_event_handler(self, handler: LocalSessionEventCallback) -> None:
+        """Add session event handler"""
+        self.event_manager.add_session_event_handler(handler)
+
+    def add_data_channel_event_handler(self, handler: LocalDataChannelEventCallback) -> None:
+        """Add data channel event handler"""
+        self.event_manager.add_data_channel_event_handler(handler)
 
     def mark_data_channel_ready(self) -> None:
         """Mark the data channel ready (simulated)."""
         logger.info(f'[LocalAudioLoop] Simulated data channel ready for peer {self.peer_id}')
         self._data_channel_ready.set()
+
+        # Emit data channel ready event
+        asyncio.create_task(
+            self.event_manager.emit_data_channel_event(
+                LocalDataChannelEventType.CHANNEL_READY,
+                {'message': 'Data channel simulation ready'},
+            )
+        )
 
         # Send pending transcripts
         if self._pending_transcripts and self.on_transcript_callback:
@@ -150,8 +353,18 @@ class LocalAudioLoop:
         self.audio_in_queue = asyncio.Queue[types.Blob]()
         self.audio_out_queue = asyncio.Queue[types.Blob](maxsize=5)
 
+        # Emit session started event
+        await self.event_manager.emit_session_event(
+            LocalSessionEventType.SESSION_STARTED, {'message': 'Local audio session started'}
+        )
+
         # Setup audio streams
         await self._setup_audio_streams()
+
+        # Emit audio stream start event
+        await self.event_manager.emit_audio_event(
+            LocalAudioEventType.AUDIO_STREAM_START, {'message': 'Audio stream setup completed'}
+        )
 
         # Start main task
         self._main_task = asyncio.create_task(self._run_with_gemini())
@@ -200,6 +413,12 @@ class LocalAudioLoop:
                 self.gemini_session = session
                 logger.info(f'[Gemini] Session started for peer {self.peer_id}')
 
+                # Emit Gemini connected event
+                await self.event_manager.emit_session_event(
+                    LocalSessionEventType.GEMINI_CONNECTED,
+                    {'message': 'Connected to Gemini Live API'},
+                )
+
                 # Send welcome message
                 await self._send_to_gemini(
                     types.Content(
@@ -219,14 +438,35 @@ class LocalAudioLoop:
 
         except asyncio.CancelledError:
             logger.info(f'[Gemini] Session cancelled for peer {self.peer_id}')
+            await self.event_manager.emit_session_event(
+                LocalSessionEventType.GEMINI_DISCONNECTED,
+                {'message': 'Gemini session cancelled by user'},
+            )
         except Exception as e:
             logger.error(f'[Gemini] Session error for peer {self.peer_id}: {e}', exc_info=True)
+            await self.event_manager.emit_session_event(
+                LocalSessionEventType.SESSION_ERROR,
+                {'error': str(e), 'message': 'Gemini session error'},
+            )
         finally:
             self.gemini_session = None
             logger.info(f'[Gemini] Session ended for peer {self.peer_id}')
+            await self.event_manager.emit_session_event(
+                LocalSessionEventType.GEMINI_DISCONNECTED, {'message': 'Gemini session ended'}
+            )
 
     async def stop(self) -> None:
         """Stop the audio stream processing."""
+        # Emit session ending event
+        await self.event_manager.emit_session_event(
+            LocalSessionEventType.SESSION_ENDED, {'message': 'Local audio session ending'}
+        )
+
+        # Emit audio stream end event
+        await self.event_manager.emit_audio_event(
+            LocalAudioEventType.AUDIO_STREAM_END, {'message': 'Audio stream stopped'}
+        )
+
         if self._main_task:
             self._main_task.cancel()
             with contextlib.suppress(asyncio.CancelledError):
@@ -265,6 +505,17 @@ class LocalAudioLoop:
 
                 # Check if it's silence
                 if not data or len(data) < 320 or is_silence(data):
+                    # Emit silence detected event if voice was previously active
+                    if self._is_voice_active:
+                        self._is_voice_active = False
+                        await self.event_manager.emit_audio_event(
+                            LocalAudioEventType.SILENCE_DETECTED,
+                            {
+                                'message': 'Voice activity stopped',
+                                'duration': time.time() - self.last_voice_time,
+                            },
+                        )
+
                     if (
                         self.gemini_session
                         and time.time() - self.last_voice_time > self.silence_timeout
@@ -272,6 +523,14 @@ class LocalAudioLoop:
                         # Send audio stream end signal (simulated)
                         self.last_voice_time = time.time()
                     continue
+
+                # Voice activity detected
+                if not self._is_voice_active:
+                    self._is_voice_active = True
+                    await self.event_manager.emit_audio_event(
+                        LocalAudioEventType.VOICE_ACTIVITY_DETECTED,
+                        {'message': 'Voice activity started', 'audio_length': len(data)},
+                    )
 
                 self.last_voice_time = time.time()
 
@@ -342,6 +601,12 @@ class LocalAudioLoop:
             )
             self._pending_transcripts.append(transcript)
             return
+
+        # Emit transcript event
+        await self.event_manager.emit_data_channel_event(
+            LocalDataChannelEventType.TRANSCRIPT_SENT,
+            {'transcript': transcript, 'length': len(transcript)},
+        )
 
         if self.on_transcript_callback:
             await self.on_transcript_callback(transcript, self.peer_id)
@@ -447,6 +712,26 @@ class LocalWebRTCSimulator:
     def __init__(self) -> None:
         self.peers: dict[str, LocalPeer] = {}
 
+    async def _handle_audio_event(self, event: LocalAudioEvent) -> None:
+        """Handle audio events"""
+        logger.info(f'[EventHandler] Audio Event: {event.type.value} for peer {event.peer_id}')
+        if event.data:
+            logger.debug(f'[EventHandler] Audio Event Data: {event.data}')
+
+    async def _handle_session_event(self, event: LocalSessionEvent) -> None:
+        """Handle session events"""
+        logger.info(f'[EventHandler] Session Event: {event.type.value} for peer {event.peer_id}')
+        if event.data:
+            logger.debug(f'[EventHandler] Session Event Data: {event.data}')
+
+    async def _handle_data_channel_event(self, event: LocalDataChannelEvent) -> None:
+        """Handle data channel events"""
+        logger.info(
+            f'[EventHandler] Data Channel Event: {event.type.value} for peer {event.peer_id}'
+        )
+        if event.data:
+            logger.debug(f'[EventHandler] Data Channel Event Data: {event.data}')
+
     async def create_peer(self, peer_id: str) -> LocalPeer:
         """Create a new local Peer."""
         if peer_id in self.peers:
@@ -474,11 +759,11 @@ class LocalWebRTCSimulator:
         """Handle transcript, simulate sending to data channel."""
         try:
             # Simulate data channel sending
-            message = json.dumps({'transcript': transcript})
+            # message = json.dumps({'transcript': transcript})
             logger.info(
                 f'[Simulated data channel] Sending transcript to peer {peer_id}: {transcript}'
             )
-            print(f'\n[Transcript] {message.get("transcript")}')
+            print(f'\n[Transcript] {transcript}')
         except Exception as e:
             logger.error(f'Error sending transcript for peer {peer_id}: {e}')
 
@@ -491,6 +776,11 @@ class LocalWebRTCSimulator:
         # Create audio loop
         audio_loop = LocalAudioLoop(peer_id)
         peer.audio_loop = audio_loop
+
+        # Set event handlers
+        audio_loop.add_audio_event_handler(self._handle_audio_event)
+        audio_loop.add_session_event_handler(self._handle_session_event)
+        audio_loop.add_data_channel_event_handler(self._handle_data_channel_event)
 
         # Set transcript callback
         audio_loop.set_transcript_callback(self._handle_transcript)
