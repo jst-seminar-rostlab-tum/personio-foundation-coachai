@@ -6,7 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session, select
 
 from app.config import Settings
-from app.database import get_session
+from app.database import get_db_session
 from app.models import UserProfile
 from app.models.user_profile import UserRole
 
@@ -47,7 +47,7 @@ def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(secu
 
 
 def require_user(
-    token: Annotated[any, Depends(verify_jwt)], db: Annotated[Session, Depends(get_session)]
+    token: Annotated[any, Depends(verify_jwt)], db: Annotated[Session, Depends(get_db_session)]
 ) -> UserProfile:
     """
     Checks if the user is authenticated and has the role of 'user' or 'admin'.
@@ -63,7 +63,7 @@ def require_user(
 
 
 def require_admin(
-    token: Annotated[any, Depends(verify_jwt)], db: Annotated[Session, Depends(get_session)]
+    token: Annotated[any, Depends(verify_jwt)], db: Annotated[Session, Depends(get_db_session)]
 ) -> UserProfile:
     """
     Checks if the user is authenticated and has the role of 'admin'.
