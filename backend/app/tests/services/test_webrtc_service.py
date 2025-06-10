@@ -375,9 +375,10 @@ class TestWebRTCAudioLoop:
         await audio_loop.handle_transcript('test transcript')
 
     @pytest.mark.asyncio
+    @patch('app.services.webrtc_service.is_silence', return_value=False)
     @patch('app.services.webrtc_service.resample_pcm_audio')
     async def test_listen_webrtc_audio_processes_frames(
-        self, mock_resample: MagicMock, audio_loop: WebRTCAudioLoop
+        self, mock_resample: MagicMock, mock_is_silence: MagicMock, audio_loop: WebRTCAudioLoop
     ) -> None:
         """Test _listen_webrtc_audio processes audio frames correctly"""
         # Setup
@@ -390,7 +391,7 @@ class TestWebRTCAudioLoop:
         audio_loop.last_voice_time = asyncio.get_event_loop().time()
 
         # Mock resample function
-        mock_resample.return_value = b'resampled_audio'
+        mock_resample.return_value = b'x' * 400  # 长度大于320
 
         # Run the method until cancelled
         with pytest.raises(asyncio.CancelledError):
