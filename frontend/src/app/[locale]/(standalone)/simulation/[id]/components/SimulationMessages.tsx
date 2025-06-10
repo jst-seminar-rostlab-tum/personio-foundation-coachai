@@ -2,7 +2,18 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-const mockMessages = [
+interface Message {
+  id: number;
+  text: string;
+  sender: 'user' | 'other';
+  timestamp?: Date;
+}
+
+interface SimulationMessagesProps {
+  receivedTranscripts: string[];
+}
+
+const mockMessages: Message[] = [
   {
     id: 1,
     text: "Thanks for meeting with me today. I wanted to discuss the project deadlines you've missed recently.",
@@ -65,17 +76,30 @@ const mockMessages = [
   },
 ];
 
-export default function SimulationMessages() {
-  const [messages] = useState(mockMessages);
+export default function SimulationMessages({ receivedTranscripts }: SimulationMessagesProps) {
+  const [allMessages, setAllMessages] = useState<Message[]>(mockMessages);
   const messageEndRef = useRef<HTMLDivElement>(null);
+
+  // Convert received transcripts to messages and add them to the list
+  useEffect(() => {
+    const transcriptMessages: Message[] = receivedTranscripts.map((transcript, index) => ({
+      id: mockMessages.length + index + 1000, // Use high ID to avoid conflicts
+      text: transcript,
+      sender: 'other' as const, // AI responses are from 'other'
+      timestamp: new Date(),
+    }));
+
+    // Combine mock messages with transcript messages
+    setAllMessages([...mockMessages, ...transcriptMessages]);
+  }, [receivedTranscripts]);
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [allMessages]);
 
   return (
     <div className="flex flex-col gap-4 py-2 h-full">
-      {messages.map((msg) => (
+      {allMessages.map((msg) => (
         <div
           key={msg.id}
           className={`text-base text-bw-90 rounded-xl px-4 py-2 max-w-[70%] ${

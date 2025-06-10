@@ -15,6 +15,8 @@ const WS_URL = 'ws://localhost:8000/webrtc/signal';
 function useWebRTC() {
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [isDataChannelReady, setIsDataChannelReady] = useState(false);
+  const [receivedTranscripts, setReceivedTranscripts] = useState<string[]>([]);
 
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -23,6 +25,7 @@ function useWebRTC() {
   const wsRef = useRef<WebSocket | null>(null);
   const cleanupRef = useRef<boolean | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
+  const pendingMessagesRef = useRef<string[]>([]);
   const cleanup = useCallback(() => {
     if (cleanupRef.current) return;
     cleanupRef.current = true;
@@ -50,6 +53,9 @@ function useWebRTC() {
 
     setIsMicActive(false);
     setIsConnected(false);
+    setIsDataChannelReady(false);
+    setReceivedTranscripts([]);
+    pendingMessagesRef.current = [];
   }, []);
 
   const disconnect = useCallback(() => {
@@ -57,6 +63,41 @@ function useWebRTC() {
     cleanup();
     cleanupRef.current = false;
   }, [cleanup]);
+
+  // Function to send pending messages when data channel becomes ready
+  const sendPendingMessages = useCallback(() => {
+    if (dataChannelRef.current && dataChannelRef.current.readyState === 'open') {
+      const messages = pendingMessagesRef.current;
+      pendingMessagesRef.current = [];
+
+      messages.forEach((message) => {
+        try {
+          dataChannelRef.current?.send(message);
+          console.debug('[WebRTC] Sent pending message:', message);
+        } catch (error) {
+          console.error('[WebRTC] Error sending pending message:', error);
+          // Re-queue the message if sending failed
+          pendingMessagesRef.current.push(message);
+        }
+      });
+    }
+  }, []);
+
+  // Function to send message (queues if channel not ready)
+  const sendDataChannelMessage = useCallback((message: string) => {
+    if (dataChannelRef.current && dataChannelRef.current.readyState === 'open') {
+      try {
+        dataChannelRef.current.send(message);
+        console.debug('[WebRTC] Sent message immediately:', message);
+      } catch (error) {
+        console.error('[WebRTC] Error sending message:', error);
+        pendingMessagesRef.current.push(message);
+      }
+    } else {
+      console.debug('[WebRTC] Data channel not ready, queuing message:', message);
+      pendingMessagesRef.current.push(message);
+    }
+  }, []);
 
   const initWebRTC = useCallback(async () => {
     try {
@@ -102,12 +143,26 @@ function useWebRTC() {
         });
         dataChannelRef.current = dataChannel;
         console.debug('[WebRTC] Data channel created, state:', dataChannel.readyState);
+        console.debug('[WebRTC] Data channel label:', dataChannel.label);
+        console.debug('[WebRTC] Data channel id:', dataChannel.id);
+        console.debug('[WebRTC] Data channel protocol:', dataChannel.protocol);
+        console.debug('[WebRTC] Data channel binaryType:', dataChannel.binaryType);
+        console.debug('[WebRTC] Data channel bufferedAmount:', dataChannel.bufferedAmount);
+        console.debug('[WebRTC] Data channel ordered:', dataChannel.ordered);
+        console.debug('[WebRTC] Data channel maxRetransmits:', dataChannel.maxRetransmits);
+        console.debug('[WebRTC] Data channel negotiated:', dataChannel.negotiated);
 
         // Set up data channel event handlers
         dataChannel.onopen = () => {
           console.info('[WebRTC] Data channel opened, state:', dataChannel.readyState);
+          console.info('[WebRTC] Data channel opened, timestamp:', new Date().toISOString());
+          setIsDataChannelReady(true);
+
+          // Send any pending messages
+          sendPendingMessages();
+
           try {
-            dataChannel.send('test message from client');
+            sendDataChannelMessage('test message from client');
             console.debug('[WebRTC] Test message sent');
           } catch (error) {
             console.error('[WebRTC] Error sending test message:', error);
@@ -116,34 +171,65 @@ function useWebRTC() {
 
         dataChannel.onclose = () => {
           console.info('[WebRTC] Data channel closed, state:', dataChannel.readyState);
+          console.info('[WebRTC] Data channel closed, timestamp:', new Date().toISOString());
+          setIsDataChannelReady(false);
           dataChannelRef.current = null;
         };
 
         dataChannel.onerror = (error) => {
           console.error('[WebRTC] Data channel error:', error);
+          console.error('[WebRTC] Data channel error, timestamp:', new Date().toISOString());
+          setIsDataChannelReady(false);
         };
 
         dataChannel.onmessage = (event) => {
           console.debug('[WebRTC] Received message:', event.data);
+          console.info('[WebRTC] Received message, timestamp:', new Date().toISOString());
+          try {
+            const parsed = JSON.parse(event.data);
+            console.info('[WebRTC] Parsed server message:', parsed);
+
+            // If it's a transcript message, display it prominently
+            if (parsed.transcript) {
+              console.info('[WebRTC] TRANSCRIPT RECEIVED:', parsed.transcript);
+              setReceivedTranscripts((prev) => [...prev, parsed.transcript]);
+            }
+          } catch {
+            console.warn('[WebRTC] Failed to parse message as JSON:', event.data);
+          }
         };
 
         // Handle incoming data channels
         peerConnection.ondatachannel = (event) => {
           console.info('[WebRTC] Received data channel:', event.channel.label);
           const receivedChannel = event.channel;
-          dataChannelRef.current = receivedChannel;
 
+          // Don't overwrite the created channel reference
+          // Instead, set up handlers for the received channel
           receivedChannel.onopen = () => {
             console.info('[WebRTC] Received channel opened');
+            setIsDataChannelReady(true);
+            sendPendingMessages();
           };
 
           receivedChannel.onclose = () => {
             console.info('[WebRTC] Received channel closed');
-            dataChannelRef.current = null;
+            setIsDataChannelReady(false);
           };
 
           receivedChannel.onmessage = (msgEvent) => {
-            console.debug('[WebRTC] Received message:', msgEvent.data);
+            console.info('[WebRTC] Received message from server:', msgEvent.data);
+            try {
+              const parsed = JSON.parse(msgEvent.data);
+              console.info('[WebRTC] Parsed message:', parsed);
+            } catch {
+              console.warn('[WebRTC] Failed to parse message as JSON:', msgEvent.data);
+            }
+          };
+
+          receivedChannel.onerror = (error) => {
+            console.error('[WebRTC] Received channel error:', error);
+            setIsDataChannelReady(false);
           };
         };
 
@@ -260,18 +346,22 @@ function useWebRTC() {
       setIsMicActive(false);
       disconnect();
     }
-  }, [disconnect]);
+  }, [disconnect, sendPendingMessages, sendDataChannelMessage]);
 
   return {
     isMicActive,
     setIsMicActive,
     isConnected,
+    isDataChannelReady,
     initWebRTC,
     cleanup,
     disconnect,
     remoteAudioRef,
     dataChannelRef,
     localStreamRef,
+    sendPendingMessages,
+    sendDataChannelMessage,
+    receivedTranscripts,
   };
 }
 
@@ -282,11 +372,13 @@ export default function SimulationPageComponent() {
     isMicActive,
     setIsMicActive,
     isConnected,
+    isDataChannelReady,
     initWebRTC,
     cleanup,
     disconnect,
     remoteAudioRef,
     localStreamRef,
+    receivedTranscripts,
   } = useWebRTC();
 
   useEffect(() => {
@@ -317,6 +409,11 @@ export default function SimulationPageComponent() {
     }
   };
 
+  // Log data channel status for debugging
+  useEffect(() => {
+    console.debug('[WebRTC] Data channel ready status:', isDataChannelReady);
+  }, [isDataChannelReady]);
+
   return (
     <div className="flex flex-col h-screen">
       <div className="mb-2">
@@ -324,7 +421,7 @@ export default function SimulationPageComponent() {
       </div>
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-        <SimulationMessages />
+        <SimulationMessages receivedTranscripts={receivedTranscripts} />
       </div>
 
       <SimulationRealtimeSuggestions />
@@ -334,7 +431,7 @@ export default function SimulationPageComponent() {
         setIsPaused={setIsPaused}
         isMicActive={isMicActive}
         toggleMicrophone={toggleMic}
-        isConnected={isConnected}
+        isConnected={isConnected && isDataChannelReady}
         onDisconnect={disconnect}
       />
       <audio ref={remoteAudioRef} autoPlay playsInline />

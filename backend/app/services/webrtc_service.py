@@ -128,8 +128,16 @@ class PeerSessionManager:
 
         @pc.on('datachannel')
         async def on_datachannel(channel: RTCDataChannel) -> None:
+            logger.info(f'[PeerSessionManager] Data channel event triggered for peer {peer_id}')
+            logger.info(f'[PeerSessionManager] Data channel label: {channel.label}')
+            logger.info(f'[PeerSessionManager] Data channel state: {channel.readyState}')
+            logger.info(f'[PeerSessionManager] Data channel protocol: {channel.protocol}')
             if self.on_datachannel_callback:
                 await self.on_datachannel_callback(channel, peer_id)
+            else:
+                logger.warning(
+                    f'[PeerSessionManager] No data channel callback set for peer {peer_id}'
+                )
 
         @pc.on('track')
         async def on_track(track: MediaStreamTrack) -> None:
@@ -185,9 +193,44 @@ class WebRTCAudioLoop:
         self.last_voice_time = time.time()
         self.silence_timeout = 1.0
 
+        # Data channel readiness tracking
+        self._data_channel_ready = asyncio.Event()
+        self._pending_transcripts: list[str] = []
+
     def set_transcript_callback(self, callback: TranscriptCallback) -> None:
         """Set callback for transcript handling"""
         self.on_transcript_callback = callback
+
+    def mark_data_channel_ready(self) -> None:
+        """Mark data channel as ready for communication"""
+        logger.info(f'[WebRTCAudioLoop] Data channel marked as ready for peer {self.peer_id}')
+        self._data_channel_ready.set()
+
+        # Send any pending transcripts
+        if self._pending_transcripts and self.on_transcript_callback:
+            logger.info(
+                f'[WebRTCAudioLoop] Processing {len(self._pending_transcripts)} '
+                f'pending transcripts for peer {self.peer_id}'
+            )
+            asyncio.create_task(self._send_pending_transcripts())
+
+    async def _send_pending_transcripts(self) -> None:
+        """Send all pending transcripts"""
+        if not self.on_transcript_callback:
+            return
+
+        for transcript in self._pending_transcripts:
+            try:
+                await self.on_transcript_callback(transcript, self.peer_id)
+            except Exception as e:
+                logger.error(
+                    f'[WebRTCAudioLoop] Error sending pending transcript '
+                    f'for peer {self.peer_id}: {e}'
+                )
+
+        # Clear pending transcripts after sending
+        self._pending_transcripts.clear()
+        logger.info(f'[WebRTCAudioLoop] All pending transcripts sent for peer {self.peer_id}')
 
     async def start(
         self, webrtc_track: MediaStreamTrack, peer: Peer, server_audio_track: AudioStreamTrack
@@ -376,7 +419,15 @@ class WebRTCAudioLoop:
             logger.error(f'Error sending audio to Gemini for peer {self.peer_id}: {e}')
 
     async def handle_transcript(self, transcript: str) -> None:
-        """Handle transcript text"""
+        """Handle transcript from Gemini, with data channel readiness check"""
+        if not self._data_channel_ready.is_set():
+            logger.info(
+                f'[WebRTCAudioLoop] Data channel not ready, queuing transcript '
+                f'for peer {self.peer_id}: {transcript}'
+            )
+            self._pending_transcripts.append(transcript)
+            return
+
         if self.on_transcript_callback:
             await self.on_transcript_callback(transcript, self.peer_id)
 
@@ -508,27 +559,80 @@ class WebRTCService:
                 peer = self.peer_session_manager.get_peer(peer_id)
                 if peer:
                     peer.data_channel = channel
+                    logger.info(f'[DataChannel] Assigned transcript channel to peer {peer_id}')
+
+                    # If audio_loop already exists and channel is already open,
+                    # mark as ready immediately
+                    if peer.audio_loop and channel.readyState == 'open':
+                        logger.info(
+                            f'[DataChannel] Channel already open, '
+                            f'marking audio_loop as ready for peer {peer_id}'
+                        )
+                        peer.audio_loop.mark_data_channel_ready()
 
                 @channel.on('open')
                 def on_transcript_open() -> None:
-                    logger.info(f'Transcript channel opened for peer {peer_id}')
+                    logger.info(f'[DataChannel] Transcript channel opened for peer {peer_id}')
+
+                    # Notify WebRTCAudioLoop that data channel is ready
+                    peer = self.peer_session_manager.get_peer(peer_id)
+                    if peer and peer.audio_loop:
+                        logger.info(
+                            f'[DataChannel] Notifying audio_loop that channel is ready '
+                            f'for peer {peer_id}'
+                        )
+                        peer.audio_loop.mark_data_channel_ready()
+                    else:
+                        logger.warning(
+                            f'[DataChannel] No audio_loop found when channel opened '
+                            f'for peer {peer_id}'
+                        )
+
+                    # Send a test message to verify the channel works
+                    try:
+                        test_message = json.dumps(
+                            {'type': 'test', 'message': 'Data channel established'}
+                        )
+                        channel.send(test_message)
+                        logger.info(f'[DataChannel] Test message sent to peer {peer_id}')
+                    except Exception as test_error:
+                        logger.error(
+                            f'[DataChannel] Failed to send test message to peer {peer_id}: '
+                            f'{test_error}'
+                        )
 
                 @channel.on('close')
                 def on_transcript_close() -> None:
-                    logger.info(f'Transcript channel closed for peer {peer_id}')
+                    logger.info(f'[DataChannel] Transcript channel closed for peer {peer_id}')
 
                 @channel.on('message')
                 def on_transcript_message(message: str) -> None:
-                    logger.info(f'Received transcript message from peer {peer_id}: {message}')
+                    logger.info(
+                        f'[DataChannel] Received transcript message from peer {peer_id}: {message}'
+                    )
+
+                @channel.on('error')
+                def on_transcript_error(error: Exception) -> None:
+                    logger.error(
+                        f'[DataChannel] Transcript channel error for peer {peer_id}: {error}'
+                    )
+            else:
+                logger.warning(
+                    f'[DataChannel] Received unexpected data channel with label: {channel.label}'
+                )
 
             logger.debug(f'[DataChannel] Stored received data channel for peer {peer_id}')
         except Exception as e:
+            logger.error(
+                f'[DataChannel] Error handling data channel for peer {peer_id}: {str(e)}',
+                exc_info=True,
+            )
             raise WebRTCDataChannelError(f'Error handling data channel: {str(e)}', peer_id) from e
 
     async def _handle_audio_track(self, track: MediaStreamTrack, peer_id: str) -> None:
         """Handle audio track events"""
         try:
-            logger.info(f'Track {track.kind} received for peer {peer_id}')
+            logger.info(f'Track {track.kind} received for peer {peer_id} at {time.time()}')
             if track.kind == 'audio':
                 logger.info(
                     f'[WebRTC] Audio track received for peer {peer_id}, '
@@ -540,8 +644,18 @@ class WebRTCService:
             if not peer:
                 raise WebRTCPeerError(f'Peer {peer_id} not found', peer_id)
 
+            logger.info(
+                f'[WebRTC] Data channel exists: {peer.data_channel is not None} for peer {peer_id}'
+            )
+            if peer.data_channel:
+                logger.info(
+                    f'[WebRTC] Data channel state: {peer.data_channel.readyState} '
+                    f'for peer {peer_id}'
+                )
+
             # Create WebRTC Audio Loop
             audio_loop = WebRTCAudioLoop(peer_id)
+            logger.info(f'[WebRTC] Audio loop created for peer {peer_id} at {time.time()}')
 
             # Create and set up the outbound audio track using our streamable version
             server_audio_track = AudioStreamTrack()
@@ -552,9 +666,27 @@ class WebRTCService:
 
             # Register to Peer object
             peer.audio_loop = audio_loop
+            logger.info(f'[WebRTC] Audio loop assigned to peer {peer_id}')
 
             # Set transcript callback
             audio_loop.set_transcript_callback(self._handle_transcript)
+
+            # Check if data channel is already open (timing issue fix)
+            if peer.data_channel and peer.data_channel.readyState == 'open':
+                logger.info(
+                    f'[WebRTC] Data channel already open for peer {peer_id}, marking as ready'
+                )
+                audio_loop.mark_data_channel_ready()
+            elif peer.data_channel:
+                logger.info(
+                    f'[WebRTC] Data channel exists but not open '
+                    f'(state: {peer.data_channel.readyState}) for peer {peer_id}'
+                )
+                # Still mark as ready - the transcript handler will wait for the channel to open
+                logger.info(f'[WebRTC] Marking audio_loop as ready anyway for peer {peer_id}')
+                audio_loop.mark_data_channel_ready()
+            else:
+                logger.warning(f'[WebRTC] No data channel found for peer {peer_id}')
 
             # Start audio loop with the streamable track
             await audio_loop.start(track, peer, server_audio_track)
@@ -566,14 +698,66 @@ class WebRTCService:
             raise WebRTCMediaError(f'Error handling media track: {str(e)}', peer_id) from e
 
     async def _handle_transcript(self, transcript: str, peer_id: str) -> None:
-        """Handle transcript text"""
+        """Handle transcript text with data channel readiness check"""
         try:
             peer = self.peer_session_manager.get_peer(peer_id)
-            if peer and peer.data_channel and peer.data_channel.readyState == 'open':
-                peer.data_channel.send(json.dumps({'transcript': transcript}))
-                logger.info(f'Sent transcript to peer {peer_id}: {transcript}')
+            if not peer:
+                logger.warning(f'Peer {peer_id} not foundwhen trying to send transcript')
+                return
+
+            if not peer.data_channel:
+                logger.warning(
+                    f'No data channel available for peer {peer_id}, transcript will be queued'
+                )
+                # If audio_loop exists, let it handle the queuing
+                if peer.audio_loop:
+                    peer.audio_loop._pending_transcripts.append(transcript)
+                return
+
+            logger.debug(f'Data channel state for peer {peer_id}: {peer.data_channel.readyState}')
+            logger.debug(f'Data channel label for peer {peer_id}: {peer.data_channel.label}')
+
+            # Wait for data channel to be open with timeout
+            max_wait_time = 5.0  # 5 seconds timeout
+            wait_start = time.time()
+
+            while peer.data_channel.readyState != 'open':
+                if time.time() - wait_start > max_wait_time:
+                    logger.warning(
+                        f'Data channel failed to open within {max_wait_time}s '
+                        f'for peer {peer_id}, state: {peer.data_channel.readyState}'
+                    )
+                    # Queue the transcript for later
+                    if peer.audio_loop:
+                        peer.audio_loop._pending_transcripts.append(transcript)
+                    return
+
+                logger.debug(
+                    f'Waiting for data channel to open for peer {peer_id}, '
+                    f'current state: {peer.data_channel.readyState}'
+                )
+                await asyncio.sleep(0.1)  # Wait 100ms before checking again
+
+                # Re-check if peer still exists
+                peer = self.peer_session_manager.get_peer(peer_id)
+                if not peer or not peer.data_channel:
+                    logger.warning(
+                        f'Peer or data channel disappeared while waiting for peer {peer_id}'
+                    )
+                    return
+
+            # Now the data channel should be open
+            message = json.dumps({'transcript': transcript})
+            logger.debug(f'Sending message to peer {peer_id}: {message}')
+            peer.data_channel.send(message)
+            logger.info(f'Sent transcript to peer {peer_id}: {transcript}')
+
         except Exception as e:
-            logger.error(f'Error sending transcript to peer {peer_id}: {e}')
+            logger.error(f'Error sending transcript to peer {peer_id}: {e}', exc_info=True)
+            # On error, queue the transcript for retry if possible
+            peer = self.peer_session_manager.get_peer(peer_id)
+            if peer and peer.audio_loop:
+                peer.audio_loop._pending_transcripts.append(transcript)
 
     async def create_peer_connection(self, peer_id: str) -> None:
         """Create a new peer connection"""
