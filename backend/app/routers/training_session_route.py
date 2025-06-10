@@ -6,15 +6,18 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from sqlmodel import Session, col, select
 
 from app.database import get_session
+from app.models.conversation_turn import ConversationTurn
 from app.models.language import Language
 from app.models.training_case import TrainingCase
 from app.models.training_session import (
     TrainingSession,
     TrainingSessionCreate,
+    TrainingSessionDetailsRead,
     TrainingSessionRead,
 )
 from app.models.training_session_feedback import (
     TrainingSessionFeedback,
+    TrainingSessionFeedbackMetrics,
     TrainingSessionFeedbackRead,
 )
 from app.models.training_sessions_paginated import (
@@ -24,6 +27,74 @@ from app.models.training_sessions_paginated import (
 )
 
 router = APIRouter(prefix='/training-session', tags=['Training Sessions'])
+
+
+@router.get('/{id_training_session}', response_model=TrainingSessionDetailsRead)
+def get_training_session(
+    id_training_session: UUID, session: Annotated[Session, Depends(get_session)]
+) -> TrainingSessionDetailsRead:
+    """
+    Retrieve a training session by its ID.
+    """
+    training_session = session.get(TrainingSession, id_training_session)
+    if not training_session:
+        raise HTTPException(status_code=404, detail='No session found with the given ID')
+
+    # Get training session title from the training case
+    training_case = session.get(TrainingCase, training_session.case_id)
+    if training_case:
+        if training_case.category:
+            training_title = training_case.category.name
+        else:
+            training_title = training_case.custom_category_label
+    else:
+        training_title = 'Unknown'
+
+    training_session_response = TrainingSessionDetailsRead(
+        id=training_session.id,
+        case_id=training_session.case_id,
+        scheduled_at=training_session.scheduled_at,
+        started_at=training_session.started_at,
+        ended_at=training_session.ended_at,
+        language_code=training_session.language_code,
+        ai_persona=training_session.ai_persona,
+        created_at=training_session.created_at,
+        updated_at=training_session.updated_at,
+        title=training_title,
+        summary=(
+            'The person giving feedback was rude but the person receiving feedback took it well.'
+        ),  # mocked
+    )
+
+    # Fetch the asociated Feedback for the training session
+    feedback = session.exec(
+        select(TrainingSessionFeedback).where(
+            TrainingSessionFeedback.session_id == id_training_session
+        )
+    ).first()
+    if feedback:
+        training_session_response.feedback = TrainingSessionFeedbackMetrics(
+            scores=feedback.scores,
+            tone_analysis=feedback.tone_analysis,
+            overall_score=feedback.overall_score,
+            transcript_uri=feedback.transcript_uri,
+            speak_time_percent=feedback.speak_time_percent,
+            questions_asked=feedback.questions_asked,
+            session_length_s=feedback.session_length_s,
+            goals_achieved=feedback.goals_achieved,
+            example_positive=feedback.example_positive,  # type: ignore
+            example_negative=feedback.example_negative,  # type: ignore
+            recommendations=feedback.recommendations,  # type: ignore
+        )
+
+    # Fetch the associated conversation turns and their audio URIs
+    conversation_turns = session.exec(
+        select(ConversationTurn).where(ConversationTurn.session_id == id_training_session)
+    ).all()
+    if conversation_turns:
+        training_session_response.audio_uris = [turn.audio_uri for turn in conversation_turns]
+
+    return training_session_response
 
 
 @router.get('/{id_training_session}/feedback', response_model=TrainingSessionFeedbackRead)
