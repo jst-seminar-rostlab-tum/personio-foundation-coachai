@@ -10,7 +10,7 @@ from sqlmodel import JSON, Column, Field, Relationship
 from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
-    from app.models.training_case import TrainingCase
+    from app.models.conversation_scenario import ConversationScenario
 
 
 class ConversationCategory(CamelModel, table=True):  # `table=True` makes it a database table
@@ -29,7 +29,7 @@ class ConversationCategory(CamelModel, table=True):  # `table=True` makes it a d
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    training_cases: list['TrainingCase'] = Relationship(
+    conversation_scenarios: list['ConversationScenario'] = Relationship(
         back_populates='category', cascade_delete=True
     )
 

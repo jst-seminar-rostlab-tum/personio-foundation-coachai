@@ -1,26 +1,28 @@
 import unittest
+from collections.abc import Generator
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
 from sqlalchemy import create_engine
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session as DBSession
+from sqlmodel import SQLModel
 
-from app.models.training_preparation import TrainingPreparation, TrainingPreparationStatus
-from app.schemas.training_preparation_schema import KeyConcept, TrainingPreparationRequest
-from app.services.training_preparation_service import (
+from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
+from app.schemas.scenario_preparation_schema import KeyConcept, ScenarioPreparationRequest
+from app.services.scenario_preparation_service import (
     create_pending_preparation,
-    generate_training_preparation,
+    generate_scenario_preparation,
 )
 
 
-class TestTrainingPreparationService(unittest.TestCase):
+class TestScenarioPreparationService(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.engine = create_engine('sqlite:///:memory:')
         print('creating in-memory SQLite database for testing')
         SQLModel.metadata.create_all(cls.engine)
         print('Database schema created')
-        cls.SessionLocal = Session(cls.engine)
+        cls.SessionLocal = DBSession(cls.engine)
 
     def setUp(self) -> None:
         self.session = self.SessionLocal
@@ -28,39 +30,39 @@ class TestTrainingPreparationService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    def fake_session_gen(self) -> Session:
+    def fake_session_gen(self) -> Generator[DBSession, None, None]:
         yield self.session
 
     def test_create_pending_preparation(self) -> None:
-        case_id = uuid4()
+        scenario_id = uuid4()
 
         # create a pending preparation
-        prep = create_pending_preparation(case_id, self.session)
+        prep = create_pending_preparation(scenario_id, self.session)
 
         # assert the preparation is created with the correct attributes
         self.assertIsNotNone(prep.id)
-        self.assertEqual(prep.case_id, case_id)
-        self.assertEqual(prep.status, TrainingPreparationStatus.pending)
+        self.assertEqual(prep.scenario_id, scenario_id)
+        self.assertEqual(prep.status, ScenarioPreparationStatus.pending)
         self.assertEqual(prep.objectives, [])
         self.assertEqual(prep.key_concepts, [])
         self.assertEqual(prep.prep_checklist, [])
 
-        retrieved = self.session.get(TrainingPreparation, prep.id)
+        retrieved = self.session.get(ScenarioPreparation, prep.id)
         self.assertIsNotNone(retrieved)
 
         # assert preparation is still pending
-        self.assertEqual(retrieved.status, TrainingPreparationStatus.pending)
+        self.assertEqual(retrieved.status, ScenarioPreparationStatus.pending)
 
     @patch(
-        'app.services.training_preparation_service.generate_objectives',
+        'app.services.scenario_preparation_service.generate_objectives',
         return_value=['Step 1', 'Step 2'],
     )
     @patch(
-        'app.services.training_preparation_service.generate_checklist',
+        'app.services.scenario_preparation_service.generate_checklist',
         return_value=['Item A', 'Item B'],
     )
     @patch(
-        'app.services.training_preparation_service.generate_key_concept',
+        'app.services.scenario_preparation_service.generate_key_concept',
         return_value=[
             KeyConcept(
                 header='Clear Communication',
@@ -76,13 +78,13 @@ class TestTrainingPreparationService(unittest.TestCase):
             ),
         ],
     )
-    def test_generate_training_preparation_completed(
+    def test_generate_scenario_preparation_completed(
         self, mock_objectives: MagicMock, mock_checklist: MagicMock, mock_key_concept: MagicMock
     ) -> None:
-        case_id = uuid4()
-        prep = create_pending_preparation(case_id, self.session)
+        scenario_id = uuid4()
+        prep = create_pending_preparation(scenario_id, self.session)
 
-        request = TrainingPreparationRequest(
+        request = ScenarioPreparationRequest(
             category='Feedback',
             goal='Improve communication',
             context='Team review',
@@ -91,9 +93,9 @@ class TestTrainingPreparationService(unittest.TestCase):
             num_checkpoints=2,
         )
 
-        result = generate_training_preparation(prep.id, request, self.fake_session_gen)
+        result = generate_scenario_preparation(prep.id, request, self.fake_session_gen)
 
-        self.assertEqual(result.status, TrainingPreparationStatus.completed)
+        self.assertEqual(result.status, ScenarioPreparationStatus.completed)
         self.assertEqual(result.objectives, ['Step 1', 'Step 2'])
         self.assertEqual(result.prep_checklist, ['Item A', 'Item B'])
         self.assertEqual(
@@ -115,7 +117,7 @@ class TestTrainingPreparationService(unittest.TestCase):
         )
 
     @patch(
-        'app.services.training_preparation_service.generate_key_concept',
+        'app.services.scenario_preparation_service.generate_key_concept',
         return_value=[
             KeyConcept(
                 header='Clear Communication',
@@ -132,14 +134,14 @@ class TestTrainingPreparationService(unittest.TestCase):
         ],
     )
     @patch(
-        'app.services.training_preparation_service.generate_checklist',
+        'app.services.scenario_preparation_service.generate_checklist',
         return_value=['Item A', 'Item B'],
     )
     @patch(
-        'app.services.training_preparation_service.generate_objectives',
+        'app.services.scenario_preparation_service.generate_objectives',
         side_effect=RuntimeError('LLM error'),
     )
-    def test_generate_training_preparation_failed(
+    def test_generate_scenario_preparation_failed(
         self,
         mock_key_concept: MagicMock,
         mock_checklist: MagicMock,
@@ -147,7 +149,7 @@ class TestTrainingPreparationService(unittest.TestCase):
     ) -> None:
         prep = create_pending_preparation(uuid4(), self.session)
 
-        request = TrainingPreparationRequest(
+        request = ScenarioPreparationRequest(
             category='Feedback',
             goal='Improve communication',
             context='Team review',
@@ -156,10 +158,10 @@ class TestTrainingPreparationService(unittest.TestCase):
             num_checkpoints=2,
         )
 
-        result = generate_training_preparation(prep.id, request, self.fake_session_gen)
+        result = generate_scenario_preparation(prep.id, request, self.fake_session_gen)
 
         # Assert that the preparation status is failed due to LLM error
-        self.assertEqual(result.status, TrainingPreparationStatus.failed)
+        self.assertEqual(result.status, ScenarioPreparationStatus.failed)
         self.assertEqual(result.prep_checklist, ['Item A', 'Item B'])
         self.assertEqual(
             result.key_concepts,
