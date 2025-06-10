@@ -7,6 +7,5 @@ export interface UserProfileCreate {
   role_id?: string;
   experience_id?: string;
   preferred_learning_style_id?: string;
-  preferred_session_length_id?: string;
   store_conversations?: boolean;
 }

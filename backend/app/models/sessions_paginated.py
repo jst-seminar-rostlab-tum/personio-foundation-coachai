@@ -11,7 +11,7 @@ class SkillScores(CamelModel):
     clarity: int
 
 
-class TrainingSessionItem(CamelModel):
+class SessionItem(CamelModel):
     session_id: UUID
     title: str
     summary: str
@@ -20,9 +20,9 @@ class TrainingSessionItem(CamelModel):
     skills: SkillScores
 
 
-class PaginatedTrainingSessionsResponse(CamelModel):
+class PaginatedSessionsResponse(CamelModel):
     page: int
     limit: int
     total_pages: int
     total_sessions: int
-    sessions: list[TrainingSessionItem]
+    sessions: list[SessionItem]
