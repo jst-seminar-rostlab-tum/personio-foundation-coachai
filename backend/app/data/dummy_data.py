@@ -149,18 +149,21 @@ def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session])
         Review(
             id=uuid4(),
             user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
             rating=4,
             comment='Good overall, but could use more examples.',
         ),
         Review(
             id=uuid4(),
             user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
             rating=4,
             comment='Great experience overall, but could use more examples.',
         ),
         Review(
             id=uuid4(),
             user_id=user_profiles[1].id,
+            session_id=sessions[0].id,  # Link to the first session
             rating=3,
             comment='Good, but I expected more personalized feedback.',
         ),
@@ -174,18 +177,21 @@ def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session])
         Review(
             id=uuid4(),
             user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
             rating=1,
             comment='Did not meet my expectations, too basic.',
         ),
         Review(
             id=uuid4(),
             user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
             rating=4,
             comment='Very informative, but the pace was a bit slow.',
         ),
         Review(
             id=uuid4(),
             user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
             rating=3,
             comment='Decent content, but I expected more depth.',
         ),
