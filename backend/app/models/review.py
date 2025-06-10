@@ -7,9 +7,9 @@ from sqlmodel import Field, SQLModel
 class Review(SQLModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
-    session_id: UUID = Field(
-        foreign_key='trainingsession.id', nullable=True
-    )  # FK to TrainingSession
+    session_id: UUID | None = Field(
+        default=None, foreign_key='trainingsession.id', nullable=True
+    )  # FK to TrainingSession, optional
     rating: int = Field(ge=1, le=5)
     comment: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
