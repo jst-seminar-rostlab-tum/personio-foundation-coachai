@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from app.schemas.training_preparation_schema import (
+from app.schemas.scenario_preparation_schema import (
     ChecklistRequest,
     KeyConcept,
     KeyConceptOutput,
@@ -8,14 +8,14 @@ from app.schemas.training_preparation_schema import (
     ObjectiveRequest,
     StringListResponse,
 )
-from app.services.training_preparation_service import (
+from app.services.scenario_preparation_service import (
     generate_checklist,
     generate_key_concept,
     generate_objectives,
 )
 
 
-@patch('app.services.training_preparation_service.call_structured_llm')
+@patch('app.services.scenario_preparation_service.call_structured_llm')
 def test_generate_objectives_returns_correct_list(mock_llm: MagicMock) -> None:
     items = ['1. Prepare outline', '2. Rehearse responses', '3. Stay calm']
     mock_llm.return_value = StringListResponse(items=items)
@@ -35,7 +35,7 @@ def test_generate_objectives_returns_correct_list(mock_llm: MagicMock) -> None:
         assert result[i] == items[i]
 
 
-@patch('app.services.training_preparation_service.call_structured_llm')
+@patch('app.services.scenario_preparation_service.call_structured_llm')
 def test_generate_checklist_returns_correct_list(mock_llm: MagicMock) -> None:
     items = ['1. Review past performance', '2. Prepare documents', '3. Set up private room']
     mock_llm.return_value = StringListResponse(items=items)
@@ -54,7 +54,7 @@ def test_generate_checklist_returns_correct_list(mock_llm: MagicMock) -> None:
         assert result[i] == items[i]
 
 
-@patch('app.services.training_preparation_service.call_structured_llm')
+@patch('app.services.scenario_preparation_service.call_structured_llm')
 def test_generate_key_concept_parses_json(mock_llm: MagicMock) -> None:
     mock_key_concept_response = [
         KeyConcept(
