@@ -4,6 +4,7 @@ import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { clearAllSessions } from '@/services/SessionService';
 
 const mockSessions = [
   {
@@ -58,13 +59,33 @@ const mockSessions = [
 
 export default function PreviousSessions() {
   const [visibleCount, setVisibleCount] = useState(3);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [sessions, setSessions] = useState(mockSessions);
   const t = useTranslations('History');
 
-  const visibleSessions = mockSessions.slice(0, visibleCount);
-  const canLoadMore = visibleCount < mockSessions.length;
+  const visibleSessions = sessions.slice(0, visibleCount);
+  const canLoadMore = visibleCount < sessions.length;
 
   const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 3, mockSessions.length));
+    setVisibleCount((prev) => Math.min(prev + 3, sessions.length));
+  };
+
+  const handleDeleteAll = async () => {
+    setIsDeleting(true);
+
+    // TODO: Get user auth context in future
+    const userId = '0b222f0b-c7e5-4140-9049-35620fee8009'; // TODO: Remove this after getting auth context
+    if (!userId) {
+      setIsDeleting(false);
+      return;
+    }
+
+    const result = await clearAllSessions(userId);
+    if (result.success) {
+      setSessions([]);
+      setVisibleCount(0);
+    }
+    setIsDeleting(false);
   };
 
   return (
@@ -75,7 +96,12 @@ export default function PreviousSessions() {
           <Button variant="ghost">
             {t('exportHistory')} <Download />
           </Button>
-          <Button variant="ghost" className="hover:text-flame-50">
+          <Button
+            variant="ghost"
+            className="hover:text-flame-50"
+            disabled={isDeleting}
+            onClick={handleDeleteAll}
+          >
             {t('clearAll')} <Trash2 />
           </Button>
         </div>
