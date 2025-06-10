@@ -178,24 +178,24 @@ def is_silence(audio_data: bytes, sample_rate: int = SEND_SAMPLE_RATE) -> bool:
             return True
         return rms < 500
 
-    # webrtcvad 需要特定长度的音频帧 (10ms, 20ms, or 30ms)
-    frame_duration_ms = 20  # 使用 20ms 帧
+    # webrtcvad requires specific frame durations (10ms, 20ms, or 30ms)
+    frame_duration_ms = 20  # use 20ms frames
     frame_size = int(sample_rate * frame_duration_ms / 1000)
     bytes_per_frame = frame_size * 2  # 16-bit = 2 bytes per sample
 
-    # 如果数据长度不够一帧，认为是静音
+    # if data length is less than one frame, consider it silence
     if len(audio_data) < bytes_per_frame:
         return True
 
-    # 只处理第一帧（如果有多帧可以循环处理）
+    # only process the first frame (if there are multiple frames, loop through them)
     frame_data = audio_data[:bytes_per_frame]
 
     try:
-        # webrtcvad.is_speech 返回 True 表示有语音，False 表示静音
+        # webrtcvad.is_speech returns True if there is speech, False if silence
         has_speech = vad.is_speech(frame_data, sample_rate)
-        return not has_speech  # is_silence 返回 True 表示静音
+        return not has_speech  # is_silence returns True if silence
     except Exception:
-        # 如果 VAD 处理失败，回退到简单的能量检测
+        # if VAD processing fails, fall back to simple energy detection
         audio_array = np.frombuffer(frame_data, dtype=np.int16).astype(np.float32)
         if not np.isfinite(audio_array).all():
             return True

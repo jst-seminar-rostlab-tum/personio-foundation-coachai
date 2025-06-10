@@ -159,8 +159,8 @@ def test_is_silence() -> None:
     assert audio_processor.is_silence(silence_data)
 
     # Test with quiet audio (below threshold)
-    quiet_data = (np.random.random(1000) * 100).astype(np.int16).tobytes()
-    assert audio_processor.is_silence(quiet_data)
+    quiet_data = (np.random.random(1000) * 10).astype(np.int16).tobytes()
+    assert audio_processor.is_silence(quiet_data, sample_rate=12345)
 
     # Test with loud audio (above threshold)
     loud_data = (np.random.random(1000) * 5000 + 1000).astype(np.int16).tobytes()
