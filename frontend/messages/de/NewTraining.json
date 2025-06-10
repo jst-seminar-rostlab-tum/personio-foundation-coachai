@@ -21,16 +21,9 @@
   },
   "situation": {
     "title": "Beschreiben Sie Ihre Situation",
-    "party": {
+    "otherParty": {
       "title": "Wer ist der Gesprächspartner? *",
-      "options": {
-        "employee": "Mitarbeiter",
-        "manager": "Vorgesetzter",
-        "peer": "Kollege",
-        "stakeholder": "Stakeholder",
-        "other": "Andere"
-      },
-      "otherPlaceholder": "Name eingeben"
+      "placeholder": "Name eingeben"
     },
     "context": {
       "title": "Was ist der Kontext? *",

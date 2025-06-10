@@ -1,8 +1,8 @@
 export interface SituationStepProps {
-  party: string;
+  otherParty: string;
   context: string;
   goal: string;
-  onPartyChange: (type: string, otherName?: string) => void;
+  onPartyChange: (otherParty: string) => void;
   onContextChange: (context: string) => void;
   onGoalChange: (goal: string) => void;
   isCustom: boolean;

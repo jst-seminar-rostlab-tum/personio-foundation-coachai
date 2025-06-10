@@ -1,14 +1,12 @@
 'use client';
 
-import Label from '@/components/ui/Label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
-import Input from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { useTranslations } from 'next-intl';
 import { SituationStepProps } from '@/interfaces/SituationStepProps';
+import Input from '@/components/ui/Input';
 
 export function SituationStep({
-  party,
+  otherParty,
   context,
   goal,
   onPartyChange,
@@ -25,7 +23,7 @@ export function SituationStep({
       {isCustom && (
         <>
           <div className="text-lg text-font-dark mb-4">{t('category.customInput')}</div>
-          <Input
+          <Textarea
             className="w-full mb-8"
             value={customCategory}
             placeholder={t('category.customPlaceholder')}
@@ -34,38 +32,13 @@ export function SituationStep({
         </>
       )}
 
-      <div className="text-lg text-font-dark mb-4">{t('situation.party.title')}</div>
-      <RadioGroup
-        value={party.type}
-        onValueChange={(value) => onPartyChange(value)}
-        className="mb-8"
-      >
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="employee" id="r1" />
-          <Label htmlFor="r1">{t('situation.party.options.employee')}</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="manager" id="r2" />
-          <Label htmlFor="r2">{t('situation.party.options.manager')}</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="peer" id="r3" />
-          <Label htmlFor="r3">{t('situation.party.options.peer')}</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="stakeholder" id="r4" />
-          <Label htmlFor="r4">{t('situation.party.options.stakeholder')}</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="other" id="r5" />
-          <Input
-            placeholder={t('situation.party.otherPlaceholder')}
-            value={party.otherName}
-            onChange={(e) => onPartyChange('other', e.target.value)}
-            disabled={party.type !== 'other'}
-          />
-        </div>
-      </RadioGroup>
+      <div className="text-lg text-font-dark mb-4">{t('situation.otherParty.title')}</div>
+      <Input
+        className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/30 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm mb-8"
+        value={otherParty}
+        placeholder={t('situation.otherParty.placeholder')}
+        onChange={(e) => onPartyChange(e.target.value)}
+      />
 
       <div className="text-lg text-font-dark mb-4">{t('situation.context.title')}</div>
       <Textarea

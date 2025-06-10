@@ -5,10 +5,11 @@ import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Stepper from '@/components/common/Stepper';
 import { use, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { ConversationCategory } from '@/interfaces/ConversationCategory';
 import { FormState } from '@/interfaces/NewTrainingFormState';
-import { TrainingCase } from '@/interfaces/TrainingCase';
-import { createTrainingCase } from '@/services/CreateTrainingCase';
+import { ConversationScenario } from '@/interfaces/ConversationScenario';
+import { createConversationScenario } from '@/services/ConversationScenarioService';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
@@ -17,10 +18,7 @@ const initialFormState: FormState = {
   category: '',
   customCategory: '',
   name: '',
-  party: {
-    type: '',
-    otherName: '',
-  },
+  otherParty: '',
   context: '',
   goal: '',
   difficulty: '',
@@ -35,11 +33,12 @@ export default function NewTrainingForm({
   categories: Promise<ConversationCategory[]>;
 }) {
   const t = useTranslations('NewTraining');
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [formState, setFormState] = useState<FormState>(initialFormState);
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
   const allCategories = use(categories);
-  console.log('allCategories', allCategories);
+
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
       setCurrentStep(step);
@@ -53,8 +52,7 @@ export default function NewTrainingForm({
       case 1:
         return (
           (!formState.isCustom || !!formState.customCategory) &&
-          !!formState.party.type &&
-          (formState.party.type !== 'other' || !!formState.party.otherName) &&
+          !!formState.otherParty &&
           !!formState.context &&
           !!formState.goal
         );
@@ -72,10 +70,7 @@ export default function NewTrainingForm({
       name: category.name,
       context: category.defaultContext || prev.context,
       goal: category.defaultGoal || prev.goal,
-      party: {
-        type: category.defaultOtherParty || prev.party.type,
-        otherName: prev.party.otherName,
-      },
+      otherParty: category.defaultOtherParty || '',
       isCustom: category.isCustom || false,
     }));
   };
@@ -84,10 +79,10 @@ export default function NewTrainingForm({
     setFormState((prev) => ({ ...prev, customCategory }));
   };
 
-  const handlePartyChange = (type: string, otherName?: string) => {
+  const handlePartyChange = (otherParty: string) => {
     setFormState((prev) => ({
       ...prev,
-      party: { type, otherName: otherName || prev.party.otherName },
+      otherParty,
     }));
   };
 
@@ -117,25 +112,27 @@ export default function NewTrainingForm({
       return;
     }
 
-    const trainingCase: TrainingCase = {
-      category_id: formState.category,
-      custom_category_label: formState.customCategory,
-      title: formState.name,
+    // TODO: get user id from auth
+    const userId = '53b5bda9-44c8-4a52-a664-f8175b79c664'; // TODO: Remove this after getting auth
+
+    const scenario: ConversationScenario = {
+      userId,
+      categoryId: formState.category,
+      customCategoryLabel: formState.customCategory,
       context: formState.context,
       goal: formState.goal,
-      other_party:
-        formState.party.type === 'other' ? formState.party.otherName : formState.party.type,
-      difficulty: formState.difficulty,
-      complexity: formState.complexity,
+      otherParty: formState.otherParty,
+      difficultyId: formState.difficulty,
       tone: formState.emotionalTone,
+      complexity: formState.complexity,
+      status: 'draft',
     };
 
-    const response = await createTrainingCase(trainingCase);
-    console.log(response);
-    if (response.status === 201) {
-      console.log('success');
-    } else {
-      console.log('error');
+    try {
+      const response = await createConversationScenario(scenario);
+      router.push(`/preparation/${response.id}`);
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
@@ -162,7 +159,7 @@ export default function NewTrainingForm({
 
       {currentStep === 1 && (
         <SituationStep
-          party={formState.party.type}
+          otherParty={formState.otherParty}
           context={formState.context}
           goal={formState.goal}
           onPartyChange={handlePartyChange}

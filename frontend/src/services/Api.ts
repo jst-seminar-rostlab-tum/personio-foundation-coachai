@@ -14,10 +14,10 @@ const api = axios.create({
 // Request interceptor for adding auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers?.set?.('Authorization', `Bearer ${token}`);
-    }
+    // const token = localStorage.getItem('token');
+    // if (token) {
+    //  config.headers?.set?.('Authorization', `Bearer ${token}`);
+    // }
     return config;
   },
   (error) => Promise.reject(error)
@@ -33,6 +33,8 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export default api;
 
 /* export const userProfileApi = {
   create: async (data: UserProfileCreate) => {

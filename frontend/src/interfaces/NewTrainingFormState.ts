@@ -2,10 +2,7 @@ export interface FormState {
   category: string;
   customCategory: string;
   name: string;
-  party: {
-    type: string;
-    otherName: string;
-  };
+  otherParty: string;
   context: string;
   goal: string;
   difficulty: string;

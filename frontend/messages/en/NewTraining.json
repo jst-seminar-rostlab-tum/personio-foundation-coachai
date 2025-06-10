@@ -21,16 +21,9 @@
   },
   "situation": {
     "title": "Describe your Situation",
-    "party": {
+    "otherParty": {
       "title": "Who is the other party? *",
-      "options": {
-        "employee": "Employee",
-        "manager": "Manager",
-        "peer": "Peer/Colleague",
-        "stakeholder": "Stakeholder",
-        "other": "Other"
-      },
-      "otherPlaceholder": "Other name"
+      "placeholder": "Enter name"
     },
     "context": {
       "title": "What is the context? *",
