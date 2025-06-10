@@ -4,19 +4,7 @@ import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/AlertDialog';
-import { Alert, AlertDescription } from '@/components/ui/Alert';
-import { sessionService } from '@/services/SessionService';
+import { clearAllSessions } from '@/services/SessionService';
 
 const mockSessions = [
   {
@@ -72,7 +60,6 @@ const mockSessions = [
 export default function PreviousSessions() {
   const [visibleCount, setVisibleCount] = useState(3);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [sessions, setSessions] = useState(mockSessions);
   const t = useTranslations('History');
 
@@ -85,22 +72,18 @@ export default function PreviousSessions() {
 
   const handleDeleteAll = async () => {
     setIsDeleting(true);
-    setError(null);
 
     // TODO: Get user auth context in future
     const userId = '0b222f0b-c7e5-4140-9049-35620fee8009'; // TODO: Remove this after getting auth context
     if (!userId) {
-      setError(t('deleteError'));
       setIsDeleting(false);
       return;
     }
 
-    const result = await sessionService.clearAllSessions(userId);
+    const result = await clearAllSessions(userId);
     if (result.success) {
       setSessions([]);
       setVisibleCount(0);
-    } else {
-      setError(t(result.error?.translationKey || 'deleteError'));
     }
     setIsDeleting(false);
   };
@@ -113,32 +96,16 @@ export default function PreviousSessions() {
           <Button variant="ghost">
             {t('exportHistory')} <Download />
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" className="hover:text-flame-50" disabled={isDeleting}>
-                {t('clearAll')} <Trash2 />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t('deleteAllConfirmTitle')}</AlertDialogTitle>
-                <AlertDialogDescription>{t('deleteAllConfirmDesc')}</AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteAll} disabled={isDeleting}>
-                  {isDeleting ? t('deleting') : t('confirm')}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button
+            variant="ghost"
+            className="hover:text-flame-50"
+            disabled={isDeleting}
+            onClick={handleDeleteAll}
+          >
+            {t('clearAll')} <Trash2 />
+          </Button>
         </div>
       </div>
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
       <div className="flex flex-col gap-4">
         {visibleSessions.map((session, idx) => (
           <div
