@@ -27,6 +27,7 @@ def get_admin_dashboard_stats(
     daily_token_limit = db_session.exec(
         select(AppConfig.value).where(AppConfig.key == 'dailyUserTokenLimit')
     ).first()
+    daily_token_limit = int(daily_token_limit) if daily_token_limit is not None else None
 
     # Get admin stats
     stats = db_session.exec(select(AdminDashboardStats)).first()

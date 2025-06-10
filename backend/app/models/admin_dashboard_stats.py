@@ -15,4 +15,4 @@ class AdminDashboardStatsRead(SQLModel):
     total_trainings: int
     total_reviews: int  # number of reviews / user feedbacks
     average_score: int
-    daily_token_limit: int  # daily token limit retrieved from app_config table
+    daily_token_limit: int | None  # daily token limit retrieved from app_config table
