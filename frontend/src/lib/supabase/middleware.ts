@@ -1,12 +1,28 @@
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
+import routing from '@/i18n/routing';
+
+const acceptedLocales = routing.locales
+  .map(String)
+  .concat(!!routing.localePrefix && routing.localePrefix === 'as-needed' ? [''] : []);
+
+const getLocalizedPaths = (urls: string[]): string[] => {
+  return acceptedLocales.flatMap((locale) =>
+    urls.map((url) => `/${locale}/${url}`.replace(/\/+/g, '/'))
+  );
+};
 
 export async function authMiddleware(
   request: NextRequest,
   response: NextResponse
 ): Promise<NextResponse> {
-  const publicUrls = ['/', '/terms', '/privacy'];
-  if (publicUrls.some((path) => request.nextUrl.pathname.startsWith(path))) {
+  const { pathname } = request.nextUrl;
+
+  const publicUrls = ['/terms', '/privacy'];
+  if (
+    acceptedLocales.some((locale) => pathname === `/${locale}`) ||
+    getLocalizedPaths(publicUrls).some((path) => pathname.startsWith(path))
+  ) {
     return response;
   }
 
@@ -25,11 +41,6 @@ export async function authMiddleware(
           );
         },
       },
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-      },
     }
   );
 
@@ -37,28 +48,20 @@ export async function authMiddleware(
     data: { user },
   } = await supabase.auth.getUser();
 
+  const authUrls = ['/login', '/confirm'];
   if (!user) {
-    if (['/confirm'].some((path) => request.nextUrl.pathname.startsWith(path))) {
+    if (getLocalizedPaths(authUrls).some((path) => pathname.startsWith(path))) {
       return response;
     }
 
-    if (!request.nextUrl.pathname.startsWith('/login')) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/login';
-      return NextResponse.redirect(url);
-    }
+    const url = request.nextUrl.clone();
+    url.pathname = '/login';
+    return NextResponse.redirect(url);
   }
 
-  const authUrls = ['/login', '/confirm'];
-  if (user && authUrls.some((path) => request.nextUrl.pathname.startsWith(path))) {
+  if (getLocalizedPaths(authUrls).some((path) => pathname.startsWith(path))) {
     const url = request.nextUrl.clone();
-    if (request.nextUrl.pathname.startsWith('/login')) {
-      // Keep the current path and search params for /login
-      return NextResponse.redirect(url);
-    }
-
-    // Redirect to home page, do not keep search params, etc.
-    url.pathname = '/';
+    url.pathname = '/dashboard';
     url.search = '';
     url.hash = '';
     return NextResponse.redirect(url);
