@@ -12,9 +12,9 @@ import { AlertCircleIcon, RotateCcw } from 'lucide-react';
 import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Alert, AlertTitle } from '@/components/ui/Alert';
-import { authApi } from '@/services/Api';
 import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
 import { useRouter } from 'next/navigation';
+import { authService } from '@/services/auth.service';
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
@@ -59,7 +59,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
         password: signUpFormData.password,
         code: form.getValues('code'),
       };
-      await authApi.create(data);
+      await authService.create(data);
       setIsLoading(false);
       router.push('/check-email');
     } catch (err) {

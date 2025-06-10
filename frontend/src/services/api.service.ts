@@ -1,4 +1,3 @@
-import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
 import { createClient } from '@/lib/supabase/client';
 import axios from 'axios';
 
@@ -6,7 +5,7 @@ const supabase = createClient();
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-const api = axios.create({
+export const apiService = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
@@ -14,7 +13,7 @@ const api = axios.create({
 });
 
 // Request interceptor for adding auth token
-api.interceptors.request.use(
+apiService.interceptors.request.use(
   async (config) => {
     if (config.url?.startsWith('/auth/')) {
       return config;
@@ -45,7 +44,7 @@ api.interceptors.request.use(
 );
 
 // Response interceptor for handling errors
-api.interceptors.response.use(
+apiService.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response } = error;
@@ -54,10 +53,3 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export const authApi = {
-  create: async (data: CreateUserRequest) => {
-    const response = await api.post('/auth/', data);
-    return response.data;
-  },
-};
