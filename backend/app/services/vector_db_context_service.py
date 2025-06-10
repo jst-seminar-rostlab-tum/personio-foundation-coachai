@@ -1,11 +1,28 @@
 from app.rag.rag import build_vector_db_retriever
-from app.rag.vector_db import format_docs
-from app.schemas.training_preparation_schema import TrainingCaseBase
+from app.rag.vector_db import format_docs_with_metadata
+from app.schemas.scenario_preparation_schema import ConversationScenarioBase
+from app.services.voice_analysis_service import analyze_voice_gemini_from_file
 
 
 def build_query_prep_feedback(
-    session_context: TrainingCaseBase, user_audio_analysis: str = None, user_transcript: str = None
+    session_context: ConversationScenarioBase,
+    user_audio_analysis: str = None,
+    user_transcript: str = None,
 ) -> str:
+    """
+    Constructs a detailed query string based on the conversation scenario
+    for preparation and feedback
+
+    Args:
+        session_context (ConversationScenarioBase): The scenario for the current session,
+            including category, other party, context, and goal
+        user_audio_analysis (str, optional): Description of the tone, emotion, or delivery
+            of the user
+        user_transcript (str, optional): Transcript of what the user said
+
+    Returns:
+        str: A concatenated query string incorporating all available context
+    """
     parts = []
 
     if session_context.category:
@@ -32,7 +49,22 @@ def build_query_prep_feedback(
 def build_query_general(
     other_context: [str] = None, user_audio_analysis: str = None, user_transcript: str = None
 ) -> str:
-    parts = ['The general context is: '] + other_context
+    """
+    Builds a query string for general purposes, i.e. usually OTHER than preparation and feedback
+
+    Args:
+        other_context (list of str, optional): A list of strings describing general
+            context. Not tied to a certain schema
+        user_audio_analysis (str, optional):Description of the tone, emotion, or delivery
+            of the user
+        user_transcript (str, optional): Transcript of what the user said
+
+    Returns:
+        str: A concatenated query string incorporating all available context
+    """
+    parts = []
+    if other_context and len(other_context) > 0:
+        parts = parts + ['The general context is: '] + other_context
 
     if user_transcript:
         parts.append(f'The HR employee said: {user_transcript}.')
@@ -44,15 +76,30 @@ def build_query_general(
 
 
 def query_vector_db(
-    session_context: TrainingCaseBase | [str] = None,
+    session_context: ConversationScenarioBase | list[str] = None,
     user_audio_path: str = None,
     user_transcript: str = None,
-) -> str:
-    # TODO: Get from voice analysis function
-    voice_analysis = user_audio_path
-    if isinstance(session_context, TrainingCaseBase):
+) -> tuple[str, list[dict]]:
+    """
+    Retrieves relevant documents from the vector database based on the session context,
+    user audio and text
+
+    Args:
+        session_context (ConversationScenarioBase or list of str, optional):
+            Either a structured conversation scenario object or a list of context strings
+        user_audio_path (str, optional): File path to the user's audio recording for analysis
+        user_transcript (str, optional): Transcript of what the user said
+
+    Returns:
+        tuple[str, list[dict]]: A tuple of:
+    1) A single string containing the concatenated contents of all documents, relevant
+    to the query
+    2) The documents' metadata in an array of dicts
+    """
+    voice_analysis = analyze_voice_gemini_from_file(user_audio_path)
+    if isinstance(session_context, ConversationScenarioBase):
         query = build_query_prep_feedback(session_context, voice_analysis, user_transcript)
     else:
         query = build_query_general(session_context, voice_analysis, user_transcript)
     retriever = build_vector_db_retriever(populate_db=False)
-    return format_docs(retriever.invoke(query))
+    return format_docs_with_metadata(retriever.invoke(query))
