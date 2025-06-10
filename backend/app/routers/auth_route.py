@@ -1,7 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from gotrue import (
-    SignUpWithPasswordCredentials,
-)
+from gotrue import AdminUserAttributes, SignUpWithPasswordCredentials
 from pydantic import BaseModel
 from supabase import create_client
 
@@ -21,11 +19,6 @@ class CreateUserRequest(BaseModel):
     code: str
 
 
-class LoginUserRequest(BaseModel):
-    phone: str
-    password: str
-
-
 @router.post('/', response_model=None, status_code=status.HTTP_201_CREATED)
 def create_user(req: CreateUserRequest) -> None:
     try:
@@ -38,24 +31,23 @@ def create_user(req: CreateUserRequest) -> None:
 
     # TODO: Verify OTP code
 
-    credentials: SignUpWithPasswordCredentials = {
-        'email': req.email,
-        'password': req.password,
-        'options': {
-            'data': {
-                'full_name': req.full_name,
-            }
-        },
-    }
     try:
-        response = supabase.auth.sign_up(credentials)
-        response = supabase.auth.admin.update_user_by_id(
-            response.user.id,
-            {
-                'phone': req.phone,
-                'phone_confirm': True,
+        attributes: AdminUserAttributes = {
+            'email': req.email,
+            'password': req.password,
+            'phone': req.phone,
+            'phone_confirm': True,
+            'user_metadata': {
+                'full_name': req.full_name,
             },
-        )
+        }
+        supabase.auth.admin.create_user(attributes)
+
+        credentials: SignUpWithPasswordCredentials = {
+            'email': req.email,
+            'password': req.password,
+        }
+        supabase.auth.sign_up(credentials)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
