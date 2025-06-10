@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '@/services/Api';
 import ObjectivesList from '@/app/[locale]/(main)/preparation/components/ObjectivesList';
 import PreparationChecklist from '@/app/[locale]/(main)/preparation/components/PreparationChecklist';
@@ -27,10 +27,10 @@ export default function PreparationPage() {
   const [preparationData, setPreparationData] = useState<TrainingPreparation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getTrainingPreparation = async () => {
+  const getTrainingPreparation = useCallback(async () => {
     try {
       // TODO: Determine the training case ID dynamically in the future
-      const trainingCase = '454cdf80-7937-4844-89bc-dae1edc2da81';
+      const trainingCase = 'cd76c086-70d5-4a9f-bddc-d4e6ee9631ac';
       const response = await api.get(`/training-case/${trainingCase}/preparation`);
 
       if (response.status === 202) {
@@ -74,11 +74,14 @@ export default function PreparationPage() {
       }
       console.error(errorMessage);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    getTrainingPreparation();
-  });
+    const fetchData = async () => {
+      await getTrainingPreparation();
+    };
+    fetchData();
+  }, [getTrainingPreparation]);
 
   if (isLoading) {
     return (
