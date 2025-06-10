@@ -1,10 +1,15 @@
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 
-export async function updateSession(
+export async function authMiddleware(
   request: NextRequest,
   response: NextResponse
 ): Promise<NextResponse> {
+  const publicUrls = ['/', '/terms', '/privacy'];
+  if (publicUrls.some((path) => request.nextUrl.pathname.startsWith(path))) {
+    return response;
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

@@ -1,6 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest } from 'next/server';
-import { updateSession } from '@/lib/supabase/middleware';
+import { authMiddleware } from '@/lib/supabase/middleware';
 import routing from '@/i18n/routing';
 
 const i18nMiddleware = createMiddleware(routing);
@@ -8,7 +8,7 @@ const i18nMiddleware = createMiddleware(routing);
 export default async function middleware(request: NextRequest) {
   const response = i18nMiddleware(request);
 
-  return updateSession(request, response);
+  return authMiddleware(request, response);
 }
 
 export const config = {
