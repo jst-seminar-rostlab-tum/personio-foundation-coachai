@@ -3,11 +3,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session, select
-from starlette.responses import JSONResponse
 from starlette import status
+from starlette.responses import JSONResponse
 
-from app.services.training_preparation_service import generate_training_preparation, \
-    create_pending_preparation
 from app.database import get_session
 from app.models.conversation_category import ConversationCategory
 from app.models.training_case import (
@@ -18,6 +16,11 @@ from app.models.training_case import (
 from app.models.training_preparation import TrainingPreparation, TrainingPreparationRead
 from app.schemas.training_preparation_schema import TrainingPreparationRequest
 from app.services.training_case_service import create_training_case
+from app.services.training_preparation_service import (
+    create_pending_preparation,
+    generate_training_preparation,
+)
+
 router = APIRouter(prefix='/training-case', tags=['Training Cases'])
 
 
@@ -78,7 +81,6 @@ def create_training_case_with_preparation(
     )
 
 
-
 @router.put('/{case_id}', response_model=TrainingCaseRead)
 def update_training_case(
     case_id: UUID,
@@ -124,9 +126,10 @@ def delete_training_case(case_id: UUID, session: Annotated[Session, Depends(get_
 @router.get('/{id_training_case}/preparation', response_model=TrainingPreparationRead)
 def get_training_preparation_by_case_id(
     id_training_case: UUID, session: Annotated[Session, Depends(get_session)]
-) -> TrainingPreparation:
+) -> TrainingPreparationRead:
     """
     Retrieve the training preparation data for a given training case ID.
+    The context is extracted from the associated training case.
     """
     # Validate that the training case exists
     training_case = session.get(TrainingCase, id_training_case)
@@ -139,5 +142,9 @@ def get_training_preparation_by_case_id(
 
     if not training_preparation:
         raise HTTPException(status_code=404, detail='Training preparation not found')
+
+    # Update the context in the training preparation with the context from the training case
+    training_preparation = TrainingPreparationRead.from_orm(training_preparation)
+    training_preparation.context = training_case.context
 
     return training_preparation

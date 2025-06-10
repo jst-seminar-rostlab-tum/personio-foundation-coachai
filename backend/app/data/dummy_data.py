@@ -164,7 +164,7 @@ def get_dummy_training_cases(
             user_id=user_profiles[0].id,
             category_id=None,
             custom_category_label='Custom Category 1',
-            context='Context 1',
+            context='You need to have conversation with Sarah...',
             goal='Goal 1',
             other_party='Other Party 1',
             difficulty_id=difficulty_levels[0].id,
@@ -179,7 +179,7 @@ def get_dummy_training_cases(
             user_id=user_profiles[1].id,
             category_id=None,
             custom_category_label='Custom Category 2',
-            context='Context 2',
+            context='You need to prepare for a team meeting...',
             goal='Goal 2',
             other_party='Other Party 2',
             difficulty_id=difficulty_levels[1].id,
@@ -497,7 +497,6 @@ def get_dummy_training_preparations(
         TrainingPreparation(
             id=uuid4(),
             case_id=training_cases[0].id,
-            context='You need to have conversation with Sarah...',
             objectives=[
                 "Understand the client's needs",
                 'Prepare a solution proposal',
@@ -517,7 +516,6 @@ def get_dummy_training_preparations(
         TrainingPreparation(
             id=uuid4(),
             case_id=training_cases[1].id,
-            context='You need to prepare for a team meeting...',
             objectives=[
                 'Discuss project timeline',
                 'Finalize deliverables',
