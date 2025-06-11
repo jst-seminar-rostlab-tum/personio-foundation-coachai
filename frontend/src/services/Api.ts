@@ -6,15 +6,14 @@ const supabase = createClient();
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-export const apiService = axios.create({
+export const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor for adding auth token
-apiService.interceptors.request.use(
+api.interceptors.request.use(
   async (config) => {
     if (config.url?.startsWith('/auth/')) {
       return config;
@@ -45,7 +44,7 @@ apiService.interceptors.request.use(
 );
 
 // Response interceptor for handling errors
-apiService.interceptors.response.use(
+api.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response } = error;

@@ -75,7 +75,7 @@ export default function ConfirmationForm() {
     setIsLoading(true);
     setError(null);
 
-    form.setValue('code', ''); // Clear the code input
+    form.setValue('code', '');
     const formData = confirmationFormSchema.parse(form.getValues());
     const supabase = await createClient();
     const credentials: ResendParams = {
