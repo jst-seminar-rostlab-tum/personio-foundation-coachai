@@ -12,7 +12,6 @@ import logging
 from app.tests.connections.live_agent_stream import (
     LocalAudioEvent,
     LocalAudioEventType,
-    LocalAudioLoop,
     LocalDataChannelEvent,
     LocalDataChannelEventType,
     LocalSessionEvent,
@@ -36,6 +35,7 @@ class EventSystemDemo(LocalWebRTCSimulator):
             'audio_events': 0,
             'session_events': 0,
             'data_channel_events': 0,
+            'user_events': 0,
         }
 
     def print_stats(self) -> None:
@@ -45,6 +45,7 @@ class EventSystemDemo(LocalWebRTCSimulator):
         print(f'   Audio events: {self.event_stats["audio_events"]}')
         print(f'   Session events: {self.event_stats["session_events"]}')
         print(f'   Data channel events: {self.event_stats["data_channel_events"]}')
+        print(f'   User events: {self.event_stats["user_events"]}')
         print('=' * 50 + '\n')
 
     async def run_demo(self) -> None:
@@ -69,6 +70,15 @@ class EventSystemDemo(LocalWebRTCSimulator):
             print("   - Type 'q' to quit")
             print("   - Type 'stats' to view event statistics")
 
+            # Get and save event_manager reference for consistency
+            peer = self.get_peer(peer_id)
+            audio_loop = peer.audio_loop if peer else None
+            event_manager = audio_loop.event_manager if audio_loop else None
+
+            if not event_manager:
+                logger.error('Failed to get event_manager')
+                return
+
             # Wait for user input
             while True:
                 try:
@@ -79,13 +89,22 @@ class EventSystemDemo(LocalWebRTCSimulator):
                         self.print_stats()
                     else:
                         logger.info(f'User input: {text}')
-                        peer = self.get_peer(peer_id)
-                        audio_loop = peer.audio_loop if peer else None
-                        event_manager = audio_loop.event_manager if audio_loop else None
-                        if event_manager:
+                        logger.info(f'About to emit user event with message: {text}')
+
+                        if not audio_loop or not audio_loop.gemini_session:
+                            logger.warning(
+                                'Audio loop or Gemini session not ready, skipping user message'
+                            )
+                            print('[Warning] System not ready, please wait and try again.')
+                            continue
+
+                        try:
                             await event_manager.emit_user_event(
                                 LocalUserEventType.USER_MESSAGE_SENT, {'message': text}
                             )
+                            logger.info('Successfully emitted user event')
+                        except Exception as e:
+                            logger.error(f'Failed to emit user event: {e}', exc_info=True)
                 except KeyboardInterrupt:
                     break
 
@@ -103,8 +122,13 @@ class EventSystemDemo(LocalWebRTCSimulator):
         if not peer:
             raise ValueError(f'Peer {peer_id} does not exist')
 
-        audio_loop = LocalAudioLoop(peer_id)
-        peer.audio_loop = audio_loop
+        await super().start_audio_session(peer_id)
+
+        peer = self.get_peer(peer_id)
+        audio_loop = peer.audio_loop if peer else None
+        if not audio_loop:
+            raise ValueError(f'Failed to create audio_loop for peer {peer_id}')
+
         event_manager = audio_loop.event_manager
 
         # Register custom event handlers using event_manager decorators
@@ -174,13 +198,35 @@ class EventSystemDemo(LocalWebRTCSimulator):
 
         @event_manager.on_user_event(LocalUserEventType.USER_MESSAGE_SENT)
         async def on_user_message(event: LocalUserEvent[str]) -> None:
+            self.event_stats['user_events'] += 1
+            logger.info(f'[DEBUG] User message event triggered: {event.data}')
             msg = event.data['message'] if event.data else None
             if msg:
-                await audio_loop._send_to_gemini(msg)
-                print(f'[UserMessage] Sent to Gemini: {msg}')
+                print(f'[UserMessage] Processing: {msg}')
+                try:
+                    from google.genai import types
 
-        # Register default event handlers from parent class
-        await super().start_audio_session(peer_id)
+                    content = types.Content(role='user', parts=[types.Part(text=msg)])
+                    logger.info('[UserMessage] Sending to Gemini with high priority')
+                    await audio_loop._send_to_gemini(content)
+                    logger.info(f'[UserMessage] Successfully sent to Gemini: {msg}')
+                    print(f'[UserMessage] Sent to Gemini: {msg}')
+                except Exception as e:
+                    logger.error(f'[UserMessage] Failed to send to Gemini: {e}', exc_info=True)
+            else:
+                logger.warning(f'[UserMessage] No message in event data: {event.data}')
+
+        logger.info(f'Registered user message handler for peer {peer_id}')
+
+        logger.info(
+            f'Event manager handlers count: '
+            f'audio={len(event_manager.audio_event_handlers)}, '
+            f'session={len(event_manager.session_event_handlers)}, '
+            f'data_channel={len(event_manager.data_channel_event_handlers)}, '
+            f'user={len(event_manager.user_event_handlers)}'
+        )
+
+        logger.info(f'All event handlers registered successfully for peer {peer_id}')
 
 
 async def main() -> None:

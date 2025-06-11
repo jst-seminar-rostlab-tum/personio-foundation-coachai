@@ -251,14 +251,30 @@ class LocalEventManager(Generic[T]):
 
     async def emit_user_event(self, event_type: LocalUserEventType, data: T | None = None) -> None:
         event = LocalUserEvent(type=event_type, peer_id=self.peer_id, data=data)
-        logger.debug(
-            f'[EventManager] Emitting user event {event_type.value} for peer {self.peer_id}'
+        logger.info(
+            f'[EventManager] Emitting user event {event_type.value} for peer {self.peer_id}, '
+            f'handlers count: {len(self.user_event_handlers)}, data: {data}'
         )
-        for handler in self.user_event_handlers:
+
+        if not self.user_event_handlers:
+            logger.warning(
+                f'[EventManager] No user event handlers registered for peer {self.peer_id}'
+            )
+            return
+
+        for i, handler in enumerate(self.user_event_handlers):
             try:
+                logger.info(
+                    f'[EventManager] Calling user event handler {i + 1}'
+                    f'of {len(self.user_event_handlers)}'
+                )
                 await handler(event)
+                logger.info(f'[EventManager] User event handler {i + 1} completed successfully')
             except Exception as e:
-                logger.error(f'[EventManager] Error in user event handler: {e}')
+                logger.error(
+                    f'[EventManager] Error in user event handler {i + 1}: {e}',
+                    exc_info=True,
+                )
 
     def on_audio_event(
         self, event_type: LocalAudioEventType
