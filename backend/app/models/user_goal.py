@@ -1,40 +1,43 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
     from app.models.goal import Goal
     from app.models.user_profile import UserProfile
 
 
-class UserGoal(SQLModel, table=True):  # `table=True` makes it a database table
+class UserGoal(CamelModel, table=True):  # `table=True` makes it a database table
     goal_id: UUID = Field(foreign_key='goal.id', primary_key=True)  # FK to Goal
     user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)  # FK to UserProfileModel
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
     goal: Optional['Goal'] = Relationship(back_populates='user_goals')
     user: Optional['UserProfile'] = Relationship(back_populates='user_goals')
 
 
+# Automatically update `updated_at` before an update
 @event.listens_for(UserGoal, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserGoal') -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(UTC)
 
 
 # Schema for creating a new UserGoal
-class UserGoalCreate(SQLModel):
+class UserGoalCreate(CamelModel):
     goal_id: UUID
     user_id: UUID
 
 
 # Schema for reading UserGoal data
-class UserGoalRead(SQLModel):
+class UserGoalRead(CamelModel):
     goal_id: UUID
     user_id: UUID
     updated_at: datetime

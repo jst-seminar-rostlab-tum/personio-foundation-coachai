@@ -3,7 +3,7 @@ name = "coachAI-backend"
 version = "0.1.0"
 description = "A smart, voice-based training app for HR professionals to master difficult conversations through guided preparation, realistic simulations, and actionable feedback"
 readme = "README.md"
-requires-python = "==3.12.7"
+requires-python = ">=3.12.7"
 dependencies = [
   "fastapi[standard]>=0.112.1",
   "sqlalchemy>=2.0.22",
@@ -30,6 +30,8 @@ dependencies = [
   "pgvector>=0.2.5,<0.4",
   "langchain-huggingface>=0.2.0",
   "langchain-postgres>=0.0.14",
+  "langchain-openai>=0.3.21",
+  "google-genai>=1.19.0",
 ]
 
 [tool.setuptools]

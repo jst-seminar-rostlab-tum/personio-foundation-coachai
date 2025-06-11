@@ -1,17 +1,19 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
-    from app.models.training_case import TrainingCase
+    from app.models.conversation_scenario import ConversationScenario
 
 
-class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a database table
+class ConversationCategory(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(unique=True)
     icon_uri: str
@@ -23,11 +25,11 @@ class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a dat
     default_other_party: str = Field(default='')
     is_custom: bool = Field(default=False)
     language_code: str = Field(foreign_key='language.code')  # FK to Language model
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    training_cases: list['TrainingCase'] = Relationship(
+    conversation_scenarios: list['ConversationScenario'] = Relationship(
         back_populates='category', cascade_delete=True
     )
 
@@ -36,11 +38,11 @@ class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a dat
 def update_timestamp(
     mapper: Mapper, connection: Connection, target: 'ConversationCategory'
 ) -> None:
-    target.updated_at = datetime.utcnow()
+    target.updated_at = datetime.now(UTC)
 
 
 # Schema for creating a new ConversationCategory
-class ConversationCategoryCreate(SQLModel):
+class ConversationCategoryCreate(CamelModel):
     name: Optional[str] = None
     icon_uri: Optional[str] = None
     system_prompt: Optional[str] = None
@@ -54,7 +56,7 @@ class ConversationCategoryCreate(SQLModel):
 
 
 # Schema for reading ConversationCategory data
-class ConversationCategoryRead(SQLModel):
+class ConversationCategoryRead(CamelModel):
     id: UUID
     name: str
     icon_uri: str
