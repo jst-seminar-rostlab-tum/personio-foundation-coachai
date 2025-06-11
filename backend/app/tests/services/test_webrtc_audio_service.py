@@ -9,7 +9,6 @@ from app.services.webrtc_audio_service import WebRTCAudioLoop, webrtc_audio_serv
 from .test_utils import MockAudioFrame
 
 
-@pytest.mark.asyncio
 def test_audio_loop_creation() -> None:
     loop = WebRTCAudioLoop('peer1')
     assert loop.peer_id == 'peer1'
