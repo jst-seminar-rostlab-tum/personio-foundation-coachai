@@ -47,17 +47,21 @@ export function AppHeader() {
           >
             {t('title')}
           </Link>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-0 md:gap-6">
             <div className="hidden md:flex items-center gap-6">
               {navigationLinks.map(({ key, href }) => (
-                <Link key={key} href={href} className="text-bw-60 hover:text-bw-50 font-medium">
+                <Link
+                  key={key}
+                  href={href}
+                  className="text-bw-60 hover:text-bw-50 font-medium text-lg"
+                >
                   {t(key)}
                 </Link>
               ))}
             </div>
             <LanguageSwitcher />
             <Button
-              className="md:hidden"
+              className="md:hidden pl-0"
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -73,7 +77,7 @@ export function AppHeader() {
           isMenuOpen ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        <div className="flex items-center justify-between px-4 py-2 xl:px-16 bg-background min-h-[56px]">
+        <div className="flex items-center justify-between px-2 py-2 xl:px-16 bg-background min-h-[56px]">
           <div className="text-bw-70 text-lg font-semibold">{t('title')}</div>
           <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
             <X className="!w-4 !h-4" />
