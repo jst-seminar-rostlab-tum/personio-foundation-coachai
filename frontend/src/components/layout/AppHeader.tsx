@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, X } from 'lucide-react';
+import { LogOut, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -47,13 +47,13 @@ export function AppHeader() {
           >
             {t('title')}
           </Link>
-          <div className="flex items-center gap-0 md:gap-6">
+          <div className="flex items-center gap-0 md:gap-4">
             <div className="hidden md:flex items-center gap-6">
               {navigationLinks.map(({ key, href }) => (
                 <Link
                   key={key}
                   href={href}
-                  className="text-bw-60 hover:text-bw-50 font-medium text-lg"
+                  className="text-bw-60 hover:text-marigold-50 font-medium text-lg"
                 >
                   {t(key)}
                 </Link>
@@ -68,6 +68,12 @@ export function AppHeader() {
             >
               {isMenuOpen ? <X className="!w-4 !h-4" /> : <Menu className="!w-4 !h-4" />}
             </Button>
+            <Link href="/logout">
+              <Button variant="ghost" className="hidden md:flex h-8">
+                <LogOut className="!w-4 !h-4" />
+                <span className="hidden md:block text-xs font-medium">{t('logout')}</span>
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -95,6 +101,15 @@ export function AppHeader() {
                 {t(key)}
               </Link>
             ))}
+            <Link href="/logout">
+              <Button
+                variant="ghost"
+                className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('logout')}
+              </Button>
+            </Link>
           </nav>
         </div>
       </div>
