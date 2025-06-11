@@ -19,8 +19,8 @@ class CreateUserRequest(BaseModel):
     code: str
 
 
-@router.post('/', response_model=None, status_code=status.HTTP_201_CREATED)
-def create_user(req: CreateUserRequest) -> None:
+@router.post('/', response_model=str, status_code=status.HTTP_201_CREATED)
+def create_user(req: CreateUserRequest) -> str:
     try:
         CreateUserRequest.model_validate(req)
     except ValueError as e:
