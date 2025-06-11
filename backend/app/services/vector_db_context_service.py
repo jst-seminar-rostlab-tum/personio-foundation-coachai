@@ -26,7 +26,7 @@ def build_query_prep_feedback(
     parts = []
 
     if session_context.category:
-        parts.append(f'This is a {session_context.category}.')
+        parts.append(f'This is a/an {session_context.category}.')
 
     if session_context.other_party:
         parts.append(f'The HR employee is speaking to {session_context.other_party}.')
@@ -96,7 +96,9 @@ def query_vector_db(
     to the query
     2) The documents' metadata in an array of dicts
     """
-    voice_analysis = analyze_voice_gemini_from_file(user_audio_path)
+    voice_analysis = None
+    if user_audio_path:
+        voice_analysis = analyze_voice_gemini_from_file(user_audio_path)
     if isinstance(session_context, ConversationScenarioBase):
         query = build_query_prep_feedback(session_context, voice_analysis, user_transcript)
     else:
