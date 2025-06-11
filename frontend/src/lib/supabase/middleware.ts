@@ -1,70 +1,66 @@
-import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import routing from '@/i18n/routing';
+import { Session } from '@supabase/supabase-js';
+import { createClient } from './server';
 
 const acceptedLocales = routing.locales
   .map(String)
   .concat(!!routing.localePrefix && routing.localePrefix === 'as-needed' ? [''] : []);
 
-const getLocalizedPaths = (urls: string[]): string[] => {
-  return acceptedLocales.flatMap((locale) =>
-    urls.map((url) => `/${locale}/${url}`.replace(/\/+/g, '/'))
-  );
+const stripLocaleFromPath = (path: string): string => {
+  for (const locale of acceptedLocales) {
+    const localePrefix = locale ? `/${locale}` : '';
+    if (path === localePrefix || path.startsWith(`${localePrefix}/`)) {
+      return path.slice(localePrefix.length) || '/';
+    }
+  }
+  return path;
+};
+
+const publicRoutes = ['/', '/terms', '/privacy'];
+const authRoutes = ['/login', '/confirm'];
+
+const isSessionExpired = (session: Session): boolean => {
+  if (!session || !session.expires_at) {
+    return true;
+  }
+  const currentTime = Math.floor(Date.now() / 1000);
+  return session.expires_at <= currentTime;
 };
 
 export async function authMiddleware(
   request: NextRequest,
   response: NextResponse
 ): Promise<NextResponse> {
-  const { pathname } = request.nextUrl;
+  const path = stripLocaleFromPath(request.nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(path);
+  const isPublicRoute = publicRoutes.includes(path);
 
-  const publicUrls = ['/terms', '/privacy'];
-  if (
-    acceptedLocales.some((locale) => pathname === `/${locale}`) ||
-    getLocalizedPaths(publicUrls).some((path) => pathname.startsWith(path))
-  ) {
+  if (isPublicRoute) {
     return response;
   }
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-
+  const supabase = await createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const authUrls = ['/login', '/confirm'];
-  if (!user) {
-    if (getLocalizedPaths(authUrls).some((path) => pathname.startsWith(path))) {
-      return response;
-    }
-
-    const url = request.nextUrl.clone();
-    url.pathname = '/login';
-    return NextResponse.redirect(url);
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
+  if (!session && path === '/login') {
+    return response;
+  }
+  if (error) {
+    return NextResponse.redirect(new URL('/login', request.nextUrl));
   }
 
-  if (getLocalizedPaths(authUrls).some((path) => pathname.startsWith(path))) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
-    url.search = '';
-    url.hash = '';
-    return NextResponse.redirect(url);
+  if (!session || isSessionExpired(session)) {
+    const { error: refreshError } = await supabase.auth.refreshSession();
+    if (refreshError) {
+      return NextResponse.redirect(new URL('/login', request.nextUrl));
+    }
+  }
+
+  if (isAuthRoute) {
+    return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
   }
 
   return response;
