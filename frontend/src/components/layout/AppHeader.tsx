@@ -48,16 +48,7 @@ export function AppHeader() {
             {t('title')}
           </Link>
           <div className="flex items-center gap-6">
-            {/* Desktop Menu */}
-            <div
-              className={`hidden md:flex items-center gap-6 
-              transform transition-all duration-300 ease-in-out
-              ${
-                isMenuOpen
-                  ? 'translate-x-0 opacity-100 visible'
-                  : 'translate-x-30 opacity-0 invisible'
-              }`}
-            >
+            <div className="hidden md:flex items-center gap-6">
               {navigationLinks.map(({ key, href }) => (
                 <Link key={key} href={href} className="text-bw-60 hover:text-bw-50 font-medium">
                   {t(key)}
@@ -65,14 +56,18 @@ export function AppHeader() {
               ))}
             </div>
             <LanguageSwitcher />
-            <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <Button
+              className="md:hidden"
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
               {isMenuOpen ? <X className="!w-4 !h-4" /> : <Menu className="!w-4 !h-4" />}
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Menu */}
       <div
         className={`md:hidden fixed inset-0 z-40 top-0 transition-transform duration-300 ease-in-out ${
           isMenuOpen ? 'translate-y-0' : '-translate-y-full'
