@@ -68,7 +68,7 @@ export default function ConfirmationForm() {
       return;
     }
 
-    router.push('/');
+    router.push('/dashboard');
   };
 
   const resendConfirmationEmail = async () => {
