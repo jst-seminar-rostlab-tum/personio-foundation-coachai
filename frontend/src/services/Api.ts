@@ -34,6 +34,8 @@ api.interceptors.response.use(
   }
 );
 
+export default api;
+
 /* export const userProfileApi = {
   create: async (data: UserProfileCreate) => {
     const response = await api.post('/user-profiles/', data);
