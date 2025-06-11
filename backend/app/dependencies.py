@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Any, TypedDict
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -14,7 +14,26 @@ settings = Settings()
 security = HTTPBearer(auto_error=not (settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH))
 
 
-def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)]):  # noqa: ANN201
+class JWTPayload(TypedDict, total=False):
+    iss: str
+    sub: str
+    aud: str
+    exp: int
+    iat: int
+    email: str
+    phone: str
+    app_metadata: dict[str, Any]
+    user_metadata: dict[str, Any]
+    role: str
+    aal: str
+    amr: list[Any]
+    session_id: str
+    is_anonymous: bool
+
+
+def verify_jwt(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+) -> JWTPayload:
     """
     Checks the validity of the JWT token and retrieves its information.
     """
@@ -47,7 +66,8 @@ def verify_jwt(credentials: Annotated[HTTPAuthorizationCredentials, Depends(secu
 
 
 def require_user(
-    token: Annotated[any, Depends(verify_jwt)], db: Annotated[Session, Depends(get_db_session)]
+    token: Annotated[JWTPayload, Depends(verify_jwt)],
+    db: Annotated[Session, Depends(get_db_session)],
 ) -> UserProfile:
     """
     Checks if the user is authenticated and has the role of 'user' or 'admin'.
@@ -63,7 +83,8 @@ def require_user(
 
 
 def require_admin(
-    token: Annotated[any, Depends(verify_jwt)], db: Annotated[Session, Depends(get_db_session)]
+    token: Annotated[JWTPayload, Depends(verify_jwt)],
+    db: Annotated[Session, Depends(get_db_session)],
 ) -> UserProfile:
     """
     Checks if the user is authenticated and has the role of 'admin'.

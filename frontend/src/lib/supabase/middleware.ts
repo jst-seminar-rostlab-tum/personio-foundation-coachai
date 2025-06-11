@@ -43,16 +43,15 @@ export async function authMiddleware(
   const supabase = await createClient();
   const {
     data: { session },
-    error,
   } = await supabase.auth.getSession();
-  if (!session && path === '/login') {
-    return response;
-  }
-  if (error) {
+  if (!session) {
+    if (isAuthRoute) {
+      return response;
+    }
     return NextResponse.redirect(new URL('/login', request.nextUrl));
   }
 
-  if (!session || isSessionExpired(session)) {
+  if (isSessionExpired(session)) {
     const { error: refreshError } = await supabase.auth.refreshSession();
     if (refreshError) {
       return NextResponse.redirect(new URL('/login', request.nextUrl));

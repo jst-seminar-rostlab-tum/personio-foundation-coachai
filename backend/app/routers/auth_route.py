@@ -1,14 +1,19 @@
-from fastapi import APIRouter, HTTPException, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from gotrue import AdminUserAttributes, SignUpWithPasswordCredentials
 from pydantic import BaseModel
+from sqlmodel import Session as DBSession
 from supabase import create_client
 
 from app.config import Settings
+from app.database import get_db_session
+from app.dependencies import JWTPayload, verify_jwt
+from app.models.user_profile import UserProfile
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
 
 settings = Settings()
-supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
 
 
 class CreateUserRequest(BaseModel):
@@ -19,8 +24,8 @@ class CreateUserRequest(BaseModel):
     code: str
 
 
-@router.post('/', response_model=str, status_code=status.HTTP_201_CREATED)
-def create_user(req: CreateUserRequest) -> str:
+@router.post('/', response_model=None, status_code=status.HTTP_201_CREATED)
+def create_user(req: CreateUserRequest) -> None:
     try:
         CreateUserRequest.model_validate(req)
     except ValueError as e:
@@ -32,6 +37,8 @@ def create_user(req: CreateUserRequest) -> str:
     # TODO: Verify OTP code
 
     try:
+        supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+
         attributes: AdminUserAttributes = {
             'email': req.email,
             'password': req.password,
@@ -54,4 +61,21 @@ def create_user(req: CreateUserRequest) -> str:
             detail=str(e),
         ) from e
 
-    return 'User created successfully'
+
+@router.get('/confirm', response_model=None)
+def confirm_user(
+    token: Annotated[JWTPayload, Depends(verify_jwt)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> None:
+    if not token['user_metadata'].get('email_verified', False):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='User is not confirmed',
+        )
+
+    user_data = UserProfile(
+        id=token['sub'],
+        preferred_language='en',
+    )
+    db_session.add(user_data)
+    db_session.commit()

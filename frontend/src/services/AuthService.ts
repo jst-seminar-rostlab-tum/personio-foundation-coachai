@@ -6,6 +6,12 @@ const createUser = async (data: CreateUserRequest) => {
   return response.data;
 };
 
+const confirmUser = async () => {
+  const response = await api.get('/auth/confirm');
+  return response.data;
+};
+
 export const authService = {
   createUser,
+  confirmUser,
 };

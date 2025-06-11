@@ -15,7 +15,7 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
-    if (config.url?.startsWith('/auth/')) {
+    if (config.url?.includes('/auth/') && !config.url?.includes('/auth/confirm')) {
       return config;
     }
 
