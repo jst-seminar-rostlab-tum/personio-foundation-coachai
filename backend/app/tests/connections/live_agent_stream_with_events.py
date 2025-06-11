@@ -12,10 +12,13 @@ import logging
 from app.tests.connections.live_agent_stream import (
     LocalAudioEvent,
     LocalAudioEventType,
+    LocalAudioLoop,
     LocalDataChannelEvent,
     LocalDataChannelEventType,
     LocalSessionEvent,
     LocalSessionEventType,
+    LocalUserEvent,
+    LocalUserEventType,
     LocalWebRTCSimulator,
 )
 
@@ -24,65 +27,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class EventSystemDemo:
-    """Event system demonstration class"""
+class EventSystemDemo(LocalWebRTCSimulator):
+    """Event system demonstration class (inherits from LocalWebRTCSimulator)"""
 
     def __init__(self) -> None:
-        self.simulator = LocalWebRTCSimulator()
+        super().__init__()
         self.event_stats = {
             'audio_events': 0,
             'session_events': 0,
             'data_channel_events': 0,
         }
-
-    async def custom_audio_event_handler(self, event: LocalAudioEvent) -> None:
-        """Custom audio event handler"""
-        self.event_stats['audio_events'] += 1
-
-        if event.type == LocalAudioEventType.VOICE_ACTIVITY_DETECTED:
-            print('Voice activity detected - Recording started!')
-        elif event.type == LocalAudioEventType.SILENCE_DETECTED:
-            print('Silence detected - Recording stopped.')
-            if event.data and 'duration' in event.data:
-                duration = event.data['duration']
-                print(f'   Voice duration: {duration:.2f} seconds')
-        elif event.type == LocalAudioEventType.AUDIO_STREAM_START:
-            print('Audio stream started')
-        elif event.type == LocalAudioEventType.AUDIO_STREAM_END:
-            print('Audio stream ended')
-
-        logger.debug(f'Audio events count: {self.event_stats["audio_events"]}')
-
-    async def custom_session_event_handler(self, event: LocalSessionEvent) -> None:
-        """Custom session event handler"""
-        self.event_stats['session_events'] += 1
-
-        if event.type == LocalSessionEventType.SESSION_STARTED:
-            print('Local audio session started')
-        elif event.type == LocalSessionEventType.GEMINI_CONNECTED:
-            print('Connected to Gemini Live API')
-        elif event.type == LocalSessionEventType.GEMINI_DISCONNECTED:
-            print('Disconnected from Gemini')
-        elif event.type == LocalSessionEventType.SESSION_ERROR:
-            print(f'Session error: {event.data.get("error", "Unknown error")}')
-        elif event.type == LocalSessionEventType.SESSION_ENDED:
-            print('Local audio session ended')
-
-        logger.debug(f'Session events count: {self.event_stats["session_events"]}')
-
-    async def custom_data_channel_event_handler(self, event: LocalDataChannelEvent) -> None:
-        """Custom data channel event handler"""
-        self.event_stats['data_channel_events'] += 1
-
-        if event.type == LocalDataChannelEventType.CHANNEL_READY:
-            print('Data channel ready')
-        elif event.type == LocalDataChannelEventType.TRANSCRIPT_SENT:
-            transcript = event.data.get('transcript', '')
-            print(f'Transcript sent: "{transcript[:50]}{"..." if len(transcript) > 50 else ""}"')
-        elif event.type == LocalDataChannelEventType.MESSAGE_RECEIVED:
-            print('Data channel message received')
-
-        logger.debug(f'Data channel events count: {self.event_stats["data_channel_events"]}')
 
     def print_stats(self) -> None:
         """Print event statistics"""
@@ -102,17 +56,10 @@ class EventSystemDemo:
 
         try:
             # Create peer
-            await self.simulator.create_peer(peer_id)
-
-            # Get audio loop and add custom event handlers
-            peer = self.simulator.get_peer(peer_id)
-            if peer and peer.audio_loop:
-                # Handlers should be added before start_audio_session
-                # but due to architecture we need to handle this inside start_audio_session
-                pass
+            await self.create_peer(peer_id)
 
             # Start audio session with our custom handlers
-            await self._start_audio_session_with_custom_handlers(peer_id)
+            await self.start_audio_session(peer_id)
 
             print('\nVoice conversation started...')
             print('Tips:')
@@ -132,6 +79,13 @@ class EventSystemDemo:
                         self.print_stats()
                     else:
                         logger.info(f'User input: {text}')
+                        peer = self.get_peer(peer_id)
+                        audio_loop = peer.audio_loop if peer else None
+                        event_manager = audio_loop.event_manager if audio_loop else None
+                        if event_manager:
+                            await event_manager.emit_user_event(
+                                LocalUserEventType.USER_MESSAGE_SENT, {'message': text}
+                            )
                 except KeyboardInterrupt:
                     break
 
@@ -139,42 +93,94 @@ class EventSystemDemo:
             logger.error(f'Demo error: {e}', exc_info=True)
         finally:
             # Clean up resources
-            await self.simulator.close_peer(peer_id)
+            await self.close_peer(peer_id)
             self.print_stats()
             print('Demo finished')
 
-    async def _start_audio_session_with_custom_handlers(self, peer_id: str) -> None:
-        """Start audio session with custom event handlers"""
-        peer = self.simulator.get_peer(peer_id)
+    async def start_audio_session(self, peer_id: str) -> None:
+        """Start audio session with event handlers (decorator style)"""
+        peer = self.get_peer(peer_id)
         if not peer:
             raise ValueError(f'Peer {peer_id} does not exist')
 
-        # Import LocalAudioLoop
-        from app.tests.connections.live_agent_stream import LocalAudioLoop
-
-        # Create audio loop
         audio_loop = LocalAudioLoop(peer_id)
         peer.audio_loop = audio_loop
+        event_manager = audio_loop.event_manager
 
-        # Add default event handlers
-        audio_loop.add_audio_event_handler(self.simulator._handle_audio_event)
-        audio_loop.add_session_event_handler(self.simulator._handle_session_event)
-        audio_loop.add_data_channel_event_handler(self.simulator._handle_data_channel_event)
+        # Register custom event handlers using event_manager decorators
+        @event_manager.on_audio_event(LocalAudioEventType.VOICE_ACTIVITY_DETECTED)
+        async def on_voice(event: LocalAudioEvent[str]) -> None:
+            self.event_stats['audio_events'] += 1
+            print('Voice activity detected - Recording started!')
 
-        # Add our custom event handlers
-        audio_loop.add_audio_event_handler(self.custom_audio_event_handler)
-        audio_loop.add_session_event_handler(self.custom_session_event_handler)
-        audio_loop.add_data_channel_event_handler(self.custom_data_channel_event_handler)
+        @event_manager.on_audio_event(LocalAudioEventType.SILENCE_DETECTED)
+        async def on_silence(event: LocalAudioEvent[str]) -> None:
+            self.event_stats['audio_events'] += 1
+            print('Silence detected - Recording stopped.')
+            if event.data and 'duration' in event.data:
+                duration = event.data['duration']
+                print(f'   Voice duration: {duration:.2f} seconds')
 
-        # Set transcript callback
-        audio_loop.set_transcript_callback(self.simulator._handle_transcript)
+        @event_manager.on_audio_event(LocalAudioEventType.AUDIO_STREAM_START)
+        async def on_audio_start(event: LocalAudioEvent[str]) -> None:
+            self.event_stats['audio_events'] += 1
+            print('Audio stream started')
 
-        # Mark data channel ready
-        audio_loop.mark_data_channel_ready()
+        @event_manager.on_audio_event(LocalAudioEventType.AUDIO_STREAM_END)
+        async def on_audio_end(event: LocalAudioEvent[str]) -> None:
+            self.event_stats['audio_events'] += 1
+            print('Audio stream ended')
 
-        # Start audio loop
-        await audio_loop.start(peer)
-        logger.info(f'Audio session with custom event handlers started for peer {peer_id}')
+        @event_manager.on_session_event(LocalSessionEventType.SESSION_STARTED)
+        async def on_session_started(event: LocalSessionEvent[str]) -> None:
+            self.event_stats['session_events'] += 1
+            print('Local audio session started')
+
+        @event_manager.on_session_event(LocalSessionEventType.GEMINI_CONNECTED)
+        async def on_gemini_connected(event: LocalSessionEvent[str]) -> None:
+            self.event_stats['session_events'] += 1
+            print('Connected to Gemini Live API')
+
+        @event_manager.on_session_event(LocalSessionEventType.GEMINI_DISCONNECTED)
+        async def on_gemini_disconnected(event: LocalSessionEvent[str]) -> None:
+            self.event_stats['session_events'] += 1
+            print('Disconnected from Gemini')
+
+        @event_manager.on_session_event(LocalSessionEventType.SESSION_ERROR)
+        async def on_session_error(event: LocalSessionEvent[str]) -> None:
+            self.event_stats['session_events'] += 1
+            print(f'Session error: {event.data.get("error", "Unknown error")}')
+
+        @event_manager.on_session_event(LocalSessionEventType.SESSION_ENDED)
+        async def on_session_ended(event: LocalSessionEvent[str]) -> None:
+            self.event_stats['session_events'] += 1
+            print('Local audio session ended')
+
+        @event_manager.on_data_channel_event(LocalDataChannelEventType.CHANNEL_READY)
+        async def on_channel_ready(event: LocalDataChannelEvent[str]) -> None:
+            self.event_stats['data_channel_events'] += 1
+            print('Data channel ready')
+
+        @event_manager.on_data_channel_event(LocalDataChannelEventType.TRANSCRIPT_SENT)
+        async def on_transcript_sent(event: LocalDataChannelEvent[str]) -> None:
+            self.event_stats['data_channel_events'] += 1
+            transcript = event.data.get('transcript', '')
+            print(f'Transcript sent: "{transcript[:50]}{"..." if len(transcript) > 50 else ""}"')
+
+        @event_manager.on_data_channel_event(LocalDataChannelEventType.MESSAGE_RECEIVED)
+        async def on_message_received(event: LocalDataChannelEvent[str]) -> None:
+            self.event_stats['data_channel_events'] += 1
+            print('Data channel message received')
+
+        @event_manager.on_user_event(LocalUserEventType.USER_MESSAGE_SENT)
+        async def on_user_message(event: LocalUserEvent[str]) -> None:
+            msg = event.data['message'] if event.data else None
+            if msg:
+                await audio_loop._send_to_gemini(msg)
+                print(f'[UserMessage] Sent to Gemini: {msg}')
+
+        # Register default event handlers from parent class
+        await super().start_audio_session(peer_id)
 
 
 async def main() -> None:

@@ -118,6 +118,12 @@ class LocalDataChannelEventType(Enum):
     MESSAGE_RECEIVED = 'message_received'
 
 
+class LocalUserEventType(Enum):
+    USER_MESSAGE_SENT = 'user_message_sent'
+    USER_MESSAGE_RECEIVED = 'user_message_received'
+    SEND_REALTIME_INPUT = 'send_realtime_input'
+
+
 T = TypeVar('T')
 
 
@@ -128,7 +134,7 @@ class LocalAudioEvent(Generic[T]):
     type: LocalAudioEventType
     peer_id: str
     data: T | None = None
-    timestamp: float = None
+    timestamp: float | None = None
 
     def __post_init__(self) -> None:
         if self.timestamp is None:
@@ -141,8 +147,8 @@ class LocalSessionEvent(Generic[T]):
 
     type: LocalSessionEventType
     peer_id: str
-    data: T = None  # type: ignore
-    timestamp: float = None
+    data: T | None = None
+    timestamp: float | None = None
 
     def __post_init__(self) -> None:
         if self.timestamp is None:
@@ -155,8 +161,20 @@ class LocalDataChannelEvent(Generic[T]):
 
     type: LocalDataChannelEventType
     peer_id: str
-    data: T = None  # type: ignore
-    timestamp: float = None
+    data: T | None = None
+    timestamp: float | None = None
+
+    def __post_init__(self) -> None:
+        if self.timestamp is None:
+            self.timestamp = time.time()
+
+
+@dataclass
+class LocalUserEvent(Generic[T]):
+    type: LocalUserEventType
+    peer_id: str
+    data: T | None = None
+    timestamp: float | None = None
 
     def __post_init__(self) -> None:
         if self.timestamp is None:
@@ -167,6 +185,7 @@ class LocalDataChannelEvent(Generic[T]):
 LocalAudioEventCallback = Callable[[LocalAudioEvent[T]], Awaitable[None]]
 LocalSessionEventCallback = Callable[[LocalSessionEvent[T]], Awaitable[None]]
 LocalDataChannelEventCallback = Callable[[LocalDataChannelEvent[T]], Awaitable[None]]
+LocalUserEventCallback = Callable[[LocalUserEvent[T]], Awaitable[None]]
 
 
 class LocalEventManager(Generic[T]):
@@ -177,6 +196,7 @@ class LocalEventManager(Generic[T]):
         self.audio_event_handlers: list[LocalAudioEventCallback[T]] = []
         self.session_event_handlers: list[LocalSessionEventCallback[T]] = []
         self.data_channel_event_handlers: list[LocalDataChannelEventCallback[T]] = []
+        self.user_event_handlers: list[LocalUserEventCallback[T]] = []
 
     def add_audio_event_handler(self, handler: LocalAudioEventCallback[T]) -> None:
         self.audio_event_handlers.append(handler)
@@ -186,6 +206,9 @@ class LocalEventManager(Generic[T]):
 
     def add_data_channel_event_handler(self, handler: LocalDataChannelEventCallback[T]) -> None:
         self.data_channel_event_handlers.append(handler)
+
+    def add_user_event_handler(self, handler: LocalUserEventCallback[T]) -> None:
+        self.user_event_handlers.append(handler)
 
     async def emit_audio_event(
         self, event_type: LocalAudioEventType, data: T | None = None
@@ -225,6 +248,83 @@ class LocalEventManager(Generic[T]):
                 await handler(event)
             except Exception as e:
                 logger.error(f'[EventManager] Error in data channel event handler: {e}')
+
+    async def emit_user_event(self, event_type: LocalUserEventType, data: T | None = None) -> None:
+        event = LocalUserEvent(type=event_type, peer_id=self.peer_id, data=data)
+        logger.debug(
+            f'[EventManager] Emitting user event {event_type.value} for peer {self.peer_id}'
+        )
+        for handler in self.user_event_handlers:
+            try:
+                await handler(event)
+            except Exception as e:
+                logger.error(f'[EventManager] Error in user event handler: {e}')
+
+    def on_audio_event(
+        self, event_type: LocalAudioEventType
+    ) -> Callable[[LocalAudioEventCallback[T]], LocalAudioEventCallback[T]]:
+        """Decorator to add an audio event handler."""
+
+        def decorator(handler: LocalAudioEventCallback[T]) -> LocalAudioEventCallback[T]:
+            def wrapped_handler(event: LocalAudioEvent[T]) -> Awaitable[None]:
+                if event.type == event_type:
+                    return handler(event)
+                return asyncio.sleep(0)
+
+            self.add_audio_event_handler(wrapped_handler)
+            return handler
+
+        return decorator
+
+    def on_session_event(
+        self, event_type: LocalSessionEventType
+    ) -> Callable[[LocalSessionEventCallback[T]], LocalSessionEventCallback[T]]:
+        """Decorator to add a session event handler."""
+
+        def decorator(handler: LocalSessionEventCallback[T]) -> LocalSessionEventCallback[T]:
+            def wrapped_handler(event: LocalSessionEvent[T]) -> Awaitable[None]:
+                if event.type == event_type:
+                    return handler(event)
+                return asyncio.sleep(0)
+
+            self.add_session_event_handler(wrapped_handler)
+            return handler
+
+        return decorator
+
+    def on_data_channel_event(
+        self, event_type: LocalDataChannelEventType
+    ) -> Callable[[LocalDataChannelEventCallback[T]], Awaitable[None]]:
+        """Decorator to add a data channel event handler."""
+
+        def decorator(
+            handler: LocalDataChannelEventCallback[T],
+        ) -> LocalDataChannelEventCallback[T]:
+            def wrapped_handler(event: LocalDataChannelEvent[T]) -> Awaitable[None]:
+                if event.type == event_type:
+                    return handler(event)
+                return asyncio.sleep(0)
+
+            self.add_data_channel_event_handler(wrapped_handler)
+            return handler
+
+        return decorator
+
+    def on_user_event(
+        self, event_type: LocalUserEventType
+    ) -> Callable[[LocalUserEventCallback[T]], LocalUserEventCallback[T]]:
+        """Decorator to add a user event handler."""
+
+        def decorator(handler: LocalUserEventCallback[T]) -> LocalUserEventCallback[T]:
+            def wrapped_handler(event: LocalUserEvent[T]) -> Awaitable[None]:
+                if event.type == event_type:
+                    return handler(event)
+                return asyncio.sleep(0)
+
+            self.add_user_event_handler(wrapped_handler)
+            return handler
+
+        return decorator
 
 
 @dataclass
