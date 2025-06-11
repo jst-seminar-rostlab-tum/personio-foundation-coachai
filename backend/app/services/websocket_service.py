@@ -94,9 +94,6 @@ class WebSocketService:
                         f'Failed to create answer: {str(e)}', peer_id
                     ) from e
 
-                # Process SDP and ensure data channel is included
-                answer = await self._process_sdp_for_data_channel(answer, message.sdp, peer_id)
-
                 # Set local description BEFORE sending answer
                 try:
                     await pc.setLocalDescription(answer)
@@ -143,24 +140,9 @@ class WebSocketService:
                 if candidate:
                     try:
                         rtc_candidate = self._build_rtc_ice_candidate(candidate)
-                        logger.debug(f'Adding ICE candidate for peer {peer_id}:')
-                        logger.debug(f'  - sdpMid: {rtc_candidate.sdpMid}')
-                        logger.debug(f'  - sdpMLineIndex: {rtc_candidate.sdpMLineIndex}')
-                        logger.debug(f'  - component: {rtc_candidate.component}')
-                        logger.debug(f'  - foundation: {rtc_candidate.foundation}')
-                        logger.debug(f'  - ip: {rtc_candidate.ip}')
-                        logger.debug(f'  - port: {rtc_candidate.port}')
-                        logger.debug(f'  - priority: {rtc_candidate.priority}')
-                        logger.debug(f'  - protocol: {rtc_candidate.protocol}')
-                        logger.debug(f'  - type: {rtc_candidate.type}')
 
                         await peer.connection.addIceCandidate(rtc_candidate)
                         logger.info(f'ICE candidate added successfully for peer {peer_id}')
-                        logger.debug(
-                            f'Current ICE connection state: {peer.connection.iceConnectionState}'
-                        )
-                        logger.debug(f'Current connection state: {peer.connection.connectionState}')
-                        logger.debug(f'Current signaling state: {peer.connection.signalingState}')
                     except Exception as e:
                         raise WebSocketIceError(
                             f'Error adding ICE candidate: {str(e)}', peer_id
@@ -184,11 +166,11 @@ class WebSocketService:
                 f'Unexpected error: {str(e)}', WebSocketErrorType.MESSAGE, peer_id
             ) from e
 
-    async def _process_sdp_for_data_channel(
+    async def _process_sdp(
         self, answer: RTCSessionDescription, offer_sdp: str, peer_id: str
     ) -> RTCSessionDescription:
         """
-        Process SDP to ensure data channel is included in the answer.
+        Process SDP to remove comfort noise and ensure data channel is included in the answer.
 
         Args:
             answer: The answer SDP to process

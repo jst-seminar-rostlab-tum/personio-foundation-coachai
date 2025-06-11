@@ -13,7 +13,7 @@ CHUNK_SIZE = 1024
 CHANNELS = 1
 
 # VAD instance (global shared)
-vad = webrtcvad.Vad(1)  # 0-3, 1 is medium sensitivity
+vad = webrtcvad.Vad(3)  # 0-3, 3 is high sensitivity
 
 
 class AudioStreamTrack(MediaStreamTrack):

@@ -279,22 +279,3 @@ class GeminiStreamReceiveError(GeminiStreamError):
 
     def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, GeminiStreamErrorType.RECEIVE, peer_id)
-
-
-# =========================================================================
-#                           AUDIO CONTROL EVENTS
-# =========================================================================
-
-
-class WebRTCAudioEventType(str, Enum):
-    # Explicit activity control is not supported
-    # When automatic activity detection is enabled
-    # ACTIVITY_END = 'activity_end'
-    # ACTIVITY_START = 'activity_start'
-    AUDIO_STREAM_END = 'audio_stream_end'
-
-
-class WebRTCAudioEvent(BaseModel):
-    type: WebRTCAudioEventType
-    timestamp: float | None = None
-    payload: dict | None = None
