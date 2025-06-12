@@ -3,8 +3,6 @@ from uuid import UUID
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.data.dummy_data import MockUserIdsEnum
-
 
 class Settings(BaseSettings):
     stage: Literal['dev', 'prod'] = 'dev'
