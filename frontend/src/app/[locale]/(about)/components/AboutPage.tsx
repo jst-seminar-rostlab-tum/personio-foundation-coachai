@@ -54,7 +54,7 @@ export default function AboutPageComponent() {
           </div>
         </section>
 
-        <section id="how-it-works" className="py-8 md:py-20 bg-white">
+        <section id="how-it-works" className="scroll-mt-20 py-8 md:py-20 bg-white">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">
