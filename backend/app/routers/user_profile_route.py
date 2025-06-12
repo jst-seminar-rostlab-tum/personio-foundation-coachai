@@ -6,6 +6,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.user_confidence_score import ConfidenceScoreRead, UserConfidenceScore
 from app.models.user_goal import UserGoal
 from app.models.user_profile import (
@@ -166,7 +167,7 @@ def get_user_profiles(
     return final_result
 
 
-@router.post('/', response_model=UserProfile)
+@router.post('/', response_model=UserProfile, dependencies=[Depends(require_user)])
 def create_user_profile(
     user_data: UserProfileCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -186,15 +187,15 @@ def create_user_profile(
     db_session.refresh(new_user)
 
     # Add goals
-    for goal_id in user_data['goal_ids']:
+    for goal_id in user_data.goal_ids:
         user_goal = UserGoal(user_id=new_user.id, goal_id=goal_id)
         db_session.add(user_goal)
 
     # Add confidence scores
-    for confidence_score in user_data['confidence_scores']:
+    for confidence_score in user_data.confidence_scores:
         user_confidence_score = UserConfidenceScore(
             user_id=new_user.id,
-            area_id=confidence_score['area_id'],
+            area_id=confidence_score['areaId'],
             score=confidence_score['score'],
         )
         db_session.add(user_confidence_score)
