@@ -23,11 +23,13 @@ class AccountRole(str, Enum):
     user = 'user'
     admin = 'admin'
 
+
 class ProfessionalRole(str, Enum):
     hr_professional = 'hr_professional'
     team_leader = 'team_leader'
     executive = 'executive'
     other = 'other'
+
 
 class Experience(str, Enum):
     beginner = 'beginner'
@@ -36,10 +38,12 @@ class Experience(str, Enum):
     advanced = 'advanced'
     expert = 'expert'
 
+
 class PreferredLearningStyle(str, Enum):
     visual = 'visual'
     auditory = 'auditory'
     kinesthetic = 'kinesthetic'
+
 
 class UserProfile(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -53,8 +57,8 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     conversation_scenarios: list['ConversationScenario'] = Relationship(
         back_populates='user_profile', cascade_delete=True
     )
-    account_role: Optional[AccountRole] = Field(default=AccountRole.user)
-    professional_role: Optional[ProfessionalRole] = Field(default=ProfessionalRole.hr_professional)
+    account_role: AccountRole = Field(default=AccountRole.user)
+    professional_role: ProfessionalRole = Field(default=ProfessionalRole.hr_professional)
     user_goals: list['UserGoal'] = Relationship(
         back_populates='user', cascade_delete=True
     )  # Add this line
@@ -77,42 +81,47 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfil
     target.updated_at = datetime.now(UTC)
 
 
-# Schema for creating a new UserProfile
-class UserProfileCreate(CamelModel):
+class UserProfileUpdate(CamelModel):
+    preferred_language_code: Optional[LanguageCode] = None
+    account_role: Optional[AccountRole] = None
+    professional_role: Optional[ProfessionalRole] = None
+    experience: Optional[Experience] = None
+    preferred_learning_style: Optional[PreferredLearningStyle] = None
+    store_conversations: Optional[bool] = None
+    goals: Optional[list[str]] = None
+    confidence_scores: Optional[list[ConfidenceScoreRead]] = None
+
+
+class UserProfileReplace(CamelModel):
     preferred_language_code: LanguageCode
     account_role: AccountRole
     professional_role: ProfessionalRole
     experience: Experience
     preferred_learning_style: PreferredLearningStyle
     store_conversations: bool
-    goal_ids: list[UUID]
-    confidence_scores: list[dict]
+    goals: list[str]
+    confidence_scores: list[ConfidenceScoreRead]
+
+
+class UserProfileCreate(UserProfileReplace):
+    user_id: UUID  # required for creating the user
 
 
 # Schema for reading UserProfile data
 class UserProfileRead(CamelModel):
-    id: UUID
+    user_id: UUID
     preferred_language_code: LanguageCode
     account_role: AccountRole
     professional_role: ProfessionalRole
     experience: Experience
     preferred_learning_style: PreferredLearningStyle
-    goal: list[UUID]
-    confidence_scores: list[UUID]
-    store_conversations: bool
     updated_at: datetime
-
-
-class UserProfileExtendedRead(CamelModel):
-    user_id: UUID
-    preferred_language_code: LanguageCode
-    account_role: Optional[AccountRole]
-    professional_role: Optional[ProfessionalRole]
-    experience: Optional[Experience]
-    preferred_learning_style: Optional[PreferredLearningStyle]
-    goal: list[str]
-    confidence_scores: list[ConfidenceScoreRead]
     store_conversations: bool
+
+
+class UserProfileExtendedRead(UserProfileRead):
+    goals: list[str]
+    confidence_scores: list[ConfidenceScoreRead]
 
 
 UserProfileExtendedRead.model_rebuild()
