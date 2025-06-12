@@ -106,8 +106,8 @@ export function SignInForm() {
                 src="/icons/google-icon.svg"
                 alt="Google Icon"
                 className="mr-2"
-                width={5}
-                height={5}
+                width={20}
+                height={20}
               ></Image>
               {t('signInWithGoogleButtonLabel')}
             </Button>
