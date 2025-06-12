@@ -58,7 +58,7 @@ async function negotiate() {
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
-    const response = await fetch(`/?model=${model}`, {
+    const response = await fetch(`/webrtc/offer`, {
         body: offer.sdp,
         headers: {
             'Content-Type': 'application/sdp'
