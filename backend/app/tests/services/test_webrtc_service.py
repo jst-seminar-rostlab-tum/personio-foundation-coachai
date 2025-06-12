@@ -155,7 +155,11 @@ class TestWebRTCService:
             WebRTCDataChannelMessage(role='user', text='test transcript'), 'test_peer'
         )
         expected_message = json.dumps(
-            WebRTCDataChannelMessage(role='user', text='test transcript').model_dump()
+            {
+                'transcript': WebRTCDataChannelMessage(
+                    role='user', text='test transcript'
+                ).model_dump()
+            }
         )
         mock_data_channel.send.assert_called_once_with(expected_message)
 
