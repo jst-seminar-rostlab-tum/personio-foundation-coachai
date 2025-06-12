@@ -205,9 +205,9 @@ def create_user_profile(
     return new_user
 
 
-@router.put('/{user_id}', response_model=UserProfile)
+@router.put('/', response_model=UserProfile)
 def update_user_profile(
-    user_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     user_data: UserProfileCreate,  # Expect full data for PUT
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserProfile:
@@ -215,6 +215,7 @@ def update_user_profile(
     Fully update an existing user profile with new data.
     Requires all fields to be provided.
     """
+    user_id = user_profile.id
     user = db_session.get(UserProfile, user_id)
 
     if not user:
@@ -248,7 +249,7 @@ def update_user_profile(
     for confidence_score in user_data.confidence_scores:
         user_confidence_score = UserConfidenceScore(
             user_id=user.id,
-            area_id=confidence_score['area_id'],
+            area_id=confidence_score['areaId'],
             score=confidence_score['score'],
         )
         db_session.add(user_confidence_score)
@@ -259,15 +260,16 @@ def update_user_profile(
     return user
 
 
-@router.patch('/{user_id}', response_model=UserProfile)
+@router.patch('/', response_model=UserProfile)
 def patch_user_profile(
-    user_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     user_data: dict,  # Expect partial data for PATCH
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserProfile:
     """
     Update an existing user profile.
     """
+    user_id = user_profile.id
     user = db_session.get(UserProfile, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User profile not found')
@@ -275,39 +277,39 @@ def patch_user_profile(
     # Update UserProfile fields if provided
     if 'role' in user_data:
         user.role = user_data['role']
-    if 'experience_id' in user_data:
-        user.experience_id = user_data['experience_id']
-    if 'preferred_language' in user_data:
-        user.preferred_language = user_data['preferred_language']
-    if 'preferred_learning_style_id' in user_data:
-        user.preferred_learning_style_id = user_data['preferred_learning_style_id']
-    if 'store_conversations' in user_data:
-        user.store_conversations = user_data['store_conversations']
+    if 'experienceId' in user_data:
+        user.experience_id = user_data['experienceId']
+    if 'preferredLanguage' in user_data:
+        user.preferred_language = user_data['preferredLanguage']
+    if 'preferredLearningStyleId' in user_data:
+        user.preferred_learning_style_id = user_data['preferredLearningStyleId']
+    if 'storeConversations' in user_data:
+        user.store_conversations = user_data['storeConversations']
 
     db_session.add(user)
 
     # Update goals if provided
-    if 'goal_ids' in user_data:
+    if 'goalIds' in user_data:
         statement = select(UserGoal).where(UserGoal.user_id == user_id)
         user_goals = db_session.exec(statement)
         for user_goal in user_goals:
             db_session.delete(user_goal)
         db_session.commit()  # Commit to remove old goals
-        for goal_id in user_data['goal_ids']:
+        for goal_id in user_data['goalIds']:
             user_goal = UserGoal(user_id=user.id, goal_id=goal_id)
             db_session.add(user_goal)
 
     # Update confidence scores if provided
-    if 'confidence_scores' in user_data:
+    if 'confidenceScores' in user_data:
         statement = select(UserConfidenceScore).where(UserConfidenceScore.user_id == user_id)
         user_confidence_scores = db_session.exec(statement)
         for user_confidence_score in user_confidence_scores:
             db_session.delete(user_confidence_score)
         db_session.commit()
-        for confidence_score in user_data['confidence_scores']:
+        for confidence_score in user_data['confidenceScores']:
             user_confidence_score = UserConfidenceScore(
                 user_id=user.id,
-                area_id=confidence_score['area_id'],
+                area_id=confidence_score['areaId'],
                 score=confidence_score['score'],
             )
             db_session.add(user_confidence_score)
