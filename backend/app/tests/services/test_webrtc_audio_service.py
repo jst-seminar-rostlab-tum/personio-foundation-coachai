@@ -5,6 +5,7 @@ import pytest
 from google.genai import types
 
 from app.services.webrtc_audio_service import WebRTCAudioLoop, webrtc_audio_service
+from app.services.webrtc_event_manager import PeerEventManager
 
 from .test_utils import MockAudioFrame
 
@@ -35,6 +36,7 @@ def test_audio_service_create_and_get() -> None:
 async def test_audio_resampling_integration(
     mock_resample_webrtc: MagicMock,
     audio_loop: WebRTCAudioLoop,
+    mock_event_manager: PeerEventManager,
 ) -> None:
     mock_resample_webrtc.return_value = b'x' * 400
     mock_frame = MockAudioFrame(rate=44100, channels=1, samples=441)
@@ -45,10 +47,7 @@ async def test_audio_resampling_integration(
     audio_loop.last_voice_time = asyncio.get_event_loop().time()
     audio_loop.segmenter = MagicMock()
     audio_loop.segmenter.feed = MagicMock(return_value=[b'x' * 400])
-    audio_loop.event_manager = MagicMock()
-    audio_loop.event_manager.emit_data_channel_event = AsyncMock()
-    audio_loop.event_manager.emit_audio_event = AsyncMock()
-    audio_loop.event_manager.emit_session_event = AsyncMock()
+    audio_loop.event_manager = mock_event_manager
     with pytest.raises(asyncio.CancelledError):
         await audio_loop._listen_webrtc_audio()
     mock_resample_webrtc.assert_called()

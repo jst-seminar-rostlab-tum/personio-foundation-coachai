@@ -4,6 +4,7 @@ import pytest
 from aiortc import RTCDataChannel, RTCPeerConnection, RTCRtpTransceiver
 
 from app.services.webrtc_audio_service import WebRTCAudioLoop
+from app.services.webrtc_event_manager import PeerEventManager
 from app.services.webrtc_service import PeerSessionManager, WebRTCService
 
 
@@ -67,3 +68,13 @@ def peer_session_manager() -> PeerSessionManager:
 @pytest.fixture
 def audio_loop() -> WebRTCAudioLoop:
     return WebRTCAudioLoop('test_peer')
+
+
+@pytest.fixture
+def mock_event_manager() -> PeerEventManager:
+    event_manager = MagicMock(spec=PeerEventManager)
+    event_manager.emit_data_channel_event = AsyncMock()
+    event_manager.emit_audio_event = AsyncMock()
+    event_manager.emit_session_event = AsyncMock()
+    event_manager.emit_user_event = AsyncMock()
+    return event_manager
