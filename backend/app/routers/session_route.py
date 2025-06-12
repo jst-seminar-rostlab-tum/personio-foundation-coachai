@@ -2,11 +2,12 @@ from math import ceil
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import (
     Session,
@@ -25,6 +26,7 @@ from app.models.sessions_paginated import (
     SessionItem,
     SkillScores,
 )
+from app.models.user_profile import UserProfile
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
 
@@ -118,21 +120,15 @@ def get_session_feedback(
 
 @router.get('/', response_model=PaginatedSessionsResponse)
 def get_sessions(
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
-    x_user_id: str = Header(...),  # Auth via header
-    # TODO: Adjust to the authentication token in the header
 ) -> PaginatedSessionsResponse:
     """
     Return paginated list of completed sessions for a user.
     """
-    try:
-        user_id = UUID(x_user_id)
-    except ValueError as err:
-        raise HTTPException(
-            status_code=401, detail='Invalid or missing authentication token'
-        ) from err
+    user_id = user_profile.id
 
     statement = select(ConversationScenario.id).where(ConversationScenario.user_id == user_id)
     scenario_ids = db_session.exec(statement).all()
@@ -182,7 +178,7 @@ def get_sessions(
     )
 
 
-@router.post('/', response_model=SessionRead)
+@router.post('/', response_model=SessionRead, dependencies=[Depends(require_user)])
 def create_session(
     session_data: SessionCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> Session:
