@@ -40,7 +40,7 @@ export function PasswordInput({
         >
           {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
           <span className="sr-only">
-            {showPassword ? t("hidePasswordSpan") : t('showPasswordSpan')}
+            {showPassword ? t('hidePasswordSpan') : t('showPasswordSpan')}
           </span>
         </button>
       </div>
