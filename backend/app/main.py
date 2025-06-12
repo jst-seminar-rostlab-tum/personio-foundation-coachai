@@ -1,9 +1,10 @@
+import logging
+import sys
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-
-# from .database import engine
 from app.database import create_db_and_tables
 from app.routers import (
     app_config_route,
@@ -25,11 +26,17 @@ from app.routers import (
     user_profile_stats_route,
 )
 
+logging.basicConfig(
+    level=logging.INFO,
+    stream=sys.stdout,
+    format='%(message)s',
+)
+
 app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://localhost:3000'],
+    allow_origins=[settings.CORS_ORIGIN],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
