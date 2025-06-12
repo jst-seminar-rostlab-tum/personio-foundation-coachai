@@ -26,8 +26,8 @@ import {
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
+import { useDeleteUser } from '@/components/common/DeleteUserHandler';
 import UserPreferences from './UserPreferences';
-import { useDeleteUser } from '../../../../../components/common/DeleteUserHandler';
 
 export default function TrainingSettings() {
   const [audioEnabled, setAudioEnabled] = useState(false);

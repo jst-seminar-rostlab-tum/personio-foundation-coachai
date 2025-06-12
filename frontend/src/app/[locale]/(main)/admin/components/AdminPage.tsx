@@ -32,7 +32,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
-import { useDeleteUser } from '../../../../../components/common/DeleteUserHandler';
+import { useDeleteUser } from '@/components/common/DeleteUserHandler';
 
 export default function Admin() {
   const t = useTranslations('Admin');
