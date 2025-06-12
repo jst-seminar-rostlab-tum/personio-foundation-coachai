@@ -166,53 +166,6 @@ class WebSocketService:
                 f'Unexpected error: {str(e)}', WebSocketErrorType.MESSAGE, peer_id
             ) from e
 
-    async def _process_sdp(
-        self, answer: RTCSessionDescription, offer_sdp: str, peer_id: str
-    ) -> RTCSessionDescription:
-        """
-        Process SDP to remove comfort noise and ensure data channel is included in the answer.
-
-        Args:
-            answer: The answer SDP to process
-            offer_sdp: The original offer SDP
-            peer_id: The peer ID for logging
-
-        Returns:
-            The processed answer SDP with data channel included if necessary
-        """
-        # Check if data channel is in the offer
-        if 'm=application' in offer_sdp:
-            logger.debug('Data channel found in offer SDP')
-        else:
-            logger.debug('Data channel not found in offer SDP')
-
-        # Ensure data channel is included in the answer
-        if 'm=application' not in answer.sdp:
-            logger.info('Data channel not found in answer SDP, adding it manually')
-            try:
-                sdp_lines = answer.sdp.split('\n')
-                # Add data channel media line after the last media line
-                for i, line in enumerate(sdp_lines):
-                    if line.startswith('m='):
-                        last_media_index = i
-                sdp_lines.insert(
-                    last_media_index + 1, 'm=application 9 UDP/DTLS/SCTP webrtc-datachannel'
-                )
-                sdp_lines.insert(last_media_index + 2, 'c=IN IP4 0.0.0.0')
-                sdp_lines.insert(last_media_index + 3, 'a=mid:1')
-                sdp_lines.insert(last_media_index + 4, 'a=sctp-port:5000')
-                sdp_lines.insert(last_media_index + 5, 'a=max-message-size:65536')
-                answer = RTCSessionDescription(sdp='\n'.join(sdp_lines), type='answer')
-                logger.debug(f'Modified answer SDP: {answer.sdp}')
-            except Exception as e:
-                raise WebSocketSignalingError(
-                    f'Failed to modify answer SDP: {str(e)}', peer_id
-                ) from e
-        else:
-            logger.debug('Data channel already present in answer SDP')
-
-        return answer
-
     def _build_rtc_ice_candidate(self, candidate_obj: WebRTCIceCandidate) -> RTCIceCandidate:
         """
         Build RTCIceCandidate from candidate object.

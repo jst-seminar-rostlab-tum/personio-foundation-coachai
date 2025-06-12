@@ -42,6 +42,17 @@ class AudioStreamTrack(MediaStreamTrack):
         await self.queue.put(frame)
 
 
+# NOTE:
+# When using aiortc, the audio frames you receive (via frame.to_ndarray())
+# are already decoded PCM (int16).
+# You can use them directly—there is NO NEED to manually
+# convert between Opus and PCM in your main WebRTC pipeline!
+# Only use these conversion functions for file processing, offline transcoding,
+# or special cases.
+# For real-time WebRTC audio, always use PCM end-to-end to avoid audio corruption
+# and compatibility issues.
+
+
 def opus_to_pcm(opus_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
     """
     Convert Opus data to PCM data
@@ -52,6 +63,11 @@ def opus_to_pcm(opus_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
 
     Returns:
         PCM audio data as bytes
+
+    WARNING:
+        - In aiortc, received audio frames are already decoded PCM (int16).
+          You should use them directly—do NOT manually convert between Opus and PCM!
+        - Only use this function for file processing, offline transcoding, or special scenarios.
     """
     # Create memory file objects
     input_container = av.open(io.BytesIO(opus_data), format='opus')
@@ -69,6 +85,17 @@ def opus_to_pcm(opus_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
     return output_buffer.getvalue()
 
 
+# NOTE:
+# When using aiortc, the audio frames you receive (via frame.to_ndarray())
+# are already decoded PCM (int16).
+# You can use them directly—there is NO NEED to manually
+# convert between Opus and PCM in your main WebRTC pipeline!
+# Only use these conversion functions for file processing, offline transcoding,
+# or special scenarios.
+# For real-time WebRTC audio, always use PCM end-to-end to avoid audio corruption
+# and compatibility issues.
+
+
 def pcm_to_opus(pcm_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
     """
     Convert PCM data to Opus data
@@ -79,6 +106,13 @@ def pcm_to_opus(pcm_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
 
     Returns:
         Opus encoded audio data as bytes
+
+    WARNING:
+        - In aiortc, received audio frames are already decoded PCM (int16).
+          You should use them directly—do NOT manually convert between Opus and PCM!
+        - Only use this function for file processing, offline transcoding, or special scenarios.
+        - For real-time WebRTC audio, always use PCM end-to-end to avoid
+            audio corruption and compatibility issues.
     """
     # Create memory file objects
     input_container = av.open(io.BytesIO(pcm_data), format='wav')

@@ -43,10 +43,14 @@ LIVE_CONFIG = LiveConnectConfig(
     system_instruction=Content(
         parts=[
             Part(
-                text='You are a employee and you are talking to your manager. '
-                + 'You are a bad employee so the manager is angry at you. '
-                + "You are trying to convince the manager that you're a good employee"
-                + "and he shouldn't fire you."
+                text='You are a helpful assistant. '
+                + 'Wait for the user to speak first before responding. '
+                + 'Only respond when the user has finished speaking. '
+                + 'Do not start the conversation yourself.'
+                + 'You are a helpful assistant. '
+                + 'Wait for the user to speak first before responding. '
+                + 'Only respond when the user has finished speaking. '
+                + 'Do not start the conversation yourself.'
             )
         ]
     ),
@@ -61,7 +65,7 @@ LIVE_CONFIG = LiveConnectConfig(
         automatic_activity_detection=AutomaticActivityDetection(
             disabled=False,  # default
             start_of_speech_sensitivity=StartSensitivity.START_SENSITIVITY_LOW,
-            end_of_speech_sensitivity=EndSensitivity.END_SENSITIVITY_LOW,
+            end_of_speech_sensitivity=EndSensitivity.END_SENSITIVITY_HIGH,
             prefix_padding_ms=20,
             silence_duration_ms=100,
         ),

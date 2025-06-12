@@ -63,8 +63,12 @@ class WebRTCAudioLoop:
         self._task_group: asyncio.TaskGroup | None = None
 
         # Audio queues
-        self.audio_in_queue: asyncio.Queue[bytes] | None = None  # Audio from user
-        self.audio_out_queue: asyncio.Queue[types.Blob] | None = None  # Audio to send to Gemini
+        self.audio_in_queue: asyncio.Queue[bytes] | None = (
+            None  # Audio FROM Gemini (for playback to user)
+        )
+        self.audio_out_queue: asyncio.Queue[types.Blob] | None = (
+            None  # Audio TO Gemini (from user input)
+        )
         self.event_queue: asyncio.Queue | None = None  # Control events (e.g., audio_stream_end)
 
         # Get event manager for this peer
@@ -83,6 +87,20 @@ class WebRTCAudioLoop:
         self.last_voice_time = time.time()
         self.silence_timeout = 1.0
         self._is_voice_active = False
+
+        # Add debounce for AUDIO_STREAM_END events to prevent spam
+        self._last_audio_stream_end_time = 0
+        self._audio_stream_end_debounce = 2.0  # Prevent rapid AUDIO_STREAM_END events
+
+        # Add turn completion logic
+        self._user_has_spoken = False  # Track if user has spoken since last response
+        self._last_turn_complete_time = 0
+        self._turn_complete_debounce = 5.0  # Minimum time between turn complete signals
+
+        # Add Gemini speaking state to prevent audio feedback
+        self._gemini_is_speaking = False
+        self._gemini_last_audio_time = 0
+        self._gemini_speaking_timeout = 2.0  # Consider Gemini stopped speaking after 2s of no audio
 
         # Task management
         self._main_task = None
@@ -195,7 +213,7 @@ class WebRTCAudioLoop:
             asyncio.create_task(self._send_pending_transcripts())
 
     async def add_audio_data(self, audio_data: bytes) -> None:
-        """Add audio data to the processing queue"""
+        """Add audio data from Gemini to the playback queue"""
         if self.audio_in_queue:
             await self.audio_in_queue.put(audio_data)
 
@@ -219,6 +237,12 @@ class WebRTCAudioLoop:
                 await self.event_manager.emit_session_event(
                     WebRTCSessionEventType.GEMINI_CONNECTED,
                     {'message': 'Connected to Gemini Live API'},
+                )
+
+                # DO NOT send any initial message to Gemini - wait for user to speak first
+                logger.info(
+                    f'[Gemini] Waiting for user input before starting conversation '
+                    f'for peer {self.peer_id}'
                 )
 
                 # Start all tasks within the TaskGroup
@@ -353,21 +377,6 @@ class WebRTCAudioLoop:
             audio_array = frame.to_ndarray()
             audio_bytes = audio_array.tobytes()
 
-            # Resample to Gemini required sample rate first (before silence detection)
-            if frame.rate != SEND_SAMPLE_RATE:
-                logger.debug(
-                    f'[WebRTC] Resampling audio for peer {self.peer_id} '
-                    f'from {frame.rate} to {SEND_SAMPLE_RATE}'
-                )
-                try:
-                    audio_bytes = resample_pcm_audio(audio_bytes, frame.rate)
-                    logger.debug(
-                        f'[WebRTC] Audio resampled successfully, new length: {len(audio_bytes)}'
-                    )
-                except Exception as e:
-                    logger.error(f'[WebRTC] Failed to resample audio for peer {self.peer_id}: {e}')
-                    continue
-
             # Check for silence on the resampled audio
             if not audio_bytes or len(audio_bytes) < 320 or is_silence(audio_bytes):
                 # Emit silence detected event if voice was previously active
@@ -384,17 +393,54 @@ class WebRTCAudioLoop:
                 if (
                     self.gemini_session
                     and time.time() - self.last_voice_time > self.silence_timeout
+                    and time.time() - self._last_audio_stream_end_time
+                    > self._audio_stream_end_debounce  # Debounce
                 ):
                     await self.event_manager.emit_audio_event(
                         WebRTCAudioEventType.AUDIO_STREAM_END,
                         {'message': 'Audio stream ended'},
                     )
                     self.last_voice_time = time.time()  # Reset the last voice time
+                    self._last_audio_stream_end_time = time.time()  # Update debounce time
                 continue
+
+            # Resample to Gemini required sample rate first (before silence detection)
+            if frame.rate != SEND_SAMPLE_RATE:
+                logger.debug(
+                    f'[WebRTC] Resampling audio for peer {self.peer_id} '
+                    f'from {frame.rate} to {SEND_SAMPLE_RATE}'
+                )
+                try:
+                    audio_bytes = resample_pcm_audio(audio_bytes, frame.rate)
+                    logger.debug(
+                        f'[WebRTC] Audio resampled successfully, new length: {len(audio_bytes)}'
+                    )
+                except Exception as e:
+                    logger.error(f'[WebRTC] Failed to resample audio for peer {self.peer_id}: {e}')
+                    continue
+
+            # Check if Gemini is currently speaking and skip processing to prevent feedback
+            current_time = time.time()
+            if self._gemini_is_speaking:
+                # Check if Gemini has stopped speaking (timeout)
+                if current_time - self._gemini_last_audio_time > self._gemini_speaking_timeout:
+                    self._gemini_is_speaking = False
+                    logger.debug(
+                        f'[WebRTC] Gemini speaking timeout, '
+                        f'resuming user audio processing for peer {self.peer_id}'
+                    )
+                else:
+                    # Skip processing while Gemini is speaking
+                    logger.debug(
+                        f'[WebRTC] Skipping user audio processing while Gemini is speaking '
+                        f'for peer {self.peer_id}'
+                    )
+                    continue
 
             # Voice activity detected
             if not self._is_voice_active:
                 self._is_voice_active = True
+                self._user_has_spoken = True  # Mark that user has spoken
                 await self.event_manager.emit_audio_event(
                     WebRTCAudioEventType.VOICE_ACTIVITY_DETECTED,
                     {'message': 'Voice activity started', 'audio_length': len(audio_bytes)},
@@ -402,6 +448,11 @@ class WebRTCAudioLoop:
 
             self.last_voice_time = time.time()
             if self.audio_out_queue:
+                # Add debug logging to track audio flow
+                logger.info(
+                    f'[WebRTC] SENDING USER AUDIO to Gemini for peer {self.peer_id}, '
+                    f'length: {len(audio_bytes)}'
+                )
                 await self.audio_out_queue.put(types.Blob(data=audio_bytes, mime_type='audio/pcm'))
 
     async def _send_realtime(self) -> None:
@@ -469,7 +520,10 @@ class WebRTCAudioLoop:
 
         try:
             if isinstance(msg, types.Blob):
-                logger.debug(f'[Gemini] Sending audio to Gemini for peer {self.peer_id}')
+                logger.info(
+                    f'[Gemini] SENDING AUDIO to Gemini for peer {self.peer_id}, '
+                    f'length: {len(msg.data)} bytes'
+                )
                 await self.gemini_session.send_realtime_input(audio=msg)
             elif isinstance(msg, types.Content):
                 await self.gemini_session.send_client_content(
@@ -502,9 +556,10 @@ class WebRTCAudioLoop:
                             f'[Gemini] Received response from Gemini for peer {self.peer_id}'
                         )
                         if data := response.data:
-                            logger.info(
-                                f'[Gemini] Received audio data from Gemini for peer {self.peer_id}'
-                            )
+                            # Mark that Gemini is speaking
+                            self._gemini_is_speaking = True
+                            self._gemini_last_audio_time = time.time()
+
                             # Put audio data directly into the queue (sync, like working version)
                             if self.audio_in_queue:
                                 self.audio_in_queue.put_nowait(
@@ -522,8 +577,11 @@ class WebRTCAudioLoop:
 
                         # Handle input transcription
                         if response.server_content.input_transcription:
-                            input_transcription.append(
-                                response.server_content.input_transcription.text
+                            input_text = response.server_content.input_transcription.text
+                            input_transcription.append(input_text)
+                            logger.info(
+                                f'[Gemini] RECEIVED INPUT TRANSCRIPTION: "{input_text}" '
+                                f'for peer {self.peer_id}'
                             )
 
                         # Handle output transcription
@@ -557,6 +615,10 @@ class WebRTCAudioLoop:
                         await self.handle_transcript(''.join(output_transcription))
 
                     logger.info(f'[Gemini] Finished one turn for peer {self.peer_id}')
+                    # Reset user spoken flag when Gemini finishes responding
+                    self._user_has_spoken = False
+                    # Reset Gemini speaking flag when turn is complete
+                    self._gemini_is_speaking = False
 
                 except Exception as turn_error:
                     # Check if this is a connection closed error
@@ -607,14 +669,38 @@ class WebRTCAudioService:
 
         event_manager = audio_loop.event_manager
 
+        # Add a new event handler for audio stream start
+        @event_manager.on_audio_event(WebRTCAudioEventType.AUDIO_STREAM_START)
+        async def on_audio_stream_start(event: WebRTCAudioEvent) -> None:
+            logger.info(f'[WebRTCAudioService] Audio stream started for peer {peer_id}')
+
+        # Smart AUDIO_STREAM_END event handler that only sends turn_complete when appropriate
         @event_manager.on_audio_event(WebRTCAudioEventType.AUDIO_STREAM_END)
         async def on_audio_stream_end(event: WebRTCAudioEvent) -> None:
-            if audio_loop.gemini_session:
-                await audio_loop.gemini_session.send_client_content(
-                    turns=[types.Content(role='user', parts=[types.Part(text='')])],
-                    turn_complete=True,
-                )
-                logger.info(f'[Gemini] Audio stream ended for peer {audio_loop.peer_id}')
+            current_time = time.time()
+
+            # Only send turn_complete if:
+            # 1. User has actually spoken since last response
+            # 2. Enough time has passed since last turn_complete signal
+            # 3. Gemini session exists
+            if (
+                audio_loop.gemini_session
+                and audio_loop._user_has_spoken
+                and current_time - audio_loop._last_turn_complete_time
+                > audio_loop._turn_complete_debounce
+            ):
+                try:
+                    await audio_loop.gemini_session.send_client_content(
+                        turns=[types.Content(role='user', parts=[types.Part(text='')])],
+                        turn_complete=True,
+                    )
+                    audio_loop._user_has_spoken = False  # Reset flag
+                    audio_loop._last_turn_complete_time = current_time  # Update debounce time
+                    logger.info(f'[Gemini] Sent turn_complete signal for peer {audio_loop.peer_id}')
+                except Exception as e:
+                    logger.error(
+                        f'[Gemini] Error sending turn_complete for peer {audio_loop.peer_id}: {e}'
+                    )
 
         return audio_loop
 
