@@ -73,7 +73,7 @@ def get_session_by_id(
     ).first()
 
     if not feedback:
-        raise HTTPException(status_code=404, detail='Session not found')
+        raise HTTPException(status_code=404, detail='Session feedback not found')
 
     if feedback.status == FeedbackStatusEnum.pending:
         raise HTTPException(status_code=202, detail='Session feedback in progress.')
