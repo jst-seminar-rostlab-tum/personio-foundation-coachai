@@ -53,7 +53,7 @@ class WebRTCUserEventType(Enum):
     """WebRTC user event types"""
 
     USER_MESSAGE_SENT = 'user_message_sent'
-    USER_MESSAGE_RECEIVED = 'user_message_received'
+    ASSISTANT_MESSAGE_RECEIVED = 'assistant_message_received'
     SEND_REALTIME_INPUT = 'send_realtime_input'
 
 

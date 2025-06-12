@@ -16,7 +16,9 @@ function useWebRTC() {
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isDataChannelReady, setIsDataChannelReady] = useState(false);
-  const [receivedTranscripts, setReceivedTranscripts] = useState<string[]>([]);
+  const [receivedTranscripts, setReceivedTranscripts] = useState<{ role: string; text: string }[]>(
+    []
+  );
 
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -174,12 +176,11 @@ function useWebRTC() {
           console.debug('[WebRTC] Received message:', event.data);
           try {
             const parsed = JSON.parse(event.data);
-            console.info('[WebRTC] Parsed server message:', parsed);
-
-            // If it's a transcript message, display it prominently
-            if (parsed.transcript) {
-              console.info('[WebRTC] TRANSCRIPT RECEIVED:', parsed.transcript);
-              setReceivedTranscripts((prev) => [...prev, parsed.transcript]);
+            if (parsed.transcript && parsed.transcript.role && parsed.transcript.text) {
+              setReceivedTranscripts((prev) => [
+                ...prev,
+                { role: parsed.transcript.role, text: parsed.transcript.text },
+              ]);
             }
           } catch {
             console.warn('[WebRTC] Failed to parse message as JSON:', event.data);

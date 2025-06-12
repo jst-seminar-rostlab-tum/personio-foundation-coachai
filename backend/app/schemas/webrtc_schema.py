@@ -279,3 +279,10 @@ class GeminiStreamReceiveError(GeminiStreamError):
 
     def __init__(self, message: str, peer_id: str | None = None) -> None:
         super().__init__(message, GeminiStreamErrorType.RECEIVE, peer_id)
+
+
+class WebRTCDataChannelMessage(BaseModel):
+    """WebRTC data channel message"""
+
+    role: Literal['user', 'assistant'] = Field(..., description='Role of the message')
+    text: str = Field(..., description='Text of the message')

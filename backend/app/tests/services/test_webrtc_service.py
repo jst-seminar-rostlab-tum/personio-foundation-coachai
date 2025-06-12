@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from aiortc import RTCDataChannel, RTCPeerConnection, RTCRtpTransceiver
 
+from app.schemas.webrtc_schema import WebRTCDataChannelMessage
 from app.services.webrtc_service import (
     Peer,
     PeerSessionManager,
@@ -150,13 +151,19 @@ class TestWebRTCService:
         mock_peer = MagicMock(spec=Peer)
         mock_peer.data_channel = mock_data_channel
         service.peer_session_manager.peers['test_peer'] = mock_peer
-        await service._handle_transcript('test transcript', 'test_peer')
-        expected_message = json.dumps({'transcript': 'test transcript'})
+        await service._handle_transcript(
+            WebRTCDataChannelMessage(role='user', text='test transcript'), 'test_peer'
+        )
+        expected_message = json.dumps(
+            WebRTCDataChannelMessage(role='user', text='test transcript').model_dump()
+        )
         mock_data_channel.send.assert_called_once_with(expected_message)
 
     @pytest.mark.asyncio
     async def test_handle_transcript_peer_not_found(self, service: WebRTCService) -> None:
-        await service._handle_transcript('hello', 'non_existent_peer')
+        await service._handle_transcript(
+            WebRTCDataChannelMessage(role='user', text='hello'), 'non_existent_peer'
+        )
 
     @pytest.mark.asyncio
     async def test_handle_transcript_data_channel_closed(
@@ -166,7 +173,9 @@ class TestWebRTCService:
         mock_peer = MagicMock(spec=Peer)
         mock_peer.data_channel = mock_data_channel
         service.peer_session_manager.peers['test_peer'] = mock_peer
-        await service._handle_transcript('hello', 'test_peer')
+        await service._handle_transcript(
+            WebRTCDataChannelMessage(role='user', text='hello'), 'test_peer'
+        )
         mock_data_channel.send.assert_not_called()
 
     @pytest.mark.asyncio

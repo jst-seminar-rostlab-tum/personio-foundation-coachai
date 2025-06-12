@@ -1,6 +1,7 @@
 import asyncio
 import io
 import os
+import time
 import wave
 
 import av
@@ -96,8 +97,6 @@ def opus_to_pcm(opus_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
 # or special scenarios.
 # For real-time WebRTC audio, always use PCM end-to-end to avoid audio corruption
 # and compatibility issues.
-
-
 def pcm_to_opus(pcm_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
     """
     Convert PCM data to Opus data
@@ -285,3 +284,49 @@ def save_pcm_audio_to_wav(
         wf.setsampwidth(sampwidth)
         wf.setframerate(sample_rate)
         wf.writeframes(pcm_data)
+
+
+class AudioChunkSegmenter:
+    """
+    Segment audio chunks into meaningful utterances for Gemini.
+    """
+
+    def __init__(
+        self,
+        sample_rate: int = SEND_SAMPLE_RATE,
+        max_segment_ms: int = 2000,
+        vad_silence_ms: int = 300,
+    ) -> None:
+        self.sample_rate = sample_rate
+        self.max_segment_bytes = int(sample_rate * 2 * max_segment_ms / 1000)  # 16bit=2bytes
+        self.vad_silence_bytes = int(sample_rate * 2 * vad_silence_ms / 1000)
+        self.buffer = bytearray()
+        self.last_voice_time = None
+
+    def feed(self, chunk: bytes) -> list[bytes]:
+        """
+        Feed a new audio chunk, return a list of complete segments (may be empty).
+        """
+        segments = []
+        if not chunk:
+            return segments
+
+        if has_voice(chunk, self.sample_rate):
+            self.buffer.extend(chunk)
+            self.last_voice_time = time.time()
+            if len(self.buffer) >= self.max_segment_bytes:
+                segments.append(bytes(self.buffer))
+                self.buffer.clear()
+        else:
+            if self.buffer:
+                segments.append(bytes(self.buffer))
+                self.buffer.clear()
+        return segments
+
+    def flush(self) -> list[bytes]:
+        """Flush remaining buffer as a segment."""
+        if self.buffer:
+            seg = bytes(self.buffer)
+            self.buffer.clear()
+            return [seg]
+        return []

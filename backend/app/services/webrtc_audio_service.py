@@ -19,12 +19,13 @@ from google.genai import types
 from google.genai.live import AsyncSession
 
 from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_client
+from app.schemas.webrtc_schema import WebRTCDataChannelMessage
 from app.services.audio_processor import (
     OPUS_SAMPLE_RATE,
     RECEIVE_SAMPLE_RATE,
     SEND_SAMPLE_RATE,
+    AudioChunkSegmenter,
     AudioStreamTrack,
-    is_silence,
     resample_pcm_audio,
     save_pcm_audio_to_wav,
 )
@@ -34,7 +35,6 @@ from app.services.webrtc_events import (
     WebRTCAudioEventType,
     WebRTCDataChannelEventType,
     WebRTCSessionEventType,
-    WebRTCUserEventType,
 )
 
 if TYPE_CHECKING:
@@ -58,8 +58,7 @@ class WebRTCAudioLoop:
     def __init__(self, peer_id: str) -> None:
         self.peer_id = peer_id
         self.gemini_session: genai.ChatSession | None = None
-        self.data_channel_ready = False
-        self._pending_transcripts: list[str] = []
+        self._pending_transcripts: list[WebRTCDataChannelMessage] = []
         self._is_voice_active = False
         self._task_group: asyncio.TaskGroup | None = None
 
@@ -104,6 +103,8 @@ class WebRTCAudioLoop:
 
         # Task management
         self._main_task = None
+
+        self.segmenter = AudioChunkSegmenter()
 
         logger.info(f'[WebRTCAudioLoop] Created for peer {peer_id}')
 
@@ -163,15 +164,6 @@ class WebRTCAudioLoop:
 
         logger.info(f'WebRTC Audio Loop stopped for peer {self.peer_id}')
 
-    def set_data_channel_ready(self) -> None:
-        """Mark data channel as ready and send pending transcripts"""
-        logger.info(f'[WebRTCAudioLoop] Data channel marked as ready for peer {self.peer_id}')
-        self.data_channel_ready = True
-
-        # Send pending transcripts
-        if self._pending_transcripts:
-            asyncio.create_task(self._send_pending_transcripts())
-
     async def _send_pending_transcripts(self) -> None:
         """Send all pending transcripts through events"""
         if not self._pending_transcripts:
@@ -185,7 +177,7 @@ class WebRTCAudioLoop:
         for transcript in self._pending_transcripts:
             try:
                 await self.event_manager.emit_data_channel_event(
-                    WebRTCDataChannelEventType.TRANSCRIPT_SENT, {'transcript': transcript}
+                    WebRTCDataChannelEventType.TRANSCRIPT_SENT, transcript
                 )
             except Exception as e:
                 logger.error(
@@ -201,15 +193,6 @@ class WebRTCAudioLoop:
         """Set the Gemini session for this audio loop"""
         self.gemini_session = session
         logger.info(f'[WebRTCAudioLoop] Gemini session set for peer {self.peer_id}')
-
-    def mark_data_channel_ready(self) -> None:
-        """Mark data channel as ready and send pending transcripts"""
-        logger.info(f'[WebRTCAudioLoop] Data channel marked as ready for peer {self.peer_id}')
-        self.data_channel_ready = True
-
-        # Send pending transcripts
-        if self._pending_transcripts:
-            asyncio.create_task(self._send_pending_transcripts())
 
     async def add_audio_data(self, audio_data: bytes) -> None:
         """Add audio data from Gemini to the playback queue"""
@@ -272,99 +255,6 @@ class WebRTCAudioLoop:
                 WebRTCSessionEventType.GEMINI_DISCONNECTED, {'message': 'Gemini session ended'}
             )
 
-    async def _process_audio_chunk(self, audio_data: bytes) -> None:
-        """Process a single audio chunk"""
-        try:
-            # Resample audio to 16kHz mono
-            resampled_audio = resample_pcm_audio(audio_data)
-
-            # Check for voice activity
-            is_silent = is_silence(resampled_audio)
-
-            # Voice activity detection
-            if not is_silent and not self._is_voice_active:
-                # Voice activity started
-                self._is_voice_active = True
-                await self.event_manager.emit_audio_event(
-                    WebRTCAudioEventType.VOICE_ACTIVITY_DETECTED
-                )
-                logger.debug(f'[WebRTCAudioLoop] Voice activity detected for peer {self.peer_id}')
-
-            elif is_silent and self._is_voice_active:
-                # Voice activity ended
-                self._is_voice_active = False
-                await self.event_manager.emit_audio_event(WebRTCAudioEventType.SILENCE_DETECTED)
-                logger.debug(f'[WebRTCAudioLoop] Silence detected for peer {self.peer_id}')
-
-            # Send audio to Gemini if session is available
-            if self.gemini_session and self.audio_out_queue:
-                audio_blob = types.Blob(mime_type='audio/pcm', data=resampled_audio)
-                await self.audio_out_queue.put(audio_blob)
-
-        except Exception as e:
-            logger.error(f'[WebRTCAudioLoop] Error processing audio chunk: {e}')
-
-    async def handle_transcript(self, transcript: str) -> None:
-        """Handle transcript from Gemini"""
-        logger.info(f'[WebRTCAudioLoop] Received transcript for peer {self.peer_id}: {transcript}')
-
-        if self.data_channel_ready:
-            # Send transcript immediately through events
-            await self.event_manager.emit_data_channel_event(
-                WebRTCDataChannelEventType.TRANSCRIPT_SENT, {'transcript': transcript}
-            )
-        else:
-            # Queue transcript for later
-            self._pending_transcripts.append(transcript)
-            logger.info(
-                f'[WebRTCAudioLoop] Data channel not ready, queuing transcript '
-                f'for peer {self.peer_id}. Queue size: {len(self._pending_transcripts)}'
-            )
-
-    async def send_to_gemini(self, content: Union[types.Blob, str, types.Content]) -> None:
-        """Send content to Gemini session"""
-        if not self.gemini_session:
-            logger.warning(f'[WebRTCAudioLoop] No Gemini session for peer {self.peer_id}')
-            return
-
-        try:
-            if isinstance(content, types.Blob):
-                # Audio blob
-                logger.debug(
-                    f'[WebRTCAudioLoop] Sending audio blob to Gemini for peer {self.peer_id}'
-                )
-                await self._send_to_gemini_session(content)
-
-            elif isinstance(content, str):
-                # Text message - emit user event
-                logger.info(
-                    f'[WebRTCAudioLoop] Sending text to Gemini for peer {self.peer_id}: {content}'
-                )
-                await self.event_manager.emit_user_event(
-                    WebRTCUserEventType.USER_MESSAGE_SENT, {'message': content}
-                )
-                await self._send_to_gemini_session(content)
-
-            elif (
-                isinstance(content, WebRTCAudioEvent)
-                and content.type == WebRTCAudioEventType.AUDIO_STREAM_END
-            ):
-                # Audio stream end event
-                logger.info(
-                    f'[WebRTCAudioLoop] Sending audio stream end to Gemini for peer {self.peer_id}'
-                )
-                await self._send_to_gemini_session(content)
-
-            else:
-                logger.warning(
-                    f'[WebRTCAudioLoop] Unknown content type for peer {self.peer_id}: '
-                    f'{type(content)}'
-                )
-                return
-
-        except Exception as e:
-            logger.error(f'[WebRTCAudioLoop] Error sending to Gemini for peer {self.peer_id}: {e}')
-
     async def _listen_webrtc_audio(self) -> None:
         """Listen to WebRTC audio and emit events"""
         while True:
@@ -375,33 +265,6 @@ class WebRTCAudioLoop:
             frame = await self.webrtc_track.recv()
             audio_array = frame.to_ndarray()
             audio_bytes = audio_array.tobytes()
-
-            # Check for silence on the resampled audio
-            if not audio_bytes or len(audio_bytes) < 320 or is_silence(audio_bytes):
-                # Emit silence detected event if voice was previously active
-                if self._is_voice_active:
-                    self._is_voice_active = False
-                    await self.event_manager.emit_audio_event(
-                        WebRTCAudioEventType.SILENCE_DETECTED,
-                        {
-                            'message': 'Voice activity stopped',
-                            'duration': time.time() - self.last_voice_time,
-                        },
-                    )
-
-                if (
-                    self.gemini_session
-                    and time.time() - self.last_voice_time > self.silence_timeout
-                    and time.time() - self._last_audio_stream_end_time
-                    > self._audio_stream_end_debounce  # Debounce
-                ):
-                    await self.event_manager.emit_audio_event(
-                        WebRTCAudioEventType.AUDIO_STREAM_END,
-                        {'message': 'Audio stream ended'},
-                    )
-                    self.last_voice_time = time.time()  # Reset the last voice time
-                    self._last_audio_stream_end_time = time.time()  # Update debounce time
-                continue
 
             # Resample to Gemini required sample rate first (before silence detection)
             if frame.rate != SEND_SAMPLE_RATE:
@@ -436,31 +299,59 @@ class WebRTCAudioLoop:
                     )
                     continue
 
-            # Voice activity detected
-            if not self._is_voice_active:
-                self._is_voice_active = True
-                self._user_has_spoken = True  # Mark that user has spoken
-                await self.event_manager.emit_audio_event(
-                    WebRTCAudioEventType.VOICE_ACTIVITY_DETECTED,
-                    {'message': 'Voice activity started', 'audio_length': len(audio_bytes)},
-                )
+            # Segment audio chunks into meaningful utterances for Gemini
+            segments = self.segmenter.feed(audio_bytes)
+            for seg in segments:
+                # Only process meaningful speech segments
+                if seg and len(seg) > 0:
+                    # Voice activity detected
+                    if not self._is_voice_active:
+                        self._is_voice_active = True
+                        self._user_has_spoken = True  # Mark that user has spoken
+                        await self.event_manager.emit_audio_event(
+                            WebRTCAudioEventType.VOICE_ACTIVITY_DETECTED,
+                            {'message': 'Voice activity started', 'audio_length': len(seg)},
+                        )
+                    self.last_voice_time = time.time()
+                    if self.audio_out_queue:
+                        logger.info(
+                            f'[WebRTC] SENDING USER AUDIO to Gemini for peer {self.peer_id}, '
+                            f'length: {len(seg)}'
+                        )
+                        await self.event_manager.emit_audio_event(
+                            WebRTCAudioEventType.AUDIO_CHUNK_READY,
+                            {
+                                'message': 'Audio chunk ready',
+                                'audio_data': seg,
+                                'timestamp': time.time(),
+                            },
+                        )
+                        await self.audio_out_queue.put(types.Blob(data=seg, mime_type='audio/pcm'))
 
-            self.last_voice_time = time.time()
-            if self.audio_out_queue:
-                # Add debug logging to track audio flow
-                logger.info(
-                    f'[WebRTC] SENDING USER AUDIO to Gemini for peer {self.peer_id}, '
-                    f'length: {len(audio_bytes)}'
-                )
+            # Check for silence (if current frame is silent and was previously active,
+            # trigger silence event)
+            if not segments and not self.segmenter.last_voice_time and self._is_voice_active:
+                self._is_voice_active = False
                 await self.event_manager.emit_audio_event(
-                    WebRTCAudioEventType.AUDIO_CHUNK_READY,
+                    WebRTCAudioEventType.SILENCE_DETECTED,
                     {
-                        'message': 'Audio chunk ready',
-                        'audio_data': audio_bytes,
-                        'timestamp': time.time(),
+                        'message': 'Voice activity stopped',
+                        'duration': time.time() - self.last_voice_time,
                     },
                 )
-                await self.audio_out_queue.put(types.Blob(data=audio_bytes, mime_type='audio/pcm'))
+
+            # Check if AUDIO_STREAM_END event should be triggered
+            if (
+                self.gemini_session
+                and time.time() - self.last_voice_time > self.silence_timeout
+                and time.time() - self._last_audio_stream_end_time > self._audio_stream_end_debounce
+            ):
+                await self.event_manager.emit_audio_event(
+                    WebRTCAudioEventType.AUDIO_STREAM_END,
+                    {'message': 'Audio stream ended'},
+                )
+                self.last_voice_time = time.time()
+                self._last_audio_stream_end_time = time.time()
 
     async def _send_realtime(self) -> None:
         """Send audio to Gemini, prioritizing events."""
@@ -614,12 +505,27 @@ class WebRTCAudioLoop:
                             f'[Gemini] Input transcript for peer {self.peer_id}: '
                             f'{"".join(input_transcription)}'
                         )
+                        # Fire a transcript event instead of calling handle_transcript
+                        transcript = ''.join(input_transcription)
+                        await self.event_manager.emit_data_channel_event(
+                            WebRTCDataChannelEventType.TRANSCRIPT_SENT,
+                            {'transcript': WebRTCDataChannelMessage(role='user', text=transcript)},
+                        )
                     if output_transcription:
                         logger.info(
                             f'[Gemini] Output transcript for peer {self.peer_id}: '
                             f'{"".join(output_transcription)}'
                         )
-                        await self.handle_transcript(''.join(output_transcription))
+                        # Fire a transcript event instead of calling handle_transcript
+                        transcript = ''.join(output_transcription)
+                        await self.event_manager.emit_data_channel_event(
+                            WebRTCDataChannelEventType.TRANSCRIPT_SENT,
+                            {
+                                'transcript': WebRTCDataChannelMessage(
+                                    role='assistant', text=transcript
+                                )
+                            },
+                        )
 
                     logger.info(f'[Gemini] Finished one turn for peer {self.peer_id}')
                     # Reset user spoken flag when Gemini finishes responding
@@ -687,7 +593,7 @@ class WebRTCAudioService:
             chunk_data = event.data.get('audio_data', None)
             timestamp = event.data.get('timestamp', None)
             if chunk_data and timestamp:
-                file_path = f'{event.peer_id}_chunk_{int(timestamp * 1000)}.wav'
+                file_path = f'peer_{event.peer_id}_chunk_{int(timestamp * 1000)}.wav'
                 save_pcm_audio_to_wav(chunk_data, file_path)
                 logger.info(f'[WebRTCAudioService] Saved audio chunk to {file_path}')
 

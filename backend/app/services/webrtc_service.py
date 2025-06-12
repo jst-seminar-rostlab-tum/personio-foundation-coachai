@@ -20,6 +20,7 @@ from google.genai import types
 
 from app.schemas.webrtc_schema import (
     WebRTCDataChannelError,
+    WebRTCDataChannelMessage,
     WebRTCMediaError,
     WebRTCPeerError,
 )
@@ -183,12 +184,35 @@ class WebRTCService:
         @event_manager.on_data_channel_event(WebRTCDataChannelEventType.TRANSCRIPT_SENT)
         async def on_transcript_sent(event: WebRTCDataChannelEvent) -> None:
             """Handle transcript sent event - replaces TranscriptCallback"""
-            transcript = event.data.get('transcript', '') if event.data else ''
+            transcript = event.data.get('transcript', None)
+            if not transcript:
+                logger.warning(
+                    f'[EventHandler] No transcript data received for peer {event.peer_id}'
+                )
+                return
+
             peer_id = event.peer_id
             logger.info(f'[EventHandler] Transcript sent for peer {peer_id}: {transcript}')
 
             # Call the original transcript handler logic
             await self._handle_transcript(transcript, peer_id)
+
+        @event_manager.on_data_channel_event(WebRTCDataChannelEventType.CHANNEL_READY)
+        async def on_channel_ready(event: WebRTCDataChannelEvent) -> None:
+            """Handle data channel ready"""
+            peer_id = event.peer_id
+            logger.info(f'[EventHandler] Data channel ready for peer {peer_id}')
+            audio_loop = webrtc_audio_service.get_audio_loop(peer_id)
+            if audio_loop and audio_loop.gemini_session and audio_loop._pending_transcripts:
+                for transcript in audio_loop._pending_transcripts:
+                    await self._handle_transcript(transcript, peer_id)
+                audio_loop._pending_transcripts.clear()
+
+        @event_manager.on_data_channel_event(WebRTCDataChannelEventType.CHANNEL_CLOSED)
+        async def on_channel_closed(event: WebRTCDataChannelEvent) -> None:
+            """Handle data channel closed"""
+            peer_id = event.peer_id
+            logger.info(f'[EventHandler] Data channel closed for peer {peer_id}')
 
         # Register audio stream events
         @event_manager.on_audio_event(WebRTCAudioEventType.AUDIO_STREAM_START)
@@ -214,19 +238,6 @@ class WebRTCService:
             logger.info(
                 f'[EventHandler] Silence detected for peer {peer_id}, duration: {duration:.2f}s'
             )
-
-        # Register data channel events
-        @event_manager.on_data_channel_event(WebRTCDataChannelEventType.CHANNEL_READY)
-        async def on_channel_ready(event: WebRTCDataChannelEvent) -> None:
-            """Handle data channel ready - replaces DataChannelCallback"""
-            peer_id = event.peer_id
-            logger.info(f'[EventHandler] Data channel ready for peer {peer_id}')
-
-        @event_manager.on_data_channel_event(WebRTCDataChannelEventType.CHANNEL_CLOSED)
-        async def on_channel_closed(event: WebRTCDataChannelEvent) -> None:
-            """Handle data channel closed"""
-            peer_id = event.peer_id
-            logger.info(f'[EventHandler] Data channel closed for peer {peer_id}')
 
         # Register session events
         @event_manager.on_session_event(WebRTCSessionEventType.SESSION_STARTED)
@@ -299,7 +310,10 @@ class WebRTCService:
                             f'[DataChannel] Channel already open, '
                             f'marking audio_loop as ready for peer {peer_id}'
                         )
-                        peer.audio_loop.mark_data_channel_ready()
+                        await peer.audio_loop.event_manager.emit_data_channel_event(
+                            WebRTCDataChannelEventType.CHANNEL_READY,
+                            {'message': 'Data channel ready'},
+                        )
 
                 @channel.on('open')
                 def on_transcript_open() -> None:
@@ -312,14 +326,16 @@ class WebRTCService:
                             f'[DataChannel] Notifying audio_loop that channel is ready '
                             f'for peer {peer_id}'
                         )
-                        peer.audio_loop.mark_data_channel_ready()
+                        peer.audio_loop.event_manager.emit_data_channel_event(
+                            WebRTCDataChannelEventType.CHANNEL_READY,
+                            {'message': 'Data channel ready'},
+                        )
                     else:
                         logger.warning(
                             f'[DataChannel] No audio_loop found when channel opened '
                             f'for peer {peer_id}'
                         )
 
-                    # Send a test message to verify the channel works
                     try:
                         test_message = json.dumps(
                             {'type': 'test', 'message': 'Data channel established'}
@@ -413,23 +429,6 @@ class WebRTCService:
             # Register event handlers (replaces old callback system)
             self.register_event_handlers(audio_loop)
 
-            # Check if data channel is already open (timing issue fix)
-            if peer.data_channel and peer.data_channel.readyState == 'open':
-                logger.info(
-                    f'[WebRTC] Data channel already open for peer {peer_id}, marking as ready'
-                )
-                audio_loop.mark_data_channel_ready()
-            elif peer.data_channel:
-                logger.info(
-                    f'[WebRTC] Data channel exists but not open '
-                    f'(state: {peer.data_channel.readyState}) for peer {peer_id}'
-                )
-                # Still mark as ready - the transcript handler will wait for the channel to open
-                logger.info(f'[WebRTC] Marking audio_loop as ready anyway for peer {peer_id}')
-                audio_loop.mark_data_channel_ready()
-            else:
-                logger.warning(f'[WebRTC] No data channel found for peer {peer_id}')
-
             # Start audio loop with the streamable track
             await audio_loop.start(track, peer, server_audio_track)
             logger.info(f'[WebRTC] WebRTCAudioLoop started for peer {peer_id}')
@@ -439,7 +438,7 @@ class WebRTCService:
         except Exception as e:
             raise WebRTCMediaError(f'Error handling media track: {str(e)}', peer_id) from e
 
-    async def _handle_transcript(self, transcript: str, peer_id: str) -> None:
+    async def _handle_transcript(self, transcript: WebRTCDataChannelMessage, peer_id: str) -> None:
         """Handle transcript text with data channel readiness check"""
         try:
             peer = self.peer_session_manager.get_peer(peer_id)
@@ -489,10 +488,8 @@ class WebRTCService:
                     return
 
             # Now the data channel should be open
-            message = json.dumps({'transcript': transcript})
-            logger.debug(f'Sending message to peer {peer_id}: {message}')
-            peer.data_channel.send(message)
-            logger.info(f'Sent transcript to peer {peer_id}: {transcript}')
+            peer.data_channel.send(json.dumps({'transcript': transcript.model_dump()}))
+            logger.info(f'Sent transcript to peer {peer_id}: {transcript.text}')
 
         except Exception as e:
             logger.error(f'Error sending transcript to peer {peer_id}: {e}', exc_info=True)
