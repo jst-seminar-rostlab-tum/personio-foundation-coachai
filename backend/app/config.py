@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    stage: Literal['dev', 'prod'] = 'dev'
+    stage: Literal['dev', 'prod'] = "dev"
     postgres_host: str = 'localhost'
     postgres_user: str = 'postgres'
     postgres_password: str = 'postgres'
