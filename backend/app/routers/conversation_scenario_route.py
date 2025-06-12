@@ -8,6 +8,7 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import (
     ConversationScenario,
@@ -36,7 +37,7 @@ def get_conversation_scenarios(
     return list(conversation_scenarios)
 
 
-@router.post('/', response_model=ConversationScenarioRead)
+@router.post('/', response_model=ConversationScenarioRead, dependencies=[Depends(require_user)])
 def create_conversation_scenario_with_preparation(
     conversation_scenario: ConversationScenarioCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -128,7 +129,11 @@ def delete_conversation_scenario(
     return {'message': 'Conversation scenario deleted successfully'}
 
 
-@router.get('/{scenario_id}/preparation', response_model=ScenarioPreparationRead)
+@router.get(
+    '/{scenario_id}/preparation',
+    response_model=ScenarioPreparationRead,
+    dependencies=[Depends(require_user)],
+)
 def get_scenario_preparation_by_scenario_id(
     scenario_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> ScenarioPreparation:
