@@ -7,6 +7,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.conversation_scenario import ConversationScenario
 from app.models.language import Language
 from app.models.session import (
@@ -26,6 +27,7 @@ from app.models.sessions_paginated import (
     SessionItem,
     SkillScores,
 )
+from app.models.user_profile import UserProfile
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
 
@@ -262,11 +264,13 @@ def delete_session(
 
 @router.delete('/clear-all/{user_id}', response_model=dict)
 def delete_sessions_by_user(
-    user_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    user: Annotated[UserProfile, Depends(require_user)],
 ) -> dict:
     """
     Delete all sessions related to conversation scenarios for a given user ID.
     """
+    user_id = user.id
     # Retrieve all conversation scenarios for the given user ID
     statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
     conversation_scenarios = db_session.exec(statement).all()
