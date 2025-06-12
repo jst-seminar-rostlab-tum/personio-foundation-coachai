@@ -28,8 +28,8 @@ class UserRole(str, Enum):
 class UserProfile(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
-    experience_id: UUID = Field(foreign_key='experience.id')  # FK to Experience
-    preferred_learning_style_id: UUID = Field(foreign_key='learningstyle.id')
+    experience_id: Optional[UUID] = Field(foreign_key='experience.id')  # FK to Experience
+    preferred_learning_style_id: Optional[UUID] = Field(foreign_key='learningstyle.id')
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     store_conversations: bool = Field(default=True)
     # Relationships
