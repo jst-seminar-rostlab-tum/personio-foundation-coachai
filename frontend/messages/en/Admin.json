@@ -17,5 +17,14 @@
   "users": "Users",
   "actions": "Actions",
   "deleteUser": "Delete user",
-  "loadMore": "Load More"
+  "loadMore": "Load More",
+  "tokenLimitUpdateSuccess": "Token limit updated successfully.",
+  "tokenLimitUpdateError": "Failed to update token limit.",
+  "tokenLimitInvalid": "Invalid limit value.",
+  "notAuthorized": "Unauthorized (admin only)",
+  "serverError": "Server error",
+  "saving": "Saving...",
+  "save": "Save",
+  "success": "Success",
+  "error": "Error"
 }
