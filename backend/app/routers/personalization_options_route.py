@@ -5,6 +5,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaRead
 from app.models.experience import Experience, ExperienceRead
 from app.models.goal import Goal, GoalRead
@@ -13,7 +14,11 @@ from app.models.learning_style import LearningStyle, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.user_profile import UserRole
 
-router = APIRouter(prefix='/personalization-options', tags=['Personalization Options'])
+router = APIRouter(
+    prefix='/personalization-options',
+    tags=['Personalization Options'],
+    dependencies=[Depends(require_user)],
+)
 
 
 @router.get('/', response_model=PersonalizationOptionRead)
