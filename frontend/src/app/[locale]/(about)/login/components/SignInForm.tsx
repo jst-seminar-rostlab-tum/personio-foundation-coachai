@@ -102,13 +102,7 @@ export function SignInForm() {
             </Button>
             <div className="w-full border-t border-gray-300" />
             <Button size="full" variant="secondary" disabled={isLoading}>
-              <Image
-                src="/icons/google-icon.svg"
-                alt="Google Icon"
-                className="mr-2"
-                width={20}
-                height={20}
-              ></Image>
+              <Image src="/icons/google-icon.svg" alt="Google Icon" width={20} height={20}></Image>
               {t('signInWithGoogleButtonLabel')}
             </Button>
           </CardFooter>
