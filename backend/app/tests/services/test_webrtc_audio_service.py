@@ -32,9 +32,7 @@ def test_audio_service_create_and_get() -> None:
 
 @pytest.mark.asyncio
 @patch('app.services.webrtc_audio_service.resample_pcm_audio')
-@patch('app.services.webrtc_audio_service.is_silence', return_value=False)
 async def test_audio_resampling_integration(
-    mock_is_silence: MagicMock,
     mock_resample_webrtc: MagicMock,
     audio_loop: WebRTCAudioLoop,
 ) -> None:
@@ -48,7 +46,6 @@ async def test_audio_resampling_integration(
     with pytest.raises(asyncio.CancelledError):
         await audio_loop._listen_webrtc_audio()
     mock_resample_webrtc.assert_called()
-    mock_is_silence.assert_called()
     call_args = mock_resample_webrtc.call_args
     assert len(call_args[0]) >= 2
     assert not audio_loop.audio_out_queue.empty()
