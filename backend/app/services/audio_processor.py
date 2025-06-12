@@ -1,5 +1,7 @@
 import asyncio
 import io
+import os
+import wave
 
 import av
 import numpy as np
@@ -13,7 +15,7 @@ CHUNK_SIZE = 1024
 CHANNELS = 1
 
 # VAD instance (global shared)
-vad = webrtcvad.Vad(3)  # 0-3, 3 is high sensitivity
+vad = webrtcvad.Vad(1)  # 0-3, 3 is high sensitivity
 
 
 class AudioStreamTrack(MediaStreamTrack):
@@ -251,3 +253,35 @@ def has_voice(audio_data: bytes, sample_rate: int = SEND_SAMPLE_RATE) -> bool:
         True if speech detected, False if silence
     """
     return not is_silence(audio_data, sample_rate)
+
+
+AUDIO_CHUNK_DIR = 'audio_chunks'
+
+
+def save_pcm_audio_to_wav(
+    pcm_data: bytes,
+    file_path: str,
+    sample_rate: int = SEND_SAMPLE_RATE,
+    channels: int = CHANNELS,
+    sampwidth: int = 2,
+    append: bool = False,
+) -> None:
+    """
+    Save PCM audio data to a WAV file.
+
+    Args:
+        pcm_data: Raw PCM audio data (16-bit)
+        file_path: Path to save the WAV file
+        sample_rate: Sample rate, default 16000
+        channels: Number of channels, default 1
+        sampwidth: Sample width in bytes, default 2 (16-bit)
+        append: Whether to append to the file (True) or overwrite (False)
+    """
+    if not os.path.exists(AUDIO_CHUNK_DIR):
+        os.makedirs(AUDIO_CHUNK_DIR)
+    mode = 'ab' if append else 'wb'
+    with wave.open(os.path.join(AUDIO_CHUNK_DIR, file_path), mode) as wf:
+        wf.setnchannels(channels)
+        wf.setsampwidth(sampwidth)
+        wf.setframerate(sample_rate)
+        wf.writeframes(pcm_data)

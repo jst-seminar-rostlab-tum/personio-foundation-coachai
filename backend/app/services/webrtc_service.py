@@ -402,6 +402,7 @@ class WebRTCService:
             server_audio_track = AudioStreamTrack()
             if peer.transceiver and peer.transceiver.sender:
                 peer.transceiver.sender.replaceTrack(server_audio_track)
+                # peer.transceiver.sender.replaceTrack(track)
             else:
                 raise WebRTCMediaError(f'Cannot find sender for peer {peer_id}', peer_id)
 

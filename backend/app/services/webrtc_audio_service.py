@@ -26,6 +26,7 @@ from app.services.audio_processor import (
     AudioStreamTrack,
     is_silence,
     resample_pcm_audio,
+    save_pcm_audio_to_wav,
 )
 from app.services.webrtc_event_manager import webrtc_event_manager
 from app.services.webrtc_events import (
@@ -69,7 +70,6 @@ class WebRTCAudioLoop:
         self.audio_out_queue: asyncio.Queue[types.Blob] | None = (
             None  # Audio TO Gemini (from user input)
         )
-        self.event_queue: asyncio.Queue | None = None  # Control events (e.g., audio_stream_end)
 
         # Get event manager for this peer
         self.event_manager = webrtc_event_manager.get_or_create_peer_manager(peer_id)
@@ -127,7 +127,6 @@ class WebRTCAudioLoop:
         # Initialize queues
         self.audio_in_queue = asyncio.Queue()
         self.audio_out_queue = asyncio.Queue(maxsize=5)
-        self.event_queue = asyncio.Queue()
 
         # Start main task
         self._main_task = asyncio.create_task(self._audio_processing_loop())
@@ -453,6 +452,14 @@ class WebRTCAudioLoop:
                     f'[WebRTC] SENDING USER AUDIO to Gemini for peer {self.peer_id}, '
                     f'length: {len(audio_bytes)}'
                 )
+                await self.event_manager.emit_audio_event(
+                    WebRTCAudioEventType.AUDIO_CHUNK_READY,
+                    {
+                        'message': 'Audio chunk ready',
+                        'audio_data': audio_bytes,
+                        'timestamp': time.time(),
+                    },
+                )
                 await self.audio_out_queue.put(types.Blob(data=audio_bytes, mime_type='audio/pcm'))
 
     async def _send_realtime(self) -> None:
@@ -673,6 +680,16 @@ class WebRTCAudioService:
         @event_manager.on_audio_event(WebRTCAudioEventType.AUDIO_STREAM_START)
         async def on_audio_stream_start(event: WebRTCAudioEvent) -> None:
             logger.info(f'[WebRTCAudioService] Audio stream started for peer {peer_id}')
+
+        @event_manager.on_audio_event(WebRTCAudioEventType.AUDIO_CHUNK_READY)
+        async def on_audio_chunk_ready(event: WebRTCAudioEvent) -> None:
+            logger.info(f'[WebRTCAudioService] Audio chunk ready for peer {peer_id}')
+            chunk_data = event.data.get('audio_data', None)
+            timestamp = event.data.get('timestamp', None)
+            if chunk_data and timestamp:
+                file_path = f'{event.peer_id}_chunk_{int(timestamp * 1000)}.wav'
+                save_pcm_audio_to_wav(chunk_data, file_path)
+                logger.info(f'[WebRTCAudioService] Saved audio chunk to {file_path}')
 
         # Smart AUDIO_STREAM_END event handler that only sends turn_complete when appropriate
         @event_manager.on_audio_event(WebRTCAudioEventType.AUDIO_STREAM_END)

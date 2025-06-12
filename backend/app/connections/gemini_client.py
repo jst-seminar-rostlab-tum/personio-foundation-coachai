@@ -47,10 +47,6 @@ LIVE_CONFIG = LiveConnectConfig(
                 + 'Wait for the user to speak first before responding. '
                 + 'Only respond when the user has finished speaking. '
                 + 'Do not start the conversation yourself.'
-                + 'You are a helpful assistant. '
-                + 'Wait for the user to speak first before responding. '
-                + 'Only respond when the user has finished speaking. '
-                + 'Do not start the conversation yourself.'
             )
         ]
     ),

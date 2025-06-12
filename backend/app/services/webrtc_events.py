@@ -27,6 +27,7 @@ class WebRTCAudioEventType(Enum):
     VOICE_ACTIVITY_DETECTED = 'voice_activity_detected'
     SILENCE_DETECTED = 'silence_detected'
     AUDIO_QUALITY_CHANGED = 'audio_quality_changed'
+    AUDIO_CHUNK_READY = 'audio_chunk_ready'
 
 
 class WebRTCSessionEventType(Enum):
