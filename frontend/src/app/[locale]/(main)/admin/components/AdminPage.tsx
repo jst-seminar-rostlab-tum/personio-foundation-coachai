@@ -1,5 +1,3 @@
-/* eslint-disable no-alert */
-
 'use client';
 
 import { ArrowRightIcon, ChevronDown, Search, Star, Trash2 } from 'lucide-react';
