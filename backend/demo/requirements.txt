@@ -1,0 +1,9 @@
+aiortc
+aioquic
+aiohttp
+websockets
+taskgroup
+asyncio
+numpy
+google-genai
+openai[realtime]
