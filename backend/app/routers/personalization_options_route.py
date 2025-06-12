@@ -8,7 +8,6 @@ from app.database import get_db_session
 from app.models.confidence_area import ConfidenceArea, ConfidenceAreaRead
 from app.models.experience import Experience, ExperienceRead
 from app.models.goal import Goal, GoalRead
-from app.models.language import Language, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.user_profile import UserRole
@@ -26,7 +25,6 @@ def get_personalization_options(
     experiences = db_session.exec(select(Experience)).all()
     goals = db_session.exec(select(Goal)).all()
     confidence_areas = db_session.exec(select(ConfidenceArea)).all()
-    languages = db_session.exec(select(Language)).all()
     learning_styles = db_session.exec(select(LearningStyle)).all()
 
     return PersonalizationOptionRead(
@@ -52,7 +50,6 @@ def get_personalization_options(
             )
             for confidence_area in confidence_areas
         ],
-        languages=[LanguageRead(code=language.code, name=language.name) for language in languages],
         learning_styles=[
             LearningStyleRead(
                 id=learning_style.id,

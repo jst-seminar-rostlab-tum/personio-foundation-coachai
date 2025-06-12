@@ -21,9 +21,9 @@ import {
 } from '@/components/ui/Form';
 import { AlertCircleIcon } from 'lucide-react';
 import { Alert, AlertTitle } from '@/components/ui/Alert';
-import { VerificationPopup } from '@/app/[locale]/(about)/login/components/VerificationPopup';
-import { PasswordInput } from '@/app/[locale]/(about)/login/components/PasswordInput';
-import PrivacyDialog from '@/app/[locale]/(about)/login/components/PrivacyDialog';
+import { VerificationPopup } from '@/app/[locale]/(auth)/login/components/VerificationPopup';
+import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordInput';
+import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
 
 export function SignUpForm() {
   const t = useTranslations('Login.SignUpTab');
@@ -79,10 +79,8 @@ export function SignUpForm() {
     setError(null);
     setIsLoading(true);
 
-    // TODO: Api call to backend for data validation (services/Api.ts)
-    // TODO: setErrors if Api call failed and return
-
     setShowVerification(true);
+
     setIsLoading(false);
   };
 

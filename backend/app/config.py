@@ -1,6 +1,9 @@
 from typing import Literal
+from uuid import UUID
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from app.data.dummy_data import MockUserIdsEnum
 
 
 class Settings(BaseSettings):
@@ -13,9 +16,12 @@ class Settings(BaseSettings):
     database_url: str | None = None
 
     SUPABASE_URL: str = ''
-    SUPABASE_KEY: str = ''
+    SUPABASE_ANON_KEY: str = ''
+    SUPABASE_SERVICE_ROLE_KEY: str = ''
+    SUPABASE_JWT_SECRET: str = ''
 
     GEMINI_API_KEY: str = ''
+    OPENAI_API_KEY: str = ''
 
     ssl_cert_url: str = 'https://test.com'
     ssl_cert_dir: str = 'cert/'  # Must be either /tmp or relative
@@ -28,6 +34,9 @@ class Settings(BaseSettings):
 
     ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
+
+    DEV_MODE_SKIP_AUTH: bool = False
+    DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.USER.value
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 

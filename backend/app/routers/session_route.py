@@ -8,7 +8,6 @@ from sqlmodel import col, select
 
 from app.database import get_db_session
 from app.models.conversation_scenario import ConversationScenario
-from app.models.language import Language
 from app.models.session import (
     Session,
     SessionCreate,
@@ -57,7 +56,6 @@ def get_session_by_id(
         scheduled_at=session.scheduled_at,
         started_at=session.started_at,
         ended_at=session.ended_at,
-        language_code=session.language_code,
         ai_persona=session.ai_persona,
         created_at=session.created_at,
         updated_at=session.updated_at,
@@ -196,12 +194,6 @@ def create_session(
     if not conversation_scenario:
         raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
-    language = db_session.exec(
-        select(Language).where(Language.code == session_data.language_code)
-    ).first()
-    if not language:
-        raise HTTPException(status_code=404, detail='Language not found')
-
     new_session = Session(**session_data.dict())
     db_session.add(new_session)
     db_session.commit()
@@ -227,13 +219,6 @@ def update_session(
         conversation_scenario = db_session.get(ConversationScenario, updated_data.scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
-
-    if updated_data.language_code:
-        language = db_session.exec(
-            select(Language).where(Language.code == updated_data.language_code)
-        ).first()
-        if not language:
-            raise HTTPException(status_code=404, detail='Language not found')
 
     for key, value in updated_data.dict().items():
         setattr(session, key, value)

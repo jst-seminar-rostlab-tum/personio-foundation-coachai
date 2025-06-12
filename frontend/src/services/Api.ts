@@ -1,23 +1,43 @@
-// import { SignInCredentials } from '@/interfaces/SignInForm';
-// import { UserProfileCreate } from '@/interfaces/SignUpForm';
+import { createClient } from '@/lib/supabase/client';
 import axios from 'axios';
+import { redirect } from 'next/navigation';
+
+const supabase = createClient();
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor for adding auth token
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers?.set?.('Authorization', `Bearer ${token}`);
+  async (config) => {
+    if (config.url?.includes('/auth/') && !config.url?.includes('/auth/confirm')) {
+      return config;
     }
+
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session) {
+      return Promise.reject(error);
+    }
+
+    // Check if the session is expired and refresh it if necessary
+    let accessToken = data.session.access_token;
+    const currentTime = Math.floor(Date.now() / 1000);
+    const sessionExpiry = data.session.expires_at;
+    if (!sessionExpiry || sessionExpiry < currentTime) {
+      const { data: refreshedData, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError || !refreshedData.session) {
+        redirect('/login');
+      }
+      accessToken = refreshedData.session.access_token;
+    }
+
+    config.headers.set('Authorization', `Bearer ${accessToken}`);
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -33,18 +53,3 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-/* export const userProfileApi = {
-  create: async (data: UserProfileCreate) => {
-    const response = await api.post('/user-profiles/', data);
-    return response.data;
-  },
-  validate: async (data: UserProfileCreate) => {
-    const response = await api.post('/user-profiles/validate', data);
-    return response.data;
-  },
-  signIn: async (credentials: SignInCredentials) => {
-    const response = await api.post('/user-profiles/sign-in', credentials);
-    return response.data;
-  },
-}; */

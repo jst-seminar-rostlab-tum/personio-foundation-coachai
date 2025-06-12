@@ -37,6 +37,12 @@ jobs:
     name: Build
     needs: test
     runs-on: ubuntu-22.04
+    env:
+      DEV_MODE_SKIP_AUTH: ${{ secrets.DEV_MODE_SKIP_AUTH }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+      NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
