@@ -9,7 +9,7 @@ from app.models.conversation_scenario import ConversationScenario, ConversationS
 from app.models.difficulty_level import DifficultyLevel  # Assuming this is the new model
 from app.models.experience import Experience
 from app.models.goal import Goal
-from app.models.language import Language  # Import the Language model
+from app.models.language import LanguageCode
 from app.models.learning_style import LearningStyle
 from app.models.rating import Rating
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
@@ -58,13 +58,6 @@ def get_dummy_learning_styles() -> list[LearningStyle]:
     ]
 
 
-def get_dummy_languages() -> list[Language]:
-    return [
-        Language(code='en', name='English'),
-        Language(code='de', name='German'),
-    ]
-
-
 def get_dummy_experiences() -> list[Experience]:
     return [
         Experience(id=uuid4(), label='Beginner', description='New to the field'),
@@ -106,7 +99,7 @@ def get_dummy_user_profiles(
     return [
         UserProfile(
             id=MockUserIdsEnum.USER.value,
-            preferred_language='en',
+            preferred_language_code=LanguageCode.en,
             role=UserRole.user,
             experience_id=experiences[0].id,
             preferred_learning_style_id=learning_styles[0].id,
@@ -119,7 +112,7 @@ def get_dummy_user_profiles(
         ),
         UserProfile(
             id=MockUserIdsEnum.ADMIN.value,
-            preferred_language='de',
+            preferred_language_code=LanguageCode.en,
             role=UserRole.admin,
             experience_id=experiences[1].id,
             preferred_learning_style_id=learning_styles[1].id,
@@ -222,7 +215,7 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_goal='Provide constructive feedback effectively.',
             default_other_party='Team member',
             is_custom=False,
-            language_code='en',
+            language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -237,7 +230,7 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_goal='Evaluate and discuss employee performance.',
             default_other_party='Employee',
             is_custom=False,
-            language_code='en',
+            language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -252,7 +245,7 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_goal='Resolve conflicts and improve team dynamics.',
             default_other_party='Team members',
             is_custom=False,
-            language_code='en',
+            language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -267,7 +260,7 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_goal='Reach a mutually beneficial agreement on salary.',
             default_other_party='Employer',
             is_custom=False,
-            language_code='en',
+            language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -282,7 +275,7 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_goal='',
             default_other_party='',
             is_custom=True,
-            language_code='en',
+            language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -326,7 +319,6 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            language_code='en',  # Assuming "en" is a valid language code in the LanguageModel table
             ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -337,7 +329,6 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            language_code='de',  # Assuming "fr" is a valid language code in the LanguageModel table
             ai_persona={'persona_name': 'AI Mentor', 'persona_role': 'Guide'},
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),

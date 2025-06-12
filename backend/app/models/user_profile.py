@@ -9,6 +9,7 @@ from sqlalchemy.orm import Mapper
 from sqlmodel import Field, Relationship
 
 from app.models.camel_case import CamelModel
+from app.models.language import LanguageCode
 from app.models.user_confidence_score import ConfidenceScoreRead
 
 if TYPE_CHECKING:
@@ -27,7 +28,7 @@ class UserRole(str, Enum):
 
 class UserProfile(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    preferred_language: str = Field(foreign_key='language.code')  # FK to LanguageModel
+    preferred_language_code: LanguageCode = Field(default=LanguageCode.en)
     experience_id: Optional[UUID] = Field(foreign_key='experience.id')  # FK to Experience
     preferred_learning_style_id: Optional[UUID] = Field(foreign_key='learningstyle.id')
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -66,7 +67,7 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfil
 
 # Schema for creating a new UserProfile
 class UserProfileCreate(CamelModel):
-    preferred_language: str
+    preferred_language_code: LanguageCode
     role: UserRole
     experience_id: UUID
     preferred_learning_style_id: UUID
@@ -78,7 +79,7 @@ class UserProfileCreate(CamelModel):
 # Schema for reading UserProfile data
 class UserProfileRead(CamelModel):
     id: UUID
-    preferred_language: str
+    preferred_language_code: LanguageCode
     role: UserRole
     experience_id: UUID
     preferred_learning_style_id: UUID
@@ -90,7 +91,7 @@ class UserProfileRead(CamelModel):
 
 class UserProfileExtendedRead(CamelModel):
     user_id: UUID
-    preferred_language: str
+    preferred_language_code: LanguageCode
     role: Optional[UserRole]
     experience: Optional[str]
     preferred_learning_style: Optional[str]

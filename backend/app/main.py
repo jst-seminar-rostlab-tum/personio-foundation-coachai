@@ -12,7 +12,6 @@ from app.routers import (
     conversation_category_route,
     conversation_scenario_route,
     goal_route,
-    language_route,
     learning_style_route,
     personalization_options_route,
     rating_route,
@@ -37,7 +36,6 @@ app.add_middleware(
 )
 
 app.include_router(auth_route.router)
-app.include_router(language_route.router)
 app.include_router(conversation_category_route.router)
 app.include_router(conversation_scenario_route.router)
 app.include_router(session_route.router)

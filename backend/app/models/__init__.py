@@ -14,7 +14,6 @@ from app.models.conversation_scenario import (
 from app.models.difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
 from app.models.experience import Experience, ExperienceCreate, ExperienceRead
 from app.models.goal import Goal, GoalCreate, GoalRead
-from app.models.language import Language, LanguageCreate, LanguageRead
 from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
@@ -59,9 +58,6 @@ from app.models.user_profile import (
 )
 
 __all__ = [
-    'Language',
-    'LanguageCreate',
-    'LanguageRead',
     'ConversationCategory',
     'ConversationCategoryCreate',
     'ConversationCategoryRead',
