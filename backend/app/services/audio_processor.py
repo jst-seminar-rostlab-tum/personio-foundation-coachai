@@ -8,6 +8,7 @@ import av
 import numpy as np
 import webrtcvad
 from aiortc.mediastreams import MediaStreamTrack
+from scipy.signal import resample_poly
 
 OPUS_SAMPLE_RATE = 48000
 SEND_SAMPLE_RATE = 16000
@@ -16,7 +17,7 @@ CHUNK_SIZE = 1024
 CHANNELS = 1
 
 # VAD instance (global shared)
-vad = webrtcvad.Vad(1)  # 0-3, 3 is high sensitivity
+vad = webrtcvad.Vad(3)  # 0-3, 3 is high sensitivity
 
 
 class AudioStreamTrack(MediaStreamTrack):
@@ -138,7 +139,7 @@ def resample_pcm_audio(
     channels: int = CHANNELS,
 ) -> bytes:
     """
-    Resample raw PCM audio data to a different sample rate
+    Resample PCM audio data to a different sample rate using scipy
 
     Args:
         pcm_data: Raw PCM audio data (16-bit signed integers)
@@ -152,42 +153,23 @@ def resample_pcm_audio(
     if source_sample_rate == target_sample_rate:
         return pcm_data
 
-    # Convert bytes to numpy array
-    audio_array = np.frombuffer(pcm_data, dtype=np.int16)
-
-    # Calculate number of samples per channel
-    samples_per_channel = len(audio_array) // channels
-
-    # Reshape correctly: (channels, samples_per_channel)
+    # 16bit PCM
+    audio = np.frombuffer(pcm_data, dtype=np.int16)
     if channels > 1:
-        audio_array = audio_array.reshape(channels, samples_per_channel)
-    else:
-        # For mono, ensure we have the right shape (1, samples_per_channel)
-        audio_array = audio_array.reshape(1, samples_per_channel)
+        audio = audio.reshape(-1, channels)
+    # calculate up/down sample factor
+    gcd = np.gcd(source_sample_rate, target_sample_rate)
+    up = target_sample_rate // gcd
+    down = source_sample_rate // gcd
 
-    # Create audio frame
-    input_frame = av.AudioFrame.from_ndarray(
-        audio_array, format='s16', layout='mono' if channels == 1 else f'{channels}c'
-    )
-    input_frame.rate = source_sample_rate
-
-    # Create resampler
-    resampler = av.AudioResampler(
-        format='s16', layout='mono' if channels == 1 else f'{channels}c', rate=target_sample_rate
-    )
-
-    # Resample
-    output_frames = resampler.resample(input_frame)
-
-    # Convert back to bytes
-    if output_frames:
-        output_array = output_frames[0].to_ndarray()
-        return output_array.astype(np.int16).tobytes()
-    else:
-        return b''
+    # resample
+    resampled = resample_poly(audio, up, down, axis=0)
+    # ensure type and range
+    resampled = np.clip(np.round(resampled), -32768, 32767).astype(np.int16)
+    return resampled.tobytes()
 
 
-def is_silence(audio_data: bytes, sample_rate: int = SEND_SAMPLE_RATE) -> bool:
+def is_silence(audio_data: bytes, sample_rate: int = RECEIVE_SAMPLE_RATE) -> bool:
     """
     Check if audio data contains speech using WebRTC VAD
 
@@ -240,7 +222,7 @@ def is_silence(audio_data: bytes, sample_rate: int = SEND_SAMPLE_RATE) -> bool:
         return rms < 500
 
 
-def has_voice(audio_data: bytes, sample_rate: int = SEND_SAMPLE_RATE) -> bool:
+def has_voice(audio_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bool:
     """
     Check if audio data contains speech using WebRTC VAD
 
@@ -263,7 +245,6 @@ def save_pcm_audio_to_wav(
     sample_rate: int = SEND_SAMPLE_RATE,
     channels: int = CHANNELS,
     sampwidth: int = 2,
-    append: bool = False,
 ) -> None:
     """
     Save PCM audio data to a WAV file.
@@ -274,12 +255,10 @@ def save_pcm_audio_to_wav(
         sample_rate: Sample rate, default 16000
         channels: Number of channels, default 1
         sampwidth: Sample width in bytes, default 2 (16-bit)
-        append: Whether to append to the file (True) or overwrite (False)
     """
     if not os.path.exists(AUDIO_CHUNK_DIR):
         os.makedirs(AUDIO_CHUNK_DIR)
-    mode = 'ab' if append else 'wb'
-    with wave.open(os.path.join(AUDIO_CHUNK_DIR, file_path), mode) as wf:
+    with wave.open(os.path.join(AUDIO_CHUNK_DIR, file_path), 'wb') as wf:
         wf.setnchannels(channels)
         wf.setsampwidth(sampwidth)
         wf.setframerate(sample_rate)
@@ -294,7 +273,7 @@ class AudioChunkSegmenter:
     def __init__(
         self,
         sample_rate: int = SEND_SAMPLE_RATE,
-        max_segment_ms: int = 2000,
+        max_segment_ms: int = 10000,
         vad_silence_ms: int = 300,
     ) -> None:
         self.sample_rate = sample_rate
@@ -328,5 +307,6 @@ class AudioChunkSegmenter:
         if self.buffer:
             seg = bytes(self.buffer)
             self.buffer.clear()
+            assert len(seg) % 2 == 0, 'PCM data length must be even'
             return [seg]
         return []

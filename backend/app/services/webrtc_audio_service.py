@@ -104,7 +104,7 @@ class WebRTCAudioLoop:
         # Task management
         self._main_task = None
 
-        self.segmenter = AudioChunkSegmenter()
+        self.segmenter = AudioChunkSegmenter(sample_rate=SEND_SAMPLE_RATE)
 
         logger.info(f'[WebRTCAudioLoop] Created for peer {peer_id}')
 
@@ -273,7 +273,7 @@ class WebRTCAudioLoop:
                     f'from {frame.rate} to {SEND_SAMPLE_RATE}'
                 )
                 try:
-                    audio_bytes = resample_pcm_audio(audio_bytes, frame.rate)
+                    audio_bytes = resample_pcm_audio(audio_bytes, frame.rate, SEND_SAMPLE_RATE)
                     logger.debug(
                         f'[WebRTC] Audio resampled successfully, new length: {len(audio_bytes)}'
                     )
@@ -594,7 +594,7 @@ class WebRTCAudioService:
             timestamp = event.data.get('timestamp', None)
             if chunk_data and timestamp:
                 file_path = f'peer_{event.peer_id}_chunk_{int(timestamp * 1000)}.wav'
-                save_pcm_audio_to_wav(chunk_data, file_path)
+                save_pcm_audio_to_wav(chunk_data, file_path, SEND_SAMPLE_RATE)
                 logger.info(f'[WebRTCAudioService] Saved audio chunk to {file_path}')
 
         # Smart AUDIO_STREAM_END event handler that only sends turn_complete when appropriate

@@ -6,7 +6,6 @@ import logging
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Union
 
 from aiortc import (
     RTCConfiguration,
@@ -56,12 +55,6 @@ RTC_CONFIG = RTCConfiguration(
         ),
     ]
 )
-
-# Callback type definitions
-SendToGeminiType = Union[types.Blob, WebRTCAudioEvent, types.Content]
-SendToGeminiCallback = Callable[[SendToGeminiType], Awaitable[None]]
-
-# Note: WebRTCEventManager moved to app.services.webrtc_event_manager
 
 
 @dataclass
@@ -268,7 +261,7 @@ class WebRTCService:
         # Register user events (for future text message handling)
         @event_manager.on_user_event(WebRTCUserEventType.USER_MESSAGE_SENT)
         async def on_user_message_sent(event: WebRTCUserEvent) -> None:
-            """Handle user message sent - replaces SendToGeminiCallback for text"""
+            """Handle user message sent"""
             peer_id = event.peer_id
             message = event.data.get('message', '') if event.data else ''
             logger.info(f'[EventHandler] User message sent for peer {peer_id}: {message}')
