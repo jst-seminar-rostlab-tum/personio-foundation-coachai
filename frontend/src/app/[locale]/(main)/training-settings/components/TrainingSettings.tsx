@@ -1,5 +1,3 @@
-/* eslint-disable no-alert */
-
 'use client';
 
 import React, { useState } from 'react';
@@ -29,13 +27,13 @@ import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
 import UserPreferences from './UserPreferences';
-import { useDeleteUser } from '../../../../../components/common/DeleteUser';
+import { useDeleteUser } from '../../../../../components/common/DeleteUserHandler';
 
 export default function TrainingSettings() {
   const [audioEnabled, setAudioEnabled] = useState(false);
   const t = useTranslations('TrainingSettings');
-  const { handleDeleteUser, loading } = useDeleteUser();
-  const userId = '12345';
+  const { handleDeleteUser, loading, RenderDialog } = useDeleteUser();
+  const userId = '0b222f0b-c7e5-4140-9049-35620fee8009';
 
   return (
     <div>
@@ -125,6 +123,7 @@ export default function TrainingSettings() {
         </div>
       </div>
       <Button size="full">{t('saveSettings')}</Button>
+      <RenderDialog />
     </div>
   );
 }
