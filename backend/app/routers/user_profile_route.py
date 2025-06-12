@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -6,6 +6,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.user_confidence_score import ConfidenceScoreRead, UserConfidenceScore
 from app.models.user_goal import UserGoal
 from app.models.user_profile import (
@@ -317,15 +318,24 @@ def patch_user_profile(
     return user
 
 
-@router.delete('/{user_id}', response_model=dict)
+@router.delete('/', response_model=dict)
 def delete_user_profile(
-    user_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    delete_user_id: Optional[UUID] = None,
 ) -> dict:
     """
     Delete a user profile by its unique user ID.
     Cascades the deletion to related goals and confidence scores.
     """
-    user_profile = db_session.get(UserProfile, user_id)
+    user_id = user_profile.id
+
+    if delete_user_id and user_profile.role == 'admin':
+        user_id = delete_user_id
+    elif delete_user_id:
+        raise HTTPException(status_code=403, detail='Admin access required to delete other users')
+
+    user_profile = db_session.get(UserProfile, user_id)  # type: ignore
     if not user_profile:
         raise HTTPException(status_code=404, detail='User profile not found')
 
