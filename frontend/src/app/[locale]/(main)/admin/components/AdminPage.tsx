@@ -32,15 +32,34 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
+import { getAdminStats } from '@/services/getAdminStats';
 
 export default function Admin() {
   const t = useTranslations('Admin');
   const tr = useTranslations('TrainingSettings');
-  const stats = [
-    { value: '11.200', label: t('statActiveUsers') },
-    { value: '34.533', label: t('statTotalTrainings') },
-    { value: '1.062', label: t('statReviews') },
-    { value: '82%', label: t('statAverageScore') },
+  const [stats, setStats] = React.useState({
+    totalUsers: 0,
+    totalTrainings: 0,
+    totalReviews: 0,
+    averageScore: 0,
+  });
+
+  React.useEffect(() => {
+    async function fetchStats() {
+      try {
+        const data = await getAdminStats();
+        setStats(data);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    fetchStats();
+  }, []);
+  const statsArray = [
+    { value: stats.totalUsers.toLocaleString(), label: t('statActiveUsers') },
+    { value: stats.totalTrainings.toLocaleString(), label: t('statTotalTrainings') },
+    { value: stats.totalReviews.toLocaleString(), label: t('statReviews') },
+    { value: `${stats.averageScore}%`, label: t('statAverageScore') },
   ];
   const [visibleUsers, setVisibleUsers] = React.useState(5);
   const allUsers = [
@@ -57,12 +76,13 @@ export default function Admin() {
   ];
   const canLoadMore = visibleUsers < allUsers.length;
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
+
   return (
     <div className="px-2 sm:px-4 max-w-full">
       <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
       <div className="text-sm text-bw-40 text-center mb-8">{t('dashboardSubtitle')}</div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {stats.map((stat, i) => (
+        {statsArray.map((stat, i) => (
           <StatCard key={i} value={stat.value} label={stat.label} />
         ))}
       </div>
