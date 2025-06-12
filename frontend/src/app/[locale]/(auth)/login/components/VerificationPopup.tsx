@@ -12,6 +12,9 @@ import { AlertCircleIcon, RotateCcw } from 'lucide-react';
 import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Alert, AlertTitle } from '@/components/ui/Alert';
+import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
+import { useRouter } from 'next/navigation';
+import { authService } from '@/services/AuthService';
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
@@ -19,8 +22,10 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
   const [resendCooldown, setResendCooldown] = useState(0);
   const [error, setError] = useState<string | null>();
 
+  const router = useRouter();
+
   const verificationSchema = z.object({
-    code: z.string().regex(/^\d{6}$/, t('codeInputError')),
+    code: z.string(),
   });
   const codeSize = 6;
 
@@ -46,11 +51,21 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     setIsLoading(true);
     setError(null);
 
-    // TODO: Call API to verify code and to sign up the user (services/Api.ts)
-    // TODO: setError if Api call failed
-    // TODO: Reroute if Api call successful
-
-    setIsLoading(false);
+    try {
+      const data: CreateUserRequest = {
+        full_name: signUpFormData.fullName,
+        email: signUpFormData.email,
+        phone: signUpFormData.phoneNumber,
+        password: signUpFormData.password,
+        code: form.getValues('code'),
+      };
+      await authService.createUser(data);
+      setIsLoading(false);
+      router.push(`/confirm?email=${encodeURIComponent(signUpFormData.email)}`);
+    } catch (err) {
+      setError(err instanceof z.ZodError ? err.errors[0].message : t('genericError'));
+      setIsLoading(false);
+    }
   };
 
   const handleResendCode = async () => {
