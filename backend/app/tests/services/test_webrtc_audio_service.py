@@ -45,6 +45,10 @@ async def test_audio_resampling_integration(
     audio_loop.last_voice_time = asyncio.get_event_loop().time()
     audio_loop.segmenter = MagicMock()
     audio_loop.segmenter.feed = MagicMock(return_value=[b'x' * 400])
+    audio_loop.event_manager = MagicMock()
+    audio_loop.event_manager.emit_data_channel_event = AsyncMock()
+    audio_loop.event_manager.emit_audio_event = AsyncMock()
+    audio_loop.event_manager.emit_session_event = AsyncMock()
     with pytest.raises(asyncio.CancelledError):
         await audio_loop._listen_webrtc_audio()
     mock_resample_webrtc.assert_called()

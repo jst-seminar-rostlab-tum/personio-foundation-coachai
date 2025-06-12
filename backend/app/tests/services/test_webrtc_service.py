@@ -38,6 +38,7 @@ class TestPeer:
     ) -> None:
         mock_audio_loop = AsyncMock()
         mock_audio_loop.stop = AsyncMock()
+        mock_audio_loop.event_manager = MagicMock()
         peer = Peer(
             peer_id='peer-4',
             connection=mock_peer_connection,
