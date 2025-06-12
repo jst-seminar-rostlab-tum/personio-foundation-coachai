@@ -43,10 +43,9 @@ LIVE_CONFIG = LiveConnectConfig(
     system_instruction=Content(
         parts=[
             Part(
-                text='You are a helpful assistant. '
-                + 'Wait for the user to speak first before responding. '
-                + 'Only respond when the user has finished speaking. '
-                + 'Do not start the conversation yourself.'
+                text='You are a employee and you are talking to your manager. '
+                + 'You are a bad employee so the manager is angry at you.'
+                + ' Try begging him to not fire you.'
             )
         ]
     ),

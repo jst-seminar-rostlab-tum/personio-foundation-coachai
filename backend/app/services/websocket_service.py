@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 
 from aiortc import RTCIceCandidate, RTCSessionDescription
 from fastapi import WebSocket
@@ -15,6 +16,7 @@ from app.schemas.webrtc_schema import (
     WebSocketIceError,
     WebSocketSignalingError,
 )
+from app.services.audio_processor import SEND_SAMPLE_RATE
 from app.services.webrtc_service import get_webrtc_service
 
 logger = logging.getLogger(__name__)
@@ -55,8 +57,27 @@ class WebSocketService:
         """Initialize the WebSocket service"""
         self.webrtc_service = get_webrtc_service()
 
+    def _modify_sdp_for_opus(self, sdp: str) -> str:
+        """Modify SDP for opus encoding"""
+        found = re.findall(r'a=rtpmap:(\d+) opus/(\d+)/2', sdp)
+        if found:
+            payload_type, sample_rate = found[0]
+            sdp = sdp.replace(f'opus/{sample_rate}/2', 'opus/16000/2')
+            sdp = sdp.replace(
+                'opus/16000/2\r\n',
+                'opus/16000/2\r\n'
+                + f'a=fmtp:{payload_type} useinbandfec=1;u'
+                + f'sedtx=1;maxaveragebitrate={SEND_SAMPLE_RATE}\r\n',
+            )
+            logger.info(
+                f'Modified SDP with opus parameters: sample_rate=16000, bitrate={SEND_SAMPLE_RATE}'
+            )
+        return sdp
+
     async def handle_webrtc_message(
-        self, websocket: WebSocket, message: WebRTCSignalingMessage
+        self,
+        websocket: WebSocket,
+        message: WebRTCSignalingMessage,
     ) -> None:
         """Handle WebRTC signaling messages"""
         peer_id = str(id(websocket))
@@ -73,11 +94,14 @@ class WebSocketService:
 
                 pc = self.webrtc_service.peer_session_manager.get_peer(peer_id).connection
 
+                # modify offer SDP
+                modified_sdp = self._modify_sdp_for_opus(message.sdp)
+                logger.debug(f'Modified offer SDP: {modified_sdp}')
+
                 # set remote description
                 try:
-                    logger.debug(f'Received offer SDP: {message.sdp}')
                     await pc.setRemoteDescription(
-                        RTCSessionDescription(sdp=message.sdp, type=WebRTCSignalingType.OFFER)
+                        RTCSessionDescription(sdp=modified_sdp, type=WebRTCSignalingType.OFFER)
                     )
                     logger.info(f'Remote description set for peer {peer_id}')
                 except Exception as e:
@@ -88,7 +112,9 @@ class WebSocketService:
                 # Create answer and set local description
                 try:
                     answer = await pc.createAnswer()
-                    logger.debug(f'Created answer SDP: {answer.sdp}')
+                    # modify answer SDP
+                    answer.sdp = self._modify_sdp_for_opus(answer.sdp)
+                    logger.debug(f'Created and modified answer SDP: {answer.sdp}')
                 except Exception as e:
                     raise WebSocketSignalingError(
                         f'Failed to create answer: {str(e)}', peer_id

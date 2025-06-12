@@ -10,7 +10,7 @@ import webrtcvad
 from aiortc.mediastreams import MediaStreamTrack
 from scipy.signal import resample_poly
 
-OPUS_SAMPLE_RATE = 48000
+# OPUS_SAMPLE_RATE = 48000
 SEND_SAMPLE_RATE = 16000
 RECEIVE_SAMPLE_RATE = 24000
 CHUNK_SIZE = 1024
@@ -57,7 +57,7 @@ class AudioStreamTrack(MediaStreamTrack):
 # and compatibility issues.
 
 
-def opus_to_pcm(opus_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
+def opus_to_pcm(opus_data: bytes, sample_rate: int = SEND_SAMPLE_RATE) -> bytes:
     """
     Convert Opus data to PCM data
 
@@ -98,7 +98,7 @@ def opus_to_pcm(opus_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
 # or special scenarios.
 # For real-time WebRTC audio, always use PCM end-to-end to avoid audio corruption
 # and compatibility issues.
-def pcm_to_opus(pcm_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bytes:
+def pcm_to_opus(pcm_data: bytes, sample_rate: int = SEND_SAMPLE_RATE) -> bytes:
     """
     Convert PCM data to Opus data
 
@@ -222,7 +222,7 @@ def is_silence(audio_data: bytes, sample_rate: int = RECEIVE_SAMPLE_RATE) -> boo
         return rms < 500
 
 
-def has_voice(audio_data: bytes, sample_rate: int = OPUS_SAMPLE_RATE) -> bool:
+def has_voice(audio_data: bytes, sample_rate: int = SEND_SAMPLE_RATE) -> bool:
     """
     Check if audio data contains speech using WebRTC VAD
 
@@ -266,47 +266,65 @@ def save_pcm_audio_to_wav(
 
 
 class AudioChunkSegmenter:
-    """
-    Segment audio chunks into meaningful utterances for Gemini.
-    """
+    """Segments audio chunks into meaningful utterances"""
 
     def __init__(
         self,
         sample_rate: int = SEND_SAMPLE_RATE,
-        max_segment_ms: int = 10000,
-        vad_silence_ms: int = 300,
+        max_segment_ms: int = 5000,  # 增加到5秒
+        vad_silence_ms: int = 500,  # 增加到500ms
     ) -> None:
         self.sample_rate = sample_rate
-        self.max_segment_bytes = int(sample_rate * 2 * max_segment_ms / 1000)  # 16bit=2bytes
-        self.vad_silence_bytes = int(sample_rate * 2 * vad_silence_ms / 1000)
+        self.max_segment_bytes = int(max_segment_ms * sample_rate * 2 / 1000)  # 2 bytes per sample
+        self.vad_silence_frames = int(vad_silence_ms * sample_rate / 1000)
         self.buffer = bytearray()
-        self.last_voice_time = None
+        self.silence_frames = 0
+        self._last_segment_time = 0
+        self._min_segment_interval = 1.0  # 最小分片间隔1秒
+        self._min_segment_bytes = int(1000 * sample_rate * 2 / 1000)  # 最小1秒的音频
 
     def feed(self, chunk: bytes) -> list[bytes]:
-        """
-        Feed a new audio chunk, return a list of complete segments (may be empty).
-        """
+        """Feed audio data and get segments when available"""
         segments = []
-        if not chunk:
+        current_time = time.time()
+
+        # 如果距离上次分片时间太短，直接返回空列表
+        if current_time - self._last_segment_time < self._min_segment_interval:
             return segments
 
+        # 检查是否是静音帧
+        if is_silence(chunk, self.sample_rate):
+            self.silence_frames += 1
+            # 如果静音帧数超过阈值，且buffer中有数据，且数据长度超过最小要求，输出一个segment
+            if (
+                self.silence_frames >= self.vad_silence_frames
+                and self.buffer
+                and len(self.buffer) >= self._min_segment_bytes
+            ):
+                segments.append(bytes(self.buffer))
+                self.buffer.clear()
+                self.silence_frames = 0
+                self._last_segment_time = current_time
+            return segments
+
+        # 重置静音帧计数
+        self.silence_frames = 0
+
+        # 检查是否有语音活动
         if has_voice(chunk, self.sample_rate):
             self.buffer.extend(chunk)
-            self.last_voice_time = time.time()
-            if len(self.buffer) >= self.max_segment_bytes:
+            # 如果buffer超过最大大小，且数据长度超过最小要求，输出一个segment
+            if (
+                len(self.buffer) >= self.max_segment_bytes
+                and len(self.buffer) >= self._min_segment_bytes
+            ):
                 segments.append(bytes(self.buffer))
                 self.buffer.clear()
+                self._last_segment_time = current_time
         else:
-            if self.buffer:
+            if self.buffer and len(self.buffer) >= self._min_segment_bytes:
                 segments.append(bytes(self.buffer))
                 self.buffer.clear()
-        return segments
+                self._last_segment_time = current_time
 
-    def flush(self) -> list[bytes]:
-        """Flush remaining buffer as a segment."""
-        if self.buffer:
-            seg = bytes(self.buffer)
-            self.buffer.clear()
-            assert len(seg) % 2 == 0, 'PCM data length must be even'
-            return [seg]
-        return []
+        return segments
