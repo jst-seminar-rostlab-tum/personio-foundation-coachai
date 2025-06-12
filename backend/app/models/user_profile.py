@@ -14,23 +14,38 @@ from app.models.user_confidence_score import ConfidenceScoreRead
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
-    from app.models.experience import Experience
-    from app.models.learning_style import LearningStyle
     from app.models.rating import Rating
     from app.models.user_confidence_score import UserConfidenceScore
     from app.models.user_goal import UserGoal
 
 
-class UserRole(str, Enum):
+class AccountRole(str, Enum):
     user = 'user'
     admin = 'admin'
 
+class ProfessionalRole(str, Enum):
+    hr_professional = 'hr_professional'
+    team_leader = 'team_leader'
+    executive = 'executive'
+    other = 'other'
+
+class Experience(str, Enum):
+    beginner = 'beginner'
+    intermediate = 'intermediate'
+    skilled = 'skilled'
+    advanced = 'advanced'
+    expert = 'expert'
+
+class PreferredLearningStyle(str, Enum):
+    visual = 'visual'
+    auditory = 'auditory'
+    kinesthetic = 'kinesthetic'
 
 class UserProfile(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     preferred_language_code: LanguageCode = Field(default=LanguageCode.en)
-    experience_id: Optional[UUID] = Field(foreign_key='experience.id')  # FK to Experience
-    preferred_learning_style_id: Optional[UUID] = Field(foreign_key='learningstyle.id')
+    experience: Experience = Field(default=Experience.beginner)
+    preferred_learning_style: PreferredLearningStyle = Field(default=PreferredLearningStyle.visual)
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     store_conversations: bool = Field(default=True)
     # Relationships
@@ -38,16 +53,13 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     conversation_scenarios: list['ConversationScenario'] = Relationship(
         back_populates='user_profile', cascade_delete=True
     )
-    role: Optional[UserRole] = Field(default=UserRole.user)
-    experience: Optional['Experience'] = Relationship(back_populates='user')
+    account_role: Optional[AccountRole] = Field(default=AccountRole.user)
+    professional_role: Optional[ProfessionalRole] = Field(default=ProfessionalRole.hr_professional)
     user_goals: list['UserGoal'] = Relationship(
         back_populates='user', cascade_delete=True
     )  # Add this line
     user_confidence_scores: list['UserConfidenceScore'] = Relationship(
         back_populates='user', cascade_delete=True
-    )
-    preferred_learning_style: Optional['LearningStyle'] = Relationship(
-        back_populates='user_profiles'
     )
 
     # User Statistics
@@ -68,9 +80,10 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfil
 # Schema for creating a new UserProfile
 class UserProfileCreate(CamelModel):
     preferred_language_code: LanguageCode
-    role: UserRole
-    experience_id: UUID
-    preferred_learning_style_id: UUID
+    account_role: AccountRole
+    professional_role: ProfessionalRole
+    experience: Experience
+    preferred_learning_style: PreferredLearningStyle
     store_conversations: bool
     goal_ids: list[UUID]
     confidence_scores: list[dict]
@@ -80,9 +93,10 @@ class UserProfileCreate(CamelModel):
 class UserProfileRead(CamelModel):
     id: UUID
     preferred_language_code: LanguageCode
-    role: UserRole
-    experience_id: UUID
-    preferred_learning_style_id: UUID
+    account_role: AccountRole
+    professional_role: ProfessionalRole
+    experience: Experience
+    preferred_learning_style: PreferredLearningStyle
     goal: list[UUID]
     confidence_scores: list[UUID]
     store_conversations: bool
@@ -92,9 +106,10 @@ class UserProfileRead(CamelModel):
 class UserProfileExtendedRead(CamelModel):
     user_id: UUID
     preferred_language_code: LanguageCode
-    role: Optional[UserRole]
-    experience: Optional[str]
-    preferred_learning_style: Optional[str]
+    account_role: Optional[AccountRole]
+    professional_role: Optional[ProfessionalRole]
+    experience: Optional[Experience]
+    preferred_learning_style: Optional[PreferredLearningStyle]
     goal: list[str]
     confidence_scores: list[ConfidenceScoreRead]
     store_conversations: bool
