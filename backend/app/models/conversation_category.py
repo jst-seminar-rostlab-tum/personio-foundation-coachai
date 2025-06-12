@@ -53,7 +53,7 @@ class ConversationCategoryCreate(CamelModel):
     default_goal: Optional[str] = None
     default_other_party: Optional[str] = None
     is_custom: Optional[bool] = None
-    language_code: Optional[LanguageCode] = Field(default=LanguageCode.en)
+    language_code: LanguageCode = Field(default=LanguageCode.en)
 
 
 # Schema for reading ConversationCategory data
