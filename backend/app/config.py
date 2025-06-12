@@ -7,7 +7,7 @@ from app.data.dummy_data import MockUserIdsEnum
 
 
 class Settings(BaseSettings):
-    stage: Literal['dev', 'prod'] = "dev"
+    stage: Literal['dev', 'prod'] = 'dev'
     postgres_host: str = 'localhost'
     postgres_user: str = 'postgres'
     postgres_password: str = 'postgres'
