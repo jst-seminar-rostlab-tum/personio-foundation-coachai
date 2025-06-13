@@ -1,14 +1,12 @@
 from app.models.camel_case import CamelModel
-from app.models.confidence_area import ConfidenceAreaRead
-from app.models.experience import ExperienceRead
-from app.models.goal import GoalRead
-from app.models.learning_style import LearningStyleRead
-from app.models.user_profile import UserRole
+from app.models.user_confidence_score import ConfidenceArea
+from app.models.user_goal import Goal
+from app.models.user_profile import AccountRole, Experience, PreferredLearningStyle
 
 
 class PersonalizationOptionRead(CamelModel):
-    roles: list[UserRole]
-    experiences: list[ExperienceRead]
-    goals: list[GoalRead]
-    confidence_areas: list[ConfidenceAreaRead]
-    learning_styles: list[LearningStyleRead]
+    roles: list[AccountRole]
+    experiences: list[Experience]
+    goals: list[Goal]
+    confidence_areas: list[ConfidenceArea]
+    learning_styles: list[PreferredLearningStyle]

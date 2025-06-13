@@ -20,19 +20,25 @@ export function AppHeader() {
   ];
 
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    const lockBodyScroll = () => {
+      const isMobile = window.matchMedia('(max-width: 767px)').matches;
+      if (isMenuOpen && isMobile) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    };
+    lockBodyScroll();
+    window.addEventListener('resize', lockBodyScroll);
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
+      window.removeEventListener('resize', lockBodyScroll);
     };
   }, [isMenuOpen]);
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 bg-background z-50 shadow">
+      <header className="sticky top-0 left-0 right-0 bg-background z-50 shadow">
         <div className="md:max-w-5xl md:mx-auto flex items-center justify-between px-4 py-2 xl:px-0 min-h-[56px]">
           <Link
             href="/dashboard"
@@ -41,21 +47,42 @@ export function AppHeader() {
           >
             {t('title')}
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0 md:gap-4">
+            <div className="hidden md:flex items-center gap-6">
+              {navigationLinks.map(({ key, href }) => (
+                <Link
+                  key={key}
+                  href={href}
+                  className="text-bw-60 hover:text-marigold-50 font-medium text-lg"
+                >
+                  {t(key)}
+                </Link>
+              ))}
+            </div>
             <LanguageSwitcher />
-            <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <Button
+              className="md:hidden pl-0"
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
               {isMenuOpen ? <X className="!w-4 !h-4" /> : <Menu className="!w-4 !h-4" />}
             </Button>
+            <Link href="/logout">
+              <Button variant="secondary" className="hidden md:flex h-8">
+                <span className="text-xs font-medium">{t('logout')}</span>
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
 
       <div
-        className={`fixed inset-0 z-40 top-0 transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed inset-0 z-40 top-0 transition-transform duration-300 ease-in-out ${
           isMenuOpen ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        <div className="flex items-center justify-between px-4 py-2 xl:px-16 bg-background min-h-[56px]">
+        <div className="flex items-center justify-between px-2 py-2 xl:px-16 bg-background min-h-[56px]">
           <div className="text-bw-70 text-lg font-semibold">{t('title')}</div>
           <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
             <X className="!w-4 !h-4" />
@@ -73,6 +100,11 @@ export function AppHeader() {
                 {t(key)}
               </Link>
             ))}
+            <Link href="/logout" onClick={() => setIsMenuOpen(false)}>
+              <span className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50">
+                {t('logout')}
+              </span>
+            </Link>
           </nav>
         </div>
       </div>
