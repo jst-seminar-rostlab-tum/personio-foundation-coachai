@@ -345,7 +345,6 @@ def delete_user_profile(
     Cascades the deletion to related goals and confidence scores.
     """
     user_id = user_profile.id
-    print(delete_user_id, 'hhhhhhshshshsh')
     if delete_user_id and user_profile.account_role == 'admin':
         user_id = delete_user_id
     elif delete_user_id and delete_user_id != user_profile.id:
