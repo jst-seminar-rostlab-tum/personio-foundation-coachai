@@ -18,13 +18,6 @@
   "actions": "Aktionen",
   "deleteUser": "Benutzer löschen",
   "loadMore": "Mehr laden",
-  "tokenLimitUpdateSuccess": "Token-Limit erfolgreich aktualisiert.",
-  "tokenLimitUpdateError": "Token-Limit konnte nicht aktualisiert werden.",
-  "tokenLimitInvalid": "Ungültiger Grenzwert.",
-  "notAuthorized": "Nicht autorisiert (nur für Admins)",
-  "serverError": "Serverfehler",
   "saving": "Speichern...",
-  "save": "Speichern",
-  "success": "Erfolg",
-  "error": "Fehler"
+  "save": "Speichern"
 }

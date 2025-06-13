@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  AlertTriangleIcon,
-  ArrowRightIcon,
-  CheckCircle2Icon,
-  ChevronDown,
-  Search,
-  Star,
-  Trash2,
-} from 'lucide-react';
+import { ArrowRightIcon, ChevronDown, Search, Star, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import {
@@ -34,7 +26,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 import { updateDailyUserTokenLimit } from '@/services/updateDailyUserTokenLimit';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 
 export default function Admin() {
   const t = useTranslations('Admin');
@@ -62,34 +53,16 @@ export default function Admin() {
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
   const [tokenLimit, setTokenLimit] = React.useState<number>(100);
   const [saving, setSaving] = React.useState(false);
-  const [alert, setAlert] = React.useState<null | { type: 'success' | 'error'; message: string }>(
-    null
-  );
 
   async function handleSaveTokenLimit() {
     if (!Number.isInteger(tokenLimit) || tokenLimit < 1) {
-      setAlert({ type: 'error', message: t('tokenLimitInvalid') });
       return;
     }
     setSaving(true);
-    setAlert(null);
     try {
       await updateDailyUserTokenLimit(tokenLimit);
-      setAlert({ type: 'success', message: t('tokenLimitUpdateSuccess') });
-    } catch (error: unknown) {
-      let msg = t('tokenLimitUpdateError');
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'response' in error &&
-        typeof (error as { response?: unknown }).response === 'object'
-      ) {
-        const axiosError = error as { response?: { status: number } };
-        if (axiosError.response?.status === 400) msg = t('tokenLimitInvalid');
-        else if (axiosError.response?.status === 401) msg = t('notAuthorized');
-        else if (axiosError.response?.status === 500) msg = t('serverError');
-      }
-      setAlert({ type: 'error', message: msg });
+    } catch (error) {
+      console.error({ error });
     } finally {
       setSaving(false);
     }
@@ -121,13 +94,6 @@ export default function Admin() {
             {saving ? t('saving') : t('save')}
           </Button>
         </div>
-        {alert && (
-          <Alert variant={alert.type === 'error' ? 'destructive' : 'default'} className="mt-2">
-            {alert.type === 'error' ? <AlertTriangleIcon /> : <CheckCircle2Icon />}
-            <AlertTitle>{alert.type === 'error' ? t('error') : t('success')}</AlertTitle>
-            <AlertDescription>{alert.message}</AlertDescription>
-          </Alert>
-        )}
       </div>
       <div className="w-full max-w-md mb-8 text-left">
         <div className="text-lg font-semibold text-bw-70 mb-4">{t('userFeedback')}</div>
