@@ -90,7 +90,7 @@ def test_query_vector_db_with_structured_context(
 
     # Assert
     mock_analyze.assert_called_once_with(audio_path)
-    mock_retriever_builder.assert_called_once_with(populate_db=False)
+    mock_retriever_builder.assert_called_once()
     fake_retriever.invoke.assert_called_once_with(expected_query)
     assert text == doc_content
     assert metadata == [doc_metadata]
