@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { api } from '@/services/Api';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages from './SimulationMessages';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 function useWebRTC() {
   const [isMicActive, setIsMicActive] = useState(false);
@@ -132,12 +131,19 @@ function useWebRTC() {
       });
       if (!offer.sdp) throw new Error('Failed to create offer: SDP is undefined');
       await pc.setLocalDescription(offer);
-      const response = await fetch(`${API_URL}/webrtc/offer`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/sdp' },
-        body: offer.sdp,
+      // const response = await fetch(`${API_URL}/webrtc/offer`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/sdp' },
+      //   body: offer.sdp,
+      // });
+      // const answerSdp = await response.text();
+      const response = await api.post('/webrtc/offer', offer.sdp, {
+        headers: {
+          'Content-Type': 'application/sdp',
+        },
+        responseType: 'text',
       });
-      const answerSdp = await response.text();
+      const answerSdp = response.data;
       await pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: answerSdp }));
     } catch (err) {
       console.error('[WebRTC] Initialization error:', err);
