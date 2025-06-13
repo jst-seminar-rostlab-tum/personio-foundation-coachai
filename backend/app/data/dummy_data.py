@@ -78,13 +78,14 @@ def get_dummy_user_profiles() -> list[UserProfile]:
 
 def get_dummy_user_goals(user_profiles: list[UserProfile]) -> list[UserGoal]:
     return [
-        UserGoal(goal_id=Goal.giving_constructive_feedback, user_id=user_profiles[0].id),
-        UserGoal(goal_id=Goal.managing_team_conflicts, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.giving_constructive_feedback, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.managing_team_conflicts, user_id=user_profiles[1].id),
     ]
 
 
 def get_dummy_conversation_scenarios(
-    user_profiles: list[UserProfile]) -> list[ConversationScenario]:
+    user_profiles: list[UserProfile],
+) -> list[ConversationScenario]:
     return [
         ConversationScenario(
             id=uuid4(),
@@ -109,7 +110,7 @@ def get_dummy_conversation_scenarios(
             context='Context 2',
             goal='Goal 2',
             other_party='Other Party 2',
-            difficulty_level= DifficultyLevel.medium,
+            difficulty_level=DifficultyLevel.medium,
             tone='Professional',
             complexity='Medium',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
@@ -354,7 +355,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.pending,  # Use the enum for status
+            status=FeedbackStatusEnum.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -423,7 +424,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.pending,  # Use the enum for status
+            status=FeedbackStatusEnum.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -475,10 +476,7 @@ def get_dummy_scenario_preparations(
     ]
 
 
-
-def get_dummy_user_confidence_scores(
-    user_profiles: list[UserProfile]
-) -> list[UserConfidenceScore]:
+def get_dummy_user_confidence_scores(user_profiles: list[UserProfile]) -> list[UserConfidenceScore]:
     """
     Generate dummy UserConfidenceScore data.
     """

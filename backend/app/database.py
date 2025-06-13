@@ -22,11 +22,10 @@ if settings.database_url:
         f'{settings.database_url}?sslmode=verify-full&sslrootcert={ssl_cert_path}'
     )
 else:
-    SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
-    # SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
+    SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
 
 # Configure engine with connection pooling and prepared statement settings
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'prepared_statements': False})
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 
 # Create the database tables

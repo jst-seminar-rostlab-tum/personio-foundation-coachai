@@ -33,7 +33,9 @@ router = APIRouter(prefix='/session', tags=['Sessions'])
 
 @router.get('/{session_id}', response_model=SessionDetailsRead)
 def get_session_by_id(
-    session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+    session_id: UUID,
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> SessionDetailsRead:
     """
     Retrieve a session by its ID.
@@ -42,6 +44,13 @@ def get_session_by_id(
     if not session:
         raise HTTPException(status_code=404, detail='No session found with the given ID')
 
+    current_scenario = session.scenario
+    if current_scenario.user_id != user_profile.id and user_profile.account_role != 'admin':
+        raise HTTPException(
+            status_code=400,
+            detail='You do not have permission to access this session '
+            'you can only view your own sessions',
+        )
     # Get session title from the conversation scenario
     conversation_scenario = db_session.get(ConversationScenario, session.scenario_id)
     if conversation_scenario:
