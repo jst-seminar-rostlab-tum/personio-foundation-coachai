@@ -18,9 +18,9 @@ settings = Settings()
 if settings.stage == 'prod':
     logger.info('Connecting to remote Supabase.')
     print('_____________________prod')
-    if not settings.SUPABASE_URL:
-        logger.error('SUPABASE_URL required in prod!')
-    SQLALCHEMY_DATABASE_URL = settings.SUPABASE_URL
+    if not settings.SUPABASE_DB_URL:
+        logger.error('SUPABASE_DB_URL required in prod!')
+    SQLALCHEMY_DATABASE_URL = settings.SUPABASE_DB_URL
     logger.debug('Connected to remote Supabase.')
 
 else:

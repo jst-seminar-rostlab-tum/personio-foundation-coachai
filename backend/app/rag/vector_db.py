@@ -69,7 +69,11 @@ def get_supabase_client() -> Client:
     Returns:
         Client: An authenticated Supabase client instance.
     """
-    return create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
+    if settings.stage == 'prod':
+        return create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
+    return create_client(
+        f'http://localhost:{settings.SUPABASE_KONG_HTTP_PORT}', settings.SUPABASE_ANON_KEY
+    )
 
 
 def load_vector_db(

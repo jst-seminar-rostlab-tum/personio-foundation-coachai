@@ -60,7 +60,7 @@ services:
       SUPABASE_DB: ${SUPABASE_DB}
       SUPABASE_PORT: ${SUPABASE_PORT}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
-      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_DB_URL: ${SUPABASE_DB_URL}
     entrypoint: ["uv", "run", "-m", "app.data.populate_dummy_data"]
     networks:
       - app-network

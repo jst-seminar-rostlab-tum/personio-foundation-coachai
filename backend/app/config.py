@@ -12,9 +12,12 @@ class Settings(BaseSettings):
     SUPABASE_PASSWORD: str = ''
     SUPABASE_DB: str = 'postgres'
     SUPABASE_PORT: int = 5432
-    SUPABASE_HOST: str = 'db'
+    SUPABASE_KONG_HTTP_PORT: int = 8001
+    SUPABASE_HOST: str = 'localhost'
 
     SUPABASE_URL: str = ''
+    SUPABASE_DB_URL: str = ''
+
     SUPABASE_ANON_KEY: str = ''
     SUPABASE_SERVICE_ROLE_KEY: str = ''
     SUPABASE_JWT_SECRET: str = ''

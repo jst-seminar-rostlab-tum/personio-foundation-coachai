@@ -1,3 +1,5 @@
+import os
+
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, text
 
@@ -125,6 +127,13 @@ def populate_data() -> None:
         db_session.add(empty_vector_data)
         db_session.commit()
         print('Vector store created successfully!')
+
+        print('Saving match_function for RAG')
+        sql_path = os.path.join(os.path.dirname(__file__), '..', 'rag', 'match_function.sql')
+        with open(sql_path) as f:
+            db_session.exec(text(f.read()))
+            db_session.commit()
+        print('Saved match_function.sql')
 
 
 if __name__ == '__main__':
