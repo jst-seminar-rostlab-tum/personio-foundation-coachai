@@ -85,3 +85,11 @@ class WebRTCDataChannelMessage(BaseModel):
 
     role: GeminiUserType = Field(..., description='Role of the message')
     text: str = Field(..., description='Text of the message')
+
+
+class GeminiSessionState(Enum):
+    """Gemini session states"""
+
+    SILENCE = 'silence'
+    USER_SPEECH = 'user_speech'
+    ASSISTANT_SPEECH = 'assistant_speech'

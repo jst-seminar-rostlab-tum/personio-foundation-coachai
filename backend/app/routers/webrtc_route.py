@@ -1,6 +1,5 @@
 import asyncio
 import fractions
-import logging
 import re
 import uuid
 from collections.abc import AsyncGenerator
@@ -17,18 +16,15 @@ from aiortc import (
     RTCSessionDescription,
 )
 from av import AudioFrame
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, FastAPI, Request, logger
 from fastapi.responses import PlainTextResponse
 
-from app.schemas.webrtc_schema import GeminiUserType, WebRTCDataChannelMessage
+from app.schemas.webrtc_schema import GeminiSessionState, GeminiUserType, WebRTCDataChannelMessage
 from app.services.gemini_model_service import connect_gemini
 
 AUDIO_PTIME = 0.02
 AUDIO_BITRATE = 16000
 
-# Logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('webrtc')
 connections: set['RTCConnection'] = set()
 
 router = APIRouter(prefix='/webrtc', tags=['WebRTC'])
@@ -79,32 +75,22 @@ class RTCConnection:
     async def handle_offer(self, request: Request) -> PlainTextResponse:
         try:
             content = await request.body()
-            # logger.info(f'Received content: {content}')
             offer = RTCSessionDescription(sdp=content.decode(), type='offer')
-            # logger.info(f'Created offer: {offer}')
 
-            # logger.info('Creating RTCPeerConnection...')
             self.pc = RTCPeerConnection(RTCConfiguration(iceServers=self.config.ice_servers))
             if not self.pc:
                 logger.error('Failed to create RTCPeerConnection')
                 raise Exception('Failed to create RTCPeerConnection')
             logger.info(f'Created RTCPeerConnection: {self.pc}')
 
-            # 在这里启动 Gemini 连接
             self._run_task = asyncio.create_task(self._run())
             logger.info('Started Gemini connection task')
 
-            # logger.info('Setting remote description...')
             await self.pc.setRemoteDescription(offer)
-            # logger.info('Remote description set successfully')
 
-            # logger.info('Creating answer...')
             answer = await self.pc.createAnswer()
-            # logger.info(f'Created answer: {answer}')
 
-            # logger.info('Setting local description...')
             await self.pc.setLocalDescription(answer)
-            # logger.info('Local description set successfully')
 
             sdp = self.pc.localDescription.sdp
             found = re.findall(r'a=rtpmap:(\d+) opus/48000/2', sdp)
@@ -230,13 +216,27 @@ class RTCConnection:
                     except Exception as e:
                         logger.error(f'Error processing transcription for peer {self.peer_id}: {e}')
 
+        async def listen_user_interrupt() -> None:
+            while self.pc and self.pc.connectionState != 'closed':
+                if self.recv_audio_track:
+                    await self.recv_audio_track.recv()
+                    if (
+                        self.genai_session
+                        and hasattr(self.genai_session, '_state')
+                        and self.genai_session._state == GeminiSessionState.ASSISTANT_SPEECH
+                    ):
+                        await self.genai_session.interrupt()
+                await asyncio.sleep(0.01)
+
         try:
             logger.info(f'Connecting to Gemini for peer {self.peer_id}...')
             async with connect_gemini() as session:
                 logger.info(f'Connected to GenAI session for peer {self.peer_id}')
                 self.genai_session = session
 
-                await asyncio.gather(run_send_track(), run_transcription_processor())
+                await asyncio.gather(
+                    run_send_track(), run_transcription_processor(), listen_user_interrupt()
+                )
                 logger.info(f'Connection finished for peer {self.peer_id}')
 
         except Exception as e:

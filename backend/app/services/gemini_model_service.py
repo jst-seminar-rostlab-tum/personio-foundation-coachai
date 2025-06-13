@@ -1,19 +1,19 @@
 import asyncio
 import contextlib
-import logging
 import re
 from abc import abstractmethod
 from collections.abc import AsyncGenerator, AsyncIterator
 from typing import Optional, Protocol, Union
 
-from aiortc import RTCDataChannel, RTCPeerConnection
 from av import AudioFrame, AudioResampler
+from fastapi import logger
 from google import genai
 from google.genai import live
 from PIL.Image import Image
 
 from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_client
 from app.schemas.webrtc_schema import (
+    GeminiSessionState,
     GeminiStreamConnectionError,
     GeminiStreamReceiveError,
     GeminiStreamSendError,
@@ -24,14 +24,6 @@ AUDIO_PTIME = 0.02
 
 type Input = Union[str, AudioFrame, Image]
 type Output = AudioFrame
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-
-class RTCConnection(Protocol):
-    datachannel: Optional[RTCDataChannel]
-    pc: Optional[RTCPeerConnection]
 
 
 class Model(Protocol):
@@ -139,8 +131,21 @@ class Gemini(Model):
         self._input_processor = TranscriptionProcessor()
         self._input = ''
         self._output = ''
+        self._state = GeminiSessionState.SILENCE
+        self._state_lock = asyncio.Lock()
+
+    async def set_state(self, state: GeminiSessionState) -> None:
+        async with self._state_lock:
+            self._state = state
+
+    async def get_state(self) -> GeminiSessionState:
+        async with self._state_lock:
+            return self._state
 
     async def send(self, input: Input) -> None:
+        if self.session is None:
+            return
+        await self.set_state(GeminiSessionState.USER_SPEECH)
         try:
             if isinstance(input, str):
                 await self.session.send(input=input, end_of_turn=True)
@@ -154,9 +159,16 @@ class Gemini(Model):
         except Exception as e:
             logger.error(f'Error sending to Gemini: {e}')
             raise GeminiStreamSendError(f'Error sending to Gemini: {e}') from e
+        finally:
+            await self.set_state(GeminiSessionState.SILENCE)
 
     async def recv(self) -> AsyncIterator[Output]:
         """Only process audio frames"""
+        if self.session is None:
+            return
+        state = await self.get_state()
+        assert state != GeminiSessionState.USER_SPEECH
+        await self.set_state(GeminiSessionState.ASSISTANT_SPEECH)
         turn = self.session.receive()
         async for response in turn:
             try:
@@ -205,6 +217,12 @@ class Gemini(Model):
                 await self._input_transcription_queue.put(self._input)
                 self._input = ''
                 self._output = ''
+            await self.set_state(GeminiSessionState.SILENCE)
+
+    async def interrupt(self) -> None:
+        if self.session is None:
+            return
+        await self.session.send(input='', end_of_turn=True)
 
     async def close(self) -> None:
         if self.session is None:
@@ -220,6 +238,7 @@ class Gemini(Model):
             self._output += output_final_text
         self._input = ''
         self._output = ''
+        await self.set_state(GeminiSessionState.SILENCE)
 
 
 client = get_client()
