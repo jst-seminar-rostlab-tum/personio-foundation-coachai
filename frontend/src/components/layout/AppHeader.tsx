@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, X } from 'lucide-react';
+import { LogOut, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -69,8 +69,9 @@ export function AppHeader() {
               {isMenuOpen ? <X className="!w-4 !h-4" /> : <Menu className="!w-4 !h-4" />}
             </Button>
             <Link href="/logout">
-              <Button variant="outline" className="hidden md:flex h-8">
-                <span className="hidden md:block text-xs font-medium">{t('logout')}</span>
+              <Button variant="secondary" className="hidden md:flex h-8">
+                <LogOut className="!w-4 !h-4 hidden md:block lg:hidden" />
+                <span className="hidden lg:block text-xs font-medium">{t('logout')}</span>
               </Button>
             </Link>
           </div>
@@ -100,14 +101,10 @@ export function AppHeader() {
                 {t(key)}
               </Link>
             ))}
-            <Link href="/logout">
-              <Button
-                variant="ghost"
-                className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50"
-                onClick={() => setIsMenuOpen(false)}
-              >
+            <Link href="/logout" onClick={() => setIsMenuOpen(false)}>
+              <span className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50">
                 {t('logout')}
-              </Button>
+              </span>
             </Link>
           </nav>
         </div>
