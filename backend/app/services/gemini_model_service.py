@@ -6,11 +6,9 @@ from abc import abstractmethod
 from collections.abc import AsyncGenerator, AsyncIterator
 from typing import Optional, Protocol, Union
 
-from aiortc import RTCDataChannel, RTCPeerConnection
 from av import AudioFrame, AudioResampler
 from google import genai
 from google.genai import live
-from PIL.Image import Image
 
 from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_client
 from app.schemas.webrtc_schema import (
@@ -22,16 +20,11 @@ from app.schemas.webrtc_schema import (
 SAMPLE_RATE = 16000
 AUDIO_PTIME = 0.02
 
-type Input = Union[str, AudioFrame, Image]
+type Input = Union[str, AudioFrame]
 type Output = AudioFrame
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
-
-class RTCConnection(Protocol):
-    datachannel: Optional[RTCDataChannel]
-    pc: Optional[RTCPeerConnection]
 
 
 class Model(Protocol):
