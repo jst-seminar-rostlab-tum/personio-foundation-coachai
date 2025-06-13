@@ -9,6 +9,7 @@ from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import Field, Relationship
 
 from app.models.camel_case import CamelModel
+from app.models.language import LanguageCode
 
 if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
@@ -31,6 +32,7 @@ class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a d
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
     custom_category_label: Optional[str] = None
+    language_code: LanguageCode = Field(default=LanguageCode.en)
     context: str
     goal: str
     other_party: str
@@ -73,6 +75,7 @@ class ConversationScenarioCreate(CamelModel):
     difficulty_id: UUID
     tone: Optional[str] = None
     complexity: Optional[str] = None
+    language_code: LanguageCode = LanguageCode.en
     status: ConversationScenarioStatus = ConversationScenarioStatus.draft
 
 
@@ -88,6 +91,7 @@ class ConversationScenarioRead(CamelModel):
     difficulty_id: UUID
     tone: Optional[str]
     complexity: Optional[str]
+    language_code: LanguageCode
     status: ConversationScenarioStatus
     created_at: datetime
     updated_at: datetime

@@ -32,6 +32,7 @@ dependencies = [
   "langchain-postgres>=0.0.14",
   "langchain-openai>=0.3.21",
   "google-genai>=1.19.0",
+  "pyjwt>=2.10.1",
 ]
 
 [tool.setuptools]

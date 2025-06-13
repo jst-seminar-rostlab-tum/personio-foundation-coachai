@@ -9,7 +9,6 @@ from app.data import (
     get_dummy_difficulty_levels,
     get_dummy_experiences,
     get_dummy_goals,
-    get_dummy_languages,
     get_dummy_learning_styles,
     get_dummy_ratings,
     get_dummy_scenario_preparations,
@@ -34,11 +33,6 @@ def populate_data() -> None:
 
         print('Creating tables...')
         SQLModel.metadata.create_all(engine)
-
-        # Populate Languages
-        languages = get_dummy_languages()
-        db_session.add_all(languages)
-        db_session.commit()
 
         # Populate Experiences
         experiences = get_dummy_experiences()

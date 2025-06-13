@@ -45,7 +45,7 @@ def get_user_profile_ids(
         user_profiles.append(
             UserProfileRead(
                 id=user.id,
-                preferred_language=user.preferred_language,
+                preferred_language_code=user.preferred_language_code,
                 role=user.role,
                 experience_id=user.experience_id,
                 preferred_learning_style_id=user.preferred_learning_style_id,
@@ -81,7 +81,7 @@ def get_user_profile_by_id(
 
     user_data = UserProfileExtendedRead(
         user_id=user.id,
-        preferred_language=user.preferred_language,
+        preferred_language_code=user.preferred_language_code,
         role=user.role if user.role else None,
         experience=user.experience.label if user.experience else None,
         preferred_learning_style=user.preferred_learning_style.label
@@ -118,7 +118,7 @@ def get_user_profiles(
         if uid not in user_map:
             user_map[uid] = {
                 'user_id': uid,
-                'preferred_language': user.preferred_language,
+                'preferred_language_code': user.preferred_language_code,
                 'role': user.role if user.role else None,
                 'experience': user.experience.label if user.experience else None,
                 'preferred_learning_style': user.preferred_learning_style.label
@@ -153,7 +153,7 @@ def get_user_profiles(
         final_result.append(
             UserProfileExtendedRead(
                 user_id=user_data['user_id'],
-                preferred_language=user_data['preferred_language'],
+                preferred_language_code=user_data['preferred_language_code'],
                 role=user_data['role'],
                 experience=user_data['experience'],
                 preferred_learning_style=user_data['preferred_learning_style'],
@@ -178,7 +178,7 @@ def create_user_profile(
     new_user = UserProfile(
         role=user_data.role,
         experience_id=user_data.experience_id,
-        preferred_language=user_data.preferred_language,
+        preferred_language_code=user_data.preferred_language_code,
         preferred_learning_style_id=user_data.preferred_learning_style_id,
     )
     db_session.add(new_user)
@@ -222,7 +222,7 @@ def update_user_profile(
     # Update UserProfile fields
     user.role = user_data.role
     user.experience_id = user_data.experience_id
-    user.preferred_language = user_data.preferred_language
+    user.preferred_language_code = user_data.preferred_language_code
     user.preferred_learning_style_id = user_data.preferred_learning_style_id
     user.store_conversations = user_data.store_conversations
 
@@ -276,8 +276,8 @@ def patch_user_profile(
         user.role = user_data['role']
     if 'experience_id' in user_data:
         user.experience_id = user_data['experience_id']
-    if 'preferred_language' in user_data:
-        user.preferred_language = user_data['preferred_language']
+    if 'preferred_language_code' in user_data:
+        user.preferred_language_code = user_data['preferred_language_code']
     if 'preferred_learning_style_id' in user_data:
         user.preferred_learning_style_id = user_data['preferred_learning_style_id']
     if 'store_conversations' in user_data:

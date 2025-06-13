@@ -1,17 +1,18 @@
+import logging
+import sys
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-
-# from .database import engine
 from app.database import create_db_and_tables
 from app.routers import (
     app_config_route,
+    auth_route,
     confidence_area_route,
     conversation_category_route,
     conversation_scenario_route,
     goal_route,
-    language_route,
     learning_style_route,
     personalization_options_route,
     rating_route,
@@ -25,17 +26,23 @@ from app.routers import (
     user_profile_stats_route,
 )
 
+logging.basicConfig(
+    level=logging.INFO,
+    stream=sys.stdout,
+    format='%(message)s',
+)
+
 app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://localhost:3000'],
+    allow_origins=[settings.CORS_ORIGIN],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
 )
 
-app.include_router(language_route.router)
+app.include_router(auth_route.router)
 app.include_router(conversation_category_route.router)
 app.include_router(conversation_scenario_route.router)
 app.include_router(session_route.router)
