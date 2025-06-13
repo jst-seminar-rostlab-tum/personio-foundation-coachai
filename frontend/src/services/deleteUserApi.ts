@@ -1,4 +1,4 @@
-import api from './Api';
+import { api } from './Api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
