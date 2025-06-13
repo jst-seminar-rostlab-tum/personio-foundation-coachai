@@ -46,8 +46,6 @@ export default function FeedbackDetail() {
   ];
 
   const roundCardStats = [
-    { key: t('stats.speakingTime'), value: `${mockFeedback.speakingTime}%`, icon: 'Mic' },
-    { key: t('stats.questionsAsked'), value: mockFeedback.questionAsked, icon: 'Message' },
     { key: t('stats.sessionLength'), value: mockFeedback.sessionLength, icon: 'Clock' },
     { key: t('stats.goalsAchieved'), value: mockFeedback.goalsAcheived, icon: 'Check' },
   ];
@@ -144,7 +142,7 @@ export default function FeedbackDetail() {
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
 
-      <div className="grid grid-cols-2 gap-y-4 w-full px-1 md:flex md:justify-between">
+      <div className="flex justify-evenly w-full">
         {roundCardStats.map((stat) => (
           <div className="flex gap-2 items-center" key={stat.key}>
             <div className="rounded-full size-11 border-1 border-bw-30 bg-bw-10 flex items-center justify-center">
