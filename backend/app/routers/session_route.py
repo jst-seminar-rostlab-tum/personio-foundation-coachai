@@ -234,7 +234,7 @@ def delete_session(
     return {'message': 'Session deleted successfully'}
 
 
-@router.delete('/clear-all/{user_id}', response_model=dict)
+@router.delete('/clear-all', response_model=dict)
 def delete_sessions_by_user(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     user: Annotated[UserProfile, Depends(require_user)],
