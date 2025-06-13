@@ -6,8 +6,8 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
 import { Button } from '@/components/ui/Button';
-import StatCard from '@/components/common/StatCard';
 import HistoryItem from '@/components/common/HistoryItem';
+import DashboardStats from './components/DashboardStats';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -53,12 +53,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard value={56} label={t('userStats.totalSessions')} />
-        <StatCard value="17.2h" label={t('userStats.trainingTime')} />
-        <StatCard value="37d" label={t('userStats.currentStreak')} />
-        <StatCard value="89%" label={t('userStats.avgScore')} />
-      </div>
+      <DashboardStats />
 
       <section className="flex flex-col gap-4">
         <div>
