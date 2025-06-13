@@ -5,7 +5,6 @@ from app.data import (
     get_dummy_app_configs,
     get_dummy_conversation_categories,
     get_dummy_conversation_scenarios,
-    get_dummy_difficulty_levels,
     get_dummy_ratings,
     get_dummy_scenario_preparations,
     get_dummy_session_feedback,
@@ -30,10 +29,6 @@ def populate_data() -> None:
         print('Creating tables...')
         SQLModel.metadata.create_all(engine)
 
-        # Populate Difficulty Levels
-        difficulty_levels = get_dummy_difficulty_levels()
-        db_session.add_all(difficulty_levels)
-
         # to get their IDs
         db_session.commit()
 
@@ -49,7 +44,7 @@ def populate_data() -> None:
         db_session.add_all(user_goals)
 
         # Populate Conversation Scenarios
-        conversation_scenarios = get_dummy_conversation_scenarios(user_profiles, difficulty_levels)
+        conversation_scenarios = get_dummy_conversation_scenarios(user_profiles)
         db_session.add_all(conversation_scenarios)
         db_session.commit()
 
