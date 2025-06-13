@@ -27,7 +27,7 @@ from app.services.openai_model_service import OpenAI, connect_openai
 AUDIO_PTIME = 0.02
 AUDIO_BITRATE = 16000
 
-MODEL_SERVICE = 'openai'
+MODEL_SERVICE = 'gemini'
 
 connections: set['RTCConnection'] = set()
 
@@ -229,7 +229,6 @@ class RTCConnection:
                         input_transcription = await asyncio.wait_for(
                             self.ai_session._input_transcription_queue.get(), timeout=1.0
                         )
-                        logger.debug(f'Input transcription: {input_transcription}')
 
                         if (
                             self.datachannel
