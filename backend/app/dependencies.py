@@ -8,7 +8,7 @@ from sqlmodel import Session, select
 from app.config import Settings
 from app.database import get_db_session
 from app.models import UserProfile
-from app.models.user_profile import UserRole
+from app.models.user_profile import AccountRole
 
 settings = Settings()
 security = HTTPBearer(auto_error=not (settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH))
@@ -75,7 +75,7 @@ def require_user(
     user_id = token['sub']
     statement = select(UserProfile).where(UserProfile.id == user_id)
     user = db.exec(statement).first()
-    if not user or user.role not in [UserRole.user, UserRole.admin]:
+    if not user or user.role not in [AccountRole.user, AccountRole.admin]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail='User does not have access'
         )
@@ -92,6 +92,6 @@ def require_admin(
     user_id = token['sub']
     statement = select(UserProfile).where(UserProfile.id == user_id)
     user = db.exec(statement).first()
-    if not user or user.role != UserRole.admin:
+    if not user or user.role != AccountRole.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Admin access required')
     return user

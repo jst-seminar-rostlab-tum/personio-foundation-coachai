@@ -63,7 +63,7 @@ export function SignInForm() {
       return;
     }
 
-    router.push('/');
+    router.push('/dashboard');
   };
 
   return (

@@ -92,7 +92,8 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
     )
     example_items = '\n'.join(mock_response.items)
     user_prompt = (
-        f'Generate {request.num_checkpoints} checklist items for the following conversation scenario:\n'
+        f'Generate {request.num_checkpoints} checklist items for'
+        f' the following conversation scenario:\n'
         f'Each item should be a single, concise sentence,'
         f' similar in length and style to the examples below.\n'
         f'Return the result strictly as a JSON object like:\n'
