@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 import logging
+import re
 from abc import abstractmethod
 from collections.abc import AsyncGenerator, AsyncIterator
 from typing import Optional, Protocol, Union
@@ -19,7 +20,6 @@ AUDIO_PTIME = 0.02
 type Input = Union[str, AudioFrame, Image]
 type Output = AudioFrame
 
-# 配置日志
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -43,6 +43,75 @@ class Model(Protocol):
         pass
 
 
+class TranscriptionProcessor:
+    def __init__(self) -> None:
+        self.buffer = ''
+
+    def _process_text(self, text: str) -> str:
+        # 1. Remove extra spaces and line breaks
+        text = text.replace('\n', ' ').replace('\r', '').strip()
+        text = re.sub(r'\s+', ' ', text)
+
+        # 2. Add space after punctuation
+        text = re.sub(r'([.,!?])([A-Za-z])', r'\1 \2', text)
+
+        # 3. Add space before capital letters at sentence start
+        text = re.sub(r'([.!?])\s*([A-Z])', r'\1 \2', text)
+
+        # 4. Fix common word joins
+        text = re.sub(r'([a-z])([A-Z])', r'\1 \2', text)
+
+        return text.strip()
+
+    def _split_sentences(self, text: str) -> tuple[list[str], str]:
+        # Split by sentence endings
+        sentences = re.split(r'([.!?])\s*', text)
+        result = []
+        current = ''
+
+        for i in range(0, len(sentences) - 1, 2):
+            if i + 1 < len(sentences):
+                current += sentences[i] + sentences[i + 1]
+                if sentences[i + 1] in '.!?':
+                    result.append(current.strip())
+                    current = ''
+            else:
+                current += sentences[i]
+
+        return result, current
+
+    def process_text(self, text: str) -> Optional[str]:
+        if not text:
+            return None
+
+        logger.info(f'Processing text: {text}')
+        self.buffer += text
+        logger.info(f'Current buffer: {self.buffer}')
+
+        # Process text
+        processed_buffer = self._process_text(self.buffer)
+        logger.info(f'Processed buffer: {processed_buffer}')
+
+        # Split sentences
+        complete_sentences, remaining = self._split_sentences(processed_buffer)
+        logger.info(f'Complete sentences: {complete_sentences}')
+        logger.info(f'Remaining text: {remaining}')
+
+        if complete_sentences:
+            self.buffer = remaining
+            return ' '.join(complete_sentences)
+
+        return None
+
+    def flush(self) -> Optional[str]:
+        if self.buffer.strip():
+            result = self._process_text(self.buffer)
+            logger.info(f'Flush result: {result}')
+            self.buffer = ''
+            return result
+        return None
+
+
 class Gemini(Model):
     def __init__(
         self,
@@ -57,6 +126,7 @@ class Gemini(Model):
         )
         self._audio_queue = asyncio.Queue()
         self._transcription_queue = asyncio.Queue()
+        self._transcription_processor = TranscriptionProcessor()
 
     async def send(self, input: Input) -> None:
         if isinstance(input, str):
@@ -86,25 +156,22 @@ class Gemini(Model):
                 response.server_content.output_transcription
                 and response.server_content.output_transcription.text
             ):
-                await self._transcription_queue.put(
-                    response.server_content.output_transcription.text
-                )
-
-    async def process_transcriptions(self) -> None:
-        """Process transcription text asynchronously"""
-        while True:
-            try:
-                transcription = await self._transcription_queue.get()
-                logger.info(f'Processing transcription: {transcription}')
-                # TODO: Add text processing logic here
-            except Exception as e:
-                logger.error(f'Error processing transcription: {e}')
+                transcription_text = response.server_content.output_transcription.text
+                logger.info(f'Received transcription: {transcription_text}')
+                processed_text = self._transcription_processor.process_text(transcription_text)
+                if processed_text:
+                    logger.info(f'Sending processed text: {processed_text}')
+                    await self._transcription_queue.put(processed_text)
 
     async def close(self) -> None:
         if self.session is None:
             return
         await self.session.close()
         self.session = None
+
+        final_text = self._transcription_processor.flush()
+        if final_text:
+            await self._transcription_queue.put(final_text)
 
 
 client = get_client()

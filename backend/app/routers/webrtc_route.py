@@ -20,12 +20,12 @@ from av import AudioFrame
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import PlainTextResponse
 
-from app.services.model_gemini import connect_gemini
+from app.services.gemini_model_service import connect_gemini
 
 AUDIO_PTIME = 0.02
 AUDIO_BITRATE = 16000
 
-# 配置日志
+# Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('webrtc')
 connections: set['RTCConnection'] = set()
