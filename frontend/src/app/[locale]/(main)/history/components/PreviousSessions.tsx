@@ -4,55 +4,56 @@ import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import HistoryItem from '@/components/common/HistoryItem';
 
 const mockSessions = [
   {
     title: 'Negotiating Job Offers',
     description: 'Practice salary negotiation with a potential candidate',
-    date: '16.04.25',
-    time: '12:37',
+    date: '2025-06-10T09:15:00',
+    duration: 1728,
   },
   {
     title: 'Conflict Resolution',
     description: 'Mediate a disagreement between team members',
-    date: '08.04.25',
-    time: '13:36',
+    date: '2025-06-09T14:00:00',
+    duration: 2925,
   },
   {
     title: 'Performance Review',
-    description: 'Conduct a quaterly performance review',
-    date: '16.04.25',
-    time: '12:37',
+    description: 'Conduct a quarterly performance review',
+    date: '2025-06-08T10:30:00',
+    duration: 1263,
   },
   {
     title: 'Team Building',
     description: 'Facilitate a team building exercise',
-    date: '07.03.25',
-    time: '10:15',
+    date: '2025-06-06T16:45:00',
+    duration: 3287,
   },
   {
     title: 'Feedback Session',
     description: 'Give constructive feedback to a peer',
-    date: '22.02.25',
-    time: '09:00',
+    date: '2025-06-05T08:00:00',
+    duration: 528,
   },
   {
     title: 'Project Kickoff',
     description: 'Start a new project with the team',
-    date: '15.01.25',
-    time: '14:20',
+    date: '2025-06-03T13:00:00',
+    duration: 3537,
   },
   {
     title: 'One-on-One',
     description: 'Have a one-on-one meeting with a direct report',
-    date: '10.01.25',
-    time: '11:45',
+    date: '2025-06-02T11:20:00',
+    duration: 1323,
   },
   {
     title: 'Strategy Planning',
     description: 'Plan the strategy for the next quarter',
-    date: '05.01.25',
-    time: '16:00',
+    date: '2025-06-01T15:30:00',
+    duration: 1724,
   },
 ];
 
@@ -82,20 +83,13 @@ export default function PreviousSessions() {
       </div>
       <div className="flex flex-col gap-4">
         {visibleSessions.map((session, idx) => (
-          <div
+          <HistoryItem
             key={idx}
-            className=" border border-bw-20 rounded-xl px-4 py-3 flex justify-between items-center"
-          >
-            <div>
-              <div className="font-semibold text-bw-70 text-sm mb-1">{session.title}</div>
-              <div className="text-xs text-bw-40 leading-tight">{session.description}</div>
-            </div>
-            <div className="text-xs text-bw-70 text-center whitespace-nowrap ml-4">
-              {session.date}
-              <br />
-              {session.time}
-            </div>
-          </div>
+            title={session.title}
+            description={session.description}
+            date={new Date(session.date)}
+            duration={session.duration}
+          />
         ))}
       </div>
       {canLoadMore && (
