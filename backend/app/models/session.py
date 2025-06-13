@@ -12,8 +12,8 @@ from app.models.session_feedback import SessionFeedbackMetrics
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
-    from app.models.language import Language
     from app.models.rating import Rating
+    from app.models.review import Review
     from app.models.session_feedback import SessionFeedback
     from app.models.session_turn import SessionTurn
 
@@ -26,20 +26,18 @@ class Session(CamelModel, table=True):  # `table=True` makes it a database table
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
-    language_code: str = Field(foreign_key='language.code')  # Foreign key to LanguageModel
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
     scenario: Optional['ConversationScenario'] = Relationship(back_populates='sessions')
-    language: Optional['Language'] = Relationship()  # Relationship to Language
     session_turns: list['SessionTurn'] = Relationship(back_populates='session', cascade_delete=True)
     feedback: Optional['SessionFeedback'] = Relationship(
         back_populates='session', cascade_delete=True
     )
     ratings: list['Rating'] = Relationship(back_populates='session', cascade_delete=True)
-
+    session_review: Optional['Review'] = Relationship(back_populates='session')
     # Automatically update `updated_at` before an update
 
 
@@ -54,7 +52,6 @@ class SessionCreate(CamelModel):
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
-    language_code: str
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
 
 
@@ -65,7 +62,6 @@ class SessionRead(CamelModel):
     scheduled_at: datetime | None
     started_at: datetime | None
     ended_at: datetime | None
-    language_code: str
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime
     updated_at: datetime
