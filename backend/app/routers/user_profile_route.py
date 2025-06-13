@@ -186,12 +186,12 @@ def create_user_profile(
     db_session.refresh(new_user)
 
     # Add goals
-    for goal_id in user_data['goal_ids']:
+    for goal_id in user_data.goal_ids:
         user_goal = UserGoal(user_id=new_user.id, goal_id=goal_id)
         db_session.add(user_goal)
 
     # Add confidence scores
-    for confidence_score in user_data['confidence_scores']:
+    for confidence_score in user_data.confidence_scores:
         user_confidence_score = UserConfidenceScore(
             user_id=new_user.id,
             area_id=confidence_score['area_id'],
