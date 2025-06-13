@@ -78,8 +78,8 @@ def get_dummy_user_profiles() -> list[UserProfile]:
 
 def get_dummy_user_goals(user_profiles: list[UserProfile]) -> list[UserGoal]:
     return [
-        UserGoal(goal_id=Goal.giving_constructive_feedback, user_id=user_profiles[0].id),
-        UserGoal(goal_id=Goal.managing_team_conflicts, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.giving_constructive_feedback, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.managing_team_conflicts, user_id=user_profiles[1].id),
     ]
 
 
