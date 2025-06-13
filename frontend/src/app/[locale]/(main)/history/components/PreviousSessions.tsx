@@ -5,6 +5,17 @@ import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { clearAllSessions } from '@/services/SessionService';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/AlertDialog';
 
 const mockSessions = [
   {
@@ -96,14 +107,25 @@ export default function PreviousSessions() {
           <Button variant="ghost">
             {t('exportHistory')} <Download />
           </Button>
-          <Button
-            variant="ghost"
-            className="hover:text-flame-50"
-            disabled={isDeleting}
-            onClick={handleDeleteAll}
-          >
-            {t('clearAll')} <Trash2 />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" className="hover:text-flame-50" disabled={isDeleting}>
+                {t('clearAll')} <Trash2 />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t('deleteAllSessions')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('deleteAllSessionsConfirmation')}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteAll}>{t('delete')}</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
       <div className="flex flex-col gap-4">
