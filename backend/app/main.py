@@ -9,12 +9,8 @@ from app.database import create_db_and_tables
 from app.routers import (
     app_config_route,
     auth_route,
-    confidence_area_route,
     conversation_category_route,
     conversation_scenario_route,
-    goal_route,
-    learning_style_route,
-    personalization_options_route,
     rating_route,
     scenario_preparation_route,
     session_feedback_route,
@@ -53,11 +49,7 @@ app.include_router(rating_route.router)
 app.include_router(user_profile_route.router)
 app.include_router(user_profile_stats_route.router)
 app.include_router(user_goals_route.router)
-app.include_router(goal_route.router)
-app.include_router(confidence_area_route.router)
 app.include_router(user_confidence_score_route.router)
-app.include_router(learning_style_route.router)
-app.include_router(personalization_options_route.router)
 app.include_router(app_config_route.router)
 
 

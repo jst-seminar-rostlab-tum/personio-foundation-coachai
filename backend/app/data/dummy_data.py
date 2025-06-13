@@ -3,14 +3,10 @@ from enum import Enum
 from uuid import UUID, uuid4
 
 from app.models.app_config import AppConfig, ConfigType
-from app.models.confidence_area import ConfidenceArea
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario, ConversationScenarioStatus
 from app.models.difficulty_level import DifficultyLevel  # Assuming this is the new model
-from app.models.experience import Experience
-from app.models.goal import Goal
 from app.models.language import LanguageCode
-from app.models.learning_style import LearningStyle
 from app.models.rating import Rating
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
@@ -19,9 +15,15 @@ from app.models.session_feedback import (
     SessionFeedback,
 )
 from app.models.session_turn import SessionTurn, SpeakerEnum
-from app.models.user_confidence_score import UserConfidenceScore
-from app.models.user_goal import UserGoal
-from app.models.user_profile import UserProfile, UserRole
+from app.models.user_confidence_score import ConfidenceArea, UserConfidenceScore
+from app.models.user_goal import Goal, UserGoal
+from app.models.user_profile import (
+    AccountRole,
+    Experience,
+    PreferredLearningStyle,
+    ProfessionalRole,
+    UserProfile,
+)
 
 
 class MockUserIdsEnum(Enum):
@@ -35,52 +37,6 @@ class MockUserIdsEnum(Enum):
     ADMIN = UUID('763c76f3-e5a4-479c-8b53-e3418d5e2ef5')
 
 
-def get_dummy_learning_styles() -> list[LearningStyle]:
-    """
-    Generate dummy LearningStyle data.
-    """
-    return [
-        LearningStyle(
-            id=uuid4(),
-            label='Visual',
-            description='Prefers learning through visual aids like diagrams and charts.',
-        ),
-        LearningStyle(
-            id=uuid4(),
-            label='Auditory',
-            description='Prefers learning through listening to explanations and discussions.',
-        ),
-        LearningStyle(
-            id=uuid4(),
-            label='Kinesthetic',
-            description='Prefers learning through hands-on activities and physical engagement.',
-        ),
-    ]
-
-
-def get_dummy_experiences() -> list[Experience]:
-    return [
-        Experience(id=uuid4(), label='Beginner', description='New to the field'),
-        Experience(id=uuid4(), label='Intermediate', description='Some experience'),
-        Experience(id=uuid4(), label='Expert', description='Highly experienced'),
-    ]
-
-
-def get_dummy_goals() -> list[Goal]:
-    return [
-        Goal(
-            id=uuid4(),
-            label='Improve Communication',
-            description='Focus on verbal and non-verbal communication skills.',
-        ),
-        Goal(
-            id=uuid4(),
-            label='Time Management',
-            description='Improve productivity and manage time effectively.',
-        ),
-    ]
-
-
 def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
     return [
         DifficultyLevel(id=uuid4(), label='Easy'),
@@ -89,10 +45,7 @@ def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
     ]
 
 
-def get_dummy_user_profiles(
-    experiences: list[Experience],
-    learning_styles: list[LearningStyle],
-) -> list[UserProfile]:
+def get_dummy_user_profiles() -> list[UserProfile]:
     """
     Generate dummy UserProfile data.
     """
@@ -100,9 +53,10 @@ def get_dummy_user_profiles(
         UserProfile(
             id=MockUserIdsEnum.USER.value,
             preferred_language_code=LanguageCode.en,
-            role=UserRole.user,
-            experience_id=experiences[0].id,
-            preferred_learning_style_id=learning_styles[0].id,
+            account_role=AccountRole.user,
+            professional_role=ProfessionalRole.hr_professional,
+            experience=Experience.beginner,
+            preferred_learning_style=PreferredLearningStyle.visual,
             store_conversations=False,
             total_sessions=32,
             training_time=4.5,
@@ -113,9 +67,10 @@ def get_dummy_user_profiles(
         UserProfile(
             id=MockUserIdsEnum.ADMIN.value,
             preferred_language_code=LanguageCode.en,
-            role=UserRole.admin,
-            experience_id=experiences[1].id,
-            preferred_learning_style_id=learning_styles[1].id,
+            account_role=AccountRole.admin,
+            professional_role=ProfessionalRole.executive,
+            experience=Experience.expert,
+            preferred_learning_style=PreferredLearningStyle.kinesthetic,
             store_conversations=True,
             total_sessions=5,
             training_time=4.2,
@@ -126,10 +81,10 @@ def get_dummy_user_profiles(
     ]
 
 
-def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) -> list[UserGoal]:
+def get_dummy_user_goals(user_profiles: list[UserProfile]) -> list[UserGoal]:
     return [
-        UserGoal(goal_id=goals[0].id, user_id=user_profiles[0].id),
-        UserGoal(goal_id=goals[1].id, user_id=user_profiles[1].id),
+        UserGoal(goal_id=Goal.giving_constructive_feedback, user_id=user_profiles[0].id),
+        UserGoal(goal_id=Goal.managing_team_conflicts, user_id=user_profiles[1].id),
     ]
 
 
@@ -526,58 +481,26 @@ def get_dummy_scenario_preparations(
     ]
 
 
-def get_dummy_confidence_areas() -> list[ConfidenceArea]:
-    """
-    Generate dummy ConfidenceArea data.
-    """
-    return [
-        ConfidenceArea(
-            id=uuid4(),
-            label='Giving difficult feedback',
-            description='Confidence in providing constructive feedback in challenging situations.',
-            min_value=0,
-            max_value=100,
-            min_label='Not confident',
-            max_label='Very confident',
-        ),
-        ConfidenceArea(
-            id=uuid4(),
-            label='Managing team conflicts',
-            description='Confidence in resolving conflicts within a team effectively.',
-            min_value=0,
-            max_value=100,
-            min_label='Not confident',
-            max_label='Very confident',
-        ),
-        ConfidenceArea(
-            id=uuid4(),
-            label='Leading challenging conversations',
-            description='Confidence in leading conversations that require tact and diplomacy.',
-            min_value=0,
-            max_value=100,
-            min_label='Not confident',
-            max_label='Very confident',
-        ),
-    ]
-
 
 def get_dummy_user_confidence_scores(
-    user_profiles: list[UserProfile], confidence_areas: list[ConfidenceArea]
+    user_profiles: list[UserProfile]
 ) -> list[UserConfidenceScore]:
     """
     Generate dummy UserConfidenceScore data.
     """
     scores = []
-    for user in user_profiles:
-        for area in confidence_areas:
-            scores.append(
-                UserConfidenceScore(
-                    area_id=area.id,
-                    user_id=user.id,
-                    score=50,  # Default score for demonstration
-                    updated_at=datetime.now(UTC),
-                )
+    areas = list(ConfidenceArea)  # ['giving_difficult_feedback', 'managing_team_conflicts', ...]
+
+    for i, user in enumerate(user_profiles):
+        assigned_area = areas[i % len(areas)]
+        scores.append(
+            UserConfidenceScore(
+                confidence_area=assigned_area,
+                user_id=user.id,
+                score=50,
+                updated_at=datetime.now(UTC),
             )
+        )
     return scores
 
 
