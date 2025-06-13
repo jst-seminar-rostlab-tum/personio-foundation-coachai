@@ -2,11 +2,22 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-const mockMessages = [
+interface Message {
+  id: number;
+  text: string;
+  sender: 'user' | 'assistant';
+  timestamp?: Date;
+}
+
+interface SimulationMessagesProps {
+  receivedTranscripts: { role: string; text: string }[];
+}
+
+const mockMessages: Message[] = [
   {
     id: 1,
     text: "Thanks for meeting with me today. I wanted to discuss the project deadlines you've missed recently.",
-    sender: 'other',
+    sender: 'assistant',
   },
   {
     id: 2,
@@ -16,7 +27,7 @@ const mockMessages = [
   {
     id: 3,
     text: 'Several tasks that were due last week are still unfinished...',
-    sender: 'other',
+    sender: 'assistant',
   },
   {
     id: 4,
@@ -26,7 +37,7 @@ const mockMessages = [
   {
     id: 5,
     text: "Can you help me understand what's been causing these delays?",
-    sender: 'other',
+    sender: 'assistant',
   },
   {
     id: 6,
@@ -36,7 +47,7 @@ const mockMessages = [
   {
     id: 7,
     text: 'I appreciate your honesty. Have you considered using any project management tools to help stay organized?',
-    sender: 'other',
+    sender: 'assistant',
   },
   {
     id: 8,
@@ -46,7 +57,7 @@ const mockMessages = [
   {
     id: 9,
     text: "I'd be happy to show you some tools that our team uses. They've really helped us stay on track.",
-    sender: 'other',
+    sender: 'assistant',
   },
   {
     id: 10,
@@ -56,7 +67,7 @@ const mockMessages = [
   {
     id: 11,
     text: "Let's set up a time tomorrow to go through them together. In the meantime, which current task is your highest priority?",
-    sender: 'other',
+    sender: 'assistant',
   },
   {
     id: 12,
@@ -65,21 +76,34 @@ const mockMessages = [
   },
 ];
 
-export default function SimulationMessages() {
-  const [messages] = useState(mockMessages);
+export default function SimulationMessages({ receivedTranscripts }: SimulationMessagesProps) {
+  const [allMessages, setAllMessages] = useState<Message[]>(mockMessages);
   const messageEndRef = useRef<HTMLDivElement>(null);
+
+  // Convert received transcripts to messages and add them to the list
+  useEffect(() => {
+    const transcriptMessages: Message[] = receivedTranscripts.map(({ role, text }, index) => ({
+      id: mockMessages.length + index + 1000, // Use high ID to avoid conflicts
+      text,
+      sender: role as 'assistant' | 'user',
+      timestamp: new Date(),
+    }));
+
+    // Combine mock messages with transcript messages
+    setAllMessages([...mockMessages, ...transcriptMessages]);
+  }, [receivedTranscripts]);
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [allMessages]);
 
   return (
     <div className="flex flex-col gap-4 py-2 h-full">
-      {messages.map((msg) => (
+      {allMessages.map((msg) => (
         <div
           key={msg.id}
           className={`text-base text-bw-90 rounded-xl px-4 py-2 max-w-[70%] ${
-            msg.sender === 'other'
+            msg.sender === 'assistant'
               ? 'self-end bg-marigold-30 rounded-br-none'
               : 'self-start bg-white border border-marigold-30 rounded-bl-none'
           }`}
