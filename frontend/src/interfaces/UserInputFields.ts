@@ -1,11 +1,6 @@
-export interface UserPreferenceOption {
-  code: string;
-  name: string;
-}
-
 export interface UserPreference {
   label: string;
-  options: UserPreferenceOption[];
+  options: UserOption[];
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
@@ -17,6 +12,7 @@ export interface UserConfidenceField {
   maxLabel: string;
   minValue: number;
   maxValue: number;
+  value?: number[];
   onChange?: (value: number[]) => void;
 }
 

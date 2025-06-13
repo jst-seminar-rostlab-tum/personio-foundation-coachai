@@ -10,49 +10,17 @@ import Label from '@/components/ui/Label';
 import { useTranslations } from 'next-intl';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Link from 'next/link';
-import { confidenceFields } from '@/configs/UserConfidenceFields.config';
+import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
-  const roleQuestion: UserOption[] = [
-    {
-      id: 'r1',
-      label: 'HR Professional',
-      labelHint: 'I work in human resources or people operations',
-    },
-    {
-      id: 'r2',
-      label: 'Team Leader',
-      labelHint: 'I manage a team or department',
-    },
-    {
-      id: 'r3',
-      label: 'Executive',
-      labelHint: `I'm a director, VP, or C-level executive`,
-    },
-    {
-      id: 'r4',
-      label: 'Other',
-      labelHint: 'None of them above',
-    },
-  ];
-
-  const primaryGoals: UserOption[] = [
-    { id: 'g1', label: 'Giving constructive feedback' },
-    { id: 'g2', label: 'Managing team conflicts' },
-    { id: 'g3', label: 'Performance reviews' },
-    { id: 'g4', label: 'Motivating team members' },
-    { id: 'g5', label: 'Leading difficult conversations' },
-    { id: 'g6', label: 'Setting team goals' },
-    { id: 'g7', label: 'Improving team collaboration' },
-    { id: 'g8', label: 'Enhancing team productivity' },
-  ];
-
   const onboardingSteps = ['Step1', 'Step2', 'Step3'];
   const [currentOnboardingStep, setCurrentOnboardingStep] = React.useState(0);
   const [selectedRole, setSelectedRole] = React.useState<string>('');
   const [selectedGoals, setSelectedGoals] = React.useState<string[]>([]);
   const t = useTranslations('Onboarding');
+  const roleQuestion: UserOption[] = UserRoles();
+  const primaryGoals: UserOption[] = PrimaryGoals();
 
   const isValidStep = (stepIndex: number) => {
     if (stepIndex === 0) return selectedRole !== '';
@@ -137,7 +105,7 @@ export default function OnboardingPageComponent() {
           <div className="text-xl self-center min-h-20 text-center max-w-70 flex items-center">
             {t('steps.step3')}
           </div>
-          <UserConfidenceFields fields={confidenceFields} />
+          <UserConfidenceFields />
         </>
       )}
 

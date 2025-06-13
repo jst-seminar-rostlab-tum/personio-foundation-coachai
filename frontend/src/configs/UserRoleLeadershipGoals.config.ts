@@ -1,4 +1,5 @@
 import { UserPreference } from '@/interfaces/UserInputFields';
+import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 
 export function useUserRoleLeadershipGoals(): UserPreference[] {
@@ -6,21 +7,13 @@ export function useUserRoleLeadershipGoals(): UserPreference[] {
   return [
     {
       label: t('currentRole.label'),
-      options: [
-        { code: 'tl', name: t('currentRole.tl') },
-        { code: 'rec', name: t('currentRole.rec') },
-        { code: 'tr', name: t('currentRole.tr') },
-      ],
-      defaultValue: 'tl',
+      options: UserRoles(),
+      defaultValue: 'team_leader',
     },
     {
       label: t('primaryGoals.label'),
-      options: [
-        { code: 'feedback', name: t('primaryGoals.feedback') },
-        { code: 'coaching', name: t('primaryGoals.coaching') },
-        { code: 'coping', name: t('primaryGoals.coping') },
-      ],
-      defaultValue: 'coaching',
+      options: PrimaryGoals(),
+      defaultValue: 'managing_team_conflicts',
     },
   ];
 }
