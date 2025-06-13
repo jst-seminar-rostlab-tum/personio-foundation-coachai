@@ -69,9 +69,11 @@ class RTCConnection:
     genai_session: Optional[Any] = None
     datachannel: Optional[RTCDataChannel] = None
     config: WebRTCConfig
+    peer_id: str
 
     def __init__(self, config: Optional[WebRTCConfig] = None) -> None:
         self.config = config or WebRTCConfig()
+        self.peer_id = str(uuid.uuid4())
 
     async def handle_offer(self, request: Request) -> PlainTextResponse:
         try:
@@ -119,40 +121,35 @@ class RTCConnection:
             raise
 
     async def _run(self) -> None:
-        pc_id = str(uuid.uuid4())
-
-        def log_info(msg: str, *args: Any) -> None:  # noqa: ANN401
-            logger.info(f'{pc_id} {msg}', *args)
-
-        log_info('Connection started')
+        logger.info(f'Connection started for peer {self.peer_id}')
 
         @self.pc.on('datachannel')
         def on_datachannel(channel: RTCDataChannel) -> None:
             self.datachannel = channel
-            log_info('Data channel opened')
+            logger.info(f'Data channel opened for peer {self.peer_id}')
 
             @channel.on('message')
             async def on_message(message: str) -> None:
-                log_info(f'Received message: {message}')
+                logger.info(f'Received message from peer {self.peer_id}: {message}')
                 if self.genai_session:
                     await self.genai_session.send(message)
 
             @channel.on('close')
             def on_close() -> None:
-                log_info('Data channel closed')
+                logger.info(f'Data channel closed for peer {self.peer_id}')
 
         @self.pc.on('connectionstatechange')
         async def on_connectionstatechange() -> None:
             if not self.pc:
                 return
 
-            log_info('Connection state is %s', self.pc.connectionState)
+            logger.info(f'Connection state for peer {self.peer_id} is {self.pc.connectionState}')
             if self.pc.connectionState == 'failed' or self.pc.connectionState == 'closed':
                 await self.close()
 
         @self.pc.on('track')
         def on_track(track: MediaStreamTrack) -> None:
-            log_info('Track %s received', track.kind)
+            logger.info(f'Track {track.kind} received for peer {self.peer_id}')
 
             if track.kind == 'audio':
                 if self.recv_audio_track:
@@ -165,7 +162,7 @@ class RTCConnection:
 
             @track.on('ended')
             async def on_ended() -> None:
-                log_info('Track %s ended', track.kind)
+                logger.info(f'Track {track.kind} ended for peer {self.peer_id}')
 
         async def run_recv_audio_track() -> None:
             while True:
@@ -176,7 +173,7 @@ class RTCConnection:
                     await self.genai_session.send(frame)
 
                 except Exception as e:
-                    log_info('Error receiving frame: %s', e)
+                    logger.error(f'Error receiving frame for peer {self.peer_id}: {e}')
                     break
 
         async def run_send_track() -> None:
@@ -200,24 +197,41 @@ class RTCConnection:
                         await self.send_track.queue.put(frame)
                         await asyncio.sleep(AUDIO_PTIME)
 
+        async def run_transcription_processor() -> None:
+            while self.pc and self.pc.connectionState != 'closed':
+                if self.genai_session and hasattr(self.genai_session, '_transcription_queue'):
+                    try:
+                        transcription = await self.genai_session._transcription_queue.get()
+                        if (
+                            self.datachannel
+                            and self.datachannel.readyState == 'open'
+                            and transcription
+                        ):
+                            self.datachannel.send(transcription)
+                            logger.info(
+                                f'Sent transcription for peer {self.peer_id}: {transcription}'
+                            )
+                    except Exception as e:
+                        logger.error(f'Error processing transcription for peer {self.peer_id}: {e}')
+
         try:
-            log_info('Connecting to Gemini...')
+            logger.info(f'Connecting to Gemini for peer {self.peer_id}...')
             async with connect_gemini() as session:
-                log_info('Connected to GenAI session')
+                logger.info(f'Connected to GenAI session for peer {self.peer_id}')
                 self.genai_session = session
 
-                await run_send_track()
-                log_info('Connection finished')
+                await asyncio.gather(run_send_track(), run_transcription_processor())
+                logger.info(f'Connection finished for peer {self.peer_id}')
 
         except Exception as e:
-            log_info('Error sending frame: %s', e)
+            logger.error(f'Error sending frame for peer {self.peer_id}: {e}')
 
         try:
             await self.close()
         except Exception as e:
-            log_info('Error closing connection: %s', e)
+            logger.error(f'Error closing connection for peer {self.peer_id}: {e}')
         connections.discard(self)
-        log_info(f'Connection stopped. Connections {len(connections)}')
+        logger.info(f'Connection stopped for peer {self.peer_id}. Connections {len(connections)}')
 
     async def close(self) -> None:
         if self.pc:

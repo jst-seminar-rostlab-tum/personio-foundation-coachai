@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 import logging
 from abc import abstractmethod
@@ -54,6 +55,8 @@ class Gemini(Model):
             rate=SAMPLE_RATE,
             frame_size=int(SAMPLE_RATE * AUDIO_PTIME),
         )
+        self._audio_queue = asyncio.Queue()
+        self._transcription_queue = asyncio.Queue()
 
     async def send(self, input: Input) -> None:
         if isinstance(input, str):
@@ -66,25 +69,8 @@ class Gemini(Model):
                 )
                 await self.session.send(input=blob)
 
-    async def send_message(self, message: str) -> None:
-        if not self.rtc_connection.datachannel:
-            logger.warning('No DataChannel available')
-            return
-
-        if self.rtc_connection.datachannel.readyState != 'open':
-            logger.warning(
-                'DataChannel not open, current state: '
-                + f'{self.rtc_connection.datachannel.readyState}'
-            )
-            return
-
-        try:
-            await self.rtc_connection.datachannel.send(message)
-            logger.info(f'Message sent successfully: {message}')
-        except Exception as e:
-            logger.error(f'Failed to send message: {e}')
-
     async def recv(self) -> AsyncIterator[Output]:
+        """Only process audio frames"""
         turn = self.session.receive()
         async for response in turn:
             if response.data is not None:
@@ -95,23 +81,24 @@ class Gemini(Model):
                 frame.sample_rate = sample_rate
                 frame.planes[0].update(response.data)
                 yield frame
-                continue
 
-            # Handle server content
-            if response.server_content.interrupted:
-                logger.info('Server interrupted the turn')
-                break
+            if (
+                response.server_content.output_transcription
+                and response.server_content.output_transcription.text
+            ):
+                await self._transcription_queue.put(
+                    response.server_content.output_transcription.text
+                )
 
-            # Handle transcription
-            if not response.server_content.output_transcription:
-                continue
-
-            transcription = response.server_content.output_transcription
-            if not transcription.text:
-                continue
-
-            transcription_text = transcription.text
-            logger.info(f'Received transcription - {transcription_text}')
+    async def process_transcriptions(self) -> None:
+        """Process transcription text asynchronously"""
+        while True:
+            try:
+                transcription = await self._transcription_queue.get()
+                logger.info(f'Processing transcription: {transcription}')
+                # TODO: Add text processing logic here
+            except Exception as e:
+                logger.error(f'Error processing transcription: {e}')
 
     async def close(self) -> None:
         if self.session is None:
