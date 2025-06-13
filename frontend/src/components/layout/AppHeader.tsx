@@ -1,6 +1,6 @@
 'use client';
 
-import { LogOut, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -70,8 +70,7 @@ export function AppHeader() {
             </Button>
             <Link href="/logout">
               <Button variant="secondary" className="hidden md:flex h-8">
-                <LogOut className="!w-4 !h-4 hidden md:block lg:hidden" />
-                <span className="hidden lg:block text-xs font-medium">{t('logout')}</span>
+                <span className="text-xs font-medium">{t('logout')}</span>
               </Button>
             </Link>
           </div>
