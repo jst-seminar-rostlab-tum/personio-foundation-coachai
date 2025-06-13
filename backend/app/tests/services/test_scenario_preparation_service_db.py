@@ -81,7 +81,6 @@ class TestScenarioPreparationService(unittest.TestCase):
     def test_generate_scenario_preparation_completed(
         self, mock_objectives: MagicMock, mock_checklist: MagicMock, mock_key_concept: MagicMock
     ) -> None:
-        self.assertTrue(False)
         scenario_id = uuid4()
         prep = create_pending_preparation(scenario_id, self.session)
 
