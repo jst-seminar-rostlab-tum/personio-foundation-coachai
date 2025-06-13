@@ -16,6 +16,7 @@ from app.models.conversation_scenario import (
     ConversationScenarioRead,
 )
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationRead
+from app.models.user_profile import UserProfile
 from app.schemas.scenario_preparation_schema import ScenarioPreparationRequest
 from app.services.scenario_preparation_service import (
     create_pending_preparation,
@@ -132,10 +133,11 @@ def delete_conversation_scenario(
 @router.get(
     '/{scenario_id}/preparation',
     response_model=ScenarioPreparationRead,
-    dependencies=[Depends(require_user)],
 )
 def get_scenario_preparation_by_scenario_id(
-    scenario_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+    scenario_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> ScenarioPreparation:
     """
     Retrieve the scenario preparation data for a given conversation scenario ID.
@@ -144,6 +146,13 @@ def get_scenario_preparation_by_scenario_id(
     conversation_scenario = db_session.get(ConversationScenario, scenario_id)
     if not conversation_scenario:
         raise HTTPException(status_code=404, detail='Conversation scenario not found')
+
+    if conversation_scenario.user_id != user_profile.id and user_profile.account_role != 'admin':
+        raise HTTPException(
+            status_code=400,
+            detail='You do not have permission to access this scenario, '
+            'you can only view your own scenarios.',
+        )
 
     # Fetch the associated scenario preparation
     statement = select(ScenarioPreparation).where(ScenarioPreparation.scenario_id == scenario_id)
