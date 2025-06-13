@@ -3,7 +3,6 @@ from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session as DBSession
-from sqlmodel import select
 from starlette import status
 from starlette.responses import JSONResponse
 

@@ -25,10 +25,10 @@ def populate_data() -> None:
         db_session.exec(text('CREATE EXTENSION IF NOT EXISTS vector'))  # type: ignore
         db_session.commit()
 
-        print('Dropping tables...')
+        print("Dropping tables...")
         SQLModel.metadata.drop_all(engine)
 
-        print('Creating tables...')
+            print('Creating tables...')
         SQLModel.metadata.create_all(engine)
 
         # to get their IDs
