@@ -17,26 +17,7 @@ from app.schemas.scenario_preparation_schema import (
     ScenarioPreparationRequest,
     StringListResponse,
 )
-from app.services.vector_db_context_service import query_vector_db
-
-
-def query_vector_db_and_prompt(
-    generated_object: str,
-    session_context: list[str] = None,
-    user_audio_path: str = None,
-    user_transcript: str = None,
-) -> str:
-    vector_db_docs = query_vector_db(session_context=session_context)
-    if vector_db_docs and len(vector_db_docs) > 0:
-        vector_db_prompt_extension = (
-            f'\nThe {generated_object} you generate should comply with '
-            f'the following HR Guideline excerpts:\n'
-            f'{vector_db_docs}\n'
-        )
-    else:
-        vector_db_prompt_extension = ''
-
-    return vector_db_prompt_extension
+from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
