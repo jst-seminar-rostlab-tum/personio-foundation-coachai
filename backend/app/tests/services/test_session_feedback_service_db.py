@@ -93,7 +93,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         )
 
         self.assertEqual(feedback.session_id, session_id)
-        self.assertEqual(feedback.goals_achieved, 2)
+        self.assertEqual(feedback.goals_achieved, ['G1', 'G2'])
 
         self.assertEqual(len(feedback.example_positive), 1)
         self.assertEqual(feedback.example_positive[0]['heading'], 'Clear Objective Addressed')
@@ -165,10 +165,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         )
 
         self.assertEqual(feedback.status, FeedbackStatusEnum.failed)
-        self.assertEqual(feedback.goals_achieved, 1)
+        self.assertEqual(feedback.goals_achieved, ['G1'])
         self.assertEqual(len(feedback.example_positive), 0)
         self.assertEqual(len(feedback.recommendations), 1)
-        self.assertEqual(feedback.goals_achieved, 1)
+        self.assertEqual(len(feedback.goals_achieved), 1)
         self.assertEqual(len(feedback.example_positive), 0)
         self.assertEqual(len(feedback.recommendations), 1)
         self.assertEqual(feedback.recommendations[0]['heading'], 'Some heading')

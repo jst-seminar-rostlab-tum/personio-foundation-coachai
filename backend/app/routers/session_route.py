@@ -40,15 +40,20 @@ def get_session_by_id(
     if not session:
         raise HTTPException(status_code=404, detail='No session found with the given ID')
 
-    # Get session title from the conversation scenario
+    # Get session title and goals from the conversation scenario
     conversation_scenario = db_session.get(ConversationScenario, session.scenario_id)
     if conversation_scenario:
         if conversation_scenario.category:
             training_title = conversation_scenario.category.name
         else:
             training_title = conversation_scenario.custom_category_label
+
+        if conversation_scenario.preparations:
+            goals = conversation_scenario.preparations[0].objectives
+
     else:
         training_title = 'Unknown'
+        goals = []
 
     session_response = SessionDetailsRead(
         id=session.id,
@@ -63,6 +68,7 @@ def get_session_by_id(
         summary=(
             'The person giving feedback was rude but the person receiving feedback took it well.'
         ),  # mocked
+        goals_total=goals,
     )
 
     # Fetch the asociated Feedback for the session
