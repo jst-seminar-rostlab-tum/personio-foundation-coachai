@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/Accordion';
 import Link from 'next/link';
 import FeedbackQuote from './FeedbackQuote';
+import FeedbackDialog from './FeedbackDialog';
 
 const mockFeedback = {
   topic: 'Giving Constructive Feedback',
@@ -116,6 +117,7 @@ export default function FeedbackDetail() {
         return <MessageCircleQuestion size={20} />;
     }
   };
+
   return (
     <div className="flex flex-col items-center gap-7 mx-auto max-w-3xl">
       <div className="text-2xl ">{t('title')}</div>
@@ -123,6 +125,7 @@ export default function FeedbackDetail() {
         <div className="text-lg text-marigold-90">{mockFeedback.topic}</div>
         <div className="text-base text-marigold-95">{mockFeedback.time}</div>
       </div>
+      <FeedbackDialog />
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
           {progressBarData.map((item) => (
