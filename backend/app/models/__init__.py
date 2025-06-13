@@ -10,7 +10,6 @@ from app.models.conversation_scenario import (
     ConversationScenarioRead,
     ConversationScenarioStatus,
 )
-from app.models.difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
 from app.models.scenario_preparation import (
@@ -84,9 +83,6 @@ __all__ = [
     'UserGoal',
     'UserGoalCreate',
     'UserGoalRead',
-    'DifficultyLevel',
-    'DifficultyLevelCreate',
-    'DifficultyLevelRead',
     'PositiveExample',
     'FeedbackStatusEnum',
     'NegativeExample',

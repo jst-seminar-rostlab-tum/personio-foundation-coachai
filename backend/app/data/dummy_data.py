@@ -4,8 +4,11 @@ from uuid import UUID, uuid4
 
 from app.models.app_config import AppConfig, ConfigType
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import ConversationScenario, ConversationScenarioStatus
-from app.models.difficulty_level import DifficultyLevel  # Assuming this is the new model
+from app.models.conversation_scenario import (
+    ConversationScenario,
+    ConversationScenarioStatus,
+    DifficultyLevel,
+)
 from app.models.language import LanguageCode
 from app.models.rating import Rating
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
@@ -35,14 +38,6 @@ class MockUserIdsEnum(Enum):
 
     USER = UUID('3a9a8970-afbe-4ee1-bc11-9dcad7875ddf')
     ADMIN = UUID('763c76f3-e5a4-479c-8b53-e3418d5e2ef5')
-
-
-def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
-    return [
-        DifficultyLevel(id=uuid4(), label='Easy'),
-        DifficultyLevel(id=uuid4(), label='Medium'),
-        DifficultyLevel(id=uuid4(), label='Hard'),
-    ]
 
 
 def get_dummy_user_profiles() -> list[UserProfile]:
@@ -89,8 +84,7 @@ def get_dummy_user_goals(user_profiles: list[UserProfile]) -> list[UserGoal]:
 
 
 def get_dummy_conversation_scenarios(
-    user_profiles: list[UserProfile], difficulty_levels: list[DifficultyLevel]
-) -> list[ConversationScenario]:
+    user_profiles: list[UserProfile]) -> list[ConversationScenario]:
     return [
         ConversationScenario(
             id=uuid4(),
@@ -100,7 +94,7 @@ def get_dummy_conversation_scenarios(
             context='Context 1',
             goal='Goal 1',
             other_party='Other Party 1',
-            difficulty_id=difficulty_levels[0].id,
+            difficulty_level=DifficultyLevel.easy,
             tone='Friendly',
             complexity='Low',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
@@ -115,7 +109,7 @@ def get_dummy_conversation_scenarios(
             context='Context 2',
             goal='Goal 2',
             other_party='Other Party 2',
-            difficulty_id=difficulty_levels[1].id,
+            difficulty_level= DifficultyLevel.medium,
             tone='Professional',
             complexity='Medium',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
