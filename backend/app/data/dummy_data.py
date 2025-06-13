@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from enum import Enum
 from uuid import UUID, uuid4
 
+from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig, ConfigType
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import (
@@ -11,6 +12,7 @@ from app.models.conversation_scenario import (
 )
 from app.models.language import LanguageCode
 from app.models.rating import Rating
+from app.models.review import Review
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
 from app.models.session_feedback import (
@@ -80,6 +82,74 @@ def get_dummy_user_goals(user_profiles: list[UserProfile]) -> list[UserGoal]:
     return [
         UserGoal(goal=Goal.giving_constructive_feedback, user_id=user_profiles[0].id),
         UserGoal(goal=Goal.managing_team_conflicts, user_id=user_profiles[1].id),
+    ]
+
+
+def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session]) -> list[Review]:
+    return [
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=sessions[0].id,  # Link to the first session
+            rating=5,
+            comment='Excellent service!',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=sessions[1].id,  # Link to a second session
+            rating=2,
+            comment='I found the sessions a bit too fast-paced.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
+            rating=4,
+            comment='Good overall, but could use more examples.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
+            rating=4,
+            comment='Great experience overall, but could use more examples.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=sessions[0].id,  # Link to the first session
+            rating=3,
+            comment='Good, but I expected more personalized feedback.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=sessions[1].id,  # Link to a second session
+            rating=5,
+            comment='Loved the interactive session and practical exercise!',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=1,
+            comment='Did not meet my expectations, too basic.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
+            rating=4,
+            comment='Very informative, but the pace was a bit slow.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
     ]
 
 
@@ -355,7 +425,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatusEnum.pending,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -424,7 +494,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatusEnum.pending,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -502,4 +572,17 @@ def get_dummy_app_configs() -> list[AppConfig]:
     """
     return [
         AppConfig(key='dailyUserTokenLimit', value='100', type=ConfigType.int),
+    ]
+
+
+def get_dummy_admin_stats() -> list[AdminDashboardStats]:
+    """
+    Generate dummy admin stats data.
+    """
+    return [
+        AdminDashboardStats(
+            id=uuid4(),
+            total_trainings=34533,
+            average_score=86,
+        )
     ]
