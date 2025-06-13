@@ -48,3 +48,5 @@ api.interceptors.response.use(
     return response.data;
   },
 }; */
+
+export default api;

@@ -1,14 +1,24 @@
-import axios from 'axios';
+import api from './Api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function deleteUser(userId: string) {
   try {
-    const { data } = await axios.delete(`${API_URL}/user-profiles/${userId}`);
+    const { data } = await api.delete(`${API_URL}/user-profiles/${userId}`);
     return data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error('Error deleting user:', error.response?.data || error.message);
+    if (
+      error &&
+      typeof error === 'object' &&
+      'response' in error &&
+      error.response &&
+      typeof error.response === 'object' &&
+      'data' in error.response
+    ) {
+      console.error(
+        'Error deleting user:',
+        (error.response as { data?: unknown })?.data || (error as { message?: string })?.message
+      );
     } else {
       console.error('Error deleting user:', error);
     }

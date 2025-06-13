@@ -58,7 +58,7 @@ export default function Admin() {
   ];
   const canLoadMore = visibleUsers < allUsers.length;
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
-  const { handleDeleteUser, loading, RenderDialog } = useDeleteUser();
+  const { handleDeleteUser, loading } = useDeleteUser();
   const userId = '0b222f0b-c7e5-4140-9049-35620fee8009';
 
   return (
@@ -265,7 +265,6 @@ export default function Admin() {
           <AccordionContent></AccordionContent>
         </AccordionItem>
       </Accordion>
-      <RenderDialog />
     </div>
   );
 }

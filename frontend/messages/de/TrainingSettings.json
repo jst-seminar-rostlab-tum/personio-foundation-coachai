@@ -52,12 +52,5 @@
       "coping": "Bewältigungsstrategien"
     }
   },
-  "deleting": "Lösche...",
-  "userDeleted": "Benutzer erfolgreich gelöscht",
-  "invalidUserId": "Ungültige oder fehlende Benutzer-ID",
-  "authFailed": "Authentifizierung fehlgeschlagen",
-  "notAuthorized": "Sie sind nicht berechtigt, dieses Profil zu löschen",
-  "userNotFound": "Kein Benutzer mit dieser ID gefunden",
-  "serverError": "Unerwarteter Serverfehler",
-  "deleteFailed": "Benutzer konnte nicht gelöscht werden."
+  "deleting": "Lösche..."
 }
