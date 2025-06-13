@@ -19,12 +19,17 @@ import {
 } from '@/components/ui/Form';
 import { AlertCircleIcon } from 'lucide-react';
 import { Alert, AlertTitle } from '@/components/ui/Alert';
-import { PasswordInput } from '@/app/[locale]/(about)/login/components/PasswordInput';
+import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordInput';
+import { createClient } from '@/lib/supabase/client';
+import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
+import { useRouter } from 'next/navigation';
 
 export function SignInForm() {
   const t = useTranslations('Login.SignInTab');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const signInFormSchema = z.object({
     email: z.string().email(t('emailInputError')),
@@ -44,9 +49,21 @@ export function SignInForm() {
   const handleSubmit = async (values: z.infer<typeof signInFormSchema>) => {
     setError(null);
     setIsLoading(true);
-    // TODO: Call API to sign in the user with email and password (services/Api.ts)
-    // TODO: Reroute if Api call successfull and setErrors if failed
-    setIsLoading(false);
+
+    const formData = signInFormSchema.parse(values);
+    const supabase = await createClient();
+    const credentials: SignInWithPasswordCredentials = {
+      email: formData.email,
+      password: formData.password,
+    };
+    const response = await supabase.auth.signInWithPassword(credentials);
+    if (response.error) {
+      setError(response.error.message);
+      setIsLoading(false);
+      return;
+    }
+
+    router.push('/dashboard');
   };
 
   return (
@@ -102,13 +119,7 @@ export function SignInForm() {
             </Button>
             <div className="w-full border-t border-gray-300" />
             <Button size="full" variant="secondary" disabled={isLoading}>
-              <Image
-                src="/icons/google-icon.svg"
-                alt="Google Icon"
-                className="mr-2"
-                width={5}
-                height={5}
-              ></Image>
+              <Image src="/icons/google-icon.svg" alt="Google Icon" width={20} height={20}></Image>
               {t('signInWithGoogleButtonLabel')}
             </Button>
           </CardFooter>
