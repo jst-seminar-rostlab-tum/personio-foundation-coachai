@@ -1,5 +1,4 @@
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
-from app.models.confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from app.models.conversation_category import (
     ConversationCategory,
     ConversationCategoryCreate,
@@ -12,9 +11,6 @@ from app.models.conversation_scenario import (
     ConversationScenarioStatus,
 )
 from app.models.difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
-from app.models.experience import Experience, ExperienceCreate, ExperienceRead
-from app.models.goal import Goal, GoalCreate, GoalRead
-from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
 from app.models.scenario_preparation import (
@@ -85,15 +81,9 @@ __all__ = [
     'UserProfile',
     'UserProfileCreate',
     'UserProfileRead',
-    'Goal',
-    'GoalCreate',
-    'GoalRead',
     'UserGoal',
     'UserGoalCreate',
     'UserGoalRead',
-    'Experience',
-    'ExperienceCreate',
-    'ExperienceRead',
     'DifficultyLevel',
     'DifficultyLevelCreate',
     'DifficultyLevelRead',
@@ -101,15 +91,9 @@ __all__ = [
     'FeedbackStatusEnum',
     'NegativeExample',
     'Recommendation',
-    'ConfidenceArea',
-    'ConfidenceAreaCreate',
-    'ConfidenceAreaRead',
     'UserConfidenceScore',
     'UserConfidenceScoreCreate',
     'UserConfidenceScoreRead',
-    'LearningStyle',
-    'LearningStyleCreate',
-    'LearningStyleRead',
     'ConfidenceScoreRead',
     'UserProfileExtendedRead',
     'PersonalizationOptionRead',
