@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
@@ -10,20 +11,22 @@ from sqlmodel import Field, Relationship
 from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
-    from app.models.confidence_area import ConfidenceArea
     from app.models.user_profile import UserProfile
 
 
+class ConfidenceArea(str, Enum):
+    # Define the confidence areas as needed
+    giving_difficult_feedback = 'giving_difficult_feedback'
+    managing_team_conflicts = 'managing_team_conflicts'
+    leading_challenging_conversations = 'leading_challenging_conversations'
+
+
 class UserConfidenceScore(CamelModel, table=True):
-    area_id: UUID = Field(foreign_key='confidencearea.id', primary_key=True)
+    confidence_area: ConfidenceArea = Field(default=ConfidenceArea.giving_difficult_feedback)
     user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)
     score: int
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
-    # Relationships
-    confidence_area: Optional['ConfidenceArea'] = Relationship(
-        back_populates='user_confidence_scores'
-    )
     user: Optional['UserProfile'] = Relationship(back_populates='user_confidence_scores')
 
 
@@ -34,18 +37,18 @@ def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserConfid
 
 
 class UserConfidenceScoreCreate(CamelModel):
-    area_id: UUID
+    confidence_area: ConfidenceArea
     user_id: UUID
     score: int
 
 
 class UserConfidenceScoreRead(CamelModel):
-    area_id: UUID
+    confidence_area: ConfidenceArea
     user_id: UUID
     score: int
     updated_at: datetime
 
 
 class ConfidenceScoreRead(CamelModel):
-    area_label: str
+    confidence_area: ConfidenceArea
     score: int
