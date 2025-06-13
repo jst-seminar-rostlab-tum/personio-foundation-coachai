@@ -32,29 +32,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
-import { getAdminStats } from '@/services/getAdminStats';
 
-export default function Admin() {
+type AdminProps = {
+  stats: {
+    totalUsers: number;
+    totalTrainings: number;
+    totalReviews: number;
+    averageScore: number;
+    dailyTokenLimit?: number;
+  };
+};
+
+export default function Admin({ stats }: AdminProps) {
   const t = useTranslations('Admin');
   const tr = useTranslations('TrainingSettings');
-  const [stats, setStats] = React.useState({
-    totalUsers: 0,
-    totalTrainings: 0,
-    totalReviews: 0,
-    averageScore: 0,
-  });
-
-  React.useEffect(() => {
-    async function fetchStats() {
-      try {
-        const data = await getAdminStats();
-        setStats(data);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    fetchStats();
-  }, []);
   const statsArray = [
     { value: stats.totalUsers.toLocaleString(), label: t('statActiveUsers') },
     { value: stats.totalTrainings.toLocaleString(), label: t('statTotalTrainings') },
