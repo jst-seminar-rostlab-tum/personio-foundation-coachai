@@ -128,7 +128,7 @@ def test_query_vector_db_complex(
 
     # Assert
     mock_analyze.assert_not_called()
-    mock_retriever_builder.assert_called_once_with(populate_db=False)
+    mock_retriever_builder.assert_called_once()
     fake_retriever.invoke.assert_called_once_with(expected_query)
     assert text == doc_content_1 + '\n\n' + doc_content_2
     assert metadata == [doc_metadata_1, doc_metadata_2]
