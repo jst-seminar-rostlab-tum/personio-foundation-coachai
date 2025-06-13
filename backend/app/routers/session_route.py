@@ -8,7 +8,6 @@ from sqlmodel import col, select
 
 from app.database import get_db_session
 from app.models.conversation_scenario import ConversationScenario
-from app.models.language import Language
 from app.models.session import (
     Session,
     SessionCreate,
@@ -16,9 +15,9 @@ from app.models.session import (
     SessionRead,
 )
 from app.models.session_feedback import (
+    FeedbackStatusEnum,
     SessionFeedback,
     SessionFeedbackMetrics,
-    SessionFeedbackRead,
 )
 from app.models.session_turn import SessionTurn
 from app.models.sessions_paginated import (
@@ -57,7 +56,6 @@ def get_session_by_id(
         scheduled_at=session.scheduled_at,
         started_at=session.started_at,
         ended_at=session.ended_at,
-        language_code=session.language_code,
         ai_persona=session.ai_persona,
         created_at=session.created_at,
         updated_at=session.updated_at,
@@ -71,7 +69,15 @@ def get_session_by_id(
     feedback = db_session.exec(
         select(SessionFeedback).where(SessionFeedback.session_id == session_id)
     ).first()
-    if feedback:
+
+    if not feedback:
+        raise HTTPException(status_code=404, detail='Session feedback not found')
+
+    if feedback.status == FeedbackStatusEnum.pending:
+        raise HTTPException(status_code=202, detail='Session feedback in progress.')
+    elif feedback.status == FeedbackStatusEnum.failed:
+        raise HTTPException(status_code=500, detail='Session feedback failed.')
+    else:
         session_response.feedback = SessionFeedbackMetrics(
             scores=feedback.scores,
             tone_analysis=feedback.tone_analysis,
@@ -90,32 +96,11 @@ def get_session_by_id(
     session_turns = db_session.exec(
         select(SessionTurn).where(SessionTurn.session_id == session_id)
     ).all()
+
     if session_turns:
         session_response.audio_uris = [turn.audio_uri for turn in session_turns]
 
     return session_response
-
-
-@router.get('/{session_id}/feedback', response_model=SessionFeedbackRead)
-def get_session_feedback(
-    session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
-) -> SessionFeedback:
-    """
-    Retrieve the session feedback for a given session ID.
-    """
-    # Validate that the session exists
-    session = db_session.get(Session, session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail='Session not found')
-
-    # Fetch the associated session feedback
-    statement = select(SessionFeedback).where(SessionFeedback.session_id == session_id)
-    session_feedback = db_session.exec(statement).first()
-
-    if not session_feedback:
-        raise HTTPException(status_code=404, detail='Session feedback not found')
-
-    return session_feedback
 
 
 @router.get('/', response_model=PaginatedSessionsResponse)
@@ -196,12 +181,6 @@ def create_session(
     if not conversation_scenario:
         raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
-    language = db_session.exec(
-        select(Language).where(Language.code == session_data.language_code)
-    ).first()
-    if not language:
-        raise HTTPException(status_code=404, detail='Language not found')
-
     new_session = Session(**session_data.dict())
     db_session.add(new_session)
     db_session.commit()
@@ -227,13 +206,6 @@ def update_session(
         conversation_scenario = db_session.get(ConversationScenario, updated_data.scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
-
-    if updated_data.language_code:
-        language = db_session.exec(
-            select(Language).where(Language.code == updated_data.language_code)
-        ).first()
-        if not language:
-            raise HTTPException(status_code=404, detail='Language not found')
 
     for key, value in updated_data.dict().items():
         setattr(session, key, value)
