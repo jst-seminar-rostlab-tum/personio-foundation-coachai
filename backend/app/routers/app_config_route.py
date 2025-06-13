@@ -131,7 +131,7 @@ def patch_app_config(
     return list(updated_configs)
 
 
-@router.delete('/{key}', response_model=dict)
+@router.delete('/{key}', response_model=dict, dependencies=[Depends(require_admin)])
 def delete_app_config(key: str, db_session: Annotated[DBSession, Depends(get_db_session)]) -> dict:
     """
     Delete an app configuration.
