@@ -2,10 +2,17 @@ name: Deploy Backend to Fly.io
 
 on:
   push:
-    branches: [ main ]
-    paths: [ 'backend/**' ]
+    branches: [main]
+    paths: ["backend/**"]
 
 jobs:
+  check-lock:
+    disabled: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pipx install uv
+      - run: uv pip compile --check
   lint:
     name: Lint
     runs-on: ubuntu-22.04
@@ -34,7 +41,7 @@ jobs:
       - name: Run Tests
         run: uv run pytest --exitfirst --disable-warnings || [[ $? -eq 5 ]]
         working-directory: ./backend
-  
+
   build:
     name: Build
     needs: test
