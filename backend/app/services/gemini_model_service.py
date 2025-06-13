@@ -89,18 +89,18 @@ class TranscriptionProcessor:
         if not text:
             return None
 
-        logger.info(f'Processing text: {text}')
+        logger.debug(f'Processing text: {text}')
         self.buffer += text
-        logger.info(f'Current buffer: {self.buffer}')
+        logger.debug(f'Current buffer: {self.buffer}')
 
         # Process text
         processed_buffer = self._process_text(self.buffer)
-        logger.info(f'Processed buffer: {processed_buffer}')
+        logger.debug(f'Processed buffer: {processed_buffer}')
 
         # Split sentences
         complete_sentences, remaining = self._split_sentences(processed_buffer)
-        logger.info(f'Complete sentences: {complete_sentences}')
-        logger.info(f'Remaining text: {remaining}')
+        logger.debug(f'Complete sentences: {complete_sentences}')
+        logger.debug(f'Remaining text: {remaining}')
 
         if complete_sentences:
             self.buffer = remaining
@@ -111,7 +111,7 @@ class TranscriptionProcessor:
     def flush(self) -> Optional[str]:
         if self.buffer.strip():
             result = self._process_text(self.buffer)
-            logger.info(f'Flush result: {result}')
+            logger.debug(f'Flush result: {result}')
             self.buffer = ''
             return result
         return None
@@ -178,23 +178,23 @@ class Gemini(Model):
                 and response.server_content.output_transcription.text
             ):
                 transcription_text = response.server_content.output_transcription.text
-                logger.info(f'Received transcription: {transcription_text}')
+                logger.debug(f'Received transcription: {transcription_text}')
                 processed_text = self._output_processor.process_text(transcription_text)
                 if processed_text:
-                    logger.info(f'Sending processed text: {processed_text}')
+                    logger.debug(f'Sending processed text: {processed_text}')
                     self._output += processed_text
             if (
                 response.server_content.input_transcription
                 and response.server_content.input_transcription.text
             ):
                 transcription_text = response.server_content.input_transcription.text
-                logger.info(f'Received input transcription: {transcription_text}')
+                logger.debug(f'Received input transcription: {transcription_text}')
                 processed_text = self._input_processor.process_text(transcription_text)
                 if processed_text:
-                    logger.info(f'Sending processed text: {processed_text}')
+                    logger.debug(f'Sending processed text: {processed_text}')
                     self._input += processed_text
             if response.server_content.generation_complete or response.server_content.interrupted:
-                logger.info('Generation complete')
+                logger.debug('Generation complete')
                 output_final_text = self._output_processor.flush()
                 if output_final_text:
                     self._output += output_final_text

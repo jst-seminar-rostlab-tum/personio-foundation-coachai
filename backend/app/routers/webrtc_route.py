@@ -1,6 +1,5 @@
 import asyncio
 import fractions
-import json
 import logging
 import re
 import uuid
@@ -21,6 +20,7 @@ from av import AudioFrame
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import PlainTextResponse
 
+from app.schemas.webrtc_schema import GeminiUserType, WebRTCDataChannelMessage
 from app.services.gemini_model_service import connect_gemini
 
 AUDIO_PTIME = 0.02
@@ -218,10 +218,14 @@ class RTCConnection:
                             and output_transcription
                         ):
                             self.datachannel.send(
-                                json.dumps({'role': 'user', 'content': input_transcription})
+                                WebRTCDataChannelMessage(
+                                    role=GeminiUserType.USER, text=input_transcription
+                                ).model_dump_json()
                             )
                             self.datachannel.send(
-                                json.dumps({'role': 'assistant', 'content': output_transcription})
+                                WebRTCDataChannelMessage(
+                                    role=GeminiUserType.ASSISTANT, text=output_transcription
+                                ).model_dump_json()
                             )
                     except Exception as e:
                         logger.error(f'Error processing transcription for peer {self.peer_id}: {e}')

@@ -88,7 +88,7 @@ async function start() {
     });
     dc.addEventListener('message', (evt) => {
         const message = JSON.parse(evt.data);
-        dataChannelLog.textContent += message.role + ': ' + message.content + '\n';
+        dataChannelLog.textContent += message.role + ': ' + message.text + '\n';
     });
 
     // Build media constraints.

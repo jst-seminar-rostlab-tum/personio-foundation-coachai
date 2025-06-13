@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -74,8 +73,15 @@ class GeminiStreamReceiveError(GeminiStreamError):
         super().__init__(message, GeminiStreamErrorType.RECEIVE, peer_id)
 
 
+class GeminiUserType(Enum):
+    """Gemini user types"""
+
+    USER = 'user'
+    ASSISTANT = 'assistant'
+
+
 class WebRTCDataChannelMessage(BaseModel):
     """WebRTC data channel message"""
 
-    role: Literal['user', 'assistant'] = Field(..., description='Role of the message')
+    role: GeminiUserType = Field(..., description='Role of the message')
     text: str = Field(..., description='Text of the message')
