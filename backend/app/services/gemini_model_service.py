@@ -82,18 +82,14 @@ class TranscriptionProcessor:
         if not text:
             return None
 
-        # logger.debug(f'Processing text: {text}')
+        # self.buffer += text
         self.buffer += text
-        # logger.debug(f'Current buffer: {self.buffer}')
 
         # Process text
         processed_buffer = self._process_text(self.buffer)
-        # logger.debug(f'Processed buffer: {processed_buffer}')
 
         # Split sentences
         complete_sentences, remaining = self._split_sentences(processed_buffer)
-        # logger.debug(f'Complete sentences: {complete_sentences}')
-        # logger.debug(f'Remaining text: {remaining}')
 
         if complete_sentences:
             self.buffer = remaining
@@ -104,7 +100,6 @@ class TranscriptionProcessor:
     def flush(self) -> Optional[str]:
         if self.buffer.strip():
             result = self._process_text(self.buffer)
-            # logger.debug(f'Flush result: {result}')
             self.buffer = ''
             return result
         return None
