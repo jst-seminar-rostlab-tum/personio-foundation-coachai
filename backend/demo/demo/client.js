@@ -54,7 +54,6 @@ function enumerateInputDevices() {
 }
 
 async function negotiate() {
-    const model = document.getElementById('model').value;
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 

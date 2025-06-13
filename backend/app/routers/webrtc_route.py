@@ -25,6 +25,8 @@ from app.services.model_gemini import connect_gemini
 AUDIO_PTIME = 0.02
 AUDIO_BITRATE = 16000
 
+# 配置日志
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('webrtc')
 connections: set['RTCConnection'] = set()
 
@@ -74,28 +76,32 @@ class RTCConnection:
     async def handle_offer(self, request: Request) -> PlainTextResponse:
         try:
             content = await request.body()
-            logger.info(f'Received content: {content}')
+            # logger.info(f'Received content: {content}')
             offer = RTCSessionDescription(sdp=content.decode(), type='offer')
-            logger.info(f'Created offer: {offer}')
+            # logger.info(f'Created offer: {offer}')
 
-            logger.info('Creating RTCPeerConnection...')
+            # logger.info('Creating RTCPeerConnection...')
             self.pc = RTCPeerConnection(RTCConfiguration(iceServers=self.config.ice_servers))
             if not self.pc:
                 logger.error('Failed to create RTCPeerConnection')
                 raise Exception('Failed to create RTCPeerConnection')
             logger.info(f'Created RTCPeerConnection: {self.pc}')
 
-            logger.info('Setting remote description...')
+            # 在这里启动 Gemini 连接
+            self._run_task = asyncio.create_task(self._run())
+            logger.info('Started Gemini connection task')
+
+            # logger.info('Setting remote description...')
             await self.pc.setRemoteDescription(offer)
-            logger.info('Remote description set successfully')
+            # logger.info('Remote description set successfully')
 
-            logger.info('Creating answer...')
+            # logger.info('Creating answer...')
             answer = await self.pc.createAnswer()
-            logger.info(f'Created answer: {answer}')
+            # logger.info(f'Created answer: {answer}')
 
-            logger.info('Setting local description...')
+            # logger.info('Setting local description...')
             await self.pc.setLocalDescription(answer)
-            logger.info('Local description set successfully')
+            # logger.info('Local description set successfully')
 
             sdp = self.pc.localDescription.sdp
             found = re.findall(r'a=rtpmap:(\d+) opus/48000/2', sdp)
@@ -116,7 +122,7 @@ class RTCConnection:
         pc_id = str(uuid.uuid4())
 
         def log_info(msg: str, *args: Any) -> None:  # noqa: ANN401
-            logger.info(pc_id + ' ' + msg, *args)
+            logger.info(f'{pc_id} {msg}', *args)
 
         log_info('Connection started')
 
@@ -127,8 +133,13 @@ class RTCConnection:
 
             @channel.on('message')
             async def on_message(message: str) -> None:
+                log_info(f'Received message: {message}')
                 if self.genai_session:
                     await self.genai_session.send(message)
+
+            @channel.on('close')
+            def on_close() -> None:
+                log_info('Data channel closed')
 
         @self.pc.on('connectionstatechange')
         async def on_connectionstatechange() -> None:
@@ -190,7 +201,8 @@ class RTCConnection:
                         await asyncio.sleep(AUDIO_PTIME)
 
         try:
-            async with connect_gemini(self) as session:
+            log_info('Connecting to Gemini...')
+            async with connect_gemini() as session:
                 log_info('Connected to GenAI session')
                 self.genai_session = session
 
