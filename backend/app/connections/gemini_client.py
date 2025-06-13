@@ -29,6 +29,10 @@ else:
 
 def generate_gemini_content(contents: [Any], model: str = DEFAULT_MODEL) -> str:
     if not ENABLE_AI or gemini_client is None:
+        print('Cannot upload files to Gemini, AI is disabled')
+        return ''
+    if None in contents:
+        print('None found in Gemini contents')
         return ''
     try:
         response = gemini_client.models.generate_content(model=model, contents=contents)
