@@ -8,7 +8,6 @@ from sqlmodel import SQLModel, create_engine
 
 from app.config import Settings
 
-# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -16,26 +15,21 @@ settings = Settings()
 
 # Determine database URL and log appropriately
 if settings.stage == 'prod':
-    logger.info('Connecting to remote Supabase.')
-    print('_____________________prod')
     if not settings.SUPABASE_DB_URL:
         logger.error('SUPABASE_DB_URL required in prod!')
     SQLALCHEMY_DATABASE_URL = settings.SUPABASE_DB_URL
-    logger.debug('Connected to remote Supabase.')
+    logger.info('Connected to remote Supabase.')
 
 else:
-    print('_____________________dev')
-
     user = 'postgres'
     password = quote_plus(settings.SUPABASE_PASSWORD)
-    host = settings.SUPABASE_HOST  # Should be "db" in docker-compose
+    host = settings.SUPABASE_HOST
     port = settings.SUPABASE_PORT
     db = settings.SUPABASE_DB
 
     SQLALCHEMY_DATABASE_URL = f'postgresql://{user}:{password}@{host}:{port}/{db}'
-    logger.debug(f'Connected to local Supabase at {SQLALCHEMY_DATABASE_URL}')
+    logger.info(f'Connected to local Supabase at {SQLALCHEMY_DATABASE_URL}')
 
-# Configure engine with connection pooling and prepared statement settings
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'connect_timeout': 5})
 
 
@@ -54,4 +48,4 @@ def get_db_session() -> Generator[DBSession, Any, None]:
             yield db_session
         finally:
             db_session.close()
-            logger.debug('Database session closed.')
+            logger.info('Database session closed.')
