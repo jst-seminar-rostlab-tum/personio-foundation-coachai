@@ -1,4 +1,4 @@
-name: Deploy Backend to Fly.io
+name: Deploy Dev Backend to Fly.io
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 jobs:
 #  Add test and linting when ready
   deploy-production:
-    name: Deploy Dev Server (Production)
+    name: Deploy Dev Server (Production mode)
     runs-on: ubuntu-22.04
     defaults:
       run:
