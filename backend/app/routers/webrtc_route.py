@@ -27,7 +27,7 @@ from app.services.openai_model_service import OpenAI, connect_openai
 AUDIO_PTIME = 0.02
 AUDIO_BITRATE = 16000
 
-MODEL_SERVICE = 'gemini'
+MODEL_SERVICE = 'openai'
 
 connections: set['RTCConnection'] = set()
 
