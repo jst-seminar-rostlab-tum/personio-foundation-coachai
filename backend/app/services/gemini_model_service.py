@@ -13,6 +13,11 @@ from google.genai import live
 from PIL.Image import Image
 
 from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_client
+from app.schemas.webrtc_schema import (
+    GeminiStreamConnectionError,
+    GeminiStreamReceiveError,
+    GeminiStreamSendError,
+)
 
 SAMPLE_RATE = 16000
 AUDIO_PTIME = 0.02
@@ -111,6 +116,9 @@ class TranscriptionProcessor:
             return result
         return None
 
+    def clear(self) -> None:
+        self.buffer = ''
+
 
 class Gemini(Model):
     def __init__(
@@ -125,26 +133,35 @@ class Gemini(Model):
             frame_size=int(SAMPLE_RATE * AUDIO_PTIME),
         )
         self._audio_queue = asyncio.Queue()
-        self._transcription_queue = asyncio.Queue()
-        self._transcription_processor = TranscriptionProcessor()
+        self._output_transcription_queue = asyncio.Queue()
+        self._input_transcription_queue = asyncio.Queue()
+        self._output_processor = TranscriptionProcessor()
+        self._input_processor = TranscriptionProcessor()
+        self._inputs = []
+        self._outputs = []
 
     async def send(self, input: Input) -> None:
-        if isinstance(input, str):
-            await self.session.send(input=input, end_of_turn=True)
-        elif isinstance(input, AudioFrame):
-            for frame in self.resampler.resample(input):
-                blob = genai.types.BlobDict(
-                    data=frame.to_ndarray().tobytes(),
-                    mime_type=f'audio/pcm;rate={SAMPLE_RATE}',
-                )
-                await self.session.send(input=blob)
+        try:
+            if isinstance(input, str):
+                await self.session.send(input=input, end_of_turn=True)
+            elif isinstance(input, AudioFrame):
+                for frame in self.resampler.resample(input):
+                    blob = genai.types.BlobDict(
+                        data=frame.to_ndarray().tobytes(),
+                        mime_type=f'audio/pcm;rate={SAMPLE_RATE}',
+                    )
+                    await self.session.send(input=blob)
+        except Exception as e:
+            logger.error(f'Error sending to Gemini: {e}')
+            raise GeminiStreamSendError(f'Error sending to Gemini: {e}') from e
 
     async def recv(self) -> AsyncIterator[Output]:
         """Only process audio frames"""
         turn = self.session.receive()
-        async for response in turn:
-            if response.data is not None:
-                mime_type = response.server_content.model_turn.parts[0].inline_data.mime_type
+        try:
+            async for response in turn:
+                if response.data is not None:
+                    mime_type = response.server_content.model_turn.parts[0].inline_data.mime_type
                 sample_rate = int(mime_type.split('rate=')[1])
 
                 frame = AudioFrame(format='s16', layout='mono', samples=len(response.data) / 2)
@@ -158,10 +175,36 @@ class Gemini(Model):
             ):
                 transcription_text = response.server_content.output_transcription.text
                 logger.info(f'Received transcription: {transcription_text}')
-                processed_text = self._transcription_processor.process_text(transcription_text)
+                processed_text = self._output_processor.process_text(transcription_text)
                 if processed_text:
                     logger.info(f'Sending processed text: {processed_text}')
-                    await self._transcription_queue.put(processed_text)
+                    self._outputs.append(processed_text)
+            if (
+                response.server_content.input_transcription
+                and response.server_content.input_transcription.text
+            ):
+                transcription_text = response.server_content.input_transcription.text
+                logger.info(f'Received input transcription: {transcription_text}')
+                processed_text = self._input_processor.process_text(transcription_text)
+                if processed_text:
+                    logger.info(f'Sending processed text: {processed_text}')
+                    self._inputs.append(processed_text)
+            if response.server_content.generation_complete or response.server_content.interrupted:
+                logger.info('Generation complete')
+                # Flush the transcription processor
+                output_final_text = self._output_processor.flush()
+                if output_final_text:
+                    self._outputs.append(output_final_text)
+                input_final_text = self._input_processor.flush()
+                if input_final_text:
+                    self._inputs.append(input_final_text)
+                await self._input_transcription_queue.put('\n'.join(self._inputs))
+                await self._output_transcription_queue.put('\n'.join(self._outputs))
+                self._inputs.clear()
+                self._outputs.clear()
+        except Exception as e:
+            logger.error(f'Error receiving from Gemini: {e}')
+            raise GeminiStreamReceiveError(f'Error receiving from Gemini: {e}') from e
 
     async def close(self) -> None:
         if self.session is None:
@@ -169,9 +212,14 @@ class Gemini(Model):
         await self.session.close()
         self.session = None
 
-        final_text = self._transcription_processor.flush()
-        if final_text:
-            await self._transcription_queue.put(final_text)
+        input_final_text = self._input_processor.flush()
+        if input_final_text:
+            self._inputs.append(input_final_text)
+        output_final_text = self._output_processor.flush()
+        if output_final_text:
+            self._outputs.append(output_final_text)
+        self._inputs.clear()
+        self._outputs.clear()
 
 
 client = get_client()
@@ -189,4 +237,4 @@ async def connect_gemini() -> AsyncGenerator[Gemini, None]:
             yield Gemini(session)
     except Exception as e:
         logger.error(f'Failed to connect to Gemini: {e}')
-        raise e
+        raise GeminiStreamConnectionError(f'Failed to connect to Gemini: {e}') from e

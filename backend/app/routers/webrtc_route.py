@@ -1,5 +1,6 @@
 import asyncio
 import fractions
+import json
 import logging
 import re
 import uuid
@@ -199,17 +200,28 @@ class RTCConnection:
 
         async def run_transcription_processor() -> None:
             while self.pc and self.pc.connectionState != 'closed':
-                if self.genai_session and hasattr(self.genai_session, '_transcription_queue'):
+                if (
+                    self.genai_session
+                    and hasattr(self.genai_session, '_output_transcription_queue')
+                    and hasattr(self.genai_session, '_input_transcription_queue')
+                ):
                     try:
-                        transcription = await self.genai_session._transcription_queue.get()
+                        input_transcription = (
+                            await self.genai_session._input_transcription_queue.get()
+                        )
+                        output_transcription = (
+                            await self.genai_session._output_transcription_queue.get()
+                        )
                         if (
                             self.datachannel
                             and self.datachannel.readyState == 'open'
-                            and transcription
+                            and output_transcription
                         ):
-                            self.datachannel.send(transcription)
-                            logger.info(
-                                f'Sent transcription for peer {self.peer_id}: {transcription}'
+                            self.datachannel.send(
+                                json.dumps({'role': 'user', 'content': input_transcription})
+                            )
+                            self.datachannel.send(
+                                json.dumps({'role': 'assistant', 'content': output_transcription})
                             )
                     except Exception as e:
                         logger.error(f'Error processing transcription for peer {self.peer_id}: {e}')
