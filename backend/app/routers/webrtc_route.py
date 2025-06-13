@@ -21,15 +21,15 @@ from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import PlainTextResponse
 
 from app.schemas.webrtc_schema import GeminiUserType, WebRTCDataChannelMessage
-from app.services.gemini_model_service import connect_gemini
+from app.services.gemini_model_service import Gemini, connect_gemini
 
 AUDIO_PTIME = 0.02
 AUDIO_BITRATE = 16000
 
-# Logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('webrtc')
 connections: set['RTCConnection'] = set()
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 router = APIRouter(prefix='/webrtc', tags=['WebRTC'])
 
@@ -79,32 +79,22 @@ class RTCConnection:
     async def handle_offer(self, request: Request) -> PlainTextResponse:
         try:
             content = await request.body()
-            # logger.info(f'Received content: {content}')
             offer = RTCSessionDescription(sdp=content.decode(), type='offer')
-            # logger.info(f'Created offer: {offer}')
 
-            # logger.info('Creating RTCPeerConnection...')
             self.pc = RTCPeerConnection(RTCConfiguration(iceServers=self.config.ice_servers))
             if not self.pc:
                 logger.error('Failed to create RTCPeerConnection')
                 raise Exception('Failed to create RTCPeerConnection')
             logger.info(f'Created RTCPeerConnection: {self.pc}')
 
-            # 在这里启动 Gemini 连接
             self._run_task = asyncio.create_task(self._run())
             logger.info('Started Gemini connection task')
 
-            # logger.info('Setting remote description...')
             await self.pc.setRemoteDescription(offer)
-            # logger.info('Remote description set successfully')
 
-            # logger.info('Creating answer...')
             answer = await self.pc.createAnswer()
-            # logger.info(f'Created answer: {answer}')
 
-            # logger.info('Setting local description...')
             await self.pc.setLocalDescription(answer)
-            # logger.info('Local description set successfully')
 
             sdp = self.pc.localDescription.sdp
             found = re.findall(r'a=rtpmap:(\d+) opus/48000/2', sdp)
@@ -169,6 +159,7 @@ class RTCConnection:
             while True:
                 try:
                     frame = await self.recv_audio_track.recv()
+                    # print(f'Received frame for peer {self.peer_id}: {frame}')
                     if not self.genai_session:
                         continue
                     await self.genai_session.send(frame)
@@ -181,7 +172,7 @@ class RTCConnection:
             timestamp = 0
             buffer = b''
             while self.pc and self.pc.connectionState != 'closed':
-                async for frame in self.genai_session.recv():
+                async for frame in self.genai_session.audio_frame_consumer():
                     sample_rate = frame.sample_rate
                     samples = int(sample_rate * AUDIO_PTIME)
                     buffer += frame.to_ndarray().tobytes()
@@ -234,9 +225,14 @@ class RTCConnection:
             logger.info(f'Connecting to Gemini for peer {self.peer_id}...')
             async with connect_gemini() as session:
                 logger.info(f'Connected to GenAI session for peer {self.peer_id}')
-                self.genai_session = session
+                self.genai_session: Gemini = session
 
-                await asyncio.gather(run_send_track(), run_transcription_processor())
+                asyncio.create_task(self.genai_session.audio_receiver())
+
+                await asyncio.gather(
+                    run_send_track(),
+                    run_transcription_processor(),
+                )
                 logger.info(f'Connection finished for peer {self.peer_id}')
 
         except Exception as e:

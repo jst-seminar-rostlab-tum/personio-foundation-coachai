@@ -140,6 +140,8 @@ class Gemini(Model):
         self._input = ''
         self._output = ''
 
+        self.turn_queue = asyncio.Queue()
+
     async def send(self, input: Input) -> None:
         try:
             if isinstance(input, str):
@@ -157,9 +159,20 @@ class Gemini(Model):
 
     async def recv(self) -> AsyncIterator[Output]:
         """Only process audio frames"""
-        turn = self.session.receive()
-        async for response in turn:
-            try:
+        try:
+            turn = self.session.receive()
+            async for response in turn:
+                if data := response.data:
+                    self.turn_queue.put_nowait(data)
+                    print(f'{self.turn_queue.qsize()} items in turn queue')
+
+                if response.server_content.turn_complete:
+                    logger.info('Turn complete')
+
+                if response.server_content.interrupted:
+                    logger.info('Turn interrupted')
+                    break
+
                 if response.data is not None:
                     mime_type = response.server_content.model_turn.parts[0].inline_data.mime_type
                     sample_rate = int(mime_type.split('rate=')[1])
@@ -168,9 +181,6 @@ class Gemini(Model):
                     frame.sample_rate = sample_rate
                     frame.planes[0].update(response.data)
                     yield frame
-            except Exception as e:
-                logger.error(f'Error receiving from Gemini: {e}')
-                raise GeminiStreamReceiveError(f'Error receiving from Gemini: {e}') from e
 
             assert response.server_content is not None
             if (
@@ -205,6 +215,55 @@ class Gemini(Model):
                 await self._input_transcription_queue.put(self._input)
                 self._input = ''
                 self._output = ''
+        except Exception as e:
+            logger.error(f'Error receiving from Gemini: {e}')
+            raise GeminiStreamReceiveError(f'Error receiving from Gemini: {e}') from e
+
+        while not self.turn_queue.empty():
+            print('Clearing audio queue')
+            self.turn_queue.get_nowait()
+
+    async def audio_receiver(self) -> None:
+        """Receives from Gemini and puts audio and transcriptions in queues."""
+        while True:
+            turn = self.session.receive()
+            async for response in turn:
+                if data := response.data:
+                    await self._audio_queue.put((data, response))
+                    print(f'{self._audio_queue.qsize()} items in audio queue')
+
+                if response.server_content.turn_complete:
+                    logger.info('Turn complete')
+
+                if response.server_content.interrupted:
+                    logger.info('Turn interrupted')
+
+                if (
+                    response.server_content.output_transcription
+                    and response.server_content.output_transcription.text
+                ):
+                    transcription_text = response.server_content.output_transcription.text
+                    logger.info(f'Received transcription: {transcription_text}')
+                    processed_text = self._transcription_processor.process_text(transcription_text)
+                    if processed_text:
+                        logger.info(f'Sending processed text: {processed_text}')
+                        await self._transcription_queue.put(processed_text)
+
+            # Clean up audio queue
+            while not self._audio_queue.empty():
+                print('Clearing audio queue')
+                self._audio_queue.get_nowait()
+
+    async def audio_frame_consumer(self) -> AsyncIterator[AudioFrame]:
+        """Yields AudioFrame objects as they become available."""
+        while True:
+            data, response = await self._audio_queue.get()
+            mime_type = response.server_content.model_turn.parts[0].inline_data.mime_type
+            sample_rate = int(mime_type.split('rate=')[1])
+            frame = AudioFrame(format='s16', layout='mono', samples=len(data) // 2)
+            frame.sample_rate = sample_rate
+            frame.planes[0].update(data)
+            yield frame
 
     async def close(self) -> None:
         if self.session is None:
@@ -234,7 +293,10 @@ async def connect_gemini() -> AsyncGenerator[Gemini, None]:
             config=LIVE_CONFIG,
         ) as session:
             logger.info('Connected to Gemini successfully')
-            yield Gemini(session)
+            gemini = Gemini(session)
+            # Start background task here, if you want
+            # gemini.audio_task = asyncio.create_task(gemini.audio_receiver())
+            yield gemini
     except Exception as e:
         logger.error(f'Failed to connect to Gemini: {e}')
         raise GeminiStreamConnectionError(f'Failed to connect to Gemini: {e}') from e
