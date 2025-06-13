@@ -6,13 +6,6 @@ on:
     paths: ["backend/**"]
 
 jobs:
-  check-lock:
-    disabled: true
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: pipx install uv
-      - run: uv pip compile --check
   lint:
     name: Lint
     runs-on: ubuntu-22.04
