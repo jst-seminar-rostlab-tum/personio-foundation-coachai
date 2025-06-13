@@ -27,7 +27,6 @@ dependencies = [
   "supabase>=2.15.2",
   "pypdf>=5.4.0",
   "pgvector>=0.2.5,<0.4",
-  "langchain-postgres>=0.0.14",
   "langchain-openai>=0.3.21",
   "google-genai>=1.19.0",
   "pyjwt>=2.10.1",
