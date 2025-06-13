@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ''
     OPENAI_API_KEY: str = ''
 
+    POPULATE_VECTOR_DB: bool = False
+
     CORS_ORIGIN: str = 'http://localhost:3000'
 
     ssl_cert_url: str = 'https://test.com'

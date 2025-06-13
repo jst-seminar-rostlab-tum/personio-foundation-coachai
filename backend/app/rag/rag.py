@@ -57,7 +57,9 @@ def load_and_index_documents(vector_db: SupabaseVectorStore) -> None:
     print(f'Added {len(docs)} documents to vector store: {TABLE_NAME}')
 
 
-def build_vector_db_retriever(populate_db: bool) -> VectorStoreRetriever:
+def build_vector_db_retriever(
+    populate_db: bool = settings.POPULATE_VECTOR_DB,
+) -> VectorStoreRetriever:
     """
     Builds a vector-based retriever using the specified embedding model
     and vector store configuration.
