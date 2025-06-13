@@ -20,7 +20,7 @@ from av import AudioFrame
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import PlainTextResponse
 
-from app.services.gemini_model_service import connect_gemini
+from app.services.gemini_model_service import Gemini, connect_gemini
 
 AUDIO_PTIME = 0.02
 AUDIO_BITRATE = 16000
@@ -168,6 +168,7 @@ class RTCConnection:
             while True:
                 try:
                     frame = await self.recv_audio_track.recv()
+                    # print(f'Received frame for peer {self.peer_id}: {frame}')
                     if not self.genai_session:
                         continue
                     await self.genai_session.send(frame)
@@ -180,7 +181,7 @@ class RTCConnection:
             timestamp = 0
             buffer = b''
             while self.pc and self.pc.connectionState != 'closed':
-                async for frame in self.genai_session.recv():
+                async for frame in self.genai_session.audio_frame_consumer():
                     sample_rate = frame.sample_rate
                     samples = int(sample_rate * AUDIO_PTIME)
                     buffer += frame.to_ndarray().tobytes()
@@ -218,9 +219,14 @@ class RTCConnection:
             logger.info(f'Connecting to Gemini for peer {self.peer_id}...')
             async with connect_gemini() as session:
                 logger.info(f'Connected to GenAI session for peer {self.peer_id}')
-                self.genai_session = session
+                self.genai_session: Gemini = session
 
-                await asyncio.gather(run_send_track(), run_transcription_processor())
+                asyncio.create_task(self.genai_session.audio_receiver())
+
+                await asyncio.gather(
+                    run_send_track(),
+                    run_transcription_processor(),
+                )
                 logger.info(f'Connection finished for peer {self.peer_id}')
 
         except Exception as e:

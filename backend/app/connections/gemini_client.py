@@ -74,8 +74,8 @@ LIVE_CONFIG = LiveConnectConfig(
         trigger_tokens=25600,
         sliding_window=SlidingWindow(target_tokens=12800),
     ),
-    input_audio_transcription={},
-    output_audio_transcription={},
+    # input_audio_transcription={},
+    # output_audio_transcription={},
 )
 
 
