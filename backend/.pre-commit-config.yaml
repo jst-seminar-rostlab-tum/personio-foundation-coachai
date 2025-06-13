@@ -12,7 +12,7 @@ repos:
       - id: ruff
         name: Ruff Linter (backend - ci)
         files: ^backend/
-        args: ["--no-fix", "--verbose", "--show-fixes", "--show-source"]
+        args: ["--no-fix"]
         stages: [manual]
 
       - id: ruff-format
@@ -23,7 +23,7 @@ repos:
       - id: ruff-format
         name: Ruff Formatter (backend - ci)
         files: ^backend/
-        args: ["--check", "--verbose", "--diff"]
+        args: ["--check"]
         stages: [manual]
 
   # Check for leaked secrets

@@ -84,7 +84,8 @@ def get_dummy_user_goals(user_profiles: list[UserProfile]) -> list[UserGoal]:
 
 
 def get_dummy_conversation_scenarios(
-    user_profiles: list[UserProfile]) -> list[ConversationScenario]:
+    user_profiles: list[UserProfile],
+) -> list[ConversationScenario]:
     return [
         ConversationScenario(
             id=uuid4(),
@@ -109,7 +110,7 @@ def get_dummy_conversation_scenarios(
             context='Context 2',
             goal='Goal 2',
             other_party='Other Party 2',
-            difficulty_level= DifficultyLevel.medium,
+            difficulty_level=DifficultyLevel.medium,
             tone='Professional',
             complexity='Medium',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string

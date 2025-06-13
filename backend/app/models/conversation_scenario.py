@@ -24,6 +24,7 @@ class ConversationScenarioStatus(str, Enum):
     ready = 'ready'
     archived = 'archived'
 
+
 class DifficultyLevel(str, Enum):
     easy = 'easy'
     medium = 'medium'
