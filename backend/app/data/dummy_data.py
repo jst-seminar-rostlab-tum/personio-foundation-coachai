@@ -481,10 +481,7 @@ def get_dummy_scenario_preparations(
     ]
 
 
-
-def get_dummy_user_confidence_scores(
-    user_profiles: list[UserProfile]
-) -> list[UserConfidenceScore]:
+def get_dummy_user_confidence_scores(user_profiles: list[UserProfile]) -> list[UserConfidenceScore]:
     """
     Generate dummy UserConfidenceScore data.
     """
