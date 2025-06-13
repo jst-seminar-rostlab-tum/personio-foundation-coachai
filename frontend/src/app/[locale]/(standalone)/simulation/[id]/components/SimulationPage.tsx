@@ -131,12 +131,6 @@ function useWebRTC() {
       });
       if (!offer.sdp) throw new Error('Failed to create offer: SDP is undefined');
       await pc.setLocalDescription(offer);
-      // const response = await fetch(`${API_URL}/webrtc/offer`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/sdp' },
-      //   body: offer.sdp,
-      // });
-      // const answerSdp = await response.text();
       const response = await api.post('/webrtc/offer', offer.sdp, {
         headers: {
           'Content-Type': 'application/sdp',
