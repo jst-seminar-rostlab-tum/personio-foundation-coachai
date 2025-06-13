@@ -46,37 +46,305 @@ services:
       dockerfile: Dockerfile
       args:
         stage: dev
-    depends_on:
-      - db
     volumes:
       - ./backend:/app
       - /app/.venv
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
       STAGE: dev
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: app_db
-      POSTGRES_PORT: 5432
+      SUPABASE_HOST: ${SUPABASE_HOST}
+      SUPABASE_USER: postgres
+      SUPABASE_PASSWORD: ${SUPABASE_PASSWORD}
+      SUPABASE_DB: ${SUPABASE_DB}
+      SUPABASE_PORT: ${SUPABASE_PORT}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_URL: ${SUPABASE_URL}
     entrypoint: ["uv", "run", "-m", "app.data.populate_dummy_data"]
     networks:
       - app-network
-  db:
-    image: pgvector/pgvector:pg17
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+
+
+  studio:
+    container_name: supabase-studio
+    image: supabase/studio:2025.06.02-sha-8f2993d
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://studio:3000/api/platform/profile').then((r) => {if (r.status !== 200) throw new Error(r.status)})"]
+      timeout: 10s
+      interval: 5s
+      retries: 3
+    depends_on:
+      analytics:
+        condition: service_healthy
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: app_db
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PASSWORD: ${SUPABASE_PASSWORD}
+      DEFAULT_ORGANIZATION_NAME: ${SUPABASE_STUDIO_DEFAULT_ORGANIZATION}
+      DEFAULT_PROJECT_NAME: ${SUPABASE_STUDIO_DEFAULT_PROJECT}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_PUBLIC_URL: ${SUPABASE_PUBLIC_URL}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      AUTH_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      LOGFLARE_API_KEY: ${SUPABASE_LOGFLARE_API_KEY}
+      LOGFLARE_URL: http://analytics:4000
+      NEXT_PUBLIC_ENABLE_LOGS: true
+      NEXT_ANALYTICS_BACKEND_PROVIDER: postgres
     networks:
       - app-network
+
+
+  kong:
+    container_name: supabase-kong
+    image: kong:2.8.1
+    restart: unless-stopped
+    ports:
+      - ${SUPABASE_KONG_HTTP_PORT}:8000/tcp
+      - ${SUPABASE_KONG_HTTPS_PORT}:8443/tcp
+    volumes:
+      - ./supabase/volumes/api/kong.yml:/home/kong/temp.yml:ro,z
+    depends_on:
+      analytics:
+        condition: service_healthy
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /home/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth
+      KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
+      KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      DASHBOARD_USERNAME: ${SUPABASE_DASHBOARD_USERNAME}
+      DASHBOARD_PASSWORD: ${SUPABASE_DASHBOARD_PASSWORD}
+    entrypoint: bash -c 'eval "echo \"$$(cat ~/temp.yml)\"" > ~/kong.yml && /docker-entrypoint.sh kong docker-start'
+    networks:
+      - app-network
+
+  auth:
+    container_name: supabase-auth
+    image: supabase/gotrue:v2.174.0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      timeout: 5s
+      interval: 5s
+      retries: 3
+    depends_on:
+      db:
+        condition: service_healthy
+      analytics:
+        condition: service_healthy
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${SUPABASE_API_EXTERNAL_URL}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${SUPABASE_PASSWORD}@${SUPABASE_HOST}:${SUPABASE_PORT}/${SUPABASE_DB}
+      GOTRUE_SITE_URL: ${SUPABASE_SITE_URL}
+      GOTRUE_URI_ALLOW_LIST: ${SUPABASE_ADDITIONAL_REDIRECT_URLS}
+      GOTRUE_DISABLE_SIGNUP: ${SUPABASE_DISABLE_SIGNUP}
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: ${SUPABASE_JWT_EXPIRY}
+      GOTRUE_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
+      GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
+      GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: ${SUPABASE_ENABLE_ANONYMOUS_USERS}
+    networks:
+      - app-network
+
+
+  rest:
+    container_name: supabase-rest
+    image: postgrest/postgrest:v12.2.12
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      analytics:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${SUPABASE_PASSWORD}@${SUPABASE_HOST}:${SUPABASE_PORT}/${SUPABASE_DB}
+      PGRST_DB_SCHEMAS: ${SUPABASE_PGRST_DB_SCHEMAS}
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+      PGRST_APP_SETTINGS_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      PGRST_APP_SETTINGS_JWT_EXP: ${SUPABASE_JWT_EXPIRY}
+    command: [ "postgrest" ]
+    networks:
+      - app-network
+
+
+  meta:
+    container_name: supabase-meta
+    image: supabase/postgres-meta:v0.89.3
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      analytics:
+        condition: service_healthy
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: ${SUPABASE_HOST}
+      PG_META_DB_PORT: ${SUPABASE_PORT}
+      PG_META_DB_NAME: ${SUPABASE_DB}
+      PG_META_DB_USER: supabase_admin
+      PG_META_DB_PASSWORD: ${SUPABASE_PASSWORD}
+    networks:
+      - app-network
+
+
+  analytics:
+    container_name: supabase-analytics
+    image: supabase/logflare:1.12.0
+    restart: unless-stopped
+    ports:
+      - 4000:4000
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:4000/health"]
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      LOGFLARE_NODE_HOST: 127.0.0.1
+      DB_USERNAME: supabase_admin
+      DB_DATABASE: _supabase
+      DB_HOSTNAME: ${SUPABASE_HOST}
+      DB_PORT: ${SUPABASE_PORT}
+      DB_PASSWORD: ${SUPABASE_PASSWORD}
+      DB_SCHEMA: _analytics
+      LOGFLARE_API_KEY: ${SUPABASE_LOGFLARE_API_KEY}
+      LOGFLARE_SINGLE_TENANT: true
+      LOGFLARE_SUPABASE_MODE: true
+      LOGFLARE_MIN_CLUSTER_SIZE: 1
+      POSTGRES_BACKEND_URL: postgresql://supabase_admin:${SUPABASE_PASSWORD}@${SUPABASE_HOST}:${SUPABASE_PORT}/_supabase
+      POSTGRES_BACKEND_SCHEMA: _analytics
+      LOGFLARE_FEATURE_FLAG_OVERRIDE: multibackend=true
+    networks:
+      - app-network
+
+
+  db:
+    container_name: supabase-db
+    image: supabase/postgres:15.8.1.060
+    restart: unless-stopped
+    volumes:
+      - ./supabase/volumes/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z
+      - ./supabase/volumes/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:Z
+      - ./supabase/volumes/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:Z
+      - postgres-data:/var/lib/postgresql/data:Z
+      - ./supabase/volumes/db/_supabase.sql:/docker-entrypoint-initdb.d/migrations/97-_supabase.sql:Z
+      - ./supabase/volumes/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
+      - ./supabase/volumes/db/pooler.sql:/docker-entrypoint-initdb.d/migrations/99-pooler.sql:Z
+      - ./supabase/volumes/db/pgvector.sql:/docker-entrypoint-initdb.d/init-scripts/99-pgvector.sql:Z
+      - db-config:/etc/postgresql-custom
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      vector:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      PGPORT: ${SUPABASE_PORT}
+      POSTGRES_PORT: ${SUPABASE_PORT}
+      PGPASSWORD: ${SUPABASE_PASSWORD}
+      POSTGRES_PASSWORD: ${SUPABASE_PASSWORD}
+      PGDATABASE: ${SUPABASE_DB}
+      POSTGRES_DB: ${SUPABASE_DB}
+      JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      JWT_EXP: ${SUPABASE_JWT_EXPIRY}
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+      - -c
+      - log_min_messages=fatal
+    networks:
+      - app-network
+
+  vector:
+    container_name: supabase-vector
+    image: timberio/vector:0.28.1-alpine
+    restart: unless-stopped
+    volumes:
+      - ./supabase/volumes/logs/vector.yml:/etc/vector/vector.yml:ro,z
+      - ${DOCKER_SOCKET_LOCATION}:/var/run/docker.sock:ro,z
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://vector:9001/health"]
+      timeout: 5s
+      interval: 5s
+      retries: 3
+    environment:
+      LOGFLARE_API_KEY: ${SUPABASE_LOGFLARE_API_KEY}
+    command:
+      - --config
+      - /etc/vector/vector.yml
+    security_opt:
+      - label=disable
+    networks:
+      - app-network
+
+
+  supavisor:
+    container_name: supabase-pooler
+    image: supabase/supavisor:2.5.1
+    restart: unless-stopped
+    ports:
+      - ${SUPABASE_PORT}:5432
+      - ${SUPABASE_POOLER_PROXY_PORT_TRANSACTION}:6543
+    volumes:
+      - ./supabase/volumes/pooler/pooler.exs:/etc/pooler/pooler.exs:ro,z
+    healthcheck:
+      test: ["CMD", "curl", "-sSfL", "--head", "-o", "/dev/null", "http://127.0.0.1:4000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
+      analytics:
+        condition: service_healthy
+    environment:
+      PORT: 4000
+      POSTGRES_PORT: ${SUPABASE_PORT}
+      POSTGRES_DB: ${SUPABASE_DB}
+      POSTGRES_PASSWORD: ${SUPABASE_PASSWORD}
+      DATABASE_URL: ecto://supabase_admin:${SUPABASE_PASSWORD}@db:${SUPABASE_PORT}/_supabase
+      CLUSTER_POSTGRES: true
+      SECRET_KEY_BASE: ${SUPABASE_SECRET_KEY_BASE}
+      VAULT_ENC_KEY: ${SUPABASE_VAULT_ENC_KEY}
+      API_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      METRICS_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      REGION: local
+      ERL_AFLAGS: -proto_dist inet_tcp
+      POOLER_TENANT_ID: ${SUPABASE_POOLER_TENANT_ID}
+      POOLER_DEFAULT_POOL_SIZE: ${SUPABASE_POOLER_DEFAULT_POOL_SIZE}
+      POOLER_MAX_CLIENT_CONN: ${SUPABASE_POOLER_MAX_CLIENT_CONN}
+      POOLER_POOL_MODE: transaction
+    command:
+      - /bin/sh
+      - -c
+      - /app/bin/migrate && /app/bin/supavisor eval "$$(cat /etc/pooler/pooler.exs)" && /app/bin/server
+    networks:
+      - app-network
+
+volumes:
+  db-config:
+  postgres-data:
 
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  postgres_data: 

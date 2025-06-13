@@ -1,42 +1,57 @@
-import os
-import urllib.request
+import logging
 from collections.abc import Generator
 from typing import Any
+from urllib.parse import quote_plus
 
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine
 
 from app.config import Settings
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 settings = Settings()
 
+# Determine database URL and log appropriately
 if settings.stage == 'prod':
-    os.makedirs(settings.ssl_cert_dir, exist_ok=True)
-    ssl_cert_path = f'{settings.ssl_cert_dir}{settings.ssl_cert_name}'
-    urllib.request.urlretrieve(settings.ssl_cert_url, ssl_cert_path)
-else:
-    ssl_cert_path = None
+    logger.info('Connecting to remote Supabase.')
+    print('_____________________prod')
+    if not settings.SUPABASE_URL:
+        logger.error('SUPABASE_URL required in prod!')
+    SQLALCHEMY_DATABASE_URL = settings.SUPABASE_URL
+    logger.debug('Connected to remote Supabase.')
 
-if settings.database_url:
-    SQLALCHEMY_DATABASE_URL = (
-        f'{settings.database_url}?sslmode=verify-full&sslrootcert={ssl_cert_path}'
-    )
 else:
-    SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
+    print('_____________________dev')
+
+    user = 'postgres'
+    password = quote_plus(settings.SUPABASE_PASSWORD)
+    host = settings.SUPABASE_HOST  # Should be "db" in docker-compose
+    port = settings.SUPABASE_PORT
+    db = settings.SUPABASE_DB
+
+    SQLALCHEMY_DATABASE_URL = f'postgresql://{user}:{password}@{host}:{port}/{db}'
+    logger.debug(f'Connected to local Supabase at {SQLALCHEMY_DATABASE_URL}')
 
 # Configure engine with connection pooling and prepared statement settings
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'connect_timeout': 5})
 
 
 # Create the database tables
 def create_db_and_tables() -> None:
+    logger.info('Creating database tables if they do not exist...')
     SQLModel.metadata.create_all(engine)
+    logger.info('Database setup complete.')
 
 
 # Dependency to get the database session
 def get_db_session() -> Generator[DBSession, Any, None]:
+    logger.debug('Creating a new database session.')
     with DBSession(engine) as db_session:
         try:
             yield db_session
         finally:
             db_session.close()
+            logger.debug('Database session closed.')
