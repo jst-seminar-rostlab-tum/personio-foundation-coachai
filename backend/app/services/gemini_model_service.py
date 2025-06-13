@@ -26,7 +26,7 @@ type Input = Union[str, AudioFrame, Image]
 type Output = AudioFrame
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 class RTCConnection(Protocol):
@@ -89,18 +89,18 @@ class TranscriptionProcessor:
         if not text:
             return None
 
-        logger.debug(f'Processing text: {text}')
+        # logger.debug(f'Processing text: {text}')
         self.buffer += text
-        logger.debug(f'Current buffer: {self.buffer}')
+        # logger.debug(f'Current buffer: {self.buffer}')
 
         # Process text
         processed_buffer = self._process_text(self.buffer)
-        logger.debug(f'Processed buffer: {processed_buffer}')
+        # logger.debug(f'Processed buffer: {processed_buffer}')
 
         # Split sentences
         complete_sentences, remaining = self._split_sentences(processed_buffer)
-        logger.debug(f'Complete sentences: {complete_sentences}')
-        logger.debug(f'Remaining text: {remaining}')
+        # logger.debug(f'Complete sentences: {complete_sentences}')
+        # logger.debug(f'Remaining text: {remaining}')
 
         if complete_sentences:
             self.buffer = remaining
@@ -111,7 +111,7 @@ class TranscriptionProcessor:
     def flush(self) -> Optional[str]:
         if self.buffer.strip():
             result = self._process_text(self.buffer)
-            logger.debug(f'Flush result: {result}')
+            # logger.debug(f'Flush result: {result}')
             self.buffer = ''
             return result
         return None
@@ -187,22 +187,32 @@ class Gemini(Model):
                 response.server_content.output_transcription
                 and response.server_content.output_transcription.text
             ):
-                transcription_text = response.server_content.output_transcription.text
-                logger.debug(f'Received transcription: {transcription_text}')
-                processed_text = self._output_processor.process_text(transcription_text)
+                transcription = response.server_content.output_transcription
+                logger.debug(f'Received transcription: {transcription}')
+                processed_text = self._output_processor.process_text(transcription.text)
+                finished = transcription.finished
                 if processed_text:
                     logger.debug(f'Sending processed text: {processed_text}')
                     self._output += processed_text
+                if finished:
+                    await self._output_transcription_queue.put(self._output)
+                    self._output = ''
+                    self._output_processor.clear()
             if (
                 response.server_content.input_transcription
                 and response.server_content.input_transcription.text
             ):
-                transcription_text = response.server_content.input_transcription.text
-                logger.debug(f'Received input transcription: {transcription_text}')
-                processed_text = self._input_processor.process_text(transcription_text)
+                transcription = response.server_content.input_transcription
+                logger.debug(f'Received input transcription: {transcription}')
+                processed_text = self._input_processor.process_text(transcription.text)
+                finished = transcription.finished
                 if processed_text:
                     logger.debug(f'Sending processed text: {processed_text}')
                     self._input += processed_text
+                if finished:
+                    await self._input_transcription_queue.put(self._input)
+                    self._input = ''
+                    self._input_processor.clear()
             if response.server_content.generation_complete or response.server_content.interrupted:
                 logger.debug('Generation complete')
                 output_final_text = self._output_processor.flush()
@@ -211,17 +221,17 @@ class Gemini(Model):
                 input_final_text = self._input_processor.flush()
                 if input_final_text:
                     self._input += input_final_text
-                await self._output_transcription_queue.put(self._output)
-                await self._input_transcription_queue.put(self._input)
+                await self._output_transcription_queue.put_nowait(self._output)
+                await self._input_transcription_queue.put_nowait(self._input)
                 self._input = ''
                 self._output = ''
         except Exception as e:
             logger.error(f'Error receiving from Gemini: {e}')
             raise GeminiStreamReceiveError(f'Error receiving from Gemini: {e}') from e
 
-        while not self.turn_queue.empty():
+        while not self._audio_queue.empty():
             print('Clearing audio queue')
-            self.turn_queue.get_nowait()
+            self._audio_queue.get_nowait()
 
     async def audio_receiver(self) -> None:
         """Receives from Gemini and puts audio and transcriptions in queues."""
@@ -230,28 +240,58 @@ class Gemini(Model):
             async for response in turn:
                 if data := response.data:
                     await self._audio_queue.put((data, response))
-                    print(f'{self._audio_queue.qsize()} items in audio queue')
+                    logger.debug(f'{self._audio_queue.qsize()} items in audio queue')
+
+                assert response.server_content is not None
 
                 if response.server_content.turn_complete:
                     logger.info('Turn complete')
 
                 if response.server_content.interrupted:
                     logger.info('Turn interrupted')
-
-                if (
-                    response.server_content.output_transcription
-                    and response.server_content.output_transcription.text
-                ):
-                    transcription_text = response.server_content.output_transcription.text
-                    logger.info(f'Received transcription: {transcription_text}')
-                    processed_text = self._transcription_processor.process_text(transcription_text)
+                if response.server_content.output_transcription:
+                    transcription = response.server_content.output_transcription
+                    processed_text = self._output_processor.process_text(transcription.text)
+                    finished = transcription.finished
+                    logger.debug(f'Output finished: {finished}')
                     if processed_text:
-                        logger.info(f'Sending processed text: {processed_text}')
-                        await self._transcription_queue.put(processed_text)
+                        logger.debug(f'Sending processed text: {processed_text}')
+                        self._output += processed_text
+                    if finished:
+                        await self._output_transcription_queue.put(self._output)
+                        logger.debug(
+                            f'Output transcription queue'
+                            f'size: {self._output_transcription_queue.qsize()}'
+                        )
+                        self._output = ''
+                if response.server_content.input_transcription:
+                    transcription = response.server_content.input_transcription
+                    processed_text = self._input_processor.process_text(transcription.text)
+                    finished = transcription.finished
+                    logger.debug(f'Input finished: {finished}')
+                    if processed_text:
+                        logger.debug(f'Sending processed text: {processed_text}')
+                        self._input += processed_text
+                    if finished:
+                        await self._input_transcription_queue.put(self._input)
+                        logger.debug(
+                            f'Input transcription queue'
+                            f'size: {self._input_transcription_queue.qsize()}'
+                        )
+                        self._input = ''
+                        self._input_processor.clear()
+                if response.server_content.turn_complete or response.server_content.interrupted:
+                    logger.debug('Generation complete')
+                    self._output_processor.clear()
+                    self._input_processor.clear()
+                    await self._output_transcription_queue.put(self._output)
+                    await self._input_transcription_queue.put(self._input)
+                    self._input = ''
+                    self._output = ''
 
             # Clean up audio queue
             while not self._audio_queue.empty():
-                print('Clearing audio queue')
+                logger.debug('Clearing audio queue')
                 self._audio_queue.get_nowait()
 
     async def audio_frame_consumer(self) -> AsyncIterator[AudioFrame]:

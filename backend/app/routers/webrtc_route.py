@@ -149,7 +149,6 @@ class RTCConnection:
                 self.recv_audio_track = track
                 self.send_track = SendingTrack()
                 self.pc.addTrack(self.send_track)
-                asyncio.ensure_future(run_recv_audio_track())
 
             @track.on('ended')
             async def on_ended() -> None:
@@ -189,6 +188,11 @@ class RTCConnection:
                         await self.send_track.queue.put(frame)
                         await asyncio.sleep(AUDIO_PTIME)
 
+        async def run_audio_receiver() -> None:
+            while self.pc and self.pc.connectionState != 'closed':
+                if self.genai_session:
+                    await self.genai_session.audio_receiver()
+
         async def run_transcription_processor() -> None:
             while self.pc and self.pc.connectionState != 'closed':
                 if (
@@ -200,19 +204,25 @@ class RTCConnection:
                         input_transcription = (
                             await self.genai_session._input_transcription_queue.get()
                         )
+                        logger.debug(f'Input transcription: {input_transcription}')
                         output_transcription = (
                             await self.genai_session._output_transcription_queue.get()
                         )
+                        logger.debug(f'Output transcription: {output_transcription}')
                         if (
                             self.datachannel
                             and self.datachannel.readyState == 'open'
                             and output_transcription
                         ):
+                            logger.debug(
+                                f'Sending message to peer {self.peer_id}', input_transcription
+                            )
                             self.datachannel.send(
                                 WebRTCDataChannelMessage(
                                     role=GeminiUserType.USER, text=input_transcription
                                 ).model_dump_json()
                             )
+                            print(f'Sending message to peer {self.peer_id}', output_transcription)
                             self.datachannel.send(
                                 WebRTCDataChannelMessage(
                                     role=GeminiUserType.ASSISTANT, text=output_transcription
@@ -227,9 +237,9 @@ class RTCConnection:
                 logger.info(f'Connected to GenAI session for peer {self.peer_id}')
                 self.genai_session: Gemini = session
 
-                asyncio.create_task(self.genai_session.audio_receiver())
-
                 await asyncio.gather(
+                    run_recv_audio_track(),
+                    run_audio_receiver(),
                     run_send_track(),
                     run_transcription_processor(),
                 )
