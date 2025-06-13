@@ -16,9 +16,9 @@ from app.models.session import (
     SessionRead,
 )
 from app.models.session_feedback import (
+    FeedbackStatusEnum,
     SessionFeedback,
     SessionFeedbackMetrics,
-    SessionFeedbackRead,
 )
 from app.models.session_turn import SessionTurn
 from app.models.sessions_paginated import (
@@ -71,7 +71,15 @@ def get_session_by_id(
     feedback = db_session.exec(
         select(SessionFeedback).where(SessionFeedback.session_id == session_id)
     ).first()
-    if feedback:
+
+    if not feedback:
+        raise HTTPException(status_code=404, detail='Session feedback not found')
+
+    if feedback.status == FeedbackStatusEnum.pending:
+        raise HTTPException(status_code=202, detail='Session feedback in progress.')
+    elif feedback.status == FeedbackStatusEnum.failed:
+        raise HTTPException(status_code=500, detail='Session feedback failed.')
+    else:
         session_response.feedback = SessionFeedbackMetrics(
             scores=feedback.scores,
             tone_analysis=feedback.tone_analysis,
@@ -90,32 +98,11 @@ def get_session_by_id(
     session_turns = db_session.exec(
         select(SessionTurn).where(SessionTurn.session_id == session_id)
     ).all()
+
     if session_turns:
         session_response.audio_uris = [turn.audio_uri for turn in session_turns]
 
     return session_response
-
-
-@router.get('/{session_id}/feedback', response_model=SessionFeedbackRead)
-def get_session_feedback(
-    session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
-) -> SessionFeedback:
-    """
-    Retrieve the session feedback for a given session ID.
-    """
-    # Validate that the session exists
-    session = db_session.get(Session, session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail='Session not found')
-
-    # Fetch the associated session feedback
-    statement = select(SessionFeedback).where(SessionFeedback.session_id == session_id)
-    session_feedback = db_session.exec(statement).first()
-
-    if not session_feedback:
-        raise HTTPException(status_code=404, detail='Session feedback not found')
-
-    return session_feedback
 
 
 @router.get('/', response_model=PaginatedSessionsResponse)
