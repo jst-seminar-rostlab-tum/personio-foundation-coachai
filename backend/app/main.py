@@ -1,8 +1,5 @@
-import os
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 
@@ -41,8 +38,6 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-demo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'demo', 'demo')
-app.mount('/demo', StaticFiles(directory=demo_path), name='demo')
 
 app.include_router(auth_route.router)
 app.include_router(language_route.router)
