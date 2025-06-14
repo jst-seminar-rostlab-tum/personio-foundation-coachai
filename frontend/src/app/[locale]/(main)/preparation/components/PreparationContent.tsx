@@ -9,7 +9,7 @@ import { useParams } from 'next/navigation';
 import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
 
-export default function PreparationPage() {
+export default function PreparationContent() {
   const t = useTranslations('Preparation');
   const [preparationData, setPreparationData] = useState<TrainingPreparation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
