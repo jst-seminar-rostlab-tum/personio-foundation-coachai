@@ -1,20 +1,21 @@
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
-from uuid import UUID, uuid4
 
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
-from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship
+
+from app.models.camel_case import CamelModel
+from app.models.language import LanguageCode
 
 if TYPE_CHECKING:
-    from app.models.training_case import TrainingCase
+    from app.models.conversation_scenario import ConversationScenario
 
 
-class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a database table
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
+class ConversationCategory(CamelModel, table=True):  # `table=True` makes it a database table
+    id: str = Field(primary_key=True)  # Changed from UUID to str
     name: str = Field(unique=True)
-    icon_uri: str
     system_prompt: str = Field(default='')
     initial_prompt: str = Field(default='')
     ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON))
@@ -22,12 +23,12 @@ class ConversationCategory(SQLModel, table=True):  # `table=True` makes it a dat
     default_goal: str = Field(default='')
     default_other_party: str = Field(default='')
     is_custom: bool = Field(default=False)
-    language_code: str = Field(foreign_key='language.code')  # FK to Language model
+    language_code: LanguageCode = Field(default=LanguageCode.en)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    training_cases: list['TrainingCase'] = Relationship(
+    conversation_scenarios: list['ConversationScenario'] = Relationship(
         back_populates='category', cascade_delete=True
     )
 
@@ -40,9 +41,9 @@ def update_timestamp(
 
 
 # Schema for creating a new ConversationCategory
-class ConversationCategoryCreate(SQLModel):
+class ConversationCategoryCreate(CamelModel):
+    id: str
     name: Optional[str] = None
-    icon_uri: Optional[str] = None
     system_prompt: Optional[str] = None
     initial_prompt: Optional[str] = None
     ai_setup: Optional[dict] = Field(default_factory=dict)
@@ -50,18 +51,17 @@ class ConversationCategoryCreate(SQLModel):
     default_goal: Optional[str] = None
     default_other_party: Optional[str] = None
     is_custom: Optional[bool] = None
-    language_code: Optional[str] = None
+    language_code: LanguageCode = Field(default=LanguageCode.en)
 
 
 # Schema for reading ConversationCategory data
-class ConversationCategoryRead(SQLModel):
-    id: UUID
+class ConversationCategoryRead(CamelModel):
+    id: str  # Changed from UUID to str
     name: str
-    icon_uri: str
     default_context: str
     default_goal: str
     default_other_party: str
     is_custom: bool
-    language_code: str
+    language_code: LanguageCode
     created_at: datetime
     updated_at: datetime

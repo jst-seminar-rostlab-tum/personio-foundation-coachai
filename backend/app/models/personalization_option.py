@@ -1,19 +1,12 @@
-from sqlmodel import SQLModel
-
-from app.models.confidence_area import ConfidenceAreaRead
-from app.models.experience import ExperienceRead
-from app.models.goal import GoalRead
-from app.models.language import LanguageRead
-from app.models.learning_style import LearningStyleRead
-from app.models.session_length import SessionLengthRead
-from app.models.user_profile import UserRole
+from app.models.camel_case import CamelModel
+from app.models.user_confidence_score import ConfidenceArea
+from app.models.user_goal import Goal
+from app.models.user_profile import AccountRole, Experience, PreferredLearningStyle
 
 
-class PersonalizationOptionRead(SQLModel):
-    roles: list[UserRole]
-    experiences: list[ExperienceRead]
-    goals: list[GoalRead]
-    confidence_areas: list[ConfidenceAreaRead]
-    languages: list[LanguageRead]
-    learning_styles: list[LearningStyleRead]
-    session_lengths: list[SessionLengthRead]
+class PersonalizationOptionRead(CamelModel):
+    roles: list[AccountRole]
+    experiences: list[Experience]
+    goals: list[Goal]
+    confidence_areas: list[ConfidenceArea]
+    learning_styles: list[PreferredLearningStyle]
