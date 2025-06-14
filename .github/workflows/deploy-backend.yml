@@ -37,6 +37,7 @@ jobs:
 
   deploy-production:
     name: Deploy (Production)
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
     needs: test
     runs-on: ubuntu-22.04
     defaults:
