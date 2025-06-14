@@ -77,29 +77,35 @@ export default function FeedbackDetail() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
     const id = params?.id;
     if (!id) return;
     setIsLoading(true);
-    api
-      .get(`/session-feedback/${id}`)
-      .then((res) => {
-        if (res.status === 202) {
-          setIsLoading(true);
-          setFeedback(null);
-        } else if (res.status === 200) {
+
+    const fetchData = () => {
+      api
+        .get(`/session-feedback/${id}`)
+        .then((res) => {
+          if (res.status === 202 || res.data.status === 'pending') {
+            setIsLoading(true);
+            setFeedback(null);
+            timer = setTimeout(fetchData, 2000);
+          } else if (res.status === 200) {
+            setIsLoading(false);
+            setFeedback(res.data);
+          } else if (res.status === 404 || res.status === 422) {
+            setIsLoading(false);
+            setFeedback(null);
+          }
+        })
+        .catch(() => {
           setIsLoading(false);
-          setFeedback(res.data);
-        } else {
-          setIsLoading(false);
           setFeedback(null);
-        }
-      })
-      .catch(() => {
-        setFeedback(null);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+        });
+    };
+
+    fetchData();
+    return () => timer && clearTimeout(timer);
   }, [params]);
 
   if (isLoading) return <Loading />;
