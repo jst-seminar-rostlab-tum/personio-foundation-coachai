@@ -34,8 +34,8 @@ const UserPreferences: React.FC<{ preferences: UserPreference[]; className?: str
             <SelectContent>
               <SelectGroup>
                 {preference.options.map((option) => (
-                  <SelectItem key={option.code} value={option.code}>
-                    {option.name}
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectGroup>

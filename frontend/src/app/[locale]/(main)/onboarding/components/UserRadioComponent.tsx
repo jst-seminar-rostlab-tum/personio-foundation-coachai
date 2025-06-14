@@ -20,7 +20,7 @@ export const UserRadioComponent: React.FC<UserRadioQuestion> = ({
         <RadioGroup value={selectedValue} onValueChange={onValueChange}>
           {options.map((option) => (
             <div className="flex gap-2.5 items-center" key={option.id}>
-              <RadioGroupItem id={option.id} value={option.label}></RadioGroupItem>
+              <RadioGroupItem id={option.id} value={option.id}></RadioGroupItem>
               <Label
                 key={option.id}
                 htmlFor={option.id}

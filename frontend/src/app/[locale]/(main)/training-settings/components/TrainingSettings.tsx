@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import Link from 'next/link';
 import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -24,14 +24,83 @@ import {
   AlertDialogAction,
 } from '@/components/ui/AlertDialog';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
-import { confidenceFields } from '@/configs/UserConfidenceFields.config';
-import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
+import { UserProfileService } from '@/services/UserProfileService';
+import { UserPreference } from '@/interfaces/UserInputFields';
+import { PrimaryGoals, UserRoles } from '@/lib/utils';
+import { UserProfile } from '@/interfaces/UserProfile';
 import UserPreferences from './UserPreferences';
 
-export default function TrainingSettings() {
-  const [audioEnabled, setAudioEnabled] = useState(false);
+export default function TrainingSettings({ userProfile }: { userProfile: Promise<UserProfile> }) {
   const t = useTranslations('TrainingSettings');
+  const tOptions = useTranslations('TrainingSettings.leadershipGoals');
+  const userProfileData = use(userProfile);
+  const [storeConversations, setStoreConversations] = useState(
+    userProfileData.storeConversations ?? false
+  );
+  const [currentRole, setCurrentRole] = useState(userProfileData.professionalRole);
+  const [primaryGoal, setPrimaryGoal] = useState(
+    userProfileData.goals.length > 0 ? userProfileData.goals[0] : ''
+  );
 
+  const getConfidenceScores = (area: string) => {
+    const score = userProfileData.confidenceScores?.find(
+      (confidenceScore) => confidenceScore.confidenceArea === area
+    )?.score;
+    return score !== undefined ? [score] : [50];
+  };
+
+  const [difficulty, setDifficulty] = useState(getConfidenceScores('giving_difficult_feedback'));
+  const [conflict, setConflict] = useState(getConfidenceScores('managing_team_conflicts'));
+  const [conversation, setConversation] = useState(
+    getConfidenceScores('leading_challenging_conversations')
+  );
+  const confidenceFieldsProps = {
+    difficulty,
+    conflict,
+    conversation,
+    setDifficulty,
+    setConflict,
+    setConversation,
+  };
+
+  const userPreferences: UserPreference[] = [
+    {
+      label: tOptions('currentRole.label'),
+      options: UserRoles(),
+      value: currentRole,
+      defaultValue: 'team_leader',
+      onChange: (value: string) => {
+        setCurrentRole(value);
+      },
+    },
+    {
+      label: tOptions('primaryGoals.label'),
+      options: PrimaryGoals(),
+      value: primaryGoal,
+      defaultValue: 'managing_team_conflicts',
+      onChange: (value: string) => {
+        setPrimaryGoal(value);
+      },
+    },
+  ];
+
+  const handleSaveSettings = async () => {
+    try {
+      await UserProfileService.updateUserProfile({
+        storeConversations,
+        professionalRole: currentRole,
+        goals: [primaryGoal],
+        /* As soon as the backend supports confidence scores patch, we can uncomment this
+        confidenceScores: [
+          { confidenceArea: 'giving_difficult_feedback', score: difficulty[0] },
+          { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
+          { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
+        ], */
+      });
+    } catch (error) {
+      console.error('Error saving settings:', error);
+    }
+  };
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -53,11 +122,11 @@ export default function TrainingSettings() {
                   <div className="flex flex-col">
                     <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
                     <div className="text-bw-40">
-                      {audioEnabled ? t('ninetyDays') : t('zeroDays')}
+                      {storeConversations ? t('ninetyDays') : t('zeroDays')}
                     </div>
                   </div>
                   <div className="flex flex-col items-center">
-                    <Switch checked={audioEnabled} onCheckedChange={setAudioEnabled} />
+                    <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
                   </div>
                 </div>
                 <div className="flex items-center justify-between w-full mt-4">
@@ -102,19 +171,21 @@ export default function TrainingSettings() {
               <AccordionContent>
                 <UserPreferences
                   className="flex flex-col gap-5 px-2"
-                  preferences={useUserRoleLeadershipGoals()}
+                  preferences={userPreferences}
                 />
                 <hr className="my-9.5 border-gray-200" />
                 <UserConfidenceFields
+                  {...confidenceFieldsProps}
                   className="flex flex-col gap-5 px-2"
-                  fields={confidenceFields}
                 />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
         </div>
       </div>
-      <Button size="full">{t('saveSettings')}</Button>
+      <Button size="full" onClick={handleSaveSettings}>
+        {t('saveSettings')}
+      </Button>
     </div>
   );
 }
