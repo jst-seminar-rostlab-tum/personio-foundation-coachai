@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Rating, RatingButton } from '@/components/ui/Rating';
 import { Textarea } from '@/components/ui/Textarea';
+import { createFeedback } from '@/services/FeedbackService';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -19,6 +20,18 @@ export default function FeedbackDialog() {
   const t = useTranslations('Feedback.feedbackDialog');
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');
+  const rateFeedback = () => {
+    try {
+      createFeedback({
+        userId: 'anonymous',
+        rating: 3,
+        comment: ratingDescription,
+      });
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -49,6 +62,7 @@ export default function FeedbackDialog() {
           <Button
             className="w-fit ml-auto"
             variant={rating ? 'default' : 'disabled'}
+            onClick={rateFeedback}
             disabled={!rating}
           >
             {t('rate')}
