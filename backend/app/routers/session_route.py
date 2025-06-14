@@ -7,6 +7,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import (
     Session,
@@ -25,13 +26,16 @@ from app.models.sessions_paginated import (
     SessionItem,
     SkillScores,
 )
+from app.models.user_profile import AccountRole, UserProfile
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
 
 
 @router.get('/{session_id}', response_model=SessionDetailsRead)
 def get_session_by_id(
-    session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+    session_id: UUID,
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> SessionDetailsRead:
     """
     Retrieve a session by its ID.
@@ -42,13 +46,22 @@ def get_session_by_id(
 
     # Get session title from the conversation scenario
     conversation_scenario = db_session.get(ConversationScenario, session.scenario_id)
-    if conversation_scenario:
-        if conversation_scenario.category:
-            training_title = conversation_scenario.category.name
-        else:
-            training_title = conversation_scenario.custom_category_label
+    if not conversation_scenario:
+        raise HTTPException(
+            status_code=404, detail='No conversation scenario found for the session'
+        )
+
+    # Test if the session is the session of the user or the user is an admin
+    user_id = user_profile.id
+    if conversation_scenario.user_id != user_id and user_profile.account_role != AccountRole.admin:
+        raise HTTPException(
+            status_code=403, detail='You do not have permission to access this session'
+        )
+
+    if conversation_scenario.category:
+        training_title = conversation_scenario.category.name
     else:
-        training_title = 'Unknown'
+        training_title = conversation_scenario.custom_category_label
 
     session_response = SessionDetailsRead(
         id=session.id,

@@ -5,6 +5,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import func, select
 
 from app.database import get_db_session
+from app.dependencies import require_admin
 from app.models.admin_dashboard_stats import AdminDashboardStats, AdminDashboardStatsRead
 from app.models.app_config import AppConfig
 from app.models.review import Review
@@ -13,7 +14,11 @@ from app.models.user_profile import UserProfile
 router = APIRouter(prefix='/admin-stats', tags=['Admin Dashboard'])
 
 
-@router.get('/', response_model=AdminDashboardStatsRead)
+@router.get(
+    '/',
+    response_model=AdminDashboardStatsRead,
+    dependencies=[Depends(require_admin)],
+)
 def get_admin_dashboard_stats(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> AdminDashboardStatsRead:

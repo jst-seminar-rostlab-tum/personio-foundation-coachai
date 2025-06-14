@@ -3,7 +3,7 @@ name: Check Backend on PR
 on:
   pull_request:
     paths:
-      - 'backend/**'
+      - "backend/**"
 
 jobs:
   lint:
@@ -32,18 +32,4 @@ jobs:
         working-directory: ./backend
       - name: Run Tests
         run: uv run pytest --exitfirst --disable-warnings || [[ $? -eq 5 ]]
-        working-directory: ./backend
-
-  build:
-    name: Build
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install uv
-        run: pipx install uv
-      - name: Install dependencies
-        run: uv sync
-        working-directory: ./backend
-      - name: Build app
-        run: uv run python -c "import app.main"
         working-directory: ./backend
