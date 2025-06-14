@@ -5,6 +5,7 @@ import { ArrowRightIcon, Play, Plus } from 'lucide-react';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
+import BackButton from '@/components/common/BackButton';
 import { Button } from '@/components/ui/Button';
 import StatCard from '@/components/common/StatCard';
 import HistoryItem from './components/HistoryItem';
@@ -19,79 +20,82 @@ export default function DashboardPage() {
   const t = useTranslations('Dashboard');
 
   return (
-    <div className="flex flex-col gap-12 p-8">
-      <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
-        <p className="text-2xl text-center md:text-left">
-          {t('header.greeting')}
-          {name}!
-        </p>
-        <Link href="/new-training" className="w-full md:w-auto">
-          <Button size="full" className="md:!size-default">
-            <Plus />
-            {t('header.cta')}
-          </Button>
-        </Link>
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <div>
-          <h2 className="text-xl">{t('currentSession.title')}</h2>
-          <p className="text-base text-bw-40">{t('currentSession.subtitle')}</p>
-        </div>
-
-        <div className="bg-marigold-5 border border-marigold-30 rounded-lg p-8 gap-8 flex flex-col">
-          <div>
-            <h2 className="text-xl">{t('currentSession.sessionCard.title')}</h2>
-            <p className="text-base text-bw-40">{t('currentSession.sessionCard.subtitle')}</p>
-          </div>
-          <Link href="/simulation/1">
-            <Button size="full" className="mx-auto">
-              <Play />
-              {t('currentSession.sessionCard.cta')}
+    <>
+      <BackButton />
+      <div className="flex flex-col gap-12 p-8">
+        <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+          <p className="text-2xl text-center md:text-left">
+            {t('header.greeting')}
+            {name}!
+          </p>
+          <Link href="/new-training" className="w-full md:w-auto">
+            <Button size="full" className="md:!size-default">
+              <Plus />
+              {t('header.cta')}
             </Button>
           </Link>
-        </div>
-      </section>
+        </section>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard value={56} label={t('userStats.totalSessions')} />
-        <StatCard value="17.2h" label={t('userStats.trainingTime')} />
-        <StatCard value="37d" label={t('userStats.currentStreak')} />
-        <StatCard value="89%" label={t('userStats.avgScore')} />
+        <section className="flex flex-col gap-4">
+          <div>
+            <h2 className="text-xl">{t('currentSession.title')}</h2>
+            <p className="text-base text-bw-40">{t('currentSession.subtitle')}</p>
+          </div>
+
+          <div className="bg-marigold-5 border border-marigold-30 rounded-lg p-8 gap-8 flex flex-col">
+            <div>
+              <h2 className="text-xl">{t('currentSession.sessionCard.title')}</h2>
+              <p className="text-base text-bw-40">{t('currentSession.sessionCard.subtitle')}</p>
+            </div>
+            <Link href="/simulation/1">
+              <Button size="full" className="mx-auto">
+                <Play />
+                {t('currentSession.sessionCard.cta')}
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard value={56} label={t('userStats.totalSessions')} />
+          <StatCard value="17.2h" label={t('userStats.trainingTime')} />
+          <StatCard value="37d" label={t('userStats.currentStreak')} />
+          <StatCard value="89%" label={t('userStats.avgScore')} />
+        </div>
+
+        <section className="flex flex-col gap-4">
+          <div>
+            <h2 className="text-xl">{t('recentSessions.title')}</h2>
+            <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
+          </div>
+
+          <HistoryItem
+            title="Negotiating Job Offers"
+            description="Practice salary negotiation with a potential candidate"
+            date={new Date('2025-01-04T13:36:00')}
+            duration={5672}
+          />
+          <HistoryItem
+            title="Conflict Resolution"
+            description="Mediate a disagreement between team members"
+            date={new Date('2024-04-16T13:36:00')}
+            duration={368}
+          />
+          <HistoryItem
+            title="Performance Review"
+            description="Conduct a quaterly performance review"
+            date={new Date('2023-07-28T13:36:00')}
+            duration={634}
+          />
+
+          <Link href="/history">
+            <Button size="full">
+              {t('recentSessions.cta')}
+              <ArrowRightIcon />
+            </Button>
+          </Link>
+        </section>
       </div>
-
-      <section className="flex flex-col gap-4">
-        <div>
-          <h2 className="text-xl">{t('recentSessions.title')}</h2>
-          <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
-        </div>
-
-        <HistoryItem
-          title="Negotiating Job Offers"
-          description="Practice salary negotiation with a potential candidate"
-          date={new Date('2025-01-04T13:36:00')}
-          duration={5672}
-        />
-        <HistoryItem
-          title="Conflict Resolution"
-          description="Mediate a disagreement between team members"
-          date={new Date('2024-04-16T13:36:00')}
-          duration={368}
-        />
-        <HistoryItem
-          title="Performance Review"
-          description="Conduct a quaterly performance review"
-          date={new Date('2023-07-28T13:36:00')}
-          duration={634}
-        />
-
-        <Link href="/history">
-          <Button size="full">
-            {t('recentSessions.cta')}
-            <ArrowRightIcon />
-          </Button>
-        </Link>
-      </section>
-    </div>
+    </>
   );
 }
