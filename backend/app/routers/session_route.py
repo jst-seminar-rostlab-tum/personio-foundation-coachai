@@ -245,13 +245,15 @@ def delete_session(
     return {'message': 'Session deleted successfully'}
 
 
-@router.delete('/clear-all/{user_id}', response_model=dict)
+@router.delete('/clear-all', response_model=dict)
 def delete_sessions_by_user(
-    user_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    user: Annotated[UserProfile, Depends(require_user)],
 ) -> dict:
     """
     Delete all sessions related to conversation scenarios for a given user ID.
     """
+    user_id = user.id
     # Retrieve all conversation scenarios for the given user ID
     statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
     conversation_scenarios = db_session.exec(statement).all()
