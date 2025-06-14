@@ -71,7 +71,7 @@ class RTCConnection:
     recv_video_track: Optional[MediaStreamTrack] = None
     send_track: Optional[SendingTrack] = None
     pc: Optional[RTCPeerConnection] = None
-    ai_session: Optional[Union[Gemini, OpenAI]] = None  # 改为通用的AI会话
+    ai_session: Optional[Union[Gemini, OpenAI]] = None
     datachannel: Optional[RTCDataChannel] = None
     config: WebRTCConfig
     peer_id: str
