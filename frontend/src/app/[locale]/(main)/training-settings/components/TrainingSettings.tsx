@@ -28,9 +28,8 @@ import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.co
 import UserPreferences from './UserPreferences';
 
 export default function TrainingSettings() {
-  const [audioEnabled, setAudioEnabled] = useState(false);
   const t = useTranslations('TrainingSettings');
-
+  const [audioEnabled, setAudioEnabled] = useState(false);
   return (
     <div>
       <div className="flex items-center justify-between">
