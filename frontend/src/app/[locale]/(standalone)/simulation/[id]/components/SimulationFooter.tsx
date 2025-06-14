@@ -1,7 +1,6 @@
 'use client';
 
 import { Pause, Play, Phone, Mic, MicOff } from 'lucide-react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 
 export default function SimulationFooter({
@@ -32,17 +31,15 @@ export default function SimulationFooter({
       <Button size="iconLarge" variant="outline" onClick={toggleMicrophone}>
         {isMicActive ? <Mic className="!w-6 !h-6" /> : <MicOff className="!w-6 !h-6" />}
       </Button>
-      <Link href="/feedback/1">
-        <Button
-          size="iconLarge"
-          variant="destructive"
-          onClick={onDisconnect}
-          disabled={!isConnected}
-          aria-label="Disconnect"
-        >
-          <Phone className="!w-6 !h-6" />
-        </Button>
-      </Link>
+      <Button
+        size="iconLarge"
+        variant="destructive"
+        onClick={onDisconnect}
+        disabled={!isConnected}
+        aria-label="Disconnect"
+      >
+        <Phone className="!w-6 !h-6" />
+      </Button>
     </div>
   );
 }
