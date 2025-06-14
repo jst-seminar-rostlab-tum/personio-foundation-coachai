@@ -3,26 +3,10 @@
 import { cn } from '@/lib/utils';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { StarIcon } from 'lucide-react';
-import {
-  Children,
-  cloneElement,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { Children, cloneElement, useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import { RatingButtonProps, RatingContextValue, RatingProps } from '@/interfaces/Rating';
-import { RatingContext } from '@/contexts/Rating';
-
-const useRating = () => {
-  const context = useContext(RatingContext);
-  if (!context) {
-    throw new Error('useRating must be used within a Rating component');
-  }
-  return context;
-};
+import { RatingContext, useRating } from '@/contexts/Rating';
 
 export const RatingButton = ({
   index: providedIndex,

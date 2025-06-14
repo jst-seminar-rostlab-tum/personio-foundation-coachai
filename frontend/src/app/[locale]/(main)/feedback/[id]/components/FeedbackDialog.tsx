@@ -20,9 +20,9 @@ export default function FeedbackDialog() {
   const t = useTranslations('Feedback.feedbackDialog');
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');
-  const rateFeedback = () => {
+  const rateFeedback = async () => {
     try {
-      createFeedback({
+      await createFeedback({
         rating,
         comment: ratingDescription,
       });
