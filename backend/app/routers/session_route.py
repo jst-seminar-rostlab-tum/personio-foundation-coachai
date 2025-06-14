@@ -2,7 +2,7 @@ from math import ceil
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
@@ -44,6 +44,13 @@ def get_session_by_id(
     if not session:
         raise HTTPException(status_code=404, detail='No session found with the given ID')
 
+    current_scenario = session.scenario
+    if current_scenario.user_id != user_profile.id and user_profile.account_role != 'admin':
+        raise HTTPException(
+            status_code=400,
+            detail='You do not have permission to access this session '
+            'you can only view your own sessions',
+        )
     # Get session title from the conversation scenario
     conversation_scenario = db_session.get(ConversationScenario, session.scenario_id)
     if not conversation_scenario:
@@ -118,21 +125,15 @@ def get_session_by_id(
 
 @router.get('/', response_model=PaginatedSessionsResponse)
 def get_sessions(
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
-    x_user_id: str = Header(...),  # Auth via header
-    # TODO: Adjust to the authentication token in the header
 ) -> PaginatedSessionsResponse:
     """
     Return paginated list of completed sessions for a user.
     """
-    try:
-        user_id = UUID(x_user_id)
-    except ValueError as err:
-        raise HTTPException(
-            status_code=401, detail='Invalid or missing authentication token'
-        ) from err
+    user_id = user_profile.id
 
     statement = select(ConversationScenario.id).where(ConversationScenario.user_id == user_id)
     scenario_ids = db_session.exec(statement).all()
@@ -182,7 +183,7 @@ def get_sessions(
     )
 
 
-@router.post('/', response_model=SessionRead)
+@router.post('/', response_model=SessionRead, dependencies=[Depends(require_user)])
 def create_session(
     session_data: SessionCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> Session:
