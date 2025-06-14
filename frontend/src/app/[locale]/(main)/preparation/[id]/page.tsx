@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import PreparationContent from '../components/PreparationContent';
+import PreparationContent from './components/PreparationContent';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;

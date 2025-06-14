@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import ObjectivesList from '@/app/[locale]/(main)/preparation/components/ObjectivesList';
-import PreparationChecklist from '@/app/[locale]/(main)/preparation/components/PreparationChecklist';
 import { useTranslations } from 'next-intl';
 import { TrainingPreparation } from '@/interfaces/TrainingPreparation';
 import { useParams } from 'next/navigation';
 import { conversationScenarioService } from '@/services/ConversationScenarioService';
+import PreparationChecklist from './PreparationChecklist';
+import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
 
 export default function PreparationContent() {

@@ -5,7 +5,11 @@ import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Stepper from '@/components/common/Stepper';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { ConversationCategory } from '@/interfaces/ConversationCategory';
 import { FormState } from '@/interfaces/NewTrainingFormState';
+import { ConversationScenario } from '@/interfaces/ConversationScenario';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
@@ -13,22 +17,24 @@ import { CustomizeStep } from './CustomizeStep';
 const initialFormState: FormState = {
   category: '',
   customCategory: '',
-  party: {
-    type: '',
-    otherName: '',
-  },
+  name: '',
+  otherParty: '',
   context: '',
   goal: '',
   difficulty: '',
   emotionalTone: '',
   complexity: '',
+  isCustom: false,
 };
 
 export default function NewTrainingForm() {
   const t = useTranslations('NewTraining');
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [formState, setFormState] = useState<FormState>(initialFormState);
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
+
+  const categories = t.raw('categories') as ConversationCategory[];
 
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
@@ -42,9 +48,8 @@ export default function NewTrainingForm() {
         return !!formState.category;
       case 1:
         return (
-          (formState.category !== 'custom' || !!formState.customCategory) &&
-          !!formState.party.type &&
-          (formState.party.type !== 'other' || !!formState.party.otherName) &&
+          (!formState.isCustom || !!formState.customCategory) &&
+          !!formState.otherParty &&
           !!formState.context &&
           !!formState.goal
         );
@@ -55,18 +60,26 @@ export default function NewTrainingForm() {
     }
   };
 
-  const handleCategorySelect = (category: string) => {
-    setFormState((prev) => ({ ...prev, category }));
+  const handleCategorySelect = (category: ConversationCategory) => {
+    setFormState((prev) => ({
+      ...prev,
+      category: category.id,
+      name: category.name,
+      context: category.defaultContext || prev.context,
+      goal: category.defaultGoal || prev.goal,
+      otherParty: category.defaultOtherParty || '',
+      isCustom: category.isCustom || false,
+    }));
   };
 
   const handleCustomCategoryInput = (customCategory: string) => {
     setFormState((prev) => ({ ...prev, customCategory }));
   };
 
-  const handlePartyChange = (type: string, otherName?: string) => {
+  const handlePartyChange = (otherParty: string) => {
     setFormState((prev) => ({
       ...prev,
-      party: { type, otherName: otherName || prev.party.otherName },
+      otherParty,
     }));
   };
 
@@ -90,6 +103,32 @@ export default function NewTrainingForm() {
     setFormState((prev) => ({ ...prev, complexity }));
   };
 
+  const submitForm = async () => {
+    if (currentStep !== 2) {
+      setCurrentStep(() => currentStep + 1);
+      return;
+    }
+
+    const scenario: ConversationScenario = {
+      categoryId: formState.category,
+      customCategoryLabel: formState.customCategory,
+      context: formState.context,
+      goal: formState.goal,
+      otherParty: formState.otherParty,
+      difficultyLevel: formState.difficulty,
+      tone: formState.emotionalTone,
+      complexity: formState.complexity,
+      status: 'draft',
+    };
+
+    try {
+      const { data } = await conversationScenarioService.createConversationScenario(scenario);
+      router.push(`/preparation/${data.scenarioId}`);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="text-2xl text-font-dark text-center w-full mb-8">{t('title')}</div>
@@ -107,19 +146,20 @@ export default function NewTrainingForm() {
         <CategoryStep
           selectedCategory={formState.category}
           onCategorySelect={handleCategorySelect}
+          categories={categories}
         />
       )}
 
       {currentStep === 1 && (
         <SituationStep
-          party={formState.party}
+          otherParty={formState.otherParty}
           context={formState.context}
           goal={formState.goal}
           onPartyChange={handlePartyChange}
           onContextChange={handleContextChange}
           onCustomCategoryInput={handleCustomCategoryInput}
           onGoalChange={handleGoalChange}
-          category={formState.category}
+          isCustom={formState.isCustom}
           customCategory={formState.customCategory}
         />
       )}
@@ -149,7 +189,7 @@ export default function NewTrainingForm() {
         )}
         <Button
           size="full"
-          onClick={() => setCurrentStep(() => currentStep + 1)}
+          onClick={() => submitForm()}
           variant={!isStepValid(currentStep) ? 'disabled' : 'default'}
         >
           {currentStep === 2 ? t('navigation.create') : t('navigation.next')}
