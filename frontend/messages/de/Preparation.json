@@ -15,8 +15,12 @@
   "resources": {
     "title": "Ressourcen"
   },
+  "keyConcepts": {
+    "title": "Wichtige Begriffe"
+  },
   "navigation": {
     "back": "Zurück",
     "start": "Training starten"
-  }
+  },
+  "loadingText": "Bereite Ziele und Checkliste vor..."
 }
