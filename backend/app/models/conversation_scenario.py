@@ -68,7 +68,6 @@ def update_timestamp(
 
 # Schema for creating a new ConversationScenario
 class ConversationScenarioCreate(CamelModel):
-    user_id: UUID
     category_id: Optional[UUID] = None
     custom_category_label: Optional[str] = None
     context: str
