@@ -50,8 +50,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // const { response } = error;
-    console.warn(error);
+    const { response } = error;
+    console.warn(response);
     // Handle different error statuses here if needed
     return Promise.reject(error);
   }
