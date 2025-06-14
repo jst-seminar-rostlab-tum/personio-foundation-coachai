@@ -26,11 +26,14 @@ import {
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { confidenceFields } from '@/configs/UserConfidenceFields.config';
 import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
+import { useDeleteUser } from '@/components/common/DeleteUserHandler';
 import UserPreferences from './UserPreferences';
 
 export default function TrainingSettings() {
   const [audioEnabled, setAudioEnabled] = useState(false);
   const t = useTranslations('TrainingSettings');
+  const { handleDeleteUser, loading } = useDeleteUser();
+  const userId = '0b222f0b-c7e5-4140-9049-35620fee8009';
 
   return (
     <div>
@@ -88,7 +91,12 @@ export default function TrainingSettings() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                        <AlertDialogAction>{t('confirm')}</AlertDialogAction>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteUser(userId)}
+                          disabled={loading}
+                        >
+                          {loading ? t('deleting') : t('confirm')}
+                        </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
