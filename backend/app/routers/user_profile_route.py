@@ -75,11 +75,11 @@ def get_user_profiles(
 
 
 @router.get(
-    '/{user_id}',
+    '/profile/',
     response_model=Union[UserProfileRead, UserProfileExtendedRead],
 )
 def get_user_profile(
-    user_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
     detailed: bool = False,
 ) -> Union[UserProfileRead, UserProfileExtendedRead]:
@@ -90,6 +90,7 @@ def get_user_profile(
 
     - If `detailed` is True, returns extended profiles including goals and confidence scores.
     """
+    user_id = user_profile.id
     statement = select(UserProfile).where(UserProfile.id == user_id)
     user = db_session.exec(statement).first()
 
@@ -128,7 +129,12 @@ def get_user_profile(
         )
 
 
-@router.post('/', response_model=UserProfileExtendedRead, status_code=201)
+@router.post(
+    '/',
+    response_model=UserProfileExtendedRead,
+    status_code=201,
+    dependencies=[Depends(require_user)],
+)
 def create_user_profile(
     data: UserProfileCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -188,12 +194,13 @@ def create_user_profile(
     )
 
 
-@router.put('/{user_id}', response_model=UserProfileExtendedRead)
+@router.put('/', response_model=UserProfileExtendedRead)
 def replace_user_profile(
-    user_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileReplace,
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserProfileExtendedRead:
+    user_id = user_profile.id
     user = db_session.get(UserProfile, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
@@ -257,12 +264,13 @@ def replace_user_profile(
     )
 
 
-@router.patch('/{user_id}', response_model=UserProfileExtendedRead)
+@router.patch('/', response_model=UserProfileExtendedRead)
 def update_user_profile(
-    user_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileUpdate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserProfileExtendedRead:
+    user_id = user_profile.id
     user = db_session.get(UserProfile, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
