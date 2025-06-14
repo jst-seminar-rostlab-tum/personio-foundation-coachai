@@ -38,7 +38,7 @@ jobs:
 
   deploy:
     name: Deploy
-    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+    environment: ${{ github.ref_name == 'main' && 'Production' || 'Development' }}
     needs: test
     runs-on: ubuntu-22.04
     defaults:
