@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { authService } from '@/services/AuthService';
 import { Button } from '../ui/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
@@ -68,11 +69,15 @@ export function AppHeader() {
             >
               {isMenuOpen ? <X className="!w-4 !h-4" /> : <Menu className="!w-4 !h-4" />}
             </Button>
-            <Link href="/logout">
-              <Button variant="secondary" className="hidden md:flex h-8">
-                <span className="text-xs font-medium">{t('logout')}</span>
-              </Button>
-            </Link>
+            <Button
+              variant="secondary"
+              className="hidden md:flex h-8"
+              onClick={async () => {
+                await authService.logoutUser();
+              }}
+            >
+              <span className="text-xs font-medium">{t('logout')}</span>
+            </Button>
           </div>
         </div>
       </header>
@@ -100,11 +105,15 @@ export function AppHeader() {
                 {t(key)}
               </Link>
             ))}
-            <Link href="/logout" onClick={() => setIsMenuOpen(false)}>
-              <span className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50">
-                {t('logout')}
-              </span>
-            </Link>
+            <span
+              className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50"
+              onClick={async () => {
+                await authService.logoutUser();
+                setIsMenuOpen(false);
+              }}
+            >
+              {t('logout')}
+            </span>
           </nav>
         </div>
       </div>
