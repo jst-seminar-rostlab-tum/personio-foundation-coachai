@@ -84,7 +84,7 @@ def create_conversation_scenario_with_preparation(
         status_code=status.HTTP_202_ACCEPTED,
         content={
             'message': 'Conversation scenario created, preparation started.',
-            'scenario_id': str(new_conversation_scenario.id),
+            'scenarioId': str(new_conversation_scenario.id),
         },
     )
 
