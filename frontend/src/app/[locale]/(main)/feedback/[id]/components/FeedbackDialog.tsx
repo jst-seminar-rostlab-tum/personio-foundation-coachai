@@ -23,8 +23,7 @@ export default function FeedbackDialog() {
   const rateFeedback = () => {
     try {
       createFeedback({
-        userId: 'anonymous',
-        rating: 3,
+        rating,
         comment: ratingDescription,
       });
     } catch (error) {
@@ -60,7 +59,6 @@ export default function FeedbackDialog() {
 
         <DialogClose asChild>
           <Button
-            className="w-fit ml-auto"
             variant={rating ? 'default' : 'disabled'}
             onClick={rateFeedback}
             disabled={!rating}

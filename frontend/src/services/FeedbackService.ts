@@ -1,15 +1,10 @@
+import { Feedback } from '@/interfaces/Feedback';
 import { api } from './Api';
 
-export interface Feedback {
-  userId: string;
-  rating: number;
-  comment: string;
-}
-
-export const createFeedback = async (data: Feedback) => {
+export const createFeedback = async (feedback: Feedback) => {
   try {
-    const response = await api.post('/review', data);
-    return response.data;
+    const { data } = await api.post('/review', feedback);
+    return data;
   } catch (error) {
     console.error('Error creating feedback:', error);
     throw error;
