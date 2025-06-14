@@ -320,7 +320,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,  # Link to the second session
-            speaker=SpeakerEnum.ai,  # Use the SpeakerEnum for the speaker
+            speaker=SpeakerEnum.assistant,  # Use the SpeakerEnum for the speaker
             start_offset_ms=5000,
             end_offset_ms=10000,
             text='I need assistance with my account.',
@@ -334,7 +334,7 @@ def get_dummy_session_turns(
 def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> list[Session]:
     return [
         Session(
-            id=uuid4(),
+            id=UUID('4e5174f9-78da-428c-bb9f-4556a14163cc'),
             scenario_id=conversation_scenarios[0].id,
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
