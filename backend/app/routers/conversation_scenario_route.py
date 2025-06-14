@@ -141,7 +141,7 @@ def get_scenario_preparation_by_scenario_id(
     scenario_id: UUID,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> ScenarioPreparation:
+) -> ScenarioPreparationRead:
     """
     Retrieve the scenario preparation data for a given conversation scenario ID.
     """
@@ -164,4 +164,20 @@ def get_scenario_preparation_by_scenario_id(
     if not scenario_preparation:
         raise HTTPException(status_code=404, detail='Scenario preparation not found')
 
-    return scenario_preparation
+    # Prepare category name with fallback to custom label or None
+    category_name = (
+        conversation_scenario.category.name
+        if conversation_scenario.category
+        else conversation_scenario.custom_category_label
+        if conversation_scenario.custom_category_label
+        else None
+    )
+
+    # Return the scenario preparation read model with additional scenario context
+    return ScenarioPreparationRead(
+        **scenario_preparation.model_dump(),
+        context=conversation_scenario.context,
+        goal=conversation_scenario.goal,
+        other_party=conversation_scenario.other_party,
+        category_name=category_name,
+    )
