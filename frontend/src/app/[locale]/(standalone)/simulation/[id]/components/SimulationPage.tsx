@@ -2,20 +2,50 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-// import { api } from '@/services/Api';
+import { api } from '@/services/Api';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages, { Message } from './SimulationMessages';
 
 const MODEL_ID = 'gpt-4o-realtime-preview-2025-06-03';
-const mockSessionId = '3fa85f64-5717-4562-b3fc-2c963f66afa6';
+const mockSessionId = '4e5174f9-78da-428c-bb9f-4556a14163cc';
+
+// temporary type for session
+type Session = {
+  id: string;
+  scenario_id: string;
+  scheduled_at?: string | null;
+  started_at?: string | null;
+  ended_at?: string | null;
+  ai_persona: Record<string, string>;
+  created_at: string;
+  updated_at: string;
+  scenario?: any;
+  session_turns: SessionTurn[];
+  feedback?: any;
+  ratings?: any[];
+  session_review?: any;
+};
+
+type SessionTurn = {
+  id: string;
+  session_id: string;
+  speaker: string;
+  start_offset_ms: number;
+  end_offset_ms: number;
+  text: string;
+  audio_uri: string;
+  ai_emotion: string;
+  created_at: string;
+};
 
 function useOpenAIRealtimeWebRTC() {
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isDataChannelReady, setIsDataChannelReady] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [session, setSession] = useState<Session | null>(null);
 
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
@@ -206,6 +236,19 @@ function useOpenAIRealtimeWebRTC() {
     }
   }, [disconnect]);
 
+  useEffect(() => {
+    if (!mockSessionId) return;
+    api
+      .get(`/session/${mockSessionId}`)
+      .then((res) => {
+        console.warn(res.data);
+        setSession(res.data);
+      })
+      .catch(() => {
+        setSession(null);
+      });
+  }, []);
+
   return {
     isMicActive,
     setIsMicActive,
@@ -217,6 +260,7 @@ function useOpenAIRealtimeWebRTC() {
     remoteAudioRef,
     localStreamRef,
     messages,
+    session,
   };
 }
 
@@ -234,6 +278,7 @@ export default function SimulationPageComponent() {
     remoteAudioRef,
     localStreamRef,
     messages,
+    session,
   } = useOpenAIRealtimeWebRTC();
 
   const router = useRouter();
@@ -272,7 +317,7 @@ export default function SimulationPageComponent() {
   }, [isDataChannelReady]);
 
   const handleDisconnect = async () => {
-    // await api.post('/session-feedback/', mockFeedback);
+    // 
     disconnect();
     router.push(`/feedback/${mockSessionId}`);
   };
