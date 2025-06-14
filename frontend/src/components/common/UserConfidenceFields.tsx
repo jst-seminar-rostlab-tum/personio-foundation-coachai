@@ -1,33 +1,47 @@
 'use client';
 
-import { UserConfidenceField } from '@/interfaces/UserInputFields';
+import { UserConfidenceField, UserConfidenceFieldProps } from '@/interfaces/UserInputFields';
 import Slider from '@/components/ui/Slider';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 
-const UserConfidenceFields: React.FC<{ className?: string }> = ({ className }) => {
+export default function UserConfidenceFields({
+  className,
+  difficulty,
+  conflict,
+  conversation,
+  setDifficulty,
+  setConflict,
+  setConversation,
+}: UserConfidenceFieldProps) {
   const t = useTranslations('PersonalizationOptions');
   const confidenceFields: UserConfidenceField[] = [
     {
-      title: t('confidence_areas.difficult'),
+      title: t('confidence_areas.giving_difficult_feedback'),
       minLabel: t('confidence_areas.labels.min'),
       maxLabel: t('confidence_areas.labels.max'),
       minValue: 0,
       maxValue: 100,
+      value: difficulty,
+      onChange: setDifficulty,
     },
     {
-      title: t('confidence_areas.conflicts'),
+      title: t('confidence_areas.managing_team_conflicts'),
       minLabel: t('confidence_areas.labels.min'),
       maxLabel: t('confidence_areas.labels.max'),
       minValue: 0,
       maxValue: 100,
+      value: conflict,
+      onChange: setConflict,
     },
     {
-      title: t('confidence_areas.conversations'),
+      title: t('confidence_areas.leading_challenging_conversations'),
       minLabel: t('confidence_areas.labels.min'),
       maxLabel: t('confidence_areas.labels.max'),
       minValue: 0,
       maxValue: 100,
+      value: conversation,
+      onChange: setConversation,
     },
   ];
   return (
@@ -56,6 +70,4 @@ const UserConfidenceFields: React.FC<{ className?: string }> = ({ className }) =
       ))}
     </div>
   );
-};
-
-export default UserConfidenceFields;
+}

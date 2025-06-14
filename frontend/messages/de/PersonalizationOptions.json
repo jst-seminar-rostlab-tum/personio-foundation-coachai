@@ -30,9 +30,9 @@
     "coaching_mentoring": "Coaching & Mentoring"
   },
   "confidence_areas": {
-    "difficult": "Schwieriges Feedback geben",
-    "conflicts": "Teamkonflikte managen",
-    "conversations": "Herausfordernde Gespräche führen",
+    "giving_difficult_feedback": "Schwieriges Feedback geben",
+    "managing_team_conflicts": "Teamkonflikte managen",
+    "leading_challenging_conversations": "Herausfordernde Gespräche führen",
     "labels": {
       "min": "Nicht selbstsicher",
       "max": "Sehr selbstsicher"

@@ -30,9 +30,9 @@
     "coaching_mentoring": "Coaching & Mentoring"
   },
   "confidence_areas": {
-    "difficult": "Giving difficult feedback",
-    "conflicts": "Managing team conflicts",
-    "conversations": "Leading challenging conversations",
+    "giving_difficult_feedback": "Giving difficult feedback",
+    "managing_team_conflicts": "Managing team conflicts",
+    "leading_challenging_conversations": "Leading challenging conversations",
     "labels": {
       "min": "Not confident",
       "max": "Very confident"

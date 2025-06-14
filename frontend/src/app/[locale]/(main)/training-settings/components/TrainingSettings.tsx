@@ -24,12 +24,76 @@ import {
   AlertDialogAction,
 } from '@/components/ui/AlertDialog';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
-import { useUserRoleLeadershipGoals } from '@/configs/UserRoleLeadershipGoals.config';
+import { UserProfileService } from '@/services/UserProfileService';
+import { UserPreference } from '@/interfaces/UserInputFields';
+import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import UserPreferences from './UserPreferences';
 
 export default function TrainingSettings() {
   const t = useTranslations('TrainingSettings');
-  const [audioEnabled, setAudioEnabled] = useState(false);
+  const tOptions = useTranslations('TrainingSettings.leadershipGoals');
+
+  const [storeConversations, setStoreConversations] = useState(false);
+  const [currentRole, setCurrentRole] = useState('team_leader');
+  const [primaryGoal, setPrimaryGoal] = useState('managing_team_conflicts');
+
+  const [difficulty, setDifficulty] = useState([50]);
+  const [conflict, setConflict] = useState([50]);
+  const [conversation, setConversation] = useState([50]);
+  const confidenceFieldsProps = {
+    difficulty,
+    conflict,
+    conversation,
+    setDifficulty,
+    setConflict,
+    setConversation,
+  };
+
+  const userPreferences: UserPreference[] = [
+    {
+      label: tOptions('currentRole.label'),
+      options: UserRoles(),
+      value: currentRole,
+      defaultValue: 'team_leader',
+      onChange: (value: string) => {
+        setCurrentRole(value);
+      },
+    },
+    {
+      label: tOptions('primaryGoals.label'),
+      options: PrimaryGoals(),
+      value: primaryGoal,
+      defaultValue: 'managing_team_conflicts',
+      onChange: (value: string) => {
+        setPrimaryGoal(value);
+      },
+    },
+  ];
+
+  const handleSaveSettings = async () => {
+    try {
+      await UserProfileService.updateUserProfile({
+        storeConversations,
+        professionalRole: currentRole,
+        goals: [primaryGoal],
+        confidenceScores: [
+          { confidenceArea: 'giving_difficult_feedback', score: difficulty[0] },
+          { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
+          { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
+        ],
+      });
+    } catch (error) {
+      console.error('Error saving settings:', error);
+    }
+    console.warn('Settings saved:', {
+      storeConversations,
+      currentRole,
+      primaryGoal,
+      difficulty,
+      conflict,
+      conversation,
+    });
+  };
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -51,11 +115,11 @@ export default function TrainingSettings() {
                   <div className="flex flex-col">
                     <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
                     <div className="text-bw-40">
-                      {audioEnabled ? t('ninetyDays') : t('zeroDays')}
+                      {storeConversations ? t('ninetyDays') : t('zeroDays')}
                     </div>
                   </div>
                   <div className="flex flex-col items-center">
-                    <Switch checked={audioEnabled} onCheckedChange={setAudioEnabled} />
+                    <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
                   </div>
                 </div>
                 <div className="flex items-center justify-between w-full mt-4">
@@ -100,16 +164,21 @@ export default function TrainingSettings() {
               <AccordionContent>
                 <UserPreferences
                   className="flex flex-col gap-5 px-2"
-                  preferences={useUserRoleLeadershipGoals()}
+                  preferences={userPreferences}
                 />
                 <hr className="my-9.5 border-gray-200" />
-                <UserConfidenceFields className="flex flex-col gap-5 px-2" />
+                <UserConfidenceFields
+                  {...confidenceFieldsProps}
+                  className="flex flex-col gap-5 px-2"
+                />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
         </div>
       </div>
-      <Button size="full">{t('saveSettings')}</Button>
+      <Button size="full" onClick={handleSaveSettings}>
+        {t('saveSettings')}
+      </Button>
     </div>
   );
 }

@@ -16,6 +16,16 @@ export interface UserConfidenceField {
   onChange?: (value: number[]) => void;
 }
 
+export interface UserConfidenceFieldProps {
+  className?: string;
+  difficulty: number[];
+  conflict: number[];
+  conversation: number[];
+  setDifficulty: (value: number[]) => void;
+  setConflict: (value: number[]) => void;
+  setConversation: (value: number[]) => void;
+}
+
 export interface UserOption {
   id: string;
   label: string;

@@ -13,7 +13,7 @@ const getUserProfile = async (userId: string): Promise<UserProfile> => {
 
 const updateUserProfile = async (userProfile: UserProfile): Promise<UserProfile> => {
   try {
-    const { data } = await api.put<UserProfile>('/user-profile', userProfile);
+    const { data } = await api.patch<UserProfile>('/user-profile', userProfile);
     return data;
   } catch (error) {
     console.error('Error updating user profile:', error);
