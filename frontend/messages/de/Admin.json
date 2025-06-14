@@ -17,5 +17,7 @@
   "users": "Benutzer",
   "actions": "Aktionen",
   "deleteUser": "Benutzer löschen",
-  "loadMore": "Mehr laden"
+  "loadMore": "Mehr laden",
+  "saving": "Speichern...",
+  "save": "Speichern"
 }

@@ -17,5 +17,7 @@
   "users": "Users",
   "actions": "Actions",
   "deleteUser": "Delete user",
-  "loadMore": "Load More"
+  "loadMore": "Load More",
+  "saving": "Saving...",
+  "save": "Save"
 }

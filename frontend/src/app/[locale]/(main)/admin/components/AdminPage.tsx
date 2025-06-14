@@ -12,13 +12,6 @@ import {
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/Select';
 import StatCard from '@/components/common/StatCard';
 import Input from '@/components/ui/Input';
 import {
@@ -32,6 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
+import { updateDailyUserTokenLimit } from '@/services/updateDailyUserTokenLimit';
 
 export default function Admin() {
   const t = useTranslations('Admin');
@@ -57,6 +51,23 @@ export default function Admin() {
   ];
   const canLoadMore = visibleUsers < allUsers.length;
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
+  const [tokenLimit, setTokenLimit] = React.useState<number>(100);
+  const [saving, setSaving] = React.useState(false);
+
+  async function handleSaveTokenLimit() {
+    if (!Number.isInteger(tokenLimit) || tokenLimit < 1) {
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateDailyUserTokenLimit(tokenLimit);
+    } catch (error) {
+      console.error({ error });
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <div className="px-2 sm:px-4 max-w-full">
       <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
@@ -70,17 +81,19 @@ export default function Admin() {
         <label className="block text-bw-70 font-semibold text-sm mb-1">
           {t('tokensPerUserLabel')}
         </label>
-        <Select defaultValue="100">
-          <SelectTrigger className="w-full border border-bw-20 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bw-70 text-left">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="100">100</SelectItem>
-            <SelectItem value="200">200</SelectItem>
-            <SelectItem value="500">500</SelectItem>
-            <SelectItem value="1000">1000</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2 items-center">
+          <input
+            type="number"
+            min={1}
+            className="border border-bw-20 rounded px-3 py-2 text-sm w-32"
+            value={tokenLimit}
+            onChange={(e) => setTokenLimit(Number(e.target.value))}
+            disabled={saving}
+          />
+          <Button onClick={handleSaveTokenLimit} disabled={saving}>
+            {saving ? t('saving') : t('save')}
+          </Button>
+        </div>
       </div>
       <div className="w-full max-w-md mb-8 text-left">
         <div className="text-lg font-semibold text-bw-70 mb-4">{t('userFeedback')}</div>
