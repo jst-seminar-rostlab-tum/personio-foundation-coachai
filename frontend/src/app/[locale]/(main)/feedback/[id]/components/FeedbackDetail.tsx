@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/Accordion';
 import { api } from '@/services/Api';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, notFound } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import FeedbackQuote from './FeedbackQuote';
 
@@ -74,32 +74,37 @@ export default function FeedbackDetail() {
   const t = useTranslations('Feedback');
   const params = useParams();
   const [feedback, setFeedback] = useState<FeedbackType | null>(null);
-  const [isPending, setIsPending] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const id = params?.id;
     if (!id) return;
+    setIsLoading(true);
     api
       .get(`/session-feedback/${id}`)
       .then((res) => {
-        console.warn('res.data', res.data);
         if (res.status === 202) {
-          setIsPending(true);
+          setIsLoading(true);
           setFeedback(null);
-        } else {
-          setIsPending(false);
+        } else if (res.status === 200) {
+          setIsLoading(false);
           setFeedback(res.data);
+        } else {
+          setIsLoading(false);
+          setFeedback(null);
         }
       })
       .catch(() => {
-        setIsPending(false);
         setFeedback(null);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, [params]);
 
-  if (isPending) return <Loading />;
+  if (isLoading) return <Loading />;
 
-  if (!feedback) return <div>Loading...</div>;
+  if (!feedback) return notFound();
 
   const progressBarData = [
     { key: t('progressBars.structure'), value: feedback.scores?.structure ?? 0 },
