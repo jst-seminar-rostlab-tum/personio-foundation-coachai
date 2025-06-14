@@ -1,7 +1,7 @@
 export interface UserProfile {
   professionalRole: string;
-  storeConversations: boolean;
   goals: string[];
+  storeConversations?: boolean;
   confidenceScores?: ConfidenceScore[];
 }
 export interface ConfidenceScore {

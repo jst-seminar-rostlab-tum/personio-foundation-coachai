@@ -1,7 +1,7 @@
 'use client';
 
 import Stepper from '@/components/common/Stepper';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { UserOption } from '@/interfaces/UserInputFields';
@@ -11,16 +11,30 @@ import { useTranslations } from 'next-intl';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Link from 'next/link';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
+import { UserProfileService } from '@/services/UserProfileService';
+import { useRouter } from 'next/navigation';
 import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
   const onboardingSteps = ['Step1', 'Step2', 'Step3'];
-  const [currentOnboardingStep, setCurrentOnboardingStep] = React.useState(0);
-  const [selectedRole, setSelectedRole] = React.useState<string>('');
-  const [selectedGoals, setSelectedGoals] = React.useState<string[]>([]);
+  const [currentOnboardingStep, setCurrentOnboardingStep] = useState(0);
+  const [selectedRole, setSelectedRole] = useState<string>('');
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const t = useTranslations('Onboarding');
+  const router = useRouter();
   const roleQuestion: UserOption[] = UserRoles();
   const primaryGoals: UserOption[] = PrimaryGoals();
+  const [difficulty, setDifficulty] = useState([50]);
+  const [conflict, setConflict] = useState([50]);
+  const [conversation, setConversation] = useState([50]);
+  const confidenceFieldsProps = {
+    difficulty,
+    conflict,
+    conversation,
+    setDifficulty,
+    setConflict,
+    setConversation,
+  };
 
   const isValidStep = (stepIndex: number) => {
     if (stepIndex === 0) return selectedRole !== '';
@@ -42,6 +56,26 @@ export default function OnboardingPageComponent() {
 
   const goToPreviousStep = () => {
     setCurrentOnboardingStep((prev) => Math.max(prev - 1, 0));
+  };
+
+  const updateUserProfile = async () => {
+    try {
+      await UserProfileService.updateUserProfile({
+        professionalRole: selectedRole,
+        goals: selectedGoals,
+        /*
+        confidenceScores: [
+          { confidenceArea: 'giving_difficult_feedback', score: difficulty[0] },
+          { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
+          { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
+        ],
+        */
+      });
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+    } finally {
+      router.push('/dashboard');
+    }
   };
 
   return (
@@ -105,7 +139,7 @@ export default function OnboardingPageComponent() {
           <div className="text-xl self-center min-h-20 text-center max-w-70 flex items-center">
             {t('steps.step3')}
           </div>
-          <UserConfidenceFields />
+          <UserConfidenceFields {...confidenceFieldsProps} />
         </>
       )}
 
@@ -126,12 +160,10 @@ export default function OnboardingPageComponent() {
           )}
 
           {currentOnboardingStep === onboardingSteps.length - 1 ? (
-            <Link href="/dashboard">
-              <Button className="w-full">
-                {t('navigation.finish')}
-                <ArrowRightIcon />
-              </Button>
-            </Link>
+            <Button className="w-full" onClick={updateUserProfile}>
+              {t('navigation.finish')}
+              <ArrowRightIcon />
+            </Button>
           ) : (
             <Button
               className="w-full"

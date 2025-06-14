@@ -34,7 +34,9 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
   const t = useTranslations('TrainingSettings');
   const tOptions = useTranslations('TrainingSettings.leadershipGoals');
   const userProfileData = use(userProfile);
-  const [storeConversations, setStoreConversations] = useState(userProfileData.storeConversations);
+  const [storeConversations, setStoreConversations] = useState(
+    userProfileData.storeConversations ?? false
+  );
   const [currentRole, setCurrentRole] = useState(userProfileData.professionalRole);
   const [primaryGoal, setPrimaryGoal] = useState(
     userProfileData.goals.length > 0 ? userProfileData.goals[0] : ''
