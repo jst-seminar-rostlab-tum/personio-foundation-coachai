@@ -2,12 +2,17 @@ from datetime import UTC, datetime
 from enum import Enum
 from uuid import UUID, uuid4
 
+from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig, ConfigType
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import ConversationScenario, ConversationScenarioStatus
-from app.models.difficulty_level import DifficultyLevel  # Assuming this is the new model
+from app.models.conversation_scenario import (
+    ConversationScenario,
+    ConversationScenarioStatus,
+    DifficultyLevel,
+)
 from app.models.language import LanguageCode
 from app.models.rating import Rating
+from app.models.review import Review
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
 from app.models.session_feedback import (
@@ -35,14 +40,6 @@ class MockUserIdsEnum(Enum):
 
     USER = UUID('3a9a8970-afbe-4ee1-bc11-9dcad7875ddf')
     ADMIN = UUID('763c76f3-e5a4-479c-8b53-e3418d5e2ef5')
-
-
-def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
-    return [
-        DifficultyLevel(id=uuid4(), label='Easy'),
-        DifficultyLevel(id=uuid4(), label='Medium'),
-        DifficultyLevel(id=uuid4(), label='Hard'),
-    ]
 
 
 def get_dummy_user_profiles() -> list[UserProfile]:
@@ -83,13 +80,81 @@ def get_dummy_user_profiles() -> list[UserProfile]:
 
 def get_dummy_user_goals(user_profiles: list[UserProfile]) -> list[UserGoal]:
     return [
-        UserGoal(goal_id=Goal.giving_constructive_feedback, user_id=user_profiles[0].id),
-        UserGoal(goal_id=Goal.managing_team_conflicts, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.giving_constructive_feedback, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.managing_team_conflicts, user_id=user_profiles[1].id),
+    ]
+
+
+def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session]) -> list[Review]:
+    return [
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=sessions[0].id,  # Link to the first session
+            rating=5,
+            comment='Excellent service!',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=sessions[1].id,  # Link to a second session
+            rating=2,
+            comment='I found the sessions a bit too fast-paced.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
+            rating=4,
+            comment='Good overall, but could use more examples.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
+            rating=4,
+            comment='Great experience overall, but could use more examples.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=sessions[0].id,  # Link to the first session
+            rating=3,
+            comment='Good, but I expected more personalized feedback.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=sessions[1].id,  # Link to a second session
+            rating=5,
+            comment='Loved the interactive session and practical exercise!',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=1,
+            comment='Did not meet my expectations, too basic.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
+            rating=4,
+            comment='Very informative, but the pace was a bit slow.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
     ]
 
 
 def get_dummy_conversation_scenarios(
-    user_profiles: list[UserProfile], difficulty_levels: list[DifficultyLevel]
+    user_profiles: list[UserProfile],
 ) -> list[ConversationScenario]:
     return [
         ConversationScenario(
@@ -100,7 +165,7 @@ def get_dummy_conversation_scenarios(
             context='Context 1',
             goal='Goal 1',
             other_party='Other Party 1',
-            difficulty_id=difficulty_levels[0].id,
+            difficulty_level=DifficultyLevel.easy,
             tone='Friendly',
             complexity='Low',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
@@ -115,7 +180,7 @@ def get_dummy_conversation_scenarios(
             context='Context 2',
             goal='Goal 2',
             other_party='Other Party 2',
-            difficulty_id=difficulty_levels[1].id,
+            difficulty_level=DifficultyLevel.medium,
             tone='Professional',
             complexity='Medium',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
@@ -481,10 +546,7 @@ def get_dummy_scenario_preparations(
     ]
 
 
-
-def get_dummy_user_confidence_scores(
-    user_profiles: list[UserProfile]
-) -> list[UserConfidenceScore]:
+def get_dummy_user_confidence_scores(user_profiles: list[UserProfile]) -> list[UserConfidenceScore]:
     """
     Generate dummy UserConfidenceScore data.
     """
@@ -510,4 +572,17 @@ def get_dummy_app_configs() -> list[AppConfig]:
     """
     return [
         AppConfig(key='dailyUserTokenLimit', value='100', type=ConfigType.int),
+    ]
+
+
+def get_dummy_admin_stats() -> list[AdminDashboardStats]:
+    """
+    Generate dummy admin stats data.
+    """
+    return [
+        AdminDashboardStats(
+            id=uuid4(),
+            total_trainings=34533,
+            average_score=86,
+        )
     ]

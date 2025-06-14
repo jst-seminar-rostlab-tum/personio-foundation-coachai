@@ -16,9 +16,9 @@ if TYPE_CHECKING:
 
 class ConfidenceArea(str, Enum):
     # Define the confidence areas as needed
-    giving_difficult_feedback = "giving_difficult_feedback"
-    managing_team_conflicts = "managing_team_conflicts"
-    leading_challenging_conversations = "leading_challenging_conversations"
+    giving_difficult_feedback = 'giving_difficult_feedback'
+    managing_team_conflicts = 'managing_team_conflicts'
+    leading_challenging_conversations = 'leading_challenging_conversations'
 
 
 class UserConfidenceScore(CamelModel, table=True):

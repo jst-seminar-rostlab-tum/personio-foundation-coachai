@@ -13,7 +13,6 @@ from app.models.language import LanguageCode
 
 if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
-    from app.models.difficulty_level import DifficultyLevel
     from app.models.scenario_preparation import ScenarioPreparation
     from app.models.session import Session
     from app.models.user_profile import UserProfile
@@ -26,6 +25,12 @@ class ConversationScenarioStatus(str, Enum):
     archived = 'archived'
 
 
+class DifficultyLevel(str, Enum):
+    easy = 'easy'
+    medium = 'medium'
+    hard = 'hard'
+
+
 # Database model
 class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -36,7 +41,7 @@ class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a d
     context: str
     goal: str
     other_party: str
-    difficulty_id: UUID = Field(default=None, foreign_key='difficultylevel.id')
+    difficulty_level: DifficultyLevel = Field(default=DifficultyLevel.easy)
     tone: Optional[str] = None
     complexity: Optional[str] = None
     status: ConversationScenarioStatus = Field(default=ConversationScenarioStatus.draft)
@@ -52,9 +57,6 @@ class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a d
         back_populates='scenario', cascade_delete=True
     )
     user_profile: Optional['UserProfile'] = Relationship(back_populates='conversation_scenarios')
-    difficulty_level: Optional['DifficultyLevel'] = Relationship(
-        back_populates='conversation_scenarios'
-    )
 
 
 @event.listens_for(ConversationScenario, 'before_update')
@@ -72,7 +74,7 @@ class ConversationScenarioCreate(CamelModel):
     context: str
     goal: str
     other_party: str
-    difficulty_id: UUID
+    difficulty_level: DifficultyLevel
     tone: Optional[str] = None
     complexity: Optional[str] = None
     language_code: LanguageCode = LanguageCode.en
@@ -88,7 +90,7 @@ class ConversationScenarioRead(CamelModel):
     context: str
     goal: str
     other_party: str
-    difficulty_id: UUID
+    difficulty_level: DifficultyLevel
     tone: Optional[str]
     complexity: Optional[str]
     language_code: LanguageCode

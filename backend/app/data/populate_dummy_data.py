@@ -2,11 +2,12 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, text
 
 from app.data import (
+    get_dummy_admin_stats,
     get_dummy_app_configs,
     get_dummy_conversation_categories,
     get_dummy_conversation_scenarios,
-    get_dummy_difficulty_levels,
     get_dummy_ratings,
+    get_dummy_reviews,
     get_dummy_scenario_preparations,
     get_dummy_session_feedback,
     get_dummy_session_turns,
@@ -30,10 +31,6 @@ def populate_data() -> None:
         print('Creating tables...')
         SQLModel.metadata.create_all(engine)
 
-        # Populate Difficulty Levels
-        difficulty_levels = get_dummy_difficulty_levels()
-        db_session.add_all(difficulty_levels)
-
         # to get their IDs
         db_session.commit()
 
@@ -49,7 +46,7 @@ def populate_data() -> None:
         db_session.add_all(user_goals)
 
         # Populate Conversation Scenarios
-        conversation_scenarios = get_dummy_conversation_scenarios(user_profiles, difficulty_levels)
+        conversation_scenarios = get_dummy_conversation_scenarios(user_profiles)
         db_session.add_all(conversation_scenarios)
         db_session.commit()
 
@@ -81,6 +78,14 @@ def populate_data() -> None:
             sessions, conversation_scenarios
         )  # Pass both sessions and scenarios
         db_session.add_all(ratings)
+
+        # Populate Admin Dashboard Stats
+        admin_stats = get_dummy_admin_stats()
+        db_session.add_all(admin_stats)
+
+        # Populate Reviews
+        reviews = get_dummy_reviews(user_profiles, sessions)
+        db_session.add_all(reviews)
 
         # Commit all data
         db_session.commit()

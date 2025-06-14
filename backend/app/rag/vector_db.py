@@ -62,6 +62,23 @@ def format_docs(docs: list[Document]) -> str:
     return '\n\n'.join([doc.page_content for doc in docs])
 
 
+def format_docs_with_metadata(docs: list[Document]) -> tuple[str, list[dict]]:
+    """
+    Formats a list of Document objects into a single string, joining their contents,
+    and collect their metadata together
+
+    Parameters:
+        docs (list[Document]): A list of LangChain Document objects.
+
+    Returns:
+        tuple[str, list[dict]]: A tuple of:
+        1) A single string containing the concatenated contents of all documents,
+             separated by double newlines
+        2) The documents' metadata in an array of dicts
+    """
+    return '\n\n'.join([doc.page_content for doc in docs]), [doc.metadata for doc in docs]
+
+
 def get_supabase_client() -> Client:
     """
     Initializes and returns a Supabase client using credentials from settings.
