@@ -31,7 +31,7 @@ class Session(CamelModel, table=True):  # `table=True` makes it a database table
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    scenario: Optional['ConversationScenario'] = Relationship(back_populates='sessions')
+    scenario: 'ConversationScenario' = Relationship(back_populates='sessions')
     session_turns: list['SessionTurn'] = Relationship(back_populates='session', cascade_delete=True)
     feedback: Optional['SessionFeedback'] = Relationship(
         back_populates='session', cascade_delete=True

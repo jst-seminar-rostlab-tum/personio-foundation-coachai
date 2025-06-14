@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import ObjectivesList from './components/ObjectivesList';
-import PreparationChecklist from './components/PreparationChecklist';
+import PreparationContent from './components/PreparationContent';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -15,30 +14,6 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 
 export default function PreparationPage() {
   const t = useTranslations('Preparation');
-
-  const mockData = {
-    id: 'f65e1b1b-1234-4a5b-9876-abc123def456',
-    case_id: '9f27e05e-4321-4d89-b123-cde456gh7890',
-    objectives: [
-      'Clearly communicate the impact of the missed deadlines',
-      'Understand potential underlying causes',
-      'Collaboratively develop a solution',
-      'End the conversation on a positive note',
-    ],
-    key_concepts: [
-      { header: 'Time management', value: 'Time management' },
-      { header: 'Collaboration', value: 'Collaboration' },
-    ],
-    prep_checklist: [
-      'Gather specific examples of missed deadlines',
-      'Document the impact on team and projects',
-      'Consider potential underlying causes',
-      'Prepare open-ended questions',
-      'Think about potential solutions to suggest',
-      'Plan a positive closing statement',
-      'Choose a private, comfortable meeting environment',
-    ],
-  };
 
   return (
     <div className="flex flex-col gap-8 p-8">
@@ -49,25 +24,7 @@ export default function PreparationPage() {
         <div className="text-base italic leading-loose">{t('context.description')}</div>
       </section>
 
-      <div className="flex flex-col md:flex-row gap-4 items-stretch">
-        <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl">{t('objectives.title')}</h2>
-          </div>
-          <ObjectivesList objectives={mockData.objectives} />
-        </section>
-
-        <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl">{t('preparation.title')}</h2>
-          </div>
-          <PreparationChecklist checklist={mockData.prep_checklist} />
-        </section>
-      </div>
-
-      <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
-        <h2 className="text-xl">{t('resources.title')}</h2>
-      </section>
+      <PreparationContent />
 
       <div className="flex gap-4">
         <Link href="/new-training" className="flex-1">

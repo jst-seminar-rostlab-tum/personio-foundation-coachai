@@ -35,6 +35,7 @@ jobs:
 
   build:
     name: Build
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
     needs: test
     runs-on: ubuntu-22.04
     env:
