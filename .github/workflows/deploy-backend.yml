@@ -37,7 +37,7 @@ jobs:
 
   deploy-production:
     name: Deploy (Production)
-    needs: build
+    needs: test
     runs-on: ubuntu-22.04
     defaults:
       run:
