@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -17,6 +18,10 @@ if TYPE_CHECKING:
     from app.models.session_feedback import SessionFeedback
     from app.models.session_turn import SessionTurn
 
+class SessionStatus(str, Enum):
+    started = 'started'
+    completed = 'completed'
+    failed = 'failed'
 
 class Session(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -27,6 +32,7 @@ class Session(CamelModel, table=True):  # `table=True` makes it a database table
     started_at: datetime | None = None
     ended_at: datetime | None = None
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    status: SessionStatus = Field(default=SessionStatus.started)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
@@ -53,6 +59,7 @@ class SessionCreate(CamelModel):
     started_at: datetime | None = None
     ended_at: datetime | None = None
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    status: SessionStatus = Field(default=SessionStatus.started)
 
 
 # Schema for reading Session data
@@ -63,6 +70,7 @@ class SessionRead(CamelModel):
     started_at: datetime | None
     ended_at: datetime | None
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    status: SessionStatus = Field(default=SessionStatus.started)
     created_at: datetime
     updated_at: datetime
 
