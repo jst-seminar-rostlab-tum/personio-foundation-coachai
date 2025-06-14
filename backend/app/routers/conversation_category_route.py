@@ -6,6 +6,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.conversation_category import (
     ConversationCategory,
     ConversationCategoryCreate,
@@ -15,7 +16,9 @@ from app.models.conversation_category import (
 router = APIRouter(prefix='/conversation-categories', tags=['Conversation Categories'])
 
 
-@router.get('/', response_model=list[ConversationCategoryRead])
+@router.get(
+    '/', response_model=list[ConversationCategoryRead], dependencies=[Depends(require_user)]
+)
 def get_conversation_categories(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[ConversationCategory]:

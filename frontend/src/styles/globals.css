@@ -101,3 +101,7 @@ body {
   font-weight: 400;
   letter-spacing: 0.01em;
 }
+
+html {
+  scroll-behavior: smooth;
+}
