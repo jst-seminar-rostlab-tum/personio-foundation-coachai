@@ -340,7 +340,6 @@ def get_dummy_session_turns(
             ai_emotion='happy',
             created_at=datetime.now(UTC),
         ),
-
         # Session 2
         SessionTurn(
             id=uuid4(),

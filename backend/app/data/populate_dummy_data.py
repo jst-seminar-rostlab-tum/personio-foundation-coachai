@@ -50,8 +50,9 @@ def populate_data() -> None:
         db_session.add_all(conversation_categories)
 
         # Populate Conversation Scenarios
-        conversation_scenarios = get_dummy_conversation_scenarios(user_profiles,
-                                                                  conversation_categories)
+        conversation_scenarios = get_dummy_conversation_scenarios(
+            user_profiles, conversation_categories
+        )
         db_session.add_all(conversation_scenarios)
         db_session.commit()
 
