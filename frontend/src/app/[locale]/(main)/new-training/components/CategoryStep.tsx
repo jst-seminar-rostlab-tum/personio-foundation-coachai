@@ -13,7 +13,7 @@ export function CategoryStep({ selectedCategory, onCategorySelect }: CategorySte
       <div className="text-xl text-font-dark text-center">{t('title')}</div>
       <div className="grid grid-cols-2 px-2 md:grid-cols-3 gap-5 w-full mx-auto place-items-center lg:grid-cols-5">
         <CategoryButton
-          onClick={() => onCategorySelect('feedback')}
+          onClick={() => onCategorySelect('giving_feedback')}
           selected={selectedCategory === 'feedback'}
         >
           <Image
@@ -26,7 +26,7 @@ export function CategoryStep({ selectedCategory, onCategorySelect }: CategorySte
           {t('options.feedback')}
         </CategoryButton>
         <CategoryButton
-          onClick={() => onCategorySelect('conflict')}
+          onClick={() => onCategorySelect('conflict_resolution')}
           selected={selectedCategory === 'conflict'}
         >
           <Image
@@ -39,7 +39,7 @@ export function CategoryStep({ selectedCategory, onCategorySelect }: CategorySte
           {t('options.conflict')}
         </CategoryButton>
         <CategoryButton
-          onClick={() => onCategorySelect('performance')}
+          onClick={() => onCategorySelect('performance_reviews')}
           selected={selectedCategory === 'performance'}
         >
           <Image
@@ -52,7 +52,7 @@ export function CategoryStep({ selectedCategory, onCategorySelect }: CategorySte
           {t('options.performance')}
         </CategoryButton>
         <CategoryButton
-          onClick={() => onCategorySelect('salary')}
+          onClick={() => onCategorySelect('salary_discussions')}
           selected={selectedCategory === 'salary'}
         >
           <Image
@@ -63,19 +63,6 @@ export function CategoryStep({ selectedCategory, onCategorySelect }: CategorySte
             className="mb-4"
           />
           {t('options.salary')}
-        </CategoryButton>
-        <CategoryButton
-          onClick={() => onCategorySelect('custom')}
-          selected={selectedCategory === 'custom'}
-        >
-          <Image
-            src="/icons/custom-category.svg"
-            alt={t('options.custom')}
-            width={56}
-            height={56}
-            className="mb-4"
-          />
-          {t('options.custom')}
         </CategoryButton>
       </div>
     </div>
