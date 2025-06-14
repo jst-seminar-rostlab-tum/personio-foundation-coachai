@@ -5,7 +5,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Stepper from '@/components/common/Stepper';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FormState } from '@/interfaces/NewTrainingFormState';
+import { FormState } from '@/interfaces/NewTraining';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
@@ -33,6 +33,13 @@ export default function NewTrainingForm() {
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
       setCurrentStep(step);
+    }
+  };
+
+  const handleSubmit = () => {
+    setCurrentStep(() => currentStep + 1);
+    if (currentStep === 2) {
+      console.log(formState);
     }
   };
 
@@ -149,7 +156,7 @@ export default function NewTrainingForm() {
         )}
         <Button
           size="full"
-          onClick={() => setCurrentStep(() => currentStep + 1)}
+          onClick={handleSubmit}
           variant={!isStepValid(currentStep) ? 'disabled' : 'default'}
         >
           {currentStep === 2 ? t('navigation.create') : t('navigation.next')}
