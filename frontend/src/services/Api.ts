@@ -2,8 +2,6 @@ import { createClient } from '@/lib/supabase/client';
 import axios from 'axios';
 import { redirect } from 'next/navigation';
 
-const supabase = createClient();
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export const api = axios.create({
@@ -18,6 +16,11 @@ api.interceptors.request.use(
     if (config.url?.includes('/auth/') && !config.url?.includes('/auth/confirm')) {
       return config;
     }
+
+    if (process.env.NODE_ENV === 'development') {
+      return config;
+    }
+    const supabase = createClient();
 
     const { data, error } = await supabase.auth.getSession();
     if (error || !data.session) {

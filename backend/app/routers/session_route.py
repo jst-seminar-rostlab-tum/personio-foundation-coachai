@@ -2,11 +2,12 @@ from math import ceil
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import (
     Session,
@@ -25,13 +26,16 @@ from app.models.sessions_paginated import (
     SessionItem,
     SkillScores,
 )
+from app.models.user_profile import AccountRole, UserProfile
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
 
 
 @router.get('/{session_id}', response_model=SessionDetailsRead)
 def get_session_by_id(
-    session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+    session_id: UUID,
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> SessionDetailsRead:
     """
     Retrieve a session by its ID.
@@ -40,15 +44,31 @@ def get_session_by_id(
     if not session:
         raise HTTPException(status_code=404, detail='No session found with the given ID')
 
+    current_scenario = session.scenario
+    if current_scenario.user_id != user_profile.id and user_profile.account_role != 'admin':
+        raise HTTPException(
+            status_code=400,
+            detail='You do not have permission to access this session '
+            'you can only view your own sessions',
+        )
     # Get session title from the conversation scenario
     conversation_scenario = db_session.get(ConversationScenario, session.scenario_id)
-    if conversation_scenario:
-        if conversation_scenario.category:
-            training_title = conversation_scenario.category.name
-        else:
-            training_title = conversation_scenario.custom_category_label
+    if not conversation_scenario:
+        raise HTTPException(
+            status_code=404, detail='No conversation scenario found for the session'
+        )
+
+    # Test if the session is the session of the user or the user is an admin
+    user_id = user_profile.id
+    if conversation_scenario.user_id != user_id and user_profile.account_role != AccountRole.admin:
+        raise HTTPException(
+            status_code=403, detail='You do not have permission to access this session'
+        )
+
+    if conversation_scenario.category:
+        training_title = conversation_scenario.category.name
     else:
-        training_title = 'Unknown'
+        training_title = conversation_scenario.custom_category_label
 
     session_response = SessionDetailsRead(
         id=session.id,
@@ -105,21 +125,15 @@ def get_session_by_id(
 
 @router.get('/', response_model=PaginatedSessionsResponse)
 def get_sessions(
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
-    x_user_id: str = Header(...),  # Auth via header
-    # TODO: Adjust to the authentication token in the header
 ) -> PaginatedSessionsResponse:
     """
     Return paginated list of completed sessions for a user.
     """
-    try:
-        user_id = UUID(x_user_id)
-    except ValueError as err:
-        raise HTTPException(
-            status_code=401, detail='Invalid or missing authentication token'
-        ) from err
+    user_id = user_profile.id
 
     statement = select(ConversationScenario.id).where(ConversationScenario.user_id == user_id)
     scenario_ids = db_session.exec(statement).all()
@@ -169,7 +183,7 @@ def get_sessions(
     )
 
 
-@router.post('/', response_model=SessionRead)
+@router.post('/', response_model=SessionRead, dependencies=[Depends(require_user)])
 def create_session(
     session_data: SessionCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> Session:
@@ -232,13 +246,15 @@ def delete_session(
     return {'message': 'Session deleted successfully'}
 
 
-@router.delete('/clear-all/{user_id}', response_model=dict)
+@router.delete('/clear-all', response_model=dict)
 def delete_sessions_by_user(
-    user_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    user: Annotated[UserProfile, Depends(require_user)],
 ) -> dict:
     """
     Delete all sessions related to conversation scenarios for a given user ID.
     """
+    user_id = user.id
     # Retrieve all conversation scenarios for the given user ID
     statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
     conversation_scenarios = db_session.exec(statement).all()
