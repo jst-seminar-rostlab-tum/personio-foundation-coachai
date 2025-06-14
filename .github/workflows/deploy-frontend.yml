@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     env:
-      VERCEL_ENV: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+      VERCEL_ENV: ${{ github.ref_name == 'main' && 'Production' || 'Development' }}
 
     steps:
       - uses: actions/checkout@v4
