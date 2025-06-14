@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import Link from 'next/link';
 import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -27,19 +27,31 @@ import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { UserProfileService } from '@/services/UserProfileService';
 import { UserPreference } from '@/interfaces/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
+import { UserProfile } from '@/interfaces/UserProfile';
 import UserPreferences from './UserPreferences';
 
-export default function TrainingSettings() {
+export default function TrainingSettings({ userProfile }: { userProfile: Promise<UserProfile> }) {
   const t = useTranslations('TrainingSettings');
   const tOptions = useTranslations('TrainingSettings.leadershipGoals');
+  const userProfileData = use(userProfile);
+  const [storeConversations, setStoreConversations] = useState(userProfileData.storeConversations);
+  const [currentRole, setCurrentRole] = useState(userProfileData.professionalRole);
+  const [primaryGoal, setPrimaryGoal] = useState(
+    userProfileData.goals.length > 0 ? userProfileData.goals[0] : ''
+  );
 
-  const [storeConversations, setStoreConversations] = useState(false);
-  const [currentRole, setCurrentRole] = useState('team_leader');
-  const [primaryGoal, setPrimaryGoal] = useState('managing_team_conflicts');
+  const getConfidenceScores = (area: string) => {
+    const score = userProfileData.confidenceScores?.find(
+      (confidenceScore) => confidenceScore.confidenceArea === area
+    )?.score;
+    return score !== undefined ? [score] : [50];
+  };
 
-  const [difficulty, setDifficulty] = useState([50]);
-  const [conflict, setConflict] = useState([50]);
-  const [conversation, setConversation] = useState([50]);
+  const [difficulty, setDifficulty] = useState(getConfidenceScores('giving_difficult_feedback'));
+  const [conflict, setConflict] = useState(getConfidenceScores('managing_team_conflicts'));
+  const [conversation, setConversation] = useState(
+    getConfidenceScores('leading_challenging_conversations')
+  );
   const confidenceFieldsProps = {
     difficulty,
     conflict,
@@ -76,23 +88,16 @@ export default function TrainingSettings() {
         storeConversations,
         professionalRole: currentRole,
         goals: [primaryGoal],
+        /* As soon as the backend supports confidence scores patch, we can uncomment this
         confidenceScores: [
           { confidenceArea: 'giving_difficult_feedback', score: difficulty[0] },
           { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
           { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
-        ],
+        ], */
       });
     } catch (error) {
       console.error('Error saving settings:', error);
     }
-    console.warn('Settings saved:', {
-      storeConversations,
-      currentRole,
-      primaryGoal,
-      difficulty,
-      conflict,
-      conversation,
-    });
   };
   return (
     <div>
