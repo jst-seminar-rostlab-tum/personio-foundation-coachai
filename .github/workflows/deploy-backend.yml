@@ -4,6 +4,16 @@ on:
   push:
     branches: [main, dev]
     paths: ["backend/**"]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - main
+          - dev
 
 jobs:
   lint:
@@ -35,9 +45,9 @@ jobs:
         run: uv run pytest --exitfirst --disable-warnings || [[ $? -eq 5 ]]
         working-directory: ./backend
 
-  deploy-production:
-    name: Deploy (Production)
-    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
+  deploy:
+    name: Deploy
+    environment: ${{ github.event_name == 'workflow_dispatch' && (inputs.branch == 'main' && 'Production' || 'Development') || (github.ref_name == 'main' && 'Production' || 'Development') }}
     needs: test
     runs-on: ubuntu-22.04
     defaults:
