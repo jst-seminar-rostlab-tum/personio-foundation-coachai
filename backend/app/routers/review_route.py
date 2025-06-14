@@ -5,6 +5,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import asc, desc, select
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.review import (
     PaginatedReviewsResponse,
     Review,
@@ -18,7 +19,11 @@ from app.models.user_profile import UserProfile
 router = APIRouter(prefix='/review', tags=['User Review'])
 
 
-@router.get('/', response_model=list[ReviewRead] | PaginatedReviewsResponse)
+@router.get(
+    '/',
+    response_model=list[ReviewRead] | PaginatedReviewsResponse,
+    dependencies=[Depends(require_user)],
+)
 def get_reviews(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     limit: Optional[int] = Query(None),
@@ -97,7 +102,7 @@ def get_reviews(
     )
 
 
-@router.post('/', response_model=ReviewResponse)
+@router.post('/', response_model=ReviewResponse, dependencies=[Depends(require_user)])
 def create_review(
     review: ReviewCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> ReviewResponse:
