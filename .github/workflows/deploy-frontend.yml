@@ -36,7 +36,7 @@ jobs:
 
   build:
     name: Build
-    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
     needs: test
     runs-on: ubuntu-22.04
     env:
@@ -56,12 +56,12 @@ jobs:
 
   deploy:
     name: Deploy
-    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
     needs: build
     runs-on: ubuntu-22.04
 
     env:
-      VERCEL_ENV: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+      VERCEL_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
 
     steps:
       - uses: actions/checkout@v4
