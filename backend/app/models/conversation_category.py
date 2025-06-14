@@ -8,9 +8,10 @@ from sqlalchemy.orm import Mapper
 from sqlmodel import JSON, Column, Field, Relationship
 
 from app.models.camel_case import CamelModel
+from app.models.language import LanguageCode
 
 if TYPE_CHECKING:
-    from app.models.training_case import TrainingCase
+    from app.models.conversation_scenario import ConversationScenario
 
 
 class ConversationCategory(CamelModel, table=True):  # `table=True` makes it a database table
@@ -24,12 +25,12 @@ class ConversationCategory(CamelModel, table=True):  # `table=True` makes it a d
     default_goal: str = Field(default='')
     default_other_party: str = Field(default='')
     is_custom: bool = Field(default=False)
-    language_code: str = Field(foreign_key='language.code')  # FK to Language model
+    language_code: LanguageCode = Field(default=LanguageCode.en)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    training_cases: list['TrainingCase'] = Relationship(
+    conversation_scenarios: list['ConversationScenario'] = Relationship(
         back_populates='category', cascade_delete=True
     )
 
@@ -52,7 +53,7 @@ class ConversationCategoryCreate(CamelModel):
     default_goal: Optional[str] = None
     default_other_party: Optional[str] = None
     is_custom: Optional[bool] = None
-    language_code: Optional[str] = None
+    language_code: LanguageCode = Field(default=LanguageCode.en)
 
 
 # Schema for reading ConversationCategory data
@@ -64,6 +65,6 @@ class ConversationCategoryRead(CamelModel):
     default_goal: str
     default_other_party: str
     is_custom: bool
-    language_code: str
+    language_code: LanguageCode
     created_at: datetime
     updated_at: datetime

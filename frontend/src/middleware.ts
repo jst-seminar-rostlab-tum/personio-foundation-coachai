@@ -1,7 +1,20 @@
 import createMiddleware from 'next-intl/middleware';
-import routing from './i18n/routing';
+import { NextRequest } from 'next/server';
+import { authMiddleware } from '@/lib/supabase/middleware';
+import routing from '@/i18n/routing';
 
-export default createMiddleware(routing);
+const i18nMiddleware = createMiddleware(routing);
+
+export default async function middleware(request: NextRequest) {
+  const response = i18nMiddleware(request);
+
+  // Skip authentication if in development mode and the environment variable is set
+  if (process.env.NODE_ENV === 'development') {
+    return response;
+  }
+
+  return authMiddleware(request, response);
+}
 
 export const config = {
   // Match all pathnames except for

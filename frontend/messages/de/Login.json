@@ -13,7 +13,7 @@
     "passwordInputError": "Password ist ungültig",
     "stayLoggedInCheckboxLabel": "Angemeldet bleiben",
     "signInButtonLabel": "Anmelden",
-    "signInWithGoogleButtonLabel": "Oder mit Google anmelden",
+    "signInWithGoogleButtonLabel": "Mit Google anmelden",
     "alertErrorTitle401": "Ungültige E-Mail oder Passwort",
     "alertErrorTitleGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
   },

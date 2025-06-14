@@ -18,7 +18,7 @@ export function LanguageSwitcher() {
 
   return (
     <Select value={locale} onValueChange={onLocaleChange}>
-      <SelectTrigger className="h-8 w-14" variant="minimal">
+      <SelectTrigger className="h-8 w-16" variant="minimal">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

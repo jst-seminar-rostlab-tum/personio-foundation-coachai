@@ -10,13 +10,13 @@ from sqlmodel import Field, Relationship
 from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
-    from app.models.training_session import TrainingSession
+    from app.models.session import Session
     from app.models.user_profile import UserProfile
 
 
 class Rating(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key='trainingsession.id')  # FK to TrainingSession
+    session_id: UUID = Field(foreign_key='session.id')  # FK to Session
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
     score: int
     comment: str
@@ -24,7 +24,7 @@ class Rating(CamelModel, table=True):  # `table=True` makes it a database table
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    session: Optional['TrainingSession'] = Relationship(back_populates='ratings')
+    session: Optional['Session'] = Relationship(back_populates='ratings')
     user: Optional['UserProfile'] = Relationship(back_populates='ratings')
 
 

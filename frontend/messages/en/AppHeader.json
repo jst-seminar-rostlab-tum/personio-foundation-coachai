@@ -4,5 +4,6 @@
   "newTraining": "New Training",
   "admin": "Admin",
   "history": "History",
-  "trainingSettings": "Settings"
+  "trainingSettings": "Settings",
+  "logout": "Logout"
 }
