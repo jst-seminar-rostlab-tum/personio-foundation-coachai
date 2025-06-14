@@ -15,6 +15,7 @@ from app.models.user_confidence_score import ConfidenceScoreRead
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
     from app.models.rating import Rating
+    from app.models.review import Review
     from app.models.user_confidence_score import UserConfidenceScore
     from app.models.user_goal import UserGoal
 
@@ -53,6 +54,8 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     store_conversations: bool = Field(default=True)
     # Relationships
+    reviews: list['Review'] = Relationship(back_populates='user_profile', cascade_delete=True)
+
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
     conversation_scenarios: list['ConversationScenario'] = Relationship(
         back_populates='user_profile', cascade_delete=True

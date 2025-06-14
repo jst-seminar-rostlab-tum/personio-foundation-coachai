@@ -13,6 +13,7 @@ from app.models.session_feedback import SessionFeedbackMetrics
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
     from app.models.rating import Rating
+    from app.models.review import Review
     from app.models.session_feedback import SessionFeedback
     from app.models.session_turn import SessionTurn
 
@@ -36,7 +37,7 @@ class Session(CamelModel, table=True):  # `table=True` makes it a database table
         back_populates='session', cascade_delete=True
     )
     ratings: list['Rating'] = Relationship(back_populates='session', cascade_delete=True)
-
+    session_review: Optional['Review'] = Relationship(back_populates='session')
     # Automatically update `updated_at` before an update
 
 

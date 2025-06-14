@@ -1,3 +1,4 @@
+from app.models.admin_dashboard_stats import AdminDashboardStats, AdminDashboardStatsRead
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
 from app.models.conversation_category import (
     ConversationCategory,
@@ -12,6 +13,7 @@ from app.models.conversation_scenario import (
 )
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
+from app.models.review import Review, ReviewCreate, ReviewRead
 from app.models.scenario_preparation import (
     ScenarioPreparation,
     ScenarioPreparationCreate,
@@ -97,4 +99,9 @@ __all__ = [
     'AppConfigCreate',
     'AppConfigRead',
     'ConfigType',
+    'AdminDashboardStats',
+    'AdminDashboardStatsRead',
+    'Review',
+    'ReviewCreate',
+    'ReviewRead',
 ]
