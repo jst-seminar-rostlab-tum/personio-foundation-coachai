@@ -81,7 +81,7 @@ def create_conversation_scenario_with_preparation(
     )
     # 5. Return response
     return JSONResponse(
-        status_code=status.HTTP_202_ACCEPTED,
+        status_code=status.HTTP_200_OK,
         content={
             'message': 'Conversation scenario created, preparation started.',
             'scenarioId': str(new_conversation_scenario.id),
