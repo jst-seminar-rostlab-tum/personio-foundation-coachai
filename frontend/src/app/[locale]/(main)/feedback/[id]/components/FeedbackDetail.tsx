@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   ChartNoAxesColumnIncreasingIcon,
@@ -17,91 +20,104 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/Accordion';
+import { api } from '@/services/Api';
 import Link from 'next/link';
+import { useParams, notFound } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import FeedbackQuote from './FeedbackQuote';
 
-const mockFeedback = {
-  topic: 'Giving Constructive Feedback',
-  time: '16.04.2025, 12:24',
-  structure: 85,
-  empathy: 89,
-  focus: 91,
-  clarity: 89,
-  overall: 82,
-  speakingTime: 62,
-  questionAsked: 6,
-  sessionLength: '3:30',
-  goalsAcheived: '4/5',
-  conversationLength: 3,
+const Loading = dynamic(() => import('../loading'), { ssr: false });
+
+type FeedbackType = {
+  id: string;
+  session_id: string;
+  scores: {
+    structure: number;
+    empathy: number;
+    focus: number;
+    clarity: number;
+    [key: string]: number;
+  };
+  tone_analysis: {
+    positive: number;
+    neutral: number;
+    negative: number;
+    [key: string]: number;
+  };
+  overall_score: number;
+  transcript_uri: string;
+  speak_time_percent: number;
+  questions_asked: number;
+  session_length_s: number;
+  goals_achieved: number;
+  example_positive: Array<{
+    heading: string;
+    feedback: string;
+    quote: string;
+  }>;
+  example_negative: Array<{
+    heading: string;
+    feedback: string;
+    quote: string;
+    improved_quote?: string;
+  }>;
+  recommendations: Array<{
+    heading: string;
+    recommendation: string;
+  }>;
+  status: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export default function FeedbackDetail() {
   const t = useTranslations('Feedback');
+  const params = useParams();
+  const [feedback, setFeedback] = useState<FeedbackType | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const id = params?.id;
+    if (!id) return;
+    setIsLoading(true);
+    api
+      .get(`/session-feedback/${id}`)
+      .then((res) => {
+        if (res.status === 202) {
+          setIsLoading(true);
+          setFeedback(null);
+        } else if (res.status === 200) {
+          setIsLoading(false);
+          setFeedback(res.data);
+        } else {
+          setIsLoading(false);
+          setFeedback(null);
+        }
+      })
+      .catch(() => {
+        setFeedback(null);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [params]);
+
+  if (isLoading) return <Loading />;
+
+  if (!feedback) return notFound();
+
   const progressBarData = [
-    { key: t('progressBars.structure'), value: mockFeedback.structure },
-    { key: t('progressBars.empathy'), value: mockFeedback.empathy },
-    { key: t('progressBars.focus'), value: mockFeedback.focus },
-    { key: t('progressBars.clarity'), value: mockFeedback.clarity },
+    { key: t('progressBars.structure'), value: feedback.scores?.structure ?? 0 },
+    { key: t('progressBars.empathy'), value: feedback.scores?.empathy ?? 0 },
+    { key: t('progressBars.focus'), value: feedback.scores?.focus ?? 0 },
+    { key: t('progressBars.clarity'), value: feedback.scores?.clarity ?? 0 },
   ];
 
   const roundCardStats = [
-    { key: t('stats.speakingTime'), value: `${mockFeedback.speakingTime}%`, icon: 'Mic' },
-    { key: t('stats.questionsAsked'), value: mockFeedback.questionAsked, icon: 'Message' },
-    { key: t('stats.sessionLength'), value: mockFeedback.sessionLength, icon: 'Clock' },
-    { key: t('stats.goalsAchieved'), value: mockFeedback.goalsAcheived, icon: 'Check' },
-  ];
-
-  const examplesPositive = [
-    {
-      heading: 'Clear framing of the issue',
-      feedback:
-        'You effectively communicated the specific issue (missed deadlines) and its impact on the team without being accusatory.',
-      quote:
-        'I’ve noticed that several deadlines were missed last week, and it’s causing our team to fall behind on the overall project timeline.',
-    },
-    {
-      heading: 'Strong active listening',
-      feedback:
-        'You demonstrated excellent listening skills by paraphrasing Sarah’s concerns and asking thoughtful follow-up questions.',
-      quote:
-        'It sounds like you’re feeling overwhelmed by the number of tasks you’re responsible for. Let’s talk about how we might prioritize these better.',
-    },
-  ];
-
-  const examplesNegative = [
-    {
-      heading: 'More specific examples needed',
-      feedback:
-        'Your feedback would have been more impactful with specific examples of the missed deadlines and their consequences.',
-      quote: 'Several tasks have been delayed…',
-      improvedQuote:
-        'The UI mockups were due last Tuesday and the API documentation was due Friday, both of which are still incomplete. This has prevented the developers from starting their work.',
-    },
-    {
-      heading: 'Rushed to solutions',
-      feedback:
-        'You moved to problem-solving before fully exploring the root causes of the missed deadlines.',
-      quote: '',
-      improvedQuote:
-        'What specific challenges have made it difficult to meet these deadlines? Are there particular aspects of these tasks that are taking more time than expected?',
-    },
-  ];
-
-  const recommendations = [
-    {
-      heading: 'Practice the STAR method',
-      recommendation:
-        'When giving feedback, use the Situation, Task, Action, Result framework to provide more concrete examples.',
-    },
-    {
-      heading: 'Ask more diagnostic questions',
-      recommendation:
-        'Spend more time understanding root causes before moving to solutions. This builds empathy and leads to more effective outcomes.',
-    },
-    {
-      heading: 'Define clear next steps',
-      recommendation: 'End feedback conversations with agreed-upon action items.',
-    },
+    { key: t('stats.speakingTime'), value: `${feedback.speak_time_percent ?? 0}%`, icon: 'Mic' },
+    { key: t('stats.questionsAsked'), value: feedback.questions_asked ?? 0, icon: 'Message' },
+    { key: t('stats.sessionLength'), value: feedback.session_length_s ?? 0, icon: 'Clock' },
+    { key: t('stats.goalsAchieved'), value: feedback.goals_achieved ?? 0, icon: 'Check' },
   ];
 
   const getIcon = (iconName: string) => {
@@ -120,8 +136,8 @@ export default function FeedbackDetail() {
     <div className="flex flex-col items-center gap-7 mx-auto max-w-3xl">
       <div className="text-2xl ">{t('title')}</div>
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
-        <div className="text-lg text-marigold-90">{mockFeedback.topic}</div>
-        <div className="text-base text-marigold-95">{mockFeedback.time}</div>
+        <div className="text-lg text-marigold-90">{feedback.session_id}</div>
+        <div className="text-base text-marigold-95">{feedback.created_at}</div>
       </div>
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
@@ -136,7 +152,7 @@ export default function FeedbackDetail() {
           ))}
         </div>
         <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
-          {mockFeedback.overall}%
+          {feedback.overall_score}%
         </div>
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
@@ -165,7 +181,7 @@ export default function FeedbackDetail() {
             <Progress className="w-10 flex-1" value={62} />
             <div className="flex gap-1 items-center text-base text-bw-40">
               <Clock size={13} />
-              <span>{mockFeedback.conversationLength} min</span>
+              <span>{feedback.session_length_s} min</span>
             </div>
           </div>
         </div>
@@ -182,9 +198,10 @@ export default function FeedbackDetail() {
               <span className="text-xl">{t('detailedFeedback.positive')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {examplesPositive.map((example, index) => (
-                <FeedbackQuote key={index} {...example} icon="Check" />
-              ))}
+              {Array.isArray(feedback.example_positive) &&
+                feedback.example_positive.map((example, index) => (
+                  <FeedbackQuote key={index} {...example} icon="Check" />
+                ))}
             </div>
 
             <div className="flex items-center gap-2 mt-10">
@@ -192,9 +209,10 @@ export default function FeedbackDetail() {
               <span className="text-xl">{t('detailedFeedback.negative')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {examplesNegative.map((negative, index) => (
-                <FeedbackQuote key={index} {...negative} icon="Cross" />
-              ))}
+              {Array.isArray(feedback.example_negative) &&
+                feedback.example_negative.map((negative, index) => (
+                  <FeedbackQuote key={index} {...negative} icon="Cross" />
+                ))}
             </div>
 
             <div className="flex items-center gap-2 mt-10">
@@ -202,9 +220,10 @@ export default function FeedbackDetail() {
               <span className="text-xl">{t('detailedFeedback.recommendations')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {recommendations.map((recommendation, index) => (
-                <FeedbackQuote key={index} {...recommendation} icon="Info" />
-              ))}
+              {Array.isArray(feedback.recommendations) &&
+                feedback.recommendations.map((recommendation, index) => (
+                  <FeedbackQuote key={index} {...recommendation} icon="Info" />
+                ))}
             </div>
           </AccordionContent>
         </AccordionItem>
