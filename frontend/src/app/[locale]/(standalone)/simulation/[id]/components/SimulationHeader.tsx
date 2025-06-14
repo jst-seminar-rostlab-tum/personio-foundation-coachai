@@ -24,7 +24,7 @@ export default function SimulationHeader({
   sessionLabel = 'Performance Reviews',
   avatarSrc,
   time = 0,
-}: SimulationHeaderProps & { time: number }) {
+}: SimulationHeaderProps) {
   return (
     <div className="px-6 pt-4 pb-2 ">
       <div className="flex items-center justify-between mb-4">

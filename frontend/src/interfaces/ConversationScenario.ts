@@ -14,3 +14,21 @@ export interface ConversationScenarioResponse {
   message: string;
   scenarioId: string;
 }
+
+export type KeyConcept = {
+  header: string;
+  value: string;
+};
+
+export type ConversationScenarioPreparation = {
+  id: string;
+  caseId: string;
+  objectives: string[];
+  keyConcepts: KeyConcept[];
+  prepChecklist: string[];
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  categoryName: string;
+  context: string;
+};
