@@ -36,7 +36,7 @@ jobs:
 
   build:
     name: Build
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
     needs: test
     runs-on: ubuntu-22.04
     env:
@@ -56,7 +56,7 @@ jobs:
 
   deploy:
     name: Deploy
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
     needs: build
     runs-on: ubuntu-22.04
 
