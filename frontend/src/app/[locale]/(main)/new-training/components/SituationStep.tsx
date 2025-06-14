@@ -11,29 +11,14 @@ export function SituationStep({
   party,
   context,
   goal,
-  category,
   onPartyChange,
   onContextChange,
   onGoalChange,
-  onCustomCategoryInput,
-  customCategory,
 }: SituationStepProps) {
   const t = useTranslations('NewTraining');
   return (
     <div>
       <div className="text-xl text-font-dark text-center w-full mb-8">{t('situation.title')}</div>
-      {category === 'custom' && (
-        <>
-          <div className="text-lg text-font-dark mb-4">{t('category.customInput')}</div>
-          <Input
-            className="w-full mb-8"
-            value={customCategory}
-            placeholder={t('category.customPlaceholder')}
-            onChange={(e) => onCustomCategoryInput(e.target.value)}
-          />
-        </>
-      )}
-
       <div className="text-lg text-font-dark mb-4">{t('situation.party.title')}</div>
       <RadioGroup
         value={party.type}

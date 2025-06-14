@@ -43,6 +43,7 @@ def create_conversation_scenario_with_preparation(
     conversation_scenario: ConversationScenarioCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
     background_tasks: BackgroundTasks,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> JSONResponse:
     """
     Create a new conversation scenario and start the preparation process in the background.
@@ -54,8 +55,10 @@ def create_conversation_scenario_with_preparation(
         if not category:
             raise HTTPException(status_code=404, detail='Category not found')
 
-    # 2. Create new ConversationScenario
-    new_conversation_scenario = ConversationScenario(**conversation_scenario.model_dump())
+    # 2. Create new ConversationScenario, set user_id from user_profile
+    new_conversation_scenario = ConversationScenario(
+        **conversation_scenario.model_dump(), user_id=user_profile.id
+    )
     db_session.add(new_conversation_scenario)
     db_session.commit()
     db_session.refresh(new_conversation_scenario)
@@ -64,7 +67,7 @@ def create_conversation_scenario_with_preparation(
     prep = create_pending_preparation(new_conversation_scenario.id, db_session)
 
     preparation_request = ScenarioPreparationRequest(
-        category=category.name,
+        category=category.name if category else '',
         context=new_conversation_scenario.context,
         goal=new_conversation_scenario.goal,
         other_party=new_conversation_scenario.other_party,
@@ -81,7 +84,7 @@ def create_conversation_scenario_with_preparation(
         status_code=status.HTTP_202_ACCEPTED,
         content={
             'message': 'Conversation scenario created, preparation started.',
-            'scenario_id': str(new_conversation_scenario.id),
+            'scenarioId': str(new_conversation_scenario.id),
         },
     )
 

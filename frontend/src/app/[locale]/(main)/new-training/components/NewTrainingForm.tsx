@@ -1,26 +1,24 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
+import { AlertCircleIcon, ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Stepper from '@/components/common/Stepper';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FormState } from '@/interfaces/NewTrainingFormState';
+import { ConversationScenarioCreateResponse, FormState } from '@/interfaces/NewTraining';
+import { createConversationScenario } from '@/services/NewTraining';
+import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
 
 const initialFormState: FormState = {
-  category: '',
-  customCategory: '',
-  party: {
-    type: '',
-    otherName: '',
-  },
+  categoryId: '',
+  otherParty: '',
   context: '',
   goal: '',
-  difficulty: '',
-  emotionalTone: '',
+  difficultyLevel: '',
+  tone: '',
   complexity: '',
 };
 
@@ -29,6 +27,7 @@ export default function NewTrainingForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formState, setFormState] = useState<FormState>(initialFormState);
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
+  const [error, setError] = useState<string | null>(null);
 
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
@@ -36,37 +35,41 @@ export default function NewTrainingForm() {
     }
   };
 
+  const handleSubmit = async () => {
+    setCurrentStep(() => currentStep + 1);
+    if (currentStep === 2) {
+      try {
+        const response: ConversationScenarioCreateResponse =
+          await createConversationScenario(formState);
+        console.debug('Training scenario created successfully:', response);
+      } catch (err) {
+        console.error('Error creating training scenario: ', err);
+        setError('An error occurred while creating the training scenario. Please try again later.');
+      }
+    }
+  };
+
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 0:
-        return !!formState.category;
+        return !!formState.categoryId;
       case 1:
-        return (
-          (formState.category !== 'custom' || !!formState.customCategory) &&
-          !!formState.party.type &&
-          (formState.party.type !== 'other' || !!formState.party.otherName) &&
-          !!formState.context &&
-          !!formState.goal
-        );
+        return !!formState.otherParty && !!formState.context && !!formState.goal;
       case 2:
-        return !!formState.difficulty && !!formState.emotionalTone && !!formState.complexity;
+        return !!formState.difficultyLevel && !!formState.tone && !!formState.complexity;
       default:
         return false;
     }
   };
 
-  const handleCategorySelect = (category: string) => {
-    setFormState((prev) => ({ ...prev, category }));
+  const handleCategorySelect = (categoryId: string) => {
+    setFormState((prev) => ({ ...prev, categoryId }));
   };
 
-  const handleCustomCategoryInput = (customCategory: string) => {
-    setFormState((prev) => ({ ...prev, customCategory }));
-  };
-
-  const handlePartyChange = (type: string, otherName?: string) => {
+  const handlePartyChange = (otherParty: string) => {
     setFormState((prev) => ({
       ...prev,
-      party: { type, otherName: otherName || prev.party.otherName },
+      otherParty,
     }));
   };
 
@@ -78,12 +81,12 @@ export default function NewTrainingForm() {
     setFormState((prev) => ({ ...prev, goal }));
   };
 
-  const handleDifficultyChange = (difficulty: string) => {
-    setFormState((prev) => ({ ...prev, difficulty }));
+  const handleDifficultyChange = (difficultyLevel: string) => {
+    setFormState((prev) => ({ ...prev, difficultyLevel }));
   };
 
-  const handleEmotionalToneChange = (emotionalTone: string) => {
-    setFormState((prev) => ({ ...prev, emotionalTone }));
+  const handleEmotionalToneChange = (tone: string) => {
+    setFormState((prev) => ({ ...prev, tone }));
   };
 
   const handleComplexityChange = (complexity: string) => {
@@ -105,29 +108,27 @@ export default function NewTrainingForm() {
 
       {currentStep === 0 && (
         <CategoryStep
-          selectedCategory={formState.category}
+          selectedCategory={formState.categoryId}
           onCategorySelect={handleCategorySelect}
         />
       )}
 
       {currentStep === 1 && (
         <SituationStep
-          party={formState.party}
+          party={formState.otherParty}
           context={formState.context}
           goal={formState.goal}
           onPartyChange={handlePartyChange}
           onContextChange={handleContextChange}
-          onCustomCategoryInput={handleCustomCategoryInput}
           onGoalChange={handleGoalChange}
-          category={formState.category}
-          customCategory={formState.customCategory}
+          category={formState.categoryId}
         />
       )}
 
       {currentStep === 2 && (
         <CustomizeStep
-          difficulty={formState.difficulty}
-          emotionalTone={formState.emotionalTone}
+          difficulty={formState.difficultyLevel}
+          emotionalTone={formState.tone}
           complexity={formState.complexity}
           onDifficultyChange={handleDifficultyChange}
           onEmotionalToneChange={handleEmotionalToneChange}
@@ -149,13 +150,19 @@ export default function NewTrainingForm() {
         )}
         <Button
           size="full"
-          onClick={() => setCurrentStep(() => currentStep + 1)}
+          onClick={handleSubmit}
           variant={!isStepValid(currentStep) ? 'disabled' : 'default'}
         >
           {currentStep === 2 ? t('navigation.create') : t('navigation.next')}
           <ArrowRightIcon />
         </Button>
       </div>
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircleIcon />
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
+      )}
     </div>
   );
 }
