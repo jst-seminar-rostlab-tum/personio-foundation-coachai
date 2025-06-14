@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { api } from '@/services/Api';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
@@ -140,6 +141,16 @@ function useOpenAIRealtimeWebRTC() {
 
               // Reconstruct the array with the one message replaced
               return [...prev.slice(0, idx), updatedMsg, ...prev.slice(idx + 1)];
+            });
+          }
+
+          if (parsed.type === 'conversation.item.input_audio_transcription.completed') {
+            console.debug(parsed.transcript);
+            api.post('/session/turns/', {
+              sessionId: '4e5174f9-78da-428c-bb9f-4556a14163cc',
+              speaker: 'user',
+              startOffsetMs: 0,
+              endOffsetMs: 0,
             });
           }
 
