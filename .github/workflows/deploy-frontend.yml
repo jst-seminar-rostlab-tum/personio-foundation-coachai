@@ -40,11 +40,11 @@ jobs:
     needs: test
     runs-on: ubuntu-22.04
     env:
-      DEV_MODE_SKIP_AUTH: ${{ env.DEV_MODE_SKIP_AUTH }}
-      NEXT_PUBLIC_SUPABASE_URL: ${{ env.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-      NEXT_PUBLIC_API_URL: ${{ env.NEXT_PUBLIC_API_URL }}
-      NEXT_PUBLIC_BASE_URL: ${{ env.NEXT_PUBLIC_BASE_URL }}
+      DEV_MODE_SKIP_AUTH: ${{ vars.DEV_MODE_SKIP_AUTH }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+      NEXT_PUBLIC_BASE_URL: ${{ vars.NEXT_PUBLIC_BASE_URL }}
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
