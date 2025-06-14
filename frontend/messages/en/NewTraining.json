@@ -9,13 +9,6 @@
   },
   "category": {
     "title": "Choose a Conversation Category *",
-    "options": {
-      "feedback": "Giving Feedback",
-      "conflict": "Conflict Resolution",
-      "performance": "Performance Reviews",
-      "salary": "Salary Discussions",
-      "custom": "Custom"
-    },
     "customPlaceholder": "E.g., Promotion discussion, Onboarding new team member...",
     "customInput": "Define your own conversation topic *"
   },
@@ -61,6 +54,49 @@
       }
     }
   },
+  "categories": [
+    {
+      "id": "giving_feedback",
+      "name": "Giving Feedback",
+      "iconUri": "/icons/giving_feedback.svg",
+      "defaultContext": "One-on-one meeting with a team member.",
+      "defaultGoal": "Provide constructive feedback effectively.",
+      "defaultOtherParty": "Team member"
+    },
+    {
+      "id": "performance_reviews",
+      "name": "Performance Reviews",
+      "iconUri": "/icons/performance_reviews.svg",
+      "defaultContext": "Formal performance review meeting.",
+      "defaultGoal": "Evaluate and discuss employee performance.",
+      "defaultOtherParty": "Employee"
+    },
+    {
+      "id": "conflict_resolution",
+      "name": "Conflict Resolution",
+      "iconUri": "/icons/conflict_resolution.svg",
+      "defaultContext": "Conflict resolution meeting between team members.",
+      "defaultGoal": "Resolve conflicts and improve team dynamics.",
+      "defaultOtherParty": "Team members"
+    },
+    {
+      "id": "salary_discussions",
+      "name": "Salary Discussions",
+      "iconUri": "/icons/salary_discussions.svg",
+      "defaultContext": "Salary negotiation meeting.",
+      "defaultGoal": "Reach a mutually beneficial agreement on salary.",
+      "defaultOtherParty": "Employer"
+    },
+    {
+      "id": "custom",
+      "name": "Custom Category",
+      "iconUri": "/icons/custom-category.svg",
+      "defaultContext": "",
+      "defaultGoal": "",
+      "defaultOtherParty": "",
+      "isCustom": true
+    }
+  ],
   "navigation": {
     "back": "Go Back",
     "next": "Next Step",

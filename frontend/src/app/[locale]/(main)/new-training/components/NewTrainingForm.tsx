@@ -3,13 +3,13 @@
 import { Button } from '@/components/ui/Button';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Stepper from '@/components/common/Stepper';
-import { use, useState } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { ConversationCategory } from '@/interfaces/ConversationCategory';
 import { FormState } from '@/interfaces/NewTrainingFormState';
 import { ConversationScenario } from '@/interfaces/ConversationScenario';
-import { createConversationScenario } from '@/services/ConversationScenarioService';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
@@ -27,17 +27,14 @@ const initialFormState: FormState = {
   isCustom: false,
 };
 
-export default function NewTrainingForm({
-  categories,
-}: {
-  categories: Promise<ConversationCategory[]>;
-}) {
+export default function NewTrainingForm() {
   const t = useTranslations('NewTraining');
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [formState, setFormState] = useState<FormState>(initialFormState);
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
-  const allCategories = use(categories);
+
+  const categories = t.raw('categories') as ConversationCategory[];
 
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
@@ -112,25 +109,21 @@ export default function NewTrainingForm({
       return;
     }
 
-    // TODO: get user id from auth
-    const userId = '53b5bda9-44c8-4a52-a664-f8175b79c664'; // TODO: Remove this after getting auth
-
     const scenario: ConversationScenario = {
-      userId,
       categoryId: formState.category,
       customCategoryLabel: formState.customCategory,
       context: formState.context,
       goal: formState.goal,
       otherParty: formState.otherParty,
-      difficultyId: formState.difficulty,
+      difficultyLevel: formState.difficulty,
       tone: formState.emotionalTone,
       complexity: formState.complexity,
       status: 'draft',
     };
 
     try {
-      const response = await createConversationScenario(scenario);
-      router.push(`/preparation/${response.id}`);
+      const { data } = await conversationScenarioService.createConversationScenario(scenario);
+      router.push(`/preparation/${data.scenarioId}`);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -153,7 +146,7 @@ export default function NewTrainingForm({
         <CategoryStep
           selectedCategory={formState.category}
           onCategorySelect={handleCategorySelect}
-          categories={allCategories}
+          categories={categories}
         />
       )}
 
