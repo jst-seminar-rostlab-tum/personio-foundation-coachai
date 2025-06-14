@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import PreparationContent from './components/PreparationContent';
+import PreparationContent from '../components/PreparationContent';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -25,10 +25,6 @@ export default function PreparationPage() {
       </section>
 
       <PreparationContent />
-
-      <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
-        <h2 className="text-xl">{t('resources.title')}</h2>
-      </section>
 
       <div className="flex gap-4">
         <Link href="/new-training" className="flex-1">

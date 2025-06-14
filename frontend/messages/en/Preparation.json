@@ -15,6 +15,9 @@
   "resources": {
     "title": "Resources"
   },
+  "keyConcepts": {
+    "title": "Key Concepts"
+  },
   "navigation": {
     "back": "Go Back",
     "start": "Start Training"
