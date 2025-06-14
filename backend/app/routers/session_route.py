@@ -26,7 +26,7 @@ from app.models.sessions_paginated import (
     SessionItem,
     SkillScores,
 )
-from app.models.user_profile import UserProfile
+from app.models.user_profile import AccountRole, UserProfile
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
 
@@ -53,13 +53,22 @@ def get_session_by_id(
         )
     # Get session title from the conversation scenario
     conversation_scenario = db_session.get(ConversationScenario, session.scenario_id)
-    if conversation_scenario:
-        if conversation_scenario.category:
-            training_title = conversation_scenario.category.name
-        else:
-            training_title = conversation_scenario.custom_category_label
+    if not conversation_scenario:
+        raise HTTPException(
+            status_code=404, detail='No conversation scenario found for the session'
+        )
+
+    # Test if the session is the session of the user or the user is an admin
+    user_id = user_profile.id
+    if conversation_scenario.user_id != user_id and user_profile.account_role != AccountRole.admin:
+        raise HTTPException(
+            status_code=403, detail='You do not have permission to access this session'
+        )
+
+    if conversation_scenario.category:
+        training_title = conversation_scenario.category.name
     else:
-        training_title = 'Unknown'
+        training_title = conversation_scenario.custom_category_label
 
     session_response = SessionDetailsRead(
         id=session.id,
