@@ -26,7 +26,6 @@ class Review(CamelModel, table=True):  # `table=True` makes it a database table
 
 # Schema for creating a new review
 class ReviewCreate(CamelModel):
-    user_id: UUID
     session_id: UUID | None = None  # Optional, can be None if not related to a session
     rating: int
     comment: str
