@@ -77,7 +77,7 @@ export default function FeedbackDetail() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout | null = null;
+    // let timer: NodeJS.Timeout | null = null;
     const id = params?.id;
     if (!id) return;
     setIsLoading(true);
@@ -89,7 +89,7 @@ export default function FeedbackDetail() {
           if (res.status === 202 || res.data.status === 'pending') {
             setIsLoading(true);
             setFeedback(null);
-            timer = setTimeout(fetchData, 2000);
+            // timer = setTimeout(fetchData, 2000);
           } else if (res.status === 200) {
             setIsLoading(false);
             setFeedback(res.data.feedback);
@@ -105,7 +105,7 @@ export default function FeedbackDetail() {
     };
 
     fetchData();
-    return () => timer && clearTimeout(timer);
+    // return () => timer && clearTimeout(timer); // Check if this line is needed
   }, [params]);
 
   if (isLoading) return <Loading />;

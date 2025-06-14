@@ -27,6 +27,14 @@ async def get_realtime_session() -> dict:
                 'model': 'gpt-4o-realtime-preview-2025-06-03',
                 'voice': 'verse',
                 'input_audio_transcription': {'language': 'en', 'model': 'gpt-4o-mini-transcribe'},
+                'instructions': 'Speak only in English.',
+                'turn_detection': {
+                    'type': 'server_vad',
+                    'threshold': 0.8,
+                    'prefix_padding_ms': 300,
+                    'silence_duration_ms': 500,
+                },
+                'speed': 0.9,
             },
         )
         try:

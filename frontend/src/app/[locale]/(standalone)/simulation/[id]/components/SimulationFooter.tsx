@@ -3,7 +3,6 @@
 import { Pause, Play, Phone, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
-
 export default function SimulationFooter({
   isPaused,
   setIsPaused,
