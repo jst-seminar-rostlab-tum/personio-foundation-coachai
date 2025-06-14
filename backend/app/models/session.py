@@ -18,10 +18,12 @@ if TYPE_CHECKING:
     from app.models.session_feedback import SessionFeedback
     from app.models.session_turn import SessionTurn
 
+
 class SessionStatus(str, Enum):
     started = 'started'
     completed = 'completed'
     failed = 'failed'
+
 
 class Session(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -60,6 +62,15 @@ class SessionCreate(CamelModel):
     ended_at: datetime | None = None
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: SessionStatus = Field(default=SessionStatus.started)
+
+
+class SessionUpdate(CamelModel):
+    scenario_id: UUID | None = None
+    scheduled_at: datetime | None = None
+    started_at: datetime | None = None
+    ended_at: datetime | None = None
+    ai_persona: Optional[dict] = None
+    status: Optional[SessionStatus] = None
 
 
 # Schema for reading Session data
