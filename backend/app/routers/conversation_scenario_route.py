@@ -141,7 +141,7 @@ def get_scenario_preparation_by_scenario_id(
     scenario_id: UUID,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> ScenarioPreparation:
+) -> ScenarioPreparationRead:
     """
     Retrieve the scenario preparation data for a given conversation scenario ID.
     """
@@ -164,4 +164,9 @@ def get_scenario_preparation_by_scenario_id(
     if not scenario_preparation:
         raise HTTPException(status_code=404, detail='Scenario preparation not found')
 
-    return scenario_preparation
+    return ScenarioPreparationRead(
+        **scenario_preparation.model_dump(),
+        context=conversation_scenario.context,
+        goal=conversation_scenario.goal,
+        other_party=conversation_scenario.other_party,
+    )
