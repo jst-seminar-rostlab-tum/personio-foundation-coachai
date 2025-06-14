@@ -2,6 +2,12 @@
   "metaTitle": "Feedback - Coach AI",
   "metaDescription": "Detailed analysis and evaluation of your training session",
   "title": "Performance Summary",
+  "feedbackDialog": {
+    "open": "Give Feedback",
+    "title": "Feedback",
+    "description": "How was the training session? Help us improve by providing your feedback.",
+    "rate": "Submit Feedback"
+  },
   "progressBars": {
     "structure": "Structure",
     "empathy": "Empathy",

@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/Accordion';
 import Link from 'next/link';
 import FeedbackQuote from './FeedbackQuote';
+import FeedbackDialog from './FeedbackDialog';
 
 const mockFeedback = {
   topic: 'Giving Constructive Feedback',
@@ -45,8 +46,6 @@ export default function FeedbackDetail() {
   ];
 
   const roundCardStats = [
-    { key: t('stats.speakingTime'), value: `${mockFeedback.speakingTime}%`, icon: 'Mic' },
-    { key: t('stats.questionsAsked'), value: mockFeedback.questionAsked, icon: 'Message' },
     { key: t('stats.sessionLength'), value: mockFeedback.sessionLength, icon: 'Clock' },
     { key: t('stats.goalsAchieved'), value: mockFeedback.goalsAcheived, icon: 'Check' },
   ];
@@ -116,6 +115,7 @@ export default function FeedbackDetail() {
         return <MessageCircleQuestion size={20} />;
     }
   };
+
   return (
     <div className="flex flex-col items-center gap-7 mx-auto max-w-3xl">
       <div className="text-2xl ">{t('title')}</div>
@@ -123,6 +123,7 @@ export default function FeedbackDetail() {
         <div className="text-lg text-marigold-90">{mockFeedback.topic}</div>
         <div className="text-base text-marigold-95">{mockFeedback.time}</div>
       </div>
+      <FeedbackDialog />
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
           {progressBarData.map((item) => (
@@ -141,7 +142,7 @@ export default function FeedbackDetail() {
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
 
-      <div className="grid grid-cols-2 gap-y-4 w-full px-1 md:flex md:justify-between">
+      <div className="flex justify-evenly w-full">
         {roundCardStats.map((stat) => (
           <div className="flex gap-2 items-center" key={stat.key}>
             <div className="rounded-full size-11 border-1 border-bw-30 bg-bw-10 flex items-center justify-center">
