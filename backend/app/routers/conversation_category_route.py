@@ -1,5 +1,4 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
@@ -46,7 +45,7 @@ def create_conversation_category(
 
 @router.put('/{category_id}', response_model=ConversationCategoryRead)
 def update_conversation_category(
-    category_id: UUID,
+    category_id: str,
     updated_data: dict,
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> ConversationCategory:
@@ -73,7 +72,7 @@ def update_conversation_category(
 
 @router.delete('/{category_id}', response_model=dict)
 def delete_conversation_category(
-    category_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+    category_id: str, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
     """
     Delete a conversation category.

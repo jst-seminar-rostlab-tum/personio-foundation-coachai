@@ -225,9 +225,8 @@ def get_dummy_ratings(
 def get_dummy_conversation_categories() -> list[ConversationCategory]:
     return [
         ConversationCategory(
-            id=uuid4(),
+            id='giving_feedback',
             name='Giving Feedback',
-            icon_uri='/icons/giving_feedback.svg',
             system_prompt='You are an expert in providing constructive feedback.',
             initial_prompt='What feedback challenge are you facing?',
             ai_setup={'type': 'feedback', 'complexity': 'medium'},
@@ -240,9 +239,8 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
-            id=uuid4(),
+            id='performance_reviews',
             name='Performance Reviews',
-            icon_uri='/icons/performance_reviews.svg',
             system_prompt='You are a manager conducting performance reviews.',
             initial_prompt='What aspect of performance would you like to discuss?',
             ai_setup={'type': 'review', 'complexity': 'high'},
@@ -255,9 +253,8 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
-            id=uuid4(),
+            id='conflict_resolution',
             name='Conflict Resolution',
-            icon_uri='/icons/conflict_resolution.svg',
             system_prompt='You are a mediator resolving conflicts.',
             initial_prompt='What conflict are you trying to resolve?',
             ai_setup={'type': 'mediation', 'complexity': 'high'},
@@ -270,9 +267,8 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
-            id=uuid4(),
+            id='salary_discussions',
             name='Salary Discussions',
-            icon_uri='/icons/salary_discussions.svg',
             system_prompt='You are a negotiator discussing salary expectations.',
             initial_prompt='What salary-related topic would you like to address?',
             ai_setup={'type': 'negotiation', 'complexity': 'medium'},
@@ -285,9 +281,8 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
-            id=uuid4(),
+            id='custom',
             name='Custom Category',
-            icon_uri='/icons/custom-category.svg',
             system_prompt='',
             initial_prompt='',
             ai_setup={},
