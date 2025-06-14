@@ -84,7 +84,7 @@ export default function FeedbackDetail() {
 
     const fetchData = () => {
       api
-        .get(`/session-feedback/${id}`)
+        .get(`/session/${id}`)
         .then((res) => {
           if (res.status === 202 || res.data.status === 'pending') {
             setIsLoading(true);
@@ -92,7 +92,7 @@ export default function FeedbackDetail() {
             timer = setTimeout(fetchData, 2000);
           } else if (res.status === 200) {
             setIsLoading(false);
-            setFeedback(res.data);
+            setFeedback(res.data.feedback);
           } else if (res.status === 404 || res.status === 422) {
             setIsLoading(false);
             setFeedback(null);

@@ -1,12 +1,15 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+// import { api } from '@/services/Api';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages, { Message } from './SimulationMessages';
 
 const MODEL_ID = 'gpt-4o-realtime-preview-2025-06-03';
+const mockSessionId = '3fa85f64-5717-4562-b3fc-2c963f66afa6';
 
 function useOpenAIRealtimeWebRTC() {
   const [isMicActive, setIsMicActive] = useState(false);
@@ -233,6 +236,8 @@ export default function SimulationPageComponent() {
     messages,
   } = useOpenAIRealtimeWebRTC();
 
+  const router = useRouter();
+
   useEffect(() => {
     if (!isPaused) {
       const interval = setInterval(() => {
@@ -266,6 +271,12 @@ export default function SimulationPageComponent() {
     console.debug('[WebRTC] Data channel ready status:', isDataChannelReady);
   }, [isDataChannelReady]);
 
+  const handleDisconnect = async () => {
+    // await api.post('/session-feedback/', mockFeedback);
+    disconnect();
+    router.push(`/feedback/${mockSessionId}`);
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <div className="mb-2">
@@ -284,7 +295,7 @@ export default function SimulationPageComponent() {
         isMicActive={isMicActive}
         toggleMicrophone={toggleMic}
         isConnected={isConnected && isDataChannelReady}
-        onDisconnect={disconnect}
+        onDisconnect={handleDisconnect}
       />
       <audio ref={remoteAudioRef} autoPlay playsInline />
     </div>
