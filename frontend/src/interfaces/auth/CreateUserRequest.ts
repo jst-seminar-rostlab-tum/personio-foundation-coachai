@@ -3,5 +3,5 @@ export interface CreateUserRequest {
   email: string;
   phone: string;
   password: string;
-  code: string;
+  // code: string;
 }

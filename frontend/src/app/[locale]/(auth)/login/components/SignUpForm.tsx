@@ -35,7 +35,7 @@ export function SignUpForm() {
   const signUpFormSchema = z.object({
     fullName: z.string().min(1, t('fullNameInputError')),
     email: z.string().email(t('emailInputError')),
-    phoneNumber: z.string().regex(/^\+[1-9]\d{7,14}$/, t('phoneNumberInputError')),
+    phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, t('phoneNumberInputError')),
     password: z
       .string()
       .regex(/^.{8,}$/)
@@ -50,7 +50,7 @@ export function SignUpForm() {
     defaultValues: {
       fullName: '',
       email: '',
-      phoneNumber: '',
+      phone_number: '',
       password: '',
       terms: false,
     },
@@ -131,7 +131,7 @@ export function SignUpForm() {
 
               <FormField
                 control={signUpForm.control}
-                name="phoneNumber"
+                name="phone_number"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('phoneNumberInputLabel')}</FormLabel>

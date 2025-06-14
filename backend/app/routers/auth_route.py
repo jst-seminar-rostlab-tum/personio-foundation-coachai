@@ -10,6 +10,7 @@ from app.config import Settings
 from app.database import get_db_session
 from app.dependencies import JWTPayload, verify_jwt
 from app.models.user_profile import UserProfile
+from app.services.twilio_service import check_verification_code, send_verification_code
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
 
@@ -21,7 +22,48 @@ class CreateUserRequest(BaseModel):
     phone: str
     email: str
     password: str
+    # code: str
+
+
+class SendVerificationRequest(BaseModel):
+    phone_number: str
+
+
+class VerifyCodeRequest(BaseModel):
+    phone_number: str
     code: str
+
+
+@router.post('/send-verification', response_model=None)
+def send_verification(req: SendVerificationRequest) -> None:
+    try:
+        status = send_verification_code(req.phone_number)
+        if status != 'pending':
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Failed to send verification code',
+            )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
+
+
+@router.post('/verify-code', response_model=None)
+def verify_code(req: VerifyCodeRequest) -> None:
+    try:
+        status = check_verification_code(req.phone_number, req.code)
+        if status != 'approved':
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Invalid verification code',
+            )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
 
 
 @router.post('/', response_model=None, status_code=status.HTTP_201_CREATED)
@@ -34,9 +76,8 @@ def create_user(req: CreateUserRequest) -> None:
             detail=str(e),
         ) from e
 
-    # TODO: Verify OTP code
-
     try:
+        print(f'Creating user with email: {req.email}, phone: {req.phone}')
         supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
 
         attributes: AdminUserAttributes = {
@@ -48,14 +89,20 @@ def create_user(req: CreateUserRequest) -> None:
                 'full_name': req.full_name,
             },
         }
-        supabase.auth.admin.create_user(attributes)
+        print(f'Creating user with attributes: {attributes}')
+        result = supabase.auth.admin.create_user(attributes)
+        print(f'Admin create_user result: {result}')
 
         credentials: SignUpWithPasswordCredentials = {
             'email': req.email,
             'password': req.password,
         }
-        supabase.auth.sign_up(credentials)
+        print(f'Signing up with credentials: {credentials}')
+        signup_result = supabase.auth.sign_up(credentials)
+        print(f'Sign up result: {signup_result}')
     except Exception as e:
+        print(f'Error in create_user: {str(e)}')
+        print(f'Error type: {type(e)}')
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
