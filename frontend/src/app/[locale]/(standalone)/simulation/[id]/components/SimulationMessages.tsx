@@ -66,9 +66,12 @@ const mockMessages = [
 ];
 
 export interface Message {
-  id: number;
+  id?: number;
   text: string;
   sender: 'user' | 'assistant';
+  start_offset_ms?: number;
+  end_offset_ms?: number;
+  created_at?: string;
 }
 
 interface MessageItemProps {

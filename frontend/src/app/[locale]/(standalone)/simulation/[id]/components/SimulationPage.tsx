@@ -9,14 +9,44 @@ import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages, { Message } from './SimulationMessages';
 
 const MODEL_ID = 'gpt-4o-realtime-preview-2025-06-03';
-const mockSessionId = '3fa85f64-5717-4562-b3fc-2c963f66afa6';
+const mockSessionId = '4e5174f9-78da-428c-bb9f-4556a14163cc';
+
+// temporary type for session
+type Session = {
+  id: string;
+  scenario_id: string;
+  scheduled_at?: string | null;
+  started_at?: string | null;
+  ended_at?: string | null;
+  ai_persona: Record<string, string>;
+  created_at: string;
+  updated_at: string;
+  scenario?: any;
+  session_turns: SessionTurn[];
+  feedback?: any;
+  ratings?: any[];
+  session_review?: any;
+};
+
+type SessionTurn = {
+  id: string;
+  session_id: string;
+  speaker: 'user' | 'assistant';
+  start_offset_ms: number;
+  end_offset_ms: number;
+  text: string;
+  audio_uri: string;
+  ai_emotion: string;
+  created_at: string;
+};
 
 function useOpenAIRealtimeWebRTC() {
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isDataChannelReady, setIsDataChannelReady] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-
+  const [session, setSession] = useState<Session | null>(null);
+  const router = useRouter();
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -43,10 +73,22 @@ function useOpenAIRealtimeWebRTC() {
     setMessages([]);
   }, []);
 
-  const disconnect = useCallback(() => {
+  const disconnect = useCallback(async () => {
+    console.debug('disconnecting');
+    console.debug(session?.id);
+    const turns = messages.map((msg) => ({
+      session_id: session?.id,
+      speaker: msg.sender === 'user' ? 'user' : 'assistant',
+      text: msg.text,
+    }));
+
+    // 提交到后端
+    await api.post(`/session/${session?.id}/turns`, { turns });
+
     cleanup();
     cleanupRef.current = false;
-  }, [cleanup]);
+    router.push(`/feedback/${session?.id}`);
+  }, [cleanup, messages, session?.id, router]);
 
   const initWebRTC = useCallback(async () => {
     try {
@@ -148,12 +190,6 @@ function useOpenAIRealtimeWebRTC() {
 
           if (parsed.type === 'conversation.item.input_audio_transcription.completed') {
             console.debug(parsed.transcript);
-            api.post('/session/turns/', {
-              sessionId: '4e5174f9-78da-428c-bb9f-4556a14163cc',
-              speaker: 'user',
-              startOffsetMs: 0,
-              endOffsetMs: 0,
-            });
           }
 
           if (parsed.type === 'response.audio_transcript.delta') {
@@ -216,6 +252,19 @@ function useOpenAIRealtimeWebRTC() {
     }
   }, [disconnect]);
 
+  useEffect(() => {
+    if (!mockSessionId) return;
+    api
+      .get(`/session/${mockSessionId}`)
+      .then((res) => {
+        console.warn(res.data);
+        setSession(res.data);
+      })
+      .catch(() => {
+        setSession(null);
+      });
+  }, []);
+
   return {
     isMicActive,
     setIsMicActive,
@@ -227,6 +276,7 @@ function useOpenAIRealtimeWebRTC() {
     remoteAudioRef,
     localStreamRef,
     messages,
+    session,
   };
 }
 
@@ -244,9 +294,8 @@ export default function SimulationPageComponent() {
     remoteAudioRef,
     localStreamRef,
     messages,
+    session,
   } = useOpenAIRealtimeWebRTC();
-
-  const router = useRouter();
 
   useEffect(() => {
     if (!isPaused) {
@@ -281,12 +330,6 @@ export default function SimulationPageComponent() {
     console.debug('[WebRTC] Data channel ready status:', isDataChannelReady);
   }, [isDataChannelReady]);
 
-  const handleDisconnect = async () => {
-    // await api.post('/session-feedback/', mockFeedback);
-    disconnect();
-    router.push(`/feedback/${mockSessionId}`);
-  };
-
   return (
     <div className="flex flex-col h-screen">
       <div className="mb-2">
@@ -305,7 +348,7 @@ export default function SimulationPageComponent() {
         isMicActive={isMicActive}
         toggleMicrophone={toggleMic}
         isConnected={isConnected && isDataChannelReady}
-        onDisconnect={handleDisconnect}
+        onDisconnect={disconnect}
       />
       <audio ref={remoteAudioRef} autoPlay playsInline />
     </div>
