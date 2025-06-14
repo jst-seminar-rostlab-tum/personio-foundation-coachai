@@ -12,14 +12,10 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 
 export default function HistoryPage() {
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="flex flex-col gap-12">
       <HistoryHeader />
-      <div className="mt-8">
-        <HistoryStats />
-      </div>
-      <div className="mt-8">
-        <PreviousSessions />
-      </div>
+      <HistoryStats />
+      <PreviousSessions />
     </div>
   );
 }

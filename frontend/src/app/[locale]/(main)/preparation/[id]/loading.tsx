@@ -1,6 +1,6 @@
 export default function PreparationPage() {
   return (
-    <div className="flex flex-col gap-8 p-8">
+    <div className="flex flex-col gap-8">
       <div className="h-8 w-48 bg-bw-10 rounded-lg animate-pulse self-center" />
 
       <section className="flex flex-col gap-4 bg-marigold-5 border border-marigold-30 rounded-lg p-8 text-marigold-95">

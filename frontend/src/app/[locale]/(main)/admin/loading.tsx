@@ -4,7 +4,7 @@ export default function AdminPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center mb-6 gap-4">
+      <div className="flex items-center gap-4">
         <Link href="/dashboard">
           <button className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center text-gray-700 font-bold text-lg hover:bg-gray-300 transition-colors">
             <svg

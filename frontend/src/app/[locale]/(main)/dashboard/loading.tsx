@@ -1,6 +1,6 @@
 export default function DashboardLoading() {
   return (
-    <div className="flex flex-col gap-12 p-8">
+    <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         <div className="h-8 w-32 bg-bw-10 rounded-lg animate-pulse" />
         <div className="h-10 w-full md:w-40 bg-bw-10 rounded-lg animate-pulse" />

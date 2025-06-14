@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const t = useTranslations('Dashboard');
 
   return (
-    <div className="flex flex-col gap-12 p-8">
+    <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         <p className="text-2xl text-center md:text-left">
           {t('header.greeting')}
