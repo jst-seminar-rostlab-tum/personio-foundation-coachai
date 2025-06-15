@@ -18,17 +18,17 @@ export interface SessionFeedback {
     clarity: number;
     empathy: number;
     structure: number;
-    solutionFocus: number;
+    focus: number;
   };
   overallScore: number;
   sessionLengthS: number;
   goalsAchieved: number;
-  examplesPositive: {
+  examplePositive: {
     heading: string;
     feedback: string;
     quote: string;
   }[];
-  examplesNegative: {
+  exampleNegative: {
     heading: string;
     feedback: string;
     quote: string;

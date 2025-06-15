@@ -80,7 +80,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
   const progressBarData = [
     { key: t('progressBars.structure'), value: feedbackDetail?.feedback?.scores.structure ?? 0 },
     { key: t('progressBars.empathy'), value: feedbackDetail?.feedback?.scores.empathy ?? 0 },
-    { key: t('progressBars.focus'), value: feedbackDetail?.feedback?.scores.solutionFocus ?? 0 },
+    { key: t('progressBars.focus'), value: feedbackDetail?.feedback?.scores.focus ?? 0 },
     { key: t('progressBars.clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
 
@@ -97,9 +97,9 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
     },
   ];
 
-  const examplesPositive = feedbackDetail?.feedback?.examplesPositive || [];
+  const examplePositive = feedbackDetail?.feedback?.examplePositive || [];
 
-  const examplesNegative = feedbackDetail?.feedback?.examplesNegative || [];
+  const exampleNegative = feedbackDetail?.feedback?.exampleNegative || [];
 
   const recommendations = feedbackDetail?.feedback?.recommendations || [];
 
@@ -186,7 +186,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
               <span className="text-xl">{t('detailedFeedback.positive')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {examplesPositive.map((example, index) => (
+              {examplePositive.map((example, index) => (
                 <FeedbackQuote key={index} {...example} icon="Check" />
               ))}
             </div>
@@ -196,7 +196,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
               <span className="text-xl">{t('detailedFeedback.negative')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {examplesNegative.map((negative, index) => (
+              {exampleNegative.map((negative, index) => (
                 <FeedbackQuote key={index} {...negative} icon="Cross" />
               ))}
             </div>
