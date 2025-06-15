@@ -209,6 +209,7 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       const sdpResponseText: string = await sessionService.getSdpResponseTextFromRealtimeApi(
+        sessionId,
         offer.sdp
       );
       const answer: RTCSessionDescriptionInit = {
