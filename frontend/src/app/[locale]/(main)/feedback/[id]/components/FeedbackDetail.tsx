@@ -22,7 +22,7 @@ import Link from 'next/link';
 import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { getSessionFeedback } from '@/services/SessionService';
+import { getSessionFeedback } from '@/services/client/SessionService';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';

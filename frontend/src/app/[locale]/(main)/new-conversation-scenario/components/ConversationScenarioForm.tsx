@@ -9,7 +9,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ConversationCategory } from '@/interfaces/ConversationCategory';
 import { ConversationScenarioFormState } from '@/interfaces/ConversationScenarioFormState';
 import { ConversationScenario } from '@/interfaces/ConversationScenario';
-import { conversationScenarioService } from '@/services/ConversationScenarioService';
+import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
