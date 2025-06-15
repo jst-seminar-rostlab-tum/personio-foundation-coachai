@@ -277,8 +277,6 @@ def update_session(
         if session_turns:
             transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
 
-        print(f'Generating feedback for session {session.id} with transcripts: {transcripts}')
-
         category = db_session.exec(
             select(ConversationCategory).where(
                 ConversationCategory.id == conversation_scenario.category_id
