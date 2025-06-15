@@ -23,6 +23,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     AppHeader: (await import(`../../messages/${locale}/AppHeader.json`)).default,
     PrivacyPolicy: (await import(`../../messages/${locale}/PrivacyPolicy.json`)).default,
     TermsOfService: (await import(`../../messages/${locale}/TermsOfService.json`)).default,
+    PersonalizationOptions: (await import(`../../messages/${locale}/PersonalizationOptions.json`))
+      .default,
   };
 
   return {
