@@ -26,6 +26,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 import { AdminProps } from '@/interfaces/AdminProps';
+import { updateDailyUserTokenLimit } from '@/services/client/DailyUserTokenLimitService';
 
 export default function Admin({ stats }: AdminProps) {
   const t = useTranslations('Admin');
@@ -52,6 +53,22 @@ export default function Admin({ stats }: AdminProps) {
   ];
   const canLoadMore = visibleUsers < allUsers.length;
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
+  const [tokenLimit, setTokenLimit] = React.useState<number>(100);
+  const [saving, setSaving] = React.useState(false);
+
+  async function handleSaveTokenLimit() {
+    if (!Number.isInteger(tokenLimit) || tokenLimit < 1) {
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateDailyUserTokenLimit(tokenLimit);
+    } catch (error) {
+      console.error({ error });
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div className="max-w-full">
@@ -67,10 +84,9 @@ export default function Admin({ stats }: AdminProps) {
           {t('tokensPerUserLabel')}
         </label>
         <div className="flex gap-2 items-center">
-          <input
+          <Input
             type="number"
             min={1}
-            className="border border-bw-20 rounded px-3 py-2 text-sm w-32"
             value={tokenLimit}
             onChange={(e) => setTokenLimit(Number(e.target.value))}
             disabled={saving}

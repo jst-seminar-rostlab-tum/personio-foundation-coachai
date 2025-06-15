@@ -4,5 +4,6 @@ export interface AdminProps {
     totalTrainings: number;
     totalReviews: number;
     averageScore: number;
+    dailyTokenLimit: number;
   }>;
 }
