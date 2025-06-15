@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class SpeakerEnum(str, Enum):
     user = 'user'
-    ai = 'ai'
+    assistant = 'assistant'
 
 
 class SessionTurn(CamelModel, table=True):

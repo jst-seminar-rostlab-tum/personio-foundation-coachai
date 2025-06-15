@@ -355,7 +355,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[0].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=5000,
             end_offset_ms=10000,
             text='Hi! I’d like to check your schedule today. Are you available at 2 PM?',
@@ -389,7 +389,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=4000,
             end_offset_ms=9000,
             text='Of course. Could you please tell me what issue you are facing?',
@@ -411,7 +411,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=13000,
             end_offset_ms=17000,
             text='Thanks for the info. I will reset your credentials and email you shortly.',
@@ -434,7 +434,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=3000,
             end_offset_ms=7000,
             text='Absolutely. I’ll make sure to include the latest figures.',
@@ -456,7 +456,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=10000,
             end_offset_ms=13500,
             text='Will do. I’ll send you a draft in a couple of hours.',
@@ -479,7 +479,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=2800,
             end_offset_ms=6500,
             text='I’ve finished most of the slides. Just adding the final data now.',
@@ -501,7 +501,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=9500,
             end_offset_ms=12800,
             text='Understood. I’ll send it for your review by 3 PM.',
@@ -524,7 +524,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=3200,
             end_offset_ms=6000,
             text='Yes, I submitted it yesterday. Waiting for approval.',
@@ -546,7 +546,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=9000,
             end_offset_ms=12500,
             text='Of course. I’ll update the team and share the status report tomorrow.',
@@ -569,7 +569,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
             text='Apologies for the delay. I’ll finalize it by this afternoon.',
@@ -591,7 +591,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
             text='Understood. I’ll share it with you before the end of the day.',
@@ -614,7 +614,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
             text='Apologies for the delay. I’ll finalize it by this afternoon.',
@@ -636,7 +636,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
             text='Understood. I’ll share it with you before the end of the day.',
@@ -659,7 +659,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
             text='Apologies for the delay. I’ll finalize it by this afternoon.',
@@ -681,7 +681,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
             text='Understood. I’ll share it with you before the end of the day.',
@@ -695,7 +695,7 @@ def get_dummy_session_turns(
 def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> list[Session]:
     return [
         Session(
-            id=uuid4(),
+            id=UUID('4e5174f9-78da-428c-bb9f-4556a14163cc'),
             scenario_id=conversation_scenarios[0].id,
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),

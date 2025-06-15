@@ -93,17 +93,22 @@ def get_session_by_id(
         ),  # mocked
     )
 
+    # Fetch the associated conversation turns and their audio URIs
+    session_turns = db_session.exec(
+        select(SessionTurn).where(SessionTurn.session_id == session_id)
+    ).all()
+
+    if session_turns:
+        session_response.audio_uris = [turn.audio_uri for turn in session_turns]
+
     # Fetch the asociated Feedback for the session
     feedback = db_session.exec(
         select(SessionFeedback).where(SessionFeedback.session_id == session_id)
     ).first()
 
-    if not feedback:
-        raise HTTPException(status_code=404, detail='Session feedback not found')
-
-    if feedback.status == FeedbackStatusEnum.pending:
+    if not feedback or feedback.status == FeedbackStatusEnum.pending:
         raise HTTPException(status_code=202, detail='Session feedback in progress.')
-    elif feedback.status == FeedbackStatusEnum.failed:
+    elif feedback and feedback.status == FeedbackStatusEnum.failed:
         raise HTTPException(status_code=500, detail='Session feedback failed.')
     else:
         session_response.feedback = SessionFeedbackMetrics(
@@ -119,14 +124,6 @@ def get_session_by_id(
             example_negative=feedback.example_negative,  # type: ignore
             recommendations=feedback.recommendations,  # type: ignore
         )
-
-    # Fetch the associated conversation turns and their audio URIs
-    session_turns = db_session.exec(
-        select(SessionTurn).where(SessionTurn.session_id == session_id)
-    ).all()
-
-    if session_turns:
-        session_response.audio_uris = [turn.audio_uri for turn in session_turns]
 
     return session_response
 
