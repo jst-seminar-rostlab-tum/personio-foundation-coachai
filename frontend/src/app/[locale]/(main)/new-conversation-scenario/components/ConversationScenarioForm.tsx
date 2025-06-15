@@ -43,13 +43,13 @@ export default function ConversationScenarioForm() {
       const response = await conversationScenarioService.getConversationCategories();
       setCategories((prevCategories) =>
         prevCategories.map((cat) => {
-          const match = response.data.find((f) => f.id === cat.id);
+          const match = response.data.find((f: ConversationCategory) => f.id === cat.id);
           return match ? { ...cat, defaultContext: match.defaultContext } : cat;
         })
       );
     }
     fetchCategories();
-  }, [categories]);
+  }, []);
 
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
