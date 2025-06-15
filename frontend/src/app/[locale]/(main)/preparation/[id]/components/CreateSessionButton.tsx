@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { sessionService } from '@/services/Session';
+import { sessionService } from '@/services/client/Session';
 import { Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { CreateSessionButtonProps } from '@/interfaces/CreateSessionButtonProps';
