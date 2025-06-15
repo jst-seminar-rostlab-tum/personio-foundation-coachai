@@ -11,7 +11,6 @@ from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
-from app.models.review import Review
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import (
     Session,
@@ -335,23 +334,9 @@ def delete_sessions_by_user(
     # Print all audio_uri values from SessionTurn for each session
     for conversation_scenario in conversation_scenarios:
         count_of_deleted_sessions += len(conversation_scenario.sessions)
-
         for session in conversation_scenario.sessions:
             for session_turn in session.session_turns:
                 audios.append(session_turn.audio_uri)
-            # Delete all ratings associated with this session
-            ratings = db_session.exec(
-                select(SessionFeedback).where(SessionFeedback.session_id == session.id)
-            ).all()
-            for rating in ratings:
-                db_session.delete(rating)
-                # db_session.commit()
-
-            # Delete all session feedback (reviews) associated with this session
-            reviews = db_session.exec(select(Review).where(Review.session_id == session.id)).all()
-            for review in reviews:
-                db_session.delete(review)
-                # db_session.commit()
             db_session.delete(session)
         db_session.commit()
 
@@ -372,21 +357,6 @@ def delete_session(
     session = db_session.exec(select(Session).where(Session.id == session_id)).first()
     if not session:
         raise HTTPException(status_code=404, detail='Session not found')
-
-    # Delete all ratings associated with this session
-    ratings = db_session.exec(
-        select(SessionFeedback).where(SessionFeedback.session_id == session_id)
-    ).all()
-    for rating in ratings:
-        db_session.delete(rating)
-        db_session.commit()
-
-    # Delete all session feedback (reviews) associated with this session
-    reviews = db_session.exec(select(Review).where(Review.session_id == session_id)).all()
-    for review in reviews:
-        db_session.delete(review)
-        db_session.commit()
-
     db_session.delete(session)
     db_session.commit()
     return {'message': 'Session deleted successfully'}
