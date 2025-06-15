@@ -14,7 +14,8 @@ import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/
 import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services/client/AuthService';
+import { api } from '@/services/ApiClient';
+import { authService } from '@/services/AuthService';
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
@@ -59,7 +60,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
         password: signUpFormData.password,
         code: form.getValues('code'),
       };
-      await authService.createUser(data);
+      await authService.createUser(api, data);
       setIsLoading(false);
       router.push(`/confirm?email=${encodeURIComponent(signUpFormData.email)}`);
     } catch (err) {

@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
+import { api } from '@/services/ApiClient';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { ConversationScenarioPreparation } from '@/interfaces/ConversationScenario';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';
@@ -20,7 +21,7 @@ export default function PreparationContent() {
 
   const getTrainingPreparation = useCallback(async (id: string) => {
     try {
-      const response = await conversationScenarioService.getPreparation(id);
+      const response = await conversationScenarioService.getPreparation(api, id);
 
       if (response.status === 202) {
         setTimeout(() => {

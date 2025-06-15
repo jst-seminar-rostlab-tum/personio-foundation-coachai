@@ -22,7 +22,8 @@ import Link from 'next/link';
 import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { getSessionFeedback } from '@/services/client/SessionService';
+import { api } from '@/services/ApiClient';
+import { getSessionFeedback } from '@/services/SessionService';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
@@ -34,7 +35,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
   const getFeedbackDetail = useCallback(
     async (id: string) => {
       try {
-        const response = await getSessionFeedback(id);
+        const response = await getSessionFeedback(api, id);
         if (response.status === 202) {
           setTimeout(() => {
             getFeedbackDetail(id);

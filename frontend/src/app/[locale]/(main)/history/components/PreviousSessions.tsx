@@ -4,7 +4,7 @@ import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { clearAllSessions } from '@/services/client/SessionService';
+import { clearAllSessions, getPaginatedSessions } from '@/services/SessionService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,8 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 import { SessionPaginated, SessionFromPagination } from '@/interfaces/Session';
-import { api } from '@/services/client/Api';
-import { getPaginatedSessions } from '@/services/server/SessionService';
+import { api } from '@/services/ApiClient';
 
 export default function PreviousSessions({
   limit,
@@ -58,7 +57,7 @@ export default function PreviousSessions({
   const handleDeleteAll = async () => {
     try {
       setIsDeleting(true);
-      await clearAllSessions();
+      await clearAllSessions(api);
       setVisibleCount(0);
     } catch (e) {
       console.error(e);

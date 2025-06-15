@@ -1,7 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { sessionService } from '@/services/client/SessionService';
+import { api } from '@/services/ApiClient';
+import { sessionService } from '@/services/SessionService';
 import { Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { CreateSessionButtonProps } from '@/interfaces/CreateSessionButtonProps';
@@ -13,7 +14,7 @@ export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) =>
 
   const handleCreateSession = async () => {
     try {
-      const { data } = await sessionService.createSession(scenarioId);
+      const { data } = await sessionService.createSession(api, scenarioId);
       router.push(`/simulation/${data.id}`);
     } catch (error) {
       console.error(error);

@@ -9,7 +9,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { ConversationCategory } from '@/interfaces/ConversationCategory';
 import { ConversationScenarioFormState } from '@/interfaces/ConversationScenarioFormState';
 import { ConversationScenario } from '@/interfaces/ConversationScenario';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
+import { api } from '@/services/ApiClient';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
@@ -123,7 +124,7 @@ export default function ConversationScenarioForm() {
     };
 
     try {
-      const { data } = await conversationScenarioService.createConversationScenario(scenario);
+      const { data } = await conversationScenarioService.createConversationScenario(api, scenario);
       router.push(`/preparation/${data.scenarioId}`);
     } catch (error) {
       console.error('Error:', error);

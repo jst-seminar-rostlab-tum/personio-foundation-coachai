@@ -2,7 +2,8 @@
 
 import { Pause, Play, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { sessionService } from '@/services/client/SessionService';
+import { api } from '@/services/ApiClient';
+import { sessionService } from '@/services/SessionService';
 import { SessionStatus } from '@/interfaces/Session';
 import { SimulationFooterProps } from '@/interfaces/SimulationFooterProps';
 import { useRouter } from 'next/navigation';
@@ -16,7 +17,7 @@ export default function SimulationFooter({
 
   const handleSessionEnd = async () => {
     try {
-      const { data } = await sessionService.updateSession(sessionId, {
+      const { data } = await sessionService.updateSession(api, sessionId, {
         status: SessionStatus.COMPLETED,
       });
       router.push(`/feedback/${data.id}`);
