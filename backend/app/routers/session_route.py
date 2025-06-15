@@ -156,17 +156,28 @@ def get_sessions(
     session_query = (
         select(Session)
         .where(col(Session.scenario_id).in_(scenario_ids))
-        .order_by(col(Session.ended_at).desc())
+        .order_by(col(Session.created_at).desc())
     )
 
     total_sessions = len(db_session.exec(session_query).all())
     sessions = db_session.exec(session_query.offset((page - 1) * page_size).limit(page_size)).all()
 
-    session_list = [
-        SessionItem(
+    session_list = []
+    for sess in sessions:
+        conversation_scenario = db_session.exec(
+            select(ConversationScenario).where(ConversationScenario.id == sess.scenario_id)
+        ).first()
+
+        conversation_category = db_session.exec(
+            select(ConversationCategory).where(
+                ConversationCategory.id == conversation_scenario.category_id
+            )
+        ).first()
+
+        item = SessionItem(
             session_id=sess.id,
-            title='Negotiating Job Offers',  # mocked
-            summary='Practice salary negotiation with a potential candidate',  # mocked
+            title=conversation_category.name,
+            summary=conversation_category.name,  # TODO: add summary to conversation_category
             status=sess.status,
             date=sess.ended_at,
             score=82,  # mocked
@@ -177,8 +188,7 @@ def get_sessions(
                 clarity=70,
             ),  # mocked
         )
-        for sess in sessions
-    ]
+        session_list.append(item)
 
     return PaginatedSessionsResponse(
         page=page,
