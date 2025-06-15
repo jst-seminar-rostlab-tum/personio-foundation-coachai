@@ -5,6 +5,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.database import get_db_session
+from app.dependencies import require_admin
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
 
 router = APIRouter(prefix='/app-config', tags=['App Config'])
@@ -22,7 +23,7 @@ def get_app_configs(
     return list(app_configs)
 
 
-@router.post('/', response_model=AppConfigRead)
+@router.post('/', response_model=AppConfigRead, dependencies=[Depends(require_admin)])
 def create_app_config(
     app_config: AppConfigCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> AppConfig:
@@ -50,7 +51,7 @@ def create_app_config(
     return db_app_config
 
 
-@router.put('/', response_model=AppConfigRead)
+@router.put('/', response_model=AppConfigRead, dependencies=[Depends(require_admin)])
 def update_app_config(
     updated_data: AppConfigCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -81,7 +82,7 @@ def update_app_config(
     return app_config
 
 
-@router.patch('/', response_model=list[AppConfigRead])
+@router.patch('/', response_model=list[AppConfigRead], dependencies=[Depends(require_admin)])
 def patch_app_config(
     updated_data: list[dict],  # Expect partial data for PATCH
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -130,7 +131,7 @@ def patch_app_config(
     return list(updated_configs)
 
 
-@router.delete('/{key}', response_model=dict)
+@router.delete('/{key}', response_model=dict, dependencies=[Depends(require_admin)])
 def delete_app_config(key: str, db_session: Annotated[DBSession, Depends(get_db_session)]) -> dict:
     """
     Delete an app configuration.

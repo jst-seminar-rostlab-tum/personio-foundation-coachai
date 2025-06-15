@@ -65,5 +65,9 @@ class ScenarioPreparationRead(CamelModel):
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: ScenarioPreparationStatus
+    category_name: Optional[str] = None
+    context: Optional[str] = None
+    goal: Optional[str] = None
+    other_party: Optional[str] = None
     created_at: datetime
     updated_at: datetime

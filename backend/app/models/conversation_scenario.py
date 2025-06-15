@@ -9,10 +9,10 @@ from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import Field, Relationship
 
 from app.models.camel_case import CamelModel
+from app.models.language import LanguageCode
 
 if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
-    from app.models.difficulty_level import DifficultyLevel
     from app.models.scenario_preparation import ScenarioPreparation
     from app.models.session import Session
     from app.models.user_profile import UserProfile
@@ -25,16 +25,23 @@ class ConversationScenarioStatus(str, Enum):
     archived = 'archived'
 
 
+class DifficultyLevel(str, Enum):
+    easy = 'easy'
+    medium = 'medium'
+    hard = 'hard'
+
+
 # Database model
 class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
-    category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
+    category_id: Optional[str] = Field(default=None, foreign_key='conversationcategory.id')
     custom_category_label: Optional[str] = None
+    language_code: LanguageCode = Field(default=LanguageCode.en)
     context: str
     goal: str
     other_party: str
-    difficulty_id: UUID = Field(default=None, foreign_key='difficultylevel.id')
+    difficulty_level: DifficultyLevel = Field(default=DifficultyLevel.easy)
     tone: Optional[str] = None
     complexity: Optional[str] = None
     status: ConversationScenarioStatus = Field(default=ConversationScenarioStatus.draft)
@@ -50,9 +57,6 @@ class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a d
         back_populates='scenario', cascade_delete=True
     )
     user_profile: Optional['UserProfile'] = Relationship(back_populates='conversation_scenarios')
-    difficulty_level: Optional['DifficultyLevel'] = Relationship(
-        back_populates='conversation_scenarios'
-    )
 
 
 @event.listens_for(ConversationScenario, 'before_update')
@@ -64,15 +68,15 @@ def update_timestamp(
 
 # Schema for creating a new ConversationScenario
 class ConversationScenarioCreate(CamelModel):
-    user_id: UUID
-    category_id: Optional[UUID] = None
+    category_id: Optional[str] = None
     custom_category_label: Optional[str] = None
     context: str
     goal: str
     other_party: str
-    difficulty_id: UUID
+    difficulty_level: DifficultyLevel
     tone: Optional[str] = None
     complexity: Optional[str] = None
+    language_code: LanguageCode = LanguageCode.en
     status: ConversationScenarioStatus = ConversationScenarioStatus.draft
 
 
@@ -80,14 +84,15 @@ class ConversationScenarioCreate(CamelModel):
 class ConversationScenarioRead(CamelModel):
     id: UUID
     user_id: UUID
-    category_id: Optional[UUID]
+    category_id: Optional[str]
     custom_category_label: Optional[str]
     context: str
     goal: str
     other_party: str
-    difficulty_id: UUID
+    difficulty_level: DifficultyLevel
     tone: Optional[str]
     complexity: Optional[str]
+    language_code: LanguageCode
     status: ConversationScenarioStatus
     created_at: datetime
     updated_at: datetime

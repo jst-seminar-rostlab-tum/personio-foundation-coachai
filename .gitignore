@@ -1,4 +1,8 @@
 /.vscode/
 /.ruff_cache/
 /.idea/
-/.env
+.env
+.env.*
+!.env.example
+*.crt
+*.pem
