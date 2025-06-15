@@ -63,13 +63,11 @@ export default function OnboardingPageComponent() {
       await UserProfileService.updateUserProfile({
         professionalRole: selectedRole,
         goals: selectedGoals,
-        /*
         confidenceScores: [
           { confidenceArea: 'giving_difficult_feedback', score: difficulty[0] },
           { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
           { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
         ],
-        */
       });
     } catch (error) {
       console.error('Error updating user profile:', error);
