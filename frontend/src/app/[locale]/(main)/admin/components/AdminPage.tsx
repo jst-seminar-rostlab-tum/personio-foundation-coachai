@@ -53,8 +53,12 @@ export default function Admin({ stats }: AdminProps) {
   ];
   const canLoadMore = visibleUsers < allUsers.length;
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
-  const [tokenLimit, setTokenLimit] = React.useState<number>(100);
+  const [tokenLimit, setTokenLimit] = React.useState<number>(statsResponse.dailyTokenLimit);
   const [saving, setSaving] = React.useState(false);
+
+  React.useEffect(() => {
+    setTokenLimit(statsResponse.dailyTokenLimit);
+  }, [statsResponse.dailyTokenLimit]);
 
   async function handleSaveTokenLimit() {
     if (!Number.isInteger(tokenLimit) || tokenLimit < 1) {
