@@ -52,14 +52,14 @@ This project uses ESLint to enforce linting rules and Prettier to automatically 
 
 ## Deployment
 
-The application can be deployed using Docker:
+The application can be deployed by using Docker:
 
 ```bash
 docker build -t frontend .
 docker run -p 3000:3000 frontend
 ```
 
-Or using Docker Compose:
+Or by using Docker Compose:
 
 ```bash
 docker compose up frontend
