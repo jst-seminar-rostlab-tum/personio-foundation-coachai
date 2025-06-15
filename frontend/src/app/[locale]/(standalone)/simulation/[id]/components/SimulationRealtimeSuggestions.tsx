@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronUp } from 'lucide-react';
 
 export default function SimulationRealtimeSuggestions() {
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -29,31 +29,32 @@ export default function SimulationRealtimeSuggestions() {
   return (
     <>
       <div
-        className={`flex items-center justify-start gap-2 px-4 py-4 bg-white border-b border-gray-200 hover:cursor-pointer group relative z-20 ${
-          showSuggestions ? 'border-t' : ''
-        }`}
+        className={`flex items-center justify-start gap-2 px-4 md:px-6 py-4 bg-white border-y border-bw-10 hover:cursor-pointer group relative z-20`}
         onClick={() => setShowSuggestions((prev) => !prev)}
       >
-        {showSuggestions ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+        <ChevronUp
+          className={`w-5 h-5 transition-transform duration-600 ${showSuggestions ? 'rotate-180' : ''}`}
+        />
         <span className="font-medium text-font-dark text-sm group-hover:underline">
           Real-time Suggestions
         </span>
       </div>
-      {showSuggestions && (
-        <div className="w-full max-h-[35vh] flex flex-col overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] p-4 border-b border-background-light">
-          <ul className="space-y-3 w-full">
+      <div
+        className={`w-full overflow-hidden transition-all duration-600 ease-in-out ${
+          showSuggestions ? 'max-h-[45%]' : 'max-h-0'
+        }`}
+      >
+        <div className="w-full flex flex-col overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] p-6 border-b border-background-light">
+          <ul className="flex flex-col gap-4 w-full">
             {suggestions.map((suggestion, idx) => (
-              <li
-                key={idx}
-                className="bg-background-light rounded-lg border border-bw-20 px-4 py-3"
-              >
+              <li key={idx} className="bg-background-light rounded-lg border border-bw-20 p-4">
                 <div className="font-semibold text-font-dark mb-1">{suggestion.title}</div>
-                <div className=" text-sm text-font-dark leading-snug">{suggestion.message}</div>
+                <div className="text-sm text-font-dark leading-snug">{suggestion.message}</div>
               </li>
             ))}
           </ul>
         </div>
-      )}
+      </div>
     </>
   );
 }
