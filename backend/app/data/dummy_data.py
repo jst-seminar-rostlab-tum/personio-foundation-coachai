@@ -328,7 +328,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[0].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=5000,
             end_offset_ms=10000,
             text='Hi! I’d like to check your schedule today. Are you available at 2 PM?',
@@ -362,7 +362,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=4000,
             end_offset_ms=9000,
             text='Of course. Could you please tell me what issue you are facing?',
@@ -384,7 +384,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=13000,
             end_offset_ms=17000,
             text='Thanks for the info. I will reset your credentials and email you shortly.',
@@ -398,7 +398,7 @@ def get_dummy_session_turns(
 def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> list[Session]:
     return [
         Session(
-            id=uuid4(),
+            id=UUID('4e5174f9-78da-428c-bb9f-4556a14163cc'),
             scenario_id=conversation_scenarios[0].id,
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
@@ -427,7 +427,7 @@ def get_dummy_session_feedback(
 ) -> list[SessionFeedback]:
     return [
         SessionFeedback(
-            id=uuid4(),
+            id=UUID('2f93f612-f2f1-4e12-bf45-f854957fb90f'),
             session_id=sessions[0].id,  # Link to the first session
             scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
@@ -491,12 +491,12 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.pending,  # Use the enum for status
+            status=FeedbackStatusEnum.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         SessionFeedback(
-            id=uuid4(),
+            id=UUID('4fa85f64-5717-4562-b3fc-2c963f66faa6'),
             session_id=sessions[1].id,  # Link to the second session
             scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},

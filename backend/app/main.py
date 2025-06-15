@@ -13,6 +13,7 @@ from app.routers import (
     conversation_category_route,
     conversation_scenario_route,
     rating_route,
+    realtime_session_route,
     review_route,
     scenario_preparation_route,
     session_feedback_route,
@@ -55,6 +56,7 @@ app.include_router(user_confidence_score_route.router)
 app.include_router(app_config_route.router)
 app.include_router(admin_dashboard_stats_route.router)
 app.include_router(review_route.router)
+app.include_router(realtime_session_route.router)
 
 
 # Create database tables on startup
