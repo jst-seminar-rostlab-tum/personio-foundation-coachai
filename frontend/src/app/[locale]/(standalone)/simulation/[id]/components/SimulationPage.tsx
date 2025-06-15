@@ -3,9 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { SimulationPageComponentProps } from '@/interfaces/SimulationPageComponentProps';
 import { useRouter } from 'next/navigation';
-import { createSessionTurn } from '@/services/SessionService';
-import { sessionService } from '@/services/Session';
 import { SessionStatus } from '@/interfaces/Session';
+import { sessionService } from '@/services/client/SessionService';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
@@ -156,7 +155,15 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
           }
 
           if (parsed.type === 'conversation.item.input_audio_transcription.completed') {
-            await createSessionTurn(sessionId, 'user', parsed.transcript, '', '', 0, 0);
+            await sessionService.createSessionTurn(
+              sessionId,
+              'user',
+              parsed.transcript,
+              '',
+              '',
+              0,
+              0
+            );
           }
 
           if (parsed.type === 'response.audio_transcript.delta') {
@@ -176,7 +183,15 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
           }
 
           if (parsed.type === 'response.audio_transcript.done') {
-            await createSessionTurn(sessionId, 'assistant', parsed.transcript, '', '', 0, 0);
+            await sessionService.createSessionTurn(
+              sessionId,
+              'assistant',
+              parsed.transcript,
+              '',
+              '',
+              0,
+              0
+            );
           }
         } catch {
           // Not JSON, just log

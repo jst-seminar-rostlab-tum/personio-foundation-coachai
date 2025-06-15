@@ -1,3 +1,4 @@
+import { Session } from '@/interfaces/Session';
 import { api } from './Api';
 
 export const getSessionFeedback = async (sessionId: string) => {
@@ -20,11 +21,29 @@ export const clearAllSessions = async () => {
   }
 };
 
-export const SessionService = {
-  clearAllSessions,
+const createSession = async (scenarioId: string) => {
+  try {
+    const response = await api.post<Session>('/session/', {
+      scenarioId,
+    });
+    return response;
+  } catch (error) {
+    console.error('Error creating conversation scenario:', error);
+    throw error;
+  }
 };
 
-export const createSessionTurn = async (
+const updateSession = async (sessionId: string, session: Partial<Session>) => {
+  try {
+    const response = await api.put<Session>(`/session/${sessionId}/`, session);
+    return response;
+  } catch (error) {
+    console.error('Error updating session:', error);
+    throw error;
+  }
+};
+
+const createSessionTurn = async (
   sessionId: string,
   speaker: string,
   text: string,
@@ -48,4 +67,12 @@ export const createSessionTurn = async (
     console.error(error);
     throw error;
   }
+};
+
+export const sessionService = {
+  clearAllSessions,
+  createSession,
+  updateSession,
+  getSessionFeedback,
+  createSessionTurn,
 };

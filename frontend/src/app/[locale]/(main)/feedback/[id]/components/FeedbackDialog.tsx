@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Rating, RatingButton } from '@/components/ui/Rating';
 import { Textarea } from '@/components/ui/Textarea';
-import { createFeedback } from '@/services/FeedbackService';
+import { createFeedback } from '@/services/client/FeedbackService';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
