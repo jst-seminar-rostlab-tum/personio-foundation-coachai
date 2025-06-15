@@ -109,19 +109,19 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(len(feedback.recommendations), 3)
         self.assertEqual(feedback.recommendations[0]['heading'], 'Practice the STAR method')
         self.assertEqual(
-            feedback.recommendations[0]['text'],
+            feedback.recommendations[0]['feedback'],
             'When giving feedback, use the Situation, Task, Action, '
             'Result framework to provide more concrete examples.',
         )
         self.assertEqual(feedback.recommendations[1]['heading'], 'Ask more diagnostic questions')
         self.assertEqual(
-            feedback.recommendations[1]['text'],
+            feedback.recommendations[1]['feedback'],
             'Spend more time understanding root causes before moving to '
             'solutions. This builds empathy and leads to more effective outcomes.',
         )
         self.assertEqual(feedback.recommendations[2]['heading'], 'Define clear next steps')
         self.assertEqual(
-            feedback.recommendations[2]['text'],
+            feedback.recommendations[2]['feedback'],
             'End feedback conversations with agreed-upon action'
             ' items, timelines, and follow-up plans.',
         )
@@ -171,7 +171,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(len(feedback.example_positive), 0)
         self.assertEqual(len(feedback.recommendations), 1)
         self.assertEqual(feedback.recommendations[0]['heading'], 'Some heading')
-        self.assertEqual(feedback.recommendations[0]['text'], 'Some text')
+        self.assertEqual(feedback.recommendations[0]['recommendation'], 'Some text')
 
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
