@@ -1,6 +1,7 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
+import { PagesProps } from '@/interfaces/PagesProps';
 import SimulationPageComponent from './components/SimulationPage';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -8,6 +9,8 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
   return generateDynamicMetadata(locale, '/simulation/[id]', true);
 }
 
-export default function SimulationPage() {
-  return <SimulationPageComponent />;
+export default async function SimulationPage(props: PagesProps) {
+  const { id } = await props.params;
+
+  return <SimulationPageComponent sessionId={id} />;
 }
