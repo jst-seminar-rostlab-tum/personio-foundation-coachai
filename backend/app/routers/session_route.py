@@ -269,12 +269,13 @@ def update_session(
         session_turns = db_session.exec(
             select(SessionTurn).where(SessionTurn.session_id == session.id)
         ).all()
-        if not session_turns:
-            raise HTTPException(
-                status_code=400, detail='Session must have at least one session turn'
-            )
 
-        transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
+        transcripts = None
+
+        if session_turns:
+            transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
+
+        print(f'Generating feedback for session {session.id} with transcripts: {transcripts}')
 
         category = db_session.exec(
             select(ConversationCategory).where(
@@ -306,9 +307,6 @@ def update_session(
             example_request=request,
             db_session=db_session,
         )
-
-        # Optionally, mark as "pending_feedback"
-        session.status = SessionStatus.started  # or define a 'pending_feedback' status
 
     db_session.add(session)
     db_session.commit()

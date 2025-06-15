@@ -380,6 +380,186 @@ def get_dummy_session_turns(
             ai_emotion='helpful',
             created_at=datetime.now(UTC),
         ),
+        # Session 3
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[2].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=0,
+            end_offset_ms=3000,
+            text='Can you prepare the sales report by end of day?',
+            audio_uri='https://example.com/audio/manager_request_report.mp3',
+            ai_emotion='attentive',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[2].id,
+            speaker=SpeakerEnum.ai,
+            start_offset_ms=3000,
+            end_offset_ms=7000,
+            text='Absolutely. I’ll make sure to include the latest figures.',
+            audio_uri='https://example.com/audio/employee_confirm_report.mp3',
+            ai_emotion='motivated',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[2].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=7000,
+            end_offset_ms=10000,
+            text='Good. Please double-check the Q2 numbers.',
+            audio_uri='https://example.com/audio/manager_followup_q2.mp3',
+            ai_emotion='firm',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[2].id,
+            speaker=SpeakerEnum.ai,
+            start_offset_ms=10000,
+            end_offset_ms=13500,
+            text='Will do. I’ll send you a draft in a couple of hours.',
+            audio_uri='https://example.com/audio/employee_confirm_draft.mp3',
+            ai_emotion='reliable',
+            created_at=datetime.now(UTC),
+        ),
+        # Session 4
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[3].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=0,
+            end_offset_ms=2800,
+            text='How’s the client presentation coming along?',
+            audio_uri='https://example.com/audio/manager_check_presentation.mp3',
+            ai_emotion='inquisitive',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[3].id,
+            speaker=SpeakerEnum.ai,
+            start_offset_ms=2800,
+            end_offset_ms=6500,
+            text='I’ve finished most of the slides. Just adding the final data now.',
+            audio_uri='https://example.com/audio/employee_update_presentation.mp3',
+            ai_emotion='focused',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[3].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=6500,
+            end_offset_ms=9500,
+            text='Great. Make sure the figures are up-to-date.',
+            audio_uri='https://example.com/audio/manager_instruction_figures.mp3',
+            ai_emotion='directive',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[3].id,
+            speaker=SpeakerEnum.ai,
+            start_offset_ms=9500,
+            end_offset_ms=12800,
+            text='Understood. I’ll send it for your review by 3 PM.',
+            audio_uri='https://example.com/audio/employee_confirm_review.mp3',
+            ai_emotion='proactive',
+            created_at=datetime.now(UTC),
+        ),
+        # Session 5
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[4].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=0,
+            end_offset_ms=3200,
+            text='Did you submit your leave request for next week?',
+            audio_uri='https://example.com/audio/manager_ask_leave.mp3',
+            ai_emotion='neutral',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[4].id,
+            speaker=SpeakerEnum.ai,
+            start_offset_ms=3200,
+            end_offset_ms=6000,
+            text='Yes, I submitted it yesterday. Waiting for approval.',
+            audio_uri='https://example.com/audio/employee_confirm_leave.mp3',
+            ai_emotion='hopeful',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[4].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=6000,
+            end_offset_ms=9000,
+            text='Alright. Make sure all your tasks are handed over before you go.',
+            audio_uri='https://example.com/audio/manager_reminder_tasks.mp3',
+            ai_emotion='responsible',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[4].id,
+            speaker=SpeakerEnum.ai,
+            start_offset_ms=9000,
+            end_offset_ms=12500,
+            text='Of course. I’ll update the team and share the status report tomorrow.',
+            audio_uri='https://example.com/audio/employee_confirm_handover.mp3',
+            ai_emotion='assuring',
+            created_at=datetime.now(UTC),
+        ),
+        # Session 6
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[5].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=0,
+            end_offset_ms=3500,
+            text='I noticed the budget forecast is still pending. Any update?',
+            audio_uri='https://example.com/audio/manager_check_budget.mp3',
+            ai_emotion='concerned',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[5].id,
+            speaker=SpeakerEnum.ai,
+            start_offset_ms=3500,
+            end_offset_ms=7000,
+            text='Apologies for the delay. I’ll finalize it by this afternoon.',
+            audio_uri='https://example.com/audio/employee_apology_budget.mp3',
+            ai_emotion='apologetic',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[5].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=7000,
+            end_offset_ms=10500,
+            text='Alright, please prioritize it. We’re presenting it tomorrow.',
+            audio_uri='https://example.com/audio/manager_instruction_prioritize.mp3',
+            ai_emotion='urgent',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[5].id,
+            speaker=SpeakerEnum.ai,
+            start_offset_ms=10500,
+            end_offset_ms=13800,
+            text='Understood. I’ll share it with you before the end of the day.',
+            audio_uri='https://example.com/audio/employee_confirm_budget.mp3',
+            ai_emotion='committed',
+            created_at=datetime.now(UTC),
+        ),
     ]
 
 
@@ -403,6 +583,50 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
             ai_persona={'persona_name': 'AI Mentor', 'persona_role': 'Guide'},
+            status=SessionStatus.started,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        Session(
+            id=uuid4(),
+            scenario_id=conversation_scenarios[1].id,
+            scheduled_at=datetime.now(UTC),
+            started_at=datetime.now(UTC),
+            ended_at=datetime.now(UTC),
+            ai_persona={'persona_name': 'AI Mentor', 'persona_role': 'Guide'},
+            status=SessionStatus.started,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        Session(
+            id=uuid4(),
+            scenario_id=conversation_scenarios[1].id,
+            scheduled_at=datetime.now(UTC),
+            started_at=datetime.now(UTC),
+            ended_at=datetime.now(UTC),
+            ai_persona={'persona_name': 'AI Mentor', 'persona_role': 'Guide'},
+            status=SessionStatus.started,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        Session(
+            id=uuid4(),
+            scenario_id=conversation_scenarios[0].id,
+            scheduled_at=datetime.now(UTC),
+            started_at=datetime.now(UTC),
+            ended_at=datetime.now(UTC),
+            ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
+            status=SessionStatus.started,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        Session(
+            id=uuid4(),
+            scenario_id=conversation_scenarios[0].id,
+            scheduled_at=datetime.now(UTC),
+            started_at=datetime.now(UTC),
+            ended_at=datetime.now(UTC),
+            ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
             status=SessionStatus.started,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -479,7 +703,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.pending,  # Use the enum for status
+            status=FeedbackStatusEnum.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -548,7 +772,283 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.pending,  # Use the enum for status
+            status=FeedbackStatusEnum.completed,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        SessionFeedback(
+            id=uuid4(),
+            session_id=sessions[2].id,  # Link to the second session
+            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
+            tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
+            overall_score=90,
+            transcript_uri='https://example.com/transcripts/session2.txt',
+            speak_time_percent=55.0,
+            questions_asked=7,
+            session_length_s=2000,
+            goals_achieved=4,
+            example_positive=[
+                {
+                    'heading': 'Clear framing of the issue',
+                    'feedback': (
+                        'You effectively communicated the specific issue (missed deadlines) and its'
+                        ' impact on the team without being accusatory.'
+                    ),
+                    'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        'causing our team to fall behind on the overall project timeline.'
+                    ),
+                }
+            ],
+            example_negative=[
+                {
+                    'heading': 'Lack of specific examples',
+                    'feedback': (
+                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
+                    ),
+                    'quote': (
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
+                    ),
+                    'improved_quote': (
+                        'Ensure deadlines are met by setting clear expectations and providing '
+                        'specific examples of missed deadlines.'
+                    ),
+                }
+            ],
+            recommendations=[
+                {
+                    'heading': 'Practice the STAR method',
+                    'recommendation': (
+                        'When giving feedback, use the Situation, Task, Action, Result framework to'
+                        ' provide more concrete examples.'
+                    ),
+                },
+                {
+                    'heading': 'Ask more diagnostic questions',
+                    'recommendation': (
+                        'Spend more time understanding root causes before moving to solutions. This'
+                        ' builds empathy and leads to more effective outcomes.'
+                    ),
+                },
+                {
+                    'heading': 'Define next steps',
+                    'recommendation': (
+                        'End feedback conversations with agreed-upon actions to ensure clarity and '
+                        'accountability.'
+                    ),
+                },
+            ],
+            status=FeedbackStatusEnum.completed,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        SessionFeedback(
+            id=uuid4(),
+            session_id=sessions[3].id,  # Link to the second session
+            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
+            tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
+            overall_score=90,
+            transcript_uri='https://example.com/transcripts/session2.txt',
+            speak_time_percent=55.0,
+            questions_asked=7,
+            session_length_s=2000,
+            goals_achieved=4,
+            example_positive=[
+                {
+                    'heading': 'Clear framing of the issue',
+                    'feedback': (
+                        'You effectively communicated the specific issue (missed deadlines) and its'
+                        ' impact on the team without being accusatory.'
+                    ),
+                    'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        'causing our team to fall behind on the overall project timeline.'
+                    ),
+                }
+            ],
+            example_negative=[
+                {
+                    'heading': 'Lack of specific examples',
+                    'feedback': (
+                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
+                    ),
+                    'quote': (
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
+                    ),
+                    'improved_quote': (
+                        'Ensure deadlines are met by setting clear expectations and providing '
+                        'specific examples of missed deadlines.'
+                    ),
+                }
+            ],
+            recommendations=[
+                {
+                    'heading': 'Practice the STAR method',
+                    'recommendation': (
+                        'When giving feedback, use the Situation, Task, Action, Result framework to'
+                        ' provide more concrete examples.'
+                    ),
+                },
+                {
+                    'heading': 'Ask more diagnostic questions',
+                    'recommendation': (
+                        'Spend more time understanding root causes before moving to solutions. This'
+                        ' builds empathy and leads to more effective outcomes.'
+                    ),
+                },
+                {
+                    'heading': 'Define next steps',
+                    'recommendation': (
+                        'End feedback conversations with agreed-upon actions to ensure clarity and '
+                        'accountability.'
+                    ),
+                },
+            ],
+            status=FeedbackStatusEnum.completed,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        SessionFeedback(
+            id=uuid4(),
+            session_id=sessions[4].id,  # Link to the first session
+            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
+            overall_score=85,
+            transcript_uri='https://example.com/transcripts/session1.txt',
+            speak_time_percent=60.5,
+            questions_asked=5,
+            session_length_s=1800,
+            goals_achieved=3,
+            example_positive=[
+                {
+                    'heading': 'Clear framing of the issue',
+                    'feedback': (
+                        'You effectively communicated the specific issue (missed deadlines) and its'
+                        ' impact on the team without being accusatory.'
+                    ),
+                    'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and '
+                        'it’s causing team to fall behind on the overall project timeline.'
+                    ),
+                }
+            ],
+            example_negative=[
+                {
+                    'heading': 'Lack of specific examples',
+                    'feedback': (
+                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
+                    ),
+                    'quote': (
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
+                    ),
+                    'improved_quote': (
+                        'Ensure deadlines are met by setting clear expectations and providing '
+                        'specific examples of missed deadlines.'
+                    ),
+                }
+            ],
+            recommendations=[
+                {
+                    'heading': 'Practice the STAR method',
+                    'recommendation': (
+                        'When giving feedback, use the Situation, Task, Action, Result framework to'
+                        ' provide more concrete examples.'
+                    ),
+                },
+                {
+                    'heading': 'Ask more diagnostic questions',
+                    'recommendation': (
+                        'Spend more time understanding root causes before moving to solutions. This'
+                        ' builds empathy and leads to more effective outcomes.'
+                    ),
+                },
+                {
+                    'heading': 'Define next steps',
+                    'recommendation': (
+                        'End feedback conversations with agreed-upon actions to ensure clarity and '
+                        'accountability.'
+                    ),
+                },
+            ],
+            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        SessionFeedback(
+            id=uuid4(),
+            session_id=sessions[5].id,  # Link to the first session
+            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
+            overall_score=85,
+            transcript_uri='https://example.com/transcripts/session1.txt',
+            speak_time_percent=60.5,
+            questions_asked=5,
+            session_length_s=1800,
+            goals_achieved=3,
+            example_positive=[
+                {
+                    'heading': 'Clear framing of the issue',
+                    'feedback': (
+                        'You effectively communicated the specific issue (missed deadlines) and its'
+                        ' impact on the team without being accusatory.'
+                    ),
+                    'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and '
+                        'it’s causing team to fall behind on the overall project timeline.'
+                    ),
+                }
+            ],
+            example_negative=[
+                {
+                    'heading': 'Lack of specific examples',
+                    'feedback': (
+                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
+                    ),
+                    'quote': (
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
+                    ),
+                    'improved_quote': (
+                        'Ensure deadlines are met by setting clear expectations and providing '
+                        'specific examples of missed deadlines.'
+                    ),
+                }
+            ],
+            recommendations=[
+                {
+                    'heading': 'Practice the STAR method',
+                    'recommendation': (
+                        'When giving feedback, use the Situation, Task, Action, Result framework to'
+                        ' provide more concrete examples.'
+                    ),
+                },
+                {
+                    'heading': 'Ask more diagnostic questions',
+                    'recommendation': (
+                        'Spend more time understanding root causes before moving to solutions. This'
+                        ' builds empathy and leads to more effective outcomes.'
+                    ),
+                },
+                {
+                    'heading': 'Define next steps',
+                    'recommendation': (
+                        'End feedback conversations with agreed-upon actions to ensure clarity and '
+                        'accountability.'
+                    ),
+                },
+            ],
+            status=FeedbackStatusEnum.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
