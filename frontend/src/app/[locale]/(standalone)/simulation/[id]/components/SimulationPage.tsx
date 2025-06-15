@@ -5,6 +5,8 @@ import { SimulationPageComponentProps } from '@/interfaces/SimulationPageCompone
 import { useRouter } from 'next/navigation';
 import { SessionStatus } from '@/interfaces/Session';
 import { sessionService } from '@/services/client/SessionService';
+import { useTranslations } from 'next-intl';
+import { showErrorToast } from '@/lib/toast';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
@@ -21,6 +23,7 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const cleanupRef = useRef<boolean | null>(null);
   const router = useRouter();
+  const t = useTranslations('Simulation');
 
   const cleanup = useCallback(() => {
     if (cleanupRef.current) return;
@@ -52,9 +55,9 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
       });
       router.push(`/feedback/${data.id}`);
     } catch (error) {
-      console.error('Error updating session:', error);
+      showErrorToast(error, t('sessionEndError'));
     }
-  }, [cleanup, router, sessionId]);
+  }, [cleanup, router, sessionId, t]);
 
   const initWebRTC = useCallback(async () => {
     try {
