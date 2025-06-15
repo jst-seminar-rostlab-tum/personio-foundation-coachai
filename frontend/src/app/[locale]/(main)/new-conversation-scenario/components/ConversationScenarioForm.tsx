@@ -119,7 +119,7 @@ export default function ConversationScenarioForm() {
       difficultyLevel: formState.difficulty,
       tone: formState.emotionalTone,
       complexity: formState.complexity,
-      languageCode: locale,
+      languageCode: locale as string,
     };
 
     try {

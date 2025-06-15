@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { ConversationScenarioPreparation } from '@/interfaces/ConversationScenarioPreparation';
 import { useParams } from 'next/navigation';
@@ -17,7 +17,6 @@ export default function PreparationContent() {
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
   const conversationScenarioId = params.id as string;
-  const hasFetchedRef = useRef(false);
 
   const getTrainingPreparation = useCallback(async (id: string) => {
     try {
@@ -44,8 +43,6 @@ export default function PreparationContent() {
   }, []);
 
   useEffect(() => {
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
     getTrainingPreparation(conversationScenarioId);
   }, [conversationScenarioId, getTrainingPreparation]);
 
