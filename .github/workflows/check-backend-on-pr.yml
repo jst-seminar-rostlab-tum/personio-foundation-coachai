@@ -3,7 +3,7 @@ name: Check Backend on PR
 on:
   pull_request:
     paths:
-      - 'backend/**'
+      - "backend/**"
 
 jobs:
   lint:
@@ -22,7 +22,6 @@ jobs:
 
   test:
     name: Test
-    needs: lint
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4

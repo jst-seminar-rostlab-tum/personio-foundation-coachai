@@ -2,23 +2,54 @@ name: Deploy Backend to Fly.io
 
 on:
   push:
-    branches: [ main ]
-    paths: [ 'backend/**' ]
-
+    branches: [main, dev]
+    paths: ["backend/**"]
+  workflow_dispatch:
 
 jobs:
-#  Add test and linting when ready
-  deploy-production:
-    name: Deploy (Production)
+  lint:
+    name: Lint
     runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: pipx install uv
+      - name: Install dependencies
+        run: uv sync
+        working-directory: ./backend
+      - name: Run Ruff Linter
+        run: uv run pre-commit run --config .pre-commit-config.yaml --hook-stage manual --all-files
+        working-directory: ./backend
+
+  test:
+    name: Test
+    needs: lint
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: pipx install uv
+      - name: Install dependencies
+        run: uv sync
+        working-directory: ./backend
+      - name: Run Tests
+        run: uv run pytest --exitfirst --disable-warnings || [[ $? -eq 5 ]]
+        working-directory: ./backend
+
+  deploy:
+    name: Deploy
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
+    needs: test
+    runs-on: ubuntu-22.04
+    env:
+      FLY_CONFIG_PATH: ${{ github.ref == 'refs/heads/main' && 'fly.toml' || 'fly-dev.toml' }}
     defaults:
       run:
         working-directory: ./backend
-
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Deploy with Fly.io
-        run: flyctl deploy --remote-only
+        run: flyctl deploy --remote-only --config ${{ env.FLY_CONFIG_PATH }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
