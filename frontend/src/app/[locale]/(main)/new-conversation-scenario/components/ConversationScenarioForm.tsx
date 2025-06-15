@@ -40,7 +40,6 @@ export default function ConversationScenarioForm() {
 
   useEffect(() => {
     async function fetchCategories() {
-      console.warn(categories);
       const response = await conversationScenarioService.getConversationCategories();
       setCategories((prevCategories) =>
         prevCategories.map((cat) => {
