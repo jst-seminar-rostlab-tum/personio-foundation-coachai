@@ -34,7 +34,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
             <BackButton />
             {children}
           </main>
-          <Toaster />
+          <Toaster richColors />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -28,7 +28,7 @@ export default async function StandaloneLayout({ children, params }: LayoutProps
         <main className="w-full">
           <NextIntlClientProvider>{children}</NextIntlClientProvider>
         </main>
-        <Toaster />
+        <Toaster richColors />
       </body>
     </html>
   );
