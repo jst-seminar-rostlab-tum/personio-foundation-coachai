@@ -1,3 +1,5 @@
+import json
+import os
 from datetime import UTC, datetime
 from enum import Enum
 from uuid import UUID, uuid4
@@ -173,7 +175,7 @@ def get_dummy_conversation_scenarios(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=categories[0].id,
-            context='Context 1',
+            context='Context',
             goal='Goal 1',
             other_party='Other Party 1',
             difficulty_level=DifficultyLevel.easy,
@@ -262,6 +264,14 @@ def get_dummy_ratings(
 
 
 def get_dummy_conversation_categories() -> list[ConversationCategory]:
+    # Load context from JSON file
+    context_path = os.path.join(os.path.dirname(__file__), 'conversation_scenario_context.json')
+    try:
+        with open(context_path, encoding='utf-8') as f:
+            context_data = json.load(f)
+    except Exception:
+        context_data = {}
+
     return [
         ConversationCategory(
             id='giving_feedback',
@@ -269,7 +279,9 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             system_prompt='You are an expert in providing constructive feedback.',
             initial_prompt='What feedback challenge are you facing?',
             ai_setup={'type': 'feedback', 'complexity': 'medium'},
-            default_context='One-on-one meeting with a team member.',
+            default_context=context_data.get(
+                'giving_feedback', 'One-on-one meeting with a team member.'
+            ),
             default_goal='Provide constructive feedback effectively.',
             default_other_party='Team member',
             is_custom=False,
@@ -283,7 +295,9 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             system_prompt='You are a manager conducting performance reviews.',
             initial_prompt='What aspect of performance would you like to discuss?',
             ai_setup={'type': 'review', 'complexity': 'high'},
-            default_context='Formal performance review meeting.',
+            default_context=context_data.get(
+                'performance_reviews', 'Formal performance review meeting.'
+            ),
             default_goal='Evaluate and discuss employee performance.',
             default_other_party='Employee',
             is_custom=False,
@@ -297,7 +311,9 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             system_prompt='You are a mediator resolving conflicts.',
             initial_prompt='What conflict are you trying to resolve?',
             ai_setup={'type': 'mediation', 'complexity': 'high'},
-            default_context='Conflict resolution meeting between team members.',
+            default_context=context_data.get(
+                'conflict_resolution', 'Conflict resolution meeting between team members.'
+            ),
             default_goal='Resolve conflicts and improve team dynamics.',
             default_other_party='Team members',
             is_custom=False,
@@ -311,7 +327,7 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             system_prompt='You are a negotiator discussing salary expectations.',
             initial_prompt='What salary-related topic would you like to address?',
             ai_setup={'type': 'negotiation', 'complexity': 'medium'},
-            default_context='Salary negotiation meeting.',
+            default_context=context_data.get('salary_discussions', 'Salary negotiation meeting.'),
             default_goal='Reach a mutually beneficial agreement on salary.',
             default_other_party='Employer',
             is_custom=False,
