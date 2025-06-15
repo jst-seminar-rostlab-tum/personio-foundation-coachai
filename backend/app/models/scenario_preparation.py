@@ -26,10 +26,9 @@ class KeyConcept(BaseModel):
     value: str
 
 
-# Database model
-class ScenarioPreparation(CamelModel, table=True):  # `table=True` makes it a database table
+class ScenarioPreparation(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    scenario_id: UUID = Field(foreign_key='conversationscenario.id')
+    scenario_id: UUID = Field(foreign_key='conversationscenario.id', ondelete='CASCADE')
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))

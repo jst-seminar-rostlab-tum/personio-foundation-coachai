@@ -273,26 +273,33 @@ def generate_and_store_feedback(
     goals = GoalsAchievedCollection(goals_achieved=[])
     recommendations = []
 
-    try:
-        examples = safe_generate_training_examples(examples_request)
-        examples_positive_dicts = [ex.model_dump() for ex in examples.positive_examples]
-        examples_negative_dicts = [ex.model_dump() for ex in examples.negative_examples]
-    except Exception as e:
-        has_error = True
-        print('[ERROR] Failed to generate examples:', e)
+    if example_request.transcript is None:
+        # No transcript: leave examples empty and goals achieved as zero
+        examples_positive_dicts = []
+        examples_negative_dicts = []
+        goals = GoalsAchievedCollection(goals_achieved=[])
+        recommendations = []
+    else:
+        try:
+            examples = safe_generate_training_examples(examples_request)
+            examples_positive_dicts = [ex.model_dump() for ex in examples.positive_examples]
+            examples_negative_dicts = [ex.model_dump() for ex in examples.negative_examples]
+        except Exception as e:
+            has_error = True
+            print('[ERROR] Failed to generate examples:', e)
 
-    try:
-        goals = safe_get_achieved_goals(goals_request)
-    except Exception as e:
-        has_error = True
-        print('[ERROR] Failed to generate goals:', e)
+        try:
+            goals = safe_get_achieved_goals(goals_request)
+        except Exception as e:
+            has_error = True
+            print('[ERROR] Failed to generate goals:', e)
 
-    try:
-        recs = safe_generate_recommendations(recommendations_request)
-        recommendations = [rec.model_dump() for rec in recs.recommendations]
-    except Exception as e:
-        has_error = True
-        print('[ERROR] Failed to generate key recommendations:', e)
+        try:
+            recs = safe_generate_recommendations(recommendations_request)
+            recommendations = [rec.model_dump() for rec in recs.recommendations]
+        except Exception as e:
+            has_error = True
+            print('[ERROR] Failed to generate key recommendations:', e)
 
     # correct placement
     status = FeedbackStatusEnum.failed if has_error else FeedbackStatusEnum.completed

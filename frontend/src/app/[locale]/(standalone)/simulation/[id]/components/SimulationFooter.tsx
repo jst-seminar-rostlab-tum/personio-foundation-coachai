@@ -1,16 +1,30 @@
 'use client';
 
 import { Pause, Play, Phone } from 'lucide-react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { sessionService } from '@/services/client/SessionService';
+import { SessionStatus } from '@/interfaces/Session';
+import { SimulationFooterProps } from '@/interfaces/SimulationFooterProps';
+import { useRouter } from 'next/navigation';
 
 export default function SimulationFooter({
   isPaused,
   setIsPaused,
-}: {
-  isPaused: boolean;
-  setIsPaused: (v: boolean) => void;
-}) {
+  sessionId,
+}: SimulationFooterProps) {
+  const router = useRouter();
+
+  const handleSessionEnd = async () => {
+    try {
+      const { data } = await sessionService.updateSession(sessionId, {
+        status: SessionStatus.COMPLETED,
+      });
+      router.push(`/feedback/${data.id}`);
+    } catch (error) {
+      console.error('Error updating session:', error);
+    }
+  };
+
   return (
     <div className="flex justify-evenly py-6 z-10">
       <Button
@@ -21,11 +35,9 @@ export default function SimulationFooter({
       >
         {isPaused ? <Play className="!w-6 !h-6" /> : <Pause className="!w-6 !h-6" />}
       </Button>
-      <Link href="/feedback/1">
-        <Button size="iconLarge" variant="destructive">
-          <Phone className="!w-6 !h-6" />
-        </Button>
-      </Link>
+      <Button onClick={handleSessionEnd} size="iconLarge" variant="destructive">
+        <Phone className="!w-6 !h-6" />
+      </Button>
     </div>
   );
 }
