@@ -491,7 +491,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.pending,  # Use the enum for status
+            status=FeedbackStatusEnum.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -560,7 +560,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.pending,  # Use the enum for status
+            status=FeedbackStatusEnum.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
