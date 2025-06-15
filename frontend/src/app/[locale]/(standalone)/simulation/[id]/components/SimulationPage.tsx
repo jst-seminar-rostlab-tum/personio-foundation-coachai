@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { SimulationPageComponentProps } from '@/interfaces/SimulationPageComponentProps';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages from './SimulationMessages';
 
-export default function SimulationPageComponent() {
+export default function SimulationPageComponent({ sessionId }: SimulationPageComponentProps) {
   const [time, setTime] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -30,7 +31,7 @@ export default function SimulationPageComponent() {
 
       <SimulationRealtimeSuggestions />
 
-      <SimulationFooter isPaused={isPaused} setIsPaused={setIsPaused} />
+      <SimulationFooter sessionId={sessionId} isPaused={isPaused} setIsPaused={setIsPaused} />
     </div>
   );
 }
