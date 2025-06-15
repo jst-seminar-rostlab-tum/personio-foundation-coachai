@@ -109,19 +109,19 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(len(feedback.recommendations), 3)
         self.assertEqual(feedback.recommendations[0]['heading'], 'Practice the STAR method')
         self.assertEqual(
-            feedback.recommendations[0]['feedback'],
+            feedback.recommendations[0]['recommendation'],
             'When giving feedback, use the Situation, Task, Action, '
             'Result framework to provide more concrete examples.',
         )
         self.assertEqual(feedback.recommendations[1]['heading'], 'Ask more diagnostic questions')
         self.assertEqual(
-            feedback.recommendations[1]['feedback'],
+            feedback.recommendations[1]['recommendation'],
             'Spend more time understanding root causes before moving to '
             'solutions. This builds empathy and leads to more effective outcomes.',
         )
         self.assertEqual(feedback.recommendations[2]['heading'], 'Define clear next steps')
         self.assertEqual(
-            feedback.recommendations[2]['feedback'],
+            feedback.recommendations[2]['recommendation'],
             'End feedback conversations with agreed-upon action'
             ' items, timelines, and follow-up plans.',
         )
