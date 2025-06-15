@@ -64,7 +64,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 ),
                 Recommendation(
                     heading='Ask more diagnostic questions',
-                    recommendation='Spend more time understanding root causes before moving  '
+                    recommendation='Spend more time understanding root causes before moving '
                     + 'to solutions. This builds empathy and leads to more effective outcomes.',
                 ),
                 Recommendation(
