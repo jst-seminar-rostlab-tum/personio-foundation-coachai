@@ -1,4 +1,5 @@
-import { useTranslations } from 'next-intl';
+'use client';
+
 import {
   ChartNoAxesColumnIncreasingIcon,
   CheckCircle,
@@ -18,91 +19,58 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import Link from 'next/link';
+import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
+import { use } from 'react';
+import { useTranslations } from 'next-intl';
 import FeedbackQuote from './FeedbackQuote';
 
-const mockFeedback = {
-  topic: 'Giving Constructive Feedback',
-  time: '16.04.2025, 12:24',
-  structure: 85,
-  empathy: 89,
-  focus: 91,
-  clarity: 89,
-  overall: 82,
-  speakingTime: 62,
-  questionAsked: 6,
-  sessionLength: '3:30',
-  goalsAcheived: '4/5',
-  conversationLength: 3,
-};
-
-export default function FeedbackDetail() {
+export default function FeedbackDetail({
+  sessionFeedbackData,
+}: {
+  sessionFeedbackData: Promise<FeedbackResponse>;
+}) {
   const t = useTranslations('Feedback');
+  const sessionFeedback = use(sessionFeedbackData);
+  const { feedback } = sessionFeedback;
+
+  const convertTimeToMinutes = (seconds: number) => {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  };
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${day}.${month}.${year}, ${hours}:${minutes}`;
+  };
+
   const progressBarData = [
-    { key: t('progressBars.structure'), value: mockFeedback.structure },
-    { key: t('progressBars.empathy'), value: mockFeedback.empathy },
-    { key: t('progressBars.focus'), value: mockFeedback.focus },
-    { key: t('progressBars.clarity'), value: mockFeedback.clarity },
+    { key: t('progressBars.structure'), value: feedback?.scores.structure ?? 0 },
+    { key: t('progressBars.empathy'), value: feedback?.scores.empathy ?? 0 },
+    { key: t('progressBars.focus'), value: feedback?.scores.solutionFocus ?? 0 },
+    { key: t('progressBars.clarity'), value: feedback?.scores.clarity ?? 0 },
   ];
 
   const roundCardStats = [
-    { key: t('stats.speakingTime'), value: `${mockFeedback.speakingTime}%`, icon: 'Mic' },
-    { key: t('stats.questionsAsked'), value: mockFeedback.questionAsked, icon: 'Message' },
-    { key: t('stats.sessionLength'), value: mockFeedback.sessionLength, icon: 'Clock' },
-    { key: t('stats.goalsAchieved'), value: mockFeedback.goalsAcheived, icon: 'Check' },
+    {
+      key: t('stats.sessionLength'),
+      value: convertTimeToMinutes(feedback?.sessionLengthS ?? 0),
+      icon: 'Clock',
+    },
+    { key: t('stats.goalsAchieved'), value: feedback?.goalsAchieved ?? 0, icon: 'Check' },
   ];
 
-  const examplesPositive = [
-    {
-      heading: 'Clear framing of the issue',
-      feedback:
-        'You effectively communicated the specific issue (missed deadlines) and its impact on the team without being accusatory.',
-      quote:
-        'I’ve noticed that several deadlines were missed last week, and it’s causing our team to fall behind on the overall project timeline.',
-    },
-    {
-      heading: 'Strong active listening',
-      feedback:
-        'You demonstrated excellent listening skills by paraphrasing Sarah’s concerns and asking thoughtful follow-up questions.',
-      quote:
-        'It sounds like you’re feeling overwhelmed by the number of tasks you’re responsible for. Let’s talk about how we might prioritize these better.',
-    },
-  ];
+  const examplesPositive = sessionFeedback.feedback?.examplesPositive || [];
 
-  const examplesNegative = [
-    {
-      heading: 'More specific examples needed',
-      feedback:
-        'Your feedback would have been more impactful with specific examples of the missed deadlines and their consequences.',
-      quote: 'Several tasks have been delayed…',
-      improvedQuote:
-        'The UI mockups were due last Tuesday and the API documentation was due Friday, both of which are still incomplete. This has prevented the developers from starting their work.',
-    },
-    {
-      heading: 'Rushed to solutions',
-      feedback:
-        'You moved to problem-solving before fully exploring the root causes of the missed deadlines.',
-      quote: '',
-      improvedQuote:
-        'What specific challenges have made it difficult to meet these deadlines? Are there particular aspects of these tasks that are taking more time than expected?',
-    },
-  ];
+  const examplesNegative = sessionFeedback.feedback?.examplesNegative || [];
 
-  const recommendations = [
-    {
-      heading: 'Practice the STAR method',
-      recommendation:
-        'When giving feedback, use the Situation, Task, Action, Result framework to provide more concrete examples.',
-    },
-    {
-      heading: 'Ask more diagnostic questions',
-      recommendation:
-        'Spend more time understanding root causes before moving to solutions. This builds empathy and leads to more effective outcomes.',
-    },
-    {
-      heading: 'Define clear next steps',
-      recommendation: 'End feedback conversations with agreed-upon action items.',
-    },
-  ];
+  const recommendations = sessionFeedback.feedback?.recommendations || [];
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -120,8 +88,10 @@ export default function FeedbackDetail() {
     <div className="flex flex-col items-center gap-7 mx-auto max-w-3xl">
       <div className="text-2xl ">{t('title')}</div>
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
-        <div className="text-lg text-marigold-90">{mockFeedback.topic}</div>
-        <div className="text-base text-marigold-95">{mockFeedback.time}</div>
+        <div className="text-lg text-marigold-90">{sessionFeedback.title}</div>
+        <div className="text-base text-marigold-95">
+          {formatDateTime(sessionFeedback.createdAt)}
+        </div>
       </div>
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
@@ -136,7 +106,7 @@ export default function FeedbackDetail() {
           ))}
         </div>
         <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
-          {mockFeedback.overall}%
+          {feedback?.overallScore ?? 0}%
         </div>
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
@@ -165,7 +135,7 @@ export default function FeedbackDetail() {
             <Progress className="w-10 flex-1" value={62} />
             <div className="flex gap-1 items-center text-base text-bw-40">
               <Clock size={13} />
-              <span>{mockFeedback.conversationLength} min</span>
+              <span>{convertTimeToMinutes(feedback?.sessionLengthS ?? 0)}</span>
             </div>
           </div>
         </div>
