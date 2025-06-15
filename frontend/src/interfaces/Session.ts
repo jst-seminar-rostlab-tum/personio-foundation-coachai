@@ -1,7 +1,7 @@
 export enum SessionStatus {
   STARTED = 'started',
   COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
+  FAILED = 'failed',
 }
 
 export interface Session {
