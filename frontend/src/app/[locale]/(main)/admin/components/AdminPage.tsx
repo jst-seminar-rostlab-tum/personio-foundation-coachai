@@ -61,7 +61,6 @@ export default function Admin({ stats }: AdminProps) {
   const canLoadMore = visibleUsers < allUsers.length;
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
   const { handleDeleteUser, loading } = useDeleteUser();
-  const userId = '0b222f0b-c7e5-4140-9049-35620fee8009';
 
   return (
     <div className="max-w-full">
@@ -231,7 +230,7 @@ export default function Admin({ stats }: AdminProps) {
                             <AlertDialogFooter>
                               <AlertDialogCancel>{tr('cancel')}</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDeleteUser(userId)}
+                                onClick={() => handleDeleteUser()}
                                 disabled={loading}
                               >
                                 {loading ? tr('deleting') : tr('confirm')}

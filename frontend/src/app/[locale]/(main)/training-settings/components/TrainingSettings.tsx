@@ -32,7 +32,6 @@ export default function TrainingSettings() {
   const [audioEnabled, setAudioEnabled] = useState(false);
   const t = useTranslations('TrainingSettings');
   const { handleDeleteUser, loading } = useDeleteUser();
-  const userId = '0b222f0b-c7e5-4140-9049-35620fee8009';
 
   return (
     <div>
@@ -82,10 +81,7 @@ export default function TrainingSettings() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDeleteUser(userId)}
-                        disabled={loading}
-                      >
+                      <AlertDialogAction onClick={() => handleDeleteUser()} disabled={loading}>
                         {loading ? t('deleting') : t('confirm')}
                       </AlertDialogAction>
                     </AlertDialogFooter>

@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { deleteUser } from '@/services/deleteUserApi';
+import { deleteUser } from '@/services/client/DeleteUserService';
 
 export function useDeleteUser() {
   const [loading, setLoading] = useState(false);
 
-  async function handleDeleteUser(userId: string) {
+  async function handleDeleteUser() {
     setLoading(true);
     try {
-      await deleteUser(userId);
+      await deleteUser();
     } catch (error) {
       console.error({ error });
     } finally {
