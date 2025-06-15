@@ -74,7 +74,7 @@ export default function SimulationMessages() {
   }, [messages]);
 
   return (
-    <div className="flex flex-col gap-4 py-2 h-full">
+    <div className="flex flex-col gap-4 h-full">
       {messages.map((msg) => (
         <div
           key={msg.id}
