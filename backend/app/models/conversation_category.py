@@ -1,6 +1,5 @@
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
-from uuid import UUID, uuid4
 
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
@@ -15,9 +14,8 @@ if TYPE_CHECKING:
 
 
 class ConversationCategory(CamelModel, table=True):  # `table=True` makes it a database table
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    id: str = Field(primary_key=True)  # Changed from UUID to str
     name: str = Field(unique=True)
-    icon_uri: str
     system_prompt: str = Field(default='')
     initial_prompt: str = Field(default='')
     ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON))
@@ -44,8 +42,8 @@ def update_timestamp(
 
 # Schema for creating a new ConversationCategory
 class ConversationCategoryCreate(CamelModel):
+    id: str
     name: Optional[str] = None
-    icon_uri: Optional[str] = None
     system_prompt: Optional[str] = None
     initial_prompt: Optional[str] = None
     ai_setup: Optional[dict] = Field(default_factory=dict)
@@ -58,9 +56,8 @@ class ConversationCategoryCreate(CamelModel):
 
 # Schema for reading ConversationCategory data
 class ConversationCategoryRead(CamelModel):
-    id: UUID
+    id: str  # Changed from UUID to str
     name: str
-    icon_uri: str
     default_context: str
     default_goal: str
     default_other_party: str

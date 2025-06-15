@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
   Form,
@@ -17,12 +17,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/Form';
-import { AlertCircleIcon } from 'lucide-react';
-import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordInput';
 import { createClient } from '@/lib/supabase/client';
 import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
+import { showErrorToast } from '@/lib/toast';
 
 export function SignInForm() {
   const t = useTranslations('Login.SignInTab');
@@ -30,6 +29,12 @@ export function SignInForm() {
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (error) {
+      showErrorToast(null, error);
+    }
+  }, [error]);
 
   const signInFormSchema = z.object({
     email: z.string().email(t('emailInputError')),
@@ -119,19 +124,12 @@ export function SignInForm() {
             </Button>
             <div className="w-full border-t border-gray-300" />
             <Button size="full" variant="secondary" disabled={isLoading}>
-              <Image src="/icons/google-icon.svg" alt="Google Icon" width={20} height={20}></Image>
+              <Image src="/icons/google-icon.svg" alt="Google Icon" width={20} height={20} />
               {t('signInWithGoogleButtonLabel')}
             </Button>
           </CardFooter>
         </form>
       </Form>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircleIcon />
-          <AlertTitle>{error}</AlertTitle>
-        </Alert>
-      )}
     </Card>
   );
 }

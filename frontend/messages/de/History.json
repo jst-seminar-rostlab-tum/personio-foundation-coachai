@@ -15,5 +15,17 @@
   "previousSessions": "Bisherige Sitzungen",
   "exportHistory": "Verlauf exportieren",
   "clearAll": "Alle löschen",
-  "loadMore": "Mehr laden"
+  "loadMore": "Mehr laden",
+  "deleteAllSessions": "Alle Sitzungen löschen",
+  "deleteAllSessionsConfirmation": "Sind Sie sicher, dass Sie alle Sitzungen löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "cancel": "Abbrechen",
+  "delete": "Löschen",
+  "deleting": "Wird gelöscht...",
+  "unauthorizedError": "Bitte melden Sie sich an, um Sitzungen zu löschen.",
+  "forbiddenError": "Sie haben keine Berechtigung, Sitzungen zu löschen.",
+  "serverError": "Ein Fehler ist beim Löschen der Sitzungen aufgetreten. Bitte versuchen Sie es erneut.",
+  "noSessionsFound": "Keine Sitzungen gefunden, die gelöscht werden können.",
+  "deleteSuccess": "Alle Sitzungen wurden erfolgreich gelöscht.",
+  "deleteError": "Sitzungen konnten nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+  "loading": "Wird geladen..."
 }
