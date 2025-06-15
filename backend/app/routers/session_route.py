@@ -77,6 +77,11 @@ def get_session_by_id(
     else:
         training_title = conversation_scenario.custom_category_label
 
+    if conversation_scenario.preparations:
+        goals = conversation_scenario.preparations[0].objectives
+    else:
+        goals = []
+
     session_response = SessionDetailsRead(
         id=session.id,
         scenario_id=session.scenario_id,
@@ -91,6 +96,7 @@ def get_session_by_id(
         summary=(
             'The person giving feedback was rude but the person receiving feedback took it well.'
         ),  # mocked
+        goals_total=goals,
     )
 
     # Fetch the associated conversation turns and their audio URIs

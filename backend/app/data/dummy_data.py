@@ -59,7 +59,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             training_time=4.5,
             current_streak_days=3,
             average_score=82,
-            goals_achieved=4,
+            goals_achieved=4,  # Summation of all goals achieved
         ),
         UserProfile(
             id=MockUserIdsEnum.ADMIN.value,
@@ -73,7 +73,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             training_time=4.2,
             current_streak_days=2,
             average_score=87,
-            goals_achieved=2,
+            goals_achieved=2,  # Summation of all goals achieved
         ),
     ]
 
@@ -799,7 +799,11 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Maintain professionalism',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -868,7 +872,10 @@ def get_dummy_session_feedback(
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
-            goals_achieved=4,
+            goals_achieved=[
+                'Align on team roles',
+                'Set expectations for communication',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -937,7 +944,10 @@ def get_dummy_session_feedback(
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
-            goals_achieved=4,
+            goals_achieved=[
+                'Align on team roles',
+                'Set expectations for communication',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1006,7 +1016,11 @@ def get_dummy_session_feedback(
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
-            goals_achieved=4,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Align on team roles',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1075,7 +1089,10 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1144,7 +1161,9 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1213,7 +1232,12 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Maintain professionalism',
+                'Provide specific feedback',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1282,7 +1306,7 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=['Bring clarity to the situation'],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1352,8 +1376,12 @@ def get_dummy_scenario_preparations(
             id=uuid4(),
             scenario_id=conversation_scenarios[0].id,
             objectives=[
-                "Understand the client's needs",
-                'Prepare a solution proposal',
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Maintain professionalism',
+                'Provide specific feedback',
+                'Foster mutual understanding',
+                'End on a positive note',
             ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
@@ -1373,6 +1401,9 @@ def get_dummy_scenario_preparations(
             objectives=[
                 'Discuss project timeline',
                 'Finalize deliverables',
+                'Align on team roles',
+                'Set expectations for communication',
+                'Identify potential risks',
             ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
