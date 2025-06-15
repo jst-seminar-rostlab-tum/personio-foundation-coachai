@@ -81,7 +81,19 @@ def get_dummy_user_profiles() -> list[UserProfile]:
 def get_dummy_user_goals(user_profiles: list[UserProfile]) -> list[UserGoal]:
     return [
         UserGoal(goal=Goal.giving_constructive_feedback, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.managing_team_conflicts, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.performance_reviews, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.motivating_team_members, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.leading_difficult_conversations, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.communicating_organizational_change, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.develop_emotional_intelligence, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.giving_constructive_feedback, user_id=user_profiles[1].id),
         UserGoal(goal=Goal.managing_team_conflicts, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.performance_reviews, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.motivating_team_members, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.leading_difficult_conversations, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.communicating_organizational_change, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.develop_emotional_intelligence, user_id=user_profiles[1].id),
     ]
 
 
@@ -607,16 +619,16 @@ def get_dummy_user_confidence_scores(user_profiles: list[UserProfile]) -> list[U
     scores = []
     areas = list(ConfidenceArea)  # ['giving_difficult_feedback', 'managing_team_conflicts', ...]
 
-    for i, user in enumerate(user_profiles):
-        assigned_area = areas[i % len(areas)]
-        scores.append(
-            UserConfidenceScore(
-                confidence_area=assigned_area,
-                user_id=user.id,
-                score=50,
-                updated_at=datetime.now(UTC),
+    for user in user_profiles:
+        for area in areas:
+            scores.append(
+                UserConfidenceScore(
+                    confidence_area=area,
+                    user_id=user.id,
+                    score=50,
+                    updated_at=datetime.now(UTC),
+                )
             )
-        )
     return scores
 
 
