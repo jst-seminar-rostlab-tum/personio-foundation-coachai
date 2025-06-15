@@ -34,7 +34,7 @@ export default function FeedbackDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="self-end">{t('open')}</Button>
+        <Button size="full">{t('open')}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
