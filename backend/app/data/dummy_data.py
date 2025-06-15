@@ -328,7 +328,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[0].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=5000,
             end_offset_ms=10000,
             text='Hi! I’d like to check your schedule today. Are you available at 2 PM?',
@@ -362,7 +362,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=4000,
             end_offset_ms=9000,
             text='Of course. Could you please tell me what issue you are facing?',
@@ -384,7 +384,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=13000,
             end_offset_ms=17000,
             text='Thanks for the info. I will reset your credentials and email you shortly.',
@@ -398,7 +398,7 @@ def get_dummy_session_turns(
 def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> list[Session]:
     return [
         Session(
-            id=uuid4(),
+            id=UUID('4e5174f9-78da-428c-bb9f-4556a14163cc'),
             scenario_id=conversation_scenarios[0].id,
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),

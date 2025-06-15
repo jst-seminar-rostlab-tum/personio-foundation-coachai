@@ -24,10 +24,10 @@ export default function SimulationHeader({
   sessionLabel = 'Performance Reviews',
   avatarSrc,
   time = 0,
-}: SimulationHeaderProps) {
+}: SimulationHeaderProps & { time: number }) {
   return (
-    <div className="flex flex-col gap-6 p-6 border-b border-bw-10">
-      <div className="flex items-center justify-between">
+    <div className="px-6 pt-4 pb-2 ">
+      <div className="flex items-center justify-between mb-4">
         <Badge variant="default" className="bg-marigold-30/40 text-marigold-90">
           {sessionLabel}
         </Badge>
@@ -35,7 +35,7 @@ export default function SimulationHeader({
           {formatTime(time)}
         </Badge>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 mb-2">
         <Avatar>
           <AvatarImage src={avatarSrc} alt={`${characterName} avatar`} />
           <AvatarFallback>

@@ -23,3 +23,29 @@ export const clearAllSessions = async () => {
 export const SessionService = {
   clearAllSessions,
 };
+
+export const createSessionTurn = async (
+  sessionId: string,
+  speaker: string,
+  text: string,
+  audioUri: string = '',
+  aiEmotion: string = '',
+  startOffsetMs: number = 0,
+  endOffsetMs: number = 0
+) => {
+  try {
+    const response = await api.post(`/session-turns/`, {
+      sessionId,
+      speaker,
+      text,
+      audioUri,
+      aiEmotion,
+      startOffsetMs,
+      endOffsetMs,
+    });
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
