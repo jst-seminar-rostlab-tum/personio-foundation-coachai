@@ -2,7 +2,7 @@
 
 import { Pause, Play, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { sessionService } from '@/services/client/Session';
+import { sessionService } from '@/services/client/SessionService';
 import { SessionStatus } from '@/interfaces/Session';
 import { SimulationFooterProps } from '@/interfaces/SimulationFooterProps';
 import { useRouter } from 'next/navigation';
