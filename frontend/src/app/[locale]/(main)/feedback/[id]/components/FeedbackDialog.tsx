@@ -20,6 +20,18 @@ export default function FeedbackDialog() {
   const t = useTranslations('Feedback.feedbackDialog');
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');
+
+  const resetForm = () => {
+    setRating(0);
+    setRatingDescription('');
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      resetForm();
+    }
+  };
+
   const rateFeedback = async () => {
     try {
       await createFeedback({
@@ -32,7 +44,7 @@ export default function FeedbackDialog() {
   };
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button size="full">{t('open')}</Button>
       </DialogTrigger>
