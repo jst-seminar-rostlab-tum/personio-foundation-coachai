@@ -11,10 +11,10 @@ if TYPE_CHECKING:
     from app.models.user_profile import UserProfile
 
 
-class Review(CamelModel, table=True):  # `table=True` makes it a database table
+class Review(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key='userprofile.id')  # FK to UserProfile
-    session_id: Optional[UUID] = Field(foreign_key='session.id', default=None)  # FK to Session
+    user_id: UUID = Field(foreign_key='userprofile.id', ondelete='CASCADE')
+    session_id: Optional[UUID] = Field(foreign_key='session.id', default=None, ondelete='CASCADE')
     rating: int = Field(ge=1, le=5)
     comment: str
     created_at: datetime = Field(default_factory=datetime.utcnow)

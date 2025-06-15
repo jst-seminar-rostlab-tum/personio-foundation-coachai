@@ -25,11 +25,9 @@ class SessionStatus(str, Enum):
     failed = 'failed'
 
 
-class Session(CamelModel, table=True):  # `table=True` makes it a database table
+class Session(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    scenario_id: UUID = Field(
-        foreign_key='conversationscenario.id'
-    )  # Foreign key to ConversationScenario
+    scenario_id: UUID = Field(foreign_key='conversationscenario.id', ondelete='CASCADE')
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
