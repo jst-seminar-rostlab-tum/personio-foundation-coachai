@@ -130,32 +130,6 @@ export default function ConversationScenarioForm() {
     }
   };
 
-  const submitForm = async () => {
-    if (currentStep !== 2) {
-      setCurrentStep(() => currentStep + 1);
-      return;
-    }
-
-    const scenario: ConversationScenario = {
-      categoryId: formState.category,
-      customCategoryLabel: formState.customCategory,
-      context: formState.context,
-      goal: formState.goal,
-      otherParty: formState.otherParty,
-      difficultyLevel: formState.difficulty,
-      tone: formState.emotionalTone,
-      complexity: formState.complexity,
-      status: 'draft',
-    };
-
-    try {
-      const { data } = await conversationScenarioService.createConversationScenario(scenario);
-      router.push(`/preparation/${data.scenarioId}`);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
   return (
     <div className="max-w-4xl mx-auto">
       <div className="text-2xl text-font-dark text-center w-full mb-8">{t('title')}</div>
