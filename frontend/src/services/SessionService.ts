@@ -1,11 +1,15 @@
-import api from './Api';
+import { api } from './Api';
 
-export const clearAllSessions = async (userId: string): Promise<{ success: boolean }> => {
+export const clearAllSessions = async () => {
   try {
-    await api.delete(`/session/clear-all/${userId}`);
-    return { success: true };
-  } catch (err) {
-    console.error(err);
-    return { success: false };
+    const response = await api.delete(`/session/clear-all/`);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
+};
+
+export const SessionService = {
+  clearAllSessions,
 };

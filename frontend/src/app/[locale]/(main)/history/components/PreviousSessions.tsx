@@ -82,21 +82,16 @@ export default function PreviousSessions() {
   };
 
   const handleDeleteAll = async () => {
-    setIsDeleting(true);
-
-    // TODO: Get user auth context in future
-    const userId = '0b222f0b-c7e5-4140-9049-35620fee8009'; // TODO: Remove this after getting auth context
-    if (!userId) {
-      setIsDeleting(false);
-      return;
-    }
-
-    const result = await clearAllSessions(userId);
-    if (result.success) {
+    try {
+      setIsDeleting(true);
+      await clearAllSessions();
       setSessions([]);
       setVisibleCount(0);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsDeleting(false);
     }
-    setIsDeleting(false);
   };
 
   return (
