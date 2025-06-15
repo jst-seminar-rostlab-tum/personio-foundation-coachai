@@ -5,12 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { useRouter, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
-
-interface BackButtonProps {
-  label?: string;
-  href?: string;
-  defaultLabel?: string;
-}
+import { BackButtonProps } from '@/interfaces/BackButton';
 
 const pageLabels: Record<string, Record<string, string>> = {
   en: {
@@ -18,7 +13,7 @@ const pageLabels: Record<string, Record<string, string>> = {
     '/dashboard': 'Dashboard',
     '/feedback': 'Feedback',
     '/history': 'History',
-    '/new-training': 'New Training',
+    '/new-conversation-scenario': 'New Training',
     '/onboarding': 'Onboarding',
     '/preparation': 'Preparation',
     '/training-settings': 'Training Settings',
@@ -28,7 +23,7 @@ const pageLabels: Record<string, Record<string, string>> = {
     '/dashboard': 'Dashboard',
     '/feedback': 'Feedback',
     '/history': 'Verlauf',
-    '/new-training': 'Neues Training',
+    '/new-conversation-scenario': 'Neues Training',
     '/onboarding': 'Onboarding',
     '/preparation': 'Vorbereitung',
     '/training-settings': 'Trainingseinstellungen',
@@ -146,14 +141,14 @@ export default function BackButton({ label, href, defaultLabel = 'Back' }: BackB
   };
 
   if (isDisabled && !href) {
-    return <div className="h-10" />;
+    return <div className="hidden" />;
   }
 
   return (
     <Button
       variant="ghost"
       className={cn(
-        'group relative flex items-center gap-2 bg-transparent p-0 text-xl text-bw-40 transition-colors duration-200 hover:text-bw-70',
+        'group relative flex items-center gap-2 bg-transparent mb-8 p-0 text-xl text-bw-40 transition-colors duration-200 hover:text-bw-70',
         'hover:bg-transparent',
         isDisabled && 'opacity-0 pointer-events-none'
       )}

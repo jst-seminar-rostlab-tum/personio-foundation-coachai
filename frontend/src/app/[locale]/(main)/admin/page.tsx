@@ -1,7 +1,6 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import BackButton from '@/components/common/BackButton';
 import Admin from './components/AdminPage';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -10,10 +9,5 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default function AdminPage() {
-  return (
-    <>
-      <BackButton />
-      <Admin />
-    </>
-  );
+  return <Admin />;
 }
