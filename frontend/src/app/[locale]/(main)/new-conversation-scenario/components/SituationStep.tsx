@@ -16,7 +16,7 @@ export function SituationStep({
   customCategory,
   isCustom,
 }: SituationStepProps) {
-  const t = useTranslations('NewTraining');
+  const t = useTranslations('ConversationScenario');
   return (
     <div>
       <div className="text-xl text-font-dark text-center w-full mb-8">{t('situation.title')}</div>

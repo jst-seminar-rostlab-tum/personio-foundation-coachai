@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export default function NewTrainingPageLoading() {
+export default function ConversationScenarioPageLoading() {
   return (
     <div>
       {/* Header */}

@@ -86,15 +86,6 @@
       "defaultContext": "Salary negotiation meeting.",
       "defaultGoal": "Reach a mutually beneficial agreement on salary.",
       "defaultOtherParty": "Employer"
-    },
-    {
-      "id": "custom",
-      "name": "Custom Category",
-      "iconUri": "/icons/custom-category.svg",
-      "defaultContext": "",
-      "defaultGoal": "",
-      "defaultOtherParty": "",
-      "isCustom": true
     }
   ],
   "navigation": {

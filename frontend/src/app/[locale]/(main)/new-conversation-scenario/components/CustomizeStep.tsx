@@ -11,7 +11,7 @@ export function CustomizeStep({
   onEmotionalToneChange,
   onComplexityChange,
 }: CustomizeStepProps) {
-  const t = useTranslations('NewTraining.customize');
+  const t = useTranslations('ConversationScenario.customize');
 
   return (
     <div>

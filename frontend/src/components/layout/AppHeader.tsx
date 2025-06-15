@@ -14,7 +14,7 @@ export function AppHeader() {
 
   const navigationLinks = [
     { key: 'dashboard', href: '/dashboard' },
-    { key: 'newTraining', href: '/new-training' },
+    { key: 'newConversationScenario', href: '/new-conversation-scenario' },
     { key: 'admin', href: '/admin' },
     { key: 'history', href: '/history' },
     { key: 'trainingSettings', href: '/training-settings' },

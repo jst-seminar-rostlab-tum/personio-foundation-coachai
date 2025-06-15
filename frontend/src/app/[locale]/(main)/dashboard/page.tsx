@@ -25,7 +25,7 @@ export default function DashboardPage() {
           {t('header.greeting')}
           {name}!
         </p>
-        <Link href="/new-training" className="w-full md:w-auto">
+        <Link href="/new-conversation-scenario" className="w-full md:w-auto">
           <Button size="full" className="md:!size-default">
             <Plus />
             {t('header.cta')}
