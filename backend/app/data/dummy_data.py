@@ -1,7 +1,11 @@
 from datetime import UTC, datetime
-from enum import Enum
-from uuid import UUID, uuid4
+from uuid import uuid4
 
+from gotrue import AdminUserAttributes
+from supabase import AuthError, create_client
+
+from app.config import settings
+from app.data.mock_user_ids_enum import MockUserIdsEnum
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig, ConfigType
 from app.models.conversation_category import ConversationCategory
@@ -29,17 +33,6 @@ from app.models.user_profile import (
     ProfessionalRole,
     UserProfile,
 )
-
-
-class MockUserIdsEnum(Enum):
-    """
-    Enum for mock user IDs to be used in dummy data generation.
-    This enum is used to ensure that the IDs are consistent across
-    different parts of the application.
-    """
-
-    USER = UUID('3a9a8970-afbe-4ee1-bc11-9dcad7875ddf')
-    ADMIN = UUID('763c76f3-e5a4-479c-8b53-e3418d5e2ef5')
 
 
 def get_dummy_user_profiles() -> list[UserProfile]:
@@ -652,3 +645,63 @@ def get_dummy_admin_stats() -> list[AdminDashboardStats]:
             average_score=86,
         )
     ]
+
+
+def get_mock_user_data() -> tuple[AdminUserAttributes, AdminUserAttributes]:
+    """
+    Generate mock user data for testing purposes.
+    """
+    return (
+        {
+            'id': MockUserIdsEnum.USER.value.__str__(),
+            'email': settings.MOCK_USER_DATA.email,
+            'password': settings.MOCK_USER_DATA.password,
+            'phone': settings.MOCK_USER_DATA.phone,
+            'email_confirm': True,
+            'phone_confirm': True,
+            'user_metadata': {
+                'full_name': settings.MOCK_USER_DATA.full_name,
+            },
+        },
+        {
+            'id': MockUserIdsEnum.ADMIN.value.__str__(),
+            'email': settings.MOCK_ADMIN_DATA.email,
+            'password': settings.MOCK_ADMIN_DATA.password,
+            'phone': settings.MOCK_ADMIN_DATA.phone,
+            'email_confirm': True,
+            'phone_confirm': True,
+            'user_metadata': {
+                'full_name': settings.MOCK_ADMIN_DATA.full_name,
+            },
+        },
+    )
+
+
+def create_mock_users() -> None:
+    supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+
+    attributes, admin_attributes = get_mock_user_data()
+
+    # Create mock user
+    try:
+        supabase.auth.admin.create_user(attributes)
+    except Exception as e:
+        raise Exception(f'Error creating mock user {MockUserIdsEnum.USER.value}: {e}') from e
+
+    # Create mock admin user
+    try:
+        supabase.auth.admin.create_user(admin_attributes)
+    except Exception as e:
+        raise Exception(f'Error creating mock admin user {MockUserIdsEnum.ADMIN.value}: {e}') from e
+
+
+def delete_mock_users() -> None:
+    supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+    for user_id in [MockUserIdsEnum.USER.value, MockUserIdsEnum.ADMIN.value]:
+        try:
+            supabase.auth.admin.delete_user(user_id.__str__())
+        except AuthError as e:
+            if e.code != 'user_not_found':
+                raise e
+        except Exception as e:
+            raise e
