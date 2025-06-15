@@ -23,7 +23,7 @@ import {
   AlertDialogAction,
 } from '@/components/ui/AlertDialog';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
-import { UserProfileService } from '@/services/UserProfileService';
+import { UserProfileService } from '@/services/client/UserProfileService';
 import { UserPreference } from '@/interfaces/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfile } from '@/interfaces/UserProfile';

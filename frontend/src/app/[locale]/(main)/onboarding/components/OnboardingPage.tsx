@@ -11,7 +11,7 @@ import { useTranslations } from 'next-intl';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Link from 'next/link';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
-import { UserProfileService } from '@/services/UserProfileService';
+import { UserProfileService } from '@/services/client/UserProfileService';
 import { useRouter } from 'next/navigation';
 import { UserRadioComponent } from './UserRadioComponent';
 

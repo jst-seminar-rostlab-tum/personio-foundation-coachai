@@ -1,7 +1,7 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import { UserProfileService } from '@/services/UserProfileService';
+import { UserProfileService } from '@/services/server/UserProfileService';
 import { Suspense } from 'react';
 import TrainingSettings from './components/TrainingSettings';
 import TrainingSettingsLoadingPage from './loading';
