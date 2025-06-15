@@ -34,19 +34,14 @@ import {
 } from '@/components/ui/AlertDialog';
 import { AdminProps } from '@/interfaces/AdminProps';
 
-export default function Admin({
-  totalUsers,
-  totalTrainings,
-  totalReviews,
-  averageScore,
-}: AdminProps) {
+export default function Admin({ stats }: AdminProps) {
   const t = useTranslations('Admin');
   const tr = useTranslations('TrainingSettings');
   const statsArray = [
-    { value: totalUsers.toLocaleString(), label: t('statActiveUsers') },
-    { value: totalTrainings.toLocaleString(), label: t('statTotalTrainings') },
-    { value: totalReviews.toLocaleString(), label: t('statReviews') },
-    { value: `${averageScore}%`, label: t('statAverageScore') },
+    { value: stats.totalUsers.toLocaleString(), label: t('statActiveUsers') },
+    { value: stats.totalTrainings.toLocaleString(), label: t('statTotalTrainings') },
+    { value: stats.totalReviews.toLocaleString(), label: t('statReviews') },
+    { value: `${stats.averageScore}%`, label: t('statAverageScore') },
   ];
   const [visibleUsers, setVisibleUsers] = React.useState(5);
   const allUsers = [
