@@ -3,9 +3,9 @@ export type KeyConcept = {
   value: string;
 };
 
-export type TrainingPreparation = {
+export type ConversationScenarioPreparation = {
   id: string;
-  caseId: string;
+  scenarioId: string;
   objectives: string[];
   keyConcepts: KeyConcept[];
   prepChecklist: string[];

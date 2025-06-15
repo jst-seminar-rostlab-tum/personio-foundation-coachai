@@ -1,19 +1,25 @@
+import logging
 from math import ceil
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
 from app.database import get_db_session
 from app.dependencies import require_user
+from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
+from app.models.review import Review
+from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import (
     Session,
     SessionCreate,
     SessionDetailsRead,
     SessionRead,
+    SessionStatus,
+    SessionUpdate,
 )
 from app.models.session_feedback import (
     FeedbackStatusEnum,
@@ -27,6 +33,8 @@ from app.models.sessions_paginated import (
     SkillScores,
 )
 from app.models.user_profile import AccountRole, UserProfile
+from app.schemas.session_feedback_schema import ExamplesRequest
+from app.services.session_feedback_service import generate_and_store_feedback
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
 
@@ -77,6 +85,7 @@ def get_session_by_id(
         started_at=session.started_at,
         ended_at=session.ended_at,
         ai_persona=session.ai_persona,
+        status=session.status,
         created_at=session.created_at,
         updated_at=session.updated_at,
         title=training_title,
@@ -162,6 +171,7 @@ def get_sessions(
             session_id=sess.id,
             title='Negotiating Job Offers',  # mocked
             summary='Practice salary negotiation with a potential candidate',  # mocked
+            status=sess.status,
             date=sess.ended_at,
             score=82,  # mocked
             skills=SkillScores(
@@ -194,8 +204,9 @@ def create_session(
     conversation_scenario = db_session.get(ConversationScenario, session_data.scenario_id)
     if not conversation_scenario:
         raise HTTPException(status_code=404, detail='Conversation scenario not found')
+    new_session = Session(**session_data.model_dump())
+    new_session.status = SessionStatus.started
 
-    new_session = Session(**session_data.dict())
     db_session.add(new_session)
     db_session.commit()
     db_session.refresh(new_session)
@@ -205,8 +216,9 @@ def create_session(
 @router.put('/{session_id}', response_model=SessionRead)
 def update_session(
     session_id: UUID,
-    updated_data: SessionCreate,
+    updated_data: SessionUpdate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
+    background_tasks: BackgroundTasks,
 ) -> Session:
     """
     Update an existing session.
@@ -215,14 +227,90 @@ def update_session(
     if not session:
         raise HTTPException(status_code=404, detail='Session not found')
 
+    previous_status = session.status
+    conversation_scenario = None
+
+    scenario_id = updated_data.scenario_id or session.scenario_id
+
     # Validate foreign keys
-    if updated_data.scenario_id:
-        conversation_scenario = db_session.get(ConversationScenario, updated_data.scenario_id)
+    if scenario_id:
+        conversation_scenario = db_session.get(ConversationScenario, scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
-    for key, value in updated_data.dict().items():
+    for key, value in updated_data.model_dump(exclude_unset=True).items():
         setattr(session, key, value)
+
+    print(f'Session feedback: {session.feedback is not None}')
+    # Check if the session status is changing to completed
+    if (
+        previous_status != SessionStatus.completed
+        and updated_data.status == SessionStatus.completed
+        and session.feedback is None
+    ):
+        if not scenario_id:
+            raise HTTPException(
+                status_code=500,
+                detail='Conversation scenario must be provided to generate feedback',
+            )
+
+        statement = select(ScenarioPreparation).where(
+            ScenarioPreparation.scenario_id == session.scenario_id
+        )
+        preparation = db_session.exec(statement).first()
+        if not preparation:
+            raise HTTPException(
+                status_code=400, detail='No preparation steps found for the given scenario'
+            )
+        if preparation.status != ScenarioPreparationStatus.completed:
+            raise HTTPException(
+                status_code=400,
+                detail='Preparation steps must be completed before generating feedback',
+            )
+
+        session_turns = db_session.exec(
+            select(SessionTurn).where(SessionTurn.session_id == session.id)
+        ).all()
+        if not session_turns:
+            raise HTTPException(
+                status_code=400, detail='Session must have at least one session turn'
+            )
+
+        transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
+
+        category = db_session.exec(
+            select(ConversationCategory).where(
+                ConversationCategory.id == conversation_scenario.category_id
+            )
+        ).first()
+        if not category:
+            raise HTTPException(
+                status_code=404, detail='Conversation category not found for the session'
+            )
+
+        key_concepts = preparation.key_concepts
+        key_concepts_str = '\n'.join(f'{item["header"]}: {item["value"]}' for item in key_concepts)
+
+        request = ExamplesRequest(
+            category=category.name,
+            goal=conversation_scenario.goal,
+            context=conversation_scenario.context,
+            other_party=conversation_scenario.other_party,
+            transcript=transcripts,
+            objectives=preparation.objectives,
+            key_concepts=key_concepts_str,
+        )
+
+        # Schedule the feedback generation in the background
+        background_tasks.add_task(
+            generate_and_store_feedback,
+            session_id=session.id,
+            example_request=request,
+            db_session=db_session,
+        )
+
+        # Optionally, mark as "pending_feedback"
+        session.status = SessionStatus.started  # or define a 'pending_feedback' status
 
     db_session.add(session)
     db_session.commit()
@@ -230,31 +318,16 @@ def update_session(
     return session
 
 
-@router.delete('/{session_id}', response_model=dict)
-def delete_session(
-    session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
-) -> dict:
-    """
-    Delete a session.
-    """
-    session = db_session.get(Session, session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail='Session not found')
-
-    db_session.delete(session)
-    db_session.commit()
-    return {'message': 'Session deleted successfully'}
-
-
 @router.delete('/clear-all', response_model=dict)
 def delete_sessions_by_user(
     db_session: Annotated[DBSession, Depends(get_db_session)],
-    user: Annotated[UserProfile, Depends(require_user)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> dict:
     """
     Delete all sessions related to conversation scenarios for a given user ID.
     """
-    user_id = user.id
+    logging.info(f'Deleting all sessions for user ID: {user_profile.id}')
+    user_id = user_profile.id
     # Retrieve all conversation scenarios for the given user ID
     statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
     conversation_scenarios = db_session.exec(statement).all()
@@ -270,11 +343,54 @@ def delete_sessions_by_user(
         for session in conversation_scenario.sessions:
             for session_turn in session.session_turns:
                 audios.append(session_turn.audio_uri)
-            db_session.delete(session)
+            # Delete all ratings associated with this session
+            ratings = db_session.exec(
+                select(SessionFeedback).where(SessionFeedback.session_id == session.id)
+            ).all()
+            for rating in ratings:
+                db_session.delete(rating)
+                # db_session.commit()
 
-    db_session.commit()
+            # Delete all session feedback (reviews) associated with this session
+            reviews = db_session.exec(select(Review).where(Review.session_id == session.id)).all()
+            for review in reviews:
+                db_session.delete(review)
+                # db_session.commit()
+            db_session.delete(session)
+        db_session.commit()
 
     return {
         'message': f'Deleted {count_of_deleted_sessions} sessions for user ID {user_id}',
         'audios': audios,
     }
+
+
+@router.delete('/{session_id}', response_model=dict)
+def delete_session(
+    session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+) -> dict:
+    """
+    Delete a session.
+    """
+    logging.info(f'Deleting session with ID: {session_id}')
+    session = db_session.exec(select(Session).where(Session.id == session_id)).first()
+    if not session:
+        raise HTTPException(status_code=404, detail='Session not found')
+
+    # Delete all ratings associated with this session
+    ratings = db_session.exec(
+        select(SessionFeedback).where(SessionFeedback.session_id == session_id)
+    ).all()
+    for rating in ratings:
+        db_session.delete(rating)
+        db_session.commit()
+
+    # Delete all session feedback (reviews) associated with this session
+    reviews = db_session.exec(select(Review).where(Review.session_id == session_id)).all()
+    for review in reviews:
+        db_session.delete(review)
+        db_session.commit()
+
+    db_session.delete(session)
+    db_session.commit()
+    return {'message': 'Session deleted successfully'}
