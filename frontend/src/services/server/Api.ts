@@ -16,9 +16,9 @@ api.interceptors.request.use(
       return config;
     }
 
-    // if (process.env.NODE_ENV === 'development') {
-    //   return config;
-    // }
+    if (process.env.NODE_ENV === 'development') {
+      return config;
+    }
 
     const supabase = await createClient();
     const { data, error } = await supabase.auth.getSession();
