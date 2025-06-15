@@ -6,7 +6,8 @@ import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
 import { createClient } from '@/lib/supabase/client';
-import { authService } from '@/services/client/AuthService';
+import { api } from '@/services/ApiClient';
+import { authService } from '@/services/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResendParams, VerifyEmailOtpParams } from '@supabase/supabase-js';
 import { AlertCircleIcon } from 'lucide-react';
@@ -70,7 +71,7 @@ export default function ConfirmationForm() {
     }
 
     try {
-      await authService.confirmUser();
+      await authService.confirmUser(api);
     } catch {
       setError(t('genericError'));
       setIsLoading(false);

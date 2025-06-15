@@ -12,7 +12,8 @@ import {
 } from '@/components/ui/Dialog';
 import { Rating, RatingButton } from '@/components/ui/Rating';
 import { Textarea } from '@/components/ui/Textarea';
-import { createFeedback } from '@/services/client/FeedbackService';
+import { api } from '@/services/ApiClient';
+import { createFeedback } from '@/services/FeedbackService';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -34,7 +35,7 @@ export default function FeedbackDialog({ sessionId }: { sessionId: string }) {
 
   const rateFeedback = async () => {
     try {
-      await createFeedback({
+      await createFeedback(api, {
         rating,
         comment: ratingDescription,
         sessionId,

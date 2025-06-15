@@ -2,9 +2,9 @@ import {
   ConversationScenarioResponse,
   ConversationScenario,
 } from '@/interfaces/ConversationScenario';
-import { api } from './Api';
+import { AxiosInstance } from 'axios';
 
-const createConversationScenario = async (scenario: ConversationScenario) => {
+const createConversationScenario = async (api: AxiosInstance, scenario: ConversationScenario) => {
   try {
     const response = await api.post<ConversationScenarioResponse>('/conversation-scenario/', {
       ...scenario,
@@ -16,7 +16,7 @@ const createConversationScenario = async (scenario: ConversationScenario) => {
   }
 };
 
-const getPreparation = async (id: string) => {
+const getPreparation = async (api: AxiosInstance, id: string) => {
   try {
     const response = await api.get(`/conversation-scenario/${id}/preparation`);
     return response;

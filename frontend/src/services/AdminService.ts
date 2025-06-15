@@ -1,6 +1,6 @@
-import { api } from './Api';
+import { AxiosInstance } from 'axios';
 
-const getAdminStats = async () => {
+const getAdminStats = async (api: AxiosInstance) => {
   try {
     const { data } = await api.get(`/admin-stats`);
     return data;

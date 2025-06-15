@@ -6,8 +6,8 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
 import { Button } from '@/components/ui/Button';
-import { getPaginatedSessions } from '@/services/server/SessionService';
-import { api } from '@/services/server/Api';
+import { api } from '@/services/ApiServer';
+import { getPaginatedSessions } from '@/services/SessionService';
 import StatCard from '@/components/common/StatCard';
 import HistoryItems from './components/HistoryItems';
 

@@ -1,14 +1,14 @@
 import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
 import { createClient } from '@/lib/supabase/client';
+import { AxiosInstance } from 'axios';
 import { redirect } from 'next/navigation';
-import { api } from './Api';
 
-const createUser = async (data: CreateUserRequest) => {
+const createUser = async (api: AxiosInstance, data: CreateUserRequest) => {
   const response = await api.post('/auth/', data);
   return response.data;
 };
 
-const confirmUser = async () => {
+const confirmUser = async (api: AxiosInstance) => {
   const response = await api.get('/auth/confirm');
   return response.data;
 };

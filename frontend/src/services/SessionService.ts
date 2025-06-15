@@ -1,7 +1,22 @@
 import { Session } from '@/interfaces/Session';
-import { api } from './Api';
+import { AxiosInstance } from 'axios';
 
-export const getSessionFeedback = async (sessionId: string) => {
+export const getPaginatedSessions = async (api: AxiosInstance, page: number, pageSize: number) => {
+  try {
+    const response = await api.get(`/session`, {
+      params: {
+        page,
+        page_size: pageSize,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error('Error fetching paginated sessions:', error);
+    throw error;
+  }
+};
+
+export const getSessionFeedback = async (api: AxiosInstance, sessionId: string) => {
   try {
     const response = await api.get(`/session/${sessionId}`);
     return response;
@@ -11,7 +26,7 @@ export const getSessionFeedback = async (sessionId: string) => {
   }
 };
 
-export const clearAllSessions = async () => {
+export const clearAllSessions = async (api: AxiosInstance) => {
   try {
     const response = await api.delete(`/session/clear-all`);
     return response;
@@ -21,7 +36,7 @@ export const clearAllSessions = async () => {
   }
 };
 
-const createSession = async (scenarioId: string) => {
+const createSession = async (api: AxiosInstance, scenarioId: string) => {
   try {
     const response = await api.post<Session>('/session/', {
       scenarioId,
@@ -33,7 +48,7 @@ const createSession = async (scenarioId: string) => {
   }
 };
 
-const updateSession = async (sessionId: string, session: Partial<Session>) => {
+const updateSession = async (api: AxiosInstance, sessionId: string, session: Partial<Session>) => {
   try {
     const response = await api.put<Session>(`/session/${sessionId}/`, session);
     return response;

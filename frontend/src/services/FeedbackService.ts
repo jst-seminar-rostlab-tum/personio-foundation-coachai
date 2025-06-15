@@ -1,7 +1,7 @@
 import { Feedback } from '@/interfaces/Feedback';
-import { api } from './Api';
+import { AxiosInstance } from 'axios';
 
-export const createFeedback = async (feedback: Feedback) => {
+export const createFeedback = async (api: AxiosInstance, feedback: Feedback) => {
   try {
     const { data } = await api.post('/review', feedback);
     return data;
