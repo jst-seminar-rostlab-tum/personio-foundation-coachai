@@ -12,9 +12,9 @@ export default function AboutPageComponent() {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex-1">
-        <section className="pb-16 pt-8 md:pt-16 md:pb-24 bg-gradient-to-br from-white to-primary/5">
+        <section className="pb-16 lg:pt-8 md:pb-24 bg-gradient-to-br from-white to-primary/5">
           <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-marigold-30/80 text-primary text-sm font-medium shadow-sm">
                   {t('hero.badge')}
@@ -25,7 +25,7 @@ export default function AboutPageComponent() {
                 <p className="text-md md:text-xl text-black/60 font-medium">
                   {t('hero.description')}
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                <div className="flex flex-col lg:flex-row gap-4 w-full">
                   <Button asChild variant="default" className="w-full md:w-auto text-center">
                     <Link href="/login" className="w-full md:w-auto">
                       {t('hero.cta.primary')}
@@ -39,7 +39,7 @@ export default function AboutPageComponent() {
                 </div>
               </div>
               <div className="rounded-xl overflow-hidden shadow-lg">
-                <div className="w-full h-56 md:h-96 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <div className="w-full aspect-[16/9] md:h-96 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                   <Image
                     src="/images/hero.png"
                     alt="Hero Image"
@@ -54,7 +54,7 @@ export default function AboutPageComponent() {
           </div>
         </section>
 
-        <section id="how-it-works" className="py-8 md:py-20 bg-white">
+        <section id="how-it-works" className="scroll-mt-10 py-8 md:py-20 bg-white">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">

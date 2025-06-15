@@ -69,7 +69,7 @@ export default function Admin({ stats }: AdminProps) {
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
 
   return (
-    <div className="px-2 sm:px-4 max-w-full">
+    <div className="max-w-full">
       <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
       <div className="text-sm text-bw-40 text-center mb-8">{t('dashboardSubtitle')}</div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

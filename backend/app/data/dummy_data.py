@@ -1,103 +1,59 @@
 from datetime import UTC, datetime
-from uuid import uuid4
+from enum import Enum
+from uuid import UUID, uuid4
 
+from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig, ConfigType
-from app.models.confidence_area import ConfidenceArea
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import ConversationScenario, ConversationScenarioStatus
-from app.models.difficulty_level import DifficultyLevel  # Assuming this is the new model
-from app.models.experience import Experience
-from app.models.goal import Goal
-from app.models.language import Language  # Import the Language model
-from app.models.learning_style import LearningStyle
+from app.models.conversation_scenario import (
+    ConversationScenario,
+    ConversationScenarioStatus,
+    DifficultyLevel,
+)
+from app.models.language import LanguageCode
 from app.models.rating import Rating
+from app.models.review import Review
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.models.session import Session
+from app.models.session import Session, SessionStatus
 from app.models.session_feedback import (
     FeedbackStatusEnum,
     SessionFeedback,
 )
 from app.models.session_turn import SessionTurn, SpeakerEnum
-from app.models.user_confidence_score import UserConfidenceScore
-from app.models.user_goal import UserGoal
-from app.models.user_profile import UserProfile, UserRole
+from app.models.user_confidence_score import ConfidenceArea, UserConfidenceScore
+from app.models.user_goal import Goal, UserGoal
+from app.models.user_profile import (
+    AccountRole,
+    Experience,
+    PreferredLearningStyle,
+    ProfessionalRole,
+    UserProfile,
+)
 
 
-def get_dummy_learning_styles() -> list[LearningStyle]:
+class MockUserIdsEnum(Enum):
     """
-    Generate dummy LearningStyle data.
+    Enum for mock user IDs to be used in dummy data generation.
+    This enum is used to ensure that the IDs are consistent across
+    different parts of the application.
     """
-    return [
-        LearningStyle(
-            id=uuid4(),
-            label='Visual',
-            description='Prefers learning through visual aids like diagrams and charts.',
-        ),
-        LearningStyle(
-            id=uuid4(),
-            label='Auditory',
-            description='Prefers learning through listening to explanations and discussions.',
-        ),
-        LearningStyle(
-            id=uuid4(),
-            label='Kinesthetic',
-            description='Prefers learning through hands-on activities and physical engagement.',
-        ),
-    ]
+
+    USER = UUID('3a9a8970-afbe-4ee1-bc11-9dcad7875ddf')
+    ADMIN = UUID('763c76f3-e5a4-479c-8b53-e3418d5e2ef5')
 
 
-def get_dummy_languages() -> list[Language]:
-    return [
-        Language(code='en', name='English'),
-        Language(code='de', name='German'),
-    ]
-
-
-def get_dummy_experiences() -> list[Experience]:
-    return [
-        Experience(id=uuid4(), label='Beginner', description='New to the field'),
-        Experience(id=uuid4(), label='Intermediate', description='Some experience'),
-        Experience(id=uuid4(), label='Expert', description='Highly experienced'),
-    ]
-
-
-def get_dummy_goals() -> list[Goal]:
-    return [
-        Goal(
-            id=uuid4(),
-            label='Improve Communication',
-            description='Focus on verbal and non-verbal communication skills.',
-        ),
-        Goal(
-            id=uuid4(),
-            label='Time Management',
-            description='Improve productivity and manage time effectively.',
-        ),
-    ]
-
-
-def get_dummy_difficulty_levels() -> list[DifficultyLevel]:
-    return [
-        DifficultyLevel(id=uuid4(), label='Easy'),
-        DifficultyLevel(id=uuid4(), label='Medium'),
-        DifficultyLevel(id=uuid4(), label='Hard'),
-    ]
-
-
-def get_dummy_user_profiles(
-    experiences: list[Experience],
-    learning_styles: list[LearningStyle],
-) -> list[UserProfile]:
+def get_dummy_user_profiles() -> list[UserProfile]:
     """
     Generate dummy UserProfile data.
     """
     return [
         UserProfile(
-            id=uuid4(),
-            preferred_language='en',
-            role=UserRole.user,
-            experience_id=experiences[0].id,
-            preferred_learning_style_id=learning_styles[0].id,
+            id=MockUserIdsEnum.USER.value,
+            preferred_language_code=LanguageCode.en,
+            account_role=AccountRole.user,
+            professional_role=ProfessionalRole.hr_professional,
+            experience=Experience.beginner,
+            preferred_learning_style=PreferredLearningStyle.visual,
             store_conversations=False,
             total_sessions=32,
             training_time=4.5,
@@ -106,11 +62,12 @@ def get_dummy_user_profiles(
             goals_achieved=4,
         ),
         UserProfile(
-            id=uuid4(),
-            preferred_language='de',
-            role=UserRole.admin,
-            experience_id=experiences[1].id,
-            preferred_learning_style_id=learning_styles[1].id,
+            id=MockUserIdsEnum.ADMIN.value,
+            preferred_language_code=LanguageCode.en,
+            account_role=AccountRole.admin,
+            professional_role=ProfessionalRole.executive,
+            experience=Experience.expert,
+            preferred_learning_style=PreferredLearningStyle.kinesthetic,
             store_conversations=True,
             total_sessions=5,
             training_time=4.2,
@@ -121,26 +78,106 @@ def get_dummy_user_profiles(
     ]
 
 
-def get_dummy_user_goals(user_profiles: list[UserProfile], goals: list[Goal]) -> list[UserGoal]:
+def get_dummy_user_goals(user_profiles: list[UserProfile]) -> list[UserGoal]:
     return [
-        UserGoal(goal_id=goals[0].id, user_id=user_profiles[0].id),
-        UserGoal(goal_id=goals[1].id, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.giving_constructive_feedback, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.managing_team_conflicts, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.performance_reviews, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.motivating_team_members, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.leading_difficult_conversations, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.communicating_organizational_change, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.develop_emotional_intelligence, user_id=user_profiles[0].id),
+        UserGoal(goal=Goal.giving_constructive_feedback, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.managing_team_conflicts, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.performance_reviews, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.motivating_team_members, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.leading_difficult_conversations, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.communicating_organizational_change, user_id=user_profiles[1].id),
+        UserGoal(goal=Goal.develop_emotional_intelligence, user_id=user_profiles[1].id),
+    ]
+
+
+def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session]) -> list[Review]:
+    return [
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=sessions[0].id,  # Link to the first session
+            rating=5,
+            comment='Excellent service!',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=sessions[1].id,  # Link to a second session
+            rating=2,
+            comment='I found the sessions a bit too fast-paced.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
+            rating=4,
+            comment='Good overall, but could use more examples.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
+            rating=4,
+            comment='Great experience overall, but could use more examples.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=sessions[0].id,  # Link to the first session
+            rating=3,
+            comment='Good, but I expected more personalized feedback.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=sessions[1].id,  # Link to a second session
+            rating=5,
+            comment='Loved the interactive session and practical exercise!',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=1,
+            comment='Did not meet my expectations, too basic.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[0].id,
+            session_id=None,  # No session linked --> App Review
+            rating=4,
+            comment='Very informative, but the pace was a bit slow.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
     ]
 
 
 def get_dummy_conversation_scenarios(
-    user_profiles: list[UserProfile], difficulty_levels: list[DifficultyLevel]
+    user_profiles: list[UserProfile], categories: list[ConversationCategory]
 ) -> list[ConversationScenario]:
     return [
         ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[0].id,
-            category_id=None,
+            category_id=categories[0].id,
             custom_category_label='Custom Category 1',
             context='Context 1',
             goal='Goal 1',
             other_party='Other Party 1',
-            difficulty_id=difficulty_levels[0].id,
+            difficulty_level=DifficultyLevel.easy,
             tone='Friendly',
             complexity='Low',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
@@ -150,12 +187,12 @@ def get_dummy_conversation_scenarios(
         ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[1].id,
-            category_id=None,
+            category_id=categories[1].id,
             custom_category_label='Custom Category 2',
             context='Context 2',
             goal='Goal 2',
             other_party='Other Party 2',
-            difficulty_id=difficulty_levels[1].id,
+            difficulty_level=DifficultyLevel.medium,
             tone='Professional',
             complexity='Medium',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
@@ -200,9 +237,8 @@ def get_dummy_ratings(
 def get_dummy_conversation_categories() -> list[ConversationCategory]:
     return [
         ConversationCategory(
-            id=uuid4(),
+            id='giving_feedback',
             name='Giving Feedback',
-            icon_uri='/icons/giving_feedback.svg',
             system_prompt='You are an expert in providing constructive feedback.',
             initial_prompt='What feedback challenge are you facing?',
             ai_setup={'type': 'feedback', 'complexity': 'medium'},
@@ -210,14 +246,13 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_goal='Provide constructive feedback effectively.',
             default_other_party='Team member',
             is_custom=False,
-            language_code='en',
+            language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
-            id=uuid4(),
+            id='performance_reviews',
             name='Performance Reviews',
-            icon_uri='/icons/performance_reviews.svg',
             system_prompt='You are a manager conducting performance reviews.',
             initial_prompt='What aspect of performance would you like to discuss?',
             ai_setup={'type': 'review', 'complexity': 'high'},
@@ -225,14 +260,13 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_goal='Evaluate and discuss employee performance.',
             default_other_party='Employee',
             is_custom=False,
-            language_code='en',
+            language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
-            id=uuid4(),
+            id='conflict_resolution',
             name='Conflict Resolution',
-            icon_uri='/icons/conflict_resolution.svg',
             system_prompt='You are a mediator resolving conflicts.',
             initial_prompt='What conflict are you trying to resolve?',
             ai_setup={'type': 'mediation', 'complexity': 'high'},
@@ -240,14 +274,13 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_goal='Resolve conflicts and improve team dynamics.',
             default_other_party='Team members',
             is_custom=False,
-            language_code='en',
+            language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
-            id=uuid4(),
+            id='salary_discussions',
             name='Salary Discussions',
-            icon_uri='/icons/salary_discussions.svg',
             system_prompt='You are a negotiator discussing salary expectations.',
             initial_prompt='What salary-related topic would you like to address?',
             ai_setup={'type': 'negotiation', 'complexity': 'medium'},
@@ -255,14 +288,13 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_goal='Reach a mutually beneficial agreement on salary.',
             default_other_party='Employer',
             is_custom=False,
-            language_code='en',
+            language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         ConversationCategory(
-            id=uuid4(),
+            id='custom',
             name='Custom Category',
-            icon_uri='/icons/custom-category.svg',
             system_prompt='',
             initial_prompt='',
             ai_setup={},
@@ -270,7 +302,7 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             default_goal='',
             default_other_party='',
             is_custom=True,
-            language_code='en',
+            language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -281,10 +313,11 @@ def get_dummy_session_turns(
     sessions: list[Session],
 ) -> list[SessionTurn]:
     return [
+        # Session 1
         SessionTurn(
             id=uuid4(),
-            session_id=sessions[0].id,  # Link to the first session
-            speaker=SpeakerEnum.user,  # Use the SpeakerEnum for the speaker
+            session_id=sessions[0].id,
+            speaker=SpeakerEnum.user,
             start_offset_ms=0,
             end_offset_ms=5000,
             text='Hello, how can I help you?',
@@ -294,13 +327,69 @@ def get_dummy_session_turns(
         ),
         SessionTurn(
             id=uuid4(),
-            session_id=sessions[1].id,  # Link to the second session
-            speaker=SpeakerEnum.ai,  # Use the SpeakerEnum for the speaker
+            session_id=sessions[0].id,
+            speaker=SpeakerEnum.ai,
             start_offset_ms=5000,
             end_offset_ms=10000,
+            text='Hi! I’d like to check your schedule today. Are you available at 2 PM?',
+            audio_uri='https://example.com/audio/ai_schedule_check.mp3',
+            ai_emotion='friendly',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[0].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=10000,
+            end_offset_ms=15000,
+            text='Sure, 2 PM works fine.',
+            audio_uri='https://example.com/audio/user_agree.mp3',
+            ai_emotion='happy',
+            created_at=datetime.now(UTC),
+        ),
+        # Session 2
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[1].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=0,
+            end_offset_ms=4000,
             text='I need assistance with my account.',
-            audio_uri='https://example.com/audio/system_assistance.mp3',
+            audio_uri='https://example.com/audio/user_assistance.mp3',
             ai_emotion='concerned',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[1].id,
+            speaker=SpeakerEnum.ai,
+            start_offset_ms=4000,
+            end_offset_ms=9000,
+            text='Of course. Could you please tell me what issue you are facing?',
+            audio_uri='https://example.com/audio/ai_request_issue.mp3',
+            ai_emotion='calm',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[1].id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=9000,
+            end_offset_ms=13000,
+            text='I’m not able to log in since yesterday.',
+            audio_uri='https://example.com/audio/user_login_issue.mp3',
+            ai_emotion='worried',
+            created_at=datetime.now(UTC),
+        ),
+        SessionTurn(
+            id=uuid4(),
+            session_id=sessions[1].id,
+            speaker=SpeakerEnum.ai,
+            start_offset_ms=13000,
+            end_offset_ms=17000,
+            text='Thanks for the info. I will reset your credentials and email you shortly.',
+            audio_uri='https://example.com/audio/ai_reset_response.mp3',
+            ai_emotion='helpful',
             created_at=datetime.now(UTC),
         ),
     ]
@@ -314,8 +403,8 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            language_code='en',  # Assuming "en" is a valid language code in the LanguageModel table
             ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
+            status=SessionStatus.started,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -325,8 +414,8 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            language_code='de',  # Assuming "fr" is a valid language code in the LanguageModel table
             ai_persona={'persona_name': 'AI Mentor', 'persona_role': 'Guide'},
+            status=SessionStatus.started,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -402,7 +491,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.pending,  # Use the enum for status
+            status=FeedbackStatusEnum.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -471,7 +560,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.pending,  # Use the enum for status
+            status=FeedbackStatusEnum.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -497,7 +586,7 @@ def get_dummy_scenario_preparations(
                 'Review client history',
                 'Prepare presentation slides',
             ],
-            status=ScenarioPreparationStatus.pending,  # Use the enum for status
+            status=ScenarioPreparationStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -516,62 +605,27 @@ def get_dummy_scenario_preparations(
                 'Prepare project timeline',
                 'Review deliverables checklist',
             ],
-            status=ScenarioPreparationStatus.pending,  # Use the enum for status
+            status=ScenarioPreparationStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
     ]
 
 
-def get_dummy_confidence_areas() -> list[ConfidenceArea]:
-    """
-    Generate dummy ConfidenceArea data.
-    """
-    return [
-        ConfidenceArea(
-            id=uuid4(),
-            label='Giving difficult feedback',
-            description='Confidence in providing constructive feedback in challenging situations.',
-            min_value=0,
-            max_value=100,
-            min_label='Not confident',
-            max_label='Very confident',
-        ),
-        ConfidenceArea(
-            id=uuid4(),
-            label='Managing team conflicts',
-            description='Confidence in resolving conflicts within a team effectively.',
-            min_value=0,
-            max_value=100,
-            min_label='Not confident',
-            max_label='Very confident',
-        ),
-        ConfidenceArea(
-            id=uuid4(),
-            label='Leading challenging conversations',
-            description='Confidence in leading conversations that require tact and diplomacy.',
-            min_value=0,
-            max_value=100,
-            min_label='Not confident',
-            max_label='Very confident',
-        ),
-    ]
-
-
-def get_dummy_user_confidence_scores(
-    user_profiles: list[UserProfile], confidence_areas: list[ConfidenceArea]
-) -> list[UserConfidenceScore]:
+def get_dummy_user_confidence_scores(user_profiles: list[UserProfile]) -> list[UserConfidenceScore]:
     """
     Generate dummy UserConfidenceScore data.
     """
     scores = []
+    areas = list(ConfidenceArea)  # ['giving_difficult_feedback', 'managing_team_conflicts', ...]
+
     for user in user_profiles:
-        for area in confidence_areas:
+        for area in areas:
             scores.append(
                 UserConfidenceScore(
-                    area_id=area.id,
+                    confidence_area=area,
                     user_id=user.id,
-                    score=50,  # Default score for demonstration
+                    score=50,
                     updated_at=datetime.now(UTC),
                 )
             )
@@ -584,4 +638,17 @@ def get_dummy_app_configs() -> list[AppConfig]:
     """
     return [
         AppConfig(key='dailyUserTokenLimit', value='100', type=ConfigType.int),
+    ]
+
+
+def get_dummy_admin_stats() -> list[AdminDashboardStats]:
+    """
+    Generate dummy admin stats data.
+    """
+    return [
+        AdminDashboardStats(
+            id=uuid4(),
+            total_trainings=34533,
+            average_score=86,
+        )
     ]

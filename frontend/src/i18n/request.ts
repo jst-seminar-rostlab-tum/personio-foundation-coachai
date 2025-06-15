@@ -6,9 +6,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
   const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
   const messages = {
+    Confirm: (await import(`../../messages/${locale}/Confirm.json`)).default,
     Common: (await import(`../../messages/${locale}/Common.json`)).default,
     HomePage: (await import(`../../messages/${locale}/HomePage.json`)).default,
-    NewTraining: (await import(`../../messages/${locale}/NewTraining.json`)).default,
+    ConversationScenario: (await import(`../../messages/${locale}/ConversationScenario.json`))
+      .default,
     Admin: (await import(`../../messages/${locale}/Admin.json`)).default,
     Dashboard: (await import(`../../messages/${locale}/Dashboard.json`)).default,
     Feedback: (await import(`../../messages/${locale}/Feedback.json`)).default,
