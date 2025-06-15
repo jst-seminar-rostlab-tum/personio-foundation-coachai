@@ -4,6 +4,18 @@ import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { clearAllSessions } from '@/services/client/SessionService';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/AlertDialog';
 
 const mockSessions = [
   {
@@ -58,26 +70,57 @@ const mockSessions = [
 
 export default function PreviousSessions() {
   const [visibleCount, setVisibleCount] = useState(3);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [sessions, setSessions] = useState(mockSessions);
   const t = useTranslations('History');
 
-  const visibleSessions = mockSessions.slice(0, visibleCount);
-  const canLoadMore = visibleCount < mockSessions.length;
+  const visibleSessions = sessions.slice(0, visibleCount);
+  const canLoadMore = visibleCount < sessions.length;
 
   const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 3, mockSessions.length));
+    setVisibleCount((prev) => Math.min(prev + 3, sessions.length));
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      setIsDeleting(true);
+      await clearAllSessions();
+      setSessions([]);
+      setVisibleCount(0);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
-    <div className="w-full mx-auto mt-10 px-4">
+    <div className="w-full">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-2 md:gap-0">
         <div className="text-xl">{t('previousSessions')}</div>
         <div className="flex justify-between md:gap-6">
           <Button variant="ghost">
             {t('exportHistory')} <Download />
           </Button>
-          <Button variant="ghost" className="hover:text-flame-50">
-            {t('clearAll')} <Trash2 />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" className="hover:text-flame-50" disabled={isDeleting}>
+                {t('clearAll')} <Trash2 />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t('deleteAllSessions')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('deleteAllSessionsConfirmation')}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteAll}>{t('delete')}</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
       <div className="flex flex-col gap-4">

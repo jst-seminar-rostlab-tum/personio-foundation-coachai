@@ -2,7 +2,7 @@
 
 import { ArrowRightIcon, ChevronDown, Search, Star, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import React from 'react';
+import React, { use } from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -33,15 +33,17 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 import { useDeleteUser } from '@/components/common/DeleteUserHandler';
+import { AdminProps } from '@/interfaces/AdminProps';
 
-export default function Admin() {
+export default function Admin({ stats }: AdminProps) {
   const t = useTranslations('Admin');
   const tr = useTranslations('TrainingSettings');
-  const stats = [
-    { value: '11.200', label: t('statActiveUsers') },
-    { value: '34.533', label: t('statTotalTrainings') },
-    { value: '1.062', label: t('statReviews') },
-    { value: '82%', label: t('statAverageScore') },
+  const statsResponse = use(stats);
+  const statsArray = [
+    { value: statsResponse.totalUsers, label: t('statActiveUsers') },
+    { value: statsResponse.totalTrainings, label: t('statTotalTrainings') },
+    { value: statsResponse.totalReviews, label: t('statReviews') },
+    { value: `${statsResponse.averageScore}%`, label: t('statAverageScore') },
   ];
   const [visibleUsers, setVisibleUsers] = React.useState(5);
   const allUsers = [
@@ -62,11 +64,11 @@ export default function Admin() {
   const userId = '0b222f0b-c7e5-4140-9049-35620fee8009';
 
   return (
-    <div className="px-2 sm:px-4 max-w-full">
+    <div className="max-w-full">
       <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
       <div className="text-sm text-bw-40 text-center mb-8">{t('dashboardSubtitle')}</div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {stats.map((stat, i) => (
+        {statsArray.map((stat, i) => (
           <StatCard key={i} value={stat.value} label={stat.label} />
         ))}
       </div>

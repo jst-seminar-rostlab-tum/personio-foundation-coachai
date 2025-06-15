@@ -8,6 +8,7 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import (
     ConversationScenario,
@@ -15,6 +16,7 @@ from app.models.conversation_scenario import (
     ConversationScenarioRead,
 )
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationRead
+from app.models.user_profile import UserProfile
 from app.schemas.scenario_preparation_schema import ScenarioPreparationRequest
 from app.services.scenario_preparation_service import (
     create_pending_preparation,
@@ -36,11 +38,12 @@ def get_conversation_scenarios(
     return list(conversation_scenarios)
 
 
-@router.post('/', response_model=ConversationScenarioRead)
+@router.post('/', response_model=ConversationScenarioRead, dependencies=[Depends(require_user)])
 def create_conversation_scenario_with_preparation(
     conversation_scenario: ConversationScenarioCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
     background_tasks: BackgroundTasks,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> JSONResponse:
     """
     Create a new conversation scenario and start the preparation process in the background.
@@ -52,8 +55,10 @@ def create_conversation_scenario_with_preparation(
         if not category:
             raise HTTPException(status_code=404, detail='Category not found')
 
-    # 2. Create new ConversationScenario
-    new_conversation_scenario = ConversationScenario(**conversation_scenario.model_dump())
+    # 2. Create new ConversationScenario, set user_id from user_profile
+    new_conversation_scenario = ConversationScenario(
+        **conversation_scenario.model_dump(), user_id=user_profile.id
+    )
     db_session.add(new_conversation_scenario)
     db_session.commit()
     db_session.refresh(new_conversation_scenario)
@@ -62,7 +67,7 @@ def create_conversation_scenario_with_preparation(
     prep = create_pending_preparation(new_conversation_scenario.id, db_session)
 
     preparation_request = ScenarioPreparationRequest(
-        category=category.name,
+        category=category.name if category else '',
         context=new_conversation_scenario.context,
         goal=new_conversation_scenario.goal,
         other_party=new_conversation_scenario.other_party,
@@ -76,10 +81,10 @@ def create_conversation_scenario_with_preparation(
     )
     # 5. Return response
     return JSONResponse(
-        status_code=status.HTTP_202_ACCEPTED,
+        status_code=status.HTTP_200_OK,
         content={
             'message': 'Conversation scenario created, preparation started.',
-            'scenario_id': str(new_conversation_scenario.id),
+            'scenarioId': str(new_conversation_scenario.id),
         },
     )
 
@@ -128,10 +133,15 @@ def delete_conversation_scenario(
     return {'message': 'Conversation scenario deleted successfully'}
 
 
-@router.get('/{scenario_id}/preparation', response_model=ScenarioPreparationRead)
+@router.get(
+    '/{scenario_id}/preparation',
+    response_model=ScenarioPreparationRead,
+)
 def get_scenario_preparation_by_scenario_id(
-    scenario_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
-) -> ScenarioPreparation:
+    scenario_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> ScenarioPreparationRead:
     """
     Retrieve the scenario preparation data for a given conversation scenario ID.
     """
@@ -140,6 +150,13 @@ def get_scenario_preparation_by_scenario_id(
     if not conversation_scenario:
         raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
+    if conversation_scenario.user_id != user_profile.id and user_profile.account_role != 'admin':
+        raise HTTPException(
+            status_code=400,
+            detail='You do not have permission to access this scenario, '
+            'you can only view your own scenarios.',
+        )
+
     # Fetch the associated scenario preparation
     statement = select(ScenarioPreparation).where(ScenarioPreparation.scenario_id == scenario_id)
     scenario_preparation = db_session.exec(statement).first()
@@ -147,4 +164,20 @@ def get_scenario_preparation_by_scenario_id(
     if not scenario_preparation:
         raise HTTPException(status_code=404, detail='Scenario preparation not found')
 
-    return scenario_preparation
+    # Prepare category name with fallback to custom label or None
+    category_name = (
+        conversation_scenario.category.name
+        if conversation_scenario.category
+        else conversation_scenario.custom_category_label
+        if conversation_scenario.custom_category_label
+        else None
+    )
+
+    # Return the scenario preparation read model with additional scenario context
+    return ScenarioPreparationRead(
+        **scenario_preparation.model_dump(),
+        context=conversation_scenario.context,
+        goal=conversation_scenario.goal,
+        other_party=conversation_scenario.other_party,
+        category_name=category_name,
+    )

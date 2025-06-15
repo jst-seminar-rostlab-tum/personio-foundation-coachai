@@ -1,5 +1,5 @@
+from app.models.admin_dashboard_stats import AdminDashboardStats, AdminDashboardStatsRead
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
-from app.models.confidence_area import ConfidenceArea, ConfidenceAreaCreate, ConfidenceAreaRead
 from app.models.conversation_category import (
     ConversationCategory,
     ConversationCategoryCreate,
@@ -11,12 +11,9 @@ from app.models.conversation_scenario import (
     ConversationScenarioRead,
     ConversationScenarioStatus,
 )
-from app.models.difficulty_level import DifficultyLevel, DifficultyLevelCreate, DifficultyLevelRead
-from app.models.experience import Experience, ExperienceCreate, ExperienceRead
-from app.models.goal import Goal, GoalCreate, GoalRead
-from app.models.learning_style import LearningStyle, LearningStyleCreate, LearningStyleRead
 from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
+from app.models.review import Review, ReviewCreate, ReviewRead
 from app.models.scenario_preparation import (
     ScenarioPreparation,
     ScenarioPreparationCreate,
@@ -85,31 +82,16 @@ __all__ = [
     'UserProfile',
     'UserProfileCreate',
     'UserProfileRead',
-    'Goal',
-    'GoalCreate',
-    'GoalRead',
     'UserGoal',
     'UserGoalCreate',
     'UserGoalRead',
-    'Experience',
-    'ExperienceCreate',
-    'ExperienceRead',
-    'DifficultyLevel',
-    'DifficultyLevelCreate',
-    'DifficultyLevelRead',
     'PositiveExample',
     'FeedbackStatusEnum',
     'NegativeExample',
     'Recommendation',
-    'ConfidenceArea',
-    'ConfidenceAreaCreate',
-    'ConfidenceAreaRead',
     'UserConfidenceScore',
     'UserConfidenceScoreCreate',
     'UserConfidenceScoreRead',
-    'LearningStyle',
-    'LearningStyleCreate',
-    'LearningStyleRead',
     'ConfidenceScoreRead',
     'UserProfileExtendedRead',
     'PersonalizationOptionRead',
@@ -117,4 +99,9 @@ __all__ = [
     'AppConfigCreate',
     'AppConfigRead',
     'ConfigType',
+    'AdminDashboardStats',
+    'AdminDashboardStatsRead',
+    'Review',
+    'ReviewCreate',
+    'ReviewRead',
 ]

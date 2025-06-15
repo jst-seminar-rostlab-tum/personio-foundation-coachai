@@ -28,7 +28,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
       <body className={inter.className}>
         <NextIntlClientProvider>
           <AppHeader />
-          <main className="container mx-auto p-4 mt-[56px]">{children}</main>
+          <main className="container mx-auto p-6 md:p-12 mt-16">{children}</main>
         </NextIntlClientProvider>
       </body>
     </html>

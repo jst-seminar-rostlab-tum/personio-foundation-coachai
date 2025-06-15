@@ -4,7 +4,7 @@ from app.models.camel_case import CamelModel
 
 
 class ExamplesRequest(CamelModel):
-    transcript: str  # Full transcript of the session
+    transcript: str | None  # Full transcript of the session
     objectives: list[str] = Field(
         ..., description='List of training objectives the user is expected to achieve'
     )
@@ -37,7 +37,7 @@ class SessionExamplesCollection(CamelModel):
 class GoalsAchievementRequest(CamelModel):
     """Request to evaluate the training objectives that were achieved in the transcript."""
 
-    transcript: str  # Full transcript of the session
+    transcript: str | None
     objectives: list[str] = Field(
         ..., description='List of training objectives the user is expected to achieve'
     )

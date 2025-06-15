@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -56,6 +57,7 @@ def create_user(req: CreateUserRequest) -> None:
         }
         supabase.auth.sign_up(credentials)
     except Exception as e:
+        logging.warning('Unhandled exception when creating user: ', e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
