@@ -1,4 +1,5 @@
-import { useTranslations } from 'next-intl';
+'use client';
+
 import {
   ChartNoAxesColumnIncreasingIcon,
   CheckCircle,
@@ -18,91 +19,90 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import Link from 'next/link';
+import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { getSessionFeedback } from '@/services/SessionService';
 import FeedbackQuote from './FeedbackQuote';
+import FeedbackDialog from './FeedbackDialog';
+import FeedbackDetailLoadingPage from '../loading';
 
-const mockFeedback = {
-  topic: 'Giving Constructive Feedback',
-  time: '16.04.2025, 12:24',
-  structure: 85,
-  empathy: 89,
-  focus: 91,
-  clarity: 89,
-  overall: 82,
-  speakingTime: 62,
-  questionAsked: 6,
-  sessionLength: '3:30',
-  goalsAcheived: '4/5',
-  conversationLength: 3,
-};
-
-export default function FeedbackDetail() {
+export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
   const t = useTranslations('Feedback');
+  const [feedbackDetail, setFeedbackDetail] = useState<FeedbackResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const getFeedbackDetail = useCallback(
+    async (id: string) => {
+      try {
+        const response = await getSessionFeedback(id);
+        if (response.status === 202) {
+          setTimeout(() => {
+            getFeedbackDetail(id);
+          }, 2000);
+          return;
+        }
+
+        if (response.status === 200) {
+          setFeedbackDetail(response.data);
+          setIsLoading(false);
+          return;
+        }
+
+        throw new Error('Failed to get training case preparation data');
+      } catch (error) {
+        setIsLoading(false);
+        console.error(error);
+      }
+    },
+    [setFeedbackDetail, setIsLoading]
+  );
+
+  useEffect(() => {
+    getFeedbackDetail(sessionId);
+  }, [getFeedbackDetail, sessionId]);
+
+  const convertTimeToMinutes = (seconds: number) => {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  };
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${day}.${month}.${year}, ${hours}:${minutes}`;
+  };
+
   const progressBarData = [
-    { key: t('progressBars.structure'), value: mockFeedback.structure },
-    { key: t('progressBars.empathy'), value: mockFeedback.empathy },
-    { key: t('progressBars.focus'), value: mockFeedback.focus },
-    { key: t('progressBars.clarity'), value: mockFeedback.clarity },
+    { key: t('progressBars.structure'), value: feedbackDetail?.feedback?.scores.structure ?? 0 },
+    { key: t('progressBars.empathy'), value: feedbackDetail?.feedback?.scores.empathy ?? 0 },
+    { key: t('progressBars.focus'), value: feedbackDetail?.feedback?.scores.focus ?? 0 },
+    { key: t('progressBars.clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
 
   const roundCardStats = [
-    { key: t('stats.speakingTime'), value: `${mockFeedback.speakingTime}%`, icon: 'Mic' },
-    { key: t('stats.questionsAsked'), value: mockFeedback.questionAsked, icon: 'Message' },
-    { key: t('stats.sessionLength'), value: mockFeedback.sessionLength, icon: 'Clock' },
-    { key: t('stats.goalsAchieved'), value: mockFeedback.goalsAcheived, icon: 'Check' },
-  ];
-
-  const examplesPositive = [
     {
-      heading: 'Clear framing of the issue',
-      feedback:
-        'You effectively communicated the specific issue (missed deadlines) and its impact on the team without being accusatory.',
-      quote:
-        'I’ve noticed that several deadlines were missed last week, and it’s causing our team to fall behind on the overall project timeline.',
+      key: t('stats.sessionLength'),
+      value: convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0),
+      icon: 'Clock',
     },
     {
-      heading: 'Strong active listening',
-      feedback:
-        'You demonstrated excellent listening skills by paraphrasing Sarah’s concerns and asking thoughtful follow-up questions.',
-      quote:
-        'It sounds like you’re feeling overwhelmed by the number of tasks you’re responsible for. Let’s talk about how we might prioritize these better.',
+      key: t('stats.goalsAchieved'),
+      value: feedbackDetail?.feedback?.goalsAchieved ?? 0,
+      icon: 'Check',
     },
   ];
 
-  const examplesNegative = [
-    {
-      heading: 'More specific examples needed',
-      feedback:
-        'Your feedback would have been more impactful with specific examples of the missed deadlines and their consequences.',
-      quote: 'Several tasks have been delayed…',
-      improvedQuote:
-        'The UI mockups were due last Tuesday and the API documentation was due Friday, both of which are still incomplete. This has prevented the developers from starting their work.',
-    },
-    {
-      heading: 'Rushed to solutions',
-      feedback:
-        'You moved to problem-solving before fully exploring the root causes of the missed deadlines.',
-      quote: '',
-      improvedQuote:
-        'What specific challenges have made it difficult to meet these deadlines? Are there particular aspects of these tasks that are taking more time than expected?',
-    },
-  ];
+  const examplePositive = feedbackDetail?.feedback?.examplePositive || [];
 
-  const recommendations = [
-    {
-      heading: 'Practice the STAR method',
-      recommendation:
-        'When giving feedback, use the Situation, Task, Action, Result framework to provide more concrete examples.',
-    },
-    {
-      heading: 'Ask more diagnostic questions',
-      recommendation:
-        'Spend more time understanding root causes before moving to solutions. This builds empathy and leads to more effective outcomes.',
-    },
-    {
-      heading: 'Define clear next steps',
-      recommendation: 'End feedback conversations with agreed-upon action items.',
-    },
-  ];
+  const exampleNegative = feedbackDetail?.feedback?.exampleNegative || [];
+
+  const recommendations = feedbackDetail?.feedback?.recommendations || [];
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -116,13 +116,19 @@ export default function FeedbackDetail() {
         return <MessageCircleQuestion size={20} />;
     }
   };
+  if (isLoading) {
+    return <FeedbackDetailLoadingPage />;
+  }
   return (
-    <div className="flex flex-col items-center gap-7 mx-auto max-w-3xl">
+    <div className="flex flex-col items-center gap-8">
       <div className="text-2xl ">{t('title')}</div>
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
-        <div className="text-lg text-marigold-90">{mockFeedback.topic}</div>
-        <div className="text-base text-marigold-95">{mockFeedback.time}</div>
+        <div className="text-lg text-marigold-90">{feedbackDetail?.title}</div>
+        <div className="text-base text-marigold-95">
+          {formatDateTime(feedbackDetail?.createdAt ?? '')}
+        </div>
       </div>
+      <FeedbackDialog sessionId={sessionId} />
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
           {progressBarData.map((item) => (
@@ -136,12 +142,12 @@ export default function FeedbackDetail() {
           ))}
         </div>
         <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
-          {mockFeedback.overall}%
+          {feedbackDetail?.feedback?.overallScore ?? 0}%
         </div>
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
 
-      <div className="grid grid-cols-2 gap-y-4 w-full px-1 md:flex md:justify-between">
+      <div className="flex justify-evenly w-full">
         {roundCardStats.map((stat) => (
           <div className="flex gap-2 items-center" key={stat.key}>
             <div className="rounded-full size-11 border-1 border-bw-30 bg-bw-10 flex items-center justify-center">
@@ -165,7 +171,7 @@ export default function FeedbackDetail() {
             <Progress className="w-10 flex-1" value={62} />
             <div className="flex gap-1 items-center text-base text-bw-40">
               <Clock size={13} />
-              <span>{mockFeedback.conversationLength} min</span>
+              <span>{convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0)}</span>
             </div>
           </div>
         </div>
@@ -182,7 +188,7 @@ export default function FeedbackDetail() {
               <span className="text-xl">{t('detailedFeedback.positive')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {examplesPositive.map((example, index) => (
+              {examplePositive.map((example, index) => (
                 <FeedbackQuote key={index} {...example} icon="Check" />
               ))}
             </div>
@@ -192,7 +198,7 @@ export default function FeedbackDetail() {
               <span className="text-xl">{t('detailedFeedback.negative')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {examplesNegative.map((negative, index) => (
+              {exampleNegative.map((negative, index) => (
                 <FeedbackQuote key={index} {...negative} icon="Cross" />
               ))}
             </div>
