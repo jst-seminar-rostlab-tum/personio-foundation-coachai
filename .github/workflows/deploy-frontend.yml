@@ -6,6 +6,8 @@ on:
   push:
     branches: [ main, dev ]
     paths: [ 'frontend/**' ]
+  pull_request:
+    paths: [ 'frontend/**' ]
   workflow_dispatch:
 
 jobs:
@@ -56,10 +58,10 @@ jobs:
 
   deploy:
     name: Deploy
-    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
     needs: build
     runs-on: ubuntu-22.04
-
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
     env:
       VERCEL_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
 
@@ -80,3 +82,46 @@ jobs:
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --target=${{ env.VERCEL_ENV }} --token=${{ secrets.VERCEL_TOKEN }}
         working-directory: ./frontend
+
+  deploy-preview:
+    name: Deploy Preview
+    if: github.event_name == 'pull_request'
+    needs: build
+    runs-on: ubuntu-22.04
+    env:
+      VERCEL_ENV: preview
+    environment:
+      name: Preview
+      url:  ${{ steps.deploy.outputs.preview_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Vercel CLI
+        run: npm i -g vercel@latest
+
+      - name: Pull Vercel Preview env
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: ./frontend
+
+      - name: Build
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: ./frontend
+
+      - name: Deploy
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "preview_url=$url" >> $GITHUB_OUTPUT
+        working-directory: ./frontend
+
+      - name: Comment PR with Preview URL
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "Vercel Preview deployed: ${{ steps.deploy.outputs.preview_url }}"
+            })
