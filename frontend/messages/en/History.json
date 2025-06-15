@@ -15,5 +15,10 @@
   "previousSessions": "Previous Sessions",
   "exportHistory": "Export History",
   "clearAll": "Clear All",
-  "loadMore": "Load More"
+  "loadMore": "Load More",
+  "deleteAllSessions": "Delete All Sessions",
+  "deleteAllSessionsConfirmation": "Are you sure you want to delete all sessions? This action cannot be undone.",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "deleting": "Deleting..."
 }
