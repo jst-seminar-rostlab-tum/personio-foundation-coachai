@@ -944,7 +944,10 @@ def get_dummy_session_feedback(
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
-            goals_achieved=4,
+            goals_achieved=[
+                'Align on team roles',
+                'Set expectations for communication',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1013,7 +1016,11 @@ def get_dummy_session_feedback(
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
-            goals_achieved=4,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Align on team roles',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1082,7 +1089,10 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1151,7 +1161,9 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1220,7 +1232,12 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Maintain professionalism',
+                'Provide specific feedback',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1289,7 +1306,7 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=['Bring clarity to the situation'],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
