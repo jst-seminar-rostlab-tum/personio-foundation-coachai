@@ -35,7 +35,7 @@ class DifficultyLevel(str, Enum):
 class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
-    category_id: Optional[UUID] = Field(default=None, foreign_key='conversationcategory.id')
+    category_id: Optional[str] = Field(default=None, foreign_key='conversationcategory.id')
     custom_category_label: Optional[str] = None
     language_code: LanguageCode = Field(default=LanguageCode.en)
     context: str
@@ -68,7 +68,7 @@ def update_timestamp(
 
 # Schema for creating a new ConversationScenario
 class ConversationScenarioCreate(CamelModel):
-    category_id: Optional[UUID] = None
+    category_id: Optional[str] = None
     custom_category_label: Optional[str] = None
     context: str
     goal: str
@@ -84,7 +84,7 @@ class ConversationScenarioCreate(CamelModel):
 class ConversationScenarioRead(CamelModel):
     id: UUID
     user_id: UUID
-    category_id: Optional[UUID]
+    category_id: Optional[str]
     custom_category_label: Optional[str]
     context: str
     goal: str

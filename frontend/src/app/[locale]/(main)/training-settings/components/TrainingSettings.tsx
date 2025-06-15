@@ -1,7 +1,6 @@
 'use client';
 
 import React, { use, useState } from 'react';
-import Link from 'next/link';
 import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
@@ -103,12 +102,7 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
   };
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <div className="text-xl font-bold text-black">{t('title')}</div>
-        <Link href="/dashboard">
-          <Button>{t('backToDashboard')}</Button>
-        </Link>
-      </div>
+      <h1 className="text-2xl">{t('title')}</h1>
 
       <div className="mt-6 space-y-4">
         <div className="w-full px-4 py-3 flex items-center rounded-t-lg">

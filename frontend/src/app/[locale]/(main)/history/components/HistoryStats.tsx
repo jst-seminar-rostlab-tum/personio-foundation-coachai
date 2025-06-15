@@ -11,7 +11,7 @@ const mockStats = [
 export default function HistoryStats() {
   const t = useTranslations('History');
   return (
-    <div className="w-full px-4">
+    <div className="w-full">
       <div className="w-full flex flex-col  gap-6">
         <div className="flex-1">
           <div className="text-xl mb-4 text-bw-70">{t('skillsPerformance')}</div>

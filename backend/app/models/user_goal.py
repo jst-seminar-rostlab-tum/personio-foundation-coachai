@@ -28,7 +28,7 @@ class Goal(str, Enum):
 
 
 class UserGoal(CamelModel, table=True):  # `table=True` makes it a database table
-    goal: Goal = Field(default=Goal.giving_constructive_feedback)
+    goal: Goal = Field(default=Goal.giving_constructive_feedback, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)  # FK to UserProfileModel
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
