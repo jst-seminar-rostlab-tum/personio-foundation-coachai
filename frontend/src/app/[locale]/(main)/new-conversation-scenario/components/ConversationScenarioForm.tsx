@@ -5,30 +5,37 @@ import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Stepper from '@/components/common/Stepper';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FormState } from '@/interfaces/NewTrainingFormState';
+import { useParams, useRouter } from 'next/navigation';
+import { ConversationCategory } from '@/interfaces/ConversationCategory';
+import { ConversationScenarioFormState } from '@/interfaces/ConversationScenarioFormState';
+import { ConversationScenario } from '@/interfaces/ConversationScenario';
+import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
 
-const initialFormState: FormState = {
+const initialFormState: ConversationScenarioFormState = {
   category: '',
   customCategory: '',
-  party: {
-    type: '',
-    otherName: '',
-  },
+  name: '',
+  otherParty: '',
   context: '',
   goal: '',
   difficulty: '',
   emotionalTone: '',
   complexity: '',
+  isCustom: false,
 };
 
-export default function NewTrainingForm() {
-  const t = useTranslations('NewTraining');
+export default function ConversationScenarioForm() {
+  const t = useTranslations('ConversationScenario');
+  const router = useRouter();
+  const { locale } = useParams();
   const [currentStep, setCurrentStep] = useState(0);
-  const [formState, setFormState] = useState<FormState>(initialFormState);
+  const [formState, setFormState] = useState<ConversationScenarioFormState>(initialFormState);
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
+
+  const categories = t.raw('categories') as ConversationCategory[];
 
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
@@ -42,9 +49,8 @@ export default function NewTrainingForm() {
         return !!formState.category;
       case 1:
         return (
-          (formState.category !== 'custom' || !!formState.customCategory) &&
-          !!formState.party.type &&
-          (formState.party.type !== 'other' || !!formState.party.otherName) &&
+          (!formState.isCustom || !!formState.customCategory) &&
+          !!formState.otherParty &&
           !!formState.context &&
           !!formState.goal
         );
@@ -55,39 +61,73 @@ export default function NewTrainingForm() {
     }
   };
 
-  const handleCategorySelect = (category: string) => {
-    setFormState((prev) => ({ ...prev, category }));
+  const handleCategorySelect = (category: ConversationCategory) => {
+    setFormState((prev: ConversationScenarioFormState) => ({
+      ...prev,
+      category: category.id,
+      name: category.name,
+      context: category.defaultContext || prev.context,
+      goal: category.defaultGoal || prev.goal,
+      otherParty: category.defaultOtherParty || '',
+      isCustom: category.isCustom || false,
+    }));
   };
 
   const handleCustomCategoryInput = (customCategory: string) => {
-    setFormState((prev) => ({ ...prev, customCategory }));
+    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, customCategory }));
   };
 
-  const handlePartyChange = (type: string, otherName?: string) => {
-    setFormState((prev) => ({
+  const handlePartyChange = (otherParty: string) => {
+    setFormState((prev: ConversationScenarioFormState) => ({
       ...prev,
-      party: { type, otherName: otherName || prev.party.otherName },
+      otherParty,
     }));
   };
 
   const handleContextChange = (context: string) => {
-    setFormState((prev) => ({ ...prev, context }));
+    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, context }));
   };
 
   const handleGoalChange = (goal: string) => {
-    setFormState((prev) => ({ ...prev, goal }));
+    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, goal }));
   };
 
   const handleDifficultyChange = (difficulty: string) => {
-    setFormState((prev) => ({ ...prev, difficulty }));
+    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, difficulty }));
   };
 
   const handleEmotionalToneChange = (emotionalTone: string) => {
-    setFormState((prev) => ({ ...prev, emotionalTone }));
+    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, emotionalTone }));
   };
 
   const handleComplexityChange = (complexity: string) => {
-    setFormState((prev) => ({ ...prev, complexity }));
+    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, complexity }));
+  };
+
+  const submitForm = async () => {
+    if (currentStep !== 2) {
+      setCurrentStep(() => currentStep + 1);
+      return;
+    }
+
+    const scenario: ConversationScenario = {
+      categoryId: formState.category,
+      customCategoryLabel: formState.customCategory,
+      context: formState.context,
+      goal: formState.goal,
+      otherParty: formState.otherParty,
+      difficultyLevel: formState.difficulty,
+      tone: formState.emotionalTone,
+      complexity: formState.complexity,
+      languageCode: locale as string,
+    };
+
+    try {
+      const { data } = await conversationScenarioService.createConversationScenario(scenario);
+      router.push(`/preparation/${data.scenarioId}`);
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -107,19 +147,20 @@ export default function NewTrainingForm() {
         <CategoryStep
           selectedCategory={formState.category}
           onCategorySelect={handleCategorySelect}
+          categories={categories}
         />
       )}
 
       {currentStep === 1 && (
         <SituationStep
-          party={formState.party}
+          otherParty={formState.otherParty}
           context={formState.context}
           goal={formState.goal}
           onPartyChange={handlePartyChange}
           onContextChange={handleContextChange}
           onCustomCategoryInput={handleCustomCategoryInput}
           onGoalChange={handleGoalChange}
-          category={formState.category}
+          isCustom={formState.isCustom}
           customCategory={formState.customCategory}
         />
       )}
@@ -149,7 +190,7 @@ export default function NewTrainingForm() {
         )}
         <Button
           size="full"
-          onClick={() => setCurrentStep(() => currentStep + 1)}
+          onClick={() => submitForm()}
           variant={!isStepValid(currentStep) ? 'disabled' : 'default'}
         >
           {currentStep === 2 ? t('navigation.create') : t('navigation.next')}

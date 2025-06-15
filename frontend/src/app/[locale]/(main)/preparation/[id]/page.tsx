@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import PreparationContent from '../components/PreparationContent';
+import PreparationContent from './components/PreparationContent';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -27,7 +27,7 @@ export default function PreparationPage() {
       <PreparationContent />
 
       <div className="flex gap-4">
-        <Link href="/new-training" className="flex-1">
+        <Link href="/new-conversation-scenario" className="flex-1">
           <Button size="full" variant="outline">
             <ArrowLeftIcon />
             {t('navigation.back')}

@@ -1,51 +1,50 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import ObjectivesList from '@/app/[locale]/(main)/preparation/components/ObjectivesList';
-import PreparationChecklist from '@/app/[locale]/(main)/preparation/components/PreparationChecklist';
 import { useTranslations } from 'next-intl';
-import { TrainingPreparation } from '@/interfaces/TrainingPreparation';
+import { ConversationScenarioPreparation } from '@/interfaces/ConversationScenarioPreparation';
 import { useParams } from 'next/navigation';
 import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
+import PreparationChecklist from './PreparationChecklist';
+import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
 
 export default function PreparationContent() {
   const t = useTranslations('Preparation');
-  const [preparationData, setPreparationData] = useState<TrainingPreparation | null>(null);
+  const [preparationData, setPreparationData] = useState<ConversationScenarioPreparation | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
-  const trainingCaseId = params.id as string;
+  const conversationScenarioId = params.id as string;
 
-  const getTrainingPreparation = useCallback(
-    async (id: string) => {
-      try {
-        const response = await conversationScenarioService.getPreparation(id);
+  const getTrainingPreparation = useCallback(async (id: string) => {
+    try {
+      const response = await conversationScenarioService.getPreparation(id);
 
-        if (response.status === 202) {
-          setTimeout(() => {
-            getTrainingPreparation(id);
-          }, 2000);
-          return;
-        }
-
-        if (response.status === 200) {
-          setPreparationData(response.data);
-          setIsLoading(false);
-          return;
-        }
-
-        throw new Error('Failed to get training case preparation data');
-      } catch (error) {
-        setIsLoading(false);
-        console.error(error);
+      if (response.status === 202) {
+        setTimeout(() => {
+          getTrainingPreparation(id);
+        }, 2000);
+        return;
       }
-    },
-    [setPreparationData, setIsLoading]
-  );
+
+      if (response.status === 200) {
+        setPreparationData(response.data);
+        setIsLoading(false);
+        return;
+      }
+
+      throw new Error('Failed to get training case preparation data');
+    } catch (error) {
+      setIsLoading(false);
+      console.error(error);
+    }
+  }, []);
 
   useEffect(() => {
-    getTrainingPreparation(trainingCaseId);
-  }, [getTrainingPreparation, trainingCaseId]);
+    getTrainingPreparation(conversationScenarioId);
+  }, [conversationScenarioId, getTrainingPreparation]);
 
   if (isLoading) {
     return (

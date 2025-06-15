@@ -36,15 +36,15 @@ jobs:
 
   build:
     name: Build
-    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
     needs: test
     runs-on: ubuntu-22.04
     env:
-      DEV_MODE_SKIP_AUTH: ${{ secrets.DEV_MODE_SKIP_AUTH }}
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-      NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+      DEV_MODE_SKIP_AUTH: ${{ vars.DEV_MODE_SKIP_AUTH }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+      NEXT_PUBLIC_BASE_URL: ${{ vars.NEXT_PUBLIC_BASE_URL }}
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
@@ -56,18 +56,18 @@ jobs:
 
   deploy:
     name: Deploy
-    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
     needs: build
     runs-on: ubuntu-22.04
 
     env:
-      VERCEL_ENV: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+      VERCEL_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: npm install --global vercel@latest;
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=${{ env.VERCEL_ENV }} --token=${{ secrets.VERCEL_TOKEN }}
