@@ -45,7 +45,7 @@ class Session(CamelModel, table=True):  # `table=True` makes it a database table
         back_populates='session', cascade_delete=True
     )
     ratings: list['Rating'] = Relationship(back_populates='session', cascade_delete=True)
-    session_review: Optional['Review'] = Relationship(back_populates='session')
+    session_review: Optional['Review'] = Relationship(back_populates='session', cascade_delete=True)
     # Automatically update `updated_at` before an update
 
 
