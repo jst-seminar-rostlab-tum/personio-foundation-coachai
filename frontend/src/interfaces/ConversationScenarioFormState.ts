@@ -1,4 +1,4 @@
-export interface FormState {
+export interface ConversationScenarioFormState {
   category: string;
   customCategory: string;
   name: string;

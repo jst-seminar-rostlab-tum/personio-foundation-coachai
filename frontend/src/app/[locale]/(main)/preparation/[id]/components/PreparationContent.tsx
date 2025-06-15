@@ -16,38 +16,35 @@ export default function PreparationContent() {
   );
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
-  const trainingCaseId = params.id as string;
+  const conversationScenarioId = params.id as string;
 
-  const getTrainingPreparation = useCallback(
-    async (id: string) => {
-      try {
-        const response = await conversationScenarioService.getPreparation(id);
+  const getTrainingPreparation = useCallback(async (id: string) => {
+    try {
+      const response = await conversationScenarioService.getPreparation(id);
 
-        if (response.status === 202) {
-          setTimeout(() => {
-            getTrainingPreparation(id);
-          }, 2000);
-          return;
-        }
-
-        if (response.status === 200) {
-          setPreparationData(response.data);
-          setIsLoading(false);
-          return;
-        }
-
-        throw new Error('Failed to get training case preparation data');
-      } catch (error) {
-        setIsLoading(false);
-        console.error(error);
+      if (response.status === 202) {
+        setTimeout(() => {
+          getTrainingPreparation(id);
+        }, 2000);
+        return;
       }
-    },
-    [setPreparationData, setIsLoading]
-  );
+
+      if (response.status === 200) {
+        setPreparationData(response.data);
+        setIsLoading(false);
+        return;
+      }
+
+      throw new Error('Failed to get training case preparation data');
+    } catch (error) {
+      setIsLoading(false);
+      console.error(error);
+    }
+  }, []);
 
   useEffect(() => {
-    getTrainingPreparation(trainingCaseId);
-  }, [getTrainingPreparation, trainingCaseId]);
+    getTrainingPreparation(conversationScenarioId);
+  }, [conversationScenarioId, getTrainingPreparation]);
 
   if (isLoading) {
     return (

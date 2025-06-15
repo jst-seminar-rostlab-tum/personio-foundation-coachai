@@ -8,6 +8,7 @@ export interface ConversationScenario {
   tone: string;
   complexity: string;
   status?: string;
+  languageCode: string;
 }
 
 export interface ConversationScenarioResponse {

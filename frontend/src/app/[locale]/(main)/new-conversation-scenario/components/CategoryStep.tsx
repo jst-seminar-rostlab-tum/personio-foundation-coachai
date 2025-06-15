@@ -10,11 +10,11 @@ export function CategoryStep({
   onCategorySelect,
   categories,
 }: CategoryStepProps) {
-  const t = useTranslations('NewTraining.category');
+  const t = useTranslations('ConversationScenario.category');
   return (
     <div className="space-y-8">
       <div className="text-xl text-font-dark text-center">{t('title')}</div>
-      <div className="grid grid-cols-2 px-2 md:grid-cols-3 gap-5 w-full mx-auto place-items-center lg:grid-cols-5">
+      <div className="flex flex-wrap justify-center gap-5 w-full max-w-4xl mx-auto">
         {categories.map((category) => (
           <CategoryButton
             key={category.id}
@@ -28,7 +28,7 @@ export function CategoryStep({
               height={56}
               className="mb-4"
             />
-            {category.name}
+            <span className="text-center">{category.name}</span>
           </CategoryButton>
         ))}
       </div>

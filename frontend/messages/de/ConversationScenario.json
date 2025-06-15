@@ -93,15 +93,6 @@
       "defaultContext": "Verhandlungsgespräch über das Gehalt.",
       "defaultGoal": "Eine für beide Seiten vorteilhafte Einigung zum Gehalt erzielen.",
       "defaultOtherParty": "Arbeitgeber"
-    },
-    {
-      "id": "custom",
-      "name": "Benutzerdefinierte Kategorie",
-      "iconUri": "/icons/custom-category.svg",
-      "defaultContext": "",
-      "defaultGoal": "",
-      "defaultOtherParty": "",
-      "isCustom": true
     }
   ],
   "navigation": {

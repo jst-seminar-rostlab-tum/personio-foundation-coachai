@@ -25,7 +25,7 @@ export default async function PreparationPage(props: PagesProps) {
       <PreparationContent />
 
       <div className="flex gap-4">
-        <Link href="/new-training" className="flex-1">
+        <Link href="/new-conversation-scenario" className="flex-1">
           <Button size="full" variant="outline">
             <ArrowLeftIcon />
             {t('navigation.back')}

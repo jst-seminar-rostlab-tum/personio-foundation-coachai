@@ -23,11 +23,9 @@ export default function SimulationPageComponent({ sessionId }: SimulationPageCom
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="mb-2">
-        <SimulationHeader time={time} />
-      </div>
+      <SimulationHeader time={time} />
 
-      <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+      <div className="flex-1 relative p-6 md:p-8  overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         <SimulationMessages />
       </div>
 

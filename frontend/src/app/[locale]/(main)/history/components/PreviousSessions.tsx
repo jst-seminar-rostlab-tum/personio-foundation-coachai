@@ -68,7 +68,7 @@ export default function PreviousSessions() {
   };
 
   return (
-    <div className="w-full mx-auto mt-10 px-4">
+    <div className="w-full">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-2 md:gap-0">
         <div className="text-xl">{t('previousSessions')}</div>
         <div className="flex justify-between md:gap-6">
