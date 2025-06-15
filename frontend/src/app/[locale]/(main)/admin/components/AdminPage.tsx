@@ -32,6 +32,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
+import { useDeleteUser } from '@/components/common/DeleteUserHandler';
 import { AdminProps } from '@/interfaces/AdminProps';
 
 export default function Admin({ stats }: AdminProps) {
@@ -59,6 +60,7 @@ export default function Admin({ stats }: AdminProps) {
   ];
   const canLoadMore = visibleUsers < allUsers.length;
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
+  const { handleDeleteUser, loading } = useDeleteUser();
 
   return (
     <div className="max-w-full">
@@ -227,7 +229,12 @@ export default function Admin({ stats }: AdminProps) {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>{tr('cancel')}</AlertDialogCancel>
-                              <AlertDialogAction>{tr('confirm')}</AlertDialogAction>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteUser()}
+                                disabled={loading}
+                              >
+                                {loading ? tr('deleting') : tr('confirm')}
+                              </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
