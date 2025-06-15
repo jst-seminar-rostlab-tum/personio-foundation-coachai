@@ -1,10 +1,10 @@
 import Link from 'next/link';
 
-export default function FeedbackDetailPage() {
+export default function FeedbackDetailLoadingPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-8">
         <Link href="/dashboard">
           <button className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center text-gray-700 font-bold text-lg hover:bg-gray-300 transition-colors">
             <svg

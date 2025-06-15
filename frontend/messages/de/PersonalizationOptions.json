@@ -1,0 +1,41 @@
+{
+  "experience_roles": {
+    "hr_professional": {
+      "label": "HR-Fachkraft",
+      "description": "Ich arbeite im Personalwesen oder in der Personalabteilung"
+    },
+    "team_leader": {
+      "label": "Teamleiter",
+      "description": "Ich leite ein Team oder eine Abteilung"
+    },
+    "executive": {
+      "label": "Führungskraft",
+      "description": "Ich bin Direktor, VP oder C-Level-Executive"
+    },
+    "other": {
+      "label": "Andere",
+      "description": "Keine der oben genannten"
+    }
+  },
+  "leadership_skill_focus": {
+    "giving_constructive_feedback": "Konstruktives Feedback geben",
+    "managing_team_conflicts": "Teamkonflikte managen",
+    "performance_reviews": "Leistungsbeurteilungen",
+    "motivating_team_members": "Teammitglieder motivieren",
+    "leading_difficult_conversations": "Schwierige Gespräche führen",
+    "communicating_organizational_change": "Kommunikation von organisatorischen Veränderungen",
+    "develop_emotional_intelligence": "Emotionale Intelligenz entwickeln",
+    "building_inclusive_teams": "Inklusive Teams aufbauen",
+    "negotiation_skills": "Verhandlungskompetenzen",
+    "coaching_mentoring": "Coaching & Mentoring"
+  },
+  "confidence_areas": {
+    "giving_difficult_feedback": "Schwieriges Feedback geben",
+    "managing_team_conflicts": "Teamkonflikte managen",
+    "leading_challenging_conversations": "Herausfordernde Gespräche führen",
+    "labels": {
+      "min": "Nicht selbstsicher",
+      "max": "Sehr selbstsicher"
+    }
+  }
+}

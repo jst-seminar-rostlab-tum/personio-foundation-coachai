@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
 import { createClient } from '@/lib/supabase/client';
-import { authService } from '@/services/AuthService';
+import { authService } from '@/services/client/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResendParams, VerifyEmailOtpParams } from '@supabase/supabase-js';
 import { AlertCircleIcon } from 'lucide-react';
@@ -69,9 +69,15 @@ export default function ConfirmationForm() {
       return;
     }
 
-    await authService.confirmUser();
+    try {
+      await authService.confirmUser();
+    } catch {
+      setError(t('genericError'));
+      setIsLoading(false);
+      return;
+    }
 
-    router.push('/dashboard');
+    router.push('/onboarding');
   };
 
   const resendConfirmationEmail = async () => {

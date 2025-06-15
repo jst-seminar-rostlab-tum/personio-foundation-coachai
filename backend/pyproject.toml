@@ -14,7 +14,6 @@ dependencies = [
   "python-jose>=3.3.0",
   "passlib>=1.7.4",
   "python-multipart>=0.0.6",
-  "email-validator>=2.0.0",
   "pre-commit>=4.2.0",
   "sqlmodel>=0.0.24",
   "twilio>=8.12.0",
@@ -28,8 +27,6 @@ dependencies = [
   "supabase>=2.15.2",
   "pypdf>=5.4.0",
   "pgvector>=0.2.5,<0.4",
-  "langchain-huggingface>=0.2.0",
-  "langchain-postgres>=0.0.14",
   "langchain-openai>=0.3.21",
   "google-genai>=1.19.0",
   "pyjwt>=2.10.1",
@@ -56,6 +53,7 @@ dev = [
   "pytest-postgresql",
   "httpx",
   "respx",
+  "deptry>=0.23.0",
 ]
 
 lint = ["ruff"]

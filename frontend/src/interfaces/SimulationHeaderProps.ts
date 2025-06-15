@@ -4,4 +4,5 @@ export interface SimulationHeaderProps {
   characterDescription?: string;
   sessionLabel?: string;
   avatarSrc?: string;
+  time: number;
 }

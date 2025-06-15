@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated, Any, TypedDict
 
 import jwt
@@ -37,10 +38,12 @@ def verify_jwt(
     """
     Checks the validity of the JWT token and retrieves its information.
     """
+    logging.info('Verifying JWT')
     if settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH:
         return {'sub': str(settings.DEV_MODE_MOCK_USER_ID)}
 
     if not credentials:
+        logging.info('No JWT token')
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail='Authentication required'
         )
@@ -52,14 +55,17 @@ def verify_jwt(
         )
         return payload
     except jwt.ExpiredSignatureError as err:
+        logging.info('JWT token expired')
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail='Token has expired'
         ) from err
     except jwt.InvalidTokenError as err:
+        logging.info('JWT token invalid')
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid token'
         ) from err
     except Exception as e:
+        logging.warning('Unhandled exception during JWT token verification: ', e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Internal server error'
         ) from e
@@ -75,7 +81,7 @@ def require_user(
     user_id = token['sub']
     statement = select(UserProfile).where(UserProfile.id == user_id)
     user = db.exec(statement).first()
-    if not user or user.role not in [AccountRole.user, AccountRole.admin]:
+    if not user or user.account_role not in [AccountRole.user, AccountRole.admin]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail='User does not have access'
         )
@@ -92,6 +98,6 @@ def require_admin(
     user_id = token['sub']
     statement = select(UserProfile).where(UserProfile.id == user_id)
     user = db.exec(statement).first()
-    if not user or user.role != AccountRole.admin:
+    if not user or user.account_role != AccountRole.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Admin access required')
     return user

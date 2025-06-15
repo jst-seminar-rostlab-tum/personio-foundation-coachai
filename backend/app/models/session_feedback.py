@@ -38,9 +38,9 @@ class Recommendation(CamelModel):
     recommendation: str
 
 
-class SessionFeedback(CamelModel, table=True):  # `table=True` makes it a database table
+class SessionFeedback(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    session_id: UUID = Field(foreign_key='session.id')  # FK to Session
+    session_id: UUID = Field(foreign_key='session.id', ondelete='CASCADE')
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: int

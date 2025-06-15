@@ -16,14 +16,16 @@ if TYPE_CHECKING:
 
 class ConfidenceArea(str, Enum):
     # Define the confidence areas as needed
-    giving_difficult_feedback = "giving_difficult_feedback"
-    managing_team_conflicts = "managing_team_conflicts"
-    leading_challenging_conversations = "leading_challenging_conversations"
+    giving_difficult_feedback = 'giving_difficult_feedback'
+    managing_team_conflicts = 'managing_team_conflicts'
+    leading_challenging_conversations = 'leading_challenging_conversations'
 
 
 class UserConfidenceScore(CamelModel, table=True):
-    confidence_area: ConfidenceArea = Field(default=ConfidenceArea.giving_difficult_feedback)
-    user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)
+    confidence_area: ConfidenceArea = Field(
+        default=ConfidenceArea.giving_difficult_feedback, primary_key=True
+    )
+    user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True, ondelete='CASCADE')
     score: int
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 

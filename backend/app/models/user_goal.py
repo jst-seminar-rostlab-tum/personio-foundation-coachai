@@ -15,21 +15,21 @@ if TYPE_CHECKING:
 
 
 class Goal(str, Enum):
-    giving_constructive_feedback = "giving_constructive_feedback"
-    managing_team_conflicts = "managing_team_conflicts"
-    performance_reviews = "performance_reviews"
-    motivating_team_members = "motivating_team_members"
-    leading_difficult_conversations = "leading_difficult_conversations"
-    communicating_organizational_change = "communicating_organizational_change"
-    develop_emotional_intelligence = "develop_emotional_intelligence"
-    building_inclusive_teams = "building_inclusive_teams"
-    negotiation_skills = "negotiation_skills"
-    coaching_mentoring = "coaching_mentoring"
+    giving_constructive_feedback = 'giving_constructive_feedback'
+    managing_team_conflicts = 'managing_team_conflicts'
+    performance_reviews = 'performance_reviews'
+    motivating_team_members = 'motivating_team_members'
+    leading_difficult_conversations = 'leading_difficult_conversations'
+    communicating_organizational_change = 'communicating_organizational_change'
+    develop_emotional_intelligence = 'develop_emotional_intelligence'
+    building_inclusive_teams = 'building_inclusive_teams'
+    negotiation_skills = 'negotiation_skills'
+    coaching_mentoring = 'coaching_mentoring'
 
 
-class UserGoal(CamelModel, table=True):  # `table=True` makes it a database table
-    goal: Goal = Field(default=Goal.giving_constructive_feedback)
-    user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)  # FK to UserProfileModel
+class UserGoal(CamelModel, table=True):
+    goal: Goal = Field(default=Goal.giving_constructive_feedback, primary_key=True)
+    user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True, ondelete='CASCADE')
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
