@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     FORCE_CHEAP_MODEL: bool = True
 
     DEV_MODE_SKIP_AUTH: bool = False
-    DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.ADMIN.value
+    DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.USER.value
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 
