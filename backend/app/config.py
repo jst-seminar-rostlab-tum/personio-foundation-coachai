@@ -40,18 +40,29 @@ class Settings(BaseSettings):
     DEV_MODE_SKIP_AUTH: bool = False
     DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.USER.value
 
-    MOCK_USER_DATA: MockUser = MockUser(
-        email='mockuser@example.com',
-        password='mockuserpassword',
-        phone='+1234567890',
-        full_name='Mock User',
-    )
-    MOCK_ADMIN_DATA: MockUser = MockUser(
-        email='mockadmin@example.com',
-        password='mockadminpassword',
-        phone='+1987654321',
-        full_name='Mock Admin',
-    )
+    DEMO_USER_EMAIL: str = 'mockuser@example.com'
+    DEMO_USER_PASSWORD: str = 'mockuserpassword'
+
+    DEMO_ADMIN_EMAIL: str = 'mockadmin@example.com'
+    DEMO_ADMIN_PASSWORD: str = 'mockadminpassword'
+
+    @property
+    def mock_user_data(self) -> MockUser:
+        return MockUser(
+            email=self.DEMO_USER_EMAIL,
+            password=self.DEMO_USER_PASSWORD,
+            phone='+1234567890',
+            full_name='Demo User',
+        )
+
+    @property
+    def mock_admin_data(self) -> MockUser:
+        return MockUser(
+            email=self.DEMO_ADMIN_EMAIL,
+            password=self.DEMO_ADMIN_PASSWORD,
+            phone='+1987654321',
+            full_name='Admin',
+        )
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 

@@ -1431,24 +1431,24 @@ def get_mock_user_data() -> tuple[AdminUserAttributes, AdminUserAttributes]:
     return (
         {
             'id': MockUserIdsEnum.USER.value.__str__(),
-            'email': settings.MOCK_USER_DATA.email,
-            'password': settings.MOCK_USER_DATA.password,
-            'phone': settings.MOCK_USER_DATA.phone,
+            'email': settings.mock_user_data.email,
+            'password': settings.mock_user_data.password,
+            'phone': settings.mock_user_data.phone,
             'email_confirm': True,
             'phone_confirm': True,
             'user_metadata': {
-                'full_name': settings.MOCK_USER_DATA.full_name,
+                'full_name': settings.mock_user_data.full_name,
             },
         },
         {
             'id': MockUserIdsEnum.ADMIN.value.__str__(),
-            'email': settings.MOCK_ADMIN_DATA.email,
-            'password': settings.MOCK_ADMIN_DATA.password,
-            'phone': settings.MOCK_ADMIN_DATA.phone,
+            'email': settings.mock_admin_data.email,
+            'password': settings.mock_admin_data.password,
+            'phone': settings.mock_admin_data.phone,
             'email_confirm': True,
             'phone_confirm': True,
             'user_metadata': {
-                'full_name': settings.MOCK_ADMIN_DATA.full_name,
+                'full_name': settings.mock_admin_data.full_name,
             },
         },
     )
