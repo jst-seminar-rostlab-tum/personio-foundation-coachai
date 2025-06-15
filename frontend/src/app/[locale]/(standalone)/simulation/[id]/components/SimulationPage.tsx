@@ -7,6 +7,7 @@ import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages, { Message } from './SimulationMessages';
+import Loading from '../loading';
 
 const MODEL_ID = 'gpt-4o-realtime-preview-2025-06-03';
 const mockSessionId = '4e5174f9-78da-428c-bb9f-4556a14163cc';
@@ -44,10 +45,8 @@ function useOpenAIRealtimeWebRTC() {
   }, []);
 
   const disconnect = useCallback(async () => {
-    console.debug('disconnecting');
     // Mark session as completed (no matter what the status is(started, completed, failed))
     await api.put(`/session/${mockSessionId}`, { status: 'completed' });
-
     cleanup();
     cleanupRef.current = false;
     router.push(`/feedback/${mockSessionId}`);
@@ -209,23 +208,24 @@ function useOpenAIRealtimeWebRTC() {
         sdp: await sdpResponse.text(),
       };
       await pc.setRemoteDescription(answer);
-    } catch {
+    } catch (e) {
+      console.error('initWebRTC error', e);
       setIsMicActive(false);
       disconnect();
     }
   }, [disconnect]);
 
-  useEffect(() => {
-    if (!mockSessionId) return;
-    api
-      .get(`/session/${mockSessionId}`)
-      .then((res) => {
-        console.warn(res.data);
-      })
-      .catch(() => {
-        console.error('Failed to fetch session');
-      });
-  }, []);
+  // useEffect(() => {
+  //   if (!mockSessionId) return;
+  //   api
+  //     .get(`/session/${mockSessionId}`)
+  //     .then((res) => {
+  //       console.warn(res.data);
+  //     })
+  //     .catch(() => {
+  //       console.error('Failed to fetch session');
+  //     });
+  // }, []);
 
   return {
     isMicActive,
@@ -244,6 +244,7 @@ function useOpenAIRealtimeWebRTC() {
 export default function SimulationPageComponent() {
   const [time, setTime] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const {
     isMicActive,
     setIsMicActive,
@@ -251,11 +252,11 @@ export default function SimulationPageComponent() {
     isDataChannelReady,
     initWebRTC,
     cleanup,
-    disconnect,
     remoteAudioRef,
     localStreamRef,
     messages,
   } = useOpenAIRealtimeWebRTC();
+  const router = useRouter();
 
   useEffect(() => {
     if (!isPaused) {
@@ -268,8 +269,9 @@ export default function SimulationPageComponent() {
   }, [isPaused]);
 
   useEffect(() => {
-    initWebRTC();
-
+    (async () => {
+      await initWebRTC();
+    })();
     return () => {
       cleanup();
     };
@@ -288,7 +290,18 @@ export default function SimulationPageComponent() {
   // Log data channel status for debugging
   useEffect(() => {
     console.debug('[WebRTC] Data channel ready status:', isDataChannelReady);
+    setIsLoading(false);
   }, [isDataChannelReady]);
+
+  const disconnect = async () => {
+    setIsLoading(true);
+    await api.put(`/session/${mockSessionId}`, { status: 'completed' });
+    router.push(`/feedback/${mockSessionId}`);
+  };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex flex-col h-screen">

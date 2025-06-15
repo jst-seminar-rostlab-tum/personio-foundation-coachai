@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-const mockMessages = [
+const mockMessages: Message[] = [
   {
     id: 1,
     text: "Thanks for meeting with me today. I wanted to discuss the project deadlines you've missed recently.",
@@ -141,8 +141,8 @@ export default function SimulationMessages({ messages = mockMessages }: { messag
 
   return (
     <div className="flex flex-col gap-4 py-2 h-full">
-      {messages.map((msg) => (
-        <MessageItem key={msg.id} message={msg} />
+      {messages.map((msg, idx) => (
+        <MessageItem key={msg.id ?? idx} message={msg} />
       ))}
       <div ref={messageEndRef} />
     </div>

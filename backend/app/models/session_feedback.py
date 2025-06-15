@@ -9,6 +9,11 @@ from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import JSON, Column, Field, Relationship
 
 from app.models.camel_case import CamelModel
+from app.schemas.session_feedback_schema import (
+    NegativeExample,
+    PositiveExample,
+    Recommendation,
+)
 
 if TYPE_CHECKING:
     from app.models.session import Session
@@ -18,24 +23,6 @@ class FeedbackStatusEnum(str, Enum):
     pending = 'pending'
     completed = 'completed'
     failed = 'failed'
-
-
-class PositiveExample(CamelModel):
-    heading: str
-    feedback: str
-    quote: str
-
-
-class NegativeExample(CamelModel):
-    heading: str
-    feedback: str
-    quote: str
-    improved_quote: str
-
-
-class Recommendation(CamelModel):
-    heading: str
-    recommendation: str
 
 
 class SessionFeedback(CamelModel, table=True):  # `table=True` makes it a database table

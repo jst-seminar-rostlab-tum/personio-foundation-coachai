@@ -428,25 +428,28 @@ def get_dummy_session_feedback(
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
-                    'feedback': (
-                        'You effectively communicated the specific issue (missed deadlines) and its'
-                        ' impact on the team without being accusatory.'
-                    ),
                     'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        'causing our team to fall behind on the overall project timeline.'
+                    ),
+                    'text': (
                         'I’ve noticed that several deadlines were missed last week, and '
                         'it’s causing team to fall behind on the overall project timeline.'
+                    ),
+                    'guideline': (
+                        'You effectively communicated the specific issue (missed deadlines) and its'
+                        ' impact on the team without being accusatory.'
                     ),
                 }
             ],
             example_negative=[
                 {
                     'heading': 'Lack of specific examples',
-                    'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
-                        'instances or data to illustrate the issue. Including concrete examples '
-                        'would strengthen your feedback.'
-                    ),
                     'quote': (
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
+                    ),
+                    'text': (
                         'The report due on Friday was submitted on Monday, which delayed our '
                         'progress.'
                     ),
@@ -459,21 +462,21 @@ def get_dummy_session_feedback(
             recommendations=[
                 {
                     'heading': 'Practice the STAR method',
-                    'recommendation': (
+                    'text': (
                         'When giving feedback, use the Situation, Task, Action, Result framework to'
                         ' provide more concrete examples.'
                     ),
                 },
                 {
                     'heading': 'Ask more diagnostic questions',
-                    'recommendation': (
+                    'text': (
                         'Spend more time understanding root causes before moving to solutions. This'
                         ' builds empathy and leads to more effective outcomes.'
                     ),
                 },
                 {
                     'heading': 'Define next steps',
-                    'recommendation': (
+                    'text': (
                         'End feedback conversations with agreed-upon actions to ensure clarity and '
                         'accountability.'
                     ),
@@ -497,11 +500,15 @@ def get_dummy_session_feedback(
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
-                    'feedback': (
+                    'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        'causing our team to fall behind on the overall project timeline.'
+                    ),
+                    'guideline': (
                         'You effectively communicated the specific issue (missed deadlines) and its'
                         ' impact on the team without being accusatory.'
                     ),
-                    'quote': (
+                    'text': (
                         'I’ve noticed that several deadlines were missed last week, and it’s '
                         'causing our team to fall behind on the overall project timeline.'
                     ),
@@ -510,10 +517,9 @@ def get_dummy_session_feedback(
             example_negative=[
                 {
                     'heading': 'Lack of specific examples',
-                    'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
-                        'instances or data to illustrate the issue. Including concrete examples '
-                        'would strengthen your feedback.'
+                    'text': (
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
                     ),
                     'quote': (
                         'The report due on Friday was submitted on Monday, which delayed our '
@@ -528,21 +534,21 @@ def get_dummy_session_feedback(
             recommendations=[
                 {
                     'heading': 'Practice the STAR method',
-                    'recommendation': (
+                    'text': (
                         'When giving feedback, use the Situation, Task, Action, Result framework to'
                         ' provide more concrete examples.'
                     ),
                 },
                 {
                     'heading': 'Ask more diagnostic questions',
-                    'recommendation': (
+                    'text': (
                         'Spend more time understanding root causes before moving to solutions. This'
                         ' builds empathy and leads to more effective outcomes.'
                     ),
                 },
                 {
                     'heading': 'Define next steps',
-                    'recommendation': (
+                    'text': (
                         'End feedback conversations with agreed-upon actions to ensure clarity and '
                         'accountability.'
                     ),
