@@ -16,7 +16,7 @@ import { createFeedback } from '@/services/FeedbackService';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-export default function FeedbackDialog() {
+export default function FeedbackDialog({ sessionId }: { sessionId: string }) {
   const t = useTranslations('Feedback.feedbackDialog');
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');
@@ -37,6 +37,7 @@ export default function FeedbackDialog() {
       await createFeedback({
         rating,
         comment: ratingDescription,
+        sessionId,
       });
     } catch (error) {
       console.error('Error submitting feedback:', error);

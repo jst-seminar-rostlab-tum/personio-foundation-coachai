@@ -128,7 +128,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           {formatDateTime(feedbackDetail?.createdAt ?? '')}
         </div>
       </div>
-      <FeedbackDialog />
+      <FeedbackDialog sessionId={sessionId} />
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
           {progressBarData.map((item) => (
