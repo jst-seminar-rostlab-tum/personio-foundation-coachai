@@ -39,10 +39,10 @@ export default function Admin({ stats }: AdminProps) {
   const tr = useTranslations('TrainingSettings');
   const statsResponse = use(stats);
   const statsArray = [
-    { value: statsResponse.total_users, label: t('statActiveUsers') },
-    { value: statsResponse.total_trainings, label: t('statTotalTrainings') },
-    { value: statsResponse.total_reviews, label: t('statReviews') },
-    { value: `${statsResponse.average_score}%`, label: t('statAverageScore') },
+    { value: statsResponse.totalUsers, label: t('statActiveUsers') },
+    { value: statsResponse.totalTrainings, label: t('statTotalTrainings') },
+    { value: statsResponse.totalReviews, label: t('statReviews') },
+    { value: `${statsResponse.averageScore}%`, label: t('statAverageScore') },
   ];
   const [visibleUsers, setVisibleUsers] = React.useState(5);
   const allUsers = [
