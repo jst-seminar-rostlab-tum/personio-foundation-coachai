@@ -4,7 +4,7 @@ import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { clearAllSessions } from '@/services/SessionService';
+import { clearAllSessions } from '@/services/client/SessionService';
 import {
   AlertDialog,
   AlertDialogAction,

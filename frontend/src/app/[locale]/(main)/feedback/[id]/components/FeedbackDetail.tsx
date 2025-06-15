@@ -22,8 +22,9 @@ import Link from 'next/link';
 import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { getSessionFeedback } from '@/services/SessionService';
+import { getSessionFeedback } from '@/services/client/SessionService';
 import FeedbackQuote from './FeedbackQuote';
+import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
 
 export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
@@ -127,6 +128,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           {formatDateTime(feedbackDetail?.createdAt ?? '')}
         </div>
       </div>
+      <FeedbackDialog sessionId={sessionId} />
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
           {progressBarData.map((item) => (

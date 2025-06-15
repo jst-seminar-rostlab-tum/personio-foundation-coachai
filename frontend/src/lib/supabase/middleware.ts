@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import routing from '@/i18n/routing';
-import { Session } from '@supabase/supabase-js';
 import { createClient } from './server';
 
 const acceptedLocales = routing.locales
@@ -20,14 +19,6 @@ const stripLocaleFromPath = (path: string): string => {
 const publicRoutes = ['/', '/terms', '/privacy'];
 const authRoutes = ['/login', '/confirm'];
 
-const isSessionExpired = (session: Session): boolean => {
-  if (!session || !session.expires_at) {
-    return true;
-  }
-  const currentTime = Math.floor(Date.now() / 1000);
-  return session.expires_at <= currentTime;
-};
-
 export async function authMiddleware(
   request: NextRequest,
   response: NextResponse
@@ -42,20 +33,13 @@ export async function authMiddleware(
 
   const supabase = await createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
     if (isAuthRoute) {
       return response;
     }
     return NextResponse.redirect(new URL('/login', request.nextUrl));
-  }
-
-  if (isSessionExpired(session)) {
-    const { error: refreshError } = await supabase.auth.refreshSession();
-    if (refreshError) {
-      return NextResponse.redirect(new URL('/login', request.nextUrl));
-    }
   }
 
   if (isAuthRoute) {
