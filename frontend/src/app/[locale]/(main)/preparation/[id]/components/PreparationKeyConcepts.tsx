@@ -1,4 +1,4 @@
-import { KeyConcept } from '@/interfaces/ConversationScenarioPreparation';
+import { KeyConcept } from '@/interfaces/ConversationScenario';
 
 export default function PreparationKeyConcepts({ keyConcepts }: { keyConcepts: KeyConcept[] }) {
   return (
