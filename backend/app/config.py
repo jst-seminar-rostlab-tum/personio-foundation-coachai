@@ -1,17 +1,9 @@
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.data.mock_user_ids_enum import MockUserIdsEnum
-
-
-class MockUser(BaseModel):
-    email: str
-    password: str
-    phone: str
-    full_name: str
+from app.interfaces import MockUser, MockUserIdsEnum
 
 
 class Settings(BaseSettings):

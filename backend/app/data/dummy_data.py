@@ -5,7 +5,7 @@ from gotrue import AdminUserAttributes
 from supabase import AuthError, create_client
 
 from app.config import settings
-from app.data.mock_user_ids_enum import MockUserIdsEnum
+from app.interfaces import MockUserIdsEnum
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig, ConfigType
 from app.models.conversation_category import ConversationCategory
