@@ -6,6 +6,8 @@ import { sessionService } from '@/services/client/SessionService';
 import { SessionStatus } from '@/interfaces/Session';
 import { SimulationFooterProps } from '@/interfaces/SimulationFooterProps';
 import { useRouter } from 'next/navigation';
+import { showErrorToast } from '@/lib/toast';
+import { useTranslations } from 'next-intl';
 
 export default function SimulationFooter({
   isPaused,
@@ -13,6 +15,7 @@ export default function SimulationFooter({
   sessionId,
 }: SimulationFooterProps) {
   const router = useRouter();
+  const t = useTranslations('Simulation');
 
   const handleSessionEnd = async () => {
     try {
@@ -21,7 +24,7 @@ export default function SimulationFooter({
       });
       router.push(`/feedback/${data.id}`);
     } catch (error) {
-      console.error('Error updating session:', error);
+      showErrorToast(error, t('sessionEndError'));
     }
   };
 

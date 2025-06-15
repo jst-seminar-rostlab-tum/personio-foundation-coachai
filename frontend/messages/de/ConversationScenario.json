@@ -99,5 +99,6 @@
     "back": "Zurück",
     "next": "Weiter",
     "create": "Training erstellen"
-  }
+  },
+  "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später erneut."
 }

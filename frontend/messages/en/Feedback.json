@@ -6,7 +6,9 @@
     "open": "Give Feedback",
     "title": "Feedback",
     "description": "How was the training session? Help us improve by providing your feedback.",
-    "rate": "Submit Feedback"
+    "rate": "Submit Feedback",
+    "submitFeedbackError": "Error while submitting feedback. Please try again later.",
+    "submitFeedbackSuccess": "Feedback submitted successfully. Thank you for your input!"
   },
   "progressBars": {
     "structure": "Structure",
@@ -34,5 +36,6 @@
     "recommendations": "Recommendations",
     "nextTime": "Next time, try asking:"
   },
-  "return": "Return to Dashboard"
+  "return": "Return to Dashboard",
+  "getSessionDetailError": "Error while fetching session feedback. Please try again later."
 }

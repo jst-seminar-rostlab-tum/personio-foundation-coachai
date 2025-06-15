@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
+import { showErrorToast, showSuccessToast } from '@/lib/toast';
 
 const mockSessions = [
   {
@@ -87,8 +88,9 @@ export default function PreviousSessions() {
       await clearAllSessions();
       setSessions([]);
       setVisibleCount(0);
+      showSuccessToast(t('deleteSuccess'));
     } catch (e) {
-      console.error(e);
+      showErrorToast(e, t('deleteError'));
     } finally {
       setIsDeleting(false);
     }
