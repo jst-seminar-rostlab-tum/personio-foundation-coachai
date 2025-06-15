@@ -2,7 +2,7 @@
 
 import { ArrowRightIcon, ChevronDown, Search, Star, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import React from 'react';
+import React, { use } from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -37,11 +37,12 @@ import { AdminProps } from '@/interfaces/AdminProps';
 export default function Admin({ stats }: AdminProps) {
   const t = useTranslations('Admin');
   const tr = useTranslations('TrainingSettings');
+  const statsResponse = use(stats);
   const statsArray = [
-    { value: stats.totalUsers.toLocaleString(), label: t('statActiveUsers') },
-    { value: stats.totalTrainings.toLocaleString(), label: t('statTotalTrainings') },
-    { value: stats.totalReviews.toLocaleString(), label: t('statReviews') },
-    { value: `${stats.averageScore}%`, label: t('statAverageScore') },
+    { value: statsResponse.total_users, label: t('statActiveUsers') },
+    { value: statsResponse.total_trainings, label: t('statTotalTrainings') },
+    { value: statsResponse.total_reviews, label: t('statReviews') },
+    { value: `${statsResponse.average_score}%`, label: t('statAverageScore') },
   ];
   const [visibleUsers, setVisibleUsers] = React.useState(5);
   const allUsers = [

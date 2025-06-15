@@ -1,7 +1,7 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import { getAdminStats } from '@/services/getAdminStats';
+import { adminService } from '@/services/server/AdminService';
 import Admin from './components/AdminPage';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
   return generateDynamicMetadata(locale, '/admin', true);
 }
 
-export default async function AdminPage() {
-  const stats = await getAdminStats();
+export default function AdminPage() {
+  const stats = adminService.getAdminStats();
   return <Admin stats={stats} />;
 }
