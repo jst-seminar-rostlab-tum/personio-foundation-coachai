@@ -11,13 +11,14 @@ from sqlmodel import Field, Relationship
 from app.models.camel_case import CamelModel
 from app.models.language import LanguageCode
 from app.models.user_confidence_score import ConfidenceScoreRead
+from app.models.user_goal import Goal
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
     from app.models.rating import Rating
     from app.models.review import Review
     from app.models.user_confidence_score import UserConfidenceScore
-    from app.models.user_goal import UserGoal
+    from app.models.user_goal import Goal, UserGoal
 
 
 class AccountRole(str, Enum):
@@ -91,7 +92,7 @@ class UserProfileUpdate(CamelModel):
     experience: Optional[Experience] = None
     preferred_learning_style: Optional[PreferredLearningStyle] = None
     store_conversations: Optional[bool] = None
-    goals: Optional[list[str]] = None
+    goals: Optional[list[Goal]] = None
     confidence_scores: Optional[list[ConfidenceScoreRead]] = None
 
 
@@ -102,7 +103,7 @@ class UserProfileReplace(CamelModel):
     experience: Experience
     preferred_learning_style: PreferredLearningStyle
     store_conversations: bool
-    goals: list[str]
+    goals: list[Goal]
     confidence_scores: list[ConfidenceScoreRead]
 
 
@@ -123,7 +124,7 @@ class UserProfileRead(CamelModel):
 
 
 class UserProfileExtendedRead(UserProfileRead):
-    goals: list[str]
+    goals: list[Goal]
     confidence_scores: list[ConfidenceScoreRead]
 
 
