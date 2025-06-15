@@ -52,5 +52,6 @@
       "coping": "Bewältigungsstrategien"
     }
   },
+  "saveSettingsSuccess": "Ihre Einstellungen wurden erfolgreich gespeichert.",
   "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
 }
