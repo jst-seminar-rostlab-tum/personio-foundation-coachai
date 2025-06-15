@@ -119,7 +119,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
     return <FeedbackDetailLoadingPage />;
   }
   return (
-    <div className="flex flex-col items-center gap-7 mx-auto max-w-3xl">
+    <div className="flex flex-col items-center gap-8">
       <div className="text-2xl ">{t('title')}</div>
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
         <div className="text-lg text-marigold-90">{feedbackDetail?.title}</div>

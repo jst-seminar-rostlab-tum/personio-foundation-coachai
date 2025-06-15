@@ -1,3 +1,4 @@
+import logging
 from math import ceil
 from typing import Annotated
 from uuid import UUID
@@ -10,6 +11,7 @@ from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
+from app.models.review import Review
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import (
     Session,
@@ -316,31 +318,16 @@ def update_session(
     return session
 
 
-@router.delete('/{session_id}', response_model=dict)
-def delete_session(
-    session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
-) -> dict:
-    """
-    Delete a session.
-    """
-    session = db_session.get(Session, session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail='Session not found')
-
-    db_session.delete(session)
-    db_session.commit()
-    return {'message': 'Session deleted successfully'}
-
-
 @router.delete('/clear-all', response_model=dict)
 def delete_sessions_by_user(
     db_session: Annotated[DBSession, Depends(get_db_session)],
-    user: Annotated[UserProfile, Depends(require_user)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> dict:
     """
     Delete all sessions related to conversation scenarios for a given user ID.
     """
-    user_id = user.id
+    logging.info(f'Deleting all sessions for user ID: {user_profile.id}')
+    user_id = user_profile.id
     # Retrieve all conversation scenarios for the given user ID
     statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
     conversation_scenarios = db_session.exec(statement).all()
@@ -356,11 +343,54 @@ def delete_sessions_by_user(
         for session in conversation_scenario.sessions:
             for session_turn in session.session_turns:
                 audios.append(session_turn.audio_uri)
-            db_session.delete(session)
+            # Delete all ratings associated with this session
+            ratings = db_session.exec(
+                select(SessionFeedback).where(SessionFeedback.session_id == session.id)
+            ).all()
+            for rating in ratings:
+                db_session.delete(rating)
+                # db_session.commit()
 
-    db_session.commit()
+            # Delete all session feedback (reviews) associated with this session
+            reviews = db_session.exec(select(Review).where(Review.session_id == session.id)).all()
+            for review in reviews:
+                db_session.delete(review)
+                # db_session.commit()
+            db_session.delete(session)
+        db_session.commit()
 
     return {
         'message': f'Deleted {count_of_deleted_sessions} sessions for user ID {user_id}',
         'audios': audios,
     }
+
+
+@router.delete('/{session_id}', response_model=dict)
+def delete_session(
+    session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+) -> dict:
+    """
+    Delete a session.
+    """
+    logging.info(f'Deleting session with ID: {session_id}')
+    session = db_session.exec(select(Session).where(Session.id == session_id)).first()
+    if not session:
+        raise HTTPException(status_code=404, detail='Session not found')
+
+    # Delete all ratings associated with this session
+    ratings = db_session.exec(
+        select(SessionFeedback).where(SessionFeedback.session_id == session_id)
+    ).all()
+    for rating in ratings:
+        db_session.delete(rating)
+        db_session.commit()
+
+    # Delete all session feedback (reviews) associated with this session
+    reviews = db_session.exec(select(Review).where(Review.session_id == session_id)).all()
+    for review in reviews:
+        db_session.delete(review)
+        db_session.commit()
+
+    db_session.delete(session)
+    db_session.commit()
+    return {'message': 'Session deleted successfully'}

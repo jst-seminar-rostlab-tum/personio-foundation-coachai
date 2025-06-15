@@ -211,6 +211,7 @@ def replace_user_profile(
     user.preferred_language_code = data.preferred_language_code
     user.preferred_learning_style = data.preferred_learning_style
     user.store_conversations = data.store_conversations
+    user.professional_role = data.professional_role
 
     db_session.add(user)
 
@@ -288,6 +289,8 @@ def update_user_profile(
         user.preferred_learning_style = update_data['preferred_learning_style']
     if 'store_conversations' in update_data:
         user.store_conversations = update_data['store_conversations']
+    if 'professional_role' in update_data:
+        user.professional_role = update_data['professional_role']
 
     db_session.add(user)
 
@@ -310,7 +313,7 @@ def update_user_profile(
             db_session.delete(cs)
         db_session.commit()
 
-        for cs_data in update_data['confidence_scores']:
+        for cs_data in data.confidence_scores:
             db_session.add(
                 UserConfidenceScore(
                     user_id=user.id,

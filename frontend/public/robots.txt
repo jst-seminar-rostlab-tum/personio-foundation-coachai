@@ -6,7 +6,7 @@ Disallow: /dashboard/
 Disallow: /training-settings/
 Disallow: /feedback/
 Disallow: /history/
-Disallow: /new-training/
+Disallow: /new-conversation-scenario/
 Disallow: /preparation/
 Disallow: /simulation/
 

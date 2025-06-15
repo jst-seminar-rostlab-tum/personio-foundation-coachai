@@ -38,9 +38,11 @@ jobs:
 
   deploy:
     name: Deploy
-    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
     needs: test
     runs-on: ubuntu-22.04
+    env:
+      FLY_CONFIG_PATH: ${{ github.ref == 'refs/heads/main' && 'fly.toml' || 'fly-dev.toml' }}
     defaults:
       run:
         working-directory: ./backend
@@ -48,6 +50,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Deploy with Fly.io
-        run: flyctl deploy --remote-only --config ${{ github.ref_name == 'main' && 'fly.toml' || 'fly-dev.toml' }}
+        run: flyctl deploy --remote-only --config ${{ env.FLY_CONFIG_PATH }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
