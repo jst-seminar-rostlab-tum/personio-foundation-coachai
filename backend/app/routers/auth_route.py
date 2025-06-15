@@ -77,7 +77,6 @@ def create_user(req: CreateUserRequest) -> None:
         ) from e
 
     try:
-        print(f'Creating user with email: {req.email}, phone: {req.phone}')
         supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
 
         attributes: AdminUserAttributes = {
@@ -89,20 +88,14 @@ def create_user(req: CreateUserRequest) -> None:
                 'full_name': req.full_name,
             },
         }
-        print(f'Creating user with attributes: {attributes}')
-        result = supabase.auth.admin.create_user(attributes)
-        print(f'Admin create_user result: {result}')
+        supabase.auth.admin.create_user(attributes)
 
         credentials: SignUpWithPasswordCredentials = {
             'email': req.email,
             'password': req.password,
         }
-        print(f'Signing up with credentials: {credentials}')
-        signup_result = supabase.auth.sign_up(credentials)
-        print(f'Sign up result: {signup_result}')
+        supabase.auth.sign_up(credentials)
     except Exception as e:
-        print(f'Error in create_user: {str(e)}')
-        print(f'Error type: {type(e)}')
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
