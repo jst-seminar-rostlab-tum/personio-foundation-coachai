@@ -29,10 +29,18 @@ import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfile } from '@/interfaces/UserProfile';
 import UserPreferences from './UserPreferences';
 
+const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
+  const score = userProfileData.confidenceScores?.find(
+    (confidenceScore) => confidenceScore.confidenceArea === area
+  )?.score;
+  return score !== undefined ? [score] : [50];
+};
+
 export default function TrainingSettings({ userProfile }: { userProfile: Promise<UserProfile> }) {
   const t = useTranslations('TrainingSettings');
   const tOptions = useTranslations('TrainingSettings.leadershipGoals');
   const userProfileData = use(userProfile);
+
   const [storeConversations, setStoreConversations] = useState(
     userProfileData.storeConversations ?? false
   );
@@ -40,19 +48,16 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
   const [primaryGoal, setPrimaryGoal] = useState(
     userProfileData.goals.length > 0 ? userProfileData.goals[0] : ''
   );
-
-  const getConfidenceScores = (area: string) => {
-    const score = userProfileData.confidenceScores?.find(
-      (confidenceScore) => confidenceScore.confidenceArea === area
-    )?.score;
-    return score !== undefined ? [score] : [50];
-  };
-
-  const [difficulty, setDifficulty] = useState(getConfidenceScores('giving_difficult_feedback'));
-  const [conflict, setConflict] = useState(getConfidenceScores('managing_team_conflicts'));
-  const [conversation, setConversation] = useState(
-    getConfidenceScores('leading_challenging_conversations')
+  const [difficulty, setDifficulty] = useState(
+    getConfidenceScores(userProfileData, 'giving_difficult_feedback')
   );
+  const [conflict, setConflict] = useState(
+    getConfidenceScores(userProfileData, 'managing_team_conflicts')
+  );
+  const [conversation, setConversation] = useState(
+    getConfidenceScores(userProfileData, 'leading_challenging_conversations')
+  );
+
   const confidenceFieldsProps = {
     difficulty,
     conflict,
@@ -61,7 +66,6 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
     setConflict,
     setConversation,
   };
-
   const userPreferences: UserPreference[] = [
     {
       label: tOptions('currentRole.label'),

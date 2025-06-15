@@ -17,16 +17,18 @@ import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
   const onboardingSteps = ['Step1', 'Step2', 'Step3'];
-  const [currentOnboardingStep, setCurrentOnboardingStep] = useState(0);
-  const [selectedRole, setSelectedRole] = useState<string>('');
-  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const t = useTranslations('Onboarding');
   const router = useRouter();
   const roleQuestion: UserOption[] = UserRoles();
   const primaryGoals: UserOption[] = PrimaryGoals();
+
+  const [currentOnboardingStep, setCurrentOnboardingStep] = useState(0);
+  const [selectedRole, setSelectedRole] = useState<string>('');
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState([50]);
   const [conflict, setConflict] = useState([50]);
   const [conversation, setConversation] = useState([50]);
+
   const confidenceFieldsProps = {
     difficulty,
     conflict,
@@ -35,7 +37,6 @@ export default function OnboardingPageComponent() {
     setConflict,
     setConversation,
   };
-
   const isValidStep = (stepIndex: number) => {
     if (stepIndex === 0) return selectedRole !== '';
     if (stepIndex === 1) return selectedGoals.length > 0;
@@ -69,10 +70,9 @@ export default function OnboardingPageComponent() {
           { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
         ],
       });
+      router.push('/dashboard');
     } catch (error) {
       console.error('Error updating user profile:', error);
-    } finally {
-      router.push('/dashboard');
     }
   };
 
