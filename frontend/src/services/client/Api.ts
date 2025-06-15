@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/client';
 import axios from 'axios';
-import { redirect } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -13,32 +12,20 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
-    if (config.url?.includes('/auth/') && !config.url?.includes('/auth/confirm')) {
+    if (config.url?.includes('/auth') && !config.url?.includes('/auth/confirm')) {
       return config;
     }
 
-    if (process.env.NODE_ENV === 'development') {
-      return config;
-    }
-    const supabase = createClient();
+    // if (process.env.NODE_ENV === 'development') {
+    //   return config;
+    // }
 
+    const supabase = await createClient();
     const { data, error } = await supabase.auth.getSession();
     if (error || !data.session) {
       return Promise.reject(error);
     }
-
-    // Check if the session is expired and refresh it if necessary
-    let accessToken = data.session.access_token;
-    const currentTime = Math.floor(Date.now() / 1000);
-    const sessionExpiry = data.session.expires_at;
-    if (!sessionExpiry || sessionExpiry < currentTime) {
-      const { data: refreshedData, error: refreshError } = await supabase.auth.refreshSession();
-      if (refreshError || !refreshedData.session) {
-        redirect('/login');
-      }
-      accessToken = refreshedData.session.access_token;
-    }
-
+    const accessToken = data.session.access_token;
     config.headers.set('Authorization', `Bearer ${accessToken}`);
 
     return config;

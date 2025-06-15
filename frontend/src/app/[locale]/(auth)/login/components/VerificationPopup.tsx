@@ -14,7 +14,7 @@ import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/
 import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services/AuthService';
+import { authService } from '@/services/client/AuthService';
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');

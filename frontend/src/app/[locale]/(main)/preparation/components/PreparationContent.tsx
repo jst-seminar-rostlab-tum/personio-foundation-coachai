@@ -6,7 +6,7 @@ import PreparationChecklist from '@/app/[locale]/(main)/preparation/components/P
 import { useTranslations } from 'next-intl';
 import { TrainingPreparation } from '@/interfaces/TrainingPreparation';
 import { useParams } from 'next/navigation';
-import { conversationScenarioService } from '@/services/ConversationScenarioService';
+import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
 
 export default function PreparationContent() {
