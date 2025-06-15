@@ -24,13 +24,13 @@ import { api } from '@/services/Api';
 import Link from 'next/link';
 import { useParams, notFound } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import FeedbackQuote from './FeedbackQuote';
+import FeedbackQuote, { NegativeExample, PositiveExample, Recommendation } from './FeedbackQuote';
 
 const Loading = dynamic(() => import('../loading'), { ssr: false });
 
 type FeedbackType = {
   id: string;
-  session_id: string;
+  sessionId: string;
   scores: {
     structure: number;
     empathy: number;
@@ -38,36 +38,24 @@ type FeedbackType = {
     clarity: number;
     [key: string]: number;
   };
-  tone_analysis: {
+  toneAnalysis: {
     positive: number;
     neutral: number;
     negative: number;
     [key: string]: number;
   };
-  overall_score: number;
-  transcript_uri: string;
-  speak_time_percent: number;
-  questions_asked: number;
-  session_length_s: number;
-  goals_achieved: number;
-  example_positive: Array<{
-    heading: string;
-    feedback: string;
-    quote: string;
-  }>;
-  example_negative: Array<{
-    heading: string;
-    feedback: string;
-    quote: string;
-    improved_quote?: string;
-  }>;
-  recommendations: Array<{
-    heading: string;
-    recommendation: string;
-  }>;
+  overallScore: number;
+  transcriptUri: string;
+  speakTimePercent: number;
+  questionsAsked: number;
+  sessionLengthS: number;
+  goalsAchieved: number;
+  examplePositive: PositiveExample[];
+  exampleNegative: NegativeExample[];
+  recommendations: Recommendation[];
   status: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export default function FeedbackDetail() {
@@ -123,10 +111,10 @@ export default function FeedbackDetail() {
   ];
 
   const roundCardStats = [
-    { key: t('stats.speakingTime'), value: `${feedback.speak_time_percent ?? 0}%`, icon: 'Mic' },
-    { key: t('stats.questionsAsked'), value: feedback.questions_asked ?? 0, icon: 'Message' },
-    { key: t('stats.sessionLength'), value: feedback.session_length_s ?? 0, icon: 'Clock' },
-    { key: t('stats.goalsAchieved'), value: feedback.goals_achieved ?? 0, icon: 'Check' },
+    { key: t('stats.speakingTime'), value: `${feedback.speakTimePercent ?? 0}%`, icon: 'Mic' },
+    { key: t('stats.questionsAsked'), value: feedback.questionsAsked ?? 0, icon: 'Message' },
+    { key: t('stats.sessionLength'), value: feedback.sessionLengthS ?? 0, icon: 'Clock' },
+    { key: t('stats.goalsAchieved'), value: feedback.goalsAchieved ?? 0, icon: 'Check' },
   ];
 
   const getIcon = (iconName: string) => {
@@ -145,8 +133,8 @@ export default function FeedbackDetail() {
     <div className="flex flex-col items-center gap-7 mx-auto max-w-3xl">
       <div className="text-2xl ">{t('title')}</div>
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
-        <div className="text-lg text-marigold-90">{feedback.session_id}</div>
-        <div className="text-base text-marigold-95">{feedback.created_at}</div>
+        <div className="text-lg text-marigold-90">{feedback.sessionId}</div>
+        <div className="text-base text-marigold-95">{feedback.createdAt}</div>
       </div>
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
@@ -161,7 +149,7 @@ export default function FeedbackDetail() {
           ))}
         </div>
         <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
-          {feedback.overall_score}%
+          {feedback.overallScore}%
         </div>
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
@@ -190,7 +178,7 @@ export default function FeedbackDetail() {
             <Progress className="w-10 flex-1" value={62} />
             <div className="flex gap-1 items-center text-base text-bw-40">
               <Clock size={13} />
-              <span>{feedback.session_length_s} min</span>
+              <span>{feedback.sessionLengthS} min</span>
             </div>
           </div>
         </div>
@@ -207,9 +195,9 @@ export default function FeedbackDetail() {
               <span className="text-xl">{t('detailedFeedback.positive')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {Array.isArray(feedback.example_positive) &&
-                feedback.example_positive.map((example, index) => (
-                  <FeedbackQuote key={index} {...example} icon="Check" />
+              {Array.isArray(feedback.examplePositive) &&
+                feedback.examplePositive.map((example, index) => (
+                  <FeedbackQuote key={index} type="positive" example={example} icon="Check" />
                 ))}
             </div>
 
@@ -218,9 +206,9 @@ export default function FeedbackDetail() {
               <span className="text-xl">{t('detailedFeedback.negative')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
-              {Array.isArray(feedback.example_negative) &&
-                feedback.example_negative.map((negative, index) => (
-                  <FeedbackQuote key={index} {...negative} icon="Cross" />
+              {Array.isArray(feedback.exampleNegative) &&
+                feedback.exampleNegative.map((negative, index) => (
+                  <FeedbackQuote key={index} type="negative" example={negative} icon="Cross" />
                 ))}
             </div>
 
@@ -231,7 +219,12 @@ export default function FeedbackDetail() {
             <div className="flex flex-col gap-4 mt-5 pl-4">
               {Array.isArray(feedback.recommendations) &&
                 feedback.recommendations.map((recommendation, index) => (
-                  <FeedbackQuote key={index} {...recommendation} icon="Info" />
+                  <FeedbackQuote
+                    key={index}
+                    type="recommendation"
+                    recommendation={recommendation}
+                    icon="Info"
+                  />
                 ))}
             </div>
           </AccordionContent>

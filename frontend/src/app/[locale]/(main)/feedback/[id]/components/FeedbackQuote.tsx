@@ -1,17 +1,44 @@
 'use client';
 
-import { FeedbackQuoteProps } from '@/interfaces/FeedbackQuoteProps';
 import { ChartNoAxesColumnIncreasingIcon, CheckCircle, CircleX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+export interface PositiveExample {
+  heading: string;
+  text: string;
+  quote: string;
+  guideline: string;
+}
+
+export interface NegativeExample {
+  heading: string;
+  text: string;
+  quote: string;
+  improved_quote: string;
+}
+
+export interface Recommendation {
+  heading: string;
+  text: string;
+}
+
+interface FeedbackQuoteProps {
+  type: 'positive' | 'negative' | 'recommendation';
+  example?: PositiveExample | NegativeExample;
+  recommendation?: Recommendation;
+  score?: number;
+  icon?: 'Check' | 'Cross' | 'Info';
+}
+
 export default function FeedbackQuote({
-  heading,
-  feedback,
-  quote,
-  improvedQuote,
+  type,
+  example,
   recommendation,
-  icon,
+  score,
+  icon = 'Info',
 }: FeedbackQuoteProps) {
+  const t = useTranslations('Feedback');
+
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Check':
@@ -24,28 +51,53 @@ export default function FeedbackQuote({
         return null;
     }
   };
-  const iconElement = getIcon(icon || 'Info');
-  const t = useTranslations('Feedback');
+
+  const getHeading = () => {
+    if (example?.heading) return example.heading;
+    if (recommendation?.heading) return recommendation.heading;
+
+    switch (type) {
+      case 'positive':
+        return t('detailedFeedback.positiveExample');
+      case 'negative':
+        return t('detailedFeedback.negativeExample');
+      case 'recommendation':
+        return t('detailedFeedback.recommendation');
+      default:
+        return '';
+    }
+  };
+
+  const iconElement = getIcon(icon);
+
   return (
     <div className="w-full">
       <div className="flex gap-2 items-center">
         {iconElement}
-        <div className="text-md">{heading}</div>
+        <div className="text-md">{getHeading()}</div>
+        {score && <div className="text-sm text-bw-60">({score}分)</div>}
       </div>
       <div className="flex flex-col gap-2 mt-2 px-7">
-        {feedback && <div className="text-base">{feedback}</div>}
-        {(quote || improvedQuote) && (
+        {example && (
           <div className="flex flex-col gap-1 bg-bw-10 border-1 border-bw-20 p-2 text-base rounded-sm">
-            {quote && <div className="italic">&quot;{quote}&quot;</div>}
-            {improvedQuote && (
+            <div className="text-base">{example.text}</div>
+            <div className="italic">&quot;{example.quote}&quot;</div>
+            {'improved_quote' in example && example.improved_quote && (
               <>
                 <div>{t('detailedFeedback.nextTime')}</div>
-                <div className="italic text-forest-60">&quot;{improvedQuote}&quot;</div>
+                <div className="italic text-forest-60">&quot;{example.improved_quote}&quot;</div>
               </>
+            )}
+            {'guideline' in example && example.guideline && (
+              <div className="text-sm text-bw-60 mt-1">{example.guideline}</div>
             )}
           </div>
         )}
-        {recommendation && <div className="text-base">{recommendation}</div>}
+        {recommendation && (
+          <div className="flex flex-col gap-1 bg-bw-10 border-1 border-bw-20 p-2 text-base rounded-sm">
+            <div>{recommendation.text}</div>
+          </div>
+        )}
       </div>
     </div>
   );
