@@ -51,5 +51,6 @@
       "coaching": "Coaching & Mentoring",
       "coping": "Coping Mechanisms"
     }
-  }
+  },
+  "saveSettingsError": "There was an error saving your settings. Please try again later."
 }

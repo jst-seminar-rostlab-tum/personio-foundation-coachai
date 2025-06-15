@@ -51,5 +51,6 @@
       "coaching": "Coaching & Mentoring",
       "coping": "Bewältigungsstrategien"
     }
-  }
+  },
+  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
 }
