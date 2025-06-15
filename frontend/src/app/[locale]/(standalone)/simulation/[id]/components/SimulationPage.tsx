@@ -10,8 +10,6 @@ import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages, { Message } from './SimulationMessages';
 
-const MODEL_ID = 'gpt-4o-realtime-preview-2025-06-03';
-
 function useOpenAIRealtimeWebRTC(sessionId: string) {
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -61,10 +59,6 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
   const initWebRTC = useCallback(async () => {
     try {
       cleanupRef.current = false;
-      const tokenResponse = await fetch('http://localhost:8000/realtime-session');
-      const data = await tokenResponse.json();
-      const EPHEMERAL_KEY = data.client_secret.value;
-
       const localStream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
@@ -177,7 +171,6 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
                 text: userMsg.text + (parsed.delta ?? ''),
               };
 
-              // Reconstruct the array with the one message replaced
               return [...prev.slice(0, idx), updatedMsg, ...prev.slice(idx + 1)];
             });
           }
@@ -198,7 +191,6 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
         }
       };
 
-      // 7. Connection state handlers
       pc.onconnectionstatechange = () => {
         if (pc.connectionState === 'connected') {
           setIsConnected(true);
@@ -211,25 +203,14 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
         }
       };
 
-      // 8. Create offer and set local description
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-
-      // 9. Send offer SDP to OpenAI Realtime API
-      const baseUrl = 'https://api.openai.com/v1/realtime';
-      const sdpResponse = await fetch(`${baseUrl}?model=${MODEL_ID}`, {
-        method: 'POST',
-        body: offer.sdp,
-        headers: {
-          Authorization: `Bearer ${EPHEMERAL_KEY}`,
-          'Content-Type': 'application/sdp',
-        },
-      });
-
-      // 10. Set remote description with answer SDP
+      const sdpResponseText: string = await sessionService.getSdpResponseTextFromRealtimeApi(
+        offer.sdp
+      );
       const answer: RTCSessionDescriptionInit = {
         type: 'answer',
-        sdp: await sdpResponse.text(),
+        sdp: sdpResponseText,
       };
       await pc.setRemoteDescription(answer);
     } catch {

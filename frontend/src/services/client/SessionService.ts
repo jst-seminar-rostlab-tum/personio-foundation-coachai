@@ -69,10 +69,34 @@ const createSessionTurn = async (
   }
 };
 
+const getSdpResponseTextFromRealtimeApi = async (offerSdp: string | undefined) => {
+  try {
+    const realtimeSessionResponse = await api.get('/realtime-session');
+    const ephemeralKey = realtimeSessionResponse.data.client_secret.value;
+
+    const baseUrl = 'https://api.openai.com/v1/realtime';
+    const modelId = 'gpt-4o-realtime-preview-2025-06-03';
+
+    const sdpResponse = await fetch(`${baseUrl}?model=${modelId}`, {
+      method: 'POST',
+      body: offerSdp,
+      headers: {
+        Authorization: `Bearer ${ephemeralKey}`,
+        'Content-Type': 'application/sdp',
+      },
+    });
+    return sdpResponse.text();
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 export const sessionService = {
   clearAllSessions,
   createSession,
   updateSession,
   getSessionFeedback,
   createSessionTurn,
+  getSdpResponseTextFromRealtimeApi,
 };
