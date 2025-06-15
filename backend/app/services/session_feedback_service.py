@@ -1,7 +1,9 @@
+import logging
 from datetime import datetime
 from uuid import UUID, uuid4
 
 from sqlmodel import Session as DBSession
+from sqlmodel import select
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
@@ -17,6 +19,9 @@ from app.schemas.session_feedback_schema import (
     RecommendationsRequest,
     SessionExamplesCollection,
 )
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
@@ -279,44 +284,57 @@ def generate_and_store_feedback(
         examples_negative_dicts = [ex.model_dump() for ex in examples.negative_examples]
     except Exception as e:
         has_error = True
-        print('[ERROR] Failed to generate examples:', e)
+        logger.error(f'[ERROR] Failed to generate examples: {e}')
 
     try:
         goals = safe_get_achieved_goals(goals_request)
     except Exception as e:
         has_error = True
-        print('[ERROR] Failed to generate goals:', e)
+        logger.error(f'[ERROR] Failed to generate goals: {e}')
 
     try:
         recs = safe_generate_recommendations(recommendations_request)
         recommendations = [rec.model_dump() for rec in recs.recommendations]
     except Exception as e:
         has_error = True
-        print('[ERROR] Failed to generate key recommendations:', e)
+        logger.error(f'[ERROR] Failed to generate key recommendations: {e}')
 
     # correct placement
     status = FeedbackStatusEnum.failed if has_error else FeedbackStatusEnum.completed
+    logger.info(f'Feedback status: {status}')
 
-    feedback = SessionFeedback(
-        id=uuid4(),
-        session_id=session_id,
-        scores={},
-        tone_analysis={},
-        overall_score=0,
-        transcript_uri='',
-        speak_time_percent=0,
-        questions_asked=0,
-        session_length_s=0,
-        goals_achieved=len(goals.goals_achieved),
-        example_positive=examples_positive_dicts,
-        example_negative=examples_negative_dicts,
-        recommendations=recommendations,
-        status=status,
-        created_at=datetime.now(),
-        updated_at=datetime.now(),
-    )
+    feedback = db_session.exec(
+        select(SessionFeedback).where(SessionFeedback.session_id == session_id)
+    ).first()
+    if feedback:
+        feedback.status = status
+        feedback.example_positive = examples_positive_dicts
+        feedback.example_negative = examples_negative_dicts
+        feedback.recommendations = recommendations
+        feedback.goals_achieved = len(goals.goals_achieved)
+        feedback.updated_at = datetime.now()
+    else:
+        feedback = SessionFeedback(
+            id=uuid4(),
+            session_id=session_id,
+            scores={},
+            tone_analysis={},
+            overall_score=0,
+            transcript_uri='',
+            speak_time_percent=0,
+            questions_asked=0,
+            session_length_s=0,
+            goals_achieved=len(goals.goals_achieved),
+            example_positive=examples_positive_dicts,
+            example_negative=examples_negative_dicts,
+            recommendations=recommendations,
+            status=status,
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
 
     db_session.add(feedback)
+    logger.info(f'Feedback generated and stored for session {session_id}')
     db_session.commit()
     return feedback
 
