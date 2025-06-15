@@ -20,18 +20,45 @@ import {
 } from '@/components/ui/Accordion';
 import Link from 'next/link';
 import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
-import { use } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { getSessionFeedback } from '@/services/SessionService';
 import FeedbackQuote from './FeedbackQuote';
+import FeedbackDetailLoadingPage from '../loading';
 
-export default function FeedbackDetail({
-  sessionFeedbackData,
-}: {
-  sessionFeedbackData: Promise<FeedbackResponse>;
-}) {
+export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
   const t = useTranslations('Feedback');
-  const sessionFeedback = use(sessionFeedbackData);
-  const { feedback } = sessionFeedback;
+  const [feedbackDetail, setFeedbackDetail] = useState<FeedbackResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const getFeedbackDetail = useCallback(
+    async (id: string) => {
+      try {
+        const response = await getSessionFeedback(id);
+        if (response.status === 202) {
+          setTimeout(() => {
+            getFeedbackDetail(id);
+          }, 2000);
+          return;
+        }
+
+        if (response.status === 200) {
+          setFeedbackDetail(response.data);
+          setIsLoading(false);
+          return;
+        }
+
+        throw new Error('Failed to get training case preparation data');
+      } catch (error) {
+        setIsLoading(false);
+        console.error(error);
+      }
+    },
+    [setFeedbackDetail, setIsLoading]
+  );
+
+  useEffect(() => {
+    getFeedbackDetail(sessionId);
+  }, [getFeedbackDetail, sessionId]);
 
   const convertTimeToMinutes = (seconds: number) => {
     return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
@@ -51,26 +78,30 @@ export default function FeedbackDetail({
   };
 
   const progressBarData = [
-    { key: t('progressBars.structure'), value: feedback?.scores.structure ?? 0 },
-    { key: t('progressBars.empathy'), value: feedback?.scores.empathy ?? 0 },
-    { key: t('progressBars.focus'), value: feedback?.scores.solutionFocus ?? 0 },
-    { key: t('progressBars.clarity'), value: feedback?.scores.clarity ?? 0 },
+    { key: t('progressBars.structure'), value: feedbackDetail?.feedback?.scores.structure ?? 0 },
+    { key: t('progressBars.empathy'), value: feedbackDetail?.feedback?.scores.empathy ?? 0 },
+    { key: t('progressBars.focus'), value: feedbackDetail?.feedback?.scores.solutionFocus ?? 0 },
+    { key: t('progressBars.clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
 
   const roundCardStats = [
     {
       key: t('stats.sessionLength'),
-      value: convertTimeToMinutes(feedback?.sessionLengthS ?? 0),
+      value: convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0),
       icon: 'Clock',
     },
-    { key: t('stats.goalsAchieved'), value: feedback?.goalsAchieved ?? 0, icon: 'Check' },
+    {
+      key: t('stats.goalsAchieved'),
+      value: feedbackDetail?.feedback?.goalsAchieved ?? 0,
+      icon: 'Check',
+    },
   ];
 
-  const examplesPositive = sessionFeedback.feedback?.examplesPositive || [];
+  const examplesPositive = feedbackDetail?.feedback?.examplesPositive || [];
 
-  const examplesNegative = sessionFeedback.feedback?.examplesNegative || [];
+  const examplesNegative = feedbackDetail?.feedback?.examplesNegative || [];
 
-  const recommendations = sessionFeedback.feedback?.recommendations || [];
+  const recommendations = feedbackDetail?.feedback?.recommendations || [];
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -84,13 +115,16 @@ export default function FeedbackDetail({
         return <MessageCircleQuestion size={20} />;
     }
   };
+  if (isLoading) {
+    return <FeedbackDetailLoadingPage />;
+  }
   return (
     <div className="flex flex-col items-center gap-7 mx-auto max-w-3xl">
       <div className="text-2xl ">{t('title')}</div>
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
-        <div className="text-lg text-marigold-90">{sessionFeedback.title}</div>
+        <div className="text-lg text-marigold-90">{feedbackDetail?.title}</div>
         <div className="text-base text-marigold-95">
-          {formatDateTime(sessionFeedback.createdAt)}
+          {formatDateTime(feedbackDetail?.createdAt ?? '')}
         </div>
       </div>
       <div className="flex gap-3 items-center w-full justify-between">
@@ -106,7 +140,7 @@ export default function FeedbackDetail({
           ))}
         </div>
         <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
-          {feedback?.overallScore ?? 0}%
+          {feedbackDetail?.feedback?.overallScore ?? 0}%
         </div>
       </div>
       <div className="my-4 mx-2 h-px w-full bg-bw-30" />
@@ -135,7 +169,7 @@ export default function FeedbackDetail({
             <Progress className="w-10 flex-1" value={62} />
             <div className="flex gap-1 items-center text-base text-bw-40">
               <Clock size={13} />
-              <span>{convertTimeToMinutes(feedback?.sessionLengthS ?? 0)}</span>
+              <span>{convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0)}</span>
             </div>
           </div>
         </div>
