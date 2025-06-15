@@ -22,7 +22,9 @@ class ConfidenceArea(str, Enum):
 
 
 class UserConfidenceScore(CamelModel, table=True):
-    confidence_area: ConfidenceArea = Field(default=ConfidenceArea.giving_difficult_feedback)
+    confidence_area: ConfidenceArea = Field(
+        default=ConfidenceArea.giving_difficult_feedback, primary_key=True
+    )
     user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)
     score: int
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

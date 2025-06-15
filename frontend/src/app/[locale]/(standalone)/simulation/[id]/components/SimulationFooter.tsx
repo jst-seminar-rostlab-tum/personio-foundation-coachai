@@ -12,7 +12,7 @@ export default function SimulationFooter({
   setIsPaused: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between md:justify-center md:gap-16 px-6 pt-4 pb-6 bg-white z-10">
+    <div className="flex justify-evenly py-6 z-10">
       <Button
         size="iconLarge"
         variant="outline"

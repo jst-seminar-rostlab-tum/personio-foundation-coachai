@@ -22,13 +22,13 @@ export default function DashboardPage() {
   return (
     <>
       <BackButton />
-      <div className="flex flex-col gap-12 p-8">
+      <div className="flex flex-col gap-12">
         <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
           <p className="text-2xl text-center md:text-left">
             {t('header.greeting')}
             {name}!
           </p>
-          <Link href="/new-training" className="w-full md:w-auto">
+          <Link href="/new-conversation-scenario" className="w-full md:w-auto">
             <Button size="full" className="md:!size-default">
               <Plus />
               {t('header.cta')}

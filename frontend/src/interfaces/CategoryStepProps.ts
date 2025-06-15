@@ -1,4 +1,7 @@
+import { ConversationCategory } from './ConversationCategory';
+
 export interface CategoryStepProps {
   selectedCategory: string;
-  onCategorySelect: (category: string) => void;
+  onCategorySelect: (category: ConversationCategory) => void;
+  categories: ConversationCategory[];
 }
