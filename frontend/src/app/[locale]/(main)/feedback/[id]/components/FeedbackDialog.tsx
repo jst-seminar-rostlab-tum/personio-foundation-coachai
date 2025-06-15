@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Rating, RatingButton } from '@/components/ui/Rating';
 import { Textarea } from '@/components/ui/Textarea';
+import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { createFeedback } from '@/services/client/FeedbackService';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -39,8 +40,9 @@ export default function FeedbackDialog({ sessionId }: { sessionId: string }) {
         comment: ratingDescription,
         sessionId,
       });
+      showSuccessToast(t('submitFeedbackSuccess'));
     } catch (error) {
-      console.error('Error submitting feedback:', error);
+      showErrorToast(error, t('submitFeedbackError'));
     }
   };
 

@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
+import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { SessionPaginated, SessionFromPagination } from '@/interfaces/Session';
 import { api } from '@/services/client/Api';
 import { getPaginatedSessions } from '@/services/server/SessionService';
@@ -60,8 +61,9 @@ export default function PreviousSessions({
       setIsDeleting(true);
       await clearAllSessions();
       setVisibleCount(0);
+      showSuccessToast(t('deleteSuccess'));
     } catch (e) {
-      console.error(e);
+      showErrorToast(e, t('deleteError'));
     } finally {
       setIsDeleting(false);
     }

@@ -313,7 +313,7 @@ def generate_and_store_feedback(
         speak_time_percent=0,
         questions_asked=0,
         session_length_s=0,
-        goals_achieved=len(goals.goals_achieved),
+        goals_achieved=goals.goals_achieved,
         example_positive=examples_positive_dicts,
         example_negative=examples_negative_dicts,
         recommendations=recommendations,

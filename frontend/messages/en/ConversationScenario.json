@@ -92,5 +92,6 @@
     "back": "Go Back",
     "next": "Next Step",
     "create": "Create Training"
-  }
+  },
+  "errorMessage": "An error occurred while creating the scenario. Please try again later."
 }

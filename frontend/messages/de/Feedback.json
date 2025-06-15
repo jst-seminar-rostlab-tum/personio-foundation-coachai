@@ -6,7 +6,9 @@
     "open": "Feedback geben",
     "title": "Feedback",
     "description": "Wie war die Trainingssitzung? Helfen Sie uns, indem Sie Ihr Feedback geben.",
-    "rate": "Feedback abgeben"
+    "rate": "Feedback abgeben",
+    "submitFeedbackError": "Fehler beim Abgeben des Feedbacks. Bitte versuchen Sie es später erneut.",
+    "submitFeedbackSuccess": "Feedback erfolgreich abgegeben. Vielen Dank für Ihr Feedback!"
   },
   "progressBars": {
     "structure": "Struktur",
@@ -34,5 +36,6 @@
     "recommendations": "Empfehlungen",
     "nextTime": "Nächstes Mal, frag:"
   },
-  "return": "Zurück zum Dashboard"
+  "return": "Zurück zum Dashboard",
+  "getSessionDetailError": "Fehler beim Abrufen der Sitzungsfeedbacks. Bitte versuchen Sie es später erneut."
 }
