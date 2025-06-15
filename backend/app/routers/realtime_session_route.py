@@ -1,20 +1,46 @@
-import os
+from typing import Annotated
+from uuid import UUID
 
 import httpx
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import Session as DBSession
+from sqlmodel import select
+
+from app.config import settings
+from app.database import get_db_session
+from app.dependencies import require_user
+from app.models.conversation_scenario import ConversationScenario
+from app.models.session import Session
+from app.models.user_profile import UserProfile
 
 router = APIRouter(prefix='', tags=['realtime-session'])
 
 
-@router.get('/realtime-session')
-async def get_realtime_session() -> dict:
+@router.get('/realtime-session/{session_id}')
+async def get_realtime_session(
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    session_id: UUID,
+) -> dict:
     """
     Proxies a POST request to OpenAI's realtime sessions endpoint
     and returns the JSON response.
     """
-    api_key = os.getenv('OPENAI_API_KEY')
+    api_key = settings.OPENAI_API_KEY
     if not api_key:
         raise HTTPException(status_code=500, detail='OPENAI_API_KEY not set')
+
+    session = db_session.exec(select(Session).where(Session.id == session_id)).first()
+    if not session:
+        raise HTTPException(status_code=404, detail='Session not found')
+    conversation_scenario = db_session.exec(
+        select(ConversationScenario).where(ConversationScenario.id == session.scenario_id)
+    ).first()
+
+    context = ''
+
+    if conversation_scenario:
+        context = conversation_scenario.context
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -25,9 +51,9 @@ async def get_realtime_session() -> dict:
             },
             json={
                 'model': 'gpt-4o-realtime-preview-2025-06-03',
-                'voice': 'verse',
-                'input_audio_transcription': {'language': 'en', 'model': 'gpt-4o-mini-transcribe'},
-                'instructions': 'Speak only in English.',
+                'voice': 'echo',
+                'input_audio_transcription': {'language': 'en', 'model': 'gpt-4o-transcribe'},
+                'instructions': context,
                 'turn_detection': {
                     'type': 'server_vad',
                     'threshold': 0.8,

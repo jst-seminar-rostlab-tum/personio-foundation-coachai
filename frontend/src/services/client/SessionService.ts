@@ -69,9 +69,12 @@ const createSessionTurn = async (
   }
 };
 
-const getSdpResponseTextFromRealtimeApi = async (offerSdp: string | undefined) => {
+const getSdpResponseTextFromRealtimeApi = async (
+  sessionId: string,
+  offerSdp: string | undefined
+) => {
   try {
-    const realtimeSessionResponse = await api.get('/realtime-session');
+    const realtimeSessionResponse = await api.get(`/realtime-session/${sessionId}`);
     const ephemeralKey = realtimeSessionResponse.data.client_secret.value;
 
     const baseUrl = 'https://api.openai.com/v1/realtime';
