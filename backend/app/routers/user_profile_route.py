@@ -364,8 +364,6 @@ def delete_user_profile(
     user_profile = db_session.get(UserProfile, user_id)  # type: ignore
     if not user_profile:
         raise HTTPException(status_code=404, detail='User profile not found')
-    for review in user_profile.reviews:
-        db_session.delete(review)
     db_session.delete(user_profile)
     db_session.commit()
     return {'message': 'User profile deleted successfully'}

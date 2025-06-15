@@ -3,6 +3,7 @@ import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { LayoutProps } from '@/interfaces/LayoutProps';
 import { AppHeader } from '@/components/layout/AppHeader';
+import BackButton from '@/components/common/BackButton';
 import { Toaster } from '@/components/ui/Sonner';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -29,7 +30,10 @@ export default async function RootLayout({ children, params }: LayoutProps) {
       <body className={inter.className}>
         <NextIntlClientProvider>
           <AppHeader />
-          <main className="container mx-auto p-6 md:p-12 mt-16">{children}</main>
+          <main className="container mx-auto p-6 md:p-12 mt-16">
+            <BackButton />
+            {children}
+          </main>
           <Toaster />
         </NextIntlClientProvider>
       </body>
