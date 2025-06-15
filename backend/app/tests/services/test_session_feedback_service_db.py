@@ -142,7 +142,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             recommendations=[
                 Recommendation(
                     heading='Some heading',
-                    text='Some text',
+                    recommendation='Some text',
                 )
             ]
         )
