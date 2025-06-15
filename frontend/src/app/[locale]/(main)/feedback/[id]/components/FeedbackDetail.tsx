@@ -23,6 +23,7 @@ import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/client/SessionService';
+import { showErrorToast } from '@/lib/toast';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
@@ -48,13 +49,13 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           return;
         }
 
-        throw new Error('Failed to get training case preparation data');
+        throw new Error('Failed to get session feedback');
       } catch (error) {
         setIsLoading(false);
-        console.error(error);
+        showErrorToast(error, t('getSessionDetailError'));
       }
     },
-    [setFeedbackDetail, setIsLoading]
+    [setFeedbackDetail, setIsLoading, t]
   );
 
   useEffect(() => {
