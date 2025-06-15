@@ -26,5 +26,6 @@
   "serverError": "Ein Fehler ist beim Löschen der Sitzungen aufgetreten. Bitte versuchen Sie es erneut.",
   "noSessionsFound": "Keine Sitzungen gefunden, die gelöscht werden können.",
   "deleteSuccess": "Alle Sitzungen wurden erfolgreich gelöscht.",
-  "deleteError": "Sitzungen konnten nicht gelöscht werden. Bitte versuchen Sie es erneut."
+  "deleteError": "Sitzungen konnten nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+  "loading": "Wird geladen..."
 }

@@ -21,6 +21,7 @@
   "cancel": "Cancel",
   "delete": "Delete",
   "deleting": "Deleting...",
+  "loading": "Loading...",
   "deleteSuccess": "All sessions deleted successfully.",
   "deleteError": "Error deleting sessions. Please try again later."
 }
