@@ -1,23 +1,26 @@
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import { ArrowRightIcon, Play, Plus } from 'lucide-react';
+import { Play, Plus } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
 import { Button } from '@/components/ui/Button';
+import { getPaginatedSessions } from '@/services/server/SessionService';
+import { api } from '@/services/server/Api';
 import StatCard from '@/components/common/StatCard';
-import HistoryItem from './components/HistoryItem';
+import HistoryItems from './components/HistoryItems';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/dashboard', true);
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const name = 'Anton';
-  const t = useTranslations('Dashboard');
-
+  const t = await getTranslations('Dashboard');
+  const PAGE_SIZE = 3;
+  const sessions = getPaginatedSessions(api, 1, PAGE_SIZE);
   return (
     <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
@@ -60,38 +63,7 @@ export default function DashboardPage() {
         <StatCard value="89%" label={t('userStats.avgScore')} />
       </div>
 
-      <section className="flex flex-col gap-4">
-        <div>
-          <h2 className="text-xl">{t('recentSessions.title')}</h2>
-          <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
-        </div>
-
-        <HistoryItem
-          title="Negotiating Job Offers"
-          description="Practice salary negotiation with a potential candidate"
-          date={new Date('2025-01-04T13:36:00')}
-          duration={5672}
-        />
-        <HistoryItem
-          title="Conflict Resolution"
-          description="Mediate a disagreement between team members"
-          date={new Date('2024-04-16T13:36:00')}
-          duration={368}
-        />
-        <HistoryItem
-          title="Performance Review"
-          description="Conduct a quaterly performance review"
-          date={new Date('2023-07-28T13:36:00')}
-          duration={634}
-        />
-
-        <Link href="/history">
-          <Button size="full">
-            {t('recentSessions.cta')}
-            <ArrowRightIcon />
-          </Button>
-        </Link>
-      </section>
+      <HistoryItems sessionsPromise={sessions} />
     </div>
   );
 }
