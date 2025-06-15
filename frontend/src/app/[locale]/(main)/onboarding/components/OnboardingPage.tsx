@@ -1,7 +1,7 @@
 'use client';
 
 import Stepper from '@/components/common/Stepper';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { UserOption } from '@/interfaces/UserInputFields';
@@ -10,50 +10,33 @@ import Label from '@/components/ui/Label';
 import { useTranslations } from 'next-intl';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Link from 'next/link';
-import { confidenceFields } from '@/configs/UserConfidenceFields.config';
+import { PrimaryGoals, UserRoles } from '@/lib/utils';
+import { UserProfileService } from '@/services/client/UserProfileService';
+import { useRouter } from 'next/navigation';
 import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
-  const roleQuestion: UserOption[] = [
-    {
-      id: 'r1',
-      label: 'HR Professional',
-      labelHint: 'I work in human resources or people operations',
-    },
-    {
-      id: 'r2',
-      label: 'Team Leader',
-      labelHint: 'I manage a team or department',
-    },
-    {
-      id: 'r3',
-      label: 'Executive',
-      labelHint: `I'm a director, VP, or C-level executive`,
-    },
-    {
-      id: 'r4',
-      label: 'Other',
-      labelHint: 'None of them above',
-    },
-  ];
-
-  const primaryGoals: UserOption[] = [
-    { id: 'g1', label: 'Giving constructive feedback' },
-    { id: 'g2', label: 'Managing team conflicts' },
-    { id: 'g3', label: 'Performance reviews' },
-    { id: 'g4', label: 'Motivating team members' },
-    { id: 'g5', label: 'Leading difficult conversations' },
-    { id: 'g6', label: 'Setting team goals' },
-    { id: 'g7', label: 'Improving team collaboration' },
-    { id: 'g8', label: 'Enhancing team productivity' },
-  ];
-
   const onboardingSteps = ['Step1', 'Step2', 'Step3'];
-  const [currentOnboardingStep, setCurrentOnboardingStep] = React.useState(0);
-  const [selectedRole, setSelectedRole] = React.useState<string>('');
-  const [selectedGoals, setSelectedGoals] = React.useState<string[]>([]);
   const t = useTranslations('Onboarding');
+  const router = useRouter();
+  const roleQuestion: UserOption[] = UserRoles();
+  const primaryGoals: UserOption[] = PrimaryGoals();
 
+  const [currentOnboardingStep, setCurrentOnboardingStep] = useState(0);
+  const [selectedRole, setSelectedRole] = useState<string>('');
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const [difficulty, setDifficulty] = useState([50]);
+  const [conflict, setConflict] = useState([50]);
+  const [conversation, setConversation] = useState([50]);
+
+  const confidenceFieldsProps = {
+    difficulty,
+    conflict,
+    conversation,
+    setDifficulty,
+    setConflict,
+    setConversation,
+  };
   const isValidStep = (stepIndex: number) => {
     if (stepIndex === 0) return selectedRole !== '';
     if (stepIndex === 1) return selectedGoals.length > 0;
@@ -74,6 +57,23 @@ export default function OnboardingPageComponent() {
 
   const goToPreviousStep = () => {
     setCurrentOnboardingStep((prev) => Math.max(prev - 1, 0));
+  };
+
+  const updateUserProfile = async () => {
+    try {
+      await UserProfileService.updateUserProfile({
+        professionalRole: selectedRole,
+        goals: selectedGoals,
+        confidenceScores: [
+          { confidenceArea: 'giving_difficult_feedback', score: difficulty[0] },
+          { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
+          { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
+        ],
+      });
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+    }
   };
 
   return (
@@ -137,7 +137,7 @@ export default function OnboardingPageComponent() {
           <div className="text-xl self-center min-h-20 text-center max-w-70 flex items-center">
             {t('steps.step3')}
           </div>
-          <UserConfidenceFields fields={confidenceFields} />
+          <UserConfidenceFields {...confidenceFieldsProps} />
         </>
       )}
 
@@ -158,12 +158,10 @@ export default function OnboardingPageComponent() {
           )}
 
           {currentOnboardingStep === onboardingSteps.length - 1 ? (
-            <Link href="/dashboard">
-              <Button className="w-full">
-                {t('navigation.finish')}
-                <ArrowRightIcon />
-              </Button>
-            </Link>
+            <Button className="w-full" onClick={updateUserProfile}>
+              {t('navigation.finish')}
+              <ArrowRightIcon />
+            </Button>
           ) : (
             <Button
               className="w-full"
