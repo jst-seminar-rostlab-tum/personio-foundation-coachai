@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   ChartNoAxesColumnIncreasingIcon,
@@ -75,38 +75,41 @@ export default function FeedbackDetail() {
   const params = useParams();
   const [feedback, setFeedback] = useState<FeedbackType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    // let timer: NodeJS.Timeout | null = null;
+  const fetchData = useCallback(() => {
     const id = params?.id;
     if (!id) return;
-    setIsLoading(true);
 
-    const fetchData = () => {
-      api
-        .get(`/session/${id}`)
-        .then((res) => {
-          if (res.status === 202 || res.data.status === 'pending') {
-            setIsLoading(true);
-            setFeedback(null);
-            // timer = setTimeout(fetchData, 2000);
-          } else if (res.status === 200) {
-            setIsLoading(false);
-            setFeedback(res.data.feedback);
-          } else if (res.status === 404 || res.status === 422) {
-            setIsLoading(false);
-            setFeedback(null);
-          }
-        })
-        .catch(() => {
+    api
+      .get(`/session/${id}`)
+      .then((res) => {
+        if (res.status === 202 || res.data.status === 'pending') {
+          setIsLoading(true);
+          setFeedback(null);
+          timerRef.current = setTimeout(fetchData, 2000);
+        } else if (res.status === 200) {
+          setIsLoading(false);
+          setFeedback(res.data.feedback);
+        } else if (res.status === 404 || res.status === 422) {
           setIsLoading(false);
           setFeedback(null);
-        });
-    };
-
-    fetchData();
-    // return () => timer && clearTimeout(timer); // Check if this line is needed
+        }
+      })
+      .catch(() => {
+        setIsLoading(false);
+        setFeedback(null);
+      });
   }, [params]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchData();
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [fetchData]);
 
   if (isLoading) return <Loading />;
 

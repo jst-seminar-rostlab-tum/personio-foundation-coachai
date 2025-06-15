@@ -204,7 +204,7 @@ function useOpenAIRealtimeWebRTC() {
       });
 
       // 10. Set remote description with answer SDP
-      const answer = {
+      const answer: RTCSessionDescriptionInit = {
         type: 'answer',
         sdp: await sdpResponse.text(),
       };
