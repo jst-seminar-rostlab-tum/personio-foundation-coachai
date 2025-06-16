@@ -245,9 +245,6 @@ def update_session(
 
     scenario_id = updated_data.scenario_id or session.scenario_id
 
-    if updated_data.scheduled_at:
-        session.scheduled_at = updated_data.scheduled_at
-
     # Validate foreign keys
     if scenario_id:
         conversation_scenario = db_session.get(ConversationScenario, scenario_id)
@@ -270,10 +267,6 @@ def update_session(
                 detail='Conversation scenario must be provided to generate feedback',
             )
 
-        if updated_data.ended_at:
-            session.ended_at = updated_data.ended_at
-        if updated_data.started_at:
-            session.started_at = updated_data.started_at
         statement = select(ScenarioPreparation).where(
             ScenarioPreparation.scenario_id == session.scenario_id
         )
