@@ -18,6 +18,6 @@ export default async function AdminPage() {
     return redirect('/dashboard');
   }
 
-  const stats = await adminService.getAdminStats();
+  const stats = adminService.getAdminStats();
   return <Admin stats={stats} />;
 }
