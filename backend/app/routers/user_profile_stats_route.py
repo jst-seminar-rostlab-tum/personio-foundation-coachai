@@ -10,7 +10,7 @@ from app.models.user_profile import UserProfile, UserStatisticsRead
 router = APIRouter(prefix='/user', tags=['User Stats'])
 
 
-@router.get('/', response_model=UserStatisticsRead)
+@router.get('', response_model=UserStatisticsRead)
 def get_user_stats(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     user_profile: Annotated[UserProfile, Depends(require_user)],

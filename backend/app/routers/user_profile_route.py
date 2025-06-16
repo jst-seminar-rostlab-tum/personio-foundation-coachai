@@ -21,7 +21,7 @@ from app.models.user_profile import (
 router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
 
 
-@router.get('/', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
+@router.get('', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
 def get_user_profiles(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     detailed: bool = False,
@@ -75,7 +75,7 @@ def get_user_profiles(
 
 
 @router.get(
-    '/profile/',
+    '/profile',
     response_model=Union[UserProfileRead, UserProfileExtendedRead],
 )
 def get_user_profile(
@@ -130,7 +130,7 @@ def get_user_profile(
 
 
 @router.post(
-    '/',
+    '',
     response_model=UserProfileExtendedRead,
     status_code=201,
     dependencies=[Depends(require_user)],
@@ -194,7 +194,7 @@ def create_user_profile(
     )
 
 
-@router.put('/', response_model=UserProfileExtendedRead)
+@router.put('', response_model=UserProfileExtendedRead)
 def replace_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileReplace,
@@ -211,6 +211,7 @@ def replace_user_profile(
     user.preferred_language_code = data.preferred_language_code
     user.preferred_learning_style = data.preferred_learning_style
     user.store_conversations = data.store_conversations
+    user.professional_role = data.professional_role
 
     db_session.add(user)
 
@@ -264,7 +265,7 @@ def replace_user_profile(
     )
 
 
-@router.patch('/', response_model=UserProfileExtendedRead)
+@router.patch('', response_model=UserProfileExtendedRead)
 def update_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileUpdate,
@@ -288,6 +289,8 @@ def update_user_profile(
         user.preferred_learning_style = update_data['preferred_learning_style']
     if 'store_conversations' in update_data:
         user.store_conversations = update_data['store_conversations']
+    if 'professional_role' in update_data:
+        user.professional_role = update_data['professional_role']
 
     db_session.add(user)
 
@@ -310,7 +313,7 @@ def update_user_profile(
             db_session.delete(cs)
         db_session.commit()
 
-        for cs_data in update_data['confidence_scores']:
+        for cs_data in data.confidence_scores:
             db_session.add(
                 UserConfidenceScore(
                     user_id=user.id,
@@ -342,7 +345,7 @@ def update_user_profile(
     )
 
 
-@router.delete('/', response_model=dict)
+@router.delete('', response_model=dict)
 def delete_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -361,8 +364,6 @@ def delete_user_profile(
     user_profile = db_session.get(UserProfile, user_id)  # type: ignore
     if not user_profile:
         raise HTTPException(status_code=404, detail='User profile not found')
-    for review in user_profile.reviews:
-        db_session.delete(review)
     db_session.delete(user_profile)
     db_session.commit()
     return {'message': 'User profile deleted successfully'}

@@ -17,7 +17,7 @@ from app.models.session_feedback import (
 router = APIRouter(prefix='/session-feedback', tags=['Session Feedback'])
 
 
-@router.get('/', response_model=list[SessionFeedbackRead])
+@router.get('', response_model=list[SessionFeedbackRead])
 def get_session_feedbacks(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[SessionFeedback]:
@@ -29,7 +29,7 @@ def get_session_feedbacks(
     return list(feedbacks)
 
 
-@router.post('/', response_model=SessionFeedbackRead)
+@router.post('', response_model=SessionFeedbackRead)
 def create_session_feedback(
     feedback: SessionFeedbackCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> SessionFeedback:

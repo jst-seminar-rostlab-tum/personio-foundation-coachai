@@ -24,15 +24,14 @@ def test_generate_training_examples(mock_client: MagicMock) -> None:
         positive_examples=[
             PositiveExample(
                 heading='Clear Objective Addressed',
-                text='The user successfully summarized the objective.',
+                feedback='The user successfully summarized the objective.',
                 quote='I want to make sure we both feel heard and find a solution together.',
-                guideline='Collaborative Problem-Solving',
             )
         ],
         negative_examples=[
             NegativeExample(
                 heading='Missed Empathy',
-                text="The user dismissed the other party's concern.",
+                feedback="The user dismissed the other party's concern.",
                 quote="That's not important right now.",
                 improved_quote="I understand your concern—let's come back to it in a moment.",
             )
@@ -98,18 +97,18 @@ def test_generate_recommendations(mock_client: MagicMock) -> None:
         recommendations=[
             Recommendation(
                 heading='Practice the STAR method',
-                text='When giving feedback, use the Situation, Task, Action, Result framework to '
-                + 'provide more concrete examples.',
+                recommendation='When giving feedback, use the Situation, Task, Action, Result '
+                + 'framework to provide more concrete examples.',
             ),
             Recommendation(
                 heading='Ask more diagnostic questions',
-                text='Spend more time understanding root causes before moving to solutions. '
-                + 'This builds empathy and leads to more effective outcomes.',
+                recommendation='Spend more time understanding root causes before moving '
+                + 'to solutions.This builds empathy and leads to more effective outcomes.',
             ),
             Recommendation(
                 heading='Define clear next steps',
-                text='End feedback conversations with agreed-upon action items, timelines, and'
-                + ' follow-up plans.',
+                recommendation='End feedback conversations with agreed-upon action items, '
+                + 'timelines, and follow-up plans.',
             ),
         ]
     )

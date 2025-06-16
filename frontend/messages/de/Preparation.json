@@ -22,5 +22,7 @@
     "back": "Zurück",
     "start": "Training starten"
   },
-  "loadingText": "Bereite Ziele und Checkliste vor..."
+  "loadingText": "Bereite Ziele und Checkliste vor...",
+  "sessionCreationError": "Fehler beim Erstellen der Trainingssitzung. Bitte versuchen Sie es später erneut.",
+  "getPreparationError": "Fehler beim Abrufen der Vorbereitungsdaten. Bitte versuchen Sie es später erneut."
 }

@@ -31,11 +31,12 @@ class DifficultyLevel(str, Enum):
     hard = 'hard'
 
 
-# Database model
 class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key='userprofile.id', nullable=False)  # FK to UserProfile
-    category_id: Optional[str] = Field(default=None, foreign_key='conversationcategory.id')
+    user_id: UUID = Field(foreign_key='userprofile.id', nullable=False, ondelete='CASCADE')
+    category_id: Optional[str] = Field(
+        default=None, foreign_key='conversationcategory.id', ondelete='CASCADE'
+    )
     custom_category_label: Optional[str] = None
     language_code: LanguageCode = Field(default=LanguageCode.en)
     context: str
@@ -53,7 +54,7 @@ class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a d
         back_populates='conversation_scenarios'
     )
     sessions: list['Session'] = Relationship(back_populates='scenario', cascade_delete=True)
-    preparations: list['ScenarioPreparation'] = Relationship(
+    preparation: Optional['ScenarioPreparation'] = Relationship(
         back_populates='scenario', cascade_delete=True
     )
     user_profile: Optional['UserProfile'] = Relationship(back_populates='conversation_scenarios')

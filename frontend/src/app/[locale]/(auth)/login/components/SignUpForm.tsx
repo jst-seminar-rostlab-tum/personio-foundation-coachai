@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Checkbox from '@/components/ui/Checkbox';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PasswordRequirement } from '@/interfaces/PasswordInput';
 import Image from 'next/image';
 import {
@@ -19,11 +19,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/Form';
-import { AlertCircleIcon } from 'lucide-react';
-import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { VerificationPopup } from '@/app/[locale]/(auth)/login/components/VerificationPopup';
 import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordInput';
 import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
+import { showErrorToast } from '@/lib/toast';
 
 export function SignUpForm() {
   const t = useTranslations('Login.SignUpTab');
@@ -32,10 +31,16 @@ export function SignUpForm() {
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (error) {
+      showErrorToast(null, error);
+    }
+  }, [error]);
+
   const signUpFormSchema = z.object({
     fullName: z.string().min(1, t('fullNameInputError')),
     email: z.string().email(t('emailInputError')),
-    phoneNumber: z.string().regex(/^\+[1-9]\d{7,14}$/, t('phoneNumberInputError')),
+    phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, t('phoneNumberInputError')),
     password: z
       .string()
       .regex(/^.{8,}$/)
@@ -50,7 +55,7 @@ export function SignUpForm() {
     defaultValues: {
       fullName: '',
       email: '',
-      phoneNumber: '',
+      phone_number: '',
       password: '',
       terms: false,
     },
@@ -131,7 +136,7 @@ export function SignUpForm() {
 
               <FormField
                 control={signUpForm.control}
-                name="phoneNumber"
+                name="phone_number"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('phoneNumberInputLabel')}</FormLabel>
@@ -223,13 +228,6 @@ export function SignUpForm() {
       />
 
       <PrivacyDialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}></PrivacyDialog>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircleIcon />
-          <AlertTitle>{error}</AlertTitle>
-        </Alert>
-      )}
     </>
   );
 }

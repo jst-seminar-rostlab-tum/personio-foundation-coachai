@@ -44,15 +44,14 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
         positive_examples=[
             PositiveExample(
                 heading='Clear Objective Addressed',
-                text='The user successfully summarized the objective.',
+                feedback='The user successfully summarized the objective.',
                 quote='I want to make sure we both feel heard and find a solution together.',
-                guideline='Collaborative Problem-Solving',
             )
         ],
         negative_examples=[
             NegativeExample(
                 heading='Missed Empathy',
-                text="The user dismissed the other party's concern.",
+                feedback="The user dismissed the other party's concern.",
                 quote="That's not important right now.",
                 improved_quote="I understand your concern—let's come back to it in a moment.",
             )
@@ -60,13 +59,17 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
     )
 
     user_prompt = f"""
-    The following is a training session transcript, in which you are practicing 
+    The following is a training session transcript in which you are practicing 
     communication skills in the context of {request.category}. 
     You are expected to follow the training guidelines provided below.
     The AI simulates the other party in the conversation, and you are expected to respond
     appropriately based on the training objectives, goal, context, and key concepts.
-    In this case, you are practicing how to {request.goal} in the context of {request.context}.
+    In this session, you are practicing how to {request.goal} in the context of {request.context}.
     The other party, the AI, is simulating a {request.other_party}.
+
+    **Speaker labels in the transcript:**
+    - Lines starting with **"User:"** are your own statements.
+    - Lines starting with **"Assistant:"** are the AI's responses and are for context only.
 
     Transcript:
     {request.transcript}
@@ -78,38 +81,32 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
     - Key Concepts: {request.key_concepts}
 
     Instructions:
-    Analyze the provided transcript and how you performed against the training guidelines. 
-    Extract up to 3 positive and 3 negative examples comparing your performance to the 
-    training guidelines. Only extract examples that are things you said (not the AI).
-    Try to find at least one positive and one negative example.
+    Carefully analyze the provided transcript and evaluate **only your own statements** 
+    (what you said as the User).  
+    **Do not analyze, quote, or critique any statements made by the Assistant.**  
+    The Assistant’s lines are for context only.
+
+    Extract up to 3 positive and up to 3 negative examples of your own communication, comparing 
+    them to the training guidelines. 
+    Always find at least one positive and one negative example, if possible.
 
     Format your output as a Pydantic model with two fields:
     - `positive_examples`: a list of up to 3 positive examples
-    - `negative_examples`: a list of up to 3 negative examples.
+    - `negative_examples`: a list of up to 3 negative examples
 
-    Each positive example represents a Pydantic model with the four fields:
-    - `heading`: A short title or summary of the positive example
-    - `text`: A short explanation of why this is a good example
-    - `quote`: A direct quote from the transcript that illustrates the example
-    - `guideline`: The specific guideline or concept this quote aligns with
-    
-    Each negative example represents a Pydantic model with the four fields:
-    - `heading`: A short title or summary of the negative example
-    - `text`: A short description or context of the example
-    - `quote`: A problematic or unhelpful quote mentioned by the user
-    - `improved_quote`: A suggested improved version of the quote
-    
-    Do not include markdown or ```json formatting.
+    Each positive example must include:
+    - **heading**: A short summary title
+    - **feedback:** A bullet point explaining why this is good practice
+    - **quote:** A bullet point with the exact quote from your own lines in the transcript
 
-    Each example should include:
-    - A bolded heading
-    - A bullet point explanation under **"Explanation:"**
-    - A bullet point quote under **"Quote:"**
-    - For positive examples: a bullet point **"Relevant Guideline:"**
-    - For negative examples: a bullet point **"Suggested Improvement:"**
+    Each negative example must include:
+    - **heading**: A short summary title
+    - **feedback:** A bullet point explaining what could be improved
+    - **quote:** A bullet point with the exact quote from your own lines in the transcript
+    - **improved_quote:** A bullet point with a clear, improved version of that quote
 
-    Do not include any headings, commentary, or extra formatting—just provide the two markdown 
-    strings as values for the Pydantic fields.
+    Do not include markdown code blocks, JSON, or extra commentary—just provide the two markdown 
+    strings as the values for the Pydantic fields.
     """
 
     response = call_structured_llm(
@@ -171,18 +168,18 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
         recommendations=[
             Recommendation(
                 heading='Practice the STAR method',
-                text='When giving feedback, use the Situation, Task, Action, Result framework to '
-                + 'provide more concrete examples.',
+                recommendation='When giving feedback, use the Situation, Task, Action, Result '
+                + 'framework to provide more concrete examples.',
             ),
             Recommendation(
                 heading='Ask more diagnostic questions',
-                text='Spend more time understanding root causes before moving to solutions. '
-                + 'This builds empathy and leads to more effective outcomes.',
+                recommendation='Spend more time understanding root causes before moving to '
+                + 'solutions. This builds empathy and leads to more effective outcomes.',
             ),
             Recommendation(
                 heading='Define clear next steps',
-                text='End feedback conversations with agreed-upon action items, timelines, and'
-                + ' follow-up plans.',
+                recommendation='End feedback conversations with agreed-upon action items,'
+                + ' timelines, and follow-up plans.',
             ),
         ]
     )
@@ -278,26 +275,33 @@ def generate_and_store_feedback(
     goals = GoalsAchievedCollection(goals_achieved=[])
     recommendations = []
 
-    try:
-        examples = safe_generate_training_examples(examples_request)
-        examples_positive_dicts = [ex.model_dump() for ex in examples.positive_examples]
-        examples_negative_dicts = [ex.model_dump() for ex in examples.negative_examples]
-    except Exception as e:
-        has_error = True
-        logger.error(f'[ERROR] Failed to generate examples: {e}')
+    if example_request.transcript is None:
+        # No transcript: leave examples empty and goals achieved as zero
+        examples_positive_dicts = []
+        examples_negative_dicts = []
+        goals = GoalsAchievedCollection(goals_achieved=[])
+        recommendations = []
+    else:
+        try:
+            examples = safe_generate_training_examples(examples_request)
+            examples_positive_dicts = [ex.model_dump() for ex in examples.positive_examples]
+            examples_negative_dicts = [ex.model_dump() for ex in examples.negative_examples]
+        except Exception as e:
+            has_error = True
+            print('[ERROR] Failed to generate examples:', e)
 
-    try:
-        goals = safe_get_achieved_goals(goals_request)
-    except Exception as e:
-        has_error = True
-        logger.error(f'[ERROR] Failed to generate goals: {e}')
+        try:
+            goals = safe_get_achieved_goals(goals_request)
+        except Exception as e:
+            has_error = True
+            print('[ERROR] Failed to generate goals:', e)
 
-    try:
-        recs = safe_generate_recommendations(recommendations_request)
-        recommendations = [rec.model_dump() for rec in recs.recommendations]
-    except Exception as e:
-        has_error = True
-        logger.error(f'[ERROR] Failed to generate key recommendations: {e}')
+        try:
+            recs = safe_generate_recommendations(recommendations_request)
+            recommendations = [rec.model_dump() for rec in recs.recommendations]
+        except Exception as e:
+            has_error = True
+            print('[ERROR] Failed to generate key recommendations:', e)
 
     # correct placement
     status = FeedbackStatusEnum.failed if has_error else FeedbackStatusEnum.completed
@@ -347,20 +351,20 @@ if __name__ == '__main__':
         goal='Successfully conduct a termination meeting',
         context='Termination meeting with a team member on poor performance',
         other_party='Team member',
-        transcript='User:  Hi, I have to talk to you.'
-        + "AI: Yes, what is it? Please don't fire me, I really need this job. "
-        + "I know I haven't been performing well lately, but I promise I can improve. "
+        transcript='User:  Hi, I have to talk to you. \n'
+        + "Assistant: Yes, what is it? Please don't fire me, I really need this job. "
+        + "I know I haven't been performing well lately, but I promise I can improve."
         + "I'll do whatever it takes."
         + 'Response interrupted'
-        + "User:  I'm sorry but I'm not happy with your performance."
-        + 'AI: I understand, and I take full responsibility. '
+        + "User:  I'm sorry but I'm not happy with your performance. \n"
+        + 'Assistant: I understand, and I take full responsibility. \n'
         + 'Could you please tell me specifically what areas I need to improve on?'
         + "I'm willing to work late, come in early, take on extra tasks—anything "
-        + 'to meet your expectations. Just please give me a chance to prove myself.'
-        + "User:  You can't do anything it's too late to improve."
-        + "AI: Please, don't say that. I'm a hard worker, and I'm a quick learner."
+        + 'to meet your expectations. Just please give me a chance to prove myself. \n'
+        + "User:  You can't do anything it's too late to improve. \n"
+        + "Assistant: Please, don't say that. I'm a hard worker, and I'm a quick learner."
         + "If you give me another chance, I promise I won't let you down."
-        + 'Is there anything, anything at all, I can do to change your mind?',
+        + 'Is there anything, anything at all, I can do to change your mind? \n',
         objectives=[
             'Bring clarity to the situation',
             'Encourage open dialogue',
@@ -381,13 +385,12 @@ if __name__ == '__main__':
 
     for example in examples.positive_examples:
         print(f'Positive Example: {example.heading}')
-        print(f'Text: {example.text}')
+        print(f'Text: {example.feedback}')
         print(f'Quote: {example.quote}')
-        print(f'Guideline: {example.guideline}\n')
 
     for example in examples.negative_examples:
         print(f'Negative Example: {example.heading}')
-        print(f'Text: {example.text}')
+        print(f'Text: {example.feedback}')
         print(f'Quote: {example.quote}')
         print(f'Improved Quote: {example.improved_quote}\n')
 
@@ -415,5 +418,5 @@ if __name__ == '__main__':
     recommendations = generate_recommendations(recommendation_request)
     for recommendation in recommendations.recommendations:
         print(f'Recommendation: {recommendation.heading}')
-        print(f'Text: {recommendation.text}\n')
+        print(f'Text: {recommendation.recommendation}\n')
     print('Recommendations generated successfully.')

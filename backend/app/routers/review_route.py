@@ -22,7 +22,7 @@ router = APIRouter(prefix='/review', tags=['User Review'])
 
 
 @router.get(
-    '/',
+    '',
     response_model=list[ReviewRead] | PaginatedReviewsResponse,
     dependencies=[Depends(require_admin)],
 )
@@ -104,7 +104,7 @@ def get_reviews(
     )
 
 
-@router.post('/', response_model=ReviewResponse)
+@router.post('', response_model=ReviewResponse)
 def create_review(
     review: ReviewCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],

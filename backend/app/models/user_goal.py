@@ -27,9 +27,9 @@ class Goal(str, Enum):
     coaching_mentoring = 'coaching_mentoring'
 
 
-class UserGoal(CamelModel, table=True):  # `table=True` makes it a database table
-    goal: Goal = Field(default=Goal.giving_constructive_feedback)
-    user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True)  # FK to UserProfileModel
+class UserGoal(CamelModel, table=True):
+    goal: Goal = Field(default=Goal.giving_constructive_feedback, primary_key=True)
+    user_id: UUID = Field(foreign_key='userprofile.id', primary_key=True, ondelete='CASCADE')
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
