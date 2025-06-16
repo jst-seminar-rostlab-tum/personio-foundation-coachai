@@ -265,23 +265,23 @@ def get_dummy_ratings(
 
 def get_dummy_conversation_categories() -> list[ConversationCategory]:
     # Load context from JSON file
-    context_path = os.path.join(os.path.dirname(__file__), 'conversation_scenario_context.json')
+    initial_prompt_path = os.path.join(os.path.dirname(__file__), 'initial_prompts.json')
     try:
-        with open(context_path, encoding='utf-8') as f:
-            context_data = json.load(f)
+        with open(initial_prompt_path, encoding='utf-8') as f:
+            initial_prompt_data = json.load(f)
     except Exception:
-        context_data = {}
+        initial_prompt_data = {}
 
     return [
         ConversationCategory(
             id='giving_feedback',
             name='Giving Feedback',
             system_prompt='You are an expert in providing constructive feedback.',
-            initial_prompt='What feedback challenge are you facing?',
-            ai_setup={'type': 'feedback', 'complexity': 'medium'},
-            default_context=context_data.get(
+            initial_prompt=initial_prompt_data.get(
                 'giving_feedback', 'One-on-one meeting with a team member.'
             ),
+            ai_setup={'type': 'feedback', 'complexity': 'medium'},
+            default_context='One-on-one meeting with a team member.',
             default_goal='Provide constructive feedback effectively.',
             default_other_party='Team member',
             is_custom=False,
@@ -293,11 +293,11 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             id='performance_reviews',
             name='Performance Reviews',
             system_prompt='You are a manager conducting performance reviews.',
-            initial_prompt='What aspect of performance would you like to discuss?',
-            ai_setup={'type': 'review', 'complexity': 'high'},
-            default_context=context_data.get(
+            initial_prompt=initial_prompt_data.get(
                 'performance_reviews', 'Formal performance review meeting.'
             ),
+            ai_setup={'type': 'review', 'complexity': 'high'},
+            default_context='Formal performance review meeting.',
             default_goal='Evaluate and discuss employee performance.',
             default_other_party='Employee',
             is_custom=False,
@@ -309,11 +309,11 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             id='conflict_resolution',
             name='Conflict Resolution',
             system_prompt='You are a mediator resolving conflicts.',
-            initial_prompt='What conflict are you trying to resolve?',
-            ai_setup={'type': 'mediation', 'complexity': 'high'},
-            default_context=context_data.get(
+            initial_prompt=initial_prompt_data.get(
                 'conflict_resolution', 'Conflict resolution meeting between team members.'
             ),
+            ai_setup={'type': 'mediation', 'complexity': 'high'},
+            default_context='Conflict resolution meeting between team members.',
             default_goal='Resolve conflicts and improve team dynamics.',
             default_other_party='Team members',
             is_custom=False,
@@ -325,9 +325,11 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             id='salary_discussions',
             name='Salary Discussions',
             system_prompt='You are a negotiator discussing salary expectations.',
-            initial_prompt='What salary-related topic would you like to address?',
+            initial_prompt=initial_prompt_data.get(
+                'salary_discussions', 'Salary negotiation meeting.'
+            ),
             ai_setup={'type': 'negotiation', 'complexity': 'medium'},
-            default_context=context_data.get('salary_discussions', 'Salary negotiation meeting.'),
+            default_context='Salary negotiation meeting with an employee.',
             default_goal='Reach a mutually beneficial agreement on salary.',
             default_other_party='Employer',
             is_custom=False,
