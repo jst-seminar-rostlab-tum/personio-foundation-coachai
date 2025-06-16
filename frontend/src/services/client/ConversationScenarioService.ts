@@ -6,7 +6,7 @@ import { api } from './Api';
 
 const createConversationScenario = async (scenario: ConversationScenario) => {
   try {
-    const response = await api.post<ConversationScenarioResponse>('/conversation-scenario/', {
+    const response = await api.post<ConversationScenarioResponse>('/conversation-scenario', {
       ...scenario,
     });
     return response;
@@ -27,7 +27,7 @@ const getPreparation = async (id: string) => {
 };
 const getConversationCategories = async () => {
   try {
-    const response = await api.get('/conversation-categories/');
+    const response = await api.get('/conversation-categories');
     return response;
   } catch (error) {
     console.error('Error fetching conversation categories:', error);

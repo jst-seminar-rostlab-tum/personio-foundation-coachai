@@ -23,7 +23,7 @@ export const clearAllSessions = async () => {
 
 const createSession = async (scenarioId: string) => {
   try {
-    const response = await api.post<Session>('/session/', {
+    const response = await api.post<Session>('/session', {
       scenarioId,
     });
     return response;
@@ -35,7 +35,7 @@ const createSession = async (scenarioId: string) => {
 
 const updateSession = async (sessionId: string, session: Partial<Session>) => {
   try {
-    const response = await api.put<Session>(`/session/${sessionId}/`, session);
+    const response = await api.put<Session>(`/session/${sessionId}`, session);
     return response;
   } catch (error) {
     console.error('Error updating session:', error);
@@ -53,7 +53,7 @@ const createSessionTurn = async (
   endOffsetMs: number = 0
 ) => {
   try {
-    const response = await api.post(`/session-turns/`, {
+    const response = await api.post(`/session-turns`, {
       sessionId,
       speaker,
       text,
