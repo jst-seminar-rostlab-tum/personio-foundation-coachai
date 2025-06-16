@@ -240,6 +240,9 @@ def update_session(
     if not session:
         raise HTTPException(status_code=404, detail='Session not found')
 
+    if session.status == SessionStatus.completed:
+        raise HTTPException(status_code=400, detail='A completed session cannot be updated.')
+
     previous_status = session.status
     conversation_scenario = None
 
