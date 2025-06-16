@@ -14,6 +14,7 @@ import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfileService } from '@/services/client/UserProfileService';
 import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/toast';
+import { useUser } from '@/lib/context/user';
 import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
@@ -22,6 +23,7 @@ export default function OnboardingPageComponent() {
   const router = useRouter();
   const roleQuestion: UserOption[] = UserRoles();
   const primaryGoals: UserOption[] = PrimaryGoals();
+  const userProfile = useUser();
 
   const [currentOnboardingStep, setCurrentOnboardingStep] = useState(0);
   const [selectedRole, setSelectedRole] = useState<string>('');
@@ -63,6 +65,7 @@ export default function OnboardingPageComponent() {
   const updateUserProfile = async () => {
     try {
       await UserProfileService.updateUserProfile({
+        fullName: userProfile.fullName,
         professionalRole: selectedRole,
         goals: selectedGoals,
         confidenceScores: [
