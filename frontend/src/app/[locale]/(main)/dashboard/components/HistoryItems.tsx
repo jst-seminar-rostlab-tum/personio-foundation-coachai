@@ -18,6 +18,7 @@ export default function HistoryItems({ sessionsPromise }: HistoryItemsProps) {
   };
 
   const response = use(sessionsPromise);
+
   return (
     <section className="flex flex-col gap-4">
       <div>
@@ -25,9 +26,10 @@ export default function HistoryItems({ sessionsPromise }: HistoryItemsProps) {
         <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
       </div>
       {response?.data?.sessions?.map((session: SessionFromPagination) => (
-        <div
+        <Link
           key={session.sessionId}
-          className="border border-bw-20 rounded-lg p-8 flex justify-between items-center gap-x-8"
+          href={`/feedback/${session.sessionId}`}
+          className="border border-bw-20 rounded-lg p-8 flex justify-between items-center gap-x-8 cursor-pointer transition-all duration-300 hover:shadow-md"
         >
           <div className="flex flex-col gap-2">
             <h2 className="text-xl">{session.title}</h2>
@@ -36,7 +38,7 @@ export default function HistoryItems({ sessionsPromise }: HistoryItemsProps) {
           <div className="flex flex-col justify-center text-center min-w-max">
             <p className="text-base whitespace-nowrap">{formattedDate(session.date)}</p>
           </div>
-        </div>
+        </Link>
       ))}
       <Link href="/history">
         <Button size="full">

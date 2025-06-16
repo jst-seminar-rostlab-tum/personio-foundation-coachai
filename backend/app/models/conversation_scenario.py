@@ -54,7 +54,7 @@ class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a d
         back_populates='conversation_scenarios'
     )
     sessions: list['Session'] = Relationship(back_populates='scenario', cascade_delete=True)
-    preparations: list['ScenarioPreparation'] = Relationship(
+    preparation: Optional['ScenarioPreparation'] = Relationship(
         back_populates='scenario', cascade_delete=True
     )
     user_profile: Optional['UserProfile'] = Relationship(back_populates='conversation_scenarios')

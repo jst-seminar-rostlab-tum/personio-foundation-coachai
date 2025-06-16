@@ -37,7 +37,7 @@ class ScenarioPreparation(CamelModel, table=True):
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships
-    scenario: Optional['ConversationScenario'] = Relationship(back_populates='preparations')
+    scenario: Optional['ConversationScenario'] = Relationship(back_populates='preparation')
 
     # Automatically update `updated_at` before an update
 

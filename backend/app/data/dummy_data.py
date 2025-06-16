@@ -1043,9 +1043,10 @@ def get_dummy_session_feedback(
             questions_asked=7,
             session_length_s=2000,
             goals_achieved=[
-                'Bring clarity to the situation',
-                'Encourage open dialogue',
-                'Align on team roles',
+                'Maintain professionalism',
+                'Provide specific feedback',
+                'Foster mutual understanding',
+                'End on a positive note',
             ],
             example_positive=[
                 {
@@ -1438,6 +1439,51 @@ def get_dummy_scenario_preparations(
             prep_checklist=[
                 'Prepare project timeline',
                 'Review deliverables checklist',
+            ],
+            status=ScenarioPreparationStatus.completed,  # Use the enum for status
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        ScenarioPreparation(
+            id=uuid4(),
+            scenario_id=conversation_scenarios[2].id,
+            objectives=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Maintain professionalism',
+                'Align on team roles',
+                'Set expectations for communication',
+            ],
+            key_concepts=[
+                {'header': 'Time management', 'value': 'Time management'},
+                {'header': 'Collaboration', 'value': 'Collaboration'},
+            ],
+            prep_checklist=[
+                'Review client history',
+                'Prepare presentation slides',
+            ],
+            status=ScenarioPreparationStatus.completed,  # Use the enum for status
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        ScenarioPreparation(
+            id=uuid4(),
+            scenario_id=conversation_scenarios[3].id,
+            objectives=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Maintain professionalism',
+                'Provide specific feedback',
+                'Foster mutual understanding',
+                'End on a positive note',
+            ],
+            key_concepts=[
+                {'header': 'Time management', 'value': 'Time management'},
+                {'header': 'Collaboration', 'value': 'Collaboration'},
+            ],
+            prep_checklist=[
+                'Review client history',
+                'Prepare presentation slides',
             ],
             status=ScenarioPreparationStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
