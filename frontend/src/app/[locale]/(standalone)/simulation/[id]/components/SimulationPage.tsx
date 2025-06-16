@@ -278,10 +278,6 @@ export default function SimulationPageComponent({ sessionId }: SimulationPageCom
         track.enabled = !isMicActive;
       });
 
-      if (remoteAudioRef.current) {
-        remoteAudioRef.current.muted = isMicActive;
-      }
-
       setIsMicActive(!isMicActive);
     }
   };
