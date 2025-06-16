@@ -1,5 +1,5 @@
 import logging
-from datetime import UTC, datetime
+from datetime import datetime
 from math import ceil
 from typing import Annotated
 from uuid import UUID
@@ -231,6 +231,10 @@ def update_session(
     previous_status = session.status
     conversation_scenario = None
 
+    # Update the scheduled_at if it is provided
+    if updated_data.scheduled_at:
+        session.scheduled_at = updated_data.scheduled_at
+
     scenario_id = updated_data.scenario_id or session.scenario_id
 
     # Validate foreign keys
@@ -254,10 +258,10 @@ def update_session(
                 detail='Conversation scenario must be provided to generate feedback',
             )
 
-        if not session.ended_at:
-            session.ended_at = datetime.now(UTC)
-        if not session.started_at:
-            session.started_at = session.scheduled_at or session.ended_at
+        if updated_data.ended_at:
+            session.ended_at = updated_data.ended_at
+        if updated_data.started_at:
+            session.started_at = updated_data.started_at
         statement = select(ScenarioPreparation).where(
             ScenarioPreparation.scenario_id == session.scenario_id
         )
@@ -312,6 +316,28 @@ def update_session(
             example_request=request,
             db_session=db_session,
         )
+
+        # === Update user statistics ===
+        session_length = 0
+        # Calculate session length (hours)
+        if session.started_at and session.ended_at:
+            session_length = (session.ended_at - session.started_at).total_seconds() / 3600
+        user = db_session.get(UserProfile, conversation_scenario.user_id)
+        if user:
+            user.total_sessions = (user.total_sessions or 0) + 1
+            user.training_time = (user.training_time or 0) + session_length
+            user.updated_at = datetime.now()
+            db_session.add(user)
+
+        # === Update admin dashboard stats ===
+        from app.models.admin_dashboard_stats import AdminDashboardStats
+
+        stats = db_session.exec(select(AdminDashboardStats)).first()
+        if not stats:
+            stats = AdminDashboardStats()
+            db_session.add(stats)
+        stats.total_trainings = (stats.total_trainings or 0) + 1
+        db_session.commit()
 
     db_session.add(session)
     db_session.commit()
