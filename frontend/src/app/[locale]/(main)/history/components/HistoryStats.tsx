@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from 'next-intl';
 import Progress from '@/components/ui/Progress';
 import StatCard from '@/components/common/StatCard';

@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from 'next-intl';
 import StatCard from '@/components/common/StatCard';
 import { UserStatsResponse } from '@/interfaces/UserStats';
