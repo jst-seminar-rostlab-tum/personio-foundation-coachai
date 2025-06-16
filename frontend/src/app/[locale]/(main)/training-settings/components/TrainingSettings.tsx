@@ -91,6 +91,7 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
   const handleSaveSettings = async () => {
     try {
       await UserProfileService.updateUserProfile({
+        fullName: userProfileData.fullName,
         storeConversations,
         professionalRole: currentRole,
         goals: [primaryGoal],
