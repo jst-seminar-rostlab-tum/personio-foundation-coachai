@@ -294,7 +294,9 @@ def update_session(
             select(SessionTurn).where(SessionTurn.session_id == session.id)
         ).all()
 
-        transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
+        transcripts = None
+        if session_turns:
+            transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
 
         category = db_session.exec(
             select(ConversationCategory).where(
