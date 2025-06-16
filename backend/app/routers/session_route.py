@@ -293,10 +293,6 @@ def update_session(
         session_turns = db_session.exec(
             select(SessionTurn).where(SessionTurn.session_id == session.id)
         ).all()
-        if not session_turns:
-            raise HTTPException(
-                status_code=400, detail='Session must have at least one session turn'
-            )
 
         transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
 
