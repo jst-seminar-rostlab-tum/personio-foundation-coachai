@@ -12,13 +12,6 @@ import {
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/Select';
 import StatCard from '@/components/common/StatCard';
 import Input from '@/components/ui/Input';
 import {
@@ -33,6 +26,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 import { AdminProps } from '@/interfaces/AdminProps';
+import { adminService } from '@/services/client/AdminService';
+import { showSuccessToast, showErrorToast } from '@/lib/toast';
 
 export default function Admin({ stats }: AdminProps) {
   const t = useTranslations('Admin');
@@ -59,6 +54,24 @@ export default function Admin({ stats }: AdminProps) {
   ];
   const canLoadMore = visibleUsers < allUsers.length;
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
+  const [tokenLimit, setTokenLimit] = React.useState<number>(statsResponse.dailyTokenLimit);
+  const [saving, setSaving] = React.useState(false);
+
+  const handleSaveTokenLimit = async () => {
+    if (!Number.isInteger(tokenLimit) || tokenLimit < 1) {
+      showErrorToast(null, t('tokenNumberFailed'));
+      return;
+    }
+    setSaving(true);
+    try {
+      await adminService.updateDailyUserTokenLimit(tokenLimit);
+      showSuccessToast(t('tokenSuccess'));
+    } catch (error) {
+      showErrorToast(error, t('tokenFailed'));
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="max-w-full">
@@ -73,17 +86,18 @@ export default function Admin({ stats }: AdminProps) {
         <label className="block text-bw-70 font-semibold text-sm mb-1">
           {t('tokensPerUserLabel')}
         </label>
-        <Select defaultValue="100">
-          <SelectTrigger className="w-full border border-bw-20 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-bw-70 text-left">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="100">100</SelectItem>
-            <SelectItem value="200">200</SelectItem>
-            <SelectItem value="500">500</SelectItem>
-            <SelectItem value="1000">1000</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2 items-center">
+          <Input
+            type="number"
+            min={1}
+            value={tokenLimit}
+            onChange={(e) => setTokenLimit(Number(e.target.value))}
+            disabled={saving}
+          />
+          <Button onClick={handleSaveTokenLimit} disabled={saving}>
+            {saving ? t('saving') : t('save')}
+          </Button>
+        </div>
       </div>
       <div className="w-full max-w-md mb-8 text-left">
         <div className="text-lg font-semibold text-bw-70 mb-4">{t('userFeedback')}</div>

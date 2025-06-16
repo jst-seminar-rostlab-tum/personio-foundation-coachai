@@ -134,7 +134,7 @@ def get_session_by_id(
     return session_response
 
 
-@router.get('/', response_model=PaginatedSessionsResponse)
+@router.get('', response_model=PaginatedSessionsResponse)
 def get_sessions(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -205,7 +205,7 @@ def get_sessions(
     )
 
 
-@router.post('/', response_model=SessionRead, dependencies=[Depends(require_user)])
+@router.post('', response_model=SessionRead, dependencies=[Depends(require_user)])
 def create_session(
     session_data: SessionCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> Session:

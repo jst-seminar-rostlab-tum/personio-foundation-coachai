@@ -19,7 +19,7 @@ import {
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { SessionPaginated, SessionFromPagination } from '@/interfaces/Session';
 import { api } from '@/services/client/Api';
-import { getPaginatedSessions } from '@/services/server/SessionService';
+import { sessionService } from '@/services/server/SessionService';
 
 export default function PreviousSessions({
   limit,
@@ -43,7 +43,7 @@ export default function PreviousSessions({
     const getSessions = async () => {
       try {
         setIsLoading(true);
-        const response = await getPaginatedSessions(api, pageNumber, limit);
+        const response = await sessionService.getPaginatedSessions(api, pageNumber, limit);
         setSessionsStorage((prev) => [...prev, ...response.data.sessions]);
         setVisibleCount((prev) => prev + limit);
       } catch (e) {

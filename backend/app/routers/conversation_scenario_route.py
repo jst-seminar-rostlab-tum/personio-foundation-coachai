@@ -30,7 +30,7 @@ from app.services.scenario_preparation_service import (
 router = APIRouter(prefix='/conversation-scenario', tags=['Conversation Scenarios'])
 
 
-@router.get('/', response_model=list[ConversationScenarioRead])
+@router.get('', response_model=list[ConversationScenarioRead])
 def get_conversation_scenarios(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[ConversationScenario]:
@@ -42,7 +42,7 @@ def get_conversation_scenarios(
     return list(conversation_scenarios)
 
 
-@router.post('/', response_model=ConversationScenarioRead, dependencies=[Depends(require_user)])
+@router.post('', response_model=ConversationScenarioRead, dependencies=[Depends(require_user)])
 def create_conversation_scenario_with_preparation(
     conversation_scenario: ConversationScenarioCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],

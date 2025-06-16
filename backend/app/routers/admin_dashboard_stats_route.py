@@ -15,7 +15,7 @@ router = APIRouter(prefix='/admin-stats', tags=['Admin Dashboard'])
 
 
 @router.get(
-    '/',
+    '',
     response_model=AdminDashboardStatsRead,
     dependencies=[Depends(require_admin)],
 )

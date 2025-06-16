@@ -13,6 +13,17 @@ const getUserProfile = async (): Promise<UserProfile> => {
   }
 };
 
+const getUserStats = async () => {
+  try {
+    const { data } = await api.get(`/user`);
+    return data;
+  } catch (error) {
+    console.error('Error getting user stats:', error);
+    throw error;
+  }
+};
+
 export const UserProfileService = {
   getUserProfile,
+  getUserStats,
 };

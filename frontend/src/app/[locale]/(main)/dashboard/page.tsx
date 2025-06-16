@@ -6,10 +6,11 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
 import { Button } from '@/components/ui/Button';
-import { getPaginatedSessions } from '@/services/server/SessionService';
+import { sessionService } from '@/services/server/SessionService';
 import { api } from '@/services/server/Api';
-import StatCard from '@/components/common/StatCard';
+import { UserProfileService } from '@/services/server/UserProfileService';
 import HistoryItems from './components/HistoryItems';
+import DashboardStats from './components/DashboardStats';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -20,7 +21,9 @@ export default async function DashboardPage() {
   const name = 'Anton';
   const t = await getTranslations('Dashboard');
   const PAGE_SIZE = 3;
-  const sessions = getPaginatedSessions(api, 1, PAGE_SIZE);
+  const sessions = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
+  const userStatsData = UserProfileService.getUserStats();
+
   return (
     <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
@@ -56,12 +59,7 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard value={56} label={t('userStats.totalSessions')} />
-        <StatCard value="17.2h" label={t('userStats.trainingTime')} />
-        <StatCard value="37d" label={t('userStats.currentStreak')} />
-        <StatCard value="89%" label={t('userStats.avgScore')} />
-      </div>
+      <DashboardStats stats={userStatsData} />
 
       <HistoryItems sessionsPromise={sessions} />
     </div>
