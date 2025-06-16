@@ -202,7 +202,7 @@ class RTCConnection:
                     break
                 except Exception as e:
                     logger.error(f'Error in send track for peer {self.peer_id}: {e}')
-                    # 短暂等待后继续
+                    # Briefly wait and then continue
                     await asyncio.sleep(0.1)
 
         async def run_audio_receiver() -> None:
@@ -217,9 +217,9 @@ class RTCConnection:
                     break
                 except Exception as e:
                     logger.error(f'Error in audio receiver for peer {self.peer_id}: {e}')
-                    # 如果出错，短暂等待后重试
+                    # If an error occurs, briefly wait and then retry
                     await asyncio.sleep(0.5)
-                    break  # 出错后退出循环
+                    break  # Exit the loop after an error
 
         async def run_input_transcription_processor() -> None:
             """Process input transcription queue"""
@@ -242,7 +242,7 @@ class RTCConnection:
                             )
 
                     except TimeoutError:
-                        continue  # 超时继续循环
+                        continue  # Continue the loop after timeout
                     except asyncio.CancelledError:
                         logger.info(
                             f'input_transcription_processor cancelled for peer {self.peer_id}'
@@ -276,7 +276,7 @@ class RTCConnection:
                             )
 
                     except TimeoutError:
-                        continue  # 超时继续循环
+                        continue  # Continue the loop after timeout
                     except asyncio.CancelledError:
                         logger.info(
                             f'output_transcription_processor cancelled for peer {self.peer_id}'
@@ -310,7 +310,7 @@ class RTCConnection:
                                 f'output_transcription={output_queue_size}'
                             )
 
-                    await asyncio.sleep(2)  # 每2秒监控一次
+                    await asyncio.sleep(2)  # Monitor queues every 2 seconds
 
                 except asyncio.CancelledError:
                     logger.info(f'monitor_queues cancelled for peer {self.peer_id}')
@@ -327,7 +327,7 @@ class RTCConnection:
                     logger.info(f'Connected to OpenAI session for peer {self.peer_id}')
                     self.ai_session: OpenAI = session
 
-                    # 创建任务列表
+                    # Create task list
                     tasks = [
                         asyncio.create_task(run_recv_audio_track()),
                         asyncio.create_task(run_audio_receiver()),
@@ -341,11 +341,11 @@ class RTCConnection:
                         await asyncio.gather(*tasks, return_exceptions=True)
                     except asyncio.CancelledError:
                         logger.info(f'OpenAI tasks cancelled for peer {self.peer_id}')
-                        # 取消所有任务
+                        # Cancel all tasks
                         for task in tasks:
                             if not task.done():
                                 task.cancel()
-                        # 等待任务完成取消
+                        # Wait for all tasks to finish cancellation
                         await asyncio.gather(*tasks, return_exceptions=True)
 
                     logger.info(f'OpenAI connection finished for peer {self.peer_id}')
@@ -355,7 +355,7 @@ class RTCConnection:
                     logger.info(f'Connected to Gemini session for peer {self.peer_id}')
                     self.ai_session: Gemini = session
 
-                    # 创建任务列表
+                    # Create task list
                     tasks = [
                         asyncio.create_task(run_recv_audio_track()),
                         asyncio.create_task(run_audio_receiver()),
@@ -369,18 +369,18 @@ class RTCConnection:
                         await asyncio.gather(*tasks, return_exceptions=True)
                     except asyncio.CancelledError:
                         logger.info(f'Gemini tasks cancelled for peer {self.peer_id}')
-                        # 取消所有任务
+                        # Cancel all tasks
                         for task in tasks:
                             if not task.done():
                                 task.cancel()
-                        # 等待任务完成取消
+                        # Wait for all tasks to finish cancellation
                         await asyncio.gather(*tasks, return_exceptions=True)
 
                     logger.info(f'Gemini connection finished for peer {self.peer_id}')
 
         except asyncio.CancelledError:
             logger.info(f'Connection cancelled for peer {self.peer_id}')
-            raise  # 重新抛出取消异常
+            raise  # Re-throw the cancellation exception
         except Exception as e:
             logger.error(
                 f'Error with {self.config.model_service.upper()} '
@@ -397,7 +397,7 @@ class RTCConnection:
     async def close(self) -> None:
         logger.info(f'Closing connection for peer {self.peer_id}')
 
-        # 关闭RTCPeerConnection
+        # Close RTCPeerConnection
         if self.pc:
             try:
                 await asyncio.wait_for(self.pc.close(), timeout=2.0)
@@ -408,7 +408,7 @@ class RTCConnection:
             finally:
                 self.pc = None
 
-        # 关闭AI会话
+        # Close AI session
         if self.ai_session:
             try:
                 await asyncio.wait_for(self.ai_session.close(), timeout=2.0)
@@ -446,10 +446,10 @@ async def offer_with_model(request: Request, model_name: str) -> PlainTextRespon
 async def on_shutdown() -> None:
     logger.info(f'Shutting down WebRTC connections. Active connections: {len(connections)}')
     if connections:
-        # 创建关闭任务
+        # Create close tasks
         close_tasks = [conn.close() for conn in list(connections)]
         try:
-            # 设置超时，避免无限等待
+            # Set timeout to avoid infinite waiting
             await asyncio.wait_for(
                 asyncio.gather(*close_tasks, return_exceptions=True), timeout=5.0
             )
