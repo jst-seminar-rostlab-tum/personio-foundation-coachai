@@ -11,6 +11,7 @@ export interface FeedbackResponse {
   title: string;
   createdAt: string;
   feedback?: SessionFeedback;
+  goalsTotal: string[];
 }
 
 export interface SessionFeedback {
@@ -22,7 +23,7 @@ export interface SessionFeedback {
   };
   overallScore: number;
   sessionLengthS: number;
-  goalsAchieved: number;
+  goalsAchieved: string[];
   examplePositive: {
     heading: string;
     feedback: string;

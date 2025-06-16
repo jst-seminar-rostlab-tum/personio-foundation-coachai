@@ -22,5 +22,10 @@
   "save": "Save",
   "tokenSuccess": "Token limit saved successfully",
   "tokenFailed": "Error saving token limit",
-  "tokenNumberFailed": "Please enter a valid number (1-1000000)"
+  "tokenNumberFailed": "Please enter a valid number (1-1000000)",
+  "sortBy": "Sort by",
+  "sortNewest": "Newest",
+  "sortOldest": "Oldest",
+  "sortHighest": "Highest",
+  "sortLowest": "Lowest"
 }

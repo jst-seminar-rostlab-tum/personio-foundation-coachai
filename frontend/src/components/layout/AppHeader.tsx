@@ -3,6 +3,7 @@
 import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { authService } from '@/services/client/AuthService';
 import { Button } from '../ui/Button';
@@ -11,6 +12,7 @@ import { LanguageSwitcher } from '../common/LanguageSwitcher';
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const t = useTranslations('AppHeader');
+  const pathname = usePathname();
 
   const navigationLinks = [
     { key: 'dashboard', href: '/dashboard' },
@@ -54,7 +56,9 @@ export function AppHeader() {
                 <Link
                   key={key}
                   href={href}
-                  className="text-bw-60 hover:text-marigold-50 font-medium text-lg"
+                  className={`text-bw-60 hover:text-marigold-50 font-medium text-lg transition-colors ${
+                    pathname.includes(href) ? 'text-marigold-50' : ''
+                  }`}
                 >
                   {t(key)}
                 </Link>
@@ -99,7 +103,9 @@ export function AppHeader() {
               <Link
                 key={key}
                 href={href}
-                className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50"
+                className={`bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50 transition-colors ${
+                  pathname === href ? 'text-marigold-50' : ''
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {t(key)}

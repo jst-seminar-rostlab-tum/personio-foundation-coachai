@@ -13,7 +13,7 @@ import {
 import { Rating, RatingButton } from '@/components/ui/Rating';
 import { Textarea } from '@/components/ui/Textarea';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
-import { createFeedback } from '@/services/client/FeedbackService';
+import { reviewService } from '@/services/client/ReviewService';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -35,7 +35,7 @@ export default function FeedbackDialog({ sessionId }: { sessionId: string }) {
 
   const rateFeedback = async () => {
     try {
-      await createFeedback({
+      await reviewService.createReview({
         rating,
         comment: ratingDescription,
         sessionId,

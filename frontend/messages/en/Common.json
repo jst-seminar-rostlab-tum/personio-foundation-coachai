@@ -1,1 +1,6 @@
-{ "hello": "hello" }
+{
+  "backToDashboard": "Back to dashboard",
+  "loading": "Loading...",
+  "loadMore": "Load more",
+  "error": "Error fetching data"
+}

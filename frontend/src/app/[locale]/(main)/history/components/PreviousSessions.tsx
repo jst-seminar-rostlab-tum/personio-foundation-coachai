@@ -57,6 +57,7 @@ export default function PreviousSessions({
       getSessions();
     }
   }, [pageNumber, canLoadMore, limit]);
+
   const handleDeleteAll = async () => {
     try {
       setIsDeleting(true);
