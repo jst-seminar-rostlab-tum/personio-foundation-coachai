@@ -1,4 +1,3 @@
-
 import concurrent.futures
 from datetime import datetime
 from uuid import UUID, uuid4
@@ -20,9 +19,6 @@ from app.schemas.session_feedback_schema import (
     RecommendationsRequest,
     SessionExamplesCollection,
 )
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
@@ -314,7 +310,6 @@ def generate_and_store_feedback(
 
     # correct placement
     status = FeedbackStatusEnum.failed if has_error else FeedbackStatusEnum.completed
-    logger.info(f'Feedback status: {status}')
 
     feedback = SessionFeedback(
         id=uuid4(),
@@ -343,7 +338,6 @@ def generate_and_store_feedback(
         db_session.commit()
 
     db_session.add(feedback)
-    logger.info(f'Feedback generated and stored for session {session_id}')
     db_session.commit()
 
     return feedback
