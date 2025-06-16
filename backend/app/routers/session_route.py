@@ -1,4 +1,5 @@
 import logging
+from datetime import UTC, datetime
 from math import ceil
 from typing import Annotated
 from uuid import UUID
@@ -253,6 +254,10 @@ def update_session(
                 detail='Conversation scenario must be provided to generate feedback',
             )
 
+        if not session.ended_at:
+            session.ended_at = datetime.now(UTC)
+        if not session.started_at:
+            session.started_at = session.scheduled_at or session.ended_at
         statement = select(ScenarioPreparation).where(
             ScenarioPreparation.scenario_id == session.scenario_id
         )
@@ -307,9 +312,6 @@ def update_session(
             example_request=request,
             db_session=db_session,
         )
-
-        # Optionally, mark as "pending_feedback"
-        # session.status = SessionStatus.started  # or define a 'pending_feedback' status
 
     db_session.add(session)
     db_session.commit()
