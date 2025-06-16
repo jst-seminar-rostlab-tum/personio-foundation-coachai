@@ -92,6 +92,7 @@ def get_reviews(
             'currentPage': page if page else 1,
             'totalPages': total_pages,
             'totalCount': total_count,
+            'pageSize': page_size,
         },
         rating_statistics=ReviewStatistics(
             average=round(sum(review.rating for review in reviews) / len(reviews), 2),
