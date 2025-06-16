@@ -40,10 +40,10 @@ export default async function DashboardPage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <div>
+        {/* <div>
           <h2 className="text-xl">{t('currentSession.title')}</h2>
           <p className="text-base text-bw-40">{t('currentSession.subtitle')}</p>
-        </div>
+        </div> */}
 
         <div className="bg-marigold-5 border border-marigold-30 rounded-lg p-8 gap-8 flex flex-col">
           <div>
