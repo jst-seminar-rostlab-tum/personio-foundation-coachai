@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { api } from './Api';
 
 const createUser = async (data: CreateUserRequest) => {
-  const response = await api.post('/auth/', data);
+  const response = await api.post('/auth', data);
   return response.data;
 };
 
