@@ -77,8 +77,8 @@ def get_session_by_id(
     else:
         training_title = conversation_scenario.custom_category_label
 
-    if conversation_scenario.preparations:
-        goals = conversation_scenario.preparations[0].objectives
+    if conversation_scenario.preparation:
+        goals = conversation_scenario.preparation.objectives
     else:
         goals = []
 
