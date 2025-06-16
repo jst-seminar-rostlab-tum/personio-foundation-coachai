@@ -44,14 +44,18 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
         positive_examples=[
             PositiveExample(
                 heading='Clear Objective Addressed',
-                feedback='The user successfully summarized the objective.',
+                text='The user successfully summarized the objective.',
+                guideline='When summarizing the objective, make sure '
+                "to include the key points and the user's intent.",
                 quote='I want to make sure we both feel heard and find a solution together.',
             )
         ],
         negative_examples=[
             NegativeExample(
                 heading='Missed Empathy',
-                feedback="The user dismissed the other party's concern.",
+                text="The user dismissed the other party's concern.",
+                guideline="When dismissing the other party's concern, make sure "
+                'to show empathy and paraphrase the concern.',
                 quote="That's not important right now.",
                 improved_quote="I understand your concern—let's come back to it in a moment.",
             )
@@ -168,17 +172,17 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
         recommendations=[
             Recommendation(
                 heading='Practice the STAR method',
-                recommendation='When giving feedback, use the Situation, Task, Action, Result '
+                text='When giving feedback, use the Situation, Task, Action, Result '
                 + 'framework to provide more concrete examples.',
             ),
             Recommendation(
                 heading='Ask more diagnostic questions',
-                recommendation='Spend more time understanding root causes before moving to '
+                text='Spend more time understanding root causes before moving to '
                 + 'solutions. This builds empathy and leads to more effective outcomes.',
             ),
             Recommendation(
                 heading='Define clear next steps',
-                recommendation='End feedback conversations with agreed-upon action items,'
+                text='End feedback conversations with agreed-upon action items,'
                 + ' timelines, and follow-up plans.',
             ),
         ]
@@ -385,12 +389,14 @@ if __name__ == '__main__':
 
     for example in examples.positive_examples:
         print(f'Positive Example: {example.heading}')
-        print(f'Text: {example.feedback}')
+        print(f'Text: {example.text}')
+        print(f'Guideline: {example.guideline}')
         print(f'Quote: {example.quote}')
 
     for example in examples.negative_examples:
         print(f'Negative Example: {example.heading}')
-        print(f'Text: {example.feedback}')
+        print(f'Text: {example.text}')
+        print(f'Guideline: {example.guideline}')
         print(f'Quote: {example.quote}')
         print(f'Improved Quote: {example.improved_quote}\n')
 

@@ -24,16 +24,20 @@ def test_generate_training_examples(mock_client: MagicMock) -> None:
         positive_examples=[
             PositiveExample(
                 heading='Clear Objective Addressed',
-                feedback='The user successfully summarized the objective.',
                 quote='I want to make sure we both feel heard and find a solution together.',
+                text='The user successfully summarized the objective.',
+                guideline='When summarizing the objective, make sure '
+                "to include the key points and the user's intent.",
             )
         ],
         negative_examples=[
             NegativeExample(
                 heading='Missed Empathy',
-                feedback="The user dismissed the other party's concern.",
                 quote="That's not important right now.",
+                text="The user dismissed the other party's concern.",
                 improved_quote="I understand your concern—let's come back to it in a moment.",
+                guideline="When dismissing the other party's concern, make sure "
+                'to show empathy and paraphrase the concern.',
             )
         ],
     )
@@ -97,17 +101,17 @@ def test_generate_recommendations(mock_client: MagicMock) -> None:
         recommendations=[
             Recommendation(
                 heading='Practice the STAR method',
-                recommendation='When giving feedback, use the Situation, Task, Action, Result '
+                text='When giving feedback, use the Situation, Task, Action, Result '
                 + 'framework to provide more concrete examples.',
             ),
             Recommendation(
                 heading='Ask more diagnostic questions',
-                recommendation='Spend more time understanding root causes before moving '
+                text='Spend more time understanding root causes before moving '
                 + 'to solutions.This builds empathy and leads to more effective outcomes.',
             ),
             Recommendation(
                 heading='Define clear next steps',
-                recommendation='End feedback conversations with agreed-upon action items, '
+                text='End feedback conversations with agreed-upon action items, '
                 + 'timelines, and follow-up plans.',
             ),
         ]
