@@ -65,7 +65,7 @@
     {
       "id": "giving_feedback",
       "name": "Feedback geben",
-      "iconUri": "/icons/giving_feedback.svg",
+      "iconUri": "/icons/category-giving_feedback.svg",
       "defaultContext": "Einzelgespräch mit einem Teammitglied.",
       "defaultGoal": "Konstruktives Feedback effektiv geben.",
       "defaultOtherParty": "Teammitglied"
@@ -73,7 +73,7 @@
     {
       "id": "performance_reviews",
       "name": "Leistungsbeurteilungen",
-      "iconUri": "/icons/performance_reviews.svg",
+      "iconUri": "/icons/category-performance_reviews.svg",
       "defaultContext": "Formelles Gespräch zur Leistungsbeurteilung.",
       "defaultGoal": "Leistung von Mitarbeitenden evaluieren und besprechen.",
       "defaultOtherParty": "Mitarbeiter/in"
@@ -81,7 +81,7 @@
     {
       "id": "conflict_resolution",
       "name": "Konfliktlösung",
-      "iconUri": "/icons/conflict_resolution.svg",
+      "iconUri": "/icons/category-conflict_resolution.svg",
       "defaultContext": "Konfliktlösungsgespräch zwischen Teammitgliedern.",
       "defaultGoal": "Konflikte lösen und Teamdynamik verbessern.",
       "defaultOtherParty": "Teammitglieder"
@@ -89,7 +89,7 @@
     {
       "id": "salary_discussions",
       "name": "Gehaltsgespräche",
-      "iconUri": "/icons/salary_discussions.svg",
+      "iconUri": "/icons/category-salary_discussions.svg",
       "defaultContext": "Verhandlungsgespräch über das Gehalt.",
       "defaultGoal": "Eine für beide Seiten vorteilhafte Einigung zum Gehalt erzielen.",
       "defaultOtherParty": "Arbeitgeber"
