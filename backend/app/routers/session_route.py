@@ -331,12 +331,10 @@ def update_session(
         session_length = 0
         if session.started_at and session.ended_at:
             session_length = (session.ended_at - session.started_at).total_seconds() / 3600
-        user = db_session.get(UserProfile, user_profile.id)
-        if user:
-            user.total_sessions = (user.total_sessions or 0) + 1
-            user.training_time = (user.training_time or 0) + session_length
-            user.updated_at = datetime.now()
-            db_session.add(user)
+        user_profile.total_sessions = (user_profile.total_sessions or 0) + 1
+        user_profile.training_time = (user_profile.training_time or 0) + session_length
+        user_profile.updated_at = datetime.now()
+        db_session.add(user_profile)
 
         # === Update admin dashboard stats ===
         stats = db_session.exec(select(AdminDashboardStats)).first()
