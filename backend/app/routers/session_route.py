@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from math import ceil
 from typing import Annotated
 from uuid import UUID
@@ -220,6 +220,7 @@ def create_session(
         raise HTTPException(status_code=404, detail='Conversation scenario not found')
     new_session = Session(**session_data.model_dump())
     new_session.status = SessionStatus.started
+    new_session.started_at = datetime.now(UTC)
 
     db_session.add(new_session)
     db_session.commit()
@@ -272,6 +273,8 @@ def update_session(
                 status_code=500,
                 detail='Conversation scenario must be provided to generate feedback',
             )
+
+        session.ended_at = datetime.now(UTC)
 
         statement = select(ScenarioPreparation).where(
             ScenarioPreparation.scenario_id == session.scenario_id
@@ -329,12 +332,11 @@ def update_session(
         )
 
         # === Update user statistics ===
-        session_length = 0
-        if session.started_at and session.ended_at:
-            session_length = (session.ended_at - session.started_at).total_seconds() / 3600
+        assert session.started_at is not None and session.ended_at is not None
+        session_length = (session.ended_at - session.started_at).total_seconds() / 3600  # in hours
         user_profile.total_sessions = (user_profile.total_sessions or 0) + 1
         user_profile.training_time = (user_profile.training_time or 0) + session_length
-        user_profile.updated_at = datetime.now()
+        user_profile.updated_at = datetime.now(UTC)
         db_session.add(user_profile)
 
         # === Update admin dashboard stats ===

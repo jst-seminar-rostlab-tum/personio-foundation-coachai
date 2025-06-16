@@ -727,7 +727,7 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
             ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
-            status=SessionStatus.started,
+            status=SessionStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
