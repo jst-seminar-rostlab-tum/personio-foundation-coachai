@@ -12,7 +12,7 @@ import Loading from '../loading';
 const MODEL_ID = 'gpt-4o-realtime-preview-2025-06-03';
 const mockSessionId = '4e5174f9-78da-428c-bb9f-4556a14163cc';
 
-function useOpenAIRealtimeWebRTC() {
+function useOpenAIRealtimeWebRTC(startedAtRef: React.MutableRefObject<string | null>) {
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isDataChannelReady, setIsDataChannelReady] = useState(false);
@@ -45,12 +45,16 @@ function useOpenAIRealtimeWebRTC() {
   }, []);
 
   const disconnect = useCallback(async () => {
-    // Mark session as completed (no matter what the status is(started, completed, failed))
-    await api.put(`/session/${mockSessionId}`, { status: 'completed' });
+    const endedAt = new Date().toISOString();
+    await api.put(`/session/${mockSessionId}`, {
+      status: 'completed',
+      started_at: startedAtRef.current,
+      ended_at: endedAt,
+    });
     cleanup();
     cleanupRef.current = false;
     router.push(`/feedback/${mockSessionId}`);
-  }, [cleanup, router]);
+  }, [cleanup, router, startedAtRef]);
 
   const initWebRTC = useCallback(async () => {
     try {
@@ -71,6 +75,9 @@ function useOpenAIRealtimeWebRTC() {
       });
       localStreamRef.current = localStream;
       setIsMicActive(true);
+
+      const ref = startedAtRef;
+      if (!ref.current) ref.current = new Date().toISOString();
 
       // 3. Create RTCPeerConnection
       const pc = new RTCPeerConnection();
@@ -213,7 +220,7 @@ function useOpenAIRealtimeWebRTC() {
       setIsMicActive(false);
       disconnect();
     }
-  }, [disconnect]);
+  }, [disconnect, startedAtRef]);
 
   // useEffect(() => {
   //   if (!mockSessionId) return;
@@ -245,17 +252,16 @@ export default function SimulationPageComponent() {
   const [time, setTime] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const startedAtRef = useRef<string | null>(null);
   const {
     isMicActive,
     setIsMicActive,
     isConnected,
     isDataChannelReady,
-    initWebRTC,
-    cleanup,
     remoteAudioRef,
     localStreamRef,
     messages,
-  } = useOpenAIRealtimeWebRTC();
+  } = useOpenAIRealtimeWebRTC(startedAtRef);
   const router = useRouter();
 
   useEffect(() => {
@@ -267,15 +273,6 @@ export default function SimulationPageComponent() {
     }
     return undefined;
   }, [isPaused]);
-
-  useEffect(() => {
-    (async () => {
-      await initWebRTC();
-    })();
-    return () => {
-      cleanup();
-    };
-  }, [initWebRTC, cleanup]);
 
   const toggleMic = () => {
     if (localStreamRef.current) {
@@ -295,7 +292,12 @@ export default function SimulationPageComponent() {
 
   const disconnect = async () => {
     setIsLoading(true);
-    await api.put(`/session/${mockSessionId}`, { status: 'completed' });
+    const endedAt = new Date().toISOString();
+    await api.put(`/session/${mockSessionId}`, {
+      status: 'completed',
+      started_at: startedAtRef.current,
+      ended_at: endedAt,
+    });
     router.push(`/feedback/${mockSessionId}`);
   };
 

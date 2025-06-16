@@ -1,5 +1,4 @@
 import logging
-from datetime import UTC, datetime
 from math import ceil
 from typing import Annotated
 from uuid import UUID
@@ -254,10 +253,12 @@ def update_session(
                 detail='Conversation scenario must be provided to generate feedback',
             )
 
-        if not session.ended_at:
-            session.ended_at = datetime.now(UTC)
-        if not session.started_at:
-            session.started_at = session.scheduled_at or session.ended_at
+        if updated_data.ended_at:
+            session.ended_at = updated_data.ended_at
+        if updated_data.started_at:
+            session.started_at = updated_data.started_at
+        if updated_data.scheduled_at:
+            session.scheduled_at = updated_data.scheduled_at
         statement = select(ScenarioPreparation).where(
             ScenarioPreparation.scenario_id == session.scenario_id
         )
