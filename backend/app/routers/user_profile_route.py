@@ -11,7 +11,6 @@ from app.models.user_confidence_score import ConfidenceScoreRead, UserConfidence
 from app.models.user_goal import Goal, UserGoal
 from app.models.user_profile import (
     UserProfile,
-    UserProfileCreate,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
@@ -139,74 +138,6 @@ def get_user_profile(
             updated_at=user.updated_at,
             store_conversations=user.store_conversations,
         )
-
-
-@router.post(
-    '',
-    response_model=UserProfileExtendedRead,
-    status_code=201,
-    dependencies=[Depends(require_user)],
-)
-def create_user_profile(
-    data: UserProfileCreate,
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> UserProfileExtendedRead:
-    # Check if user already exists
-    existing_user = db_session.get(UserProfile, data.user_id)
-    if existing_user:
-        raise HTTPException(status_code=409, detail='User already exists')
-
-    # Create new user profile
-    user = UserProfile(
-        id=data.user_id,
-        account_role=data.account_role,
-        experience=data.experience,
-        preferred_language_code=data.preferred_language_code,
-        preferred_learning_style=data.preferred_learning_style,
-        store_conversations=data.store_conversations,
-    )
-    db_session.add(user)
-    db_session.commit()
-    db_session.refresh(user)
-
-    # Create goals
-    for goal in data.goals:
-        user_goal = UserGoal(user_id=user.id, goal=Goal(goal))
-        db_session.add(user_goal)
-
-    # Create confidence scores
-    for confidence_score in data.confidence_scores:
-        user_confidence_score = UserConfidenceScore(
-            user_id=user.id,
-            confidence_area=confidence_score.confidence_area,
-            score=confidence_score.score,
-        )
-        db_session.add(user_confidence_score)
-
-    db_session.commit()
-    db_session.refresh(user)
-
-    return UserProfileExtendedRead(
-        user_id=user.id,
-        full_name=user.full_name,
-        email=user.email,
-        phone_number=user.phone_number,
-        preferred_language_code=user.preferred_language_code,
-        account_role=user.account_role,
-        professional_role=user.professional_role,
-        experience=user.experience,
-        preferred_learning_style=user.preferred_learning_style,
-        goals=[g.goal for g in user.user_goals],
-        confidence_scores=[
-            ConfidenceScoreRead(
-                confidence_area=cs.confidence_area,
-                score=cs.score,
-            )
-            for cs in user.user_confidence_scores
-        ],
-        updated_at=user.updated_at,
-        store_conversations=user.store_conversations,
-    )
 
 
 @router.put('', response_model=UserProfileExtendedRead)

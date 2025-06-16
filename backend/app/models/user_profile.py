@@ -111,10 +111,6 @@ class UserProfileReplace(CamelModel):
     confidence_scores: list[ConfidenceScoreRead]
 
 
-class UserProfileCreate(UserProfileReplace):
-    user_id: UUID  # required for creating the user
-
-
 # Schema for reading UserProfile data
 class UserProfileRead(CamelModel):
     user_id: UUID
