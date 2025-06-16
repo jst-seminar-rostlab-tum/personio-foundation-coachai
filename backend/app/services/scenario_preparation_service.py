@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import concurrent.futures
 from collections.abc import Callable, Generator
 from uuid import UUID
 
@@ -248,29 +249,30 @@ def generate_scenario_preparation(
 
         has_error = False
 
-        # 3. Generate each part with individual retry and error handling
-        try:
-            objectives = safe_generate_objectives(objectives_request)
-            preparation.objectives = objectives
-        except Exception as e:
-            has_error = True
-            print('[ERROR] Failed to generate objectives:', e)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_key_concepts = executor.submit(safe_generate_key_concepts, key_concept_request)
+            future_objectives = executor.submit(safe_generate_objectives, objectives_request)
+            future_checklist = executor.submit(safe_generate_checklist, checklist_request)
 
-        try:
-            checklist = safe_generate_checklist(checklist_request)
-            preparation.prep_checklist = checklist
-        except Exception as e:
-            has_error = True
-            print('[ERROR] Failed to generate checklist:', e)
+            try:
+                preparation.objectives = future_objectives.result()
+            except Exception as e:
+                has_error = True
+                print('[ERROR] Failed to generate objectives:', e)
 
-        try:
-            key_concepts = safe_generate_key_concepts(key_concept_request)
-            preparation.key_concepts = [ex.model_dump() for ex in key_concepts]
-        except Exception as e:
-            has_error = True
-            print('[ERROR] Failed to generate key concepts:', e)
+            try:
+                preparation.prep_checklist = future_checklist.result()
+            except Exception as e:
+                has_error = True
+                print('[ERROR] Failed to generate checklist:', e)
 
-        # 4. Update status depending on error presence
+            try:
+                key_concepts = future_key_concepts.result()
+                preparation.key_concepts = [ex.model_dump() for ex in key_concepts]
+            except Exception as e:
+                has_error = True
+                print('[ERROR] Failed to generate key concepts:', e)
+
         if has_error:
             preparation.status = ScenarioPreparationStatus.failed
         else:
