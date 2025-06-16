@@ -21,7 +21,7 @@ from app.models.user_profile import (
 router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
 
 
-@router.get('/', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
+@router.get('', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
 def get_user_profiles(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     detailed: bool = False,
@@ -194,7 +194,7 @@ def create_user_profile(
     )
 
 
-@router.put('/', response_model=UserProfileExtendedRead)
+@router.put('', response_model=UserProfileExtendedRead)
 def replace_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileReplace,
@@ -265,7 +265,7 @@ def replace_user_profile(
     )
 
 
-@router.patch('/', response_model=UserProfileExtendedRead)
+@router.patch('', response_model=UserProfileExtendedRead)
 def update_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileUpdate,
@@ -345,7 +345,7 @@ def update_user_profile(
     )
 
 
-@router.delete('/', response_model=dict)
+@router.delete('', response_model=dict)
 def delete_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],

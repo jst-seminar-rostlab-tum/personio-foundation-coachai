@@ -12,7 +12,7 @@ from app.models.user_profile import UserProfile
 router = APIRouter(prefix='/user-goals', tags=['User Goals'])
 
 
-@router.post('/', response_model=UserGoalRead)
+@router.post('', response_model=UserGoalRead)
 def create_user_goal(
     user_goal: UserGoalCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> UserGoal:

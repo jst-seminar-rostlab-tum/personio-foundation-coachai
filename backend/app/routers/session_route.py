@@ -205,7 +205,7 @@ def get_sessions(
     )
 
 
-@router.post('/', response_model=SessionRead, dependencies=[Depends(require_user)])
+@router.post('', response_model=SessionRead, dependencies=[Depends(require_user)])
 def create_session(
     session_data: SessionCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> Session:

@@ -104,7 +104,7 @@ def get_reviews(
     )
 
 
-@router.post('/', response_model=ReviewResponse)
+@router.post('', response_model=ReviewResponse)
 def create_review(
     review: ReviewCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],

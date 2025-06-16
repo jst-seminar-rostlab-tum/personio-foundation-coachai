@@ -12,7 +12,7 @@ from app.models.session import Session
 router = APIRouter(prefix='/ratings', tags=['Ratings'])
 
 
-@router.get('/', response_model=list[RatingRead])
+@router.get('', response_model=list[RatingRead])
 def get_ratings(db_session: Annotated[DBSession, Depends(get_db_session)]) -> list[Rating]:
     """
     Retrieve all ratings.
@@ -22,7 +22,7 @@ def get_ratings(db_session: Annotated[DBSession, Depends(get_db_session)]) -> li
     return list(ratings)
 
 
-@router.post('/', response_model=RatingRead)
+@router.post('', response_model=RatingRead)
 def create_rating(
     rating: RatingCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> Rating:
