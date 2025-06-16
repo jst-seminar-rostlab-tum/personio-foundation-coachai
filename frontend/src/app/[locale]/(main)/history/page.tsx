@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
 import { getPaginatedSessions } from '@/services/server/SessionService';
 import { api } from '@/services/server/Api';
+import { UserProfileService } from '@/services/server/UserProfileService';
 import HistoryHeader from './components/HistoryHeader';
 import HistoryStats from './components/HistoryStats';
 import PreviousSessions from './components/PreviousSessions';
@@ -17,11 +18,13 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 export default async function HistoryPage() {
   const PAGE_SIZE = 3;
   const sessions = await getPaginatedSessions(api, 1, PAGE_SIZE);
+  const userStatsData = UserProfileService.getUserStats();
+
   return (
     <Suspense fallback={<Loading />}>
       <div className="flex flex-col gap-12">
         <HistoryHeader />
-        <HistoryStats />
+        <HistoryStats stats={userStatsData} />
         <PreviousSessions {...sessions.data} />
       </div>
     </Suspense>

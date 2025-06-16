@@ -3,16 +3,12 @@
 import { useTranslations } from 'next-intl';
 import Progress from '@/components/ui/Progress';
 import StatCard from '@/components/common/StatCard';
-import useUserStats from '@/services/useUserStats';
+import { UserStatsResponse } from '@/interfaces/UserStats';
+import { use } from 'react';
 
-export default function HistoryStats() {
+export default function HistoryStats({ stats }: UserStatsResponse) {
   const t = useTranslations('History');
-
-  const userId = '763c76f3-e5a4-479c-8b53-e3418d5e2ef5';
-  const { data, error } = useUserStats(userId);
-
-  if (error) return <p className="text-red-500">{error}</p>;
-  if (!data) return null;
+  const data = use(stats);
 
   return (
     <div className="w-full">

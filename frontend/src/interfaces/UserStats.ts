@@ -14,3 +14,7 @@ export type UserStats = {
   performanceOverTime: number[];
   skillsPerformance: SkillsPerformance;
 };
+
+export type UserStatsResponse = {
+  stats: Promise<UserStats>;
+};

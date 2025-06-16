@@ -8,6 +8,7 @@ import { MetadataProps } from '@/interfaces/MetadataProps';
 import { Button } from '@/components/ui/Button';
 import { getPaginatedSessions } from '@/services/server/SessionService';
 import { api } from '@/services/server/Api';
+import { UserProfileService } from '@/services/server/UserProfileService';
 import HistoryItems from './components/HistoryItems';
 import DashboardStats from './components/DashboardStats';
 
@@ -21,6 +22,8 @@ export default async function DashboardPage() {
   const t = await getTranslations('Dashboard');
   const PAGE_SIZE = 3;
   const sessions = getPaginatedSessions(api, 1, PAGE_SIZE);
+  const userStatsData = UserProfileService.getUserStats();
+
   return (
     <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
@@ -56,7 +59,7 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      <DashboardStats />
+      <DashboardStats stats={userStatsData} />
 
       <HistoryItems sessionsPromise={sessions} />
     </div>
