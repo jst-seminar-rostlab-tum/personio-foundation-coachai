@@ -58,7 +58,7 @@
     {
       "id": "giving_feedback",
       "name": "Giving Feedback",
-      "iconUri": "/icons/giving_feedback.svg",
+      "iconUri": "/icons/category-giving_feedback.svg",
       "defaultContext": "One-on-one meeting with a team member.",
       "defaultGoal": "Provide constructive feedback effectively.",
       "defaultOtherParty": "Team member"
@@ -66,7 +66,7 @@
     {
       "id": "performance_reviews",
       "name": "Performance Reviews",
-      "iconUri": "/icons/performance_reviews.svg",
+      "iconUri": "/icons/category-performance_reviews.svg",
       "defaultContext": "Formal performance review meeting.",
       "defaultGoal": "Evaluate and discuss employee performance.",
       "defaultOtherParty": "Employee"
@@ -74,7 +74,7 @@
     {
       "id": "conflict_resolution",
       "name": "Conflict Resolution",
-      "iconUri": "/icons/conflict_resolution.svg",
+      "iconUri": "/icons/category-conflict_resolution.svg",
       "defaultContext": "Conflict resolution meeting between team members.",
       "defaultGoal": "Resolve conflicts and improve team dynamics.",
       "defaultOtherParty": "Team members"
@@ -82,7 +82,7 @@
     {
       "id": "salary_discussions",
       "name": "Salary Discussions",
-      "iconUri": "/icons/salary_discussions.svg",
+      "iconUri": "/icons/category-salary_discussions.svg",
       "defaultContext": "Salary negotiation meeting.",
       "defaultGoal": "Reach a mutually beneficial agreement on salary.",
       "defaultOtherParty": "Employer"

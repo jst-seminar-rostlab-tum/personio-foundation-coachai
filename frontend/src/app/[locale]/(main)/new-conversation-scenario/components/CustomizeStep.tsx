@@ -24,7 +24,7 @@ export function CustomizeStep({
       >
         <label htmlFor="d1" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/custom-category.svg"
+            src="/icons/difficulty-easy.svg"
             alt={t('difficulty.options.easy')}
             width={56}
             height={56}
@@ -34,7 +34,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="d2" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/custom-category.svg"
+            src="/icons/difficulty-medium.svg"
             alt={t('difficulty.options.medium')}
             width={56}
             height={56}
@@ -44,7 +44,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="d3" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/custom-category.svg"
+            src="/icons/difficulty-hard.svg"
             alt={t('difficulty.options.hard')}
             width={56}
             height={56}
@@ -62,7 +62,7 @@ export function CustomizeStep({
       >
         <label htmlFor="e1" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/positive.svg"
+            src="/icons/mood-positive.svg"
             alt={t('emotionalTone.options.positive')}
             width={56}
             height={56}
@@ -72,7 +72,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="e2" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/neutral.svg"
+            src="/icons/mood-neutral.svg"
             alt={t('emotionalTone.options.neutral')}
             width={56}
             height={56}
@@ -82,7 +82,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="e3" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/negative.svg"
+            src="/icons/mood-negative.svg"
             alt={t('emotionalTone.options.negative')}
             width={56}
             height={56}
@@ -100,7 +100,7 @@ export function CustomizeStep({
       >
         <label htmlFor="c1" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/simple.svg"
+            src="/icons/complexity-simple.svg"
             alt={t('complexity.options.simple')}
             width={56}
             height={56}
@@ -110,7 +110,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="c2" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/medium.svg"
+            src="/icons/complexity-medium.svg"
             alt={t('complexity.options.medium')}
             width={56}
             height={56}
@@ -120,7 +120,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="c3" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/complex.svg"
+            src="/icons/complexity-complex.svg"
             alt={t('complexity.options.complex')}
             width={56}
             height={56}
