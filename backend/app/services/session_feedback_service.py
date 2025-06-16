@@ -84,7 +84,7 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
     Carefully analyze the provided transcript and evaluate **only your own statements** 
     (what you said as the User).  
     **Do not analyze, quote, or critique any statements made by the Assistant.**  
-    The Assistant’s lines are for context only.
+    The Assistant's lines are for context only.
 
     Extract up to 3 positive and up to 3 negative examples of your own communication, comparing 
     them to the training guidelines. 
@@ -315,7 +315,7 @@ def generate_and_store_feedback(
         feedback.example_positive = examples_positive_dicts
         feedback.example_negative = examples_negative_dicts
         feedback.recommendations = recommendations
-        feedback.goals_achieved = len(goals.goals_achieved)
+        feedback.goals_achieved = goals.goals_achieved
         feedback.updated_at = datetime.now()
     else:
         feedback = SessionFeedback(
@@ -328,7 +328,7 @@ def generate_and_store_feedback(
             speak_time_percent=0,
             questions_asked=0,
             session_length_s=0,
-            goals_achieved=len(goals.goals_achieved),
+            goals_achieved=goals.goals_achieved,
             example_positive=examples_positive_dicts,
             example_negative=examples_negative_dicts,
             recommendations=recommendations,
