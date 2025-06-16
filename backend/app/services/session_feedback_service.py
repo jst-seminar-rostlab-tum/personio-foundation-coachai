@@ -7,7 +7,7 @@ from sqlmodel import select
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
-from app.models import FeedbackStatusEnum, SessionFeedback
+from app.models import FeedbackStatusEnum, SessionFeedback, UserProfile
 from app.schemas.session_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -340,6 +340,13 @@ def generate_and_store_feedback(
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
+
+    # Update user profile with feedback
+    user = db_session.exec(select(UserProfile).where(UserProfile.id == session_id)).first()
+    if user:
+        user.goals_achieved += len(goals.goals_achieved)
+        db_session.add(user)
+        db_session.commit()
 
     db_session.add(feedback)
     logger.info(f'Feedback generated and stored for session {session_id}')
