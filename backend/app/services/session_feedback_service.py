@@ -1,3 +1,4 @@
+import concurrent.futures
 from datetime import datetime
 from uuid import UUID, uuid4
 
@@ -277,26 +278,33 @@ def generate_and_store_feedback(
         goals = GoalsAchievedCollection(goals_achieved=[])
         recommendations = []
     else:
-        try:
-            examples = safe_generate_training_examples(examples_request)
-            examples_positive_dicts = [ex.model_dump() for ex in examples.positive_examples]
-            examples_negative_dicts = [ex.model_dump() for ex in examples.negative_examples]
-        except Exception as e:
-            has_error = True
-            print('[ERROR] Failed to generate examples:', e)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_examples = executor.submit(safe_generate_training_examples, examples_request)
+            future_goals = executor.submit(safe_get_achieved_goals, goals_request)
+            future_recommendations = executor.submit(
+                safe_generate_recommendations, recommendations_request
+            )
 
-        try:
-            goals = safe_get_achieved_goals(goals_request)
-        except Exception as e:
-            has_error = True
-            print('[ERROR] Failed to generate goals:', e)
+            try:
+                examples = future_examples.result()
+                examples_positive_dicts = [ex.model_dump() for ex in examples.positive_examples]
+                examples_negative_dicts = [ex.model_dump() for ex in examples.negative_examples]
+            except Exception as e:
+                has_error = True
+                print('[ERROR] Failed to generate examples:', e)
 
-        try:
-            recs = safe_generate_recommendations(recommendations_request)
-            recommendations = [rec.model_dump() for rec in recs.recommendations]
-        except Exception as e:
-            has_error = True
-            print('[ERROR] Failed to generate key recommendations:', e)
+            try:
+                goals = future_goals.result()
+            except Exception as e:
+                has_error = True
+                print('[ERROR] Failed to generate goals:', e)
+
+            try:
+                recs = future_recommendations.result()
+                recommendations = [rec.model_dump() for rec in recs.recommendations]
+            except Exception as e:
+                has_error = True
+                print('[ERROR] Failed to generate key recommendations:', e)
 
     # correct placement
     status = FeedbackStatusEnum.failed if has_error else FeedbackStatusEnum.completed
