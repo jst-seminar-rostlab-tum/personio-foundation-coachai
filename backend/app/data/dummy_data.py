@@ -816,7 +816,7 @@ def get_dummy_session_feedback(
 ) -> list[SessionFeedback]:
     return [
         SessionFeedback(
-            id=UUID('2f93f612-f2f1-4e12-bf45-f854957fb90f'),
+            id=uuid4(),
             session_id=sessions[0].id,  # Link to the first session
             scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
@@ -833,28 +833,25 @@ def get_dummy_session_feedback(
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
-                    'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s '
-                        'causing our team to fall behind on the overall project timeline.'
-                    ),
-                    'text': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
-                    ),
-                    'guideline': (
+                    'feedback': (
                         'You effectively communicated the specific issue (missed deadlines) and its'
                         ' impact on the team without being accusatory.'
+                    ),
+                    'quote': (
+                        'I’ve noticed that several deadlines were missed last week, and '
+                        'it’s causing team to fall behind on the overall project timeline.'
                     ),
                 }
             ],
             example_negative=[
                 {
                     'heading': 'Lack of specific examples',
-                    'quote': (
-                        'The report due on Friday was submitted on Monday, which delayed our '
-                        'progress.'
+                    'feedback': (
+                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
                     ),
-                    'text': (
+                    'quote': (
                         'The report due on Friday was submitted on Monday, which delayed our '
                         'progress.'
                     ),
@@ -867,21 +864,21 @@ def get_dummy_session_feedback(
             recommendations=[
                 {
                     'heading': 'Practice the STAR method',
-                    'text': (
+                    'recommendation': (
                         'When giving feedback, use the Situation, Task, Action, Result framework to'
                         ' provide more concrete examples.'
                     ),
                 },
                 {
                     'heading': 'Ask more diagnostic questions',
-                    'text': (
+                    'recommendation': (
                         'Spend more time understanding root causes before moving to solutions. This'
                         ' builds empathy and leads to more effective outcomes.'
                     ),
                 },
                 {
                     'heading': 'Define next steps',
-                    'text': (
+                    'recommendation': (
                         'End feedback conversations with agreed-upon actions to ensure clarity and '
                         'accountability.'
                     ),
@@ -892,7 +889,7 @@ def get_dummy_session_feedback(
             updated_at=datetime.now(UTC),
         ),
         SessionFeedback(
-            id=UUID('4fa85f64-5717-4562-b3fc-2c963f66faa6'),
+            id=uuid4(),
             session_id=sessions[1].id,  # Link to the second session
             scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
@@ -908,15 +905,11 @@ def get_dummy_session_feedback(
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
-                    'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s '
-                        'causing our team to fall behind on the overall project timeline.'
-                    ),
-                    'guideline': (
+                    'feedback': (
                         'You effectively communicated the specific issue (missed deadlines) and its'
                         ' impact on the team without being accusatory.'
                     ),
-                    'text': (
+                    'quote': (
                         'I’ve noticed that several deadlines were missed last week, and it’s '
                         'causing our team to fall behind on the overall project timeline.'
                     ),
@@ -925,9 +918,10 @@ def get_dummy_session_feedback(
             example_negative=[
                 {
                     'heading': 'Lack of specific examples',
-                    'text': (
-                        'The report due on Friday was submitted on Monday, which delayed our '
-                        'progress.'
+                    'feedback': (
+                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
                     ),
                     'quote': (
                         'The report due on Friday was submitted on Monday, which delayed our '
@@ -942,21 +936,21 @@ def get_dummy_session_feedback(
             recommendations=[
                 {
                     'heading': 'Practice the STAR method',
-                    'text': (
+                    'recommendation': (
                         'When giving feedback, use the Situation, Task, Action, Result framework to'
                         ' provide more concrete examples.'
                     ),
                 },
                 {
                     'heading': 'Ask more diagnostic questions',
-                    'text': (
+                    'recommendation': (
                         'Spend more time understanding root causes before moving to solutions. This'
                         ' builds empathy and leads to more effective outcomes.'
                     ),
                 },
                 {
                     'heading': 'Define next steps',
-                    'text': (
+                    'recommendation': (
                         'End feedback conversations with agreed-upon actions to ensure clarity and '
                         'accountability.'
                     ),

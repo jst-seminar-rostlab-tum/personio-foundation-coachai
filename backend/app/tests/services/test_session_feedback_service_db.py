@@ -41,17 +41,15 @@ class TestSessionFeedbackService(unittest.TestCase):
             positive_examples=[
                 PositiveExample(
                     heading='Clear Objective Addressed',
+                    feedback='The user successfully summarized the objective.',
                     quote='I want to make sure we both feel heard and find a solution together.',
-                    text='The user successfully summarized the objective.',
-                    guideline='When summarizing the objective, make sure '
-                    "to include the key points and the user's intent.",
                 )
             ],
             negative_examples=[
                 NegativeExample(
                     heading='Missed Empathy',
+                    feedback="The user dismissed the other party's concern.",
                     quote="That's not important right now.",
-                    text="The user dismissed the other party's concern.",
                     improved_quote="I understand your concern—let's come back to it in a moment.",
                 )
             ],
@@ -61,17 +59,17 @@ class TestSessionFeedbackService(unittest.TestCase):
             recommendations=[
                 Recommendation(
                     heading='Practice the STAR method',
-                    text='When giving feedback, use the Situation, Task, '
+                    recommendation='When giving feedback, use the Situation, Task, '
                     'Action, Result framework to ' + 'provide more concrete examples.',
                 ),
                 Recommendation(
                     heading='Ask more diagnostic questions',
-                    text='Spend more time understanding root causes before moving '
+                    recommendation='Spend more time understanding root causes before moving '
                     + 'to solutions. This builds empathy and leads to more effective outcomes.',
                 ),
                 Recommendation(
                     heading='Define clear next steps',
-                    text='End feedback conversations with agreed-upon action items, '
+                    recommendation='End feedback conversations with agreed-upon action items, '
                     + 'timelines, and follow-up plans.',
                 ),
             ]
@@ -111,19 +109,19 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(len(feedback.recommendations), 3)
         self.assertEqual(feedback.recommendations[0]['heading'], 'Practice the STAR method')
         self.assertEqual(
-            feedback.recommendations[0]['text'],
+            feedback.recommendations[0]['recommendation'],
             'When giving feedback, use the Situation, Task, Action, '
             'Result framework to provide more concrete examples.',
         )
         self.assertEqual(feedback.recommendations[1]['heading'], 'Ask more diagnostic questions')
         self.assertEqual(
-            feedback.recommendations[1]['text'],
+            feedback.recommendations[1]['recommendation'],
             'Spend more time understanding root causes before moving to '
             'solutions. This builds empathy and leads to more effective outcomes.',
         )
         self.assertEqual(feedback.recommendations[2]['heading'], 'Define clear next steps')
         self.assertEqual(
-            feedback.recommendations[2]['text'],
+            feedback.recommendations[2]['recommendation'],
             'End feedback conversations with agreed-upon action'
             ' items, timelines, and follow-up plans.',
         )
@@ -144,7 +142,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             recommendations=[
                 Recommendation(
                     heading='Some heading',
-                    text='Some text',
+                    recommendation='Some text',
                 )
             ]
         )
@@ -173,7 +171,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(len(feedback.example_positive), 0)
         self.assertEqual(len(feedback.recommendations), 1)
         self.assertEqual(feedback.recommendations[0]['heading'], 'Some heading')
-        self.assertEqual(feedback.recommendations[0]['text'], 'Some text')
+        self.assertEqual(feedback.recommendations[0]['recommendation'], 'Some text')
 
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)

@@ -45,18 +45,14 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
         positive_examples=[
             PositiveExample(
                 heading='Clear Objective Addressed',
-                text='The user successfully summarized the objective.',
-                guideline='When summarizing the objective, make sure '
-                "to include the key points and the user's intent.",
+                feedback='The user successfully summarized the objective.',
                 quote='I want to make sure we both feel heard and find a solution together.',
             )
         ],
         negative_examples=[
             NegativeExample(
                 heading='Missed Empathy',
-                text="The user dismissed the other party's concern.",
-                guideline="When dismissing the other party's concern, make sure "
-                'to show empathy and paraphrase the concern.',
+                feedback="The user dismissed the other party's concern.",
                 quote="That's not important right now.",
                 improved_quote="I understand your concern—let's come back to it in a moment.",
             )
@@ -89,7 +85,7 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
     Carefully analyze the provided transcript and evaluate **only your own statements** 
     (what you said as the User).  
     **Do not analyze, quote, or critique any statements made by the Assistant.**  
-    The Assistant's lines are for context only.
+    The Assistant’s lines are for context only.
 
     Extract up to 3 positive and up to 3 negative examples of your own communication, comparing 
     them to the training guidelines. 
@@ -173,17 +169,17 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
         recommendations=[
             Recommendation(
                 heading='Practice the STAR method',
-                text='When giving feedback, use the Situation, Task, Action, Result '
+                recommendation='When giving feedback, use the Situation, Task, Action, Result '
                 + 'framework to provide more concrete examples.',
             ),
             Recommendation(
                 heading='Ask more diagnostic questions',
-                text='Spend more time understanding root causes before moving to '
+                recommendation='Spend more time understanding root causes before moving to '
                 + 'solutions. This builds empathy and leads to more effective outcomes.',
             ),
             Recommendation(
                 heading='Define clear next steps',
-                text='End feedback conversations with agreed-upon action items,'
+                recommendation='End feedback conversations with agreed-upon action items,'
                 + ' timelines, and follow-up plans.',
             ),
         ]
@@ -221,21 +217,22 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
     Format your output as a list of 'Recommendation' objects.
     Each recommendation represents a Pydantic model with two fields:
     - `heading`: A short title or summary of the recommendation
-    - `text`: A description or elaboration of the recommendation
+    - `recommendation`: A description or elaboration of the recommendation
 
     Do not include markdown, explanation, or code formatting.
 
     Example Recommendations:
     1. heading: "Practice the STAR method", 
-    text: "When giving feedback, use the Situation, Task, Action, Result framework to provide more 
-    concrete examples."
+    recommendation: "When giving feedback, use the Situation, Task, Action, 
+    Result framework to provide more concrete examples."
     
     2. heading: "Ask more diagnostic questions", 
-    text: "Spend more time understanding root causes before moving to solutions. 
+    recommendation: "Spend more time understanding root causes before moving to solutions. 
     This builds empathy and leads to more effective outcomes."
 
     3. heading: "Define clear next steps",
-    text: "End feedback conversations with agreed-upon action items, timelines, and follow-up plans.
+    recommendation: "End feedback conversations with agreed-upon action items, 
+    timelines, and follow-up plans."
 
     """
     response = call_structured_llm(
@@ -393,14 +390,12 @@ if __name__ == '__main__':
 
     for example in examples.positive_examples:
         print(f'Positive Example: {example.heading}')
-        print(f'Text: {example.text}')
-        print(f'Guideline: {example.guideline}')
+        print(f'Feedback: {example.feedback}')
         print(f'Quote: {example.quote}')
 
     for example in examples.negative_examples:
         print(f'Negative Example: {example.heading}')
-        print(f'Text: {example.text}')
-        print(f'Guideline: {example.guideline}')
+        print(f'Feedback: {example.feedback}')
         print(f'Quote: {example.quote}')
         print(f'Improved Quote: {example.improved_quote}\n')
 
@@ -428,5 +423,5 @@ if __name__ == '__main__':
     recommendations = generate_recommendations(recommendation_request)
     for recommendation in recommendations.recommendations:
         print(f'Recommendation: {recommendation.heading}')
-        print(f'Text: {recommendation.recommendation}\n')
+        print(f'Recommendation: {recommendation.recommendation}\n')
     print('Recommendations generated successfully.')
