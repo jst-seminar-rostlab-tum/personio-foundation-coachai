@@ -18,18 +18,18 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function DashboardPage() {
-  const name = 'Anton';
   const t = await getTranslations('Dashboard');
   const PAGE_SIZE = 3;
-  const sessions = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
+  const userProfile = await UserProfileService.getUserProfile();
   const userStatsData = UserProfileService.getUserStats();
+  const sessions = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
 
   return (
     <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         <p className="text-2xl text-center md:text-left">
           {t('header.greeting')}
-          {name}!
+          {userProfile.fullName}!
         </p>
         <Link href="/new-conversation-scenario" className="w-full md:w-auto">
           <Button size="full" className="md:!size-default">

@@ -1,7 +1,7 @@
 from typing import Annotated, Optional, Union
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
@@ -40,6 +40,9 @@ def get_user_profiles(
         return [
             UserProfileExtendedRead(
                 user_id=user.id,
+                full_name=user.full_name,
+                email=user.email,
+                phone_number=user.phone_number,
                 preferred_language_code=user.preferred_language_code,
                 account_role=user.account_role,
                 professional_role=user.professional_role,
@@ -62,6 +65,9 @@ def get_user_profiles(
         return [
             UserProfileRead(
                 user_id=user.id,
+                full_name=user.full_name,
+                email=user.email,
+                phone_number=user.phone_number,
                 preferred_language_code=user.preferred_language_code,
                 account_role=user.account_role,
                 professional_role=user.professional_role,
@@ -81,7 +87,7 @@ def get_user_profiles(
 def get_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
-    detailed: bool = False,
+    detailed: bool = Query(False, description='Return extended profile details'),
 ) -> Union[UserProfileRead, UserProfileExtendedRead]:
     """
     Retrieve a single user profile.
@@ -100,6 +106,9 @@ def get_user_profile(
     if detailed:
         return UserProfileExtendedRead(
             user_id=user.id,
+            full_name=user.full_name,
+            email=user.email,
+            phone_number=user.phone_number,
             preferred_language_code=user.preferred_language_code,
             account_role=user.account_role,
             professional_role=user.professional_role,
@@ -119,6 +128,9 @@ def get_user_profile(
     else:
         return UserProfileRead(
             user_id=user.id,
+            full_name=user.full_name,
+            email=user.email,
+            phone_number=user.phone_number,
             preferred_language_code=user.preferred_language_code,
             account_role=user.account_role,
             professional_role=user.professional_role,
@@ -176,6 +188,9 @@ def create_user_profile(
 
     return UserProfileExtendedRead(
         user_id=user.id,
+        full_name=user.full_name,
+        email=user.email,
+        phone_number=user.phone_number,
         preferred_language_code=user.preferred_language_code,
         account_role=user.account_role,
         professional_role=user.professional_role,
@@ -327,6 +342,9 @@ def update_user_profile(
 
     return UserProfileExtendedRead(
         user_id=user.id,
+        full_name=user.full_name,
+        email=user.email,
+        phone_number=user.phone_number,
         preferred_language_code=user.preferred_language_code,
         account_role=user.account_role,
         professional_role=user.professional_role,

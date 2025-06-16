@@ -44,6 +44,9 @@ def get_dummy_user_profiles() -> list[UserProfile]:
     return [
         UserProfile(
             id=MockUserIdsEnum.USER.value,
+            full_name=settings.mock_user_data.full_name,
+            email=settings.mock_user_data.email,
+            phone_number=settings.mock_user_data.phone,
             preferred_language_code=LanguageCode.en,
             account_role=AccountRole.user,
             professional_role=ProfessionalRole.hr_professional,
@@ -58,6 +61,9 @@ def get_dummy_user_profiles() -> list[UserProfile]:
         ),
         UserProfile(
             id=MockUserIdsEnum.ADMIN.value,
+            full_name=settings.mock_admin_data.full_name,
+            email=settings.mock_admin_data.email,
+            phone_number=settings.mock_admin_data.phone,
             preferred_language_code=LanguageCode.en,
             account_role=AccountRole.admin,
             professional_role=ProfessionalRole.executive,

@@ -5,17 +5,20 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { authService } from '@/services/client/AuthService';
+import { useUser } from '@/lib/context/user';
+import { AccountRole } from '@/interfaces/UserProfile';
 import { Button } from '../ui/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const t = useTranslations('AppHeader');
+  const user = useUser();
 
   const navigationLinks = [
     { key: 'dashboard', href: '/dashboard' },
     { key: 'newConversationScenario', href: '/new-conversation-scenario' },
-    { key: 'admin', href: '/admin' },
+    ...(user?.accountRole === AccountRole.admin ? [{ key: 'admin', href: '/admin' }] : []),
     { key: 'history', href: '/history' },
     { key: 'trainingSettings', href: '/training-settings' },
   ];

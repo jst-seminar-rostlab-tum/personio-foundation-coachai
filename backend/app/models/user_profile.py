@@ -49,6 +49,9 @@ class PreferredLearningStyle(str, Enum):
 
 class UserProfile(CamelModel, table=True):  # `table=True` makes it a database table
     id: UUID = Field(default_factory=uuid4, primary_key=True)
+    full_name: str = Field(max_length=100)
+    email: str = Field(max_length=100, unique=True)
+    phone_number: str = Field(max_length=15, unique=True)
     preferred_language_code: LanguageCode = Field(default=LanguageCode.en)
     experience: Experience = Field(default=Experience.beginner)
     preferred_learning_style: PreferredLearningStyle = Field(default=PreferredLearningStyle.visual)
@@ -114,6 +117,9 @@ class UserProfileCreate(UserProfileReplace):
 # Schema for reading UserProfile data
 class UserProfileRead(CamelModel):
     user_id: UUID
+    full_name: str
+    email: str
+    phone_number: str
     preferred_language_code: LanguageCode
     account_role: AccountRole
     professional_role: ProfessionalRole
