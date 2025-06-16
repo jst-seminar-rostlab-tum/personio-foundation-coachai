@@ -16,6 +16,11 @@ from app.models.user_profile import UserProfile
 
 router = APIRouter(prefix='', tags=['realtime-session'])
 
+if settings.FORCE_CHEAP_MODEL:
+    MODEL = 'gpt-4o-mini-realtime-preview-2024-12-17'
+else:
+    MODEL = 'gpt-4o-realtime-preview-2025-06-03'
+
 
 @router.get('/realtime-session/{session_id}')
 async def get_realtime_session(
@@ -59,11 +64,6 @@ async def get_realtime_session(
     if conversation_category:
         instructions += '\n\n' + conversation_category.initial_prompt
 
-    if settings.FORCE_CHEAP_MODEL:
-        model = 'gpt-4o-mini-realtime-preview-2024-12-17'
-    else:
-        model = 'gpt-4o-realtime-preview-2025-06-03'
-
     async with httpx.AsyncClient() as client:
         response = await client.post(
             'https://api.openai.com/v1/realtime/sessions',
@@ -72,7 +72,7 @@ async def get_realtime_session(
                 'Content-Type': 'application/json',
             },
             json={
-                'model': model,
+                'model': MODEL,
                 'voice': 'echo',
                 'input_audio_transcription': {'language': 'en', 'model': 'gpt-4o-transcribe'},
                 'instructions': instructions,
