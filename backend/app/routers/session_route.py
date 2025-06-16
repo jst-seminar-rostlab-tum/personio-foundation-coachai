@@ -10,6 +10,7 @@ from sqlmodel import col, select
 
 from app.database import get_db_session
 from app.dependencies import require_user
+from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
@@ -232,6 +233,7 @@ def update_session(
     updated_data: SessionUpdate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
     background_tasks: BackgroundTasks,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> Session:
     """
     Update an existing session.
@@ -240,7 +242,8 @@ def update_session(
     if not session:
         raise HTTPException(status_code=404, detail='Session not found')
 
-    if session.status == SessionStatus.completed:
+    # Forbid updates to completed sessions for non-admin users
+    if session.status == SessionStatus.completed and user_profile.account_role != AccountRole.admin:
         raise HTTPException(status_code=400, detail='A completed session cannot be updated.')
 
     previous_status = session.status
@@ -257,7 +260,6 @@ def update_session(
     for key, value in updated_data.model_dump(exclude_unset=True).items():
         setattr(session, key, value)
 
-    print(f'Session feedback: {session.feedback is not None}')
     # Check if the session status is changing to completed
     if (
         previous_status != SessionStatus.completed
@@ -287,11 +289,12 @@ def update_session(
         session_turns = db_session.exec(
             select(SessionTurn).where(SessionTurn.session_id == session.id)
         ).all()
+        if not session_turns:
+            raise HTTPException(
+                status_code=400, detail='Session must have at least one session turn'
+            )
 
-        transcripts = None
-
-        if session_turns:
-            transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
+        transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
 
         category = db_session.exec(
             select(ConversationCategory).where(
@@ -326,10 +329,9 @@ def update_session(
 
         # === Update user statistics ===
         session_length = 0
-        # Calculate session length (hours)
         if session.started_at and session.ended_at:
             session_length = (session.ended_at - session.started_at).total_seconds() / 3600
-        user = db_session.get(UserProfile, conversation_scenario.user_id)
+        user = db_session.get(UserProfile, user_profile.id)
         if user:
             user.total_sessions = (user.total_sessions or 0) + 1
             user.training_time = (user.training_time or 0) + session_length
@@ -337,8 +339,6 @@ def update_session(
             db_session.add(user)
 
         # === Update admin dashboard stats ===
-        from app.models.admin_dashboard_stats import AdminDashboardStats
-
         stats = db_session.exec(select(AdminDashboardStats)).first()
         if not stats:
             stats = AdminDashboardStats()
