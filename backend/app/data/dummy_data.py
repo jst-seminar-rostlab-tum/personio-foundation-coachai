@@ -808,6 +808,17 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
+        Session(
+            id=uuid4(),
+            scenario_id=conversation_scenarios[3].id,
+            scheduled_at=datetime.now(UTC),
+            started_at=datetime.now(UTC),
+            ended_at=datetime.now(UTC),
+            ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
+            status=SessionStatus.started,
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
     ]
 
 
