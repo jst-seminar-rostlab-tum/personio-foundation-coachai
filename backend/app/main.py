@@ -68,6 +68,6 @@ def on_startup() -> None:
 # app.include_router(twilio_route.router)
 
 
-@app.get('/')
+@app.get('')
 async def root() -> dict:
     return {'message': 'Welcome to the API'}

@@ -11,7 +11,7 @@ from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, Con
 router = APIRouter(prefix='/app-config', tags=['App Config'])
 
 
-@router.get('/', response_model=list[AppConfigRead])
+@router.get('', response_model=list[AppConfigRead])
 def get_app_configs(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[AppConfig]:
@@ -23,7 +23,7 @@ def get_app_configs(
     return list(app_configs)
 
 
-@router.post('/', response_model=AppConfigRead, dependencies=[Depends(require_admin)])
+@router.post('', response_model=AppConfigRead, dependencies=[Depends(require_admin)])
 def create_app_config(
     app_config: AppConfigCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> AppConfig:
@@ -51,7 +51,7 @@ def create_app_config(
     return db_app_config
 
 
-@router.put('/', response_model=AppConfigRead, dependencies=[Depends(require_admin)])
+@router.put('', response_model=AppConfigRead, dependencies=[Depends(require_admin)])
 def update_app_config(
     updated_data: AppConfigCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -82,7 +82,7 @@ def update_app_config(
     return app_config
 
 
-@router.patch('/', response_model=list[AppConfigRead], dependencies=[Depends(require_admin)])
+@router.patch('', response_model=list[AppConfigRead], dependencies=[Depends(require_admin)])
 def patch_app_config(
     updated_data: list[dict],  # Expect partial data for PATCH
     db_session: Annotated[DBSession, Depends(get_db_session)],

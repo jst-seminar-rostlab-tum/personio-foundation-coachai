@@ -16,7 +16,7 @@ from app.models.session_turn import (
 router = APIRouter(prefix='/session-turns', tags=['Session Turns'])
 
 
-@router.get('/', response_model=list[SessionTurnRead])
+@router.get('', response_model=list[SessionTurnRead])
 def get_session_turns(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[SessionTurn]:
@@ -28,7 +28,7 @@ def get_session_turns(
     return list(turns)
 
 
-@router.post('/', response_model=SessionTurnRead)
+@router.post('', response_model=SessionTurnRead)
 def create_session_turn(
     turn: SessionTurnCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> SessionTurn:

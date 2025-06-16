@@ -29,7 +29,7 @@ def get_conversation_categories(
     return list(categories)
 
 
-@router.post('/', response_model=ConversationCategoryRead)
+@router.post('', response_model=ConversationCategoryRead)
 def create_conversation_category(
     category: ConversationCategoryCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> ConversationCategory:

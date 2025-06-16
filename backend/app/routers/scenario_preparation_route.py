@@ -17,7 +17,7 @@ from app.models.scenario_preparation import (
 router = APIRouter(prefix='/scenario-preparation', tags=['Scenario Preparations'])
 
 
-@router.get('/', response_model=list[ScenarioPreparationRead])
+@router.get('', response_model=list[ScenarioPreparationRead])
 def get_scenario_preparations(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[ScenarioPreparation]:
@@ -50,7 +50,7 @@ def get_scenario_preparation(
     return preparation
 
 
-@router.post('/', response_model=ScenarioPreparationRead)
+@router.post('', response_model=ScenarioPreparationRead)
 def create_scenario_preparation(
     preparation: ScenarioPreparationCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],

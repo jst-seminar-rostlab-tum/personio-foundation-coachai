@@ -15,7 +15,7 @@ from app.models.user_confidence_score import (
 router = APIRouter(prefix='/user-confidence-scores', tags=['User Confidence Scores'])
 
 
-@router.get('/', response_model=list[UserConfidenceScoreRead])
+@router.get('', response_model=list[UserConfidenceScoreRead])
 def get_user_confidence_scores(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[UserConfidenceScore]:
@@ -27,7 +27,7 @@ def get_user_confidence_scores(
     return list(results)
 
 
-@router.post('/', response_model=UserConfidenceScoreRead)
+@router.post('', response_model=UserConfidenceScoreRead)
 def create_user_confidence_score(
     user_confidence_score: UserConfidenceScoreCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
