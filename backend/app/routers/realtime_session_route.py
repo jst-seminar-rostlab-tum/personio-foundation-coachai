@@ -9,6 +9,7 @@ from sqlmodel import select
 from app.config import settings
 from app.database import get_db_session
 from app.dependencies import require_user
+from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session
 from app.models.user_profile import UserProfile
@@ -36,11 +37,27 @@ async def get_realtime_session(
     conversation_scenario = db_session.exec(
         select(ConversationScenario).where(ConversationScenario.id == session.scenario_id)
     ).first()
+    if not conversation_scenario:
+        raise HTTPException(
+            status_code=404, detail='No conversation scenario found for this session'
+        )
+    conversation_category = db_session.exec(
+        select(ConversationCategory).where(
+            ConversationCategory.id == conversation_scenario.category_id
+        )
+    ).first()
+    if not conversation_category:
+        raise HTTPException(
+            status_code=404, detail='No conversation category found for this scenario'
+        )
 
-    context = ''
+    instructions = ''
 
     if conversation_scenario:
-        context = conversation_scenario.context
+        instructions += conversation_scenario.context
+
+    if conversation_category:
+        instructions += '\n\n' + conversation_category.initial_prompt
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -53,7 +70,7 @@ async def get_realtime_session(
                 'model': 'gpt-4o-realtime-preview-2025-06-03',
                 'voice': 'echo',
                 'input_audio_transcription': {'language': 'en', 'model': 'gpt-4o-transcribe'},
-                'instructions': context,
+                'instructions': instructions,
                 'turn_detection': {
                     'type': 'server_vad',
                     'threshold': 0.8,
