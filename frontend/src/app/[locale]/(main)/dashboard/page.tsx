@@ -6,7 +6,7 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
 import { Button } from '@/components/ui/Button';
-import { getPaginatedSessions } from '@/services/server/SessionService';
+import { sessionService } from '@/services/server/SessionService';
 import { api } from '@/services/server/Api';
 import { UserProfileService } from '@/services/server/UserProfileService';
 import HistoryItems from './components/HistoryItems';
@@ -21,7 +21,7 @@ export default async function DashboardPage() {
   const name = 'Anton';
   const t = await getTranslations('Dashboard');
   const PAGE_SIZE = 3;
-  const sessions = getPaginatedSessions(api, 1, PAGE_SIZE);
+  const sessions = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
   const userStatsData = UserProfileService.getUserStats();
 
   return (
