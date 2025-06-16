@@ -8,6 +8,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
 from app.models import FeedbackStatusEnum, Session, SessionFeedback, UserProfile
+from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.schemas.session_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -356,6 +357,14 @@ def generate_and_store_feedback(
                 user.updated_at = datetime.now()
                 db_session.add(user)
                 db_session.commit()
+
+    # === Update admin dashboard stats ===
+    stats = db_session.exec(select(AdminDashboardStats)).first()
+    if not stats:
+        stats = AdminDashboardStats()
+        db_session.add(stats)
+    stats.total_trainings = (stats.total_trainings or 0) + 1
+    db_session.commit()
 
     return feedback
 
