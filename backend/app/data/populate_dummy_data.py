@@ -2,8 +2,6 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, text
 
 from app.data import (
-    create_mock_users,
-    delete_mock_users,
     get_dummy_admin_stats,
     get_dummy_app_configs,
     get_dummy_conversation_categories,
@@ -30,8 +28,8 @@ def populate_data() -> None:
         print('Dropping tables...')
         SQLModel.metadata.drop_all(engine)
 
-        print('Removing mock users...')
-        delete_mock_users()
+        # print('Removing mock users...')
+        # delete_mock_users()
 
         print('Creating tables...')
         SQLModel.metadata.create_all(engine)
@@ -113,8 +111,8 @@ def populate_data() -> None:
         db_session.commit()
         print('Vector store created successfully!')
 
-        print('Creating mock users...')
-        create_mock_users()
+        # print('Creating mock users...')
+        # create_mock_users()
 
 
 if __name__ == '__main__':
