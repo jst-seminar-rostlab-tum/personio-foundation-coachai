@@ -4,7 +4,7 @@ export interface VerificationPopupProps {
   signUpFormData: {
     fullName: string;
     email: string;
-    phoneNumber: string;
+    phone_number: string;
     password: string;
     terms: boolean;
   };
