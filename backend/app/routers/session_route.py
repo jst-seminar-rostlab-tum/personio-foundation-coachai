@@ -11,7 +11,6 @@ from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
-from app.models.review import Review
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import (
     Session,
@@ -78,6 +77,11 @@ def get_session_by_id(
     else:
         training_title = conversation_scenario.custom_category_label
 
+    if conversation_scenario.preparations:
+        goals = conversation_scenario.preparations[0].objectives
+    else:
+        goals = []
+
     session_response = SessionDetailsRead(
         id=session.id,
         scenario_id=session.scenario_id,
@@ -92,19 +96,25 @@ def get_session_by_id(
         summary=(
             'The person giving feedback was rude but the person receiving feedback took it well.'
         ),  # mocked
+        goals_total=goals,
     )
+
+    # Fetch the associated conversation turns and their audio URIs
+    session_turns = db_session.exec(
+        select(SessionTurn).where(SessionTurn.session_id == session_id)
+    ).all()
+
+    if session_turns:
+        session_response.audio_uris = [turn.audio_uri for turn in session_turns]
 
     # Fetch the asociated Feedback for the session
     feedback = db_session.exec(
         select(SessionFeedback).where(SessionFeedback.session_id == session_id)
     ).first()
 
-    if not feedback:
-        raise HTTPException(status_code=404, detail='Session feedback not found')
-
-    if feedback.status == FeedbackStatusEnum.pending:
+    if not feedback or feedback.status == FeedbackStatusEnum.pending:
         raise HTTPException(status_code=202, detail='Session feedback in progress.')
-    elif feedback.status == FeedbackStatusEnum.failed:
+    elif feedback and feedback.status == FeedbackStatusEnum.failed:
         raise HTTPException(status_code=500, detail='Session feedback failed.')
     else:
         session_response.feedback = SessionFeedbackMetrics(
@@ -120,14 +130,6 @@ def get_session_by_id(
             example_negative=feedback.example_negative,  # type: ignore
             recommendations=feedback.recommendations,  # type: ignore
         )
-
-    # Fetch the associated conversation turns and their audio URIs
-    session_turns = db_session.exec(
-        select(SessionTurn).where(SessionTurn.session_id == session_id)
-    ).all()
-
-    if session_turns:
-        session_response.audio_uris = [turn.audio_uri for turn in session_turns]
 
     return session_response
 
@@ -160,17 +162,28 @@ def get_sessions(
     session_query = (
         select(Session)
         .where(col(Session.scenario_id).in_(scenario_ids))
-        .order_by(col(Session.ended_at).desc())
+        .order_by(col(Session.created_at).desc())
     )
 
     total_sessions = len(db_session.exec(session_query).all())
     sessions = db_session.exec(session_query.offset((page - 1) * page_size).limit(page_size)).all()
 
-    session_list = [
-        SessionItem(
+    session_list = []
+    for sess in sessions:
+        conversation_scenario = db_session.exec(
+            select(ConversationScenario).where(ConversationScenario.id == sess.scenario_id)
+        ).first()
+
+        conversation_category = db_session.exec(
+            select(ConversationCategory).where(
+                ConversationCategory.id == conversation_scenario.category_id
+            )
+        ).first()
+
+        item = SessionItem(
             session_id=sess.id,
-            title='Negotiating Job Offers',  # mocked
-            summary='Practice salary negotiation with a potential candidate',  # mocked
+            title=conversation_category.name,
+            summary=conversation_category.name,  # TODO: add summary to conversation_category
             status=sess.status,
             date=sess.ended_at,
             score=82,  # mocked
@@ -181,8 +194,7 @@ def get_sessions(
                 clarity=70,
             ),  # mocked
         )
-        for sess in sessions
-    ]
+        session_list.append(item)
 
     return PaginatedSessionsResponse(
         page=page,
@@ -335,23 +347,9 @@ def delete_sessions_by_user(
     # Print all audio_uri values from SessionTurn for each session
     for conversation_scenario in conversation_scenarios:
         count_of_deleted_sessions += len(conversation_scenario.sessions)
-
         for session in conversation_scenario.sessions:
             for session_turn in session.session_turns:
                 audios.append(session_turn.audio_uri)
-            # Delete all ratings associated with this session
-            ratings = db_session.exec(
-                select(SessionFeedback).where(SessionFeedback.session_id == session.id)
-            ).all()
-            for rating in ratings:
-                db_session.delete(rating)
-                # db_session.commit()
-
-            # Delete all session feedback (reviews) associated with this session
-            reviews = db_session.exec(select(Review).where(Review.session_id == session.id)).all()
-            for review in reviews:
-                db_session.delete(review)
-                # db_session.commit()
             db_session.delete(session)
         db_session.commit()
 
@@ -372,21 +370,6 @@ def delete_session(
     session = db_session.exec(select(Session).where(Session.id == session_id)).first()
     if not session:
         raise HTTPException(status_code=404, detail='Session not found')
-
-    # Delete all ratings associated with this session
-    ratings = db_session.exec(
-        select(SessionFeedback).where(SessionFeedback.session_id == session_id)
-    ).all()
-    for rating in ratings:
-        db_session.delete(rating)
-        db_session.commit()
-
-    # Delete all session feedback (reviews) associated with this session
-    reviews = db_session.exec(select(Review).where(Review.session_id == session_id)).all()
-    for review in reviews:
-        db_session.delete(review)
-        db_session.commit()
-
     db_session.delete(session)
     db_session.commit()
     return {'message': 'Session deleted successfully'}

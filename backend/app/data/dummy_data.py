@@ -1,3 +1,5 @@
+import json
+import os
 from datetime import UTC, datetime
 from enum import Enum
 from uuid import UUID, uuid4
@@ -59,7 +61,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             training_time=4.5,
             current_streak_days=3,
             average_score=82,
-            goals_achieved=4,
+            goals_achieved=4,  # Summation of all goals achieved
         ),
         UserProfile(
             id=MockUserIdsEnum.ADMIN.value,
@@ -73,7 +75,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             training_time=4.2,
             current_streak_days=2,
             average_score=87,
-            goals_achieved=2,
+            goals_achieved=2,  # Summation of all goals achieved
         ),
     ]
 
@@ -173,7 +175,7 @@ def get_dummy_conversation_scenarios(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=categories[0].id,
-            context='Context 1',
+            context='Context',
             goal='Goal 1',
             other_party='Other Party 1',
             difficulty_level=DifficultyLevel.easy,
@@ -262,6 +264,14 @@ def get_dummy_ratings(
 
 
 def get_dummy_conversation_categories() -> list[ConversationCategory]:
+    # Load context from JSON file
+    context_path = os.path.join(os.path.dirname(__file__), 'conversation_scenario_context.json')
+    try:
+        with open(context_path, encoding='utf-8') as f:
+            context_data = json.load(f)
+    except Exception:
+        context_data = {}
+
     return [
         ConversationCategory(
             id='giving_feedback',
@@ -269,7 +279,9 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             system_prompt='You are an expert in providing constructive feedback.',
             initial_prompt='What feedback challenge are you facing?',
             ai_setup={'type': 'feedback', 'complexity': 'medium'},
-            default_context='One-on-one meeting with a team member.',
+            default_context=context_data.get(
+                'giving_feedback', 'One-on-one meeting with a team member.'
+            ),
             default_goal='Provide constructive feedback effectively.',
             default_other_party='Team member',
             is_custom=False,
@@ -283,7 +295,9 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             system_prompt='You are a manager conducting performance reviews.',
             initial_prompt='What aspect of performance would you like to discuss?',
             ai_setup={'type': 'review', 'complexity': 'high'},
-            default_context='Formal performance review meeting.',
+            default_context=context_data.get(
+                'performance_reviews', 'Formal performance review meeting.'
+            ),
             default_goal='Evaluate and discuss employee performance.',
             default_other_party='Employee',
             is_custom=False,
@@ -297,7 +311,9 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             system_prompt='You are a mediator resolving conflicts.',
             initial_prompt='What conflict are you trying to resolve?',
             ai_setup={'type': 'mediation', 'complexity': 'high'},
-            default_context='Conflict resolution meeting between team members.',
+            default_context=context_data.get(
+                'conflict_resolution', 'Conflict resolution meeting between team members.'
+            ),
             default_goal='Resolve conflicts and improve team dynamics.',
             default_other_party='Team members',
             is_custom=False,
@@ -311,7 +327,7 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
             system_prompt='You are a negotiator discussing salary expectations.',
             initial_prompt='What salary-related topic would you like to address?',
             ai_setup={'type': 'negotiation', 'complexity': 'medium'},
-            default_context='Salary negotiation meeting.',
+            default_context=context_data.get('salary_discussions', 'Salary negotiation meeting.'),
             default_goal='Reach a mutually beneficial agreement on salary.',
             default_other_party='Employer',
             is_custom=False,
@@ -355,7 +371,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[0].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=5000,
             end_offset_ms=10000,
             text='Hi! I’d like to check your schedule today. Are you available at 2 PM?',
@@ -389,7 +405,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=4000,
             end_offset_ms=9000,
             text='Of course. Could you please tell me what issue you are facing?',
@@ -411,7 +427,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=13000,
             end_offset_ms=17000,
             text='Thanks for the info. I will reset your credentials and email you shortly.',
@@ -434,7 +450,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=3000,
             end_offset_ms=7000,
             text='Absolutely. I’ll make sure to include the latest figures.',
@@ -456,7 +472,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=10000,
             end_offset_ms=13500,
             text='Will do. I’ll send you a draft in a couple of hours.',
@@ -479,7 +495,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=2800,
             end_offset_ms=6500,
             text='I’ve finished most of the slides. Just adding the final data now.',
@@ -501,7 +517,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=9500,
             end_offset_ms=12800,
             text='Understood. I’ll send it for your review by 3 PM.',
@@ -524,7 +540,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=3200,
             end_offset_ms=6000,
             text='Yes, I submitted it yesterday. Waiting for approval.',
@@ -546,7 +562,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=9000,
             end_offset_ms=12500,
             text='Of course. I’ll update the team and share the status report tomorrow.',
@@ -569,7 +585,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
             text='Apologies for the delay. I’ll finalize it by this afternoon.',
@@ -591,7 +607,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
             text='Understood. I’ll share it with you before the end of the day.',
@@ -614,7 +630,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
             text='Apologies for the delay. I’ll finalize it by this afternoon.',
@@ -636,7 +652,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
             text='Understood. I’ll share it with you before the end of the day.',
@@ -659,7 +675,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
             text='Apologies for the delay. I’ll finalize it by this afternoon.',
@@ -681,7 +697,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.ai,
+            speaker=SpeakerEnum.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
             text='Understood. I’ll share it with you before the end of the day.',
@@ -695,7 +711,7 @@ def get_dummy_session_turns(
 def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> list[Session]:
     return [
         Session(
-            id=uuid4(),
+            id=UUID('4e5174f9-78da-428c-bb9f-4556a14163cc'),
             scenario_id=conversation_scenarios[0].id,
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
@@ -799,7 +815,11 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Maintain professionalism',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -868,7 +888,10 @@ def get_dummy_session_feedback(
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
-            goals_achieved=4,
+            goals_achieved=[
+                'Align on team roles',
+                'Set expectations for communication',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -937,7 +960,10 @@ def get_dummy_session_feedback(
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
-            goals_achieved=4,
+            goals_achieved=[
+                'Align on team roles',
+                'Set expectations for communication',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1006,7 +1032,11 @@ def get_dummy_session_feedback(
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
-            goals_achieved=4,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Align on team roles',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1075,7 +1105,10 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1144,7 +1177,9 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1213,7 +1248,12 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=[
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Maintain professionalism',
+                'Provide specific feedback',
+            ],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1282,7 +1322,7 @@ def get_dummy_session_feedback(
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=3,
+            goals_achieved=['Bring clarity to the situation'],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1352,8 +1392,12 @@ def get_dummy_scenario_preparations(
             id=uuid4(),
             scenario_id=conversation_scenarios[0].id,
             objectives=[
-                "Understand the client's needs",
-                'Prepare a solution proposal',
+                'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Maintain professionalism',
+                'Provide specific feedback',
+                'Foster mutual understanding',
+                'End on a positive note',
             ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
@@ -1373,6 +1417,9 @@ def get_dummy_scenario_preparations(
             objectives=[
                 'Discuss project timeline',
                 'Finalize deliverables',
+                'Align on team roles',
+                'Set expectations for communication',
+                'Identify potential risks',
             ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},

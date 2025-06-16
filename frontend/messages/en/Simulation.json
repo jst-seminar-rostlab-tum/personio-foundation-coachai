@@ -1,4 +1,5 @@
 {
   "metaTitle": "Simulation - Coach AI",
-  "metaDescription": "Practice your skills in an interactive training simulation"
+  "metaDescription": "Practice your skills in an interactive training simulation",
+  "sessionEndError": "Error ending the session."
 }

@@ -14,5 +14,6 @@
     "next": "Nächster Schritt",
     "finish": "Setup abschließen",
     "skip": "Überspringen"
-  }
+  },
+  "updateProfileError": "Beim Aktualisieren Ihres Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
 }

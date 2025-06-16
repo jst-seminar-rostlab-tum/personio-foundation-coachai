@@ -8,13 +8,13 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
-import { AlertCircleIcon, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
-import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/client/AuthService';
+import { showErrorToast } from '@/lib/toast';
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
@@ -46,6 +46,12 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     }
     return () => clearTimeout(timer);
   }, [resendCooldown]);
+
+  useEffect(() => {
+    if (error) {
+      showErrorToast(null, error);
+    }
+  }, [error]);
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -177,13 +183,6 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
           </form>
         </Form>
       </Card>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircleIcon />
-          <AlertTitle>{error}</AlertTitle>
-        </Alert>
-      )}
     </div>
   );
 }

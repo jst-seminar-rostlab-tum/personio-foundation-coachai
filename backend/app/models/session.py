@@ -25,11 +25,9 @@ class SessionStatus(str, Enum):
     failed = 'failed'
 
 
-class Session(CamelModel, table=True):  # `table=True` makes it a database table
+class Session(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    scenario_id: UUID = Field(
-        foreign_key='conversationscenario.id'
-    )  # Foreign key to ConversationScenario
+    scenario_id: UUID = Field(foreign_key='conversationscenario.id', ondelete='CASCADE')
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
@@ -91,6 +89,7 @@ class SessionRead(CamelModel):
 class SessionDetailsRead(SessionRead):
     title: str | None = None
     summary: str | None = None
+    goals_total: list[str] | None = None
     feedback: Optional['SessionFeedbackMetrics'] = None
     # List of audio file URIs --> located in session_turns
     audio_uris: list[str] = Field(default_factory=list)

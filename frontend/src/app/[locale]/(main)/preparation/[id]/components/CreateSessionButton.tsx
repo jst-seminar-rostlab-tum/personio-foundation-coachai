@@ -6,6 +6,7 @@ import { Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { CreateSessionButtonProps } from '@/interfaces/CreateSessionButtonProps';
 import { useRouter } from 'next/navigation';
+import { showErrorToast } from '@/lib/toast';
 
 export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) => {
   const t = useTranslations('Preparation');
@@ -16,7 +17,7 @@ export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) =>
       const { data } = await sessionService.createSession(scenarioId);
       router.push(`/simulation/${data.id}`);
     } catch (error) {
-      console.error(error);
+      showErrorToast(error, t('sessionCreationError'));
     }
   };
 

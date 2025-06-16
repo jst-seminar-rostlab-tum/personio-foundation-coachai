@@ -7,6 +7,7 @@ import AboutFooter from '@/components/layout/AboutFooter';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { LayoutProps } from '@/interfaces/LayoutProps';
 import { MetadataProps } from '@/interfaces/MetadataProps';
+import { Toaster } from '@/components/ui/Sonner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -37,6 +38,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
         <NextIntlClientProvider>
           <AboutHeader />
           <main className="container mx-auto px-4">{children}</main>
+          <Toaster richColors />
           <AboutFooter />
         </NextIntlClientProvider>
       </body>
