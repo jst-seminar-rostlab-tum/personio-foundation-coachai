@@ -17,14 +17,15 @@ class ExamplesRequest(CamelModel):
 
 class PositiveExample(CamelModel):
     heading: str = Field(..., description='Title or summary of the positive example')
-    feedback: str = Field(..., description='Explanation of why this is a good example')
     quote: str = Field(..., description='Direct quote from the transcript')
+    text: str = Field(..., description='Explanation of why this is a good example')
+    guideline: str = Field(..., description='Guidelines for the user to follow')
 
 
 class NegativeExample(CamelModel):
     heading: str = Field(..., description='Title or summary of the negative example')
-    feedback: str = Field(..., description='Description or context of the example')
     quote: str = Field(..., description='Problematic or unhelpful quote mentioned by the user')
+    text: str = Field(..., description='Explanation of why this is a bad example')
     improved_quote: str = Field(..., description='Suggested improved version of the quote')
 
 
@@ -60,7 +61,7 @@ class RecommendationsRequest(ExamplesRequest):
 
 class Recommendation(CamelModel):
     heading: str = Field(..., description='Title or summary of the recommendation')
-    recommendation: str = Field(..., description='Description or elaboration of the recommendation')
+    text: str = Field(..., description='Description or elaboration of the recommendation')
 
 
 class RecommendationsCollection(CamelModel):
