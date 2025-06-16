@@ -17,5 +17,10 @@
   "users": "Users",
   "actions": "Actions",
   "deleteUser": "Delete user",
-  "loadMore": "Load More"
+  "loadMore": "Load More",
+  "saving": "Saving...",
+  "save": "Save",
+  "tokenSuccess": "Token limit saved successfully",
+  "tokenFailed": "Error saving token limit",
+  "tokenNumberFailed": "Please enter a valid number (1-1000000)"
 }
