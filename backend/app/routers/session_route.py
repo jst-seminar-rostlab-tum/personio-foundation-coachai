@@ -264,6 +264,7 @@ def update_session(
     if (
         previous_status != SessionStatus.completed
         and updated_data.status == SessionStatus.completed
+        and session.feedback is None
     ):
         print('Session status is changing to completed')
         if not scenario_id:

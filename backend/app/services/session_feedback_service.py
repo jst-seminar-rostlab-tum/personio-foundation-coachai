@@ -311,35 +311,24 @@ def generate_and_store_feedback(
     status = FeedbackStatusEnum.failed if has_error else FeedbackStatusEnum.completed
     logger.info(f'Feedback status: {status}')
 
-    feedback = db_session.exec(
-        select(SessionFeedback).where(SessionFeedback.session_id == session_id)
-    ).first()
-    if feedback:
-        feedback.status = status
-        feedback.example_positive = examples_positive_dicts
-        feedback.example_negative = examples_negative_dicts
-        feedback.recommendations = recommendations
-        feedback.goals_achieved = goals.goals_achieved
-        feedback.updated_at = datetime.now()
-    else:
-        feedback = SessionFeedback(
-            id=uuid4(),
-            session_id=session_id,
-            scores={},
-            tone_analysis={},
-            overall_score=0,
-            transcript_uri='',
-            speak_time_percent=0,
-            questions_asked=0,
-            session_length_s=0,
-            goals_achieved=goals.goals_achieved,
-            example_positive=examples_positive_dicts,
-            example_negative=examples_negative_dicts,
-            recommendations=recommendations,
-            status=status,
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
-        )
+    feedback = SessionFeedback(
+        id=uuid4(),
+        session_id=session_id,
+        scores={},
+        tone_analysis={},
+        overall_score=0,
+        transcript_uri='',
+        speak_time_percent=0,
+        questions_asked=0,
+        session_length_s=0,
+        goals_achieved=goals.goals_achieved,
+        example_positive=examples_positive_dicts,
+        example_negative=examples_negative_dicts,
+        recommendations=recommendations,
+        status=status,
+        created_at=datetime.now(),
+        updated_at=datetime.now(),
+    )
 
     # Update user profile with feedback
     user = db_session.exec(select(UserProfile).where(UserProfile.id == session_id)).first()
