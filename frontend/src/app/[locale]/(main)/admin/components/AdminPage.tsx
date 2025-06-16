@@ -26,7 +26,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 import { AdminProps } from '@/interfaces/AdminProps';
-import { updateDailyUserTokenLimit } from '@/services/client/DailyUserTokenLimitService';
+import { adminService } from '@/services/client/AdminService';
+import { showSuccessToast, showErrorToast } from '@/lib/toast';
 
 export default function Admin({ stats }: AdminProps) {
   const t = useTranslations('Admin');
@@ -56,23 +57,21 @@ export default function Admin({ stats }: AdminProps) {
   const [tokenLimit, setTokenLimit] = React.useState<number>(statsResponse.dailyTokenLimit);
   const [saving, setSaving] = React.useState(false);
 
-  React.useEffect(() => {
-    setTokenLimit(statsResponse.dailyTokenLimit);
-  }, [statsResponse.dailyTokenLimit]);
-
-  async function handleSaveTokenLimit() {
+  const handleSaveTokenLimit = async () => {
     if (!Number.isInteger(tokenLimit) || tokenLimit < 1) {
+      showErrorToast(null, t('tokenNumberFailed'));
       return;
     }
     setSaving(true);
     try {
-      await updateDailyUserTokenLimit(tokenLimit);
+      await adminService.updateDailyUserTokenLimit(tokenLimit);
+      showSuccessToast(t('tokenSuccess'));
     } catch (error) {
-      console.error({ error });
+      showErrorToast(error, t('tokenFailed'));
     } finally {
       setSaving(false);
     }
-  }
+  };
 
   return (
     <div className="max-w-full">
