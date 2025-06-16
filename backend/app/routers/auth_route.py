@@ -115,6 +115,11 @@ def confirm_user(
             detail='User is not confirmed',
         )
 
-    user_data = UserProfile(id=token['sub'])
+    user_data = UserProfile(
+        id=token['sub'],
+        full_name=token['user_metadata']['full_name'],
+        email=token['email'],
+        phone_number=token['phone'],
+    )
     db_session.add(user_data)
     db_session.commit()

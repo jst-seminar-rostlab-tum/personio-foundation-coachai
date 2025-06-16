@@ -221,6 +221,7 @@ def replace_user_profile(
         raise HTTPException(status_code=404, detail='User not found')
 
     # Update UserProfile fields
+    user.full_name = data.full_name
     user.account_role = data.account_role
     user.experience = data.experience
     user.preferred_language_code = data.preferred_language_code
@@ -262,6 +263,9 @@ def replace_user_profile(
 
     return UserProfileExtendedRead(
         user_id=user.id,
+        full_name=user.full_name,
+        email=user.email,
+        phone_number=user.phone_number,
         preferred_language_code=user.preferred_language_code,
         account_role=user.account_role,
         professional_role=user.professional_role,

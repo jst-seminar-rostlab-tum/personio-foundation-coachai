@@ -100,6 +100,7 @@ class UserProfileUpdate(CamelModel):
 
 
 class UserProfileReplace(CamelModel):
+    full_name: str
     preferred_language_code: LanguageCode
     account_role: AccountRole
     professional_role: ProfessionalRole
