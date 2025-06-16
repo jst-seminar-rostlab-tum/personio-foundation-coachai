@@ -53,8 +53,11 @@ async def get_realtime_session(
 
     instructions = ''
 
+    if conversation_scenario:
+        instructions += conversation_scenario.context
+
     if conversation_category:
-        instructions = conversation_category.initial_prompt
+        instructions += '\n\n' + conversation_category.initial_prompt
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
