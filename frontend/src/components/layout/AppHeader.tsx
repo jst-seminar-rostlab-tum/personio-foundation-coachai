@@ -18,7 +18,7 @@ export function AppHeader() {
   const navigationLinks = [
     { key: 'dashboard', href: '/dashboard' },
     { key: 'newConversationScenario', href: '/new-conversation-scenario' },
-    ...(user?.accountRole === AccountRole.admin ? [{ key: 'admin', href: '/admin' }] : []),
+    ...(user.accountRole === AccountRole.admin ? [{ key: 'admin', href: '/admin' }] : []),
     { key: 'history', href: '/history' },
     { key: 'trainingSettings', href: '/training-settings' },
   ];

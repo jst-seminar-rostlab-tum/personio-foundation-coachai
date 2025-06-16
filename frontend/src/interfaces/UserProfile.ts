@@ -4,9 +4,12 @@ export interface UserProfile {
   phoneNumber: string;
   professionalRole: string;
   goals: string[];
+  accountRole: AccountRole;
   storeConversations?: boolean;
   confidenceScores?: ConfidenceScore[];
 }
+
+export type UserProfileUpdate = Omit<UserProfile, 'email' | 'phoneNumber' | 'accountRole'>;
 
 export interface ConfidenceScore {
   confidenceArea: string;

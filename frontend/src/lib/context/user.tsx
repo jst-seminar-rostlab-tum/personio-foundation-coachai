@@ -3,14 +3,14 @@
 import { UserProfile } from '@/interfaces/UserProfile';
 import { createContext, useContext } from 'react';
 
-const UserContext = createContext<UserProfile | null>(null);
+const UserContext = createContext<UserProfile>(undefined!);
 
 export function UserContextProvider({
   children,
   user,
 }: {
   children: React.ReactNode;
-  user: UserProfile | null;
+  user: UserProfile;
 }) {
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
