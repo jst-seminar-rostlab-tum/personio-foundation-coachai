@@ -15,9 +15,7 @@ from app.models.conversation_category import (
 router = APIRouter(prefix='/conversation-categories', tags=['Conversation Categories'])
 
 
-@router.get(
-    '/', response_model=list[ConversationCategoryRead], dependencies=[Depends(require_user)]
-)
+@router.get('', response_model=list[ConversationCategoryRead], dependencies=[Depends(require_user)])
 def get_conversation_categories(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[ConversationCategory]:

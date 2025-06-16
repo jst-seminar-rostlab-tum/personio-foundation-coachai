@@ -22,7 +22,7 @@ router = APIRouter(prefix='/review', tags=['User Review'])
 
 
 @router.get(
-    '/',
+    '',
     response_model=list[ReviewRead] | PaginatedReviewsResponse,
     dependencies=[Depends(require_admin)],
 )

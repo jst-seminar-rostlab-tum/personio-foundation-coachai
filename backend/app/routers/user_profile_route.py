@@ -75,7 +75,7 @@ def get_user_profiles(
 
 
 @router.get(
-    '/profile/',
+    '/profile',
     response_model=Union[UserProfileRead, UserProfileExtendedRead],
 )
 def get_user_profile(
@@ -130,7 +130,7 @@ def get_user_profile(
 
 
 @router.post(
-    '/',
+    '',
     response_model=UserProfileExtendedRead,
     status_code=201,
     dependencies=[Depends(require_user)],
