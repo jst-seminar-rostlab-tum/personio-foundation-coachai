@@ -11,12 +11,14 @@ from sqlmodel import Field, Relationship
 from app.models.camel_case import CamelModel
 from app.models.language import LanguageCode
 from app.models.user_confidence_score import ConfidenceScoreRead
+from app.models.user_goal import Goal
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
     from app.models.rating import Rating
+    from app.models.review import Review
     from app.models.user_confidence_score import UserConfidenceScore
-    from app.models.user_goal import UserGoal
+    from app.models.user_goal import Goal, UserGoal
 
 
 class AccountRole(str, Enum):
@@ -53,6 +55,8 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     store_conversations: bool = Field(default=True)
     # Relationships
+    reviews: list['Review'] = Relationship(back_populates='user_profile', cascade_delete=True)
+
     ratings: Optional['Rating'] = Relationship(back_populates='user', cascade_delete=True)
     conversation_scenarios: list['ConversationScenario'] = Relationship(
         back_populates='user_profile', cascade_delete=True
@@ -88,7 +92,7 @@ class UserProfileUpdate(CamelModel):
     experience: Optional[Experience] = None
     preferred_learning_style: Optional[PreferredLearningStyle] = None
     store_conversations: Optional[bool] = None
-    goals: Optional[list[str]] = None
+    goals: Optional[list[Goal]] = None
     confidence_scores: Optional[list[ConfidenceScoreRead]] = None
 
 
@@ -99,7 +103,7 @@ class UserProfileReplace(CamelModel):
     experience: Experience
     preferred_learning_style: PreferredLearningStyle
     store_conversations: bool
-    goals: list[str]
+    goals: list[Goal]
     confidence_scores: list[ConfidenceScoreRead]
 
 
@@ -120,7 +124,7 @@ class UserProfileRead(CamelModel):
 
 
 class UserProfileExtendedRead(UserProfileRead):
-    goals: list[str]
+    goals: list[Goal]
     confidence_scores: list[ConfidenceScoreRead]
 
 
@@ -133,6 +137,6 @@ class UserStatisticsRead(CamelModel):
     training_time: float  # in hours
     current_streak_days: int
     average_score: int
-    goals_achieved: int
+    goals_achieved: int  # summation of all goals achieved
     performance_over_time: list[int]
     skills_performance: dict[str, int]

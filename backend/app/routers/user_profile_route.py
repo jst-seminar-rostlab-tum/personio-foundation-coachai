@@ -1,4 +1,4 @@
-from typing import Annotated, Union
+from typing import Annotated, Optional, Union
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -6,6 +6,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.user_confidence_score import ConfidenceScoreRead, UserConfidenceScore
 from app.models.user_goal import Goal, UserGoal
 from app.models.user_profile import (
@@ -20,7 +21,7 @@ from app.models.user_profile import (
 router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
 
 
-@router.get('/', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
+@router.get('', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
 def get_user_profiles(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     detailed: bool = False,
@@ -74,11 +75,11 @@ def get_user_profiles(
 
 
 @router.get(
-    '/{user_id}',
+    '/profile',
     response_model=Union[UserProfileRead, UserProfileExtendedRead],
 )
 def get_user_profile(
-    user_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
     detailed: bool = False,
 ) -> Union[UserProfileRead, UserProfileExtendedRead]:
@@ -89,6 +90,7 @@ def get_user_profile(
 
     - If `detailed` is True, returns extended profiles including goals and confidence scores.
     """
+    user_id = user_profile.id
     statement = select(UserProfile).where(UserProfile.id == user_id)
     user = db_session.exec(statement).first()
 
@@ -127,7 +129,12 @@ def get_user_profile(
         )
 
 
-@router.post('/', response_model=UserProfileExtendedRead, status_code=201)
+@router.post(
+    '',
+    response_model=UserProfileExtendedRead,
+    status_code=201,
+    dependencies=[Depends(require_user)],
+)
 def create_user_profile(
     data: UserProfileCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -187,12 +194,13 @@ def create_user_profile(
     )
 
 
-@router.put('/{user_id}', response_model=UserProfileExtendedRead)
+@router.put('', response_model=UserProfileExtendedRead)
 def replace_user_profile(
-    user_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileReplace,
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserProfileExtendedRead:
+    user_id = user_profile.id
     user = db_session.get(UserProfile, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
@@ -203,6 +211,7 @@ def replace_user_profile(
     user.preferred_language_code = data.preferred_language_code
     user.preferred_learning_style = data.preferred_learning_style
     user.store_conversations = data.store_conversations
+    user.professional_role = data.professional_role
 
     db_session.add(user)
 
@@ -256,12 +265,13 @@ def replace_user_profile(
     )
 
 
-@router.patch('/{user_id}', response_model=UserProfileExtendedRead)
+@router.patch('', response_model=UserProfileExtendedRead)
 def update_user_profile(
-    user_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileUpdate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> UserProfileExtendedRead:
+    user_id = user_profile.id
     user = db_session.get(UserProfile, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
@@ -279,6 +289,8 @@ def update_user_profile(
         user.preferred_learning_style = update_data['preferred_learning_style']
     if 'store_conversations' in update_data:
         user.store_conversations = update_data['store_conversations']
+    if 'professional_role' in update_data:
+        user.professional_role = update_data['professional_role']
 
     db_session.add(user)
 
@@ -301,7 +313,7 @@ def update_user_profile(
             db_session.delete(cs)
         db_session.commit()
 
-        for cs_data in update_data['confidence_scores']:
+        for cs_data in data.confidence_scores:
             db_session.add(
                 UserConfidenceScore(
                     user_id=user.id,
@@ -333,18 +345,25 @@ def update_user_profile(
     )
 
 
-@router.delete('/{user_id}', response_model=dict)
+@router.delete('', response_model=dict)
 def delete_user_profile(
-    user_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    delete_user_id: Optional[UUID] = None,
 ) -> dict:
     """
     Delete a user profile by its unique user ID.
     Cascades the deletion to related goals and confidence scores.
     """
-    user_profile = db_session.get(UserProfile, user_id)
+    user_id = user_profile.id
+    if delete_user_id and user_profile.account_role == 'admin':
+        user_id = delete_user_id
+    elif delete_user_id and delete_user_id != user_profile.id:
+        raise HTTPException(status_code=403, detail='Admin access required to delete other users')
+
+    user_profile = db_session.get(UserProfile, user_id)  # type: ignore
     if not user_profile:
         raise HTTPException(status_code=404, detail='User profile not found')
-
     db_session.delete(user_profile)
     db_session.commit()
     return {'message': 'User profile deleted successfully'}

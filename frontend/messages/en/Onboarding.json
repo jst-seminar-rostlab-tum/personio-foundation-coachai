@@ -14,5 +14,6 @@
     "next": "Next Step",
     "finish": "Finish Setup",
     "skip": "Skip for now"
-  }
+  },
+  "updateProfileError": "There was an error updating your profile. Please try again later."
 }

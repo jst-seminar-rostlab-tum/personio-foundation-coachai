@@ -9,7 +9,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     Confirm: (await import(`../../messages/${locale}/Confirm.json`)).default,
     Common: (await import(`../../messages/${locale}/Common.json`)).default,
     HomePage: (await import(`../../messages/${locale}/HomePage.json`)).default,
-    NewTraining: (await import(`../../messages/${locale}/NewTraining.json`)).default,
+    ConversationScenario: (await import(`../../messages/${locale}/ConversationScenario.json`))
+      .default,
     Admin: (await import(`../../messages/${locale}/Admin.json`)).default,
     Dashboard: (await import(`../../messages/${locale}/Dashboard.json`)).default,
     Feedback: (await import(`../../messages/${locale}/Feedback.json`)).default,
@@ -22,6 +23,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     AppHeader: (await import(`../../messages/${locale}/AppHeader.json`)).default,
     PrivacyPolicy: (await import(`../../messages/${locale}/PrivacyPolicy.json`)).default,
     TermsOfService: (await import(`../../messages/${locale}/TermsOfService.json`)).default,
+    PersonalizationOptions: (await import(`../../messages/${locale}/PersonalizationOptions.json`))
+      .default,
   };
 
   return {

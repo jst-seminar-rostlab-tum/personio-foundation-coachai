@@ -20,7 +20,7 @@ function getNamespaceFromPath(path: string): string {
     feedback: 'Feedback',
     history: 'History',
     login: 'Login',
-    'new-training': 'NewTraining',
+    'new-conversation-scenario': 'ConversationScenario',
     onboarding: 'Onboarding',
     preparation: 'Preparation',
     privacy: 'PrivacyPolicy',

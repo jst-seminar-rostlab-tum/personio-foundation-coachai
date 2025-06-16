@@ -1,18 +1,17 @@
 'use client';
 
-import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
 import { createClient } from '@/lib/supabase/client';
-import { authService } from '@/services/AuthService';
+import { showErrorToast } from '@/lib/toast';
+import { authService } from '@/services/client/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResendParams, VerifyEmailOtpParams } from '@supabase/supabase-js';
-import { AlertCircleIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
@@ -23,6 +22,12 @@ export default function ConfirmationForm() {
   const [showResendButton, setShowResendButton] = useState(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (error) {
+      showErrorToast(null, error);
+    }
+  }, [error]);
 
   const confirmationFormSchema = z.object({
     email: z.string().email(t('emailInputError')),
@@ -69,9 +74,15 @@ export default function ConfirmationForm() {
       return;
     }
 
-    await authService.confirmUser();
+    try {
+      await authService.confirmUser();
+    } catch {
+      setError(t('genericError'));
+      setIsLoading(false);
+      return;
+    }
 
-    router.push('/dashboard');
+    router.push('/onboarding');
   };
 
   const resendConfirmationEmail = async () => {
@@ -184,13 +195,6 @@ export default function ConfirmationForm() {
           </form>
         </Form>
       </Card>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircleIcon />
-          <AlertTitle>{error}</AlertTitle>
-        </Alert>
-      )}
     </div>
   );
 }

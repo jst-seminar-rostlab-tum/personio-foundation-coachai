@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { authService } from '@/services/client/AuthService';
 import { Button } from '../ui/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
@@ -13,7 +14,7 @@ export function AppHeader() {
 
   const navigationLinks = [
     { key: 'dashboard', href: '/dashboard' },
-    { key: 'newTraining', href: '/new-training' },
+    { key: 'newConversationScenario', href: '/new-conversation-scenario' },
     { key: 'admin', href: '/admin' },
     { key: 'history', href: '/history' },
     { key: 'trainingSettings', href: '/training-settings' },
@@ -38,8 +39,8 @@ export function AppHeader() {
 
   return (
     <>
-      <header className="sticky top-0 left-0 right-0 bg-background z-50 shadow">
-        <div className="md:max-w-5xl md:mx-auto flex items-center justify-between px-4 py-2 xl:px-0 min-h-[56px]">
+      <header className="fixed top-0 left-0 right-0 bg-background z-50 shadow">
+        <div className="container flex h-16 items-center justify-between mx-auto px-4">
           <Link
             href="/dashboard"
             className="text-bw-70 text-xl font-semibold"
@@ -68,11 +69,15 @@ export function AppHeader() {
             >
               {isMenuOpen ? <X className="!w-4 !h-4" /> : <Menu className="!w-4 !h-4" />}
             </Button>
-            <Link href="/logout">
-              <Button variant="secondary" className="hidden md:flex h-8">
-                <span className="text-xs font-medium">{t('logout')}</span>
-              </Button>
-            </Link>
+            <Button
+              variant="secondary"
+              className="hidden md:flex h-8"
+              onClick={async () => {
+                await authService.logoutUser();
+              }}
+            >
+              <span className="text-xs font-medium">{t('logout')}</span>
+            </Button>
           </div>
         </div>
       </header>
@@ -100,11 +105,15 @@ export function AppHeader() {
                 {t(key)}
               </Link>
             ))}
-            <Link href="/logout" onClick={() => setIsMenuOpen(false)}>
-              <span className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50">
-                {t('logout')}
-              </span>
-            </Link>
+            <span
+              className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50"
+              onClick={async () => {
+                await authService.logoutUser();
+                setIsMenuOpen(false);
+              }}
+            >
+              {t('logout')}
+            </span>
           </nav>
         </div>
       </div>

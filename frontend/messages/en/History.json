@@ -9,11 +9,19 @@
   "empathy": "Empathy",
   "solutionFocus": "Focus",
   "clarity": "Clarity",
-  "totalSessions": "total\nsessions",
-  "avgScore": "avg.\nscore",
-  "goalsAchieved": "goals\nachieved",
+  "totalSessions": "Total Sessions",
+  "avgScore": "Avg. Score",
+  "goalsAchieved": "Goals Achieved",
   "previousSessions": "Previous Sessions",
   "exportHistory": "Export History",
   "clearAll": "Clear All",
-  "loadMore": "Load More"
+  "loadMore": "Load More",
+  "deleteAllSessions": "Delete All Sessions",
+  "deleteAllSessionsConfirmation": "Are you sure you want to delete all sessions? This action cannot be undone.",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "deleting": "Deleting...",
+  "loading": "Loading...",
+  "deleteSuccess": "All sessions deleted successfully.",
+  "deleteError": "Error deleting sessions. Please try again later."
 }

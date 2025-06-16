@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Checkbox from '@/components/ui/Checkbox';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PasswordRequirement } from '@/interfaces/PasswordInput';
 import Image from 'next/image';
 import {
@@ -19,11 +19,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/Form';
-import { AlertCircleIcon } from 'lucide-react';
-import { Alert, AlertTitle } from '@/components/ui/Alert';
 import { VerificationPopup } from '@/app/[locale]/(auth)/login/components/VerificationPopup';
 import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordInput';
 import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
+import { showErrorToast } from '@/lib/toast';
 
 export function SignUpForm() {
   const t = useTranslations('Login.SignUpTab');
@@ -31,6 +30,12 @@ export function SignUpForm() {
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (error) {
+      showErrorToast(null, error);
+    }
+  }, [error]);
 
   const signUpFormSchema = z.object({
     fullName: z.string().min(1, t('fullNameInputError')),
@@ -208,13 +213,7 @@ export function SignUpForm() {
               </Button>
               <div className="w-full border-t border-gray-300" />
               <Button size="full" variant="secondary" disabled={isLoading}>
-                <Image
-                  src="/icons/google-icon.svg"
-                  alt="Google Icon"
-                  className="mr-2"
-                  width={5}
-                  height={5}
-                ></Image>
+                <Image src="/icons/google-icon.svg" alt="Google Icon" width={20} height={20} />
                 {t('signUpWithGoogleButtonLabel')}
               </Button>
             </CardFooter>
@@ -229,13 +228,6 @@ export function SignUpForm() {
       />
 
       <PrivacyDialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}></PrivacyDialog>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircleIcon />
-          <AlertTitle>{error}</AlertTitle>
-        </Alert>
-      )}
     </>
   );
 }

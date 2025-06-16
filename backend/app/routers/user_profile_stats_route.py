@@ -1,28 +1,21 @@
 from typing import Annotated
-from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
+from app.dependencies import require_user
 from app.models.user_profile import UserProfile, UserStatisticsRead
 
 router = APIRouter(prefix='/user', tags=['User Stats'])
 
 
-@router.get('/', response_model=UserStatisticsRead)
+@router.get('', response_model=UserStatisticsRead)
 def get_user_stats(
     db_session: Annotated[DBSession, Depends(get_db_session)],
-    x_user_id: str = Header(...),  # Auth via header
-    # TODO: Adjust to the authentication token in the header
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> UserStatisticsRead:
-    try:
-        user_id = UUID(x_user_id)
-    except ValueError as err:
-        raise HTTPException(
-            status_code=401, detail='Invalid or missing authentication token'
-        ) from err
-
+    user_id = user_profile.id
     user = db_session.get(UserProfile, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')

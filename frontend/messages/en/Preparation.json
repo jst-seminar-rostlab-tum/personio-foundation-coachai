@@ -15,8 +15,14 @@
   "resources": {
     "title": "Resources"
   },
+  "keyConcepts": {
+    "title": "Key Concepts"
+  },
   "navigation": {
     "back": "Go Back",
     "start": "Start Training"
-  }
+  },
+  "loadingText": "Preparing Objectives and Checklist...",
+  "sessionCreationError": "Error creating training session. Please try again later.",
+  "getPreparationError": "Error fetching preparation data. Please try again later."
 }

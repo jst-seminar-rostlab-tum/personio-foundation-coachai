@@ -28,6 +28,9 @@ def populate_data() -> None:
         print('Dropping tables...')
         SQLModel.metadata.drop_all(engine)
 
+        # print('Removing mock users...')
+        # delete_mock_users()
+
         print('Creating tables...')
         SQLModel.metadata.create_all(engine)
 
@@ -45,14 +48,16 @@ def populate_data() -> None:
         user_goals = get_dummy_user_goals(user_profiles)
         db_session.add_all(user_goals)
 
-        # Populate Conversation Scenarios
-        conversation_scenarios = get_dummy_conversation_scenarios(user_profiles)
-        db_session.add_all(conversation_scenarios)
-        db_session.commit()
-
         # Populate Conversation Categories
         conversation_categories = get_dummy_conversation_categories()
         db_session.add_all(conversation_categories)
+
+        # Populate Conversation Scenarios
+        conversation_scenarios = get_dummy_conversation_scenarios(
+            user_profiles, conversation_categories
+        )
+        db_session.add_all(conversation_scenarios)
+        db_session.commit()
 
         # Populate Sessions
         sessions = get_dummy_sessions(conversation_scenarios)
@@ -105,6 +110,9 @@ def populate_data() -> None:
         db_session.add(empty_vector_data)
         db_session.commit()
         print('Vector store created successfully!')
+
+        # print('Creating mock users...')
+        # create_mock_users()
 
 
 if __name__ == '__main__':
