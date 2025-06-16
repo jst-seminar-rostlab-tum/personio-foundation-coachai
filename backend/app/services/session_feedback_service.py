@@ -6,6 +6,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
 from app.models import FeedbackStatusEnum, SessionFeedback
+from app.models.session import Session
 from app.schemas.session_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -298,6 +299,12 @@ def generate_and_store_feedback(
             has_error = True
             print('[ERROR] Failed to generate key recommendations:', e)
 
+    session = db_session.get(Session, session_id)
+
+    session_length_s = 0
+    if session and session.started_at and session.ended_at:
+        session_length_s = int((session.ended_at - session.started_at).total_seconds())
+
     # correct placement
     status = FeedbackStatusEnum.failed if has_error else FeedbackStatusEnum.completed
 
@@ -310,7 +317,7 @@ def generate_and_store_feedback(
         transcript_uri='',
         speak_time_percent=0,
         questions_asked=0,
-        session_length_s=0,
+        session_length_s=session_length_s,
         goals_achieved=goals.goals_achieved,
         example_positive=examples_positive_dicts,
         example_negative=examples_negative_dicts,

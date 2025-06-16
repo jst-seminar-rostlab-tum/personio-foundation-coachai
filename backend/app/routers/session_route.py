@@ -1,4 +1,5 @@
 import logging
+from datetime import UTC, datetime
 from math import ceil
 from typing import Annotated
 from uuid import UUID
@@ -218,6 +219,7 @@ def create_session(
         raise HTTPException(status_code=404, detail='Conversation scenario not found')
     new_session = Session(**session_data.model_dump())
     new_session.status = SessionStatus.started
+    new_session.started_at = datetime.now(UTC)
 
     db_session.add(new_session)
     db_session.commit()
@@ -252,6 +254,9 @@ def update_session(
 
     for key, value in updated_data.model_dump(exclude_unset=True).items():
         setattr(session, key, value)
+
+    if updated_data.status == SessionStatus.completed:
+        session.ended_at = datetime.now(UTC)
 
     print(f'Session feedback: {session.feedback is not None}')
     # Check if the session status is changing to completed
