@@ -32,7 +32,6 @@ class Settings(BaseSettings):
     # Twilio settings
     TWILIO_ACCOUNT_SID: str = ''
     TWILIO_AUTH_TOKEN: str = ''
-    TWILIO_PHONE_NUMBER: str = ''
     TWILIO_VERIFY_SERVICE_SID: str = ''
 
     ENABLE_AI: bool = False
