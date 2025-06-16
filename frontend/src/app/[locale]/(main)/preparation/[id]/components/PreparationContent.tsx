@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
 import { ConversationScenarioPreparation } from '@/interfaces/ConversationScenario';
+import { showErrorToast } from '@/lib/toast';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
@@ -18,29 +19,33 @@ export default function PreparationContent() {
   const params = useParams();
   const conversationScenarioId = params.id as string;
 
-  const getTrainingPreparation = useCallback(async (id: string) => {
-    try {
-      const response = await conversationScenarioService.getPreparation(id);
+  const getTrainingPreparation = useCallback(
+    async (id: string) => {
+      try {
+        const response = await conversationScenarioService.getPreparation(id);
 
-      if (response.status === 202) {
-        setTimeout(() => {
-          getTrainingPreparation(id);
-        }, 2000);
-        return;
-      }
+        if (response.status === 202) {
+          setTimeout(() => {
+            getTrainingPreparation(id);
+          }, 2000);
+          return;
+        }
 
-      if (response.status === 200) {
-        setPreparationData(response.data);
+        if (response.status === 200) {
+          setPreparationData(response.data);
+          setIsLoading(false);
+          return;
+        }
+
+        throw new Error('Failed to get training case preparation data');
+      } catch (error) {
+        showErrorToast(error, t('getPreparationError'));
         setIsLoading(false);
-        return;
+        console.error(error);
       }
-
-      throw new Error('Failed to get training case preparation data');
-    } catch (error) {
-      setIsLoading(false);
-      console.error(error);
-    }
-  }, []);
+    },
+    [t]
+  );
 
   useEffect(() => {
     getTrainingPreparation(conversationScenarioId);

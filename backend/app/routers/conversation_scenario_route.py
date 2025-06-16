@@ -15,7 +15,11 @@ from app.models.conversation_scenario import (
     ConversationScenarioCreate,
     ConversationScenarioRead,
 )
-from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationRead
+from app.models.scenario_preparation import (
+    ScenarioPreparation,
+    ScenarioPreparationRead,
+    ScenarioPreparationStatus,
+)
 from app.models.user_profile import UserProfile
 from app.schemas.scenario_preparation_schema import ScenarioPreparationRequest
 from app.services.scenario_preparation_service import (
@@ -161,8 +165,13 @@ def get_scenario_preparation_by_scenario_id(
     statement = select(ScenarioPreparation).where(ScenarioPreparation.scenario_id == scenario_id)
     scenario_preparation = db_session.exec(statement).first()
 
-    if not scenario_preparation:
-        raise HTTPException(status_code=404, detail='Scenario preparation not found')
+    print(f'Scenario Preparation: {scenario_preparation}')
+
+    if not scenario_preparation or scenario_preparation.status == ScenarioPreparationStatus.pending:
+        raise HTTPException(status_code=202, detail='Session preparation in progress.')
+
+    elif scenario_preparation.status == ScenarioPreparationStatus.failed:
+        raise HTTPException(status_code=500, detail='Session preparation failed.')
 
     # Prepare category name with fallback to custom label or None
     category_name = (

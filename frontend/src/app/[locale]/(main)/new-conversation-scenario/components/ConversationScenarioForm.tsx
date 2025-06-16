@@ -3,13 +3,14 @@
 import { Button } from '@/components/ui/Button';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import Stepper from '@/components/common/Stepper';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { ConversationCategory } from '@/interfaces/ConversationCategory';
 import { ConversationScenarioFormState } from '@/interfaces/ConversationScenarioFormState';
 import { ConversationScenario } from '@/interfaces/ConversationScenario';
 import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
+import { showErrorToast } from '@/lib/toast';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
@@ -34,8 +35,22 @@ export default function ConversationScenarioForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formState, setFormState] = useState<ConversationScenarioFormState>(initialFormState);
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
+  const [categories, setCategories] = useState<ConversationCategory[]>(
+    t.raw('categories') as ConversationCategory[]
+  );
 
-  const categories = t.raw('categories') as ConversationCategory[];
+  useEffect(() => {
+    async function fetchCategories() {
+      const response = await conversationScenarioService.getConversationCategories();
+      setCategories((prevCategories) =>
+        prevCategories.map((cat) => {
+          const match = response.data.find((f: ConversationCategory) => f.id === cat.id);
+          return match ? { ...cat, defaultContext: match.defaultContext } : cat;
+        })
+      );
+    }
+    fetchCategories();
+  }, []);
 
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
@@ -126,7 +141,7 @@ export default function ConversationScenarioForm() {
       const { data } = await conversationScenarioService.createConversationScenario(scenario);
       router.push(`/preparation/${data.scenarioId}`);
     } catch (error) {
-      console.error('Error:', error);
+      showErrorToast(error, t('errorMessage'));
     }
   };
 

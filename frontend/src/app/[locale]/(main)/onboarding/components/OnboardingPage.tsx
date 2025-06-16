@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfileService } from '@/services/client/UserProfileService';
 import { useRouter } from 'next/navigation';
+import { showErrorToast } from '@/lib/toast';
 import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
@@ -72,7 +73,7 @@ export default function OnboardingPageComponent() {
       });
       router.push('/dashboard');
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      showErrorToast(error, t('updateProfileError'));
     }
   };
 

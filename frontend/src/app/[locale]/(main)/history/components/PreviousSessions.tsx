@@ -2,7 +2,7 @@
 
 import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { clearAllSessions } from '@/services/client/SessionService';
 import {
@@ -16,79 +16,54 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
+import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import { SessionPaginated, SessionFromPagination } from '@/interfaces/Session';
+import { api } from '@/services/client/Api';
+import { getPaginatedSessions } from '@/services/server/SessionService';
 
-const mockSessions = [
-  {
-    title: 'Negotiating Job Offers',
-    description: 'Practice salary negotiation with a potential candidate',
-    date: '16.04.25',
-    time: '12:37',
-  },
-  {
-    title: 'Conflict Resolution',
-    description: 'Mediate a disagreement between team members',
-    date: '08.04.25',
-    time: '13:36',
-  },
-  {
-    title: 'Performance Review',
-    description: 'Conduct a quaterly performance review',
-    date: '16.04.25',
-    time: '12:37',
-  },
-  {
-    title: 'Team Building',
-    description: 'Facilitate a team building exercise',
-    date: '07.03.25',
-    time: '10:15',
-  },
-  {
-    title: 'Feedback Session',
-    description: 'Give constructive feedback to a peer',
-    date: '22.02.25',
-    time: '09:00',
-  },
-  {
-    title: 'Project Kickoff',
-    description: 'Start a new project with the team',
-    date: '15.01.25',
-    time: '14:20',
-  },
-  {
-    title: 'One-on-One',
-    description: 'Have a one-on-one meeting with a direct report',
-    date: '10.01.25',
-    time: '11:45',
-  },
-  {
-    title: 'Strategy Planning',
-    description: 'Plan the strategy for the next quarter',
-    date: '05.01.25',
-    time: '16:00',
-  },
-];
-
-export default function PreviousSessions() {
-  const [visibleCount, setVisibleCount] = useState(3);
+export default function PreviousSessions({
+  limit,
+  totalSessions,
+  page,
+  sessions,
+}: SessionPaginated) {
+  const [visibleCount, setVisibleCount] = useState(limit);
+  const [pageNumber, setPageNumber] = useState(page);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [sessions, setSessions] = useState(mockSessions);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sessionsStorage, setSessionsStorage] = useState<SessionFromPagination[]>(sessions);
   const t = useTranslations('History');
+  const canLoadMore = visibleCount < totalSessions;
 
-  const visibleSessions = sessions.slice(0, visibleCount);
-  const canLoadMore = visibleCount < sessions.length;
-
-  const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 3, sessions.length));
+  const handleLoadMore = (newPage: number) => {
+    setPageNumber(newPage);
   };
 
+  useEffect(() => {
+    const getSessions = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getPaginatedSessions(api, pageNumber, limit);
+        setSessionsStorage((prev) => [...prev, ...response.data.sessions]);
+        setVisibleCount((prev) => prev + limit);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (canLoadMore && pageNumber > 1) {
+      getSessions();
+    }
+  }, [pageNumber, canLoadMore, limit]);
   const handleDeleteAll = async () => {
     try {
       setIsDeleting(true);
       await clearAllSessions();
-      setSessions([]);
       setVisibleCount(0);
+      showSuccessToast(t('deleteSuccess'));
     } catch (e) {
-      console.error(e);
+      showErrorToast(e, t('deleteError'));
     } finally {
       setIsDeleting(false);
     }
@@ -124,27 +99,27 @@ export default function PreviousSessions() {
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        {visibleSessions.map((session, idx) => (
+        {sessionsStorage.map((session: SessionFromPagination) => (
           <div
-            key={idx}
-            className=" border border-bw-20 rounded-xl px-4 py-3 flex justify-between items-center"
+            key={session.sessionId}
+            className="border border-bw-20 rounded-xl px-4 py-3 flex justify-between items-center"
           >
             <div>
               <div className="font-semibold text-bw-70 text-sm mb-1">{session.title}</div>
-              <div className="text-xs text-bw-40 leading-tight">{session.description}</div>
+              <div className="text-xs text-bw-40 leading-tight">{session.summary}</div>
             </div>
             <div className="text-xs text-bw-70 text-center whitespace-nowrap ml-4">
-              {session.date}
+              {session.score}%
               <br />
-              {session.time}
+              {session.status}
             </div>
           </div>
         ))}
       </div>
       {canLoadMore && (
         <div className="flex justify-center mt-4">
-          <Button variant="ghost" onClick={handleLoadMore}>
-            {t('loadMore')} <ChevronDown />
+          <Button variant="ghost" onClick={() => handleLoadMore(pageNumber + 1)}>
+            {isLoading ? t('loading') : t('loadMore')} <ChevronDown />
           </Button>
         </div>
       )}

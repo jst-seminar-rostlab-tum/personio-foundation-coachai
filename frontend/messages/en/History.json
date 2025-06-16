@@ -20,5 +20,8 @@
   "deleteAllSessionsConfirmation": "Are you sure you want to delete all sessions? This action cannot be undone.",
   "cancel": "Cancel",
   "delete": "Delete",
-  "deleting": "Deleting..."
+  "deleting": "Deleting...",
+  "loading": "Loading...",
+  "deleteSuccess": "All sessions deleted successfully.",
+  "deleteError": "Error deleting sessions. Please try again later."
 }

@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { LayoutProps } from '@/interfaces/LayoutProps';
 import { AppHeader } from '@/components/layout/AppHeader';
 import BackButton from '@/components/common/BackButton';
+import { Toaster } from '@/components/ui/Sonner';
 
 const inter = Inter({ subsets: ['latin'] });
 const bebasNeue = BebasNeue({ subsets: ['latin'], weight: '400' });
@@ -33,6 +34,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
             <BackButton />
             {children}
           </main>
+          <Toaster richColors />
         </NextIntlClientProvider>
       </body>
     </html>

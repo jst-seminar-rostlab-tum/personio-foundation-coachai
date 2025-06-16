@@ -27,6 +27,7 @@ import { UserProfileService } from '@/services/client/UserProfileService';
 import { UserPreference } from '@/interfaces/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfile } from '@/interfaces/UserProfile';
+import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import UserPreferences from './UserPreferences';
 
 const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
@@ -99,8 +100,9 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
           { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
         ],
       });
+      showSuccessToast(t('saveSettingsSuccess'));
     } catch (error) {
-      console.error('Error saving settings:', error);
+      showErrorToast(error, t('saveSettingsError'));
     }
   };
   return (
