@@ -22,21 +22,29 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_objectives(request: ObjectiveRequest) -> list[str]:
-    return generate_objectives(request)
+def safe_generate_objectives(
+    request: ObjectiveRequest, vector_db_prompt_extension: str = ''
+) -> list[str]:
+    return generate_objectives(request, vector_db_prompt_extension)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_checklist(request: ChecklistRequest) -> list[str]:
-    return generate_checklist(request)
+def safe_generate_checklist(
+    request: ChecklistRequest, vector_db_prompt_extension: str = ''
+) -> list[str]:
+    return generate_checklist(request, vector_db_prompt_extension)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_key_concepts(request: KeyConceptRequest) -> list[KeyConcept]:
-    return generate_key_concept(request)
+def safe_generate_key_concepts(
+    request: KeyConceptRequest, vector_db_prompt_extension: str = ''
+) -> list[KeyConcept]:
+    return generate_key_concept(request, vector_db_prompt_extension)
 
 
-def generate_objectives(request: ObjectiveRequest) -> list[str]:
+def generate_objectives(
+    request: ObjectiveRequest, vector_db_prompt_extension: str = ''
+) -> list[str]:
     """
     Generate a list of training objectives using structured output from the LLM.
     """
@@ -49,11 +57,6 @@ def generate_objectives(request: ObjectiveRequest) -> list[str]:
         ]
     )
     example_items = '\n'.join(mock_response.items)
-
-    vector_db_prompt_extension = query_vector_db_and_prompt(
-        session_context=[request.category, request.goal, request.context, request.other_party],
-        generated_object='objectives',
-    )
 
     user_prompt = (
         f'Generate {request.num_objectives} clear, specific training objectives based on '
@@ -83,7 +86,9 @@ def generate_objectives(request: ObjectiveRequest) -> list[str]:
     return result.items
 
 
-def generate_checklist(request: ChecklistRequest) -> list[str]:
+def generate_checklist(
+    request: ChecklistRequest, vector_db_prompt_extension: str = ''
+) -> list[str]:
     """
     Generate a preparation checklist using structured output from the LLM.
     """
@@ -99,11 +104,6 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
         ]
     )
     example_items = '\n'.join(mock_response.items)
-
-    vector_db_prompt_extension = query_vector_db_and_prompt(
-        session_context=[request.category, request.goal, request.context, request.other_party],
-        generated_object='checklist items',
-    )
 
     user_prompt = (
         f'Generate {request.num_checkpoints} checklist items for'
@@ -132,11 +132,9 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
     return result.items
 
 
-def build_key_concept_prompt(request: KeyConceptRequest, example: str) -> str:
-    vector_db_prompt_extension = query_vector_db_and_prompt(
-        session_context=[request.category, request.goal, request.context, request.other_party],
-        generated_object='concepts',
-    )
+def build_key_concept_prompt(
+    request: KeyConceptRequest, example: str, vector_db_prompt_extension: str = ''
+) -> str:
     return f"""
 You are a training assistant. Based on the HR professionals conversation scenario below, 
 generate 3-4 key concepts for the conversation.
@@ -180,7 +178,9 @@ Conversation scenario:
 """
 
 
-def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
+def generate_key_concept(
+    request: KeyConceptRequest, vector_db_prompt_extension: str = ''
+) -> list[KeyConcept]:
     mock_key_concept = [
         KeyConcept(
             header='Clear Communication',
@@ -196,7 +196,9 @@ def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
     ]
     mock_response = KeyConceptOutput(items=mock_key_concept)
 
-    prompt = build_key_concept_prompt(request, mock_response.model_dump_json(indent=4))
+    prompt = build_key_concept_prompt(
+        request, mock_response.model_dump_json(indent=4), vector_db_prompt_extension
+    )
 
     result = call_structured_llm(
         request_prompt=prompt,
@@ -267,12 +269,23 @@ def generate_scenario_preparation(
             other_party=request.other_party,
         )
 
+        vector_db_prompt_extension = query_vector_db_and_prompt(
+            session_context=[request.category, request.goal, request.context, request.other_party],
+            generated_object='output',
+        )
+
         has_error = False
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_key_concepts = executor.submit(safe_generate_key_concepts, key_concept_request)
-            future_objectives = executor.submit(safe_generate_objectives, objectives_request)
-            future_checklist = executor.submit(safe_generate_checklist, checklist_request)
+            future_key_concepts = executor.submit(
+                safe_generate_key_concepts, key_concept_request, vector_db_prompt_extension
+            )
+            future_objectives = executor.submit(
+                safe_generate_objectives, objectives_request, vector_db_prompt_extension
+            )
+            future_checklist = executor.submit(
+                safe_generate_checklist, checklist_request, vector_db_prompt_extension
+            )
 
             try:
                 preparation.objectives = future_objectives.result()
