@@ -17,9 +17,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/Select';
+import { useRouter } from 'next/navigation';
 
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
   const limit = pagination.pageSize;
+  const router = useRouter();
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
   const [visibleCount, setVisibleCount] = useState(limit);
@@ -28,6 +30,12 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
   const [sortBy, setSortBy] = useState('newest');
   const canLoadMore = visibleCount < pagination.totalCount;
   const [reviewsStorage, setReviewsStorage] = useState<Review[]>(reviews);
+
+  const handleReviewClick = (sessionId: string | null) => {
+    if (sessionId) {
+      router.push(`/feedback/${sessionId}`);
+    }
+  };
 
   const handleLoadMore = (newPage: number) => {
     setPageNumber(newPage);
@@ -69,7 +77,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
   return (
     <div>
       <div className="w-full max-w-md mb-8 text-left">
-        <div className="text-lg font-semibold text-bw-70 mb-4">{t('userFeedback')}</div>
+        <div className="text-lg font-semibold text-bw-70 mb-4">{t('userReviews')}</div>
         <div className="flex flex-col sm:flex-row items-start gap-4">
           <div className="flex flex-col items-start justify-center min-w-0">
             <Star className="w-14 h-14 fill-marigold-30 mb-2" strokeWidth={0} />
@@ -104,7 +112,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
       </div>
       <div className="w-full mb-8 text-left">
         <div className="flex items-center justify-between mb-4">
-          <div className="text-lg font-semibold text-bw-70">{t('userFeedback')}</div>
+          <div className="text-lg font-semibold text-bw-70">{t('userReviews')}</div>
           <Select value={sortBy} onValueChange={handleSortChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder={t('sortBy')} />
@@ -120,11 +128,14 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {reviewsStorage.slice(0, visibleCount).map((review) => (
             <div
+              onClick={() => handleReviewClick(review.sessionId)}
               key={review.id}
-              className="border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start"
+              className={`border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start ${
+                review.sessionId ? 'cursor-pointer' : 'cursor-not-allowed'
+              } transition-all duration-300 hover:shadow-md`}
             >
               <div className="flex items-center mb-2">
-                <span className="text-sm font-semibold text-bw-70">{review.userId}</span>
+                <span className="text-sm font-semibold text-bw-70">{review.userEmail}</span>
               </div>
               <div className="flex items-center mb-2">
                 {[...Array(5)].map((_, i) => (

@@ -1,6 +1,12 @@
+export interface ReviewCreate {
+  rating: number;
+  comment: string;
+  sessionId: string;
+}
 export interface Review {
   id: string;
   userId: string;
+  userEmail: string;
   sessionId: string | null;
   rating: number;
   comment: string;

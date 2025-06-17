@@ -17,8 +17,8 @@ import { reviewService } from '@/services/client/ReviewService';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-export default function FeedbackDialog({ sessionId }: { sessionId: string }) {
-  const t = useTranslations('Feedback.feedbackDialog');
+export default function ReviewDialog({ sessionId }: { sessionId: string }) {
+  const t = useTranslations('Feedback.reviewDialog');
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');
 
@@ -40,9 +40,9 @@ export default function FeedbackDialog({ sessionId }: { sessionId: string }) {
         comment: ratingDescription,
         sessionId,
       });
-      showSuccessToast(t('submitFeedbackSuccess'));
+      showSuccessToast(t('submitReviewSuccess'));
     } catch (error) {
-      showErrorToast(error, t('submitFeedbackError'));
+      showErrorToast(error, t('submitReviewError'));
     }
   };
 

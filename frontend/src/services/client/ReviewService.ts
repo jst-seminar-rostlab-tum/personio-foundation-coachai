@@ -1,7 +1,7 @@
-import { Review } from '@/interfaces/Review';
+import { ReviewCreate } from '@/interfaces/Review';
 import { api } from './Api';
 
-const createReview = async (review: Review) => {
+const createReview = async (review: ReviewCreate) => {
   try {
     const { data } = await api.post('/review', review);
     return data;
