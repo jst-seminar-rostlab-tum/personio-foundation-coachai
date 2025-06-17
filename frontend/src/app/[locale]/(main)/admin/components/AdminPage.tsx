@@ -1,8 +1,8 @@
 'use client';
 
-import { ArrowRightIcon, ChevronDown, Search, Star, Trash2 } from 'lucide-react';
+import { ChevronDown, Search, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import React, { use } from 'react';
+import React, { useState } from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -10,8 +10,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import { Button } from '@/components/ui/Button';
-import Progress from '@/components/ui/Progress';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import StatCard from '@/components/common/StatCard';
 import Input from '@/components/ui/Input';
 import {
@@ -28,34 +26,23 @@ import {
 import { AdminProps } from '@/interfaces/AdminProps';
 import { adminService } from '@/services/client/AdminService';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
+import Reviews from './Reviews';
 
-export default function Admin({ stats }: AdminProps) {
+export default function Admin({ stats, reviews }: AdminProps) {
   const t = useTranslations('Admin');
   const tr = useTranslations('TrainingSettings');
-  const statsResponse = use(stats);
+  const [tokenLimit, setTokenLimit] = useState<number>(stats.dailyTokenLimit);
+  const [saving, setSaving] = useState(false);
+  const [visibleUsers, setVisibleUsers] = useState(5);
+
   const statsArray = [
-    { value: statsResponse.totalUsers, label: t('statActiveUsers') },
-    { value: statsResponse.totalTrainings, label: t('statTotalTrainings') },
-    { value: statsResponse.totalReviews, label: t('statReviews') },
-    { value: `${statsResponse.averageScore}%`, label: t('statAverageScore') },
+    { value: stats.totalUsers, label: t('statActiveUsers') },
+    { value: stats.totalTrainings, label: t('statTotalTrainings') },
+    { value: stats.totalReviews, label: t('statReviews') },
+    { value: `${stats.averageScore}%`, label: t('statAverageScore') },
   ];
-  const [visibleUsers, setVisibleUsers] = React.useState(5);
-  const allUsers = [
-    'Sara P.',
-    'TheLegend27',
-    'Jackson Lopez',
-    'Maria Surname',
-    'Alex Kim',
-    'John Doe',
-    'Jane Roe',
-    'Chris Evans',
-    'Sam Lee',
-    'Patricia Surname',
-  ];
-  const canLoadMore = visibleUsers < allUsers.length;
+
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
-  const [tokenLimit, setTokenLimit] = React.useState<number>(statsResponse.dailyTokenLimit);
-  const [saving, setSaving] = React.useState(false);
 
   const handleSaveTokenLimit = async () => {
     if (!Number.isInteger(tokenLimit) || tokenLimit < 1) {
@@ -72,6 +59,21 @@ export default function Admin({ stats }: AdminProps) {
       setSaving(false);
     }
   };
+
+  const allUsers = [
+    'Sara P.',
+    'TheLegend27',
+    'Jackson Lopez',
+    'Maria Surname',
+    'Alex Kim',
+    'John Doe',
+    'Jane Roe',
+    'Chris Evans',
+    'Sam Lee',
+    'Patricia Surname',
+  ];
+
+  const canLoadMore = visibleUsers < allUsers.length;
 
   return (
     <div className="max-w-full">
@@ -99,93 +101,7 @@ export default function Admin({ stats }: AdminProps) {
           </Button>
         </div>
       </div>
-      <div className="w-full max-w-md mb-8 text-left">
-        <div className="text-lg font-semibold text-bw-70 mb-4">{t('userFeedback')}</div>
-        <div className="flex flex-col sm:flex-row items-start gap-4">
-          <div className="flex flex-col items-start justify-center min-w-0">
-            <Star className="w-14 h-14 fill-marigold-30 mb-2" strokeWidth={0} />
-            <div className="flex items-end whitespace-nowrap">
-              <span className="text-2xl font-semibold text-bw-70 leading-none">4.7</span>
-              <span className="text-2xl font-normal text-bw-40 leading-none ml-1">/ 5</span>
-            </div>
-          </div>
-          <div className="flex flex-col space-y-2 w-full max-w-full">
-            {[5, 4, 3, 2, 1].map((num, idx) => (
-              <div key={num} className="flex items-center justify-end w-full">
-                <Progress className="h-3 [&>div]:!bg-marigold-30" value={[80, 40, 15, 8, 2][idx]} />
-                <span className="ml-3 text-sm text-bw-70 font-semibold w-6 text-right">{num}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="w-full max-w-5xl mb-8 text-left">
-        <div className="text-lg font-semibold text-bw-70 mb-4">{t('userFeedback')}</div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start">
-            <div className="flex items-center mb-2">
-              <Avatar className="w-8 h-8 mr-3">
-                <AvatarImage alt="Sara P." />
-                <AvatarFallback>SP</AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-semibold text-bw-70">Sara P.</span>
-            </div>
-            <div className="flex items-center mb-2">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 fill-marigold-30 mr-1" strokeWidth={0} />
-              ))}
-            </div>
-            <div className="text-sm text-bw-70 mb-2">
-              Great app! It helped me so much with mastering difficult conversations!
-            </div>
-            <div className="text-sm text-bw-40">18 Jul 2019</div>
-          </div>
-          <div className="border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start">
-            <div className="flex items-center mb-2">
-              <Avatar className="w-8 h-8 mr-3">
-                <AvatarImage alt="TheLegend27" />
-                <AvatarFallback>TL</AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-semibold text-bw-70">TheLegend27</span>
-            </div>
-            <div className="flex items-center mb-2">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-5 h-5 mr-1 ${i < 4 ? 'fill-marigold-30' : 'fill-bw-20'}`}
-                  strokeWidth={0}
-                />
-              ))}
-            </div>
-            <div className="text-sm text-bw-70 mb-2"></div>
-            <div className="text-sm text-bw-40">20 Jan 2025</div>
-          </div>
-          <div className="border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start">
-            <div className="flex items-center mb-2">
-              <Avatar className="w-8 h-8 mr-3">
-                <AvatarImage alt="Jackson Lopez" />
-                <AvatarFallback>JL</AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-semibold text-bw-70">Jackson Lopez</span>
-            </div>
-            <div className="flex items-center mb-2">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-5 h-5 mr-1 ${i === 0 ? 'fill-marigold-30' : 'fill-bw-20'}`}
-                  strokeWidth={0}
-                />
-              ))}
-            </div>
-            <div className="text-sm text-bw-70 mb-2">I got brain damage.</div>
-            <div className="text-sm text-bw-40">6 Dez 2023</div>
-          </div>
-        </div>
-      </div>
-      <Button size="full">
-        {t('showAllReviews')}
-        <ArrowRightIcon className="inline w-4 h-4 ml-2" />
-      </Button>
+      <Reviews {...reviews} />
       <Accordion type="multiple" className="w-full mt-8">
         <AccordionItem value="item-1" className="text-dark">
           <AccordionTrigger className="font-bw-70 cursor-pointer">
