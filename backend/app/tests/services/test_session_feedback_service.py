@@ -13,9 +13,13 @@ from app.schemas.session_feedback_schema import (
     PositiveExample,
     Recommendation,
     RecommendationsCollection,
-    SessionExamplesCollection, RecommendationsRequest,
+    RecommendationsRequest,
+    SessionExamplesCollection,
 )
-from app.services.session_feedback_service import generate_and_store_feedback, generate_recommendations
+from app.services.session_feedback_service import (
+    generate_and_store_feedback,
+    generate_recommendations,
+)
 
 
 class TestSessionFeedbackService(unittest.TestCase):
