@@ -1,16 +1,12 @@
 import asyncio
 import base64
-import contextlib
 import logging
 import re
-from collections.abc import AsyncGenerator, AsyncIterator
+from collections.abc import AsyncIterator
 from typing import Optional, Union
 
 from av import AudioFrame, AudioResampler
-from openai import AsyncOpenAI
 from openai.types.beta import realtime as openai_types
-
-from app.connections.openai_client import connect_realtime_openai
 
 SAMPLE_RATE = 24000
 AUDIO_PTIME = 0.02
@@ -336,12 +332,3 @@ class OpenAIRealtime:
             self._output_processor.clear()
         except Exception as e:
             logger.error(f'Error clearing processors: {e}')
-
-
-client = AsyncOpenAI()
-
-
-@contextlib.asynccontextmanager
-async def connect_openai() -> AsyncGenerator[OpenAIRealtime, None]:
-    async with connect_realtime_openai() as conn:
-        yield OpenAIRealtime(conn)

@@ -20,9 +20,11 @@ from av import AudioFrame
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import PlainTextResponse
 
+from app.connections.gemini_client import connect_realtime_gemini
+from app.connections.openai_client import connect_realtime_openai
 from app.schemas.webrtc_schema import GeminiUserType, WebRTCDataChannelMessage
-from app.services.gemini_model_service import GeminiRealtime, connect_gemini
-from app.services.openai_model_service import OpenAIRealtime, connect_openai
+from app.services.gemini_model_service import GeminiRealtime
+from app.services.openai_model_service import OpenAIRealtime
 
 AUDIO_PTIME = 0.02
 AUDIO_BITRATE = 16000
@@ -321,7 +323,7 @@ class RTCConnection:
             # Connect to model service
             if self.config.model_service == 'openai':
                 logger.info(f'Connecting to OpenAI for peer {self.peer_id}...')
-                async with connect_openai() as session:
+                async with connect_realtime_openai() as session:
                     logger.info(f'Connected to OpenAI session for peer {self.peer_id}')
                     self.ai_session: OpenAIRealtime = session
 
@@ -346,7 +348,7 @@ class RTCConnection:
                     logger.info(f'OpenAI connection finished for peer {self.peer_id}')
             else:  # Default to Gemini
                 logger.info(f'Connecting to Gemini for peer {self.peer_id}...')
-                async with connect_gemini() as session:
+                async with connect_realtime_gemini() as session:
                     logger.info(f'Connected to Gemini session for peer {self.peer_id}')
                     self.ai_session: GeminiRealtime = session
 
