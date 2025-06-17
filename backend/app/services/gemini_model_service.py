@@ -1,17 +1,14 @@
 import asyncio
-import contextlib
 import logging
 import re
-from collections.abc import AsyncGenerator, AsyncIterator
+from collections.abc import AsyncIterator
 from typing import Optional, Union
 
 from av import AudioFrame, AudioResampler
 from google import genai
 from google.genai import live
 
-from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_client
 from app.schemas.webrtc_schema import (
-    GeminiStreamConnectionError,
     GeminiStreamReceiveError,
     GeminiStreamSendError,
 )
@@ -292,24 +289,3 @@ class GeminiRealtime:
             self._output += output_final_text
         self._input = ''
         self._output = ''
-
-
-client = get_client()
-
-
-@contextlib.asynccontextmanager
-async def connect_gemini() -> AsyncGenerator[GeminiRealtime, None]:
-    try:
-        logger.info('Connecting to Gemini...')
-        async with client.aio.live.connect(
-            model=MODEL,
-            config=LIVE_CONFIG,
-        ) as session:
-            logger.info('Connected to Gemini successfully')
-            gemini = GeminiRealtime(session)
-            # Start background task here, if you want
-            # gemini.audio_task = asyncio.create_task(gemini.audio_receiver())
-            yield gemini
-    except Exception as e:
-        logger.error(f'Failed to connect to Gemini: {e}')
-        raise GeminiStreamConnectionError(f'Failed to connect to Gemini: {e}') from e
