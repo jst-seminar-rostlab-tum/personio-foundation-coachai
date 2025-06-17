@@ -33,7 +33,6 @@ if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/version
         esac
     done
 
-    exit 1
     if ! timeout 10 uv run alembic current >/dev/null 2>&1; then
         echo "❌- Cannot connect to database! Make sure your database is running."
         exit 1
@@ -53,5 +52,3 @@ if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/version
 
     echo "✅ Checks for database migrations and models passed"
 fi
-
-exit 1
