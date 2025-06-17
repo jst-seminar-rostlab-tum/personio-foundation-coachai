@@ -17,7 +17,23 @@ echo "✅- Linting and formatting checks passed"
 # Run Alembic checks if model or migration files changed
 if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/versions/)"; then
     echo "🗃️- Checking database migrations and models..."
+    while true; do
+        read -p "You have changed the backend/app/models and/or the backend/alembic/versions folder. This pre-commit hook will test the database migrations and override your local database. Please confirm to continue: [y/N]: " confirm
+        case "$confirm" in
+            [Yy]) 
+                break  # continue script
+                ;;
+            [Nn]) 
+                echo "Aborting."
+                exit 1
+                ;;
+            *) 
+                echo "Please enter 'y' to continue or 'n' to abort."
+                ;;
+        esac
+    done
 
+    exit 1
     if ! timeout 10 uv run alembic current >/dev/null 2>&1; then
         echo "❌- Cannot connect to database! Make sure your database is running."
         exit 1
@@ -37,3 +53,5 @@ if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/version
 
     echo "✅ Checks for database migrations and models passed"
 fi
+
+exit 1

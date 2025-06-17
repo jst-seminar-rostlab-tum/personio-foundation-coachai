@@ -24,4 +24,4 @@ cpu_kind = 'shared'
 cpus = 1
 
 [deploy]
-  release_command = "uv run alembic upgrade head"
+release_command = "uv run alembic upgrade head"
