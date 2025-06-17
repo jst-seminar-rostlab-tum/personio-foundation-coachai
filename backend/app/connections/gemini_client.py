@@ -12,6 +12,7 @@ from google.genai.types import (
     Content,
     ContextWindowCompressionConfig,
     EndSensitivity,
+    File,
     LiveConnectConfig,
     MediaResolution,
     Modality,
@@ -43,6 +44,46 @@ ENABLE_AI = settings.ENABLE_AI
 FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
 
 MODEL = 'models/gemini-2.0-flash-live-001'
+
+
+def _is_valid_api_key(key: str | None) -> bool:
+    return bool(key and isinstance(key, str) and key.strip())
+
+
+if not _is_valid_api_key(GEMINI_API_KEY):
+    print(
+        '[WARNING] GEMINI_API_KEY is missing or invalid. '
+        'AI features will be disabled and mock responses will be used.'
+    )
+    ENABLE_AI = False
+    gemini_client = None
+else:
+    ENABLE_AI = settings.ENABLE_AI
+    gemini_client = genai.Client(api_key=settings.GEMINI_API_KEY)
+
+
+def generate_gemini_content(contents: list[str], model: str = MODEL) -> str:
+    if not ENABLE_AI or gemini_client is None:
+        logger.error('Cannot upload files to Gemini, AI is disabled')
+        return ''
+    if None in contents:
+        logger.error('None found in Gemini contents')
+        return ''
+    try:
+        response = gemini_client.models.generate_content(model=model, contents=contents)
+        return response.text
+    except Exception as e:
+        logger.error(f'Gemini content generation failed: {e}')
+
+
+def upload_audio_gemini(audio_path: str) -> File:
+    if not ENABLE_AI or gemini_client is None:
+        logger.error('Cannot upload files to Gemini, AI is disabled')
+    try:
+        return gemini_client.files.upload(file=audio_path)
+    except Exception as e:
+        logger.error(f"Error uploading audio file '{audio_path}': {e}")
+
 
 LIVE_CONFIG = LiveConnectConfig(
     system_instruction=Content(
