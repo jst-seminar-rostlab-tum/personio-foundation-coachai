@@ -1,4 +1,5 @@
 import logging
+from datetime import UTC, datetime
 from math import ceil
 from typing import Annotated
 from uuid import UUID
@@ -9,6 +10,7 @@ from sqlmodel import col, select
 
 from app.database import get_db_session
 from app.dependencies import require_user
+from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
@@ -218,6 +220,7 @@ def create_session(
         raise HTTPException(status_code=404, detail='Conversation scenario not found')
     new_session = Session(**session_data.model_dump())
     new_session.status = SessionStatus.started
+    new_session.started_at = datetime.now(UTC)
 
     db_session.add(new_session)
     db_session.commit()
@@ -231,6 +234,7 @@ def update_session(
     updated_data: SessionUpdate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
     background_tasks: BackgroundTasks,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> Session:
     """
     Update an existing session.
@@ -238,6 +242,10 @@ def update_session(
     session = db_session.get(Session, session_id)
     if not session:
         raise HTTPException(status_code=404, detail='Session not found')
+
+    # Forbid updates to completed sessions for non-admin users
+    if session.status == SessionStatus.completed and user_profile.account_role != AccountRole.admin:
+        raise HTTPException(status_code=400, detail='A completed session cannot be updated.')
 
     previous_status = session.status
     conversation_scenario = None
@@ -253,7 +261,6 @@ def update_session(
     for key, value in updated_data.model_dump(exclude_unset=True).items():
         setattr(session, key, value)
 
-    print(f'Session feedback: {session.feedback is not None}')
     # Check if the session status is changing to completed
     if (
         previous_status != SessionStatus.completed
@@ -265,6 +272,8 @@ def update_session(
                 status_code=500,
                 detail='Conversation scenario must be provided to generate feedback',
             )
+
+        session.ended_at = datetime.now(UTC)
 
         statement = select(ScenarioPreparation).where(
             ScenarioPreparation.scenario_id == session.scenario_id
@@ -285,7 +294,6 @@ def update_session(
         ).all()
 
         transcripts = None
-
         if session_turns:
             transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
 
@@ -320,6 +328,32 @@ def update_session(
             db_session=db_session,
         )
 
+        # === Update user statistics ===
+        assert session.started_at is not None and session.ended_at is not None
+        started_at = (
+            session.started_at.replace(tzinfo=UTC)
+            if session.started_at.tzinfo is None
+            else session.started_at
+        )
+        ended_at = (
+            session.ended_at.replace(tzinfo=UTC)
+            if session.ended_at.tzinfo is None
+            else session.ended_at
+        )
+        session_length = (ended_at - started_at).total_seconds() / 3600  # in hours
+        user_profile.total_sessions = (user_profile.total_sessions or 0) + 1
+        user_profile.training_time = (user_profile.training_time or 0) + session_length
+        user_profile.updated_at = datetime.now(UTC)
+        db_session.add(user_profile)
+
+        # === Update admin dashboard stats ===
+        stats = db_session.exec(select(AdminDashboardStats)).first()
+        if not stats:
+            stats = AdminDashboardStats()
+            db_session.add(stats)
+        stats.total_trainings = (stats.total_trainings or 0) + 1
+        db_session.commit()
+
     db_session.add(session)
     db_session.commit()
     db_session.refresh(session)
@@ -339,7 +373,6 @@ def delete_sessions_by_user(
     # Retrieve all conversation scenarios for the given user ID
     statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
     conversation_scenarios = db_session.exec(statement).all()
-    print(f'Conversation scenarios for user ID {user_id}: {conversation_scenarios}')
     if not conversation_scenarios:
         raise HTTPException(status_code=404, detail='No sessions found for the given user ID')
     count_of_deleted_sessions = 0
