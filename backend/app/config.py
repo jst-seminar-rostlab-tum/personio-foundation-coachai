@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Literal
 from uuid import UUID
 
@@ -22,8 +23,6 @@ class Settings(BaseSettings):
 
     GEMINI_API_KEY: str = ''
     OPENAI_API_KEY: str = ''
-
-    POPULATE_VECTOR_DB: bool = False
 
     CORS_ORIGIN: str = 'http://localhost:3000'
 
@@ -66,7 +65,7 @@ class Settings(BaseSettings):
             full_name='Admin',
         )
 
-    model_config = SettingsConfigDict(env_file='.env', extra='ignore')
+    model_config = SettingsConfigDict(env_file=Path(__file__).parent / '.env', extra='ignore')
 
 
 settings = Settings()

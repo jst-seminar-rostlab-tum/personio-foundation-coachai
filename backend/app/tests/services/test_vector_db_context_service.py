@@ -7,6 +7,7 @@ from app.services.vector_db_context_service import (
     build_query_general,
     build_query_prep_feedback,
     query_vector_db,
+    query_vector_db_and_prompt,
 )
 
 
@@ -108,10 +109,10 @@ def test_query_vector_db_complex(
     # Prepare retriever and docs
     fake_retriever = MagicMock()
     doc_content_1 = 'Prepare team for adapting.'
-    doc_metadata_1 = {'source': 'https://example.com'}
+    doc_metadata_1 = {'source': 'doc1'}
     document_1 = Document(page_content=doc_content_1, metadata=doc_metadata_1)
     doc_content_2 = 'Bring up the topic soon.'
-    doc_metadata_2 = {'source': 'https://example.com'}
+    doc_metadata_2 = {'source': 'doc2'}
     document_2 = Document(page_content=doc_content_2, metadata=doc_metadata_2)
     fake_docs = [document_1, document_2]
     fake_retriever.invoke.return_value = fake_docs
@@ -132,3 +133,61 @@ def test_query_vector_db_complex(
     fake_retriever.invoke.assert_called_once_with(expected_query)
     assert text == doc_content_1 + '\n\n' + doc_content_2
     assert metadata == [doc_metadata_1, doc_metadata_2]
+
+
+@patch('app.services.vector_db_context_service.query_vector_db')
+def test_query_vector_db_and_prompt_with_results(mock_query_vector_db: MagicMock) -> None:
+    # Set up args and mocks
+    generated_object = 'objectives'
+    session_context = ['Example context']
+    transcript = "Here's a user statement."
+
+    doc1 = 'Follow the company policy.'
+    doc2 = 'Ensure respectful communication.'
+    combined_docs = f'{doc1}\n\n{doc2}'
+    mock_query_vector_db.return_value = (combined_docs, [{'source': 'doc1'}, {'source': 'doc2'}])
+
+    result = query_vector_db_and_prompt(
+        generated_object=generated_object,
+        session_context=session_context,
+        user_transcript=transcript,
+    )
+
+    # Assert
+    expected = (
+        f'\nThe objectives you generate should comply with '
+        f'the following HR Guideline excerpts:\n'
+        f'{combined_docs}\n'
+    )
+    mock_query_vector_db.assert_called_once()
+    assert result == expected
+
+
+@patch('app.services.vector_db_context_service.query_vector_db')
+def test_query_vector_db_and_prompt_with_none(mock_query_vector_db: MagicMock) -> None:
+    # Set up args and mocks
+    generated_object = 'objectives'
+    mock_query_vector_db.return_value = (None, None)
+
+    result = query_vector_db_and_prompt(
+        generated_object=generated_object, session_context=None, user_transcript=None
+    )
+
+    # Assert
+    assert result == ''
+    mock_query_vector_db.assert_called_once()
+
+
+@patch('app.services.vector_db_context_service.query_vector_db')
+def test_query_vector_db_and_prompt_with_empty_docs(mock_query_vector_db: MagicMock) -> None:
+    # Set up args and mocks
+    generated_object = 'objectives'
+    mock_query_vector_db.return_value = ('', [])
+
+    result = query_vector_db_and_prompt(
+        generated_object=generated_object, session_context=None, user_transcript=None
+    )
+
+    # Assert
+    assert result == ''
+    mock_query_vector_db.assert_called_once()
