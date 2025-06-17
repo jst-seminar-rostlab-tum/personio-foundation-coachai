@@ -109,7 +109,10 @@ def query_vector_db(
         else:
             query = build_query_general(session_context, voice_analysis, user_transcript)
         retriever = build_vector_db_retriever()
-        return format_docs_with_metadata(retriever.invoke(query))
+        if retriever:
+            return format_docs_with_metadata(retriever.invoke(query))
+        else:
+            return '', []
     except Exception as e:
         print(f'Failed to query vector db: {e}')
         return '', []
@@ -117,7 +120,7 @@ def query_vector_db(
 
 def query_vector_db_and_prompt(
     generated_object: str,
-    session_context: list[str] = None,
+    session_context: ConversationScenarioBase | list[str] = None,
     user_audio_path: str = None,
     user_transcript: str = None,
 ) -> str:

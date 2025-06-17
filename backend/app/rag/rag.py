@@ -58,8 +58,8 @@ def load_and_index_documents(vector_db: SupabaseVectorStore) -> None:
 
 
 def build_vector_db_retriever(
-    populate_db: bool = settings.POPULATE_VECTOR_DB,
-) -> VectorStoreRetriever:
+    populate_db: bool = DEFAULT_POPULATE_DB,
+) -> VectorStoreRetriever | None:
     """
     Builds a vector-based retriever using the specified embedding model
     and vector store configuration.
@@ -73,6 +73,8 @@ def build_vector_db_retriever(
         VectorStoreRetriever: A retriever instance for querying the vector database.
     """
     embedding = get_embedding_model(EMBEDDING_TYPE)
+    if not embedding:
+        return None
     vector_db = load_vector_db(embedding, TABLE_NAME)
     if populate_db:
         load_and_index_documents(vector_db)

@@ -29,7 +29,10 @@ else:
 
 def generate_gemini_content(contents: [Any], model: str = DEFAULT_MODEL) -> str:
     if not ENABLE_AI or gemini_client is None:
-        # TODO: Add mock responses
+        print('Cannot upload files to Gemini, AI is disabled')
+        return ''
+    if None in contents:
+        print('None found in Gemini contents')
         return ''
     try:
         response = gemini_client.models.generate_content(model=model, contents=contents)
@@ -40,7 +43,6 @@ def generate_gemini_content(contents: [Any], model: str = DEFAULT_MODEL) -> str:
 
 def upload_audio_gemini(audio_path: str) -> File:
     if not ENABLE_AI or gemini_client is None:
-        # TODO: Maybe throw an exception
         print('Cannot upload files to Gemini, AI is disabled')
     try:
         return gemini_client.files.upload(file=audio_path)
