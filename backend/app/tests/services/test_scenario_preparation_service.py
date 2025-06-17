@@ -82,3 +82,40 @@ def test_generate_key_concept_parses_json(mock_llm: MagicMock) -> None:
     result = generate_key_concept(req)
     assert all(isinstance(x, KeyConcept) for x in result)
     assert result == mock_key_concept_response
+
+
+@patch('app.services.scenario_preparation_service.call_structured_llm')
+def test_generate_objectives_with_vector_db_prompt_extension(mock_llm: MagicMock) -> None:
+    # Analogically for checklist and concepts
+
+    # Set up llm mock and vector db prompt extension
+    mock_llm.return_value = StringListResponse(items=['Objective 1', 'Objective 2'])
+
+    req = ObjectiveRequest(
+        category='Feedback',
+        goal='Improve team dynamics',
+        context='Team meeting',
+        other_party='Team lead',
+        num_objectives=2,
+    )
+
+    vector_db_prompt_extension_base = (
+        'The output you generate should comply with thefollowing HR Guideline excerpts:\n'
+    )
+    vector_db_prompt_extension_1 = f'{vector_db_prompt_extension_base}Respect\n2. Clarity\n'
+    vector_db_prompt_extension_2 = ''
+
+    # Assert for vector_db_prompt_extension_1
+    _ = generate_objectives(req, vector_db_prompt_extension=vector_db_prompt_extension_1)
+    assert mock_llm.called
+    args, kwargs = mock_llm.call_args
+    request_prompt = kwargs['request_prompt']
+    assert vector_db_prompt_extension_1 in request_prompt
+
+    # Assert for vector_db_prompt_extension_2
+    _ = generate_objectives(req, vector_db_prompt_extension=vector_db_prompt_extension_2)
+    assert mock_llm.called
+    args, kwargs = mock_llm.call_args
+    request_prompt = kwargs['request_prompt']
+    assert vector_db_prompt_extension_base not in request_prompt
+    assert len(request_prompt) > 0
