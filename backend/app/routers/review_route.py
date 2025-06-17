@@ -2,7 +2,7 @@ from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session as DBSession
-from sqlmodel import asc, desc, select
+from sqlmodel import asc, col, desc, select
 
 from app.database import get_db_session
 from app.dependencies import require_admin, require_user
@@ -64,7 +64,9 @@ def get_reviews(
 
     # Getting the user profiles for the reviews to get user names
     user_ids = [review.user_id for review in reviews]
-    user_profiles = db_session.exec(select(UserProfile).where(UserProfile.id.in_(user_ids))).all()
+    user_profiles = db_session.exec(
+        select(UserProfile).where(col(UserProfile.id).in_(user_ids))
+    ).all()
     user_profiles_dict = {profile.id: profile for profile in user_profiles}
 
     # Constructing the review items
@@ -76,6 +78,7 @@ def get_reviews(
                 ReviewRead(
                     id=review.id,
                     user_id=review.user_id,
+                    user_email=user_profile.email,
                     session_id=review.session_id,
                     rating=review.rating,
                     comment=review.comment,
