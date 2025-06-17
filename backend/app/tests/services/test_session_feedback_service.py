@@ -161,7 +161,7 @@ def test_generate_recommendation_with_vector_db_prompt_extension(mock_llm: Magic
     )
 
     vector_db_prompt_extension_base = (
-        'The output you generate should comply with thefollowing HR Guideline excerpts:\n'
+        'The output you generate should comply with the following HR Guideline excerpts:\n'
     )
     vector_db_prompt_extension_1 = f'{vector_db_prompt_extension_base}Respect\n2. Clarity\n'
     vector_db_prompt_extension_2 = ''
