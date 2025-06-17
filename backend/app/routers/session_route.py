@@ -267,7 +267,6 @@ def update_session(
         and updated_data.status == SessionStatus.completed
         and session.feedback is None
     ):
-        print('Session status is changing to completed')
         if not scenario_id:
             raise HTTPException(
                 status_code=500,
@@ -374,7 +373,6 @@ def delete_sessions_by_user(
     # Retrieve all conversation scenarios for the given user ID
     statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
     conversation_scenarios = db_session.exec(statement).all()
-    print(f'Conversation scenarios for user ID {user_id}: {conversation_scenarios}')
     if not conversation_scenarios:
         raise HTTPException(status_code=404, detail='No sessions found for the given user ID')
     count_of_deleted_sessions = 0
