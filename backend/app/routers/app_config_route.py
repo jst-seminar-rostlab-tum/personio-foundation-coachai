@@ -1,36 +1,38 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 
-from app.database import get_session
+from app.database import get_db_session
+from app.dependencies import require_admin
 from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
 
 router = APIRouter(prefix='/app-config', tags=['App Config'])
 
 
-@router.get('/', response_model=list[AppConfigRead])
+@router.get('', response_model=list[AppConfigRead])
 def get_app_configs(
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[AppConfig]:
     """
     Retrieve all app configurations.
     """
     statement = select(AppConfig)
-    app_configs = session.exec(statement).all()
+    app_configs = db_session.exec(statement).all()
     return list(app_configs)
 
 
-@router.post('/', response_model=AppConfigRead)
+@router.post('', response_model=AppConfigRead, dependencies=[Depends(require_admin)])
 def create_app_config(
-    app_config: AppConfigCreate, session: Annotated[Session, Depends(get_session)]
+    app_config: AppConfigCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> AppConfig:
     """
     Create a new app configuration.
     Automatically assigns the type based on the value.
     """
     # Check if the key already exists
-    existing_config = session.get(AppConfig, app_config.key)
+    existing_config = db_session.get(AppConfig, app_config.key)
     if existing_config:
         raise HTTPException(status_code=400, detail='AppConfig with this key already exists')
 
@@ -43,23 +45,23 @@ def create_app_config(
         app_config.type = ConfigType.string
 
     db_app_config = AppConfig(**app_config.dict())
-    session.add(db_app_config)
-    session.commit()
-    session.refresh(db_app_config)
+    db_session.add(db_app_config)
+    db_session.commit()
+    db_session.refresh(db_app_config)
     return db_app_config
 
 
-@router.put('/', response_model=AppConfigRead)
+@router.put('', response_model=AppConfigRead, dependencies=[Depends(require_admin)])
 def update_app_config(
     updated_data: AppConfigCreate,
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> AppConfig:
     """
     Update an existing app configuration.
     Automatically assigns the type based on the value.
     """
     key = updated_data.key
-    app_config = session.get(AppConfig, key)
+    app_config = db_session.get(AppConfig, key)
     if not app_config:
         raise HTTPException(status_code=404, detail='AppConfig not found')
 
@@ -74,16 +76,16 @@ def update_app_config(
     for field, value in updated_data.dict().items():
         setattr(app_config, field, value)
 
-    session.add(app_config)
-    session.commit()
-    session.refresh(app_config)
+    db_session.add(app_config)
+    db_session.commit()
+    db_session.refresh(app_config)
     return app_config
 
 
-@router.patch('/', response_model=list[AppConfigRead])
+@router.patch('', response_model=list[AppConfigRead], dependencies=[Depends(require_admin)])
 def patch_app_config(
     updated_data: list[dict],  # Expect partial data for PATCH
-    session: Annotated[Session, Depends(get_session)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[AppConfig]:
     """
     Partially update an existing app configuration.
@@ -96,7 +98,7 @@ def patch_app_config(
         if not key:
             raise HTTPException(status_code=400, detail='Key is required to update AppConfig')
 
-        app_config = session.get(AppConfig, key)
+        app_config = db_session.get(AppConfig, key)
         if not app_config:
             raise HTTPException(status_code=404, detail=f"AppConfig with key '{key}' not found")
 
@@ -117,27 +119,27 @@ def patch_app_config(
             ):  # Ensure the field exists in the model
                 setattr(app_config, field, value)
 
-        session.add(app_config)
+        db_session.add(app_config)
         updated_configs.append(app_config)
 
-    session.commit()
+    db_session.commit()
 
     # Refresh all updated configs
     for config in updated_configs:
-        session.refresh(config)
+        db_session.refresh(config)
 
     return list(updated_configs)
 
 
-@router.delete('/{key}', response_model=dict)
-def delete_app_config(key: str, session: Annotated[Session, Depends(get_session)]) -> dict:
+@router.delete('/{key}', response_model=dict, dependencies=[Depends(require_admin)])
+def delete_app_config(key: str, db_session: Annotated[DBSession, Depends(get_db_session)]) -> dict:
     """
     Delete an app configuration.
     """
-    app_config = session.get(AppConfig, key)
+    app_config = db_session.get(AppConfig, key)
     if not app_config:
         raise HTTPException(status_code=404, detail='AppConfig not found')
 
-    session.delete(app_config)
-    session.commit()
+    db_session.delete(app_config)
+    db_session.commit()
     return {'message': 'AppConfig deleted successfully'}

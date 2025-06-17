@@ -1,0 +1,97 @@
+{
+  "metaTitle": "New Training - Coach AI",
+  "metaDescription": "Start a new training session with personalized coaching",
+  "title": "New Training Session",
+  "steps": {
+    "category": "Category",
+    "situation": "Situation",
+    "customize": "Customize"
+  },
+  "category": {
+    "title": "Choose a Conversation Category *",
+    "customPlaceholder": "E.g., Promotion discussion, Onboarding new team member...",
+    "customInput": "Define your own conversation topic *"
+  },
+  "situation": {
+    "title": "Describe your Situation",
+    "otherParty": {
+      "title": "Who is the other party? *",
+      "placeholder": "Enter name"
+    },
+    "context": {
+      "title": "What is the context? *",
+      "placeholder": "Please specify the context of the conversation here."
+    },
+    "goal": {
+      "title": "What is your goal? *",
+      "placeholder": "What outcome do you hope to achieve?"
+    }
+  },
+  "customize": {
+    "title": "Customize your Training",
+    "difficulty": {
+      "title": "Difficulty Level *",
+      "options": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      }
+    },
+    "emotionalTone": {
+      "title": "Emotional Tone *",
+      "options": {
+        "positive": "Positive",
+        "neutral": "Neutral",
+        "negative": "Negative"
+      }
+    },
+    "complexity": {
+      "title": "Response Complexity *",
+      "options": {
+        "simple": "Simple",
+        "medium": "Medium",
+        "complex": "Complex"
+      }
+    }
+  },
+  "categories": [
+    {
+      "id": "giving_feedback",
+      "name": "Giving Feedback",
+      "iconUri": "/icons/category-giving_feedback.svg",
+      "defaultContext": "One-on-one meeting with a team member.",
+      "defaultGoal": "Provide constructive feedback effectively.",
+      "defaultOtherParty": "Team member"
+    },
+    {
+      "id": "performance_reviews",
+      "name": "Performance Reviews",
+      "iconUri": "/icons/category-performance_reviews.svg",
+      "defaultContext": "Formal performance review meeting.",
+      "defaultGoal": "Evaluate and discuss employee performance.",
+      "defaultOtherParty": "Employee"
+    },
+    {
+      "id": "conflict_resolution",
+      "name": "Conflict Resolution",
+      "iconUri": "/icons/category-conflict_resolution.svg",
+      "defaultContext": "Conflict resolution meeting between team members.",
+      "defaultGoal": "Resolve conflicts and improve team dynamics.",
+      "defaultOtherParty": "Team members"
+    },
+    {
+      "id": "salary_discussions",
+      "name": "Salary Discussions",
+      "iconUri": "/icons/category-salary_discussions.svg",
+      "defaultContext": "Salary negotiation meeting.",
+      "defaultGoal": "Reach a mutually beneficial agreement on salary.",
+      "defaultOtherParty": "Employer"
+    }
+  ],
+  "navigation": {
+    "back": "Go Back",
+    "next": "Next Step",
+    "create": "Create Training"
+  },
+  "errorMessage": "An error occurred while creating the scenario. Please try again later."
+}

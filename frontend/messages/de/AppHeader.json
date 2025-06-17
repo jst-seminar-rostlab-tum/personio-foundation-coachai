@@ -1,8 +1,9 @@
 {
   "title": "Führungs-Coach",
   "dashboard": "Dashboard",
-  "newTraining": "Neues Training",
+  "newConversationScenario": "Neues Training",
   "admin": "Admin",
   "history": "Verlauf",
-  "trainingSettings": "Einstellungen"
+  "trainingSettings": "Einstellungen",
+  "logout": "Abmelden"
 }

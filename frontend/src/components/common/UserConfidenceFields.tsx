@@ -1,14 +1,52 @@
-import { UserConfidenceField } from '@/interfaces/UserInputFields';
+'use client';
+
+import { UserConfidenceField, UserConfidenceFieldProps } from '@/interfaces/UserInputFields';
 import Slider from '@/components/ui/Slider';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
-const UserConfidenceFields: React.FC<{ fields: UserConfidenceField[]; className?: string }> = ({
-  fields,
+export default function UserConfidenceFields({
   className,
-}) => {
+  difficulty,
+  conflict,
+  conversation,
+  setDifficulty,
+  setConflict,
+  setConversation,
+}: UserConfidenceFieldProps) {
+  const t = useTranslations('PersonalizationOptions');
+  const confidenceFields: UserConfidenceField[] = [
+    {
+      title: t('confidence_areas.giving_difficult_feedback'),
+      minLabel: t('confidence_areas.labels.min'),
+      maxLabel: t('confidence_areas.labels.max'),
+      minValue: 0,
+      maxValue: 100,
+      value: difficulty,
+      onChange: setDifficulty,
+    },
+    {
+      title: t('confidence_areas.managing_team_conflicts'),
+      minLabel: t('confidence_areas.labels.min'),
+      maxLabel: t('confidence_areas.labels.max'),
+      minValue: 0,
+      maxValue: 100,
+      value: conflict,
+      onChange: setConflict,
+    },
+    {
+      title: t('confidence_areas.leading_challenging_conversations'),
+      minLabel: t('confidence_areas.labels.min'),
+      maxLabel: t('confidence_areas.labels.max'),
+      minValue: 0,
+      maxValue: 100,
+      value: conversation,
+      onChange: setConversation,
+    },
+  ];
   return (
     <div className={cn('flex flex-col gap-4 w-full h-63', className)}>
-      {fields.map((field) => (
+      {confidenceFields.map((field) => (
         <div key={field.title} className="flex flex-col gap-2">
           <span className="text-lg">{field.title}</span>
           <Slider
@@ -17,6 +55,7 @@ const UserConfidenceFields: React.FC<{ fields: UserConfidenceField[]; className?
             max={field.maxValue}
             step={1}
             defaultValue={[50]}
+            value={field.value || [50]}
             onValueChange={(value) => {
               if (field.onChange) {
                 field.onChange(value);
@@ -31,6 +70,4 @@ const UserConfidenceFields: React.FC<{ fields: UserConfidenceField[]; className?
       ))}
     </div>
   );
-};
-
-export default UserConfidenceFields;
+}
