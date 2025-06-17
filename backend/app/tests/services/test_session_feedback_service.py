@@ -126,3 +126,57 @@ def test_generate_recommendations(mock_client: MagicMock) -> None:
     result = generate_recommendations(request)
     assert len(result.recommendations) == 3
     assert result.recommendations[0].heading == 'Practice the STAR method'
+
+
+@patch('app.services.session_feedback_service.call_structured_llm')
+def test_generate_recommendation_with_vector_db_prompt_extension(mock_llm: MagicMock) -> None:
+    # Analogically for examples and goals
+    transcript = "User: Let's explore what might be causing these delays."
+    objectives = ['Understand root causes', 'Collaboratively develop a solution']
+    goal = 'Improve team communication'
+    key_concepts = '### Active Listening\nAsk open-ended questions.'
+    context = 'Project delay review'
+    category = 'Project Management'
+    other_party = 'Colleague'
+
+    # Set up llm mock and vector db prompt extension
+    mock_llm.return_value = RecommendationsCollection(
+        recommendations=[
+            Recommendation(
+                heading='Practice the STAR method',
+                text='When giving feedback, use the Situation, Task, Action, Result framework to '
+                + 'provide more concrete examples.',
+            )
+        ]
+    )
+
+    req = RecommendationsRequest(
+        category=category,
+        context=context,
+        other_party=other_party,
+        transcript=transcript,
+        objectives=objectives,
+        goal=goal,
+        key_concepts=key_concepts,
+    )
+
+    vector_db_prompt_extension_base = (
+        'The output you generate should comply with thefollowing HR Guideline excerpts:\n'
+    )
+    vector_db_prompt_extension_1 = f'{vector_db_prompt_extension_base}Respect\n2. Clarity\n'
+    vector_db_prompt_extension_2 = ''
+
+    # Assert for vector_db_prompt_extension_1
+    _ = generate_recommendations(req, vector_db_prompt_extension=vector_db_prompt_extension_1)
+    assert mock_llm.called
+    args, kwargs = mock_llm.call_args
+    request_prompt = kwargs['request_prompt']
+    assert vector_db_prompt_extension_1 in request_prompt
+
+    # Assert for vector_db_prompt_extension_2
+    _ = generate_recommendations(req, vector_db_prompt_extension=vector_db_prompt_extension_2)
+    assert mock_llm.called
+    args, kwargs = mock_llm.call_args
+    request_prompt = kwargs['request_prompt']
+    assert vector_db_prompt_extension_base not in request_prompt
+    assert len(request_prompt) > 0
