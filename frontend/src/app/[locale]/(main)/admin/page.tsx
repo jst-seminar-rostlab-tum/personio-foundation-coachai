@@ -17,14 +17,16 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function AdminPage() {
-  const PAGE_SIZE = 4;
-  const statsData = adminService.getAdminStats();
-  const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
-  const [stats, reviews] = await Promise.all([statsData, reviewsData]);
   const userProfile = await UserProfileService.getUserProfile();
   if (userProfile.accountRole !== AccountRole.admin) {
     return redirect('/dashboard');
   }
+
+  const PAGE_SIZE = 4;
+  const statsData = adminService.getAdminStats();
+  const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
+  const [stats, reviews] = await Promise.all([statsData, reviewsData]);
+
   return (
     <Suspense fallback={<AdminLoadingPage />}>
       <Admin stats={stats} reviews={reviews} />

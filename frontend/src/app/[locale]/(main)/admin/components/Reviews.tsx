@@ -20,15 +20,15 @@ import {
 import { useRouter } from 'next/navigation';
 
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
-  const limit = pagination.pageSize;
+  const limit = pagination?.pageSize;
   const router = useRouter();
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
   const [visibleCount, setVisibleCount] = useState(limit);
-  const [pageNumber, setPageNumber] = useState(pagination.currentPage);
+  const [pageNumber, setPageNumber] = useState(pagination?.currentPage);
   const [isLoading, setIsLoading] = useState(false);
   const [sortBy, setSortBy] = useState('newest');
-  const canLoadMore = visibleCount < pagination.totalCount;
+  const canLoadMore = visibleCount < pagination?.totalCount;
   const [reviewsStorage, setReviewsStorage] = useState<Review[]>(reviews);
 
   const handleReviewClick = (sessionId: string | null) => {
@@ -83,7 +83,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
             <Star className="w-14 h-14 fill-marigold-30 mb-2" strokeWidth={0} />
             <div className="flex items-end whitespace-nowrap">
               <span className="text-2xl font-semibold text-bw-70 leading-none">
-                {ratingStatistics.average.toFixed(1)}
+                {ratingStatistics?.average?.toFixed(1) ?? '0'}
               </span>
               <span className="text-2xl font-normal text-bw-40 leading-none ml-1">/ 5</span>
             </div>
@@ -91,13 +91,13 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
           <div className="flex flex-col space-y-2 w-full max-w-full">
             {[5, 4, 3, 2, 1].map((num, idx) => {
               const count = [
-                ratingStatistics.numFiveStar,
-                ratingStatistics.numFourStar,
-                ratingStatistics.numThreeStar,
-                ratingStatistics.numTwoStar,
-                ratingStatistics.numOneStar,
+                ratingStatistics?.numFiveStar,
+                ratingStatistics?.numFourStar,
+                ratingStatistics?.numThreeStar,
+                ratingStatistics?.numTwoStar,
+                ratingStatistics?.numOneStar,
               ][idx];
-              const percentage = (count / pagination.totalCount) * 100;
+              const percentage = (count / (pagination?.totalCount ?? 0)) * 100;
               return (
                 <div key={num} className="flex items-center justify-end w-full">
                   <Progress className="h-3 [&>div]:!bg-marigold-30" value={percentage} />
@@ -126,7 +126,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
           </Select>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {reviewsStorage.slice(0, visibleCount).map((review) => (
+          {reviewsStorage?.slice(0, visibleCount).map((review) => (
             <div
               onClick={() => handleReviewClick(review.sessionId)}
               key={review.id}
