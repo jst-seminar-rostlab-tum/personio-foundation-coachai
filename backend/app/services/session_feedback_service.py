@@ -19,24 +19,33 @@ from app.schemas.session_feedback_schema import (
     RecommendationsRequest,
     SessionExamplesCollection,
 )
+from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_training_examples(request: ExamplesRequest) -> SessionExamplesCollection:
-    return generate_training_examples(request)
+def safe_generate_training_examples(
+    request: ExamplesRequest, vector_db_prompt_extension: str = ''
+) -> SessionExamplesCollection:
+    return generate_training_examples(request, vector_db_prompt_extension)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollection:
-    return get_achieved_goals(request)
+def safe_get_achieved_goals(
+    request: GoalsAchievementRequest, vector_db_prompt_extension: str = ''
+) -> GoalsAchievedCollection:
+    return get_achieved_goals(request, vector_db_prompt_extension)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_recommendations(request: RecommendationsRequest) -> RecommendationsCollection:
-    return generate_recommendations(request)
+def safe_generate_recommendations(
+    request: RecommendationsRequest, vector_db_prompt_extension: str = ''
+) -> RecommendationsCollection:
+    return generate_recommendations(request, vector_db_prompt_extension)
 
 
-def generate_training_examples(request: ExamplesRequest) -> SessionExamplesCollection:
+def generate_training_examples(
+    request: ExamplesRequest, vector_db_prompt_extension: str = ''
+) -> SessionExamplesCollection:
     mock_response = SessionExamplesCollection(
         positive_examples=[
             PositiveExample(
@@ -76,6 +85,8 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
     - Goal: {request.goal}
     - Context: {request.context}
     - Key Concepts: {request.key_concepts}
+    
+    {vector_db_prompt_extension}
 
     Instructions:
     Carefully analyze the provided transcript and evaluate **only your own statements** 
@@ -117,7 +128,9 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
     return response
 
 
-def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollection:
+def get_achieved_goals(
+    request: GoalsAchievementRequest, vector_db_prompt_extension: str = ''
+) -> GoalsAchievedCollection:
     mock_response = GoalsAchievedCollection(
         goals_achieved=[
             'Clearly communicate the impact of the missed deadlines',
@@ -134,6 +147,8 @@ def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollect
 
     Goals:
     {request.objectives}
+    
+    {vector_db_prompt_extension}
 
     Instructions:
     - For each goal, determine if the user's speech aligns with 
@@ -160,7 +175,9 @@ def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollect
     return response
 
 
-def generate_recommendations(request: RecommendationsRequest) -> RecommendationsCollection:
+def generate_recommendations(
+    request: RecommendationsRequest, vector_db_prompt_extension: str = ''
+) -> RecommendationsCollection:
     mock_response = RecommendationsCollection(
         recommendations=[
             Recommendation(
@@ -204,6 +221,8 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
 
     Context:
     {request.context}
+    
+    {vector_db_prompt_extension}
 
     Situation:
     - The conversation of this training session is about {request.category}
@@ -273,6 +292,19 @@ def generate_and_store_feedback(
     goals = GoalsAchievedCollection(goals_achieved=[])
     recommendations = []
 
+    vector_db_prompt_extension = query_vector_db_and_prompt(
+        session_context=[
+            recommendations_request.category,
+            recommendations_request.goal,
+            recommendations_request.context,
+            recommendations_request.other_party,
+            recommendations_request.transcript,
+            recommendations_request.objectives,
+            recommendations_request.key_concepts,
+        ],
+        generated_object='output',
+    )
+
     if example_request.transcript is None:
         # No transcript: leave examples empty and goals achieved as zero
         examples_positive_dicts = []
@@ -281,10 +313,14 @@ def generate_and_store_feedback(
         recommendations = []
     else:
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_examples = executor.submit(safe_generate_training_examples, examples_request)
-            future_goals = executor.submit(safe_get_achieved_goals, goals_request)
+            future_examples = executor.submit(
+                safe_generate_training_examples, examples_request, vector_db_prompt_extension
+            )
+            future_goals = executor.submit(
+                safe_get_achieved_goals, goals_request, vector_db_prompt_extension
+            )
             future_recommendations = executor.submit(
-                safe_generate_recommendations, recommendations_request
+                safe_generate_recommendations, recommendations_request, vector_db_prompt_extension
             )
 
             try:
