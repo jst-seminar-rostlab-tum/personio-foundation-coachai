@@ -63,6 +63,30 @@ services:
     entrypoint: ["uv", "run", "-m", "app.data.populate_dummy_data"]
     networks:
       - app-network
+  
+  test-migrations:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        stage: dev
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+      - ./.husky/test-migrations.sh:/test-migrations.sh
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGPASSWORD: postgres
+      POSTGRES_DB: test_migrations
+      POSTGRES_PORT: 5432
+    entrypoint: ["/bin/bash", "/test-migrations.sh"]
+    networks:
+      - app-network
+
   db:
     image: pgvector/pgvector:pg17
     ports:

@@ -112,11 +112,11 @@ After making changes to your database models under `backend/app/models`:
 
 ```bash
 # Generate migration script automatically
-uv run alembic revision --autogenerate -m "descriptive message about changes"
+uv run alembic revision --autogenerate -m "descriptive message about your changes"
 ```
 
 This creates a new migration file in the `backend/alembic/versions/` directory with the format:
-`<timestamp>-<revision_id>_descriptive_message_about_changes.py`
+`<timestamp>-<revision_id>_descriptive_message_about_your_changes.py`
 
 ##### 4. Review Generated Migration
 **Important:** Always review the generated migration script before committing:
@@ -124,7 +124,6 @@ This creates a new migration file in the `backend/alembic/versions/` directory w
 - Check the `upgrade()` function for correctness
 - Verify the `downgrade()` function properly reverses changes
 - Check imports and formatting
-- Ensure data migration logic is included if needed
 
 ##### 5. Test Migration Locally
 
@@ -148,8 +147,8 @@ Update `backend/app/data/dummy_data` with your model changes. To see if everythi
 docker compose up init-db -d
 ```
 
-##### 6. Commit and Push
-The pre-commit hook will automatically run `alembic check` to ensure consistency between models and migration scripts.
+##### 7. Commit your Changes
+A pre-commit hook is executed when committing changes to `backend/app/models` and/or `backend/alembic/versions`. Within that hook the docker container `test-migrations` is run which executes `./husky/test-migrations.sh` against a separate database with the name `test_migrations`.
 
 ##### Important Rule
 - **Never edit migration scripts once they're merged to `dev`**
