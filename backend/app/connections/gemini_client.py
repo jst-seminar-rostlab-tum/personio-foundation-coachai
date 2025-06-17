@@ -27,7 +27,7 @@ else:
     gemini_client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
 
-def generate_gemini_content(contents: [Any], model: str = DEFAULT_MODEL) -> str:
+def generate_gemini_content(contents: list[Any], model: str = DEFAULT_MODEL) -> str:
     if not ENABLE_AI or gemini_client is None:
         print('Cannot upload files to Gemini, AI is disabled')
         return ''

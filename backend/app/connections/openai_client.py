@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import contextlib
+import logging
 import os
+from collections.abc import AsyncGenerator
 from typing import TypeVar
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import AsyncOpenAI, OpenAI
 from pydantic import BaseModel
 
 from app.config import Settings
@@ -17,6 +20,8 @@ openai_api_key = os.getenv('OPENAI_API_KEY')
 settings = Settings()
 FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
 DEFAULT_CHEAP_MODEL = 'gpt-4o-mini'
+
+logger = logging.getLogger(__name__)
 
 
 # Check for API key and handle edge cases
@@ -90,3 +95,54 @@ def call_structured_llm(
         raise ValueError('LLM did not return a valid response')
 
     return response.output_parsed
+
+
+if not _is_valid_api_key(openai_api_key):
+    print(
+        '[WARNING] OPENAI_API_KEY is missing or invalid. '
+        'AI features will be disabled and mock responses will be used.'
+    )
+    ENABLE_AI = False
+    async_client = None
+else:
+    ENABLE_AI = settings.ENABLE_AI
+    async_client = AsyncOpenAI(api_key=openai_api_key)
+
+
+def get_async_openai_client() -> AsyncOpenAI:
+    """
+    Return the AsyncOpenAI instance for realtime functionality.
+    """
+    if not ENABLE_AI or async_client is None:
+        raise RuntimeError('AsyncOpenAI client is not available.')
+    return async_client
+
+
+@contextlib.asynccontextmanager
+async def connect_realtime_openai() -> AsyncGenerator[AsyncOpenAI, None]:
+    """
+    Connect to OpenAI realtime session and configure it with
+    input audio transcription and server VAD enabled. Yield the connection object.
+
+    Returns:
+    - AsyncOpenAI connection object
+    """
+    async with async_client.beta.realtime.connect(
+        model='gpt-4o-realtime-preview-2025-06-03'
+    ) as conn:
+        session_update = {
+            'type': 'session.update',
+            'session': {
+                'modalities': ['text', 'audio'],
+                'input_audio_transcription': {'model': 'whisper-1'},
+                'turn_detection': {
+                    'type': 'server_vad',
+                    'threshold': 0.5,
+                    'prefix_padding_ms': 300,
+                    'silence_duration_ms': 500,
+                },
+            },
+        }
+        await conn.send(session_update)
+        logger.info('Session configured with input audio transcription and server VAD enabled')
+        yield conn
