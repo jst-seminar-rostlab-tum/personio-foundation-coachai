@@ -291,6 +291,7 @@ def downgrade() -> None:
     op.drop_table('appconfig')
     op.drop_table('admindashboardstats')
 
+    # To remove enums
     op.execute('DROP TYPE IF EXISTS configtype CASCADE')
     op.execute('DROP TYPE IF EXISTS languagecode CASCADE')
     op.execute('DROP TYPE IF EXISTS experience CASCADE')

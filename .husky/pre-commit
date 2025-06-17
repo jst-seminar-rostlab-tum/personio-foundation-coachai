@@ -19,7 +19,7 @@ if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/version
     echo "🗃️- Checking database migrations and models..."
 
     echo "🔌- Testing DB connection..."
-    if ! docker compose run  -T backend uv run alembic current >/dev/null 2>&1; then
+    if ! docker compose run --rm -T backend uv run alembic current >/dev/null 2>&1; then
         echo "⚠️  Cannot connect to database. Attempting to start it with Docker..."
 
         if docker compose up -d db; then
@@ -27,6 +27,7 @@ if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/version
 
             for i in {1..10}; do
                 STATUS=$(docker inspect --format='{{.State.Health.Status}}' jspracticalcourse-db-1 2>/dev/null || echo "unknown")
+                echo "⏳ Waiting... ($i/10) – DB status: $STATUS"
                 if [ "$STATUS" = "healthy" ]; then
                     echo "✅ DB container is healthy after $i second(s)"
                     break
@@ -34,7 +35,6 @@ if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/version
                     echo "❌ DB container did not become healthy in time"
                     exit 1
                 fi
-                echo "⏳ Waiting... ($i/10)"
                 sleep 1
             done
         else
@@ -44,6 +44,7 @@ if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/version
     else
         echo "✅ alembic current succeeded"
     fi
+
 
     echo "📈- Upgrading to latest migration..."
     if ! docker compose run --rm -T backend uv run alembic upgrade head >/dev/null 2>&1; then
