@@ -110,48 +110,52 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
           </div>
         </div>
       </div>
-      <div className="w-full mb-8 text-left">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-lg font-semibold text-bw-70">{t('userReviews')}</div>
-          <Select value={sortBy} onValueChange={handleSortChange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={t('sortBy')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">{t('sortNewest')}</SelectItem>
-              <SelectItem value="oldest">{t('sortOldest')}</SelectItem>
-              <SelectItem value="highest">{t('sortHighest')}</SelectItem>
-              <SelectItem value="lowest">{t('sortLowest')}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {reviewsStorage?.slice(0, visibleCount).map((review) => (
-            <div
-              onClick={() => handleReviewClick(review.sessionId)}
-              key={review.id}
-              className={`border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start ${
-                review.sessionId ? 'cursor-pointer' : 'cursor-not-allowed'
-              } transition-all duration-300 hover:shadow-md`}
-            >
-              <div className="flex items-center mb-2">
-                <span className="text-sm font-semibold text-bw-70">{review.userEmail}</span>
+      {reviewsStorage && (
+        <div className="w-full mb-8 text-left">
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-lg font-semibold text-bw-70">{t('userReviews')}</div>
+            <Select value={sortBy} onValueChange={handleSortChange}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder={t('sortBy')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">{t('sortNewest')}</SelectItem>
+                <SelectItem value="oldest">{t('sortOldest')}</SelectItem>
+                <SelectItem value="highest">{t('sortHighest')}</SelectItem>
+                <SelectItem value="lowest">{t('sortLowest')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {reviewsStorage?.slice(0, visibleCount).map((review) => (
+              <div
+                onClick={() => handleReviewClick(review.sessionId)}
+                key={review.id}
+                className={`border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start ${
+                  review.sessionId ? 'cursor-pointer' : 'cursor-not-allowed'
+                } transition-all duration-300 hover:shadow-md`}
+              >
+                <div className="flex items-center mb-2">
+                  <span className="text-sm font-semibold text-bw-70">{review.userEmail}</span>
+                </div>
+                <div className="flex items-center mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-5 h-5 mr-1 ${i < review.rating ? 'fill-marigold-30' : 'fill-bw-20'}`}
+                      strokeWidth={0}
+                    />
+                  ))}
+                </div>
+                <div className="text-sm text-bw-70 mb-2">{review.comment}</div>
+                <div className="text-sm text-bw-40">
+                  {new Date(review.date).toLocaleDateString()}
+                </div>
               </div>
-              <div className="flex items-center mb-2">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-5 h-5 mr-1 ${i < review.rating ? 'fill-marigold-30' : 'fill-bw-20'}`}
-                    strokeWidth={0}
-                  />
-                ))}
-              </div>
-              <div className="text-sm text-bw-70 mb-2">{review.comment}</div>
-              <div className="text-sm text-bw-40">{new Date(review.date).toLocaleDateString()}</div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
       {canLoadMore && (
         <div className="flex justify-center mt-4">
           <Button variant="ghost" onClick={() => handleLoadMore(pageNumber + 1)}>
