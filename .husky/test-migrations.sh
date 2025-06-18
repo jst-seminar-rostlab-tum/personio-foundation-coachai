@@ -12,3 +12,4 @@ fi
 uv run -m app.data.populate_dummy_data
 uv run alembic check
 uv run -m app.data.populate_dummy_data
+
