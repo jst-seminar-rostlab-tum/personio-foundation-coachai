@@ -307,4 +307,5 @@ def downgrade() -> None:
     op.execute('DROP TYPE IF EXISTS feedbackstatusenum CASCADE')
     op.execute('DROP TYPE IF EXISTS speakerenum CASCADE')
 
+    # To remove pgvector extention
     op.execute('DROP EXTENSION IF EXISTS vector CASCADE')
