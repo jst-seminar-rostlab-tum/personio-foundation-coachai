@@ -90,7 +90,7 @@ This project uses [Alembic](https://alembic.sqlalchemy.org/) for database migrat
 
 #### Overview
 
-Alembic has been integrated with our backend models (`/backend/app/models`) and database configuration (`backend/app/database.py`). A pre-commit hook automatically checks consistency between models and migration scripts, ensuring database integrity.
+Alembic has been integrated with our backend models (`/backend/app/models`) and database configuration (`backend/app/database.py`). A pre-push hook automatically checks consistency between models and migration scripts, ensuring database integrity.
 
 #### Development Workflow
 ##### 1. Create Feature Branch
@@ -103,7 +103,7 @@ git checkout -b feature/your-feature-name
 # Start the database
 docker compose up db -d
 
-# Initialize the database
+# Update db to latest schema
 uv run alembic upgrade head
 ```
 
@@ -147,8 +147,8 @@ Update `backend/app/data/dummy_data` with your model changes. To see if everythi
 docker compose up init-db -d
 ```
 
-##### 7. Commit your Changes
-A pre-commit hook is executed when committing changes to `backend/app/models` and/or `backend/alembic/versions`. Within that hook the docker container `test-migrations` is run which executes `./husky/test-migrations.sh` against a separate database with the name `test_migrations`.
+##### 7. Commit and push your Changes
+A pre-push hook is executed when committing changes to `backend/app/models` and/or `backend/alembic/versions`. Within that hook the docker container `test-migrations` is run which executes `./husky/test-migrations.sh` against a separate database with the name `test_migrations`.
 
 ##### Important Rule
 - **Never edit migration scripts once they're merged to `dev`**
