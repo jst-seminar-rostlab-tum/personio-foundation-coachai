@@ -13,16 +13,51 @@ while read local_ref local_sha remote_ref remote_sha; do
   changed_files=$(git diff-tree --name-only -r $range)
 
   if echo "$changed_files" | grep -q '^frontend/'; then
-    echo "🛠️- Changes in frontend. Running frontend pre-push hooks..."
+    echo "🛠️- Changes in frontend. Running frontend tests..."
     cd frontend
     npx jest --bail --passWithNoTests
     cd - >/dev/null
+    echo "✅- Frontend tests passed"
   fi
 
   if echo "$changed_files" | grep -q '^backend/'; then
-    echo "🛠️- Changes in backend. Running backend pre-push hooks..."
+    echo "🛠️- Changes in backend. Running backend tests..."
     cd backend
     uv run pytest --exitfirst --disable-warnings || [ $? -eq 5 ]
     cd - >/dev/null
+    echo "✅- Backend tests passed"
+  fi
+
+  if echo "$changed_files" | grep -q '(^backend/app/models/|^backend/alembic/versions/)'; then
+    echo "🛠️- Changes in models and/or migrations. Running migration checks..."
+    
+    ROOT="$(git rev-parse --show-toplevel)"
+    BASE="$ROOT/docker-compose.yml"
+    CI="$ROOT/.husky/docker-compose.ci.yml"
+    COMPOSE="docker compose -f $BASE -f $CI"
+    $COMPOSE up -d --remove-orphans db
+
+    for i in {1..10}; do
+      state=$($COMPOSE ps --format '{{.Health}}' db)
+      [[ "$state" == "healthy" ]] && { break; }
+      [[ $i -eq 10 ]] && { echo "❌- DB not healthy in time"; exit 1; }
+      sleep 1
+    done
+
+    CID=$($COMPOSE run --build --no-deps -d test-migrations | tail -n1)
+    EXIT=$(docker wait "$CID")
+    docker logs "$CID"
+
+    $COMPOSE stop test-migrations >/dev/null 2>&1 || true
+    $COMPOSE rm -f test-migrations >/dev/null 2>&1 || true
+
+    if [[ "$EXIT" -eq 0 ]]; then
+      echo "✅- Migration checks passed"
+    else
+      echo "❌- Migration checks failed"
+      exit 1
+    fi
   fi
 done
+
+exit 1
