@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
@@ -37,7 +36,10 @@ CID=$($COMPOSE run --build --no-deps -d test-migrations | tail -n1)
 
 EXIT=$(docker wait "$CID")
 docker logs "$CID"
-docker rm  "$CID" >/dev/null
+
+echo "🧹  Cleaning up test-migrations container…"
+$COMPOSE stop   test-migrations >/dev/null 2>&1 || true
+$COMPOSE rm -f  test-migrations >/dev/null 2>&1 || true
 
 if [[ "$EXIT" -eq 0 ]]; then
   echo "✅  Migration & model checks passed"
