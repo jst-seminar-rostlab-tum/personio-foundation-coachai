@@ -6,9 +6,74 @@ on:
       - 'backend/alembic/versions/**'
 
 jobs:
+  pre-checks:
+    name: Pre-migration checks
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Check if dev branch is merged
+        run: |          
+          MERGE_BASE=$(git merge-base HEAD origin/dev)   
+          DEV_HEAD=$(git rev-parse origin/dev)  
+
+          if [[ "$MERGE_BASE" == "$DEV_HEAD" ]]; then
+            echo "✅ Dev branch is properly merged"
+          else
+            echo "❌ Dev branch is not fully merged into this branch"
+            echo "Please merge or rebase dev branch before proceeding"
+            exit 1
+          fi
+
+      - name: Check for modified dev migration files
+        run: |
+          echo "Checking for modifications to existing migration files from dev..."
+          
+          # Get list of migration files that exist on dev branch
+          git checkout origin/dev -- backend/alembic/versions/ || echo "No migration files on dev"
+          DEV_MIGRATIONS=$(find backend/alembic/versions/ -name "*.py" 2>/dev/null || echo "")
+          
+          # Switch back to PR branch
+          git checkout HEAD -- backend/alembic/versions/
+          
+          if [[ -n "$DEV_MIGRATIONS" ]]; then
+            echo "Migration files found on dev branch:"
+            echo "$DEV_MIGRATIONS"
+            
+            # Check if any of these files have been modified or deleted
+            MODIFIED_FILES=""
+            for file in $DEV_MIGRATIONS; do
+              if [[ -f "$file" ]]; then
+                # File exists, check if it's been modified
+                if ! git diff --quiet origin/dev HEAD -- "$file"; then
+                  MODIFIED_FILES="$MODIFIED_FILES\n$file (modified)"
+                fi
+              else
+                # File was deleted
+                MODIFIED_FILES="$MODIFIED_FILES\n$file (deleted)"
+              fi
+            done
+            
+            if [[ -n "$MODIFIED_FILES" ]]; then
+              echo "❌ Existing migration files from dev have been altered:"
+              echo -e "$MODIFIED_FILES"
+              echo ""
+              echo "Migration files from dev branch should never be modified or deleted."
+              echo "Revert changes and create new migration files instead."
+              exit 1
+            else
+              echo "✅ No existing migration files from dev have been modified"
+            fi
+          else
+            echo "✅ No migration files found on dev branch"
+          fi
+
   migrations:
     name: Check migrations
     runs-on: ubuntu-22.04
+    needs: pre-checks
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
@@ -31,7 +96,7 @@ jobs:
             elif [[ "$state" == "starting" ]]; then
               echo "Database starting... ($((i*2))s elapsed)"
             fi
-            [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
+            [[ $i -eq 60 ]] && { echo "❌ Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
       - name: Run migrations
@@ -40,9 +105,8 @@ jobs:
           docker logs -f "$CID"
           EXIT=$(docker wait "$CID")
           if [[ "$EXIT" -eq 0 ]]; then
-            echo "✅- Migration checks passed"
+            echo "✅ Migration checks passed"
           else
-            echo "❌- Migration checks failed"
+            echo "❌ Migration checks failed"
             exit 1
           fi
-
