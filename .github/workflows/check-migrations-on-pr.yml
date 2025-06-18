@@ -20,10 +20,10 @@ jobs:
           DEV_HEAD=$(git rev-parse origin/dev)  
 
           if [[ "$MERGE_BASE" == "$DEV_HEAD" ]]; then
-            echo "✅ Dev branch is properly merged"
+            echo "✅ Dev branch is merged"
           else
             echo "❌ Dev branch is not fully merged into this branch"
-            echo "Please merge or rebase dev branch before proceeding"
+            echo "Please merge dev branch before proceeding"
             exit 1
           fi
 
@@ -92,4 +92,16 @@ jobs:
             elif [[ "$state" == "starting" ]]; then
               echo "Database starting... ($((i*2))s elapsed)"
             fi
-            [[ $i -eq 60 ]] && { ech
+            [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
+            sleep 2
+          done
+      - name: Run migrations
+        run: |
+          CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations | tail -n1)
+          docker logs -f "$CID"
+          EXIT=$(docker wait "$CID")
+          if [[ "$EXIT" -eq 0 ]]; then
+            echo "✅- Migration checks passed"
+          else
+            echo "❌- Migration checks failed"
+            exit 1
