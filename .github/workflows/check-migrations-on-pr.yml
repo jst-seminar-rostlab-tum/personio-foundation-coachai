@@ -30,32 +30,28 @@ jobs:
       - name: Check for modified dev migration files
         run: |
           echo "Checking for modifications to existing migration files from dev..."
-          
+
           # Get list of migration files that exist on dev branch
-          git checkout origin/dev -- backend/alembic/versions/ || echo "No migration files on dev"
-          DEV_MIGRATIONS=$(find backend/alembic/versions/ -name "*.py" 2>/dev/null || echo "")
-          
-          # Switch back to PR branch
-          git checkout HEAD -- backend/alembic/versions/
+          DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ | grep '\.py$' || true)
           
           if [[ -n "$DEV_MIGRATIONS" ]]; then
             echo "Migration files found on dev branch:"
             echo "$DEV_MIGRATIONS"
-            
-            # Check if any of these files have been modified or deleted
+
             MODIFIED_FILES=""
             for file in $DEV_MIGRATIONS; do
-              if [[ -f "$file" ]]; then
-                # File exists, check if it's been modified
+              # Does the file exist in this PR branch?
+              if git ls-tree -r --name-only HEAD -- "$file" | grep -q .; then
+                # File exists; check if modified
                 if ! git diff --quiet origin/dev HEAD -- "$file"; then
                   MODIFIED_FILES="$MODIFIED_FILES\n$file (modified)"
                 fi
               else
-                # File was deleted
+                # File is missing in PR branch (i.e. deleted)
                 MODIFIED_FILES="$MODIFIED_FILES\n$file (deleted)"
               fi
             done
-            
+
             if [[ -n "$MODIFIED_FILES" ]]; then
               echo "❌ Existing migration files from dev have been altered:"
               echo -e "$MODIFIED_FILES"
@@ -96,17 +92,4 @@ jobs:
             elif [[ "$state" == "starting" ]]; then
               echo "Database starting... ($((i*2))s elapsed)"
             fi
-            [[ $i -eq 60 ]] && { echo "❌ Database not healthy after 2 minutes"; exit 1; }
-            sleep 2
-          done
-      - name: Run migrations
-        run: |
-          CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations | tail -n1)
-          docker logs -f "$CID"
-          EXIT=$(docker wait "$CID")
-          if [[ "$EXIT" -eq 0 ]]; then
-            echo "✅ Migration checks passed"
-          else
-            echo "❌ Migration checks failed"
-            exit 1
-          fi
+            [[ $i -eq 60 ]] && { ech
