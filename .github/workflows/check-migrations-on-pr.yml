@@ -6,7 +6,7 @@ on:
       - 'backend/alembic/versions/**'
 
 jobs:
-  lint:
+  migrations:
     name: Check migrations
     runs-on: ubuntu-22.04
     steps:
@@ -20,5 +20,29 @@ jobs:
         run: docker network create app-network
       - name: Start database
         run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans db
-      - name: Run migration tests
-        run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build test-migrations
+      - name: Wait for database startup
+        run: |
+          echo "Waiting for database to be healthy..."
+          for i in {1..60}; do
+            state=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml ps --format '{{.Health}}' db)
+            if [[ "$state" == "healthy" ]]; then
+              echo "✅ Database ready after $((i*2)) seconds"
+              break
+            elif [[ "$state" == "starting" ]]; then
+              echo "Database starting... ($((i*2))s elapsed)"
+            fi
+            [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
+            sleep 2
+          done
+      - name: Run migrations
+        run: |
+          CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations | tail -n1)
+          docker logs -f "$CID"
+          EXIT=$(docker wait "$CID")
+          if [[ "$EXIT" -eq 0 ]]; then
+            echo "✅- Migration checks passed"
+          else
+            echo "❌- Migration checks failed"
+            exit 1
+          fi
+
