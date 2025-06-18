@@ -59,5 +59,3 @@ while read local_ref local_sha remote_ref remote_sha; do
     fi
   fi
 done
-
-exit 1
