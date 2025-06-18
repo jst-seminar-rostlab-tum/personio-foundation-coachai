@@ -1,0 +1,24 @@
+name: Check Migrations on PR
+on:
+  pull_request:
+    paths:
+      - 'backend/app/models/**'
+      - 'backend/alembic/versions/**'
+
+jobs:
+  lint:
+    name: Check migrations
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: pipx install uv
+      - name: Install dependencies
+        run: uv sync
+        working-directory: ./backend
+      - name: Create network
+        run: docker network create app-network
+      - name: Start database
+        run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans db
+      - name: Run migration tests
+        run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build test-migrations
