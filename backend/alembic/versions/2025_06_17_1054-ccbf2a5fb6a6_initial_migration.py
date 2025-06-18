@@ -307,5 +307,4 @@ def downgrade() -> None:
     op.execute('DROP TYPE IF EXISTS feedbackstatusenum CASCADE')
     op.execute('DROP TYPE IF EXISTS speakerenum CASCADE')
 
-    # Remove vector extention
     op.execute('DROP EXTENSION IF EXISTS vector CASCADE')

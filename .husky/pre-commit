@@ -1,33 +1,47 @@
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Go to root directory of the repository
-cd "$(git rev-parse --show-toplevel)"
+ROOT="$(git rev-parse --show-toplevel)"
+BASE="$ROOT/docker-compose.yml"
+CI="$ROOT/.husky/docker-compose.ci.yml"
+COMPOSE="docker compose -f $BASE -f $CI"
 
-# Run frontend lint-staged
-echo "🛠️- Running linting and formatting checks..."
-cd ./frontend
+echo "🧹  Frontend lint-staged…"
+pushd "$ROOT/frontend" >/dev/null
 npx lint-staged
+popd >/dev/null
 
-# Run backend pre-commit linting
-cd ../backend
+echo "🧹  Backend pre-commit hooks…"
+pushd "$ROOT/backend" >/dev/null
 uv run pre-commit run --config .pre-commit-config.yaml --hook-stage pre-commit
+popd >/dev/null
 
-echo "✅- Linting and formatting checks passed"
+echo "✅  Linting and formatting checks passed"
 
-# Run alembic checks
-if git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/versions/)"; then
-    echo "🛠️- Running test-migrations docker container ..."
+git diff --cached --name-only | grep -qE "(models\.py|models/|alembic/versions/)" || {
+  echo "ℹ️  No DB-relevant changes — skipping migration checks"; exit 0; }
 
-    CONTAINER_ID=$(docker compose run --build -d test-migrations | tail -n1)
-    EXIT_CODE=$(docker wait "$CONTAINER_ID")
+echo "🗃️  Migration & model checks…"
 
-    if [ "$EXIT_CODE" -eq 0 ]; then
-        docker rm "$CONTAINER_ID" >/dev/null 2>&1
-        echo "✅- Database migration and model checks passed"
-    else
-        echo "❌- Initializing the database, and checking migrations and models failed. Check the logs:"
-        docker logs $CONTAINER_ID
-        docker rm "$CONTAINER_ID" >/dev/null 2>&1
-        exit 1
-    fi
+$COMPOSE up -d --remove-orphans db
+
+for i in {1..10}; do
+  state=$($COMPOSE ps --format '{{.Health}}' db)
+  [[ "$state" == "healthy" ]] && { echo "✅  DB healthy"; break; }
+  [[ $i -eq 10 ]] && { echo "❌  DB not healthy in time"; exit 1; }
+  echo "⏳  Waiting for DB ($i/10)…"; sleep 1
+done
+
+echo "🚀  Running test-migrations…"
+CID=$($COMPOSE run --build --no-deps -d test-migrations | tail -n1)
+
+EXIT=$(docker wait "$CID")
+docker logs "$CID"
+docker rm  "$CID" >/dev/null
+
+if [[ "$EXIT" -eq 0 ]]; then
+  echo "✅  Migration & model checks passed"
+else
+  echo "❌  Migration checks failed (exit $EXIT)"
+  exit 1
 fi
