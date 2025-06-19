@@ -1,6 +1,10 @@
 name: Check Migrations on PR
 on:
-  pull_request:
+  push:
+    paths:
+      - 'backend/app/models/**'
+      - 'backend/alembic/versions/**'
+
 jobs:
   pre-checks:
     name: Pre-migration checks
