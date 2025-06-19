@@ -5,6 +5,7 @@ on:
     paths:
       - 'backend/app/models/**'
       - 'backend/alembic/versions/**'
+      - 'backend/alembic/data/**'
 
 jobs:
   pre-checks:
@@ -33,7 +34,7 @@ jobs:
           echo "Checking for modifications to existing migration files from dev..."
 
           # Get list of migration files that exist on dev branch
-          DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/ci/add-alembic -- backend/alembic/versions/ | grep '\.py$' || true)
+          DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.py$|\.sql$' || true)
           
           if [[ -n "$DEV_MIGRATIONS" ]]; then
             echo "Migration files found on dev branch:"

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 HEADS=$(uv run alembic heads | wc -l)
 if [ "$HEADS" -gt 1 ]; then
@@ -7,12 +7,17 @@ if [ "$HEADS" -gt 1 ]; then
     exit 1
 fi
 
-psql -h db -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='test_migrations'" | grep -q 1 || \
+psql -h db -U postgres -c "DROP DATABASE IF EXISTS test_migrations;"
 psql -h db -U postgres -c "CREATE DATABASE test_migrations;"
 
-uv run -m app.data.populate_dummy_data
+uv run alembic downgrade base
+uv run alembic upgrade head
 uv run alembic check
-uv run -m app.data.populate_dummy_data
-
-echo "DONE RUNNING test-migrations.sh"
-
+uv run alembic downgrade base
+uv run alembic upgrade head
+uv run alembic downgrade base
+if ! uv run -m app.data.populate_dummy_data; then
+    echo "❌- Failed to populate dummy data."
+    echo "Make sure you updated the dummy data script (app.data.populate_dummy_data) to match your latest model changes."
+    exit 1
+fi

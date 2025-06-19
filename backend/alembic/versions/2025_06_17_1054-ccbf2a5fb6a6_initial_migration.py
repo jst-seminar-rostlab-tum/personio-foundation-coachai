@@ -6,6 +6,7 @@ Create Date: 2025-06-17 10:54:37.637507
 
 """
 
+import os
 from collections.abc import Sequence
 from typing import Union
 
@@ -273,6 +274,15 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(['session_id'], ['session.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id'),
     )
+
+    sql_file_path = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)),
+        'data',
+        '2025_06_17_1054-ccbf2a5fb6a6_initial_migration.sql',
+    )
+    with open(sql_file_path) as f:
+        sql_content = f.read()
+    op.execute(sql_content)
 
 
 def downgrade() -> None:

@@ -1,6 +1,5 @@
-import subprocess
-
 from sqlmodel import Session as DBSession
+from sqlmodel import SQLModel, text
 
 from app.data import (
     get_dummy_admin_stats,
@@ -22,15 +21,21 @@ from app.models.hr_information import HrInformation
 
 
 def populate_data() -> None:
-    print('Downgrading to base...')
-    subprocess.run(['uv', 'run', 'alembic', 'downgrade', 'base'], check=True)
-
-    print('Upgrading to head...')
-    subprocess.run(['uv', 'run', 'alembic', 'upgrade', 'head'], check=True)
-
     with DBSession(engine) as db_session:
+        db_session.exec(text('CREATE EXTENSION IF NOT EXISTS vector'))  # type: ignore
+        db_session.commit()
+
+        print('Dropping tables...')
+        SQLModel.metadata.drop_all(engine)
+
         # print('Removing mock users...')
         # delete_mock_users()
+
+        print('Creating tables...')
+        SQLModel.metadata.create_all(engine)
+
+        # to get their IDs
+        db_session.commit()
 
         # Populate User Profiles
         user_profiles = get_dummy_user_profiles()

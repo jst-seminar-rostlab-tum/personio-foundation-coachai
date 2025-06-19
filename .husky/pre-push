@@ -28,7 +28,7 @@ while read local_ref local_sha remote_ref remote_sha; do
     echo "✅- Backend tests passed"
   fi
 
-  if echo "$changed_files" | grep -qE '^backend/app/models/|^backend/alembic/versions/'; then
+  if echo "$changed_files" | grep -qE '^backend/app/models/|^backend/alembic/versions/|^backend/alembic/data'; then
     echo "🛠️- Changes in models and/or migrations. Running migration checks..."
     
     ROOT="$(git rev-parse --show-toplevel)"
