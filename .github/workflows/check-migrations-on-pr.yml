@@ -102,5 +102,6 @@ jobs:
       - name: Run migrations
         run: |
           CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations | tail -n1)
+          docker logs -f "$CID"
       - name: Dummy run after migrations
         run: echo "No syntax error!"
