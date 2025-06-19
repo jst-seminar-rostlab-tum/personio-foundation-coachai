@@ -113,7 +113,7 @@ class UserProfileReplace(CamelModel):
 
 # Schema for reading UserProfile data
 class UserProfileRead(CamelModel):
-    user_id: UUID
+    user_id: UUID = Field(alias='id')
     full_name: str
     email: str
     phone_number: str
