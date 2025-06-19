@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -ex
 
 psql -h db -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='test_migrations'" | grep -q 1 || \
 psql -h db -U postgres -c "CREATE DATABASE test_migrations;"
