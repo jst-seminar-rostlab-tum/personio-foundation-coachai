@@ -21,6 +21,18 @@ from app.schemas.scenario_preparation import (
     ScenarioPreparationRead,
     StringListResponse,
 )
+from app.schemas.session_feedback_schema import (
+    ExamplesRequest,
+    GoalsAchievedCollection,
+    GoalsAchievementRequest,
+    NegativeExample,
+    PositiveExample,
+    Recommendation,
+    RecommendationsCollection,
+    RecommendationsRequest,
+    SessionExamplesCollection,
+    SessionFeedbackMetrics,
+)
 
 __all__ = [
     'MessageSchema',
@@ -45,4 +57,14 @@ __all__ = [
     'ScenarioPreparationCreate',
     'ScenarioPreparationRead',
     'StringListResponse',
+    'ExamplesRequest',
+    'GoalsAchievedCollection',
+    'GoalsAchievementRequest',
+    'NegativeExample',
+    'PositiveExample',
+    'Recommendation',
+    'RecommendationsCollection',
+    'RecommendationsRequest',
+    'SessionExamplesCollection',
+    'SessionFeedbackMetrics',
 ]

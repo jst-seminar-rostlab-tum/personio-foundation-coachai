@@ -9,7 +9,7 @@ from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import JSON, Column, Field, Relationship
 
 from app.models.camel_case import CamelModel
-from app.models.session_feedback import SessionFeedbackMetrics
+from app.schemas.session_feedback_schema import SessionFeedbackMetrics
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario

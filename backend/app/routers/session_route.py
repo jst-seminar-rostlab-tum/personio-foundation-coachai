@@ -22,11 +22,7 @@ from app.models.session import (
     SessionStatus,
     SessionUpdate,
 )
-from app.models.session_feedback import (
-    FeedbackStatusEnum,
-    SessionFeedback,
-    SessionFeedbackMetrics,
-)
+from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
 from app.models.session_turn import SessionTurn
 from app.models.sessions_paginated import (
     PaginatedSessionsResponse,
@@ -34,7 +30,7 @@ from app.models.sessions_paginated import (
     SkillScores,
 )
 from app.models.user_profile import AccountRole, UserProfile
-from app.schemas.session_feedback_schema import ExamplesRequest
+from app.schemas.session_feedback_schema import ExamplesRequest, SessionFeedbackMetrics
 from app.services.session_feedback_service import generate_and_store_feedback
 
 router = APIRouter(prefix='/session', tags=['Sessions'])

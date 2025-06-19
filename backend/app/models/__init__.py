@@ -16,15 +16,7 @@ from app.models.session import (
     SessionDetailsRead,
     SessionRead,
 )
-from app.models.session_feedback import (
-    FeedbackStatusEnum,
-    NegativeExample,
-    PositiveExample,
-    Recommendation,
-    SessionFeedback,
-    SessionFeedbackCreate,
-    SessionFeedbackRead,
-)
+from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
 from app.models.session_turn import (
     SessionTurn,
     SessionTurnCreate,
@@ -57,17 +49,12 @@ __all__ = [
     'SessionTurnCreate',
     'SessionTurnRead',
     'SessionFeedback',
-    'SessionFeedbackCreate',
-    'SessionFeedbackRead',
     'UserProfile',
     'UserProfileRead',
     'UserGoal',
     'UserGoalCreate',
     'UserGoalRead',
-    'PositiveExample',
     'FeedbackStatusEnum',
-    'NegativeExample',
-    'Recommendation',
     'UserConfidenceScore',
     'UserConfidenceScoreCreate',
     'UserConfidenceScoreRead',
