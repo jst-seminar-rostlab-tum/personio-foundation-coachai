@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/Button';
 import { Home, RefreshCw, ServerCrash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import '@/styles/globals.css';
 import { useTranslations } from 'next-intl';
 
 interface ErrorPageProps {
@@ -24,8 +23,8 @@ export default function Error({ error, reset }: ErrorPageProps) {
     reset();
   };
 
-  const handleBackDashboard = () => {
-    router.push('/dashboard');
+  const handleBackAbout = () => {
+    router.push('/');
   };
 
   return (
@@ -47,7 +46,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
               <RefreshCw className="w-4 h-4 mr-2" />
               {t('tryAgain')}
             </Button>
-            <Button onClick={handleBackDashboard} variant="outline">
+            <Button onClick={handleBackAbout} variant="outline">
               <Home className="w-4 h-4 mr-2" />
               {t('backAbout')}
             </Button>

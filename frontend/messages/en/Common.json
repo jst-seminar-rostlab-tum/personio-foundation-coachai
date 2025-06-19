@@ -6,14 +6,14 @@
   "notFound": {
     "title": "Page Not Found",
     "description": "The page you're trying to access might have been moved, deleted, or you entered the wrong URL.",
-    "backAbout": "Back to About",
+    "backAbout": "Back to Home",
     "backDashboard": "Back to Dashboard"
   },
   "errorPage": {
     "title": "Something Went Wrong",
     "description": "We're sorry, but something went wrong. Please try refreshing the page or contact support if the problem persists.",
     "tryAgain": "Try Again",
-    "backAbout": "Back to About",
+    "backAbout": "Back to Home",
     "backDashboard": "Back to Dashboard"
   }
 }

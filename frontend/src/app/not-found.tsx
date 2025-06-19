@@ -2,7 +2,6 @@ import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/Button';
 import { ChevronLeft, Home, TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
-import '@/styles/globals.css';
 
 export default async function NotFound() {
   const t = await getTranslations('Common.notFound');
