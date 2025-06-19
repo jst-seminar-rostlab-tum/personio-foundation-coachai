@@ -71,7 +71,7 @@ jobs:
   migrations:
     name: Check migrations
     runs-on: ubuntu-22.04
-    needs: pre-checks
+    # needs: pre-checks
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
