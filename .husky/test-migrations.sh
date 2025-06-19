@@ -16,4 +16,8 @@ uv run alembic check
 uv run alembic downgrade base
 uv run alembic upgrade head
 uv run alembic downgrade base
-uv run -m app.data.populate_dummy_data
+if ! uv run -m app.data.populate_dummy_data; then
+    echo "❌- Failed to populate dummy data."
+    echo "Make sure you updated the dummy data script (app.data.populate_dummy_data) to match your latest model changes."
+    exit 1
+fi
