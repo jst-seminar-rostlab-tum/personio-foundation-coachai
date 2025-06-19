@@ -17,8 +17,8 @@ jobs:
 
       - name: Check if dev branch is merged
         run: |          
-          MERGE_BASE=$(git merge-base HEAD origin/dev)   
-          DEV_HEAD=$(git rev-parse origin/dev)  
+          MERGE_BASE=$(git merge-base HEAD origin/ci/add-alembic)   
+          DEV_HEAD=$(git rev-parse origin/ci/add-alembic)  
 
           if [[ "$MERGE_BASE" == "$DEV_HEAD" ]]; then
             echo "✅ Dev branch is merged"
@@ -33,7 +33,7 @@ jobs:
           echo "Checking for modifications to existing migration files from dev..."
 
           # Get list of migration files that exist on dev branch
-          DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ | grep '\.py$' || true)
+          DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/ci/add-alembic -- backend/alembic/versions/ | grep '\.py$' || true)
           
           if [[ -n "$DEV_MIGRATIONS" ]]; then
             echo "Migration files found on dev branch:"
@@ -44,7 +44,7 @@ jobs:
               # Does the file exist in this PR branch?
               if git ls-tree -r --name-only HEAD -- "$file" | grep -q .; then
                 # File exists; check if modified
-                if ! git diff --quiet origin/dev HEAD -- "$file"; then
+                if ! git diff --quiet origin/ci/add-alembic HEAD -- "$file"; then
                   MODIFIED_FILES="$MODIFIED_FILES\n$file (modified)"
                 fi
               else
