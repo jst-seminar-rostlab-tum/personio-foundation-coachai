@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 HEADS=$(uv run alembic heads | wc -l)
 if [ "$HEADS" -gt 1 ]; then
