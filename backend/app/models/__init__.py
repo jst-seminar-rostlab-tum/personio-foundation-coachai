@@ -1,5 +1,5 @@
 from app.models.admin_dashboard_stats import AdminDashboardStats
-from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
+from app.models.app_config import AppConfig, ConfigType
 from app.models.conversation_category import (
     ConversationCategory,
     ConversationCategoryCreate,
@@ -94,8 +94,6 @@ __all__ = [
     'UserProfileExtendedRead',
     'PersonalizationOptionRead',
     'AppConfig',
-    'AppConfigCreate',
-    'AppConfigRead',
     'ConfigType',
     'AdminDashboardStats',
     'Review',
