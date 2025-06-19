@@ -1,7 +1,0 @@
-          docker logs -f "$CID"
-          EXIT=$(docker wait "$CID")
-          if [[ "$EXIT" -eq 0 ]]; then
-            echo "✅- Migration checks passed"
-          else
-            echo "❌- Migration checks failed"
-            exit 1

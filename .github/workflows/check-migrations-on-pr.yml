@@ -10,7 +10,6 @@ jobs:
   pre-checks:
     name: Pre-migration checks
     runs-on: ubuntu-22.04
-    if: false
     steps:
       - uses: actions/checkout@v4
         with:
@@ -71,7 +70,7 @@ jobs:
   migrations:
     name: Check migrations
     runs-on: ubuntu-22.04
-    # needs: pre-checks
+    needs: pre-checks
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
@@ -97,9 +96,6 @@ jobs:
             [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
-      - name: Show line endings
-        run: |
-          cat -A .husky/test-migrations.sh
       - name: Run migrations
         run: |
           CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations | tail -n1)
@@ -111,5 +107,3 @@ jobs:
             echo "❌- Migration checks failed"
             exit 1
           fi
-      - name: Dummy run after migrations
-        run: echo "No syntax error!"
