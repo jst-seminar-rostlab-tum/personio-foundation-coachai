@@ -33,6 +33,10 @@ from app.schemas.session_feedback import (
     SessionExamplesCollection,
     SessionFeedbackMetrics,
 )
+from app.schemas.session_turn import (
+    SessionTurnCreate,
+    SessionTurnRead,
+)
 
 __all__ = [
     'MessageSchema',
@@ -67,4 +71,6 @@ __all__ = [
     'RecommendationsRequest',
     'SessionExamplesCollection',
     'SessionFeedbackMetrics',
+    'SessionTurnCreate',
+    'SessionTurnRead',
 ]

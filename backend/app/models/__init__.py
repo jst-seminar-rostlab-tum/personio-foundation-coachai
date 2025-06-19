@@ -17,11 +17,7 @@ from app.models.session import (
     SessionRead,
 )
 from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
-from app.models.session_turn import (
-    SessionTurn,
-    SessionTurnCreate,
-    SessionTurnRead,
-)
+from app.models.session_turn import SessionTurn
 from app.models.user_confidence_score import (
     ConfidenceScoreRead,
     UserConfidenceScore,
@@ -46,8 +42,6 @@ __all__ = [
     'ScenarioPreparation',
     'ScenarioPreparationStatus',
     'SessionTurn',
-    'SessionTurnCreate',
-    'SessionTurnRead',
     'SessionFeedback',
     'UserProfile',
     'UserProfileRead',
