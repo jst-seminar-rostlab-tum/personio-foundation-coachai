@@ -96,7 +96,7 @@ jobs:
             [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
-      - name: Debug: show line endings
+      - name: Show line endings
         run: |
           cat -A .husky/test-migrations.sh
       - name: Run migrations
