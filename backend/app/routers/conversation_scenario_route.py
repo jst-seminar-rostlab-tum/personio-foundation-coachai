@@ -21,7 +21,7 @@ from app.schemas.conversation_scenario import (
     ConversationScenarioCreate,
     ConversationScenarioRead,
 )
-from app.schemas.scenario_preparation_schema import ScenarioPreparationRequest
+from app.schemas.scenario_preparation import ScenarioPreparationRequest
 from app.services.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,

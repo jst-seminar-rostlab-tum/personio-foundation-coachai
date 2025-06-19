@@ -8,7 +8,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel
 
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.schemas.scenario_preparation_schema import KeyConcept, ScenarioPreparationRequest
+from app.schemas.scenario_preparation import KeyConcept, ScenarioPreparationRequest
 from app.services.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,

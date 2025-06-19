@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from app.schemas.scenario_preparation_schema import (
+from app.schemas.scenario_preparation import (
     ChecklistRequest,
     KeyConcept,
     KeyConceptOutput,
