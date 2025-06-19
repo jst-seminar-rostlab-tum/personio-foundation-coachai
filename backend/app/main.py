@@ -53,11 +53,3 @@ app.include_router(realtime_session_route.router)
 @app.on_event('startup')
 def on_startup() -> None:
     create_db_and_tables()
-
-
-# app.include_router(twilio_route.router)
-
-
-@app.get('')
-async def root() -> dict:
-    return {'message': 'Welcome to the API'}
