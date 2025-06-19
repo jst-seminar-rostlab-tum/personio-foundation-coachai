@@ -16,7 +16,7 @@ from app.models.session_turn import SessionTurn
 from app.models.user_confidence_score import (
     UserConfidenceScore,
 )
-from app.models.user_goal import UserGoal, UserGoalCreate, UserGoalRead
+from app.models.user_goal import UserGoal
 from app.models.user_profile import (
     UserProfile,
     UserProfileExtendedRead,
@@ -36,8 +36,6 @@ __all__ = [
     'UserProfile',
     'UserProfileRead',
     'UserGoal',
-    'UserGoalCreate',
-    'UserGoalRead',
     'FeedbackStatusEnum',
     'UserConfidenceScore',
     'UserProfileExtendedRead',
