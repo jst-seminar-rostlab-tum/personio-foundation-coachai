@@ -15,7 +15,6 @@ from app.routers import (
     rating_route,
     realtime_session_route,
     review_route,
-    scenario_preparation_route,
     session_feedback_route,
     session_route,
     session_turn_route,
@@ -45,7 +44,6 @@ app.include_router(auth_route.router)
 app.include_router(conversation_category_route.router)
 app.include_router(conversation_scenario_route.router)
 app.include_router(session_route.router)
-app.include_router(scenario_preparation_route.router)
 app.include_router(session_turn_route.router)
 app.include_router(session_feedback_route.router)
 app.include_router(rating_route.router)
