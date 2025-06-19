@@ -10,17 +10,17 @@ from starlette.responses import JSONResponse
 from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import (
-    ConversationScenario,
-    ConversationScenarioCreate,
-    ConversationScenarioRead,
-)
+from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import (
     ScenarioPreparation,
     ScenarioPreparationRead,
     ScenarioPreparationStatus,
 )
 from app.models.user_profile import UserProfile
+from app.schemas.conversation_scenario import (
+    ConversationScenarioCreate,
+    ConversationScenarioRead,
+)
 from app.schemas.scenario_preparation_schema import ScenarioPreparationRequest
 from app.services.scenario_preparation_service import (
     create_pending_preparation,

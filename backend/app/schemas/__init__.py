@@ -1,6 +1,7 @@
 from app.schemas.admin_dashboard_stats import AdminDashboardStatsRead
 from app.schemas.app_config import AppConfigCreate, AppConfigRead
 from app.schemas.conversation_category import ConversationCategoryRead
+from app.schemas.conversation_scenario import ConversationScenarioCreate, ConversationScenarioRead
 from app.schemas.message_schema import MessageCreateSchema, MessageSchema
 
 __all__ = [
@@ -10,4 +11,6 @@ __all__ = [
     'AppConfigCreate',
     'AppConfigRead',
     'ConversationCategoryRead',
+    'ConversationScenarioCreate',
+    'ConversationScenarioRead',
 ]
