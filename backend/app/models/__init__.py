@@ -10,12 +10,7 @@ from app.models.scenario_preparation import (
     ScenarioPreparation,
     ScenarioPreparationStatus,
 )
-from app.models.session import (
-    Session,
-    SessionCreate,
-    SessionDetailsRead,
-    SessionRead,
-)
+from app.models.session import Session, SessionStatus
 from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
 from app.models.session_turn import SessionTurn
 from app.models.user_confidence_score import (
@@ -36,9 +31,7 @@ __all__ = [
     'ConversationScenario',
     'ConversationScenarioStatus',
     'Session',
-    'SessionCreate',
-    'SessionRead',
-    'SessionDetailsRead',
+    'SessionStatus',
     'ScenarioPreparation',
     'ScenarioPreparationStatus',
     'SessionTurn',

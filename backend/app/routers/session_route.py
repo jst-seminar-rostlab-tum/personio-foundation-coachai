@@ -14,14 +14,7 @@ from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.models.session import (
-    Session,
-    SessionCreate,
-    SessionDetailsRead,
-    SessionRead,
-    SessionStatus,
-    SessionUpdate,
-)
+from app.models.session import Session, SessionStatus
 from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
 from app.models.session_turn import SessionTurn
 from app.models.sessions_paginated import (
@@ -30,6 +23,12 @@ from app.models.sessions_paginated import (
     SkillScores,
 )
 from app.models.user_profile import AccountRole, UserProfile
+from app.schemas.session import (
+    SessionCreate,
+    SessionDetailsRead,
+    SessionRead,
+    SessionUpdate,
+)
 from app.schemas.session_feedback import ExamplesRequest, SessionFeedbackMetrics
 from app.services.session_feedback_service import generate_and_store_feedback
 

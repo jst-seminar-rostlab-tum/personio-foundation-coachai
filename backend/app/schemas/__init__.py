@@ -21,6 +21,12 @@ from app.schemas.scenario_preparation import (
     ScenarioPreparationRead,
     StringListResponse,
 )
+from app.schemas.session import (
+    SessionCreate,
+    SessionDetailsRead,
+    SessionRead,
+    SessionUpdate,
+)
 from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -73,4 +79,8 @@ __all__ = [
     'SessionFeedbackMetrics',
     'SessionTurnCreate',
     'SessionTurnRead',
+    'SessionCreate',
+    'SessionDetailsRead',
+    'SessionRead',
+    'SessionUpdate',
 ]
