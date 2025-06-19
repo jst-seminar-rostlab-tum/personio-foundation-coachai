@@ -2,5 +2,18 @@
   "backToDashboard": "Zurück zur Dashboard",
   "loading": "Wird geladen...",
   "loadMore": "Mehr laden",
-  "error": "Fehler beim Laden der Daten"
+  "error": "Fehler beim Laden der Daten",
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die Seite, die Sie aufrufen möchten, wurde möglicherweise verschoben, gelöscht oder Sie haben eine falsche URL eingegeben.",
+    "backAbout": "Zurück zur Startseite",
+    "backDashboard": "Zurück zum Dashboard"
+  },
+  "errorPage": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Es tut uns leid, aber etwas ist schiefgelaufen. Bitte versuchen Sie, die Seite zu aktualisieren, oder kontaktieren Sie den Support, falls das Problem weiterhin besteht.",
+    "tryAgain": "Erneut versuchen",
+    "backAbout": "Zurück zur Startseite",
+    "backDashboard": "Zurück zum Dashboard"
+  }
 }
