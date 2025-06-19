@@ -225,18 +225,18 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         # Assert for vector_db_prompt_extension_1
         _ = generate_recommendations(req, vector_db_prompt_extension=vector_db_prompt_extension_1)
-        assert mock_llm.called
+        self.assertTrue(mock_llm.called)
         args, kwargs = mock_llm.call_args
         request_prompt = kwargs['request_prompt']
-        assert vector_db_prompt_extension_1 in request_prompt
+        self.assertTrue(vector_db_prompt_extension_1 in request_prompt)
 
         # Assert for vector_db_prompt_extension_2
         _ = generate_recommendations(req, vector_db_prompt_extension=vector_db_prompt_extension_2)
-        assert mock_llm.called
+        self.assertTrue(mock_llm.called)
         args, kwargs = mock_llm.call_args
         request_prompt = kwargs['request_prompt']
-        assert vector_db_prompt_extension_base not in request_prompt
-        assert len(request_prompt) > 0
+        self.assertTrue(vector_db_prompt_extension_base not in request_prompt)
+        self.assertTrue(len(request_prompt) > 0)
 
 
 if __name__ == '__main__':
