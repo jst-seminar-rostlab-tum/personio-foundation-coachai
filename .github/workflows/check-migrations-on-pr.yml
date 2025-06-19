@@ -109,3 +109,5 @@ jobs:
           else
             echo "❌- Migration checks failed"
             exit 1
+      - name: Dummy run after migrations
+        run: echo "No syntax error!"
