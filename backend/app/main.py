@@ -12,13 +12,10 @@ from app.routers import (
     auth_route,
     conversation_category_route,
     conversation_scenario_route,
-    rating_route,
     realtime_session_route,
     review_route,
     session_route,
     session_turn_route,
-    user_confidence_score_route,
-    user_goals_route,
     user_profile_route,
     user_profile_stats_route,
 )
@@ -44,11 +41,8 @@ app.include_router(conversation_category_route.router)
 app.include_router(conversation_scenario_route.router)
 app.include_router(session_route.router)
 app.include_router(session_turn_route.router)
-app.include_router(rating_route.router)
 app.include_router(user_profile_route.router)
 app.include_router(user_profile_stats_route.router)
-app.include_router(user_goals_route.router)
-app.include_router(user_confidence_score_route.router)
 app.include_router(app_config_route.router)
 app.include_router(admin_dashboard_stats_route.router)
 app.include_router(review_route.router)
