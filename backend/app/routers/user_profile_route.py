@@ -9,14 +9,14 @@ from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import Goal, UserGoal
-from app.models.user_profile import (
-    UserProfile,
+from app.models.user_profile import UserProfile
+from app.schemas.user_confidence_score import ConfidenceScoreRead
+from app.schemas.user_profile import (
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
 )
-from app.schemas.user_confidence_score import ConfidenceScoreRead
 
 router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
 

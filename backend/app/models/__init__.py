@@ -17,11 +17,7 @@ from app.models.user_confidence_score import (
     UserConfidenceScore,
 )
 from app.models.user_goal import UserGoal
-from app.models.user_profile import (
-    UserProfile,
-    UserProfileExtendedRead,
-    UserProfileRead,
-)
+from app.models.user_profile import UserProfile
 
 __all__ = [
     'ConversationCategory',
@@ -34,11 +30,9 @@ __all__ = [
     'SessionTurn',
     'SessionFeedback',
     'UserProfile',
-    'UserProfileRead',
     'UserGoal',
     'FeedbackStatusEnum',
     'UserConfidenceScore',
-    'UserProfileExtendedRead',
     'AppConfig',
     'ConfigType',
     'AdminDashboardStats',

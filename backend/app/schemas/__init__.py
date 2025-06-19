@@ -44,6 +44,13 @@ from app.schemas.session_turn import (
     SessionTurnRead,
 )
 from app.schemas.user_confidence_score import ConfidenceScoreRead
+from app.schemas.user_profile import (
+    UserProfileExtendedRead,
+    UserProfileRead,
+    UserProfileReplace,
+    UserProfileUpdate,
+    UserStatisticsRead,
+)
 
 __all__ = [
     'MessageSchema',
@@ -85,4 +92,9 @@ __all__ = [
     'SessionRead',
     'SessionUpdate',
     'ConfidenceScoreRead',
+    'UserProfileUpdate',
+    'UserProfileReplace',
+    'UserProfileRead',
+    'UserProfileExtendedRead',
+    'UserStatisticsRead',
 ]

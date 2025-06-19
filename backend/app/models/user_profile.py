@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 from enum import Enum
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import event
@@ -10,14 +10,12 @@ from sqlmodel import Field, Relationship
 
 from app.models.camel_case import CamelModel
 from app.models.language import LanguageCode
-from app.models.user_goal import Goal
-from app.schemas.user_confidence_score import ConfidenceScoreRead
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
     from app.models.review import Review
     from app.models.user_confidence_score import UserConfidenceScore
-    from app.models.user_goal import Goal, UserGoal
+    from app.models.user_goal import UserGoal
 
 
 class AccountRole(str, Enum):
@@ -84,60 +82,3 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
 @event.listens_for(UserProfile, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfile') -> None:
     target.updated_at = datetime.now(UTC)
-
-
-class UserProfileUpdate(CamelModel):
-    preferred_language_code: Optional[LanguageCode] = None
-    account_role: Optional[AccountRole] = None
-    professional_role: Optional[ProfessionalRole] = None
-    experience: Optional[Experience] = None
-    preferred_learning_style: Optional[PreferredLearningStyle] = None
-    store_conversations: Optional[bool] = None
-    goals: Optional[list[Goal]] = None
-    confidence_scores: Optional[list[ConfidenceScoreRead]] = None
-
-
-class UserProfileReplace(CamelModel):
-    full_name: str
-    preferred_language_code: LanguageCode
-    account_role: AccountRole
-    professional_role: ProfessionalRole
-    experience: Experience
-    preferred_learning_style: PreferredLearningStyle
-    store_conversations: bool
-    goals: list[Goal]
-    confidence_scores: list[ConfidenceScoreRead]
-
-
-# Schema for reading UserProfile data
-class UserProfileRead(CamelModel):
-    user_id: UUID
-    full_name: str
-    email: str
-    phone_number: str
-    preferred_language_code: LanguageCode
-    account_role: AccountRole
-    professional_role: ProfessionalRole
-    experience: Experience
-    preferred_learning_style: PreferredLearningStyle
-    updated_at: datetime
-    store_conversations: bool
-
-
-class UserProfileExtendedRead(UserProfileRead):
-    goals: list[Goal]
-    confidence_scores: list[ConfidenceScoreRead]
-
-
-UserProfileExtendedRead.model_rebuild()
-
-
-# Schema for reading User Statistics
-class UserStatisticsRead(CamelModel):
-    total_sessions: int
-    training_time: float  # in hours
-    current_streak_days: int
-    average_score: int
-    goals_achieved: int  # summation of all goals achieved
-    performance_over_time: list[int]
-    skills_performance: dict[str, int]
