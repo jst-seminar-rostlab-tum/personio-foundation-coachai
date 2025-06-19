@@ -10,7 +10,6 @@ fi
 psql -h db -U postgres -c "DROP DATABASE IF EXISTS test_migrations;"
 psql -h db -U postgres -c "CREATE DATABASE test_migrations;"
 
-uv run alembic downgrade base
 uv run alembic upgrade head
 uv run alembic check
 uv run alembic downgrade base

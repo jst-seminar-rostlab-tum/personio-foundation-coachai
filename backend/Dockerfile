@@ -11,7 +11,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#caching
 ENV UV_LINK_MODE=copy
 
-# postgresql client
+# postgresql client for alembic tests
 RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies

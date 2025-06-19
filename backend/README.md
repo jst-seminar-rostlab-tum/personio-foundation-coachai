@@ -100,6 +100,9 @@ git checkout -b feature/your-feature-name
 
 ##### 2. Start and initialize the local database
 ```bash
+# Reset the local database
+docker compose down db -v
+
 # Start the database
 docker compose up db -d
 
@@ -148,8 +151,8 @@ Update `backend/app/data/dummy_data` with your model changes. To see if everythi
 docker compose up init-db -d
 ```
 
-##### 7. Commit and push your Changes
-A pre-push hook is executed when committing changes to `backend/app/models` and/or `backend/alembic/versions`. Within that hook the docker container `test-migrations` is run which executes `./husky/test-migrations.sh` against a separate database with the name `test_migrations`.
+##### 7. Commit and Push your Changes
+A pre-push hook is executed when committing changes to `backend/app/models`, `backend/alembic/versions` and/or `backend/alembic/data`. Within that hook the docker container `test-migrations` is run which executes `./husky/test-migrations.sh` against a separate database with the name `test_migrations`.
 
 ##### Important Rule
 - **Never edit migration scripts once they're merged to `dev`**
