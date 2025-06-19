@@ -21,7 +21,7 @@ from app.schemas.scenario_preparation import (
     ScenarioPreparationRead,
     StringListResponse,
 )
-from app.schemas.session_feedback_schema import (
+from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
     GoalsAchievementRequest,

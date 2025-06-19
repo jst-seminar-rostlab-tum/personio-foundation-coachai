@@ -30,7 +30,7 @@ from app.models.sessions_paginated import (
     SkillScores,
 )
 from app.models.user_profile import AccountRole, UserProfile
-from app.schemas.session_feedback_schema import ExamplesRequest, SessionFeedbackMetrics
+from app.schemas.session_feedback import ExamplesRequest, SessionFeedbackMetrics
 from app.services.session_feedback_service import generate_and_store_feedback
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
