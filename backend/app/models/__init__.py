@@ -14,10 +14,7 @@ from app.models.session import Session, SessionStatus
 from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
 from app.models.session_turn import SessionTurn
 from app.models.user_confidence_score import (
-    ConfidenceScoreRead,
     UserConfidenceScore,
-    UserConfidenceScoreCreate,
-    UserConfidenceScoreRead,
 )
 from app.models.user_goal import UserGoal, UserGoalCreate, UserGoalRead
 from app.models.user_profile import (
@@ -43,9 +40,6 @@ __all__ = [
     'UserGoalRead',
     'FeedbackStatusEnum',
     'UserConfidenceScore',
-    'UserConfidenceScoreCreate',
-    'UserConfidenceScoreRead',
-    'ConfidenceScoreRead',
     'UserProfileExtendedRead',
     'AppConfig',
     'ConfigType',

@@ -10,8 +10,8 @@ from sqlmodel import Field, Relationship
 
 from app.models.camel_case import CamelModel
 from app.models.language import LanguageCode
-from app.models.user_confidence_score import ConfidenceScoreRead
 from app.models.user_goal import Goal
+from app.schemas.user_confidence_score import ConfidenceScoreRead
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
