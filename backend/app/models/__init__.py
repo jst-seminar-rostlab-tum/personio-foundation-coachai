@@ -1,10 +1,6 @@
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig, ConfigType
-from app.models.conversation_category import (
-    ConversationCategory,
-    ConversationCategoryCreate,
-    ConversationCategoryRead,
-)
+from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioCreate,
@@ -55,8 +51,6 @@ from app.models.user_profile import (
 
 __all__ = [
     'ConversationCategory',
-    'ConversationCategoryCreate',
-    'ConversationCategoryRead',
     'ConversationScenario',
     'ConversationScenarioCreate',
     'ConversationScenarioRead',
