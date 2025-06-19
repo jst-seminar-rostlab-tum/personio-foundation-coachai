@@ -5,7 +5,6 @@ from app.models.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioStatus,
 )
-from app.models.rating import Rating, RatingCreate, RatingRead
 from app.models.review import Review, ReviewCreate, ReviewRead
 from app.models.scenario_preparation import (
     ScenarioPreparation,
@@ -64,9 +63,6 @@ __all__ = [
     'SessionFeedback',
     'SessionFeedbackCreate',
     'SessionFeedbackRead',
-    'Rating',
-    'RatingCreate',
-    'RatingRead',
     'UserProfile',
     'UserProfileRead',
     'UserGoal',
