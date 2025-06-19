@@ -3,6 +3,13 @@ from app.schemas.app_config import AppConfigCreate, AppConfigRead
 from app.schemas.conversation_category import ConversationCategoryRead
 from app.schemas.conversation_scenario import ConversationScenarioCreate, ConversationScenarioRead
 from app.schemas.message_schema import MessageCreateSchema, MessageSchema
+from app.schemas.review import (
+    PaginatedReviewsResponse,
+    ReviewCreate,
+    ReviewRead,
+    ReviewResponse,
+    ReviewStatistics,
+)
 
 __all__ = [
     'MessageSchema',
@@ -13,4 +20,9 @@ __all__ = [
     'ConversationCategoryRead',
     'ConversationScenarioCreate',
     'ConversationScenarioRead',
+    'ReviewCreate',
+    'ReviewRead',
+    'ReviewResponse',
+    'ReviewStatistics',
+    'PaginatedReviewsResponse',
 ]
