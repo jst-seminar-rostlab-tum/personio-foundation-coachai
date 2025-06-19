@@ -52,7 +52,6 @@ from app.models.user_profile import (
     UserProfileExtendedRead,
     UserProfileRead,
 )
-from app.schemas.admin_dashboard_stats import AdminDashboardStatsRead
 
 __all__ = [
     'ConversationCategory',
@@ -99,7 +98,6 @@ __all__ = [
     'AppConfigRead',
     'ConfigType',
     'AdminDashboardStats',
-    'AdminDashboardStatsRead',
     'Review',
     'ReviewCreate',
     'ReviewRead',
