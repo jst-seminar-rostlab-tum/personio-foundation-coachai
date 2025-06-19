@@ -3,10 +3,11 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from sqlmodel import Session as DBSession
+from sqlmodel import select
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
-from app.models import FeedbackStatusEnum, SessionFeedback
+from app.models import FeedbackStatusEnum, SessionFeedback, UserProfile
 from app.schemas.session_feedback_schema import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -135,7 +136,7 @@ def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollect
     {request.objectives}
 
     Instructions:
-    - For each goal, determine if the user’s speech aligns with 
+    - For each goal, determine if the user's speech aligns with 
         and fulfills the intention behind it.
     - Only count goals that are clearly demonstrated in the user's statements.
 
@@ -212,21 +213,22 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
     Format your output as a list of 'Recommendation' objects.
     Each recommendation represents a Pydantic model with two fields:
     - `heading`: A short title or summary of the recommendation
-    - `text`: A description or elaboration of the recommendation
+    - `recommendation`: A description or elaboration of the recommendation
 
     Do not include markdown, explanation, or code formatting.
 
     Example Recommendations:
     1. heading: "Practice the STAR method", 
-    text: "When giving feedback, use the Situation, Task, Action, Result framework to provide more 
-    concrete examples."
+    recommendation: "When giving feedback, use the Situation, Task, Action, 
+    Result framework to provide more concrete examples."
     
     2. heading: "Ask more diagnostic questions", 
-    text: "Spend more time understanding root causes before moving to solutions. 
+    recommendation: "Spend more time understanding root causes before moving to solutions. 
     This builds empathy and leads to more effective outcomes."
 
     3. heading: "Define clear next steps",
-    text: "End feedback conversations with agreed-upon action items, timelines, and follow-up plans.
+    recommendation: "End feedback conversations with agreed-upon action items, 
+    timelines, and follow-up plans."
 
     """
     response = call_structured_llm(
@@ -328,8 +330,16 @@ def generate_and_store_feedback(
         updated_at=datetime.now(),
     )
 
+    # Update user profile with feedback
+    user = db_session.exec(select(UserProfile).where(UserProfile.id == session_id)).first()
+    if user:
+        user.goals_achieved += len(goals.goals_achieved)
+        db_session.add(user)
+        db_session.commit()
+
     db_session.add(feedback)
     db_session.commit()
+
     return feedback
 
 
@@ -374,12 +384,12 @@ if __name__ == '__main__':
 
     for example in examples.positive_examples:
         print(f'Positive Example: {example.heading}')
-        print(f'Text: {example.feedback}')
+        print(f'Feedback: {example.feedback}')
         print(f'Quote: {example.quote}')
 
     for example in examples.negative_examples:
         print(f'Negative Example: {example.heading}')
-        print(f'Text: {example.feedback}')
+        print(f'Feedback: {example.feedback}')
         print(f'Quote: {example.quote}')
         print(f'Improved Quote: {example.improved_quote}\n')
 
@@ -407,5 +417,5 @@ if __name__ == '__main__':
     recommendations = generate_recommendations(recommendation_request)
     for recommendation in recommendations.recommendations:
         print(f'Recommendation: {recommendation.heading}')
-        print(f'Text: {recommendation.recommendation}\n')
+        print(f'Recommendation: {recommendation.recommendation}\n')
     print('Recommendations generated successfully.')

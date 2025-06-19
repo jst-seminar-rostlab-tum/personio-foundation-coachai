@@ -2,13 +2,13 @@
   "metaTitle": "Feedback - Coach AI",
   "metaDescription": "Detailed analysis and evaluation of your training session",
   "title": "Performance Summary",
-  "feedbackDialog": {
-    "open": "Give Feedback",
-    "title": "Feedback",
-    "description": "How was the training session? Help us improve by providing your feedback.",
-    "rate": "Submit Feedback",
-    "submitFeedbackError": "Error while submitting feedback. Please try again later.",
-    "submitFeedbackSuccess": "Feedback submitted successfully. Thank you for your input!"
+  "reviewDialog": {
+    "open": "Give Review",
+    "title": "Review",
+    "description": "How was the training session? Help us improve by providing your review.",
+    "rate": "Submit Review",
+    "submitReviewError": "Error while submitting review. Please try again later.",
+    "submitReviewSuccess": "Review submitted successfully. Thank you for your review!"
   },
   "progressBars": {
     "structure": "Structure",
