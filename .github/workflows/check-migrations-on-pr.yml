@@ -1,6 +1,7 @@
 name: Check Migrations on PR
+
 on:
-  push:
+  pull_request:
     paths:
       - 'backend/app/models/**'
       - 'backend/alembic/versions/**'
