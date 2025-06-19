@@ -5,7 +5,6 @@ from app.models.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioStatus,
 )
-from app.models.personalization_option import PersonalizationOptionRead
 from app.models.rating import Rating, RatingCreate, RatingRead
 from app.models.review import Review, ReviewCreate, ReviewRead
 from app.models.scenario_preparation import (
@@ -82,7 +81,6 @@ __all__ = [
     'UserConfidenceScoreRead',
     'ConfidenceScoreRead',
     'UserProfileExtendedRead',
-    'PersonalizationOptionRead',
     'AppConfig',
     'ConfigType',
     'AdminDashboardStats',
