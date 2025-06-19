@@ -8,8 +8,6 @@ from app.models.conversation_scenario import (
 from app.models.review import Review
 from app.models.scenario_preparation import (
     ScenarioPreparation,
-    ScenarioPreparationCreate,
-    ScenarioPreparationRead,
     ScenarioPreparationStatus,
 )
 from app.models.session import (
@@ -54,8 +52,6 @@ __all__ = [
     'SessionRead',
     'SessionDetailsRead',
     'ScenarioPreparation',
-    'ScenarioPreparationCreate',
-    'ScenarioPreparationRead',
     'ScenarioPreparationStatus',
     'SessionTurn',
     'SessionTurnCreate',

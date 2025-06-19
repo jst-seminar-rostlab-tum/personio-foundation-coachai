@@ -10,6 +10,17 @@ from app.schemas.review import (
     ReviewResponse,
     ReviewStatistics,
 )
+from app.schemas.scenario_preparation import (
+    ChecklistRequest,
+    ConversationScenarioBase,
+    KeyConcept,
+    KeyConceptRequest,
+    KeyConceptResponse,
+    ObjectiveRequest,
+    ScenarioPreparationCreate,
+    ScenarioPreparationRead,
+    StringListResponse,
+)
 
 __all__ = [
     'MessageSchema',
@@ -25,4 +36,13 @@ __all__ = [
     'ReviewResponse',
     'ReviewStatistics',
     'PaginatedReviewsResponse',
+    'ChecklistRequest',
+    'ConversationScenarioBase',
+    'KeyConcept',
+    'KeyConceptRequest',
+    'KeyConceptResponse',
+    'ObjectiveRequest',
+    'ScenarioPreparationCreate',
+    'ScenarioPreparationRead',
+    'StringListResponse',
 ]

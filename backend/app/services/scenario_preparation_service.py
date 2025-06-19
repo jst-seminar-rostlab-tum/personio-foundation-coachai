@@ -12,10 +12,10 @@ from app.models.scenario_preparation import ScenarioPreparation, ScenarioPrepara
 from app.schemas.scenario_preparation import (
     ChecklistRequest,
     KeyConcept,
-    KeyConceptOutput,
     KeyConceptRequest,
+    KeyConceptResponse,
     ObjectiveRequest,
-    ScenarioPreparationRequest,
+    ScenarioPreparationCreate,
     StringListResponse,
 )
 
@@ -123,7 +123,8 @@ def build_key_concept_prompt(request: KeyConceptRequest, example: str) -> str:
 You are a training assistant. Based on the HR professionals conversation scenario below, 
 generate 3-4 key concepts for the conversation.
 
-Your output must strictly follow this JSON format representing a Pydantic model `KeyConceptOutput`:
+Your output must strictly follow this JSON format representing 
+a Pydantic model `KeyConceptResponse`:
 
 {{
   "items": [
@@ -174,14 +175,14 @@ def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
             value='Ask open-ended questions to encourage dialogue and exploration.',
         ),
     ]
-    mock_response = KeyConceptOutput(items=mock_key_concept)
+    mock_response = KeyConceptResponse(items=mock_key_concept)
 
     prompt = build_key_concept_prompt(request, mock_response.model_dump_json(indent=4))
 
     result = call_structured_llm(
         request_prompt=prompt,
         model='gpt-4o-2024-08-06',
-        output_model=KeyConceptOutput,
+        output_model=KeyConceptResponse,
         mock_response=mock_response,
     )
     return result.items
@@ -205,7 +206,7 @@ def create_pending_preparation(scenario_id: UUID, db_session: DBSession) -> Scen
 
 def generate_scenario_preparation(
     preparation_id: UUID,
-    request: ScenarioPreparationRequest,
+    new_preparation: ScenarioPreparationCreate,
     session_generator_func: Callable[[], Generator[DBSession, None, None]],
 ) -> ScenarioPreparation:
     """
@@ -227,24 +228,24 @@ def generate_scenario_preparation(
 
         # 2. build request objects
         objectives_request = ObjectiveRequest(
-            category=request.category,
-            goal=request.goal,
-            context=request.context,
-            other_party=request.other_party,
-            num_objectives=request.num_objectives,
+            category=new_preparation.category,
+            goal=new_preparation.goal,
+            context=new_preparation.context,
+            other_party=new_preparation.other_party,
+            num_objectives=new_preparation.num_objectives,
         )
         checklist_request = ChecklistRequest(
-            category=request.category,
-            goal=request.goal,
-            context=request.context,
-            other_party=request.other_party,
-            num_checkpoints=request.num_checkpoints,
+            category=new_preparation.category,
+            goal=new_preparation.goal,
+            context=new_preparation.context,
+            other_party=new_preparation.other_party,
+            num_checkpoints=new_preparation.num_checkpoints,
         )
         key_concept_request = KeyConceptRequest(
-            category=request.category,
-            goal=request.goal,
-            context=request.context,
-            other_party=request.other_party,
+            category=new_preparation.category,
+            goal=new_preparation.goal,
+            context=new_preparation.context,
+            other_party=new_preparation.other_party,
         )
 
         has_error = False

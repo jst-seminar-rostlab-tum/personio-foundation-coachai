@@ -13,7 +13,6 @@ from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import (
     ScenarioPreparation,
-    ScenarioPreparationRead,
     ScenarioPreparationStatus,
 )
 from app.models.user_profile import UserProfile
@@ -21,7 +20,7 @@ from app.schemas.conversation_scenario import (
     ConversationScenarioCreate,
     ConversationScenarioRead,
 )
-from app.schemas.scenario_preparation import ScenarioPreparationRequest
+from app.schemas.scenario_preparation import ScenarioPreparationCreate, ScenarioPreparationRead
 from app.services.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,
@@ -58,7 +57,7 @@ def create_conversation_scenario_with_preparation(
     # 3. Initialize preparation（status = pending）
     prep = create_pending_preparation(new_conversation_scenario.id, db_session)
 
-    preparation_request = ScenarioPreparationRequest(
+    new_preparation = ScenarioPreparationCreate(
         category=category.name if category else '',
         context=new_conversation_scenario.context,
         goal=new_conversation_scenario.goal,
@@ -69,7 +68,7 @@ def create_conversation_scenario_with_preparation(
 
     # 4. Start background task to generate preparation
     background_tasks.add_task(
-        generate_scenario_preparation, prep.id, preparation_request, get_db_session
+        generate_scenario_preparation, prep.id, new_preparation, get_db_session
     )
     # 5. Return response
     return JSONResponse(
