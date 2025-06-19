@@ -15,4 +15,5 @@ uv run alembic upgrade head
 uv run alembic check
 uv run alembic downgrade base
 uv run alembic upgrade head
+uv run alembic downgrade base
 uv run -m app.data.populate_dummy_data
