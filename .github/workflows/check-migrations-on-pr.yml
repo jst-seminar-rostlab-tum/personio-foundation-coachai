@@ -2,10 +2,6 @@ name: Check Migrations on PR
 
 on:
   pull_request:
-    paths:
-      - 'backend/app/models/**'
-      - 'backend/alembic/versions/**'
-      - 'backend/alembic/data/**'
 
 jobs:
   pre-checks:
@@ -16,7 +12,18 @@ jobs:
         with:
           fetch-depth: 0 
 
+      - name: Check for backend changes
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            backend/app/models/**
+            backend/alembic/versions/**
+            backend/alembic/data/**
+            backend/app/data/**
+
       - name: Check if dev branch is merged
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: |          
           MERGE_BASE=$(git merge-base HEAD origin/dev)   
           DEV_HEAD=$(git rev-parse origin/dev)  
@@ -30,6 +37,7 @@ jobs:
           fi
 
       - name: Check for modified dev migration files
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           echo "Checking for modifications to existing migration files from dev..."
 
@@ -67,23 +75,48 @@ jobs:
           else
             echo "✅ No migration files found on dev branch"
           fi
+      
+      - name: No relevant changes, skipping migration pre-checks
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "No relevant changes, skipping migration pre-checks."
 
+  
   migrations:
     name: Check migrations
     runs-on: ubuntu-22.04
     needs: pre-checks
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check for backend changes
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            backend/app/models/**
+            backend/alembic/versions/**
+            backend/alembic/data/**
+            backend/app/data/**
+
       - name: Install uv
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: pipx install uv
+
       - name: Install dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: uv sync
         working-directory: ./backend
+
       - name: Create network
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: docker network create app-network
+
       - name: Start database
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans db
+
       - name: Wait for database startup
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           echo "Waiting for database to be healthy..."
           for i in {1..60}; do
@@ -97,7 +130,9 @@ jobs:
             [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
+      
       - name: Run migrations
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations | tail -n1)
           docker logs -f "$CID"
@@ -108,3 +143,7 @@ jobs:
             echo "❌- Migration checks failed"
             exit 1
           fi
+      
+      - name: No relevant changes, skipping migration checks
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "No relevant changes, skipping migration checks."
