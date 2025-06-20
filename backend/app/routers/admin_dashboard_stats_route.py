@@ -23,7 +23,6 @@ def get_admin_dashboard_service(
     dependencies=[Depends(require_admin)],
 )
 def get_admin_dashboard_stats(
-    db_session: Annotated[DBSession, Depends(get_db_session)],
     service: Annotated[AdminDashboardService, Depends(get_admin_dashboard_service)],
 ) -> AdminDashboardStatsRead:
     return service.get_admin_dashboard_stats()
