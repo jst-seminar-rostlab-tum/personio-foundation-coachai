@@ -1,7 +1,7 @@
 from typing import Annotated, Optional, Union
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
@@ -11,7 +11,6 @@ from app.models.user_confidence_score import ConfidenceScoreRead, UserConfidence
 from app.models.user_goal import Goal, UserGoal
 from app.models.user_profile import (
     UserProfile,
-    UserProfileCreate,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
@@ -21,7 +20,7 @@ from app.models.user_profile import (
 router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
 
 
-@router.get('/', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
+@router.get('', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
 def get_user_profiles(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     detailed: bool = False,
@@ -40,6 +39,9 @@ def get_user_profiles(
         return [
             UserProfileExtendedRead(
                 user_id=user.id,
+                full_name=user.full_name,
+                email=user.email,
+                phone_number=user.phone_number,
                 preferred_language_code=user.preferred_language_code,
                 account_role=user.account_role,
                 professional_role=user.professional_role,
@@ -62,6 +64,9 @@ def get_user_profiles(
         return [
             UserProfileRead(
                 user_id=user.id,
+                full_name=user.full_name,
+                email=user.email,
+                phone_number=user.phone_number,
                 preferred_language_code=user.preferred_language_code,
                 account_role=user.account_role,
                 professional_role=user.professional_role,
@@ -75,13 +80,13 @@ def get_user_profiles(
 
 
 @router.get(
-    '/profile/',
+    '/profile',
     response_model=Union[UserProfileRead, UserProfileExtendedRead],
 )
 def get_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
-    detailed: bool = False,
+    detailed: bool = Query(False, description='Return extended profile details'),
 ) -> Union[UserProfileRead, UserProfileExtendedRead]:
     """
     Retrieve a single user profile.
@@ -100,6 +105,9 @@ def get_user_profile(
     if detailed:
         return UserProfileExtendedRead(
             user_id=user.id,
+            full_name=user.full_name,
+            email=user.email,
+            phone_number=user.phone_number,
             preferred_language_code=user.preferred_language_code,
             account_role=user.account_role,
             professional_role=user.professional_role,
@@ -119,6 +127,9 @@ def get_user_profile(
     else:
         return UserProfileRead(
             user_id=user.id,
+            full_name=user.full_name,
+            email=user.email,
+            phone_number=user.phone_number,
             preferred_language_code=user.preferred_language_code,
             account_role=user.account_role,
             professional_role=user.professional_role,
@@ -129,72 +140,7 @@ def get_user_profile(
         )
 
 
-@router.post(
-    '/',
-    response_model=UserProfileExtendedRead,
-    status_code=201,
-    dependencies=[Depends(require_user)],
-)
-def create_user_profile(
-    data: UserProfileCreate,
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> UserProfileExtendedRead:
-    # Check if user already exists
-    existing_user = db_session.get(UserProfile, data.user_id)
-    if existing_user:
-        raise HTTPException(status_code=409, detail='User already exists')
-
-    # Create new user profile
-    user = UserProfile(
-        id=data.user_id,
-        account_role=data.account_role,
-        experience=data.experience,
-        preferred_language_code=data.preferred_language_code,
-        preferred_learning_style=data.preferred_learning_style,
-        store_conversations=data.store_conversations,
-    )
-    db_session.add(user)
-    db_session.commit()
-    db_session.refresh(user)
-
-    # Create goals
-    for goal in data.goals:
-        user_goal = UserGoal(user_id=user.id, goal=Goal(goal))
-        db_session.add(user_goal)
-
-    # Create confidence scores
-    for confidence_score in data.confidence_scores:
-        user_confidence_score = UserConfidenceScore(
-            user_id=user.id,
-            confidence_area=confidence_score.confidence_area,
-            score=confidence_score.score,
-        )
-        db_session.add(user_confidence_score)
-
-    db_session.commit()
-    db_session.refresh(user)
-
-    return UserProfileExtendedRead(
-        user_id=user.id,
-        preferred_language_code=user.preferred_language_code,
-        account_role=user.account_role,
-        professional_role=user.professional_role,
-        experience=user.experience,
-        preferred_learning_style=user.preferred_learning_style,
-        goals=[g.goal for g in user.user_goals],
-        confidence_scores=[
-            ConfidenceScoreRead(
-                confidence_area=cs.confidence_area,
-                score=cs.score,
-            )
-            for cs in user.user_confidence_scores
-        ],
-        updated_at=user.updated_at,
-        store_conversations=user.store_conversations,
-    )
-
-
-@router.put('/', response_model=UserProfileExtendedRead)
+@router.put('', response_model=UserProfileExtendedRead)
 def replace_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileReplace,
@@ -206,6 +152,7 @@ def replace_user_profile(
         raise HTTPException(status_code=404, detail='User not found')
 
     # Update UserProfile fields
+    user.full_name = data.full_name
     user.account_role = data.account_role
     user.experience = data.experience
     user.preferred_language_code = data.preferred_language_code
@@ -247,6 +194,9 @@ def replace_user_profile(
 
     return UserProfileExtendedRead(
         user_id=user.id,
+        full_name=user.full_name,
+        email=user.email,
+        phone_number=user.phone_number,
         preferred_language_code=user.preferred_language_code,
         account_role=user.account_role,
         professional_role=user.professional_role,
@@ -265,7 +215,7 @@ def replace_user_profile(
     )
 
 
-@router.patch('/', response_model=UserProfileExtendedRead)
+@router.patch('', response_model=UserProfileExtendedRead)
 def update_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileUpdate,
@@ -327,6 +277,9 @@ def update_user_profile(
 
     return UserProfileExtendedRead(
         user_id=user.id,
+        full_name=user.full_name,
+        email=user.email,
+        phone_number=user.phone_number,
         preferred_language_code=user.preferred_language_code,
         account_role=user.account_role,
         professional_role=user.professional_role,
@@ -345,7 +298,7 @@ def update_user_profile(
     )
 
 
-@router.delete('/', response_model=dict)
+@router.delete('', response_model=dict)
 def delete_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],

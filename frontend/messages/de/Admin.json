@@ -8,7 +8,7 @@
   "statReviews": "Bewertungen",
   "statAverageScore": "Durchschnittliche Bewertung",
   "tokensPerUserLabel": "Tokens/Benutzer/Tag",
-  "userFeedback": "Nutzerfeedback",
+  "userReviews": "Nutzerbewertungen",
   "showAllReviews": "Alle Bewertungen anzeigen",
   "userManagement": "Benutzerverwaltung",
   "trainingCategories": "Trainingskategorien",
@@ -17,5 +17,15 @@
   "users": "Benutzer",
   "actions": "Aktionen",
   "deleteUser": "Benutzer löschen",
-  "loadMore": "Mehr laden"
+  "loadMore": "Mehr laden",
+  "saving": "Speichern...",
+  "save": "Speichern",
+  "tokenSuccess": "Token-Limit erfolgreich gespeichert",
+  "tokenFailed": "Fehler beim Speichern des Token-Limits",
+  "tokenNumberFailed": "Bitte geben Sie eine gültige Zahl (1-1000000) ein",
+  "sortBy": "Sortieren nach",
+  "sortNewest": "Neueste",
+  "sortOldest": "Älteste",
+  "sortHighest": "Höchste",
+  "sortLowest": "Niedrigste"
 }

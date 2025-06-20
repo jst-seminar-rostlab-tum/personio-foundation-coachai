@@ -63,6 +63,7 @@ services:
     entrypoint: ["uv", "run", "-m", "app.data.populate_dummy_data"]
     networks:
       - app-network
+
   db:
     image: pgvector/pgvector:pg17
     ports:
@@ -73,6 +74,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: app_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 2s
+      retries: 5
     networks:
       - app-network
 

@@ -40,6 +40,7 @@ class ReviewResponse(CamelModel):
 class ReviewRead(CamelModel):
     id: UUID
     user_id: UUID
+    user_email: str
     session_id: UUID | None = None  # Optional, can be None if not related to a session
     rating: int
     comment: str

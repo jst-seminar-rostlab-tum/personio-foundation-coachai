@@ -19,7 +19,8 @@ import {
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { SessionPaginated, SessionFromPagination } from '@/interfaces/Session';
 import { api } from '@/services/client/Api';
-import { getPaginatedSessions } from '@/services/server/SessionService';
+import { sessionService } from '@/services/server/SessionService';
+import Link from 'next/link';
 
 export default function PreviousSessions({
   limit,
@@ -43,7 +44,7 @@ export default function PreviousSessions({
     const getSessions = async () => {
       try {
         setIsLoading(true);
-        const response = await getPaginatedSessions(api, pageNumber, limit);
+        const response = await sessionService.getPaginatedSessions(api, pageNumber, limit);
         setSessionsStorage((prev) => [...prev, ...response.data.sessions]);
         setVisibleCount((prev) => prev + limit);
       } catch (e) {
@@ -56,6 +57,7 @@ export default function PreviousSessions({
       getSessions();
     }
   }, [pageNumber, canLoadMore, limit]);
+
   const handleDeleteAll = async () => {
     try {
       setIsDeleting(true);
@@ -100,9 +102,10 @@ export default function PreviousSessions({
       </div>
       <div className="flex flex-col gap-4">
         {sessionsStorage.map((session: SessionFromPagination) => (
-          <div
+          <Link
             key={session.sessionId}
-            className="border border-bw-20 rounded-xl px-4 py-3 flex justify-between items-center"
+            href={`/feedback/${session.sessionId}`}
+            className="border border-bw-20 rounded-xl px-4 py-3 flex justify-between items-center cursor-pointer transition-all duration-300 hover:shadow-md"
           >
             <div>
               <div className="font-semibold text-bw-70 text-sm mb-1">{session.title}</div>
@@ -113,7 +116,7 @@ export default function PreviousSessions({
               <br />
               {session.status}
             </div>
-          </div>
+          </Link>
         ))}
       </div>
       {canLoadMore && (

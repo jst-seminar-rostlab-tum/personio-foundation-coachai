@@ -1,0 +1,110 @@
+name: Check Migrations on PR
+
+on:
+  pull_request:
+    paths:
+      - 'backend/app/models/**'
+      - 'backend/alembic/versions/**'
+      - 'backend/alembic/data/**'
+
+jobs:
+  pre-checks:
+    name: Pre-migration checks
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Check if dev branch is merged
+        run: |          
+          MERGE_BASE=$(git merge-base HEAD origin/dev)   
+          DEV_HEAD=$(git rev-parse origin/dev)  
+
+          if [[ "$MERGE_BASE" == "$DEV_HEAD" ]]; then
+            echo "✅ Dev branch is merged"
+          else
+            echo "❌ Dev branch is not fully merged into this branch"
+            echo "Please merge dev branch before proceeding"
+            exit 1
+          fi
+
+      - name: Check for modified dev migration files
+        run: |
+          echo "Checking for modifications to existing migration files from dev..."
+
+          # Get list of migration files that exist on dev branch
+          DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.py$|\.sql$' || true)
+          
+          if [[ -n "$DEV_MIGRATIONS" ]]; then
+            echo "Migration files found on dev branch:"
+            echo "$DEV_MIGRATIONS"
+
+            MODIFIED_FILES=""
+            for file in $DEV_MIGRATIONS; do
+              # Does the file exist in this PR branch?
+              if git ls-tree -r --name-only HEAD -- "$file" | grep -q .; then
+                # File exists; check if modified
+                if ! git diff --quiet origin/dev HEAD -- "$file"; then
+                  MODIFIED_FILES="$MODIFIED_FILES\n$file (modified)"
+                fi
+              else
+                # File is missing in PR branch (i.e. deleted)
+                MODIFIED_FILES="$MODIFIED_FILES\n$file (deleted)"
+              fi
+            done
+
+            if [[ -n "$MODIFIED_FILES" ]]; then
+              echo "❌ Existing migration files from dev have been altered:"
+              echo -e "$MODIFIED_FILES"
+              echo ""
+              echo "Migration files from dev branch should never be modified or deleted."
+              echo "Revert changes and create new migration files instead."
+              exit 1
+            else
+              echo "✅ No existing migration files from dev have been modified"
+            fi
+          else
+            echo "✅ No migration files found on dev branch"
+          fi
+
+  migrations:
+    name: Check migrations
+    runs-on: ubuntu-22.04
+    needs: pre-checks
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: pipx install uv
+      - name: Install dependencies
+        run: uv sync
+        working-directory: ./backend
+      - name: Create network
+        run: docker network create app-network
+      - name: Start database
+        run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans db
+      - name: Wait for database startup
+        run: |
+          echo "Waiting for database to be healthy..."
+          for i in {1..60}; do
+            state=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml ps --format '{{.Health}}' db)
+            if [[ "$state" == "healthy" ]]; then
+              echo "✅ Database ready after $((i*2)) seconds"
+              break
+            elif [[ "$state" == "starting" ]]; then
+              echo "Database starting... ($((i*2))s elapsed)"
+            fi
+            [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
+            sleep 2
+          done
+      - name: Run migrations
+        run: |
+          CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations | tail -n1)
+          docker logs -f "$CID"
+          EXIT=$(docker wait "$CID")
+          if [[ "$EXIT" -eq 0 ]]; then
+            echo "✅- Migration checks passed"
+          else
+            echo "❌- Migration checks failed"
+            exit 1
+          fi

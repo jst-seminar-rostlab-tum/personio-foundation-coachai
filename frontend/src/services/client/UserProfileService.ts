@@ -1,7 +1,7 @@
-import { UserProfile } from '@/interfaces/UserProfile';
+import { UserProfile, UserProfileUpdate } from '@/interfaces/UserProfile';
 import { api } from './Api';
 
-const updateUserProfile = async (userProfile: UserProfile): Promise<UserProfile> => {
+const updateUserProfile = async (userProfile: UserProfileUpdate): Promise<UserProfile> => {
   try {
     const { data } = await api.patch<UserProfile>('/user-profile', userProfile);
     return data;

@@ -18,7 +18,7 @@ function formatTime(seconds: number) {
 }
 
 export default function SimulationHeader({
-  characterName = 'Sarah',
+  characterName = 'Alex',
   characterRole = 'Team Member',
   characterDescription = 'Defensive at first, but open to feedback',
   sessionLabel = 'Performance Reviews',

@@ -209,6 +209,7 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       const sdpResponseText: string = await sessionService.getSdpResponseTextFromRealtimeApi(
+        sessionId,
         offer.sdp
       );
       const answer: RTCSessionDescriptionInit = {
@@ -276,10 +277,6 @@ export default function SimulationPageComponent({ sessionId }: SimulationPageCom
         // eslint-disable-next-line no-param-reassign
         track.enabled = !isMicActive;
       });
-
-      if (remoteAudioRef.current) {
-        remoteAudioRef.current.muted = isMicActive;
-      }
 
       setIsMicActive(!isMicActive);
     }
