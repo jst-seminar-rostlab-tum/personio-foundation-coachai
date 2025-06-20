@@ -41,6 +41,7 @@ jobs:
         run: npm ci
         working-directory: ./frontend
       - name: Run Tests
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: npm test
         working-directory: ./frontend
       - name: No changes in frontend, skipping tests
