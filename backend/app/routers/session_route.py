@@ -40,6 +40,7 @@ from app.services.session_feedback_service import generate_and_store_feedback
 router = APIRouter(prefix='/session', tags=['Sessions'])
 
 
+# Endpoint to get session details by ID
 @router.get('/{session_id}', response_model=SessionDetailsRead)
 def get_session_by_id(
     session_id: UUID,
@@ -131,6 +132,7 @@ def get_session_by_id(
     return session_response
 
 
+# Endpoint to get paginated list of sessions for a user
 @router.get('', response_model=PaginatedSessionsResponse)
 def get_sessions(
     user_profile: Annotated[UserProfile, Depends(require_user)],
@@ -210,6 +212,7 @@ def get_sessions(
     )
 
 
+# Endpoint to create a new session
 @router.post('', response_model=SessionRead, dependencies=[Depends(require_user)])
 def create_session(
     session_data: SessionCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
@@ -231,6 +234,7 @@ def create_session(
     return new_session
 
 
+# Endpoint to update an existing session
 @router.put('/{session_id}', response_model=SessionRead)
 def update_session(
     session_id: UUID,
@@ -353,6 +357,7 @@ def update_session(
     return session
 
 
+# Endpoint to delete all sessions for a user
 @router.delete('/clear-all', response_model=dict)
 def delete_sessions_by_user(
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -385,6 +390,7 @@ def delete_sessions_by_user(
     }
 
 
+# Endpoint to delete a specific session by ID
 @router.delete('/{session_id}', response_model=dict)
 def delete_session(
     session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
