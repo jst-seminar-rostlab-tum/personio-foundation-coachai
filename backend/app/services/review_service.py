@@ -5,11 +5,15 @@ from fastapi import HTTPException, Query
 from sqlmodel import Session as DBSession
 from sqlmodel import asc, desc, select
 
+from app.models.conversation_scenario import ConversationScenario
 from app.models.review import Review
-from app.models.user_profile import UserProfile
+from app.models.session import Session
+from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.review import (
     PaginatedReviewsResponse,
+    ReviewCreate,
     ReviewRead,
+    ReviewResponse,
     ReviewStatistics,
 )
 
@@ -151,3 +155,65 @@ class ReviewService:
 
         else:
             return self._get_paginated_reviews(page, page_size, sort)
+
+    def _check_session_review_permissions(
+        self,
+        session_id: UUID,
+        user_profile: UserProfile,
+    ) -> None:
+        """
+        Check if the user has permission to create a review for the given session.
+        Raises HTTPException if the session does not exist or the user does not have permission.
+        """
+        # Check if the session exists
+        session = self.db.get(Session, session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail='Session not found')
+
+        # Check if the review is for a session of the logged-in user or the user is an admin
+        # For this, we need to check the conversation scenario of the session
+        conversation_scenario = self.db.get(ConversationScenario, session.scenario_id)
+        if not conversation_scenario:
+            raise HTTPException(
+                status_code=404, detail='No conversation scenario found for the session'
+            )
+        if (
+            conversation_scenario.user_id != user_profile.id
+            and user_profile.account_role != AccountRole.admin
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail='Not your session: You do not have permission to create this review.',
+            )
+
+    def create_review(
+        self,
+        review: ReviewCreate,
+        user_profile: UserProfile,
+    ) -> ReviewResponse:
+        """
+        Create a new review.
+        """
+        user_id = user_profile.id  # Logged-in user's ID
+
+        if review.session_id is not None:
+            # Review is for a session --> without a session_id, it is a general review
+            self._check_session_review_permissions(review.session_id, user_profile)
+
+        if review.rating < 1 or review.rating > 5:
+            raise HTTPException(status_code=400, detail='Rating must be between 1 and 5')
+
+        new_review = Review(
+            user_id=user_id,
+            session_id=review.session_id,
+            rating=review.rating,
+            comment=review.comment,
+        )
+        self.db.add(new_review)
+        self.db.commit()
+        self.db.refresh(new_review)
+
+        return ReviewResponse(
+            message='Review submitted successfully',
+            review_id=new_review.id,
+        )
