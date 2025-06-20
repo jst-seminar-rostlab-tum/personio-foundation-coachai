@@ -2,8 +2,6 @@ name: Check Frontend on PR
 
 on:
   pull_request:
-    paths:
-      - 'frontend/**'
 
 jobs:
   lint:
@@ -11,10 +9,17 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - name: Check for frontend changes
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: frontend/**
       - name: Install dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: npm ci
         working-directory: ./frontend
       - name: Run ESLint
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: npm run lint
         working-directory: ./frontend
 
@@ -23,7 +28,13 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - name: Check for frontend changes
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: frontend/**
       - name: Install dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: npm ci
         working-directory: ./frontend
       - name: Run Tests
@@ -35,9 +46,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - name: Check for frontend changes
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: frontend/**
       - name: Install dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: npm ci
         working-directory: ./frontend
       - name: Build app
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: npm run build
         working-directory: ./frontend
