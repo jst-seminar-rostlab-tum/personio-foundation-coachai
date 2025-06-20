@@ -107,9 +107,9 @@ jobs:
         run: uv sync
         working-directory: ./backend
 
-      #- name: Create network
-      #  if: steps.changed-files.outputs.any_changed == 'true'
-      #  run: docker network create app-network
+      - name: Create network
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: docker network create app-network
 
       - name: Start database
         if: steps.changed-files.outputs.any_changed == 'true'
