@@ -23,17 +23,8 @@
     "goalsAchieved": "Goals Achieved"
   },
   "listenConversation": "Listen to Conversation",
-  "yourApproach": "Your Approach",
   "compareAI": "Compare with AI",
-  "accordian": {
-    "feedback": "Detailed Feedback",
-    "suggestion": "Suggested Resources",
-    "sessions": "Recommended Sessions"
-  },
   "detailedFeedback": {
-    "positive": "What Went Well",
-    "negative": "Areas for Improvement",
-    "recommendations": "Recommendations",
     "nextTime": "Next time, try asking:"
   },
   "return": "Return to Dashboard",
