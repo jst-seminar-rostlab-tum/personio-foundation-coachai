@@ -40,16 +40,11 @@
   },
   "leadershipGoals": {
     "currentRole": {
-      "label": "Current Role",
-      "tl": "Team Leader",
-      "rec": "Recruitment Specialist",
-      "tr": "Trainee"
+      "label": "Current Role"
     },
     "primaryGoals": {
       "label": "Primary Goals",
-      "feedback": "Give Constructive Feedback",
-      "coaching": "Coaching & Mentoring",
-      "coping": "Coping Mechanisms"
+      "placeholder": "Please select upto 3 goals"
     }
   },
   "saveSettingsSuccess": "Your settings have been saved successfully.",
