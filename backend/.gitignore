@@ -163,3 +163,6 @@ cython_debug/
 
 # ruff
 .ruff_cache/
+
+# credentials
+coachai-dev-service-account.json
