@@ -35,6 +35,7 @@ from app.services.session_feedback_service import generate_and_store_feedback
 router = APIRouter(prefix='/session', tags=['Sessions'])
 
 
+# Endpoint to get session details by ID
 @router.get('/{session_id}', response_model=SessionDetailsRead)
 def get_session_by_id(
     session_id: UUID,
@@ -48,13 +49,6 @@ def get_session_by_id(
     if not session:
         raise HTTPException(status_code=404, detail='No session found with the given ID')
 
-    current_scenario = session.scenario
-    if current_scenario.user_id != user_profile.id and user_profile.account_role != 'admin':
-        raise HTTPException(
-            status_code=400,
-            detail='You do not have permission to access this session '
-            'you can only view your own sessions',
-        )
     # Get session title from the conversation scenario
     conversation_scenario = db_session.get(ConversationScenario, session.scenario_id)
     if not conversation_scenario:
@@ -71,8 +65,10 @@ def get_session_by_id(
 
     if conversation_scenario.category:
         training_title = conversation_scenario.category.name
-    else:
+    elif conversation_scenario.custom_category_label:
         training_title = conversation_scenario.custom_category_label
+    else:
+        training_title = 'No Title available'
 
     if conversation_scenario.preparation:
         goals = conversation_scenario.preparation.objectives
@@ -131,6 +127,7 @@ def get_session_by_id(
     return session_response
 
 
+# Endpoint to get paginated list of sessions for a user
 @router.get('', response_model=PaginatedSessionsResponse)
 def get_sessions(
     user_profile: Annotated[UserProfile, Depends(require_user)],
@@ -170,17 +167,25 @@ def get_sessions(
         conversation_scenario = db_session.exec(
             select(ConversationScenario).where(ConversationScenario.id == sess.scenario_id)
         ).first()
+        if not conversation_scenario:
+            raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
-        conversation_category = db_session.exec(
-            select(ConversationCategory).where(
-                ConversationCategory.id == conversation_scenario.category_id
-            )
-        ).first()
+        conversation_category = None
+        if conversation_scenario.category_id:
+            conversation_category = db_session.exec(
+                select(ConversationCategory).where(
+                    ConversationCategory.id == conversation_scenario.category_id
+                )
+            ).first()
+            if not conversation_category:
+                raise HTTPException(status_code=404, detail='Conversation Category not found')
 
         item = SessionItem(
             session_id=sess.id,
-            title=conversation_category.name,
-            summary=conversation_category.name,  # TODO: add summary to conversation_category
+            title=conversation_category.name if conversation_category else 'No Title',
+            summary=conversation_category.name
+            if conversation_category
+            else 'No Summary',  # TODO: add summary to conversation_category
             status=sess.status,
             date=sess.ended_at,
             score=82,  # mocked
@@ -202,6 +207,7 @@ def get_sessions(
     )
 
 
+# Endpoint to create a new session
 @router.post('', response_model=SessionRead, dependencies=[Depends(require_user)])
 def create_session(
     session_data: SessionCreate, db_session: Annotated[DBSession, Depends(get_db_session)]
@@ -223,6 +229,7 @@ def create_session(
     return new_session
 
 
+# Endpoint to update an existing session
 @router.put('/{session_id}', response_model=SessionRead)
 def update_session(
     session_id: UUID,
@@ -243,15 +250,11 @@ def update_session(
         raise HTTPException(status_code=400, detail='A completed session cannot be updated.')
 
     previous_status = session.status
-    conversation_scenario = None
 
     scenario_id = updated_data.scenario_id or session.scenario_id
-
-    # Validate foreign keys
-    if scenario_id:
-        conversation_scenario = db_session.get(ConversationScenario, scenario_id)
-        if not conversation_scenario:
-            raise HTTPException(status_code=404, detail='Conversation scenario not found')
+    conversation_scenario = db_session.get(ConversationScenario, scenario_id)
+    if not conversation_scenario:
+        raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
     for key, value in updated_data.model_dump(exclude_unset=True).items():
         setattr(session, key, value)
@@ -262,12 +265,6 @@ def update_session(
         and updated_data.status == SessionStatus.completed
         and session.feedback is None
     ):
-        if not scenario_id:
-            raise HTTPException(
-                status_code=500,
-                detail='Conversation scenario must be provided to generate feedback',
-            )
-
         session.ended_at = datetime.now(UTC)
 
         statement = select(ScenarioPreparation).where(
@@ -355,6 +352,7 @@ def update_session(
     return session
 
 
+# Endpoint to delete all sessions for a user
 @router.delete('/clear-all', response_model=dict)
 def delete_sessions_by_user(
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -387,6 +385,7 @@ def delete_sessions_by_user(
     }
 
 
+# Endpoint to delete a specific session by ID
 @router.delete('/{session_id}', response_model=dict)
 def delete_session(
     session_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
