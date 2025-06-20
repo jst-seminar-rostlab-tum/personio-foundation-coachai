@@ -28,6 +28,9 @@ def populate_data() -> None:
         print('Dropping tables...')
         SQLModel.metadata.drop_all(engine)
 
+        # print('Removing mock users...')
+        # delete_mock_users()
+
         print('Creating tables...')
         SQLModel.metadata.create_all(engine)
 
@@ -107,6 +110,9 @@ def populate_data() -> None:
         db_session.add(empty_vector_data)
         db_session.commit()
         print('Vector store created successfully!')
+
+        # print('Creating mock users...')
+        # create_mock_users()
 
 
 if __name__ == '__main__':

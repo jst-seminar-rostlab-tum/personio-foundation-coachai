@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.data.dummy_data import MockUserIdsEnum
+from app.interfaces import MockUser, MockUserIdsEnum
 
 
 class Settings(BaseSettings):
@@ -32,13 +32,37 @@ class Settings(BaseSettings):
     # Twilio settings
     TWILIO_ACCOUNT_SID: str = ''
     TWILIO_AUTH_TOKEN: str = ''
-    TWILIO_PHONE_NUMBER: str = ''
+    TWILIO_VERIFY_SERVICE_SID: str = ''
 
     ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
 
     DEV_MODE_SKIP_AUTH: bool = False
     DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.USER.value
+
+    DEMO_USER_EMAIL: str = 'mockuser@example.com'
+    DEMO_USER_PASSWORD: str = 'mockuserpassword'
+
+    DEMO_ADMIN_EMAIL: str = 'mockadmin@example.com'
+    DEMO_ADMIN_PASSWORD: str = 'mockadminpassword'
+
+    @property
+    def mock_user_data(self) -> MockUser:
+        return MockUser(
+            email=self.DEMO_USER_EMAIL,
+            password=self.DEMO_USER_PASSWORD,
+            phone='+1234567890',
+            full_name='Demo User',
+        )
+
+    @property
+    def mock_admin_data(self) -> MockUser:
+        return MockUser(
+            email=self.DEMO_ADMIN_EMAIL,
+            password=self.DEMO_ADMIN_PASSWORD,
+            phone='+1987654321',
+            full_name='Admin',
+        )
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 

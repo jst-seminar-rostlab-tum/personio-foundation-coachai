@@ -28,6 +28,8 @@ services:
       - ./backend:/app
       - /app/.venv
     environment:
+      DEV_MODE_SKIP_AUTH: ${DEV_MODE_SKIP_AUTH:-True}
+      DEV_MODE_MOCK_USER_ID: ${DEV_MODE_MOCK_USER_ID:-3a9a8970-afbe-4ee1-bc11-9dcad7875ddf}
       STAGE: dev
       POSTGRES_HOST: db
       POSTGRES_USER: postgres
@@ -61,6 +63,7 @@ services:
     entrypoint: ["uv", "run", "-m", "app.data.populate_dummy_data"]
     networks:
       - app-network
+
   db:
     image: pgvector/pgvector:pg17
     ports:
@@ -71,6 +74,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: app_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 2s
+      retries: 5
     networks:
       - app-network
 
@@ -79,4 +87,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data: 
+  postgres_data:

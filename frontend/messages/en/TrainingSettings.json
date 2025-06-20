@@ -52,5 +52,7 @@
       "coping": "Coping Mechanisms"
     }
   },
+  "saveSettingsSuccess": "Your settings have been saved successfully.",
+  "saveSettingsError": "There was an error saving your settings. Please try again later.",
   "deleting": "Deleting..."
 }

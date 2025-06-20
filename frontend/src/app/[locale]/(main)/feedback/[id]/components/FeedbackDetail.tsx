@@ -18,11 +18,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/Accordion';
-import Link from 'next/link';
 import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/client/SessionService';
+import { showErrorToast } from '@/lib/toast';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
@@ -48,13 +48,13 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           return;
         }
 
-        throw new Error('Failed to get training case preparation data');
+        throw new Error('Failed to get session feedback');
       } catch (error) {
         setIsLoading(false);
-        console.error(error);
+        showErrorToast(error, t('getSessionDetailError'));
       }
     },
-    [setFeedbackDetail, setIsLoading]
+    [setFeedbackDetail, setIsLoading, t]
   );
 
   useEffect(() => {
@@ -93,7 +93,9 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
     },
     {
       key: t('stats.goalsAchieved'),
-      value: feedbackDetail?.feedback?.goalsAchieved ?? 0,
+      value: `${feedbackDetail?.feedback?.goalsAchieved.length ?? 0} / ${
+        feedbackDetail?.goalsTotal.length ?? 0
+      }`,
       icon: 'Check',
     },
   ];
@@ -221,9 +223,6 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           <AccordionTrigger>{t('accordian.sessions')}</AccordionTrigger>
         </AccordionItem>
       </Accordion>
-      <Link href="/dashboard" className="w-full">
-        <Button size="full">{t('return')}</Button>
-      </Link>
     </div>
   );
 }

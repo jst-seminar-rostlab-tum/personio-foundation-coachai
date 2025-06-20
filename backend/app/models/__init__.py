@@ -49,7 +49,6 @@ from app.models.user_confidence_score import (
 from app.models.user_goal import UserGoal, UserGoalCreate, UserGoalRead
 from app.models.user_profile import (
     UserProfile,
-    UserProfileCreate,
     UserProfileExtendedRead,
     UserProfileRead,
 )
@@ -80,7 +79,6 @@ __all__ = [
     'RatingCreate',
     'RatingRead',
     'UserProfile',
-    'UserProfileCreate',
     'UserProfileRead',
     'UserGoal',
     'UserGoalCreate',

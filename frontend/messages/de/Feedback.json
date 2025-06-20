@@ -2,11 +2,13 @@
   "metaTitle": "Auswertung - Coach AI",
   "metaDescription": "Detaillierte Auswertung und Analyse Ihrer Trainingssitzung",
   "title": "Performance Zusammenfassung",
-  "feedbackDialog": {
-    "open": "Feedback geben",
-    "title": "Feedback",
-    "description": "Wie war die Trainingssitzung? Helfen Sie uns, indem Sie Ihr Feedback geben.",
-    "rate": "Feedback abgeben"
+  "reviewDialog": {
+    "open": "Bewertung abgeben",
+    "title": "Bewertung",
+    "description": "Wie war die Trainingssitzung? Helfen Sie uns, indem Sie Ihre Bewertung abgeben.",
+    "rate": "Bewertung abgeben",
+    "submitReviewError": "Fehler beim Abgeben der Bewertung. Bitte versuchen Sie es später erneut.",
+    "submitReviewSuccess": "Bewertung erfolgreich abgegeben. Vielen Dank für Ihre Bewertung!"
   },
   "progressBars": {
     "structure": "Struktur",
@@ -34,5 +36,6 @@
     "recommendations": "Empfehlungen",
     "nextTime": "Nächstes Mal, frag:"
   },
-  "return": "Zurück zum Dashboard"
+  "return": "Zurück zum Dashboard",
+  "getSessionDetailError": "Fehler beim Abrufen der Sitzungsdetails. Bitte versuchen Sie es später erneut."
 }

@@ -15,7 +15,11 @@ from app.models.conversation_scenario import (
     ConversationScenarioCreate,
     ConversationScenarioRead,
 )
-from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationRead
+from app.models.scenario_preparation import (
+    ScenarioPreparation,
+    ScenarioPreparationRead,
+    ScenarioPreparationStatus,
+)
 from app.models.user_profile import UserProfile
 from app.schemas.scenario_preparation_schema import ScenarioPreparationRequest
 from app.services.scenario_preparation_service import (
@@ -26,19 +30,7 @@ from app.services.scenario_preparation_service import (
 router = APIRouter(prefix='/conversation-scenario', tags=['Conversation Scenarios'])
 
 
-@router.get('/', response_model=list[ConversationScenarioRead])
-def get_conversation_scenarios(
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> list[ConversationScenario]:
-    """
-    Retrieve all conversation scenarios.
-    """
-    statement = select(ConversationScenario)
-    conversation_scenarios = db_session.exec(statement).all()
-    return list(conversation_scenarios)
-
-
-@router.post('/', response_model=ConversationScenarioRead, dependencies=[Depends(require_user)])
+@router.post('', response_model=ConversationScenarioRead, dependencies=[Depends(require_user)])
 def create_conversation_scenario_with_preparation(
     conversation_scenario: ConversationScenarioCreate,
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -89,50 +81,6 @@ def create_conversation_scenario_with_preparation(
     )
 
 
-@router.put('/{scenario_id}', response_model=ConversationScenarioRead)
-def update_conversation_scenario(
-    scenario_id: UUID,
-    updated_data: ConversationScenarioCreate,
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> ConversationScenario:
-    """
-    Update an existing conversation scenario.
-    """
-    conversation_scenario = db_session.get(ConversationScenario, scenario_id)
-    if not conversation_scenario:
-        raise HTTPException(status_code=404, detail='Conversation scenario not found')
-
-    # Validate foreign keys
-    if updated_data.category_id:
-        category = db_session.get(ConversationCategory, updated_data.category_id)
-        if not category:
-            raise HTTPException(status_code=404, detail='Category not found')
-
-    for key, value in updated_data.dict().items():
-        setattr(conversation_scenario, key, value)
-
-    db_session.add(conversation_scenario)
-    db_session.commit()
-    db_session.refresh(conversation_scenario)
-    return conversation_scenario
-
-
-@router.delete('/{scenario_id}', response_model=dict)
-def delete_conversation_scenario(
-    scenario_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
-) -> dict:
-    """
-    Delete a conversation scenario.
-    """
-    conversation_scenario = db_session.get(ConversationScenario, scenario_id)
-    if not conversation_scenario:
-        raise HTTPException(status_code=404, detail='Conversation scenario not found')
-
-    db_session.delete(conversation_scenario)
-    db_session.commit()
-    return {'message': 'Conversation scenario deleted successfully'}
-
-
 @router.get(
     '/{scenario_id}/preparation',
     response_model=ScenarioPreparationRead,
@@ -161,8 +109,13 @@ def get_scenario_preparation_by_scenario_id(
     statement = select(ScenarioPreparation).where(ScenarioPreparation.scenario_id == scenario_id)
     scenario_preparation = db_session.exec(statement).first()
 
-    if not scenario_preparation:
-        raise HTTPException(status_code=404, detail='Scenario preparation not found')
+    print(f'Scenario Preparation: {scenario_preparation}')
+
+    if not scenario_preparation or scenario_preparation.status == ScenarioPreparationStatus.pending:
+        raise HTTPException(status_code=202, detail='Session preparation in progress.')
+
+    elif scenario_preparation.status == ScenarioPreparationStatus.failed:
+        raise HTTPException(status_code=500, detail='Session preparation failed.')
 
     # Prepare category name with fallback to custom label or None
     category_name = (
