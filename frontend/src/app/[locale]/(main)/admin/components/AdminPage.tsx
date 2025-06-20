@@ -160,7 +160,7 @@ export default function Admin({ stats, reviews }: AdminProps) {
                             <AlertDialogFooter>
                               <AlertDialogCancel>{tr('cancel')}</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDeleteUser()}
+                                onClick={() => handleDeleteUser(user)}
                                 disabled={loading}
                               >
                                 {loading ? tr('deleting') : tr('confirm')}
