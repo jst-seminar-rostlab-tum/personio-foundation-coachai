@@ -1,5 +1,4 @@
 from enum import Enum as PyEnum
-from typing import Optional
 
 from sqlmodel import Column, Enum, Field
 
@@ -13,22 +12,7 @@ class ConfigType(PyEnum):
     boolean = 'boolean'
 
 
-# Main AppConfig model
 class AppConfig(CamelModel, table=True):
     key: str = Field(primary_key=True)
     value: str = Field(nullable=False)
     type: ConfigType = Field(sa_column=Column(Enum(ConfigType)))
-
-
-# Schema for creating a new AppConfig
-class AppConfigCreate(CamelModel):
-    key: str
-    value: str
-    type: Optional[ConfigType] = None
-
-
-# Schema for reading AppConfig data
-class AppConfigRead(CamelModel):
-    key: str
-    value: str
-    type: ConfigType

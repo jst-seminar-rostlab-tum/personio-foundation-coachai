@@ -8,7 +8,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
 from app.models import FeedbackStatusEnum, SessionFeedback, UserProfile
-from app.schemas.session_feedback_schema import (
+from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
     GoalsAchievementRequest,

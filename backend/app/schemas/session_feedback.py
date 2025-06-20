@@ -1,4 +1,4 @@
-from pydantic import Field
+from sqlmodel import JSON, Column, Field
 
 from app.models.camel_case import CamelModel
 
@@ -67,3 +67,18 @@ class RecommendationsCollection(CamelModel):
     recommendations: list[Recommendation] = Field(
         ..., description='List of improvement recommendations'
     )
+
+
+# Schema for reading a session's feedback metrics
+class SessionFeedbackMetrics(CamelModel):
+    scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
+    overall_score: int
+    transcript_uri: str
+    speak_time_percent: float
+    questions_asked: int
+    session_length_s: int
+    goals_achieved: list[str] = Field(default_factory=list)
+    example_positive: list[PositiveExample] = Field(default_factory=list)
+    example_negative: list[NegativeExample] = Field(default_factory=list)
+    recommendations: list[Recommendation] = Field(default_factory=list)

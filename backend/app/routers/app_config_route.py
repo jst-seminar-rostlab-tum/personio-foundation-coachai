@@ -6,7 +6,8 @@ from sqlmodel import select
 
 from app.database import get_db_session
 from app.dependencies import require_admin
-from app.models.app_config import AppConfig, AppConfigCreate, AppConfigRead, ConfigType
+from app.models.app_config import AppConfig, ConfigType
+from app.schemas.app_config import AppConfigCreate, AppConfigRead
 
 router = APIRouter(prefix='/app-config', tags=['App Config'])
 

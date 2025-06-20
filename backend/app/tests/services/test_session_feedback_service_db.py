@@ -6,7 +6,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine
 
 from app.models import FeedbackStatusEnum
-from app.schemas.session_feedback_schema import (
+from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
     NegativeExample,

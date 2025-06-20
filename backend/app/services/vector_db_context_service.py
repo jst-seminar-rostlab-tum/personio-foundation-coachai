@@ -1,6 +1,6 @@
 from app.rag.rag import build_vector_db_retriever
 from app.rag.vector_db import format_docs_with_metadata
-from app.schemas.scenario_preparation_schema import ConversationScenarioBase
+from app.schemas.scenario_preparation import ConversationScenarioBase
 from app.services.voice_analysis_service import analyze_voice_gemini_from_file
 
 

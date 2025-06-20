@@ -65,18 +65,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
       - name: Install Vercel CLI
         run: npm install --global vercel@latest;
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=${{ env.VERCEL_ENV }} --token=${{ secrets.VERCEL_TOKEN }}
         working-directory: ./frontend
-
       - name: Build Project Artifacts
         run: vercel build --target=${{ env.VERCEL_ENV }} --token=${{ secrets.VERCEL_TOKEN }}
         working-directory: ./frontend
-
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --target=${{ env.VERCEL_ENV }} --token=${{ secrets.VERCEL_TOKEN }}
         working-directory: ./frontend

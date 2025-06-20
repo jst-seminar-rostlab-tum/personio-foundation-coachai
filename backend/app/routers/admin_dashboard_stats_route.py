@@ -6,10 +6,11 @@ from sqlmodel import func, select
 
 from app.database import get_db_session
 from app.dependencies import require_admin
-from app.models.admin_dashboard_stats import AdminDashboardStats, AdminDashboardStatsRead
+from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig
 from app.models.review import Review
 from app.models.user_profile import UserProfile
+from app.schemas.admin_dashboard_stats import AdminDashboardStatsRead
 
 router = APIRouter(prefix='/admin-stats', tags=['Admin Dashboard'])
 

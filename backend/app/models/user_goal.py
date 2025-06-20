@@ -40,16 +40,3 @@ class UserGoal(CamelModel, table=True):
 @event.listens_for(UserGoal, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserGoal') -> None:
     target.updated_at = datetime.now(UTC)
-
-
-# Schema for creating a new UserGoal
-class UserGoalCreate(CamelModel):
-    goal: Goal
-    user_id: UUID
-
-
-# Schema for reading UserGoal data
-class UserGoalRead(CamelModel):
-    goal: Goal
-    user_id: UUID
-    updated_at: datetime

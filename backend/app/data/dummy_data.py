@@ -17,7 +17,6 @@ from app.models.conversation_scenario import (
     DifficultyLevel,
 )
 from app.models.language import LanguageCode
-from app.models.rating import Rating
 from app.models.review import Review
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session, SessionStatus
@@ -224,38 +223,6 @@ def get_dummy_conversation_scenarios(
             tone='Friendly',
             complexity='Low',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
-            created_at=datetime.now(UTC),
-            updated_at=datetime.now(UTC),
-        ),
-    ]
-
-
-def get_dummy_ratings(
-    sessions: list[Session], conversation_scenarios: list[ConversationScenario]
-) -> list[Rating]:
-    # Create a mapping of scenario_id to user_id from the conversation_scenarios
-    scenario_to_user_map = {scenario.id: scenario.user_id for scenario in conversation_scenarios}
-
-    return [
-        Rating(
-            id=uuid4(),
-            session_id=sessions[0].id,  # Link to the first session
-            user_id=scenario_to_user_map[
-                sessions[0].scenario_id
-            ],  # Get user_id from the conversation scenario
-            score=5,
-            comment='Excellent session!',
-            created_at=datetime.now(UTC),
-            updated_at=datetime.now(UTC),
-        ),
-        Rating(
-            id=uuid4(),
-            session_id=sessions[1].id,  # Link to the second session
-            user_id=scenario_to_user_map[
-                sessions[1].scenario_id
-            ],  # Get user_id from the conversation scenario
-            score=4,
-            comment='Good session, but room for improvement.',
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),

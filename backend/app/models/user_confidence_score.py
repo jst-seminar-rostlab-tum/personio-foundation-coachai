@@ -36,21 +36,3 @@ class UserConfidenceScore(CamelModel, table=True):
 @event.listens_for(UserConfidenceScore, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserConfidenceScore') -> None:
     target.updated_at = datetime.now(UTC)
-
-
-class UserConfidenceScoreCreate(CamelModel):
-    confidence_area: ConfidenceArea
-    user_id: UUID
-    score: int
-
-
-class UserConfidenceScoreRead(CamelModel):
-    confidence_area: ConfidenceArea
-    user_id: UUID
-    score: int
-    updated_at: datetime
-
-
-class ConfidenceScoreRead(CamelModel):
-    confidence_area: ConfidenceArea
-    score: int

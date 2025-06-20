@@ -2,8 +2,6 @@ name: Check Backend on PR
 
 on:
   pull_request:
-    paths:
-      - "backend/**"
 
 jobs:
   lint:
@@ -11,25 +9,47 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - name: Check for backend changes
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: backend/**
       - name: Install uv
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: pipx install uv
       - name: Install dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: uv sync
         working-directory: ./backend
       - name: Run Ruff Linter
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: uv run pre-commit run --config .pre-commit-config.yaml --hook-stage manual --all-files
         working-directory: ./backend
+      - name: No changes in backend, skipping lint
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "No changes in backend, skipping lint."
 
   test:
     name: Test
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - name: Check for backend changes
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: backend/**
       - name: Install uv
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: pipx install uv
       - name: Install dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: uv sync
         working-directory: ./backend
       - name: Run Tests
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: uv run pytest --exitfirst --disable-warnings || [[ $? -eq 5 ]]
         working-directory: ./backend
+      - name: No changes in backend, skipping tests
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "No changes in backend, skipping tests."

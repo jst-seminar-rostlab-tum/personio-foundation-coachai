@@ -1,10 +1,10 @@
 from unittest.mock import MagicMock, patch
 
-from app.schemas.scenario_preparation_schema import (
+from app.schemas.scenario_preparation import (
     ChecklistRequest,
     KeyConcept,
-    KeyConceptOutput,
     KeyConceptRequest,
+    KeyConceptResponse,
     ObjectiveRequest,
     StringListResponse,
 )
@@ -70,7 +70,7 @@ def test_generate_key_concept_parses_json(mock_llm: MagicMock) -> None:
         ),
     ]
 
-    mock_llm.return_value = KeyConceptOutput(items=mock_key_concept_response)
+    mock_llm.return_value = KeyConceptResponse(items=mock_key_concept_response)
 
     req = KeyConceptRequest(
         category='Feedback',

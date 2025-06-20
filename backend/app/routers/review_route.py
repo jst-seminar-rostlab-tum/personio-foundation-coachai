@@ -7,16 +7,16 @@ from sqlmodel import asc, col, desc, select
 from app.database import get_db_session
 from app.dependencies import require_admin, require_user
 from app.models.conversation_scenario import ConversationScenario
-from app.models.review import (
+from app.models.review import Review
+from app.models.session import Session
+from app.models.user_profile import AccountRole, UserProfile
+from app.schemas.review import (
     PaginatedReviewsResponse,
-    Review,
     ReviewCreate,
     ReviewRead,
     ReviewResponse,
     ReviewStatistics,
 )
-from app.models.session import Session
-from app.models.user_profile import AccountRole, UserProfile
 
 router = APIRouter(prefix='/review', tags=['User Review'])
 

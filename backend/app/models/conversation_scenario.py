@@ -65,35 +65,3 @@ def update_timestamp(
     mapper: Mapper, connection: Connection, target: 'ConversationScenario'
 ) -> None:
     target.updated_at = datetime.now(UTC)
-
-
-# Schema for creating a new ConversationScenario
-class ConversationScenarioCreate(CamelModel):
-    category_id: Optional[str] = None
-    custom_category_label: Optional[str] = None
-    context: str
-    goal: str
-    other_party: str
-    difficulty_level: DifficultyLevel
-    tone: Optional[str] = None
-    complexity: Optional[str] = None
-    language_code: LanguageCode = LanguageCode.en
-    status: ConversationScenarioStatus = ConversationScenarioStatus.draft
-
-
-# Schema for reading ConversationScenario data
-class ConversationScenarioRead(CamelModel):
-    id: UUID
-    user_id: UUID
-    category_id: Optional[str]
-    custom_category_label: Optional[str]
-    context: str
-    goal: str
-    other_party: str
-    difficulty_level: DifficultyLevel
-    tone: Optional[str]
-    complexity: Optional[str]
-    language_code: LanguageCode
-    status: ConversationScenarioStatus
-    created_at: datetime
-    updated_at: datetime

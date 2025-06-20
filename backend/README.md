@@ -84,6 +84,80 @@ Once the server is running, you can access:
 - Interactive API documentation: http://localhost:8000/docs
 - Alternative API documentation: http://localhost:8000/redoc
 
+### Database Migrations with Alembic
+
+This project uses [Alembic](https://alembic.sqlalchemy.org/) for database migration management. Alembic helps us track, version, and deploy database schema changes in a controlled and reproducible way, especially important for production deployments.
+
+#### Overview
+
+Alembic has been integrated with our backend models (`/backend/app/models`) and database configuration (`backend/app/database.py`). A pre-push hook automatically checks consistency between models and migration scripts, ensuring database integrity.
+
+#### Development Workflow
+##### 1. Create Feature Branch
+```bash
+git checkout -b feature/your-feature-name
+```
+
+##### 2. Start and initialize the local database
+```bash
+# Reset the local database
+docker compose down db -v
+
+# Start the database
+docker compose up db -d
+
+# Update db to latest schema
+uv run alembic upgrade head
+```
+
+##### 3. Modify Models and Generate Migration
+After making changes to your database models under `backend/app/models`:
+
+```bash
+# Generate migration script automatically
+uv run alembic revision --autogenerate -m "descriptive message about your changes"
+```
+
+This creates a new migration file in the `backend/alembic/versions/` directory with the format:
+`<timestamp>-<revision_id>_descriptive_message_about_your_changes.py`
+
+##### 4. Review Generated Migration
+**Important:** Always review the generated migration script before committing:
+
+- Check the `upgrade()` function for correctness
+- Verify the `downgrade()` function properly reverses changes
+- Check imports and formatting
+- If data needs to be inserted within the migration, add that to `backend/alembic/data`
+
+##### 5. Test Migration Locally
+
+```bash
+# Apply the migration
+uv run alembic upgrade head
+
+# Test rollback functionality
+uv run alembic downgrade -1
+
+# Apply the migration again
+uv run alembic upgrade head
+
+# Verify model/migration consistency
+uv run alembic check
+```
+
+##### 6. Update Dummy Data for Database
+Update `backend/app/data/dummy_data` with your model changes. To see if everything works, populate the database with the dummy data:
+```bash
+docker compose up init-db -d
+```
+
+##### 7. Commit and Push your Changes
+A pre-push hook is executed when committing changes to `backend/app/models`, `backend/alembic/versions` and/or `backend/alembic/data`. Within that hook the docker container `test-migrations` is run which executes `./husky/test-migrations.sh` against a separate database with the name `test_migrations`.
+
+##### Important Rule
+- **Never edit migration scripts once they're merged to `dev`**
+- If changes are needed, create a follow-up migration instead
+
 ### Twilio Setup
 
 Twilio is used for phone number verification by sending verification codes via SMS.

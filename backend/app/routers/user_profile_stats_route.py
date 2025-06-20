@@ -5,7 +5,8 @@ from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
 from app.dependencies import require_user
-from app.models.user_profile import UserProfile, UserStatisticsRead
+from app.models.user_profile import UserProfile
+from app.schemas.user_profile import UserStatisticsRead
 
 router = APIRouter(prefix='/user', tags=['User Stats'])
 

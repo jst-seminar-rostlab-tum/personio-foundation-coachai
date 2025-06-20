@@ -29,27 +29,3 @@ class SessionTurn(CamelModel, table=True):
 
     # Relationships
     session: Optional['Session'] = Relationship(back_populates='session_turns')
-
-
-# Schema for creating a new SessionTurn
-class SessionTurnCreate(CamelModel):
-    session_id: UUID
-    speaker: SpeakerEnum
-    start_offset_ms: int
-    end_offset_ms: int
-    text: str
-    audio_uri: str
-    ai_emotion: str
-
-
-# Schema for reading SessionTurn data
-class SessionTurnRead(CamelModel):
-    id: UUID
-    session_id: UUID
-    speaker: SpeakerEnum
-    start_offset_ms: int
-    end_offset_ms: int
-    text: str
-    audio_uri: str
-    ai_emotion: str
-    created_at: datetime
