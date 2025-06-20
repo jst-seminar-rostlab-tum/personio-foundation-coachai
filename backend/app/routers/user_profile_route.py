@@ -16,6 +16,7 @@ from app.schemas.user_profile import (
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
+    UserStatisticsRead,
 )
 
 router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
@@ -139,6 +140,31 @@ def get_user_profile(
             updated_at=user.updated_at,
             store_conversations=user.store_conversations,
         )
+
+
+@router.get('/stats', response_model=UserStatisticsRead)
+def get_user_stats(
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+) -> UserStatisticsRead:
+    user_id = user_profile.id
+    user = db_session.get(UserProfile, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail='User not found')
+
+    return UserStatisticsRead(
+        total_sessions=user.total_sessions,
+        training_time=user.training_time,
+        current_streak_days=user.current_streak_days,
+        average_score=user.average_score,
+        goals_achieved=user.goals_achieved,
+        # TODO: Uncomment and implement these fields when ready
+        # performance_over_time=user.performance_over_time,
+        # skills_performance=user.skills_performance
+        # Mockked data for now
+        performance_over_time=[72, 65, 70, 68, 74, 71, 78, 80, 69, 82],
+        skills_performance={'structure': 85, 'empathy': 70, 'solutionFocus': 75, 'clarity': 75},
+    )
 
 
 @router.put('', response_model=UserProfileExtendedRead)
