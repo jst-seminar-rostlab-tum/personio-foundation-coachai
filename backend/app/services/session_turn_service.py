@@ -19,8 +19,8 @@ class SessionTurnService:
         if not session:
             raise HTTPException(status_code=404, detail='Session not found')
 
-        new_turn = SessionTurn(**turn.dict())
+        new_turn = SessionTurn(**turn.model_dump())
         self.db.add(new_turn)
         self.db.commit()
         self.db.refresh(new_turn)
-        return SessionTurnRead.from_orm(new_turn)
+        return SessionTurnRead(**new_turn.model_dump())
