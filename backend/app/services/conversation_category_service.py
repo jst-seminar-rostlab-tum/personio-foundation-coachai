@@ -15,4 +15,4 @@ class ConversationCategoryService:
         """
         statement = select(ConversationCategory)
         categories = self.db.exec(statement).all()
-        return [ConversationCategoryRead.from_orm(category) for category in categories]
+        return [ConversationCategoryRead(**category.model_dump()) for category in categories]
