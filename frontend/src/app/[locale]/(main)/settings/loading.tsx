@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export default function TrainingSettingsLoadingPage() {
+export default function SettingsLoadingPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
