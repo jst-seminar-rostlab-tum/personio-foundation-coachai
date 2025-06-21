@@ -1,0 +1,57 @@
+{
+  "scenario": {
+    "title": "Feedback on Project Communication",
+    "description": "A User (playing the role of a manager) is giving feedback to an Assistant (playing the role of a direct report, Sam) about their communication during a recent project.",
+    "participants": {
+      "user_role": "Manager",
+      "assistant_role": "Sam, Direct Report"
+    }
+  },
+  "transcript": [
+    {
+      "speaker": "User",
+      "turn": 1,
+      "message": "Hi Sam, thanks for meeting with me. I wanted to chat about the Phoenix project. How do you think it's going from your side?"
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 2,
+      "message": "Hi. Thanks for asking. Overall, I think it's going okay, but I admit I've felt a bit overwhelmed lately and I might have let some things slip."
+    },
+    {
+      "speaker": "User",
+      "turn": 3,
+      "message": "I appreciate the honesty. I wanted to bring up something specific. I've noticed you've missed a couple of the recent project syncs, and some of my emails have gone unanswered for a few days, like the one about the client's updated requirements last week. That caused a bit of a scramble for the team."
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 4,
+      "message": "You're right. I sincerely apologize for that. I was trying to manage another urgent deadline and also had a family matter come up, but I should have communicated that to you proactively. It's my responsibility, and I'm sorry for the impact it had on the team."
+    },
+    {
+      "speaker": "User",
+      "turn": 5,
+      "message": "I understand that personal things come up and it's tough to juggle everything, and I appreciate you taking ownership. My main concern is the impact on the team's workflow. The updated requirements were critical, and we lost a day of work because the designers were working off the old spec. It puts pressure on everyone else to catch up."
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 6,
+      "message": "I completely understand. Seeing it from that perspective, I realize the downstream effects were more significant than I thought. I'm committed to making sure this doesn't happen again."
+    },
+    {
+      "speaker": "User",
+      "turn": 7,
+      "message": "I'm glad to hear that. Your work itself is great, and that's why your input is so valuable. What can we do to ensure you're in the loop moving forward? Would a different reminder system work, or is there something else I can do to support you?"
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 8,
+      "message": "Thank you for that. It's on me to manage my responsibilities. I will block out the syncs in my calendar as non-negotiable and will make a point to acknowledge all critical emails within a few hours, even if it's just to say 'received'. That should solve the issue."
+    },
+    {
+      "speaker": "User",
+      "turn": 9,
+      "message": "That sounds like a great plan. I appreciate you being so receptive and proactive about a solution. Let's check in on this next week. Thanks, Sam."
+    }
+  ]
+} 
