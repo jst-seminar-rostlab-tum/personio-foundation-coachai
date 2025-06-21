@@ -1,7 +1,7 @@
 {
-  "metaTitle": "Trainingsseinstellungen - Coach AI",
+  "metaTitle": "Einstellungen - Coach AI",
   "metaDescription": "Passen Sie Ihre Trainingsseinstellungen an",
-  "title": "Trainingseinstellungen",
+  "title": "Einstellungen",
   "backToDashboard": "Zurück zum Dashboard",
   "privacyControls": "Datenschutzeinstellungen",
   "storeAudioTranscripts": "Gesprächsaudio und Transkripte speichern",
@@ -40,16 +40,12 @@
   },
   "leadershipGoals": {
     "currentRole": {
-      "label": "Aktuelle Rolle",
-      "tl": "Teamleiter",
-      "rec": "Recruiting-Spezialist",
-      "tr": "Trainee"
+      "label": "Aktuelle Rolle"
     },
     "primaryGoals": {
       "label": "Hauptziele",
-      "feedback": "Konstruktives Feedback geben",
-      "coaching": "Coaching & Mentoring",
-      "coping": "Bewältigungsstrategien"
+      "placeholder": "Bitte wählen Sie bis zu 3 Ziele aus",
+      "maxOptionsSelected": "Max. Optionen ausgewählt"
     }
   },
   "saveSettingsSuccess": "Ihre Einstellungen wurden erfolgreich gespeichert.",
