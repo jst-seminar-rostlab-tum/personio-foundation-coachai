@@ -1,11 +1,11 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from app.schemas.scenario_preparation_schema import (
+from app.schemas.scenario_preparation import (
     ChecklistRequest,
     KeyConcept,
-    KeyConceptOutput,
     KeyConceptRequest,
+    KeyConceptResponse,
     ObjectiveRequest,
     StringListResponse,
 )
@@ -119,3 +119,4 @@ class TestScenarioPreparationService(unittest.TestCase):
         request_prompt = kwargs['request_prompt']
         self.assertTrue(vector_db_prompt_extension_base not in request_prompt)
         self.assertTrue(len(request_prompt) > 0)
+

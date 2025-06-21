@@ -8,7 +8,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel
 
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.schemas.scenario_preparation_schema import KeyConcept, ScenarioPreparationRequest
+from app.schemas.scenario_preparation import KeyConcept, ScenarioPreparationCreate
 from app.services.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,
@@ -84,7 +84,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         scenario_id = uuid4()
         prep = create_pending_preparation(scenario_id, self.session)
 
-        request = ScenarioPreparationRequest(
+        new_preparation = ScenarioPreparationCreate(
             category='Feedback',
             goal='Improve communication',
             context='Team review',
@@ -93,7 +93,7 @@ class TestScenarioPreparationService(unittest.TestCase):
             num_checkpoints=2,
         )
 
-        result = generate_scenario_preparation(prep.id, request, self.fake_session_gen)
+        result = generate_scenario_preparation(prep.id, new_preparation, self.fake_session_gen)
 
         self.assertEqual(result.status, ScenarioPreparationStatus.completed)
         self.assertEqual(result.objectives, ['Step 1', 'Step 2'])
@@ -149,7 +149,7 @@ class TestScenarioPreparationService(unittest.TestCase):
     ) -> None:
         prep = create_pending_preparation(uuid4(), self.session)
 
-        request = ScenarioPreparationRequest(
+        new_preparation = ScenarioPreparationCreate(
             category='Feedback',
             goal='Improve communication',
             context='Team review',
@@ -158,7 +158,7 @@ class TestScenarioPreparationService(unittest.TestCase):
             num_checkpoints=2,
         )
 
-        result = generate_scenario_preparation(prep.id, request, self.fake_session_gen)
+        result = generate_scenario_preparation(prep.id, new_preparation, self.fake_session_gen)
 
         # Assert that the preparation status is failed due to LLM error
         self.assertEqual(result.status, ScenarioPreparationStatus.failed)

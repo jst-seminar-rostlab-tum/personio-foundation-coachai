@@ -19,7 +19,7 @@ export default function BackButton() {
     return null;
   }
   return (
-    <Link href="/dashboard">
+    <Link href="/dashboard" className="block w-fit">
       <Button
         variant="ghost"
         className={cn(

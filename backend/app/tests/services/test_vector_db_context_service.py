@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from langchain.schema import Document
 
-from app.schemas.scenario_preparation_schema import ConversationScenarioBase
+from app.schemas.scenario_preparation import ConversationScenarioBase
 from app.services.vector_db_context_service import (
     build_query_general,
     build_query_prep_feedback,
