@@ -10,7 +10,7 @@ from av import AudioFrame, AudioResampler
 from google import genai
 from google.genai import live
 
-from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_client
+from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_realtime_client
 from app.schemas.webrtc_schema import (
     GeminiStreamConnectionError,
     GeminiStreamReceiveError,
@@ -309,7 +309,7 @@ class Gemini(Model):
         self._output = ''
 
 
-client = get_client()
+client = get_realtime_client()
 
 
 @contextlib.asynccontextmanager

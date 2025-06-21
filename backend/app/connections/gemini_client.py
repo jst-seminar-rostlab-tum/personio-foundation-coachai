@@ -35,6 +35,9 @@ load_dotenv()
 
 settings = Settings()
 
+# Only for debugging, to be removed in uploading
+use_vertex = True
+
 # Determine MODEL based on stage
 if settings.stage == 'prod':
     MODEL = 'gemini-2.0-flash-live-preview-04-09'
@@ -86,7 +89,7 @@ def get_client() -> genai.Client:
     if not hasattr(get_client, '_client'):
         try:
             logger.info('Creating Gemini client...')
-            if settings.stage == 'prod':
+            if settings.stage == 'prod' or use_vertex:
                 # Vertex AI configuration
                 # The service account file is expected to be in the `backend` directory
                 backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -160,7 +163,7 @@ def get_realtime_client() -> genai.Client:
     if not hasattr(get_realtime_client, '_client'):
         try:
             logger.info('Creating realtime Gemini client...')
-            if settings.stage == 'prod':
+            if settings.stage == 'prod' or use_vertex:
                 # Vertex AI configuration
                 # The service account file is expected to be in the `backend` directory
                 backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -184,7 +187,7 @@ def get_realtime_client() -> genai.Client:
                     project=settings.GOOGLE_CLOUD_PROJECT,
                     location=settings.GOOGLE_CLOUD_LOCATION,
                     credentials=credentials,
-                    http_options=HttpOptions(api_version='v1beta'),
+                    # http_options=HttpOptions(api_version='v1beta'),
                 )
             else:
                 # Gemini API configuration

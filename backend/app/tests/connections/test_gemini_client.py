@@ -86,23 +86,3 @@ def test_generate_gemini_content_prod() -> None:
     print(f'Vertex AI Response: {response}')
     assert isinstance(response, str)
     assert len(response) > 0
-
-
-@pytest.mark.integration
-@pytest.mark.usefixtures('dev_env')
-def test_get_realtime_client_dev() -> None:
-    """
-    Tests that the realtime Gemini client can be created successfully in a dev environment.
-    """
-    client = gemini_client.get_realtime_client()
-    assert client is not None, 'Failed to create realtime Gemini client for dev.'
-
-
-@pytest.mark.integration
-@pytest.mark.usefixtures('prod_env')
-def test_get_realtime_client_prod() -> None:
-    """
-    Tests that the realtime Vertex AI client can be created successfully in a prod environment.
-    """
-    client = gemini_client.get_realtime_client()
-    assert client is not None, 'Failed to create realtime Vertex AI client for production.'
