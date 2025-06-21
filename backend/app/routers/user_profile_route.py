@@ -34,6 +34,12 @@ def get_user_profiles(
     detailed: bool = False,
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
+    email_substring: str | None = Query(
+        None,
+        description='Filter profiles by email substring',
+        min_length=1,
+        max_length=100,
+    ),
 ) -> PaginatedUserResponse:
     """
     Retrieve all user profiles.
@@ -42,7 +48,9 @@ def get_user_profiles(
 
     - If `detailed` is True, returns extended profiles including goals and confidence scores.
     """
-    return service.get_user_profiles(detailed=detailed, page=page, page_size=page_size)
+    return service.get_user_profiles(
+        detailed=detailed, page=page, page_size=page_size, email_substring=email_substring
+    )
 
 
 @router.get(

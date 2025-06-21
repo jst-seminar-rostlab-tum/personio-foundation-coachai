@@ -12,6 +12,7 @@ from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
     PaginatedUserResponse,
+    UserEmailRead,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
@@ -62,9 +63,38 @@ class UserService:
             store_conversations=user.store_conversations,
         )
 
-    def get_user_profiles(
-        self, detailed: bool, page: int = 1, page_size: int = 10
+    def _get_user_by_email(
+        self, page: int, page_size: int, email_substring: str
     ) -> PaginatedUserResponse:
+        statement = (
+            select(UserProfile)
+            .where(col(UserProfile.email).like(f'%{email_substring}%'))
+            .order_by(col(UserProfile.updated_at).desc())
+        )
+
+        users = self.db.exec(statement.offset((page - 1) * page_size).limit(page_size)).all()
+        if not users:
+            raise HTTPException(
+                status_code=404,
+                detail='No user profiles found with the specified email substring.',
+            )
+
+        user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
+        total_users = len(users)
+        return PaginatedUserResponse(
+            page=page,
+            limit=page_size,
+            total_pages=ceil(total_users / page_size),
+            total_users=total_users,
+            users=user_list,
+        )
+
+    def get_user_profiles(
+        self, detailed: bool, page: int = 1, page_size: int = 10, email_substring: str | None = None
+    ) -> PaginatedUserResponse:
+        if email_substring:
+            return self._get_user_by_email(page, page_size, email_substring)
+
         statement = select(UserProfile).order_by(col(UserProfile.updated_at).desc())
         total_users = len(self.db.exec(statement).all())
         if total_users == 0:
