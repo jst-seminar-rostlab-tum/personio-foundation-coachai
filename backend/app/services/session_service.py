@@ -69,7 +69,8 @@ def fetch_session_details(
         created_at=session.created_at,
         updated_at=session.updated_at,
         title=training_title,
-        summary='The person giving feedback was rude but the person receiving feedback took it well.',  # mocked
+        summary='The person giving feedback was rude but the person receiving '
+        'feedback took it well.',
         goals_total=goals,
     )
 
