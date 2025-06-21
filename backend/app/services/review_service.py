@@ -2,6 +2,7 @@ from collections.abc import Sequence
 from uuid import UUID
 
 from fastapi import HTTPException, Query
+from sqlalchemy import func
 from sqlmodel import Session as DBSession
 from sqlmodel import asc, desc, select
 
@@ -93,7 +94,7 @@ class ReviewService:
         statement = select(Review).order_by(order_by)
 
         # Pagination
-        total_count = len(self.db.exec(select(Review)).all())
+        total_count = self.db.exec(select(func.count()).select_from(Review)).one()
         if total_count == 0:
             return PaginatedReviewsResponse(
                 reviews=[],
