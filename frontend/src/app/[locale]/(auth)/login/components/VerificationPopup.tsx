@@ -164,6 +164,21 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                               (next as HTMLInputElement)?.focus();
                             }
                           }}
+                          onPaste={(e) => {
+                            e.preventDefault();
+                            const pastedData = e.clipboardData.getData('text');
+                            const numericOnly = pastedData.replace(/\D/g, '');
+                            const codeToUse = numericOnly.slice(0, codeSize);
+
+                            if (codeToUse.length > 0) {
+                              field.onChange(codeToUse);
+                              const nextFieldIndex = Math.min(codeToUse.length, codeSize - 1);
+                              const nextField = document.getElementById(
+                                `code-cell-${nextFieldIndex}`
+                              );
+                              (nextField as HTMLInputElement)?.focus();
+                            }
+                          }}
                           onKeyDown={(e) => {
                             if (e.key === 'Backspace') {
                               const codeArr = (field.value || '').split('');
