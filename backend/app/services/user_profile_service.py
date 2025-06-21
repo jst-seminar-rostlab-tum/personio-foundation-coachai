@@ -196,47 +196,40 @@ class UserService:
         self.db.commit()
 
     def replace_user_profile(
-        self, user_id: UUID, data: UserProfileReplace
+        self, user: UserProfile, data: UserProfileReplace
     ) -> UserProfileExtendedRead:
-        user = self.db.get(UserProfile, user_id)
-        if not user:
-            raise HTTPException(status_code=404, detail='User not found')
-
         # Update UserProfile fields
         user.full_name = data.full_name
-        user.account_role = data.account_role
         user.experience = data.experience
         user.preferred_language_code = data.preferred_language_code
         user.preferred_learning_style = data.preferred_learning_style
         user.store_conversations = data.store_conversations
         user.professional_role = data.professional_role
 
+        # Only admins can change the account role
+        if user.account_role == 'admin':
+            user.account_role = data.account_role
+
         self.db.add(user)
 
         # Update goals
         if not data.goals:
             raise HTTPException(status_code=400, detail='Goals cannot be empty')
-        self._update_goals(user_id, data.goals)
+        self._update_goals(user.id, data.goals)
 
         # Update confidence scores
         if not data.confidence_scores:
             raise HTTPException(status_code=400, detail='Confidence scores cannot be empty')
-        self._update_confidence_scores(user_id, data.confidence_scores)
+        self._update_confidence_scores(user.id, data.confidence_scores)
 
         self.db.refresh(user)
 
         return self._get_detailed_user_profile_response(user)
 
     def update_user_profile(
-        self, user_id: UUID, data: UserProfileUpdate
+        self, user: UserProfile, data: UserProfileUpdate
     ) -> UserProfileExtendedRead:
-        user = self.db.get(UserProfile, user_id)
-        if not user:
-            raise HTTPException(status_code=404, detail='User not found')
-
         # Update UserProfile fields if provided
-        if data.account_role is not None:
-            user.account_role = data.account_role
         if data.experience is not None:
             user.experience = data.experience
         if data.preferred_language_code is not None:
@@ -248,14 +241,23 @@ class UserService:
         if data.professional_role is not None:
             user.professional_role = data.professional_role
 
+        if data.account_role is not None:
+            if user.account_role == 'admin':
+                user.account_role = data.account_role
+            else:
+                raise HTTPException(
+                    status_code=403,
+                    detail='Only admins can change the account role.',
+                )
+
         self.db.add(user)
         # Update goals if provided
         if data.goals is not None:
-            self._update_goals(user_id, data.goals)
+            self._update_goals(user.id, data.goals)
 
         # Update confidence scores if provided
         if data.confidence_scores is not None:
-            self._update_confidence_scores(user_id, data.confidence_scores)
+            self._update_confidence_scores(user.id, data.confidence_scores)
 
         self.db.commit()
         self.db.refresh(user)

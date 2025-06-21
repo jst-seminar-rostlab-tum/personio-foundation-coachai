@@ -87,7 +87,7 @@ def replace_user_profile(
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserProfileExtendedRead:
     return service.replace_user_profile(
-        user_id=user_profile.id,
+        user=user_profile,
         data=data,
     )
 
@@ -99,7 +99,7 @@ def update_user_profile(
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserProfileExtendedRead:
     return service.update_user_profile(
-        user_id=user_profile.id,
+        user=user_profile,
         data=data,
     )
 
