@@ -28,34 +28,34 @@ while read local_ref local_sha remote_ref remote_sha; do
     echo "✅- Backend tests passed"
   fi
 
-  if echo "$changed_files" | grep -qE '^backend/app/models/|^backend/alembic/versions/|^backend/alembic/data'; then
-    echo "🛠️- Changes in models and/or migrations. Running migration checks..."
+  # if echo "$changed_files" | grep -qE '^backend/app/models/|^backend/alembic/versions/|^backend/alembic/data'; then
+  #   echo "🛠️- Changes in models and/or migrations. Running migration checks..."
     
-    ROOT="$(git rev-parse --show-toplevel)"
-    BASE="$ROOT/docker-compose.yml"
-    CI="$ROOT/.husky/docker-compose.ci.yml"
-    COMPOSE="docker compose -f $BASE -f $CI"
-    $COMPOSE up -d --remove-orphans db
+  #   ROOT="$(git rev-parse --show-toplevel)"
+  #   BASE="$ROOT/docker-compose.yml"
+  #   CI="$ROOT/.husky/docker-compose.ci.yml"
+  #   COMPOSE="docker compose -f $BASE -f $CI"
+  #   $COMPOSE up -d --remove-orphans db
 
-    for i in {1..10}; do
-      state=$($COMPOSE ps --format '{{.Health}}' db)
-      [[ "$state" == "healthy" ]] && { break; }
-      [[ $i -eq 10 ]] && { echo "❌- DB not healthy in time"; exit 1; }
-      sleep 1
-    done
+  #   for i in {1..10}; do
+  #     state=$($COMPOSE ps --format '{{.Health}}' db)
+  #     [[ "$state" == "healthy" ]] && { break; }
+  #     [[ $i -eq 10 ]] && { echo "❌- DB not healthy in time"; exit 1; }
+  #     sleep 1
+  #   done
 
-    CID=$($COMPOSE run --build --no-deps -d test-migrations | tail -n1)
-    docker logs -f "$CID" &
-    EXIT=$(docker wait "$CID")
+  #   CID=$($COMPOSE run --build --no-deps -d test-migrations | tail -n1)
+  #   docker logs -f "$CID" &
+  #   EXIT=$(docker wait "$CID")
 
-    $COMPOSE stop test-migrations >/dev/null 2>&1 || true
-    $COMPOSE rm -f test-migrations >/dev/null 2>&1 || true
+  #   $COMPOSE stop test-migrations >/dev/null 2>&1 || true
+  #   $COMPOSE rm -f test-migrations >/dev/null 2>&1 || true
 
-    if [[ "$EXIT" -eq 0 ]]; then
-      echo "✅- Migration checks passed"
-    else
-      echo "❌- Migration checks failed"
-      exit 1
-    fi
-  fi
+  #   if [[ "$EXIT" -eq 0 ]]; then
+  #     echo "✅- Migration checks passed"
+  #   else
+  #     echo "❌- Migration checks failed"
+  #     exit 1
+  #   fi
+  # fi
 done

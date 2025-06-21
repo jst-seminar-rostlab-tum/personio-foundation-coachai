@@ -6,10 +6,8 @@ from sqlmodel import select
 
 from app.database import get_db_session
 from app.dependencies import require_user
-from app.models.conversation_category import (
-    ConversationCategory,
-    ConversationCategoryRead,
-)
+from app.models.conversation_category import ConversationCategory
+from app.schemas.conversation_category import ConversationCategoryRead
 
 router = APIRouter(prefix='/conversation-categories', tags=['Conversation Categories'])
 

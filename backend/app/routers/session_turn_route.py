@@ -5,8 +5,8 @@ from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
 from app.models.session import Session
-from app.models.session_turn import (
-    SessionTurn,
+from app.models.session_turn import SessionTurn
+from app.schemas.session_turn import (
     SessionTurnCreate,
     SessionTurnRead,
 )
