@@ -30,6 +30,7 @@ dependencies = [
   "langchain-openai>=0.3.21",
   "google-genai>=1.19.0",
   "pyjwt>=2.10.1",
+  "aiortc>=1.13.0",
 ]
 
 [tool.setuptools]

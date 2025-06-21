@@ -230,7 +230,7 @@ def create_session(
 
 
 # Endpoint to update an existing session
-@router.put('/{session_id}', response_model=SessionRead)
+@router.patch('/{session_id}', response_model=SessionRead)
 def update_session(
     session_id: UUID,
     updated_data: SessionUpdate,

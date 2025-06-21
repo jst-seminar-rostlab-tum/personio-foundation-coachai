@@ -35,7 +35,7 @@ const createSession = async (scenarioId: string) => {
 
 const updateSession = async (sessionId: string, session: Partial<Session>) => {
   try {
-    const response = await api.put<Session>(`/session/${sessionId}`, session);
+    const response = await api.patch<Session>(`/session/${sessionId}`, session);
     return response;
   } catch (error) {
     console.error('Error updating session:', error);

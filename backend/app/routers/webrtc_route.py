@@ -93,14 +93,14 @@ class RTCConnection:
                 raise Exception('Failed to create RTCPeerConnection')
             logger.info(f'Created RTCPeerConnection: {self.pc}')
 
-            self._run_task = asyncio.create_task(self._run())
-            logger.info(f'Started {self.config.model_service.upper()} connection task')
-
             await self.pc.setRemoteDescription(offer)
 
             answer = await self.pc.createAnswer()
 
             await self.pc.setLocalDescription(answer)
+
+            self._run_task = asyncio.create_task(self._run())
+            logger.info(f'Started {self.config.model_service.upper()} connection task')
 
             sdp = self.pc.localDescription.sdp
             found = re.findall(r'a=rtpmap:(\d+) opus/48000/2', sdp)
@@ -417,20 +417,6 @@ class RTCConnection:
 @router.post('/offer')
 async def offer(request: Request) -> PlainTextResponse:
     connection = RTCConnection()
-    connections.add(connection)
-    return await connection.handle_offer(request)
-
-
-@router.post('/offer/{model_name}')
-async def offer_with_model(request: Request, model_name: str) -> PlainTextResponse:
-    """Use specified model service to create connection"""
-    if model_name.lower() not in ['gemini', 'openai']:
-        raise ValueError(
-            f'Unsupported model service: {model_name}. Please use "gemini" or "openai"'
-        )
-
-    config = WebRTCConfig(model_service=model_name.lower())
-    connection = RTCConnection(config)
     connections.add(connection)
     return await connection.handle_offer(request)
 

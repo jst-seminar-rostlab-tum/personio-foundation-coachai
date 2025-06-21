@@ -18,6 +18,7 @@ from app.routers import (
     session_turn_route,
     user_profile_route,
     user_profile_stats_route,
+    webrtc_route,
 )
 
 logging.basicConfig(
@@ -47,6 +48,7 @@ app.include_router(app_config_route.router)
 app.include_router(admin_dashboard_stats_route.router)
 app.include_router(review_route.router)
 app.include_router(realtime_session_route.router)
+app.include_router(webrtc_route.router)
 
 
 # Create database tables on startup

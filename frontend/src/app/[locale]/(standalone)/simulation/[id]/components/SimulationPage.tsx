@@ -7,12 +7,13 @@ import { SessionStatus } from '@/interfaces/Session';
 import { sessionService } from '@/services/client/SessionService';
 import { useTranslations } from 'next-intl';
 import { showErrorToast } from '@/lib/toast';
+import { webRTCService } from '@/services/client/WebRTCService';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages, { Message } from './SimulationMessages';
 
-function useOpenAIRealtimeWebRTC(sessionId: string) {
+function useWebRTCProxy(sessionId: string) {
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isDataChannelReady, setIsDataChannelReady] = useState(false);
@@ -73,11 +74,9 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
       localStreamRef.current = localStream;
       setIsMicActive(true);
 
-      // 3. Create RTCPeerConnection
       const pc = new RTCPeerConnection();
       peerConnectionRef.current = pc;
 
-      // 4. Set up remote audio
       pc.ontrack = (event) => {
         if (event.track.kind === 'audio' && remoteAudioRef.current) {
           const [stream] = event.streams;
@@ -85,13 +84,11 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
         }
       };
 
-      // 5. Add local audio track
       localStream.getTracks().forEach((track) => {
         pc.addTrack(track, localStream);
       });
 
-      // 6. Set up data channel
-      const dc = pc.createDataChannel('oai-events');
+      const dc = pc.createDataChannel('data');
       dataChannelRef.current = dc;
       dc.onopen = () => {
         setIsDataChannelReady(true);
@@ -106,88 +103,20 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
       dc.onmessage = async (event) => {
         try {
           const parsed = JSON.parse(event.data);
-
-          if (
-            parsed.type === 'conversation.item.created' &&
-            parsed.item.role === 'user' &&
-            parsed.item.status === 'completed'
-          ) {
-            setMessages((prev) => [
-              // keep only those that are NOT both empty text and user‐sent
-              ...prev.filter((msg) => !(msg.text === '' && msg.sender === 'user')),
-              // then append your new (possibly empty) user message
-              {
-                text: '',
-                sender: 'user',
-              },
-            ]);
-          }
-
-          if (parsed.type === 'response.created') {
-            setMessages((prev) => [
-              // keep only those that are NOT both empty text and user‐sent
-              ...prev.filter((msg) => !(msg.text === '' && msg.sender === 'assistant')),
-              // then append your new (possibly empty) user message
-              {
-                text: '',
-                sender: 'assistant',
-              },
-            ]);
-          }
-
-          if (parsed.type === 'conversation.item.input_audio_transcription.delta') {
+          if (parsed.role && parsed.text) {
+            const sender = parsed.role === 'user' ? 'user' : 'assistant';
             setMessages((prev) => {
-              const idx = prev.findLastIndex((msg) => msg.sender === 'user');
-              if (idx === -1) return prev;
-
-              const userMsg = prev[idx];
-              const updatedMsg = {
-                ...userMsg,
-                text: userMsg.text + (parsed.delta ?? ''),
-              };
-
-              // Reconstruct the array with the one message replaced
-              return [...prev.slice(0, idx), updatedMsg, ...prev.slice(idx + 1)];
+              const lastMessage = prev[prev.length - 1];
+              if (lastMessage && lastMessage.sender === sender) {
+                const updatedMessages = [...prev];
+                updatedMessages[updatedMessages.length - 1] = {
+                  ...lastMessage,
+                  text: parsed.text,
+                };
+                return updatedMessages;
+              }
+              return [...prev, { sender, text: parsed.text }];
             });
-          }
-
-          if (parsed.type === 'conversation.item.input_audio_transcription.completed') {
-            await sessionService.createSessionTurn(
-              sessionId,
-              'user',
-              parsed.transcript,
-              '',
-              '',
-              0,
-              0
-            );
-          }
-
-          if (parsed.type === 'response.audio_transcript.delta') {
-            setMessages((prev) => {
-              const idx = prev.findLastIndex((msg) => msg.sender === 'assistant');
-              if (idx === -1) return prev;
-
-              const userMsg = prev[idx];
-              const updatedMsg = {
-                ...userMsg,
-                text: userMsg.text + (parsed.delta ?? ''),
-              };
-
-              return [...prev.slice(0, idx), updatedMsg, ...prev.slice(idx + 1)];
-            });
-          }
-
-          if (parsed.type === 'response.audio_transcript.done') {
-            await sessionService.createSessionTurn(
-              sessionId,
-              'assistant',
-              parsed.transcript,
-              '',
-              '',
-              0,
-              0
-            );
           }
         } catch {
           // Not JSON, just log
@@ -206,22 +135,28 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
         }
       };
 
-      const offer = await pc.createOffer();
+      const offer = await pc.createOffer({
+        iceRestart: true,
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: false,
+      });
       await pc.setLocalDescription(offer);
-      const sdpResponseText: string = await sessionService.getSdpResponseTextFromRealtimeApi(
-        sessionId,
-        offer.sdp
-      );
+      if (!offer.sdp) {
+        throw new Error('Failed to create offer: SDP is undefined');
+      }
+
+      const answerSdp = await webRTCService.getAnswerSdp(offer.sdp);
+
       const answer: RTCSessionDescriptionInit = {
         type: 'answer',
-        sdp: sdpResponseText,
+        sdp: answerSdp,
       };
       await pc.setRemoteDescription(answer);
     } catch {
       setIsMicActive(false);
       disconnect();
     }
-  }, [disconnect, sessionId]);
+  }, [disconnect]);
 
   return {
     isMicActive,
@@ -251,7 +186,7 @@ export default function SimulationPageComponent({ sessionId }: SimulationPageCom
     remoteAudioRef,
     localStreamRef,
     messages,
-  } = useOpenAIRealtimeWebRTC(sessionId);
+  } = useWebRTCProxy(sessionId);
 
   useEffect(() => {
     if (!isPaused) {

@@ -49,10 +49,10 @@ FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
 
 MODEL = 'models/gemini-2.0-flash-live-001'
 
-if not os.getenv('GEMINI_APPLICATION_CREDENTIALS'):
-    logger.error('GEMINI_APPLICATION_CREDENTIALS not found in environment variables')
+if not os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
+    logger.error('GOOGLE_APPLICATION_CREDENTIALS not found in environment variables')
     raise GeminiStreamConnectionError(
-        'GEMINI_APPLICATION_CREDENTIALS not found in environment variables'
+        'GOOGLE_APPLICATION_CREDENTIALS not found in environment variables'
     )
 
 
