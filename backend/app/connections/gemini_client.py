@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import contextlib
 import logging
-import os
 from collections.abc import AsyncGenerator
 
 from dotenv import load_dotenv
@@ -13,6 +12,7 @@ from google.genai.types import (
     ContextWindowCompressionConfig,
     EndSensitivity,
     File,
+    HttpOptions,
     LiveConnectConfig,
     MediaResolution,
     Modality,
@@ -34,11 +34,14 @@ logger.setLevel(logging.DEBUG)
 load_dotenv()
 
 settings = Settings()
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
-if not GEMINI_API_KEY:
-    logger.error('GEMINI_API_KEY not found in environment variables')
-    raise GeminiStreamConnectionError('GEMINI_API_KEY not found in environment variables')
+# The API key is no longer needed, as authentication will be handled by the
+# service account specified in the GOOGLE_APPLICATION_CREDENTIALS environment variable.
+# GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+#
+# if not GEMINI_API_KEY:
+#     logger.error('GEMINI_API_KEY not found in environment variables')
+#     raise GeminiStreamConnectionError('GEMINI_API_KEY not found in environment variables')
 
 ENABLE_AI = settings.ENABLE_AI
 FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
@@ -46,20 +49,32 @@ FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
 MODEL = 'models/gemini-2.0-flash-live-001'
 
 
-def _is_valid_api_key(key: str | None) -> bool:
-    return bool(key and isinstance(key, str) and key.strip())
-
-
-if not _is_valid_api_key(GEMINI_API_KEY):
-    print(
-        '[WARNING] GEMINI_API_KEY is missing or invalid. '
+# This check is no longer needed. The client will be initialized using
+# Application Default Credentials.
+# def _is_valid_api_key(key: str | None) -> bool:
+#     return bool(key and isinstance(key, str) and key.strip())
+#
+#
+# if not _is_valid_api_key(GEMINI_API_KEY):
+#     print(
+#         '[WARNING] GEMINI_API_KEY is missing or invalid. '
+#         'AI features will be disabled and mock responses will be used.'
+#     )
+#     ENABLE_AI = False
+#     gemini_client = None
+# else:
+#     ENABLE_AI = settings.ENABLE_AI
+#     gemini_client = genai.Client(api_key=settings.GEMINI_API_KEY)
+try:
+    gemini_client = genai.Client()
+    ENABLE_AI = settings.ENABLE_AI
+except Exception as e:
+    logger.warning(
+        f'[WARNING] Failed to initialize Gemini client, likely due to missing credentials: {e}. '
         'AI features will be disabled and mock responses will be used.'
     )
     ENABLE_AI = False
     gemini_client = None
-else:
-    ENABLE_AI = settings.ENABLE_AI
-    gemini_client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
 
 def generate_gemini_content(contents: list[str], model: str = MODEL) -> str:
@@ -125,9 +140,10 @@ def get_realtime_client() -> genai.Client:
     if not hasattr(get_realtime_client, '_client'):
         try:
             logger.info('Creating Gemini client...')
+            # The api_key parameter is removed to allow the client to use Application
+            # Default Credentials.
             get_realtime_client._client = genai.Client(
-                api_key=GEMINI_API_KEY,
-                # http_options=HttpOptions(api_version='v1beta'),
+                http_options=HttpOptions(api_version='v1beta'),
             )
             logger.info('Gemini client created successfully')
         except Exception as e:
