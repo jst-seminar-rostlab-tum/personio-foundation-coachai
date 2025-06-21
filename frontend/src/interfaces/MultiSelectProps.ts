@@ -5,5 +5,6 @@ export interface MultiSelectProps {
   value: string[];
   onChange: (value: string[]) => void;
   placeholder?: string;
+  maxSelectedDisclaimer?: string;
   maxSelected?: number;
 }

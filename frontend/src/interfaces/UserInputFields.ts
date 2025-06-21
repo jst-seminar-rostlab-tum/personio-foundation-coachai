@@ -4,6 +4,7 @@ export interface UserPreference<T = string> {
   value?: T;
   defaultValue?: T;
   placeholder?: string;
+  maxSelectedDisclaimer?: string;
   onChange?: (value: T) => void;
 }
 

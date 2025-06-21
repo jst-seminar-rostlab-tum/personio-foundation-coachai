@@ -79,6 +79,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     options: PrimaryGoals(),
     value: primaryGoals.slice(0, 3),
     placeholder: tOptions('primaryGoals.placeholder'),
+    maxSelectedDisclaimer: tOptions('primaryGoals.maxOptionsSelected'),
     onChange: (value: string[]) => {
       setPrimaryGoals(value);
     },

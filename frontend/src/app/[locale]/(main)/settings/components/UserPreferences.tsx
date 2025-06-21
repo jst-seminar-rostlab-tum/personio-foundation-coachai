@@ -50,6 +50,7 @@ const UserPreferences: React.FC<{
           value={primaryGoals.value!}
           maxSelected={3}
           placeholder={primaryGoals.placeholder}
+          maxSelectedDisclaimer={primaryGoals.maxSelectedDisclaimer}
           onChange={(value) => {
             if (primaryGoals.onChange) {
               primaryGoals.onChange(value);

@@ -44,7 +44,8 @@
     },
     "primaryGoals": {
       "label": "Hauptziele",
-      "placeholder": "Bitte wählen Sie bis zu 3 Ziele aus"
+      "placeholder": "Bitte wählen Sie bis zu 3 Ziele aus",
+      "maxOptionsSelected": "Max. Optionen ausgewählt"
     }
   },
   "saveSettingsSuccess": "Ihre Einstellungen wurden erfolgreich gespeichert.",

@@ -14,6 +14,7 @@ export function MultiSelect({
   onChange,
   placeholder,
   maxSelected,
+  maxSelectedDisclaimer,
 }: MultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -97,7 +98,7 @@ export function MultiSelect({
                 handleUnselect(optionId);
               }}
             >
-              <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+              <X className="h-3 w-3 text-muted-foreground hover:text-flame-50" />
             </div>
           </Badge>
         ))}
@@ -110,7 +111,7 @@ export function MultiSelect({
             className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
           />
         ) : (
-          <span className="text-sm text-bw-40">Max. options selected</span>
+          <span className="text-sm text-bw-40">{maxSelectedDisclaimer}</span>
         )}
       </div>
 
