@@ -1,15 +1,17 @@
+from math import ceil
 from typing import Union
 from uuid import UUID
 
 from fastapi import HTTPException
 from sqlmodel import Session as DBSession
-from sqlmodel import select
+from sqlmodel import col, select
 
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import Goal, UserGoal
 from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
+    PaginatedUserResponse,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
@@ -61,20 +63,36 @@ class UserService:
         )
 
     def get_user_profiles(
-        self, detailed: bool
-    ) -> Union[list[UserProfileRead], list[UserProfileExtendedRead]]:
-        statement = select(UserProfile)
-        users = self.db.exec(statement).all()
-        if not users:
+        self, detailed: bool, page: int = 1, page_size: int = 10
+    ) -> PaginatedUserResponse:
+        statement = select(UserProfile).order_by(col(UserProfile.updated_at).desc())
+        total_users = len(self.db.exec(statement).all())
+        if total_users == 0:
             raise HTTPException(
                 status_code=404,
                 detail='No user profiles found.',
             )
+        total_pages = ceil(total_users / page_size)  # Calculate total pages
+        if page < 1 or page > total_pages:
+            raise HTTPException(
+                status_code=400,
+                detail='Invalid page number.',
+            )
+
+        users = self.db.exec(statement.offset((page - 1) * page_size).limit(page_size)).all()
 
         if detailed:
-            return [self._get_detailed_user_profile_response(user) for user in users]
+            user_list = [self._get_detailed_user_profile_response(user) for user in users]
         else:
-            return [self._get_user_profile_response(user) for user in users]
+            user_list = [self._get_user_profile_response(user) for user in users]
+
+        return PaginatedUserResponse(
+            page=page,
+            limit=page_size,
+            total_pages=total_pages,
+            total_users=total_users,
+            users=user_list,
+        )
 
     def get_user_profile_by_id(
         self, user_id: UUID, detailed: bool

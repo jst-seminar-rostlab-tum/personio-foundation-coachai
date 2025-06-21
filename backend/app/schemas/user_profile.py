@@ -62,6 +62,14 @@ class UserProfileExtendedRead(UserProfileRead):
 UserProfileExtendedRead.model_rebuild()
 
 
+class PaginatedUserResponse(CamelModel):
+    page: int
+    limit: int
+    total_pages: int
+    total_users: int
+    users: list[UserProfileRead] | list[UserProfileExtendedRead]
+
+
 # Schema for reading User Statistics
 class UserStatisticsRead(CamelModel):
     total_sessions: int

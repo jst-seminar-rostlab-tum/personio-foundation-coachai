@@ -8,6 +8,7 @@ from app.database import get_db_session
 from app.dependencies import require_admin, require_user
 from app.models.user_profile import UserProfile
 from app.schemas.user_profile import (
+    PaginatedUserResponse,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
@@ -25,13 +26,15 @@ def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserS
 
 @router.get(
     '',
-    response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]],
+    response_model=PaginatedUserResponse,
     dependencies=[Depends(require_admin)],
 )
 def get_user_profiles(
     service: Annotated[UserService, Depends(get_user_service)],
     detailed: bool = False,
-) -> Union[list[UserProfileRead], list[UserProfileExtendedRead]]:
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1),
+) -> PaginatedUserResponse:
     """
     Retrieve all user profiles.
 
@@ -39,7 +42,7 @@ def get_user_profiles(
 
     - If `detailed` is True, returns extended profiles including goals and confidence scores.
     """
-    return service.get_user_profiles(detailed=detailed)
+    return service.get_user_profiles(detailed=detailed, page=page, page_size=page_size)
 
 
 @router.get(
