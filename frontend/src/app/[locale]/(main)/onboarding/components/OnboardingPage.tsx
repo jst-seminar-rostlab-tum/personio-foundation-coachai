@@ -42,6 +42,7 @@ export default function OnboardingPageComponent() {
     setConflict,
     conversation,
     setConversation,
+    reset,
   } = useOnboardingStore();
 
   const isValidStep = (stepIndex: number) => {
@@ -70,6 +71,7 @@ export default function OnboardingPageComponent() {
         ],
       });
       router.push('/dashboard');
+      reset();
     } catch (error) {
       showErrorToast(error, t('updateProfileError'));
     }
