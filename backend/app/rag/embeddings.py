@@ -1,4 +1,3 @@
-from langchain.embeddings.base import Embeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_openai import OpenAIEmbeddings
 
@@ -7,7 +6,9 @@ from app.config import Settings
 settings = Settings()
 
 
-def get_embedding_model(model_type: str = 'gemini') -> Embeddings:
+def get_embedding_model(
+    model_type: str = 'gemini',
+) -> GoogleGenerativeAIEmbeddings | OpenAIEmbeddings:
     """
     Returns an embedding model instance based on the specified provider.
 
@@ -28,10 +29,15 @@ def get_embedding_model(model_type: str = 'gemini') -> Embeddings:
         ValueError: If an unsupported model type is specified.
     """
     if model_type == 'gemini':
+        if not settings.GEMINI_API_KEY:
+            print('No GEMINI_API_KEY to create embedding model')
+            raise ValueError('No GEMINI_API_KEY to create embedding model')
         return GoogleGenerativeAIEmbeddings(
             model='models/embedding-001', google_api_key=settings.GEMINI_API_KEY
         )
     elif model_type == 'openai':
+        if not settings.OPENAI_API_KEY:
+            raise ValueError('No OPENAI_API_KEY to create embedding model')
         return OpenAIEmbeddings(
             model='text-embedding-3-small', openai_api_key=settings.OPENAI_API_KEY
         )

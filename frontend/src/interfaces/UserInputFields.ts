@@ -1,9 +1,11 @@
-export interface UserPreference {
+export interface UserPreference<T = string> {
   label: string;
   options: UserOption[];
-  value?: string;
-  defaultValue?: string;
-  onChange?: (value: string) => void;
+  value?: T;
+  defaultValue?: T;
+  placeholder?: string;
+  maxSelectedDisclaimer?: string;
+  onChange?: (value: T) => void;
 }
 
 export interface UserConfidenceField {
