@@ -32,6 +32,7 @@ from google.genai.types import (
     StartSensitivity,
     VoiceConfig,
 )
+from google.oauth2 import service_account
 
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
@@ -42,11 +43,24 @@ CHUNK_SIZE = 1024
 # Load environment variables from .env file
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-GOOGLE_CLOUD_PROJECT = os.getenv('GOOGLE_CLOUD_PROJECT')
-GOOGLE_CLOUD_LOCATION = os.getenv('GOOGLE_CLOUD_LOCATION')
+ROOT = os.path.dirname(__file__)
 
-client = genai.Client(vertexai=True, project=GOOGLE_CLOUD_PROJECT, location=GOOGLE_CLOUD_LOCATION)
+GOOGLE_CLOUD_PROJECT = 'personio-foundation'
+GOOGLE_CLOUD_LOCATION = 'us-central1'
+
+service_account_path = os.path.join(ROOT, 'service_account.json')
+scopes = ['https://www.googleapis.com/auth/cloud-platform']
+
+credentials = service_account.Credentials.from_service_account_file(
+    service_account_path, scopes=scopes
+)
+
+client = genai.Client(
+    vertexai=True,
+    project=GOOGLE_CLOUD_PROJECT,
+    location=GOOGLE_CLOUD_LOCATION,
+    credentials=credentials,
+)
 
 MODEL_ID = 'gemini-2.0-flash-live-preview-04-09'
 
@@ -157,8 +171,8 @@ class AudioLoop:
 
                     print('Response interrupted')
 
-            print('Input:', ''.join(input_transcription))
-            print('Output:', ''.join(output_transcription))
+            print('Input:', ''.join(x for x in input_transcription if x is not None))
+            print('Output:', ''.join(x for x in output_transcription if x is not None))
 
             # If you interrupt the model, it sends a turn_complete.
             # For interruptions to work, we need to stop playback.
