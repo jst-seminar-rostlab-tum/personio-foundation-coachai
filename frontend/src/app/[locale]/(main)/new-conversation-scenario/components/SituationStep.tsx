@@ -34,7 +34,7 @@ export function SituationStep({
 
       <div className="text-lg text-font-dark mb-4">{t('situation.otherParty.title')}</div>
       <Input
-        className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/30 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm mb-8"
+        className="w-full mb-8"
         value={otherParty}
         placeholder={t('situation.otherParty.placeholder')}
         onChange={(e) => onPartyChange(e.target.value)}

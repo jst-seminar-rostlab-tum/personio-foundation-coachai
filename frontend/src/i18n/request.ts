@@ -19,7 +19,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     Onboarding: (await import(`../../messages/${locale}/Onboarding.json`)).default,
     Preparation: (await import(`../../messages/${locale}/Preparation.json`)).default,
     Simulation: (await import(`../../messages/${locale}/Simulation.json`)).default,
-    TrainingSettings: (await import(`../../messages/${locale}/TrainingSettings.json`)).default,
+    Settings: (await import(`../../messages/${locale}/Settings.json`)).default,
     AppHeader: (await import(`../../messages/${locale}/AppHeader.json`)).default,
     PrivacyPolicy: (await import(`../../messages/${locale}/PrivacyPolicy.json`)).default,
     TermsOfService: (await import(`../../messages/${locale}/TermsOfService.json`)).default,

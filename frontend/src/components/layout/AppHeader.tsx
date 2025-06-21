@@ -22,7 +22,7 @@ export function AppHeader() {
     { key: 'newConversationScenario', href: '/new-conversation-scenario' },
     ...(user.accountRole === AccountRole.admin ? [{ key: 'admin', href: '/admin' }] : []),
     { key: 'history', href: '/history' },
-    { key: 'trainingSettings', href: '/training-settings' },
+    { key: 'settings', href: '/settings' },
   ];
 
   useEffect(() => {
