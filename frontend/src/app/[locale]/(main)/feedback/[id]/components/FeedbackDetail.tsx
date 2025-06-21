@@ -11,7 +11,6 @@ import {
   PlayIcon,
 } from 'lucide-react';
 import Progress from '@/components/ui/Progress';
-import { Button } from '@/components/ui/Button';
 import {
   Accordion,
   AccordionContent,
@@ -178,9 +177,6 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           </div>
         </div>
       </div>
-      <Button variant="outline" size="full">
-        {t('yourApproach')}
-      </Button>
       <Accordion type="multiple" className="w-full">
         <AccordionItem value="feedback">
           <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
