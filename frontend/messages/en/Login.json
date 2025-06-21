@@ -51,6 +51,7 @@
     "verifyButtonLabel": "Verify",
     "verifyingButtonLabel": "Verifying...",
     "cancelButtonLabel": "Cancel",
+    "codeLengthError": "The code must be 6 characters long",
     "genericError": "An error occurred during verification"
   },
   "PrivacyPolicyDialog": {
