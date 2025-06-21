@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     SUPABASE_JWT_SECRET: str = ''
 
     GEMINI_API_KEY: str = ''
+    GOOGLE_SERVICE_ACCOUNT_FILE: str = ''
+    GOOGLE_CLOUD_PROJECT: str = ''
+    GOOGLE_CLOUD_LOCATION: str = ''
+
     OPENAI_API_KEY: str = ''
 
     CORS_ORIGIN: str = 'http://localhost:3000'
