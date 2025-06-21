@@ -269,7 +269,7 @@ def generate_scenario_preparation(
             other_party=request.other_party,
         )
 
-        vector_db_prompt_extension = query_vector_db_and_prompt(
+        hr_docs_context = query_vector_db_and_prompt(
             session_context=[request.category, request.goal, request.context, request.other_party],
             generated_object='output',
         )
@@ -278,13 +278,13 @@ def generate_scenario_preparation(
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_key_concepts = executor.submit(
-                safe_generate_key_concepts, key_concept_request, vector_db_prompt_extension
+                safe_generate_key_concepts, key_concept_request, hr_docs_context
             )
             future_objectives = executor.submit(
-                safe_generate_objectives, objectives_request, vector_db_prompt_extension
+                safe_generate_objectives, objectives_request, hr_docs_context
             )
             future_checklist = executor.submit(
-                safe_generate_checklist, checklist_request, vector_db_prompt_extension
+                safe_generate_checklist, checklist_request, hr_docs_context
             )
 
             try:

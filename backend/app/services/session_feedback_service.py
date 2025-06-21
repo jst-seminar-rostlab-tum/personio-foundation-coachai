@@ -292,7 +292,7 @@ def generate_and_store_feedback(
     goals = GoalsAchievedCollection(goals_achieved=[])
     recommendations = []
 
-    vector_db_prompt_extension = query_vector_db_and_prompt(
+    hr_docs_context = query_vector_db_and_prompt(
         session_context=[
             recommendations_request.category,
             recommendations_request.goal,
@@ -314,13 +314,11 @@ def generate_and_store_feedback(
     else:
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_examples = executor.submit(
-                safe_generate_training_examples, examples_request, vector_db_prompt_extension
+                safe_generate_training_examples, examples_request, hr_docs_context
             )
-            future_goals = executor.submit(
-                safe_get_achieved_goals, goals_request, vector_db_prompt_extension
-            )
+            future_goals = executor.submit(safe_get_achieved_goals, goals_request, hr_docs_context)
             future_recommendations = executor.submit(
-                safe_generate_recommendations, recommendations_request, vector_db_prompt_extension
+                safe_generate_recommendations, recommendations_request, hr_docs_context
             )
 
             try:
