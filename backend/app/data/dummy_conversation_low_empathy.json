@@ -1,0 +1,52 @@
+{
+  "scenario": {
+    "title": "Feedback on Project Communication (User has Low Empathy)",
+    "description": "An Assistant (playing a direct report, Sam) expresses that they are struggling, and the User (playing a manager) responds with a lack of empathy.",
+    "participants": {
+      "user_role": "Manager",
+      "assistant_role": "Sam, Direct Report"
+    }
+  },
+  "transcript": [
+    {
+      "speaker": "Assistant",
+      "turn": 1,
+      "message": "Thanks for meeting with me. To be honest, I've been having a hard time keeping up with the project's demands lately, and I know my communication has suffered. I apologize for that."
+    },
+    {
+      "speaker": "User",
+      "turn": 2,
+      "message": "So you're saying you can't handle the workload."
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 3,
+      "message": "It's not that. I had a personal family matter that was very stressful, and it temporarily affected my focus. I'm confident I can get back on track now."
+    },
+    {
+      "speaker": "User",
+      "turn": 4,
+      "message": "Look, everyone has personal problems. Your family issues shouldn't impact the team's deadlines. We have a project to deliver."
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 5,
+      "message": "I understand my responsibilities. I'm not making excuses, just providing context. I am fully committed to my work and the team."
+    },
+    {
+      "speaker": "User",
+      "turn": 6,
+      "message": "Good. Then just make sure you answer your emails from now on. The team can't afford any more mistakes from you."
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 7,
+      "message": "I will. I want to assure you that my performance will return to its usual high standard immediately."
+    },
+    {
+      "speaker": "User",
+      "turn": 8,
+      "message": "Fine. Let's move on."
+    }
+  ]
+} 
