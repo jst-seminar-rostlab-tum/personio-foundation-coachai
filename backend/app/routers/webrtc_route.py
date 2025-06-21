@@ -20,11 +20,9 @@ from av import AudioFrame
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import PlainTextResponse
 
-from app.connections.gemini_client import connect_realtime_gemini
-from app.connections.openai_client import connect_realtime_openai
 from app.schemas.webrtc_schema import GeminiUserType, WebRTCDataChannelMessage
-from app.services.gemini_model_service import GeminiRealtime
-from app.services.openai_model_service import OpenAIRealtime
+from app.services.gemini_model_service import Gemini, connect_gemini
+from app.services.openai_model_service import OpenAI, connect_openai
 
 AUDIO_PTIME = 0.02
 AUDIO_BITRATE = 16000
@@ -73,7 +71,7 @@ class RTCConnection:
     recv_video_track: Optional[MediaStreamTrack] = None
     send_track: Optional[SendingTrack] = None
     pc: Optional[RTCPeerConnection] = None
-    ai_session: Optional[Union[GeminiRealtime, OpenAIRealtime]] = None
+    ai_session: Optional[Union[Gemini, OpenAI]] = None
     datachannel: Optional[RTCDataChannel] = None
     config: WebRTCConfig
     peer_id: str
@@ -93,14 +91,14 @@ class RTCConnection:
                 raise Exception('Failed to create RTCPeerConnection')
             logger.info(f'Created RTCPeerConnection: {self.pc}')
 
+            self._run_task = asyncio.create_task(self._run())
+            logger.info(f'Started {self.config.model_service.upper()} connection task')
+
             await self.pc.setRemoteDescription(offer)
 
             answer = await self.pc.createAnswer()
 
             await self.pc.setLocalDescription(answer)
-
-            self._run_task = asyncio.create_task(self._run())
-            logger.info(f'Started {self.config.model_service.upper()} connection task')
 
             sdp = self.pc.localDescription.sdp
             found = re.findall(r'a=rtpmap:(\d+) opus/48000/2', sdp)
@@ -204,6 +202,7 @@ class RTCConnection:
                     break
                 except Exception as e:
                     logger.error(f'Error in send track for peer {self.peer_id}: {e}')
+                    # 短暂等待后继续
                     await asyncio.sleep(0.1)
 
         async def run_audio_receiver() -> None:
@@ -218,8 +217,9 @@ class RTCConnection:
                     break
                 except Exception as e:
                     logger.error(f'Error in audio receiver for peer {self.peer_id}: {e}')
+                    # 如果出错，短暂等待后重试
                     await asyncio.sleep(0.5)
-                    break
+                    break  # 出错后退出循环
 
         async def run_input_transcription_processor() -> None:
             """Process input transcription queue"""
@@ -242,7 +242,7 @@ class RTCConnection:
                             )
 
                     except TimeoutError:
-                        continue
+                        continue  # 超时继续循环
                     except asyncio.CancelledError:
                         logger.info(
                             f'input_transcription_processor cancelled for peer {self.peer_id}'
@@ -276,7 +276,7 @@ class RTCConnection:
                             )
 
                     except TimeoutError:
-                        continue
+                        continue  # 超时继续循环
                     except asyncio.CancelledError:
                         logger.info(
                             f'output_transcription_processor cancelled for peer {self.peer_id}'
@@ -310,7 +310,7 @@ class RTCConnection:
                                 f'output_transcription={output_queue_size}'
                             )
 
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(2)  # 每2秒监控一次
 
                 except asyncio.CancelledError:
                     logger.info(f'monitor_queues cancelled for peer {self.peer_id}')
@@ -323,10 +323,11 @@ class RTCConnection:
             # Connect to model service
             if self.config.model_service == 'openai':
                 logger.info(f'Connecting to OpenAI for peer {self.peer_id}...')
-                async with connect_realtime_openai() as session:
+                async with connect_openai() as session:
                     logger.info(f'Connected to OpenAI session for peer {self.peer_id}')
-                    self.ai_session: OpenAIRealtime = session
+                    self.ai_session: OpenAI = session
 
+                    # 创建任务列表
                     tasks = [
                         asyncio.create_task(run_recv_audio_track()),
                         asyncio.create_task(run_audio_receiver()),
@@ -340,18 +341,21 @@ class RTCConnection:
                         await asyncio.gather(*tasks, return_exceptions=True)
                     except asyncio.CancelledError:
                         logger.info(f'OpenAI tasks cancelled for peer {self.peer_id}')
+                        # 取消所有任务
                         for task in tasks:
                             if not task.done():
                                 task.cancel()
+                        # 等待任务完成取消
                         await asyncio.gather(*tasks, return_exceptions=True)
 
                     logger.info(f'OpenAI connection finished for peer {self.peer_id}')
             else:  # Default to Gemini
                 logger.info(f'Connecting to Gemini for peer {self.peer_id}...')
-                async with connect_realtime_gemini() as session:
+                async with connect_gemini() as session:
                     logger.info(f'Connected to Gemini session for peer {self.peer_id}')
-                    self.ai_session: GeminiRealtime = session
+                    self.ai_session: Gemini = session
 
+                    # 创建任务列表
                     tasks = [
                         asyncio.create_task(run_recv_audio_track()),
                         asyncio.create_task(run_audio_receiver()),
@@ -365,16 +369,18 @@ class RTCConnection:
                         await asyncio.gather(*tasks, return_exceptions=True)
                     except asyncio.CancelledError:
                         logger.info(f'Gemini tasks cancelled for peer {self.peer_id}')
+                        # 取消所有任务
                         for task in tasks:
                             if not task.done():
                                 task.cancel()
+                        # 等待任务完成取消
                         await asyncio.gather(*tasks, return_exceptions=True)
 
                     logger.info(f'Gemini connection finished for peer {self.peer_id}')
 
         except asyncio.CancelledError:
             logger.info(f'Connection cancelled for peer {self.peer_id}')
-            raise
+            raise  # 重新抛出取消异常
         except Exception as e:
             logger.error(
                 f'Error with {self.config.model_service.upper()} '
@@ -391,6 +397,7 @@ class RTCConnection:
     async def close(self) -> None:
         logger.info(f'Closing connection for peer {self.peer_id}')
 
+        # 关闭RTCPeerConnection
         if self.pc:
             try:
                 await asyncio.wait_for(self.pc.close(), timeout=2.0)
@@ -401,6 +408,7 @@ class RTCConnection:
             finally:
                 self.pc = None
 
+        # 关闭AI会话
         if self.ai_session:
             try:
                 await asyncio.wait_for(self.ai_session.close(), timeout=2.0)
@@ -421,11 +429,27 @@ async def offer(request: Request) -> PlainTextResponse:
     return await connection.handle_offer(request)
 
 
+@router.post('/offer/{model_name}')
+async def offer_with_model(request: Request, model_name: str) -> PlainTextResponse:
+    """Use specified model service to create connection"""
+    if model_name.lower() not in ['gemini', 'openai']:
+        raise ValueError(
+            f'Unsupported model service: {model_name}. Please use "gemini" or "openai"'
+        )
+
+    config = WebRTCConfig(model_service=model_name.lower())
+    connection = RTCConnection(config)
+    connections.add(connection)
+    return await connection.handle_offer(request)
+
+
 async def on_shutdown() -> None:
     logger.info(f'Shutting down WebRTC connections. Active connections: {len(connections)}')
     if connections:
+        # 创建关闭任务
         close_tasks = [conn.close() for conn in list(connections)]
         try:
+            # 设置超时，避免无限等待
             await asyncio.wait_for(
                 asyncio.gather(*close_tasks, return_exceptions=True), timeout=5.0
             )

@@ -1,11 +1,13 @@
 import asyncio
 import base64
+import contextlib
 import logging
 import re
-from collections.abc import AsyncIterator
-from typing import Optional, Union
+from collections.abc import AsyncGenerator, AsyncIterator
+from typing import Optional, Protocol, Union, abstractmethod
 
 from av import AudioFrame, AudioResampler
+from openai import AsyncOpenAI
 from openai.types.beta import realtime as openai_types
 
 SAMPLE_RATE = 24000
@@ -16,6 +18,20 @@ Output = AudioFrame
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+
+class Model(Protocol):
+    @abstractmethod
+    async def send(self, _input: Input) -> None:
+        pass
+
+    @abstractmethod
+    async def recv(self) -> AsyncIterator[Output]:
+        pass
+
+    @abstractmethod
+    async def close(self) -> None:
+        pass
 
 
 class TranscriptionProcessor:
@@ -108,7 +124,7 @@ class TranscriptionProcessor:
         self.buffer = ''
 
 
-class OpenAIRealtime:
+class OpenAI(Model):
     def __init__(self, session: openai_types.Session) -> None:
         self.session: openai_types.Session = session
         self.resampler = AudioResampler(
@@ -332,3 +348,31 @@ class OpenAIRealtime:
             self._output_processor.clear()
         except Exception as e:
             logger.error(f'Error clearing processors: {e}')
+
+
+client = AsyncOpenAI()
+
+
+@contextlib.asynccontextmanager
+async def connect_openai() -> AsyncGenerator[OpenAI, None]:
+    async with client.beta.realtime.connect(model='gpt-4o-realtime-preview-2025-06-03') as conn:
+        # Configure session to enable input audio transcription and server VAD
+        session_update = {
+            'type': 'session.update',
+            'session': {
+                'modalities': ['text', 'audio'],
+                'input_audio_transcription': {'model': 'whisper-1'},
+                'turn_detection': {
+                    'type': 'server_vad',
+                    'threshold': 0.5,
+                    'prefix_padding_ms': 300,
+                    'silence_duration_ms': 500,
+                },
+            },
+        }
+
+        # Send session update to enable transcription and VAD
+        await conn.send(session_update)
+        logger.info('Session configured with input audio transcription and server VAD enabled')
+
+        yield OpenAI(conn)

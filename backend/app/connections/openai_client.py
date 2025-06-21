@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import contextlib
 import logging
 import os
-from collections.abc import AsyncGenerator
 from typing import TypeVar
 
 from dotenv import load_dotenv
@@ -116,33 +114,3 @@ def get_async_openai_client() -> AsyncOpenAI:
     if not ENABLE_AI or async_client is None:
         raise RuntimeError('AsyncOpenAI client is not available.')
     return async_client
-
-
-@contextlib.asynccontextmanager
-async def connect_realtime_openai() -> AsyncGenerator[AsyncOpenAI, None]:
-    """
-    Connect to OpenAI realtime session and configure it with
-    input audio transcription and server VAD enabled. Yield the connection object.
-
-    Returns:
-    - AsyncOpenAI connection object
-    """
-    async with async_client.beta.realtime.connect(
-        model='gpt-4o-realtime-preview-2025-06-03'
-    ) as conn:
-        session_update = {
-            'type': 'session.update',
-            'session': {
-                'modalities': ['text', 'audio'],
-                'input_audio_transcription': {'model': 'whisper-1'},
-                'turn_detection': {
-                    'type': 'server_vad',
-                    'threshold': 0.5,
-                    'prefix_padding_ms': 300,
-                    'silence_duration_ms': 500,
-                },
-            },
-        }
-        await conn.send(session_update)
-        logger.info('Session configured with input audio transcription and server VAD enabled')
-        yield conn

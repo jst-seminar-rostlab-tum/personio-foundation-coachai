@@ -1,14 +1,18 @@
 import asyncio
+import contextlib
 import logging
 import re
-from collections.abc import AsyncIterator
-from typing import Optional, Union
+from abc import abstractmethod
+from collections.abc import AsyncGenerator, AsyncIterator
+from typing import Optional, Protocol, Union
 
 from av import AudioFrame, AudioResampler
 from google import genai
 from google.genai import live
 
+from app.connections.gemini_client import LIVE_CONFIG, MODEL, get_client
 from app.schemas.webrtc_schema import (
+    GeminiStreamConnectionError,
     GeminiStreamReceiveError,
     GeminiStreamSendError,
 )
@@ -21,6 +25,20 @@ type Output = AudioFrame
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+
+class Model(Protocol):
+    @abstractmethod
+    async def send(self, _input: Input) -> None:
+        pass
+
+    @abstractmethod
+    async def recv(self) -> AsyncIterator[Output]:
+        pass
+
+    @abstractmethod
+    async def close(self) -> None:
+        pass
 
 
 class TranscriptionProcessor:
@@ -90,7 +108,7 @@ class TranscriptionProcessor:
         self.buffer = ''
 
 
-class GeminiRealtime:
+class Gemini(Model):
     def __init__(
         self,
         session: live.AsyncSession,
@@ -289,3 +307,24 @@ class GeminiRealtime:
             self._output += output_final_text
         self._input = ''
         self._output = ''
+
+
+client = get_client()
+
+
+@contextlib.asynccontextmanager
+async def connect_gemini() -> AsyncGenerator[Gemini, None]:
+    try:
+        logger.info('Connecting to Gemini...')
+        async with client.aio.live.connect(
+            model=MODEL,
+            config=LIVE_CONFIG,
+        ) as session:
+            logger.info('Connected to Gemini successfully')
+            gemini = Gemini(session)
+            # Start background task here, if you want
+            # gemini.audio_task = asyncio.create_task(gemini.audio_receiver())
+            yield gemini
+    except Exception as e:
+        logger.error(f'Failed to connect to Gemini: {e}')
+        raise GeminiStreamConnectionError(f'Failed to connect to Gemini: {e}') from e
