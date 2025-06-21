@@ -63,46 +63,23 @@ class UserService:
             store_conversations=user.store_conversations,
         )
 
-    def _get_user_by_email(
-        self, page: int, page_size: int, email_substring: str
-    ) -> PaginatedUserResponse:
-        statement = (
-            select(UserProfile)
-            .where(col(UserProfile.email).like(f'%{email_substring}%'))
-            .order_by(col(UserProfile.updated_at).desc())
-        )
-
-        users = self.db.exec(statement.offset((page - 1) * page_size).limit(page_size)).all()
-        if not users:
-            raise HTTPException(
-                status_code=404,
-                detail='No user profiles found with the specified email substring.',
-            )
-
-        user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
-        total_users = len(users)
-        return PaginatedUserResponse(
-            page=page,
-            limit=page_size,
-            total_pages=ceil(total_users / page_size),
-            total_users=total_users,
-            users=user_list,
-        )
-
     def get_user_profiles(
         self, detailed: bool, page: int = 1, page_size: int = 10, email_substring: str | None = None
     ) -> PaginatedUserResponse:
+        statement = select(UserProfile)
         if email_substring:
-            return self._get_user_by_email(page, page_size, email_substring)
+            statement = statement.where(col(UserProfile.email).like(f'%{email_substring}%'))
 
-        statement = select(UserProfile).order_by(col(UserProfile.updated_at).desc())
+        statement = statement.order_by(col(UserProfile.updated_at).desc())
+
         total_users = len(self.db.exec(statement).all())
         if total_users == 0:
             raise HTTPException(
                 status_code=404,
                 detail='No user profiles found.',
             )
-        total_pages = ceil(total_users / page_size)  # Calculate total pages
+
+        total_pages = ceil(total_users / page_size)
         if page < 1 or page > total_pages:
             raise HTTPException(
                 status_code=400,
@@ -114,7 +91,7 @@ class UserService:
         if detailed:
             user_list = [self._get_detailed_user_profile_response(user) for user in users]
         else:
-            user_list = [self._get_user_profile_response(user) for user in users]
+            user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
 
         return PaginatedUserResponse(
             page=page,
