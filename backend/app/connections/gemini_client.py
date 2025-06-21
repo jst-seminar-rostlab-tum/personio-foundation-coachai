@@ -36,7 +36,7 @@ load_dotenv()
 settings = Settings()
 
 # Only for debugging, to be removed in uploading
-use_vertex = True
+use_vertex = False
 
 # Determine MODEL based on stage
 if settings.stage == 'prod':
