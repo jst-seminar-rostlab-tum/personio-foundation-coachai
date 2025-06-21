@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import logging
+import os
 from collections.abc import AsyncGenerator
 
 from dotenv import load_dotenv
@@ -47,6 +48,12 @@ ENABLE_AI = settings.ENABLE_AI
 FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
 
 MODEL = 'models/gemini-2.0-flash-live-001'
+
+if not os.getenv('GEMINI_APPLICATION_CREDENTIALS'):
+    logger.error('GEMINI_APPLICATION_CREDENTIALS not found in environment variables')
+    raise GeminiStreamConnectionError(
+        'GEMINI_APPLICATION_CREDENTIALS not found in environment variables'
+    )
 
 
 # This check is no longer needed. The client will be initialized using
