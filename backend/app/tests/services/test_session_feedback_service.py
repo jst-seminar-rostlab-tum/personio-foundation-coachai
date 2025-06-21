@@ -184,9 +184,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(feedback.transcript_uri, '')
 
     @patch('app.services.session_feedback_service.call_structured_llm')
-    def test_generate_recommendation_with_vector_db_prompt_extension(
-        self, mock_llm: MagicMock
-    ) -> None:
+    def test_generate_recommendation_with_hr_docs_context(self, mock_llm: MagicMock) -> None:
         # Analogically for examples and goals
         transcript = "User: Let's explore what might be causing these delays."
         objectives = ['Understand root causes', 'Collaboratively develop a solution']
@@ -217,25 +215,25 @@ class TestSessionFeedbackService(unittest.TestCase):
             key_concepts=key_concepts,
         )
 
-        vector_db_prompt_extension_base = (
+        hr_docs_context_base = (
             'The output you generate should comply with the following HR Guideline excerpts:\n'
         )
-        vector_db_prompt_extension_1 = f'{vector_db_prompt_extension_base}Respect\n2. Clarity\n'
-        vector_db_prompt_extension_2 = ''
+        hr_docs_context_1 = f'{hr_docs_context_base}Respect\n2. Clarity\n'
+        hr_docs_context_2 = ''
 
-        # Assert for vector_db_prompt_extension_1
-        _ = generate_recommendations(req, vector_db_prompt_extension=vector_db_prompt_extension_1)
+        # Assert for hr_docs_context_1
+        _ = generate_recommendations(req, hr_docs_context=hr_docs_context_1)
         self.assertTrue(mock_llm.called)
         args, kwargs = mock_llm.call_args
         request_prompt = kwargs['request_prompt']
-        self.assertTrue(vector_db_prompt_extension_1 in request_prompt)
+        self.assertTrue(hr_docs_context_1 in request_prompt)
 
-        # Assert for vector_db_prompt_extension_2
-        _ = generate_recommendations(req, vector_db_prompt_extension=vector_db_prompt_extension_2)
+        # Assert for hr_docs_context_2
+        _ = generate_recommendations(req, hr_docs_context=hr_docs_context_2)
         self.assertTrue(mock_llm.called)
         args, kwargs = mock_llm.call_args
         request_prompt = kwargs['request_prompt']
-        self.assertTrue(vector_db_prompt_extension_base not in request_prompt)
+        self.assertTrue(hr_docs_context_base not in request_prompt)
         self.assertTrue(len(request_prompt) > 0)
 
 

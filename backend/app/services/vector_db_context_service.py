@@ -145,12 +145,12 @@ def query_vector_db_and_prompt(
         user_transcript=user_transcript,
     )
     if vector_db_docs and len(vector_db_docs) > 0:
-        vector_db_prompt_extension = (
+        hr_docs_context = (
             f'\nThe {generated_object} you generate should comply with '
             f'the following HR Guideline excerpts:\n'
             f'{vector_db_docs}\n'
         )
     else:
-        vector_db_prompt_extension = ''
+        hr_docs_context = ''
 
-    return vector_db_prompt_extension
+    return hr_docs_context

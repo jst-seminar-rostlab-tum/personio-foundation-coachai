@@ -85,7 +85,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         self.assertEqual(result, mock_key_concept_response)
 
     @patch('app.services.scenario_preparation_service.call_structured_llm')
-    def test_generate_objectives_with_vector_db_prompt_extension(self, mock_llm: MagicMock) -> None:
+    def test_generate_objectives_with_hr_docs_context(self, mock_llm: MagicMock) -> None:
         # Analogically for checklist and concepts
 
         # Set up llm mock and vector db prompt extension
@@ -99,23 +99,23 @@ class TestScenarioPreparationService(unittest.TestCase):
             num_objectives=2,
         )
 
-        vector_db_prompt_extension_base = (
+        hr_docs_context_base = (
             'The output you generate should comply with the following HR Guideline excerpts:\n'
         )
-        vector_db_prompt_extension_1 = f'{vector_db_prompt_extension_base}Respect\n2. Clarity\n'
-        vector_db_prompt_extension_2 = ''
+        hr_docs_context_1 = f'{hr_docs_context_base}Respect\n2. Clarity\n'
+        hr_docs_context_2 = ''
 
-        # Assert for vector_db_prompt_extension_1
-        _ = generate_objectives(req, vector_db_prompt_extension=vector_db_prompt_extension_1)
+        # Assert for hr_docs_context_1
+        _ = generate_objectives(req, hr_docs_context=hr_docs_context_1)
         self.assertTrue(mock_llm.called)
         args, kwargs = mock_llm.call_args
         request_prompt = kwargs['request_prompt']
-        self.assertTrue(vector_db_prompt_extension_1 in request_prompt)
+        self.assertTrue(hr_docs_context_1 in request_prompt)
 
-        # Assert for vector_db_prompt_extension_2
-        _ = generate_objectives(req, vector_db_prompt_extension=vector_db_prompt_extension_2)
+        # Assert for hr_docs_context_2
+        _ = generate_objectives(req, hr_docs_context=hr_docs_context_2)
         self.assertTrue(mock_llm.called)
         args, kwargs = mock_llm.call_args
         request_prompt = kwargs['request_prompt']
-        self.assertTrue(vector_db_prompt_extension_base not in request_prompt)
+        self.assertTrue(hr_docs_context_base not in request_prompt)
         self.assertTrue(len(request_prompt) > 0)

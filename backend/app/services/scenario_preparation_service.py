@@ -22,29 +22,23 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_objectives(
-    request: ObjectiveRequest, vector_db_prompt_extension: str = ''
-) -> list[str]:
-    return generate_objectives(request, vector_db_prompt_extension)
+def safe_generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') -> list[str]:
+    return generate_objectives(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_checklist(
-    request: ChecklistRequest, vector_db_prompt_extension: str = ''
-) -> list[str]:
-    return generate_checklist(request, vector_db_prompt_extension)
+def safe_generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> list[str]:
+    return generate_checklist(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_key_concepts(
-    request: KeyConceptRequest, vector_db_prompt_extension: str = ''
+    request: KeyConceptRequest, hr_docs_context: str = ''
 ) -> list[KeyConcept]:
-    return generate_key_concept(request, vector_db_prompt_extension)
+    return generate_key_concept(request, hr_docs_context)
 
 
-def generate_objectives(
-    request: ObjectiveRequest, vector_db_prompt_extension: str = ''
-) -> list[str]:
+def generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') -> list[str]:
     """
     Generate a list of training objectives using structured output from the LLM.
     """
@@ -71,7 +65,8 @@ def generate_objectives(
         f'Goal: {request.goal}\n'
         f'Context: {request.context}\n'
         f'Other Party: {request.other_party}'
-        f'{vector_db_prompt_extension}'
+        f'HR Document Context:\n'
+        f'{hr_docs_context}'
         f'Here are example objectives items(for style and length reference only):\n'
         f'{example_items}'
     )
@@ -86,9 +81,7 @@ def generate_objectives(
     return result.items
 
 
-def generate_checklist(
-    request: ChecklistRequest, vector_db_prompt_extension: str = ''
-) -> list[str]:
+def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> list[str]:
     """
     Generate a preparation checklist using structured output from the LLM.
     """
@@ -118,7 +111,8 @@ def generate_checklist(
         f'Goal: {request.goal}\n'
         f'Context: {request.context}\n'
         f'Other Party: {request.other_party}'
-        f'{vector_db_prompt_extension}'
+        f'HR Document Context:\n'
+        f'{hr_docs_context}'
         f'Here are example checklist items(for style and length reference only):\n'
         f'{example_items}'
     )
@@ -133,7 +127,7 @@ def generate_checklist(
 
 
 def build_key_concept_prompt(
-    request: KeyConceptRequest, example: str, vector_db_prompt_extension: str = ''
+    request: KeyConceptRequest, example: str, hr_docs_context: str = ''
 ) -> str:
     return f"""
 You are a training assistant. Based on the HR professionals conversation scenario below, 
@@ -155,7 +149,8 @@ a Pydantic model `KeyConceptResponse`:
   ]
 }}
 
-{vector_db_prompt_extension}
+HR Document Context:
+{hr_docs_context}
 
 Instructions:
 - Do not include any text outside of the JSON structure.
@@ -179,9 +174,7 @@ Conversation scenario:
 """
 
 
-def generate_key_concept(
-    request: KeyConceptRequest, vector_db_prompt_extension: str = ''
-) -> list[KeyConcept]:
+def generate_key_concept(request: KeyConceptRequest, hr_docs_context: str = '') -> list[KeyConcept]:
     mock_key_concept = [
         KeyConcept(
             header='Clear Communication',
@@ -198,7 +191,7 @@ def generate_key_concept(
     mock_response = KeyConceptResponse(items=mock_key_concept)
 
     prompt = build_key_concept_prompt(
-        request, mock_response.model_dump_json(indent=4), vector_db_prompt_extension
+        request, mock_response.model_dump_json(indent=4), hr_docs_context
     )
 
     result = call_structured_llm(

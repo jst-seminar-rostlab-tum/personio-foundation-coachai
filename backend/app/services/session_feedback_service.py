@@ -24,27 +24,27 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_training_examples(
-    request: ExamplesRequest, vector_db_prompt_extension: str = ''
+    request: ExamplesRequest, hr_docs_context: str = ''
 ) -> SessionExamplesCollection:
-    return generate_training_examples(request, vector_db_prompt_extension)
+    return generate_training_examples(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_get_achieved_goals(
-    request: GoalsAchievementRequest, vector_db_prompt_extension: str = ''
+    request: GoalsAchievementRequest, hr_docs_context: str = ''
 ) -> GoalsAchievedCollection:
-    return get_achieved_goals(request, vector_db_prompt_extension)
+    return get_achieved_goals(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_recommendations(
-    request: RecommendationsRequest, vector_db_prompt_extension: str = ''
+    request: RecommendationsRequest, hr_docs_context: str = ''
 ) -> RecommendationsCollection:
-    return generate_recommendations(request, vector_db_prompt_extension)
+    return generate_recommendations(request, hr_docs_context)
 
 
 def generate_training_examples(
-    request: ExamplesRequest, vector_db_prompt_extension: str = ''
+    request: ExamplesRequest, hr_docs_context: str = ''
 ) -> SessionExamplesCollection:
     mock_response = SessionExamplesCollection(
         positive_examples=[
@@ -86,7 +86,8 @@ def generate_training_examples(
     - Context: {request.context}
     - Key Concepts: {request.key_concepts}
     
-    {vector_db_prompt_extension}
+    HR Document Context:
+    {hr_docs_context}
 
     Instructions:
     Carefully analyze the provided transcript and evaluate **only your own statements** 
@@ -129,7 +130,7 @@ def generate_training_examples(
 
 
 def get_achieved_goals(
-    request: GoalsAchievementRequest, vector_db_prompt_extension: str = ''
+    request: GoalsAchievementRequest, hr_docs_context: str = ''
 ) -> GoalsAchievedCollection:
     mock_response = GoalsAchievedCollection(
         goals_achieved=[
@@ -148,7 +149,8 @@ def get_achieved_goals(
     Goals:
     {request.objectives}
     
-    {vector_db_prompt_extension}
+    HR Document Context:
+    {hr_docs_context}
 
     Instructions:
     - For each goal, determine if the user's speech aligns with 
@@ -176,7 +178,7 @@ def get_achieved_goals(
 
 
 def generate_recommendations(
-    request: RecommendationsRequest, vector_db_prompt_extension: str = ''
+    request: RecommendationsRequest, hr_docs_context: str = ''
 ) -> RecommendationsCollection:
     mock_response = RecommendationsCollection(
         recommendations=[
@@ -222,7 +224,8 @@ def generate_recommendations(
     Context:
     {request.context}
     
-    {vector_db_prompt_extension}
+    HR Document Context:
+    {hr_docs_context}
 
     Situation:
     - The conversation of this training session is about {request.category}
