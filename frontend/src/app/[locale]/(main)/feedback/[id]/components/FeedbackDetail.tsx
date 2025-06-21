@@ -1,12 +1,28 @@
 'use client';
 
-import { Clock, MessageCircle, MessageCircleQuestion, Mic, PlayIcon } from 'lucide-react';
+import {
+  ChartNoAxesColumnIncreasingIcon,
+  CheckCircle,
+  CircleX,
+  Clock,
+  MessageCircle,
+  MessageCircleQuestion,
+  Mic,
+  PlayIcon,
+} from 'lucide-react';
 import Progress from '@/components/ui/Progress';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/Accordion';
 import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/client/SessionService';
 import { showErrorToast } from '@/lib/toast';
+import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
 
@@ -83,6 +99,12 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
     },
   ];
 
+  const examplePositive = feedbackDetail?.feedback?.examplePositive || [];
+
+  const exampleNegative = feedbackDetail?.feedback?.exampleNegative || [];
+
+  const recommendations = feedbackDetail?.feedback?.recommendations || [];
+
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Mic':
@@ -155,6 +177,48 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           </div>
         </div>
       </div>
+      <Accordion type="multiple" className="w-full">
+        <AccordionItem value="feedback">
+          <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
+          <AccordionContent className="px-5">
+            <div className="flex items-center gap-2 mt-3">
+              <CheckCircle size={24} className="text-forest-50" />
+              <span className="text-xl">{t('detailedFeedback.positive')}</span>
+            </div>
+            <div className="flex flex-col gap-4 mt-5 pl-4">
+              {examplePositive.map((example, index) => (
+                <FeedbackQuote key={index} {...example} icon="Check" />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 mt-10">
+              <CircleX size={24} className="text-flame-50" />
+              <span className="text-xl">{t('detailedFeedback.negative')}</span>
+            </div>
+            <div className="flex flex-col gap-4 mt-5 pl-4">
+              {exampleNegative.map((negative, index) => (
+                <FeedbackQuote key={index} {...negative} icon="Cross" />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 mt-10">
+              <ChartNoAxesColumnIncreasingIcon size={24} className="text-marigold-50" />
+              <span className="text-xl">{t('detailedFeedback.recommendations')}</span>
+            </div>
+            <div className="flex flex-col gap-4 mt-5 pl-4">
+              {recommendations.map((recommendation, index) => (
+                <FeedbackQuote key={index} {...recommendation} icon="Info" />
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="suggestion">
+          <AccordionTrigger>{t('accordian.suggestion')}</AccordionTrigger>
+        </AccordionItem>
+        <AccordionItem value="session">
+          <AccordionTrigger>{t('accordian.sessions')}</AccordionTrigger>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }
