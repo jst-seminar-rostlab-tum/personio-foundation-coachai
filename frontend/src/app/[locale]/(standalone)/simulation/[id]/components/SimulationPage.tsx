@@ -7,7 +7,7 @@ import { SessionStatus } from '@/interfaces/Session';
 import { sessionService } from '@/services/client/SessionService';
 import { useTranslations } from 'next-intl';
 import { showErrorToast } from '@/lib/toast';
-import { webRTCService } from '@/services/client/WebRTCService';
+import { api } from '@/services/client/Api';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
@@ -18,6 +18,7 @@ function useWebRTCProxy(sessionId: string) {
   const [isConnected, setIsConnected] = useState(false);
   const [isDataChannelReady, setIsDataChannelReady] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -47,8 +48,9 @@ function useWebRTCProxy(sessionId: string) {
   }, []);
 
   const disconnect = useCallback(async () => {
+    console.info('[WebRTC] Disconnecting...');
     cleanup();
-    cleanupRef.current = false;
+    cleanupRef.current = false; // Allow re-init
 
     try {
       const { data } = await sessionService.updateSession(sessionId, {
@@ -77,41 +79,48 @@ function useWebRTCProxy(sessionId: string) {
       const pc = new RTCPeerConnection();
       peerConnectionRef.current = pc;
 
+      pc.oniceconnectionstatechange = () => {
+        console.info('[WebRTC] ICE connection state changed:', pc.iceConnectionState);
+      };
+
       pc.ontrack = (event) => {
+        console.info('[WebRTC] Received remote track:', event.track.kind);
         if (event.track.kind === 'audio' && remoteAudioRef.current) {
           const [stream] = event.streams;
           remoteAudioRef.current.srcObject = stream;
         }
       };
 
-      localStream.getTracks().forEach((track) => {
-        pc.addTrack(track, localStream);
+      const dc = pc.createDataChannel('data', {
+        ordered: true,
       });
-
-      const dc = pc.createDataChannel('data');
       dataChannelRef.current = dc;
       dc.onopen = () => {
+        console.info('[WebRTC] Data channel opened');
         setIsDataChannelReady(true);
       };
       dc.onclose = () => {
+        console.info('[WebRTC] Data channel closed');
         setIsDataChannelReady(false);
         dataChannelRef.current = null;
       };
-      dc.onerror = () => {
+      dc.onerror = (error) => {
+        console.error('[WebRTC] Data channel error:', error);
         setIsDataChannelReady(false);
       };
       dc.onmessage = async (event) => {
+        console.debug('[WebRTC] Received message:', event.data);
         try {
           const parsed = JSON.parse(event.data);
           if (parsed.role && parsed.text) {
             const sender = parsed.role === 'user' ? 'user' : 'assistant';
             setMessages((prev) => {
-              const lastMessage = prev[prev.length - 1];
-              if (lastMessage && lastMessage.sender === sender) {
+              const lastMessage = prev.at(-1);
+              if (lastMessage?.sender === sender) {
                 const updatedMessages = [...prev];
                 updatedMessages[updatedMessages.length - 1] = {
                   ...lastMessage,
-                  text: parsed.text,
+                  text: lastMessage.text + parsed.text,
                 };
                 return updatedMessages;
               }
@@ -119,11 +128,12 @@ function useWebRTCProxy(sessionId: string) {
             });
           }
         } catch {
-          // Not JSON, just log
+          console.warn('[WebRTC] Failed to parse message as JSON:', event.data);
         }
       };
 
       pc.onconnectionstatechange = () => {
+        console.info('[WebRTC] Connection state changed:', pc.connectionState);
         if (pc.connectionState === 'connected') {
           setIsConnected(true);
         } else if (
@@ -135,6 +145,10 @@ function useWebRTCProxy(sessionId: string) {
         }
       };
 
+      localStream.getTracks().forEach((track) => {
+        pc.addTrack(track, localStream);
+      });
+
       const offer = await pc.createOffer({
         iceRestart: true,
         offerToReceiveAudio: true,
@@ -145,14 +159,21 @@ function useWebRTCProxy(sessionId: string) {
         throw new Error('Failed to create offer: SDP is undefined');
       }
 
-      const answerSdp = await webRTCService.getAnswerSdp(offer.sdp);
+      const response = await api.post('/webrtc/offer', offer.sdp, {
+        headers: {
+          'Content-Type': 'application/sdp',
+        },
+        responseType: 'text',
+      });
+      const answerSdp = response.data;
 
       const answer: RTCSessionDescriptionInit = {
         type: 'answer',
         sdp: answerSdp,
       };
       await pc.setRemoteDescription(answer);
-    } catch {
+    } catch (err) {
+      console.error('[WebRTC] Initialization error:', err);
       setIsMicActive(false);
       disconnect();
     }
