@@ -20,7 +20,8 @@ def format_scores(result: ScoringResult) -> str:
 
 
 @unittest.skipIf(
-    not os.getenv('OPENAI_API_KEY'), 'Skipping integration test: OPENAI_API_KEY not set'
+    os.getenv('RUN_INTEGRATION_TESTS', 'false').lower() != 'true',
+    'Skipping integration tests by default. Set RUN_INTEGRATION_TESTS=true to run.',
 )
 class TestScoringServiceIntegration(unittest.TestCase):
     def setUp(self) -> None:
@@ -53,7 +54,11 @@ class TestScoringServiceIntegration(unittest.TestCase):
 
         self.assertIsInstance(result, ScoringResult)
         self.assertLess(result.scoring.overall_score, 3.0)
-        empathy_score = next(s.score for s in result.scoring.scores if s.metric == 'Empathy')
+
+        scores_dict = {s.metric: s.score for s in result.scoring.scores}
+        empathy_score = scores_dict.get('Empathy')
+
+        self.assertIsNotNone(empathy_score, "Metric 'Empathy' not found in response.")
         self.assertLessEqual(empathy_score, 2)
         print(f'Low Empathy  -> {format_scores(result)}')
 
@@ -69,8 +74,13 @@ class TestScoringServiceIntegration(unittest.TestCase):
 
         self.assertIsInstance(result, ScoringResult)
         self.assertLess(result.scoring.overall_score, 3.0)
-        clarity_score = next(s.score for s in result.scoring.scores if s.metric == 'Clarity')
-        structure_score = next(s.score for s in result.scoring.scores if s.metric == 'Structure')
+
+        scores_dict = {s.metric: s.score for s in result.scoring.scores}
+        clarity_score = scores_dict.get('Clarity')
+        structure_score = scores_dict.get('Structure')
+
+        self.assertIsNotNone(clarity_score, "Metric 'Clarity' not found in response.")
+        self.assertIsNotNone(structure_score, "Metric 'Structure' not found in response.")
         self.assertLessEqual(clarity_score, 2)
         self.assertLessEqual(structure_score, 2)
         print(f'Low Clarity  -> {format_scores(result)}')
@@ -87,7 +97,11 @@ class TestScoringServiceIntegration(unittest.TestCase):
 
         self.assertIsInstance(result, ScoringResult)
         self.assertLess(result.scoring.overall_score, 3.0)
-        focus_score = next(s.score for s in result.scoring.scores if s.metric == 'Focus')
+
+        scores_dict = {s.metric: s.score for s in result.scoring.scores}
+        focus_score = scores_dict.get('Focus')
+
+        self.assertIsNotNone(focus_score, "Metric 'Focus' not found in response.")
         self.assertLessEqual(focus_score, 2)
         print(f'Low Focus    -> {format_scores(result)}')
 

@@ -43,11 +43,9 @@ class ScoringService:
             prompt += f'{turn["speaker"]}: {turn["message"]}\\n'
 
         prompt += """
-        Based on the rubric, please provide a score from 0-5 for each metric
+        Based on the rubric, please provide a score from 0-5 for each metric 
         (Structure, Empathy, Focus, Clarity) for the "User" only.
-        The "Assistant" speaker is an AI and should not be evaluated; their dialogue is 
-        for context only.
-        Include a justification for each score.
+        You MUST return a score and justification for all four metrics.
         Also provide an overall summary of the "User's" performance.
         Format the output as a JSON object matching the ScoringResult schema.
         Do not include markdown, explanation, or code formatting.
@@ -64,6 +62,7 @@ class ScoringService:
             ),
             model='gpt-4o-2024-08-06',
             output_model=ScoringResult,
+            temperature=0.0,
         )
 
         return response
