@@ -46,9 +46,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     userProfileData.storeConversations ?? false
   );
   const [currentRole, setCurrentRole] = useState(userProfileData.professionalRole);
-  const [primaryGoal, setPrimaryGoal] = useState(
-    userProfileData.goals.length > 0 ? userProfileData.goals[0] : ''
-  );
+  const [primaryGoals, setPrimaryGoals] = useState(userProfileData.goals);
   const [difficulty, setDifficulty] = useState(
     getConfidenceScores(userProfileData, 'giving_difficult_feedback')
   );
@@ -67,26 +65,25 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     setConflict,
     setConversation,
   };
-  const userPreferences: UserPreference[] = [
-    {
-      label: tOptions('currentRole.label'),
-      options: UserRoles(),
-      value: currentRole,
-      defaultValue: 'team_leader',
-      onChange: (value: string) => {
-        setCurrentRole(value);
-      },
+  const currentRoleSelect: UserPreference = {
+    label: tOptions('currentRole.label'),
+    options: UserRoles(),
+    value: currentRole,
+    defaultValue: 'team_leader',
+    onChange: (value: string) => {
+      setCurrentRole(value);
     },
-    {
-      label: tOptions('primaryGoals.label'),
-      options: PrimaryGoals(),
-      value: primaryGoal,
-      defaultValue: 'managing_team_conflicts',
-      onChange: (value: string) => {
-        setPrimaryGoal(value);
-      },
+  };
+  const primaryGoalsSelect: UserPreference<string[]> = {
+    label: tOptions('primaryGoals.label'),
+    options: PrimaryGoals(),
+    value: primaryGoals.slice(0, 3),
+    placeholder: tOptions('primaryGoals.placeholder'),
+    maxSelectedDisclaimer: tOptions('primaryGoals.maxOptionsSelected'),
+    onChange: (value: string[]) => {
+      setPrimaryGoals(value);
     },
-  ];
+  };
 
   const handleSaveSettings = async () => {
     try {
@@ -94,7 +91,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
         fullName: userProfileData.fullName,
         storeConversations,
         professionalRole: currentRole,
-        goals: [primaryGoal],
+        goals: primaryGoals,
         confidenceScores: [
           { confidenceArea: 'giving_difficult_feedback', score: difficulty[0] },
           { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
@@ -174,7 +171,11 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
               {t('personalizationSettings')}
             </AccordionTrigger>
             <AccordionContent className="py-8 space-y-8">
-              <UserPreferences className="flex flex-col gap-8 px-2" preferences={userPreferences} />
+              <UserPreferences
+                className="flex flex-col gap-8 px-2"
+                currentRole={currentRoleSelect}
+                primaryGoals={primaryGoalsSelect}
+              />
               <hr className="border-bw-20 px-2" />
               <UserConfidenceFields
                 className="flex flex-col gap-8 px-2"
