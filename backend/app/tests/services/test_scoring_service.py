@@ -24,8 +24,14 @@ class TestScoringService(unittest.TestCase):
         with open(self.conversation_path, 'w') as f:
             json.dump(
                 {
-                    'scenario': {'description': 'Test scenario'},
-                    'transcript': [{'speaker': 'A', 'message': 'Hello'}],
+                    'scenario': {
+                        'description': 'Test scenario',
+                        'participants': {
+                            'user_role': 'Manager',
+                            'assistant_role': 'Direct Report',
+                        },
+                    },
+                    'transcript': [{'speaker': 'User', 'message': 'Hello'}],
                 },
                 f,
             )
@@ -57,10 +63,8 @@ class TestScoringService(unittest.TestCase):
         # Arrange: Define the mock return value for the call_structured_llm function
         mock_result = ScoringResult(
             conversation_summary=(
-                'The manager, Alex, provided structured and empathetic feedback to Sam '
-                'regarding communication issues. While Sam was initially defensive, Alex '
-                'skillfully guided the conversation to a productive outcome, with clear '
-                'action items agreed upon.'
+                'The User initiated the conversation clearly and maintained a professional '
+                'tone throughout the interaction.'
             ),
             scoring={
                 'overall_score': 4.25,
@@ -89,6 +93,7 @@ class TestScoringService(unittest.TestCase):
         )
         self.assertEqual(kwargs['model'], 'gpt-4o-2024-08-06')
         self.assertEqual(kwargs['output_model'], ScoringResult)
+        self.assertEqual(kwargs['temperature'], 0.0)
 
         # Assert: Check that the final result is the one returned by our mock
         self.assertEqual(result, mock_result)
@@ -100,8 +105,8 @@ class TestScoringService(unittest.TestCase):
         prompt = self.scoring_service._build_prompt()
         self.assertIn('Test Rubric', prompt)
         self.assertIn('Test scenario', prompt)
-        self.assertIn('A: Hello', prompt)
-        self.assertIn('Provide a score from 0-5', prompt)
+        self.assertIn('User: Hello', prompt)
+        self.assertIn('please provide a score from 0-5 for each metric', prompt)
 
 
 if __name__ == '__main__':
