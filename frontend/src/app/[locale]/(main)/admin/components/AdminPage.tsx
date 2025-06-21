@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
+import { useDeleteUser } from '@/components/common/DeleteUserHandler';
 import { AdminProps } from '@/interfaces/AdminProps';
 import { adminService } from '@/services/client/AdminService';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
@@ -74,6 +75,7 @@ export default function Admin({ stats, reviews }: AdminProps) {
   ];
 
   const canLoadMore = visibleUsers < allUsers.length;
+  const { handleDeleteUser, loading } = useDeleteUser();
 
   return (
     <div className="max-w-full">
@@ -157,7 +159,12 @@ export default function Admin({ stats, reviews }: AdminProps) {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>{tr('cancel')}</AlertDialogCancel>
-                              <AlertDialogAction>{tr('confirm')}</AlertDialogAction>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteUser(user)}
+                                disabled={loading}
+                              >
+                                {loading ? tr('deleting') : tr('confirm')}
+                              </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>

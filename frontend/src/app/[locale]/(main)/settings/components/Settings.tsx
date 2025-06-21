@@ -23,6 +23,7 @@ import {
   AlertDialogAction,
 } from '@/components/ui/AlertDialog';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
+import { useDeleteUser } from '@/components/common/DeleteUserHandler';
 import { UserProfileService } from '@/services/client/UserProfileService';
 import { UserPreference } from '@/interfaces/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
@@ -103,6 +104,8 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
       showErrorToast(error, t('saveSettingsError'));
     }
   };
+
+  const { handleDeleteUser, loading } = useDeleteUser();
   return (
     <div>
       <h1 className="text-2xl">{t('title')}</h1>
@@ -153,7 +156,9 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                      <AlertDialogAction>{t('confirm')}</AlertDialogAction>
+                      <AlertDialogAction onClick={() => handleDeleteUser()} disabled={loading}>
+                        {loading ? t('deleting') : t('confirm')}
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
