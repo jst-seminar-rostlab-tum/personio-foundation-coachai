@@ -8,7 +8,7 @@ from app.connections import gemini_client
 @pytest.fixture
 def dev_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """Set stage to 'dev' and reload module."""
-    monkeypatch.setattr('app.connections.gemini_client.settings.stage', 'dev')
+    monkeypatch.setenv('STAGE', 'dev')
     importlib.reload(gemini_client)
     monkeypatch.setattr(gemini_client, 'ENABLE_AI', True)
 
@@ -16,7 +16,7 @@ def dev_env(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.fixture
 def prod_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """Set stage to 'prod' and reload module."""
-    monkeypatch.setattr('app.connections.gemini_client.settings.stage', 'prod')
+    monkeypatch.setenv('STAGE', 'prod')
     importlib.reload(gemini_client)
     monkeypatch.setattr(gemini_client, 'ENABLE_AI', True)
 
@@ -86,3 +86,23 @@ def test_generate_gemini_content_prod() -> None:
     print(f'Vertex AI Response: {response}')
     assert isinstance(response, str)
     assert len(response) > 0
+
+
+@pytest.mark.integration
+@pytest.mark.usefixtures('dev_env')
+def test_get_realtime_client_dev() -> None:
+    """
+    Tests that the realtime Gemini client can be created successfully in a dev environment.
+    """
+    client = gemini_client.get_realtime_client()
+    assert client is not None, 'Failed to create realtime Gemini client for dev.'
+
+
+@pytest.mark.integration
+@pytest.mark.usefixtures('prod_env')
+def test_get_realtime_client_prod() -> None:
+    """
+    Tests that the realtime Vertex AI client can be created successfully in a prod environment.
+    """
+    client = gemini_client.get_realtime_client()
+    assert client is not None, 'Failed to create realtime Vertex AI client for production.'
