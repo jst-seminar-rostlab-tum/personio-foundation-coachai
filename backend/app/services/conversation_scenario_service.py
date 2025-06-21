@@ -36,7 +36,7 @@ class ConversationScenarioService:
 
         # Create conversation scenario
         new_conversation_scenario = ConversationScenario(
-            **conversation_scenario.dict(), user_id=user_profile.id
+            **conversation_scenario.model_dump(), user_id=user_profile.id
         )
         self.db.add(new_conversation_scenario)
         self.db.commit()
@@ -50,7 +50,7 @@ class ConversationScenarioService:
 
         # Return a JSONResponse
         return JSONResponse(
-            status_code=200,
+            status_code=202,
             content={
                 'message': 'Conversation scenario created, preparation started.',
                 'scenarioId': str(new_conversation_scenario.id),
@@ -100,7 +100,7 @@ class ConversationScenarioService:
         )
 
         return ScenarioPreparationRead(
-            **scenario_preparation.dict(),
+            **scenario_preparation.model_dump(),
             context=conversation_scenario.context,
             goal=conversation_scenario.goal,
             other_party=conversation_scenario.other_party,
