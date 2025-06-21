@@ -1,0 +1,57 @@
+{
+  "scenario": {
+    "title": "Feedback on Project Communication",
+    "description": "A manager (Alex) is giving feedback to a direct report (Sam) about their communication during the recent 'Phoenix' project. Sam has been missing key meetings and not responding to important emails, causing delays.",
+    "participants": {
+      "manager": "Alex",
+      "report": "Sam"
+    }
+  },
+  "transcript": [
+    {
+      "speaker": "Alex",
+      "turn": 1,
+      "message": "Hi Sam, thanks for meeting with me. I wanted to chat about the Phoenix project. How do you think it's going from your side?"
+    },
+    {
+      "speaker": "Sam",
+      "turn": 2,
+      "message": "Oh, hey Alex. Yeah, it's... fine. A bit busy, you know. Lots of moving parts. But it's okay."
+    },
+    {
+      "speaker": "Alex",
+      "turn": 3,
+      "message": "I see. I wanted to bring up something specific. I've noticed you've missed a couple of the recent project syncs, and some of my emails have gone unanswered for a few days. For example, the one about the client's updated requirements last week. That caused a bit of a scramble for the team."
+    },
+    {
+      "speaker": "Sam",
+      "turn": 4,
+      "message": "Right. Sorry about that. I've been swamped. I had another deadline and my kid was sick. I saw the email but I just forgot to reply. I figured it wasn't super urgent since the deadline is still a ways off."
+    },
+    {
+      "speaker": "Alex",
+      "turn": 5,
+      "message": "I understand that personal things come up and it's tough to juggle everything. And I appreciate you're working hard. However, when we don't communicate effectively, it impacts the whole team's workflow. The updated requirements were critical, and we lost a day of work because the designers were working off the old spec. It puts pressure on everyone else to catch up."
+    },
+    {
+      "speaker": "Sam",
+      "turn": 6,
+      "message": "I guess I didn't realize it was that big of a deal. I'm not trying to make things difficult for anyone."
+    },
+    {
+      "speaker": "Alex",
+      "turn": 7,
+      "message": "I know you're not. Your work itself is great. That's why your input is so valuable in those meetings. What can we do to make sure this doesn't happen again? Would a different reminder system work? Or is there something else I can do to support you?"
+    },
+    {
+      "speaker": "Sam",
+      "turn": 8,
+      "message": "No, it's on me. I'll make a better effort to respond, even if it's just to say 'got it'. And I'll add the project syncs as a recurring high-priority event in my calendar. I'm sorry for the trouble I caused."
+    },
+    {
+      "speaker": "Alex",
+      "turn": 9,
+      "message": "I appreciate that, Sam. Let's check in on this next week and see how the new system is working for you. Thanks for being so receptive to this."
+    }
+  ]
+} 
