@@ -88,8 +88,11 @@ def get_client() -> genai.Client:
             logger.info('Creating Gemini client...')
             if settings.stage == 'prod':
                 # Vertex AI configuration
-                root = os.path.dirname(os.path.abspath(__file__))
-                service_account_path = os.path.join(root, settings.GOOGLE_SERVICE_ACCOUNT_FILE)
+                # The service account file is expected to be in the `backend` directory
+                backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+                service_account_path = os.path.join(
+                    backend_dir, settings.GOOGLE_SERVICE_ACCOUNT_FILE
+                )
 
                 if not os.path.exists(service_account_path):
                     logger.error(
@@ -112,7 +115,7 @@ def get_client() -> genai.Client:
                 )
             else:
                 # Gemini API configuration
-                gemini_api_key = os.getenv('GEMINI_API_KEY')
+                gemini_api_key = settings.GEMINI_API_KEY
                 if not gemini_api_key:
                     logger.error('GEMINI_API_KEY not found in environment variables')
                     raise GeminiStreamConnectionError(
@@ -127,7 +130,7 @@ def get_client() -> genai.Client:
     return get_client._client
 
 
-def generate_gemini_content(contents: list[str], model: str = 'gemini-1.5-flash-latest') -> str:
+def generate_gemini_content(contents: list[str], model: str = 'gemini-2.5-flash') -> str:
     if not ENABLE_AI or get_client() is None:
         logger.error('Cannot upload files to Gemini, AI is disabled')
         return ''
@@ -159,8 +162,11 @@ def get_realtime_client() -> genai.Client:
             logger.info('Creating realtime Gemini client...')
             if settings.stage == 'prod':
                 # Vertex AI configuration
-                root = os.path.dirname(os.path.abspath(__file__))
-                service_account_path = os.path.join(root, settings.GOOGLE_SERVICE_ACCOUNT_FILE)
+                # The service account file is expected to be in the `backend` directory
+                backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+                service_account_path = os.path.join(
+                    backend_dir, settings.GOOGLE_SERVICE_ACCOUNT_FILE
+                )
                 if not os.path.exists(service_account_path):
                     logger.error(
                         f'{settings.GOOGLE_SERVICE_ACCOUNT_FILE} not found at '
@@ -182,7 +188,7 @@ def get_realtime_client() -> genai.Client:
                 )
             else:
                 # Gemini API configuration
-                gemini_api_key = os.getenv('GEMINI_API_KEY')
+                gemini_api_key = settings.GEMINI_API_KEY
                 if not gemini_api_key:
                     logger.error('GEMINI_API_KEY not found in environment variables')
                     raise GeminiStreamConnectionError(
