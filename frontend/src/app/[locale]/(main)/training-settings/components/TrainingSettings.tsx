@@ -77,7 +77,7 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
   const primaryGoalsSelect: UserPreference<string[]> = {
     label: tOptions('primaryGoals.label'),
     options: PrimaryGoals(),
-    value: primaryGoals,
+    value: primaryGoals.slice(0, 3),
     placeholder: tOptions('primaryGoals.placeholder'),
     onChange: (value: string[]) => {
       setPrimaryGoals(value);
