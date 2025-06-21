@@ -54,7 +54,7 @@ def update_app_config(
 
 @router.patch('', response_model=list[AppConfigRead], dependencies=[Depends(require_admin)])
 def patch_app_config(
-    updated_data: list[dict],
+    updated_data: list[AppConfigCreate],
     service: Annotated[AppConfigService, Depends(get_app_config_service)],
 ) -> list[AppConfigRead]:
     """

@@ -16,7 +16,7 @@ class AppConfigService:
         """
         statement = select(AppConfig)
         app_configs = self.db.exec(statement).all()
-        return [AppConfigRead.from_orm(config) for config in app_configs]
+        return [AppConfigRead(**config.model_dump()) for config in app_configs]
 
     def create_new_app_config(self, app_config: AppConfigCreate) -> AppConfigRead:
         """
@@ -39,7 +39,7 @@ class AppConfigService:
         self.db.add(db_app_config)
         self.db.commit()
         self.db.refresh(db_app_config)
-        return AppConfigRead.from_orm(db_app_config)
+        return AppConfigRead(**db_app_config.model_dump())
 
     def update_existing_app_config(self, updated_data: AppConfigCreate) -> AppConfigRead:
         """
@@ -59,22 +59,22 @@ class AppConfigService:
         else:
             updated_data.type = ConfigType.string
 
-        for field, value in updated_data.dict().items():
+        for field, value in updated_data.model_dump().items():
             setattr(app_config, field, value)
 
         self.db.add(app_config)
         self.db.commit()
         self.db.refresh(app_config)
-        return AppConfigRead.from_orm(app_config)
+        return AppConfigRead(**app_config.model_dump())
 
-    def patch_app_configs(self, updated_data: list[dict]) -> list[AppConfigRead]:
+    def patch_app_configs(self, updated_data: list[AppConfigCreate]) -> list[AppConfigRead]:
         """
         Partially update existing app configurations.
         """
         updated_configs = []
 
         for config_data in updated_data:
-            key = config_data.get('key')
+            key = config_data.key
             if not key:
                 raise HTTPException(status_code=400, detail='Key is required to update AppConfig')
 
@@ -83,17 +83,17 @@ class AppConfigService:
                 raise HTTPException(status_code=404, detail=f"AppConfig with key '{key}' not found")
 
             # Automatically determine the type based on the value
-            value = config_data.get('value')
+            value = config_data.value
             if value:
                 if value.lower() in ['true', 'false']:
-                    config_data['type'] = ConfigType.boolean
-                elif value.isdigit():
-                    config_data['type'] = ConfigType.int
+                    config_data.type = ConfigType.boolean
+                elif self._is_int(value):
+                    config_data.type = ConfigType.int
                 else:
-                    config_data['type'] = ConfigType.string
+                    config_data.type = ConfigType.string
 
             # Update only the provided fields
-            for field, value in config_data.items():
+            for field, value in config_data.model_dump().items():
                 if field != 'key' and hasattr(app_config, field):
                     setattr(app_config, field, value)
 
@@ -106,7 +106,7 @@ class AppConfigService:
         for config in updated_configs:
             self.db.refresh(config)
 
-        return [AppConfigRead.from_orm(config) for config in updated_configs]
+        return [AppConfigRead(**config.model_dump()) for config in updated_configs]
 
     def delete_app_config_by_key(self, key: str) -> dict:
         """
@@ -119,3 +119,10 @@ class AppConfigService:
         self.db.delete(app_config)
         self.db.commit()
         return {'message': 'AppConfig deleted successfully'}
+
+    def _is_int(self, text: str) -> bool:
+        try:
+            int(text)
+            return True
+        except ValueError:
+            return False
