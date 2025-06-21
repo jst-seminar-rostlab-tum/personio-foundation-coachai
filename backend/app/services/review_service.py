@@ -23,43 +23,12 @@ class ReviewService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
 
-    def _get_user_profile(self, user_id: UUID) -> UserProfile:
-        """
-        Retrieve a user profile by user ID.
-        """
-        user_profile = self.db.exec(select(UserProfile).where(UserProfile.id == user_id)).first()
-        if not user_profile:
-            raise HTTPException(
-                status_code=404,
-                detail=f'User profile with ID {user_id} not found.',
-            )
-        return user_profile
-
-    def _add_user_info_to_reviews(self, reviews: Sequence[Review]) -> list[ReviewRead]:
-        """
-        Add user information to a list of reviews.
-        """
-        review_list = []
-        for review in reviews:
-            user_profile = self._get_user_profile(review.user_id)
-            if user_profile:
-                review_list.append(
-                    ReviewRead(
-                        id=review.id,
-                        user_id=review.user_id,
-                        user_email=user_profile.email,
-                        session_id=review.session_id,
-                        rating=review.rating,
-                        comment=review.comment,
-                        date=review.created_at.date(),
-                    )
-                )
-        return review_list
-
-    def _get_limited_reviews(self, limit: int, sort: str = Query('newest')) -> list[ReviewRead]:
-        """
-        Retrieve a list of reviews with a limit.
-        """
+    def _query_reviews_with_users(
+        self,
+        sort: str = Query('newest'),
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> Sequence[tuple[Review, UserProfile]]:
         sort_mapping = {
             'newest': desc(Review.created_at),
             'oldest': asc(Review.created_at),
@@ -68,12 +37,38 @@ class ReviewService:
         }
 
         order_by = sort_mapping.get(sort, desc(Review.created_at))
-        statement = select(Review).order_by(order_by).limit(limit)
-        reviews = self.db.exec(statement).all()
-        if not reviews:
-            return []
 
-        return self._add_user_info_to_reviews(reviews)
+        stmt = (
+            select(Review, UserProfile)
+            .select_from(Review)
+            .join(UserProfile, Review.user_id == UserProfile.id)  # type: ignore
+            .order_by(order_by)
+        )
+
+        if offset:
+            stmt = stmt.offset(offset)
+        if limit:
+            stmt = stmt.limit(limit)
+
+        return self.db.exec(stmt).all()
+
+    def _build_review_read_list(
+        self, joined_reviews_users: Sequence[tuple[Review, UserProfile]]
+    ) -> list[ReviewRead]:
+        review_list = []
+        for review, user in joined_reviews_users:
+            review_list.append(
+                ReviewRead(
+                    id=review.id,
+                    user_id=review.user_id,
+                    user_email=user.email,
+                    session_id=review.session_id,
+                    rating=review.rating,
+                    comment=review.comment,
+                    date=review.created_at.date(),
+                )
+            )
+        return review_list
 
     def _get_paginated_reviews(
         self,
@@ -82,16 +77,6 @@ class ReviewService:
         sort: str = Query('newest'),
     ) -> PaginatedReviewsResponse:
         """Retrieve paginated reviews with optional sorting."""
-
-        sort_mapping = {
-            'newest': desc(Review.created_at),
-            'oldest': asc(Review.created_at),
-            'highest': desc(Review.rating),
-            'lowest': asc(Review.rating),
-        }
-
-        order_by = sort_mapping.get(sort, desc(Review.created_at))
-        statement = select(Review).order_by(order_by)
 
         # Pagination
         total_count = self.db.exec(select(func.count()).select_from(Review)).one()
@@ -117,10 +102,13 @@ class ReviewService:
         total_pages = (total_count + page_size - 1) // page_size
         offset = (page - 1) * page_size if page else 0
 
-        statement = statement.offset(offset).limit(page_size)
-        reviews = self.db.exec(statement).all()
+        joined_reviews_users = self._query_reviews_with_users(
+            sort=sort, limit=page_size, offset=offset
+        )
+        review_list = self._build_review_read_list(joined_reviews_users)
 
-        review_list = self._add_user_info_to_reviews(reviews)
+        # Get all reviews for rating statistics
+        reviews = self.db.exec(select(Review)).all()
 
         return PaginatedReviewsResponse(
             reviews=review_list,
@@ -152,7 +140,8 @@ class ReviewService:
         """
 
         if limit is not None:
-            return self._get_limited_reviews(limit, sort)
+            joined_reviews_users = self._query_reviews_with_users(sort=sort, limit=limit)
+            return self._build_review_read_list(joined_reviews_users)
 
         else:
             return self._get_paginated_reviews(page, page_size, sort)
