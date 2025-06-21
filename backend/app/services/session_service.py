@@ -171,14 +171,14 @@ class SessionService:
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
-        new_session = Session(**session_data.dict())
+        new_session = Session(**session_data.model_dump())
         new_session.status = SessionStatus.started
         new_session.started_at = datetime.now(UTC)
 
         self.db.add(new_session)
         self.db.commit()
         self.db.refresh(new_session)
-        return SessionRead.from_orm(new_session)
+        return SessionRead(**new_session.model_dump())
 
     def update_existing_session(
         self,
@@ -204,7 +204,7 @@ class SessionService:
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
-        for key, value in updated_data.dict(exclude_unset=True).items():
+        for key, value in updated_data.model_dump(exclude_unset=True).items():
             setattr(session, key, value)
 
         if (
@@ -296,7 +296,7 @@ class SessionService:
         self.db.add(session)
         self.db.commit()
         self.db.refresh(session)
-        return SessionRead.from_orm(session)
+        return SessionRead(**session.model_dump())
 
     def delete_all_user_sessions(self, user_profile: UserProfile) -> dict:
         user_id = user_profile.id
