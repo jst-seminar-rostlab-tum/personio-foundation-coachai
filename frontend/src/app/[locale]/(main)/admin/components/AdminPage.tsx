@@ -30,7 +30,7 @@ import Reviews from './Reviews';
 
 export default function Admin({ stats, reviews }: AdminProps) {
   const t = useTranslations('Admin');
-  const tr = useTranslations('TrainingSettings');
+  const tr = useTranslations('Settings');
   const [tokenLimit, setTokenLimit] = useState<number>(stats.dailyTokenLimit);
   const [saving, setSaving] = useState(false);
   const [visibleUsers, setVisibleUsers] = useState(5);
