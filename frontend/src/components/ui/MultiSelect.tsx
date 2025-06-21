@@ -82,7 +82,7 @@ export function MultiSelect({
       <div
         ref={wrapperRef}
         tabIndex={-1}
-        className="group rounded-md border border-bw-20 bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-bw-40 focus-within:ring-offset-2 flex items-center flex-wrap gap-1"
+        className="group rounded-md border border-bw-20 bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-bw-40 focus-within:ring-offset-2 flex items-center flex-wrap gap-1 cursor-pointer"
         onClick={handleWrapperClick}
         onBlur={handleBlur}
       >
@@ -101,7 +101,7 @@ export function MultiSelect({
             </div>
           </Badge>
         ))}
-        {selectables.length > 0 && value.length < (maxSelected ?? Infinity) && (
+        {value.length < (maxSelected ?? Infinity) ? (
           <CommandPrimitive.Input
             ref={inputRef}
             value={inputValue}
@@ -109,6 +109,8 @@ export function MultiSelect({
             placeholder={placeholder ?? 'Select options...'}
             className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
           />
+        ) : (
+          <span className="text-sm text-bw-40">Max. options selected</span>
         )}
       </div>
 
