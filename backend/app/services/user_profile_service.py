@@ -184,8 +184,13 @@ class UserService:
         user.professional_role = data.professional_role
 
         # Only admins can change the account role
-        if user.account_role == 'admin':
+        if data.account_role and user.account_role == 'admin':
             user.account_role = data.account_role
+        elif data.account_role:
+            raise HTTPException(
+                status_code=403,
+                detail='Only admins can change the account role.',
+            )
 
         self.db.add(user)
 
