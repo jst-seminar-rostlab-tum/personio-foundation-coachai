@@ -92,7 +92,7 @@ export default function ConversationScenarioForm() {
     try {
       const { data } = await conversationScenarioService.createConversationScenario(scenario);
       router.push(`/preparation/${data.scenarioId}`);
-      reset();
+      setTimeout(reset, 2000);
     } catch (error) {
       showErrorToast(error, t('errorMessage'));
     }

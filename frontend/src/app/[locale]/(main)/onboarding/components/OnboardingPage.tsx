@@ -71,7 +71,7 @@ export default function OnboardingPageComponent() {
         ],
       });
       router.push('/dashboard');
-      reset();
+      setTimeout(reset, 2000);
     } catch (error) {
       showErrorToast(error, t('updateProfileError'));
     }
