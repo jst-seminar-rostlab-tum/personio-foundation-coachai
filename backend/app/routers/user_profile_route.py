@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
-from app.dependencies import require_user
+from app.dependencies import require_admin, require_user
 from app.models.user_profile import UserProfile
 from app.schemas.user_profile import (
     UserProfileExtendedRead,
@@ -23,7 +23,11 @@ def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserS
     return UserService(db)
 
 
-@router.get('', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
+@router.get(
+    '',
+    response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]],
+    dependencies=[Depends(require_admin)],
+)
 def get_user_profiles(
     service: Annotated[UserService, Depends(get_user_service)],
     detailed: bool = False,
