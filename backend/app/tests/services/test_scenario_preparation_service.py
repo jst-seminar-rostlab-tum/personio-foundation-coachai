@@ -71,7 +71,7 @@ class TestScenarioPreparationService(unittest.TestCase):
             ),
         ]
 
-        mock_llm.return_value = KeyConceptOutput(items=mock_key_concept_response)
+        mock_llm.return_value = KeyConceptResponse(items=mock_key_concept_response)
 
         req = KeyConceptRequest(
             category='Feedback',
@@ -119,4 +119,3 @@ class TestScenarioPreparationService(unittest.TestCase):
         request_prompt = kwargs['request_prompt']
         self.assertTrue(vector_db_prompt_extension_base not in request_prompt)
         self.assertTrue(len(request_prompt) > 0)
-

@@ -271,7 +271,12 @@ def generate_scenario_preparation(
         )
 
         hr_docs_context = query_vector_db_and_prompt(
-            session_context=[request.category, request.goal, request.context, request.other_party],
+            session_context=[
+                new_preparation.category,
+                new_preparation.goal,
+                new_preparation.context,
+                new_preparation.other_party,
+            ],
             generated_object='output',
         )
 
