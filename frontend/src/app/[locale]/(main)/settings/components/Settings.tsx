@@ -110,13 +110,18 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     <div>
       <h1 className="text-2xl">{t('title')}</h1>
 
-      <div className="mt-6 space-y-4 flex items-center rounded-t-lg">
-        <Accordion type="multiple" className="w-full" defaultValue={['item-1', 'item-2']}>
+      <div className="space-y-4 flex items-center rounded-t-lg">
+        <Accordion
+          type="multiple"
+          className="w-full py-4 space-y-4"
+          defaultValue={['item-1', 'item-2']}
+        >
+          {/* Privacy Controls */}
           <AccordionItem value="item-1" className="text-dark">
             <AccordionTrigger className="font-bw-70 cursor-pointer">
               {t('privacyControls')}
             </AccordionTrigger>
-            <AccordionContent>
+            <AccordionContent className="py-8 space-y-8">
               <div className="flex items-center justify-between w-full px-2">
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
@@ -163,15 +168,16 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
               </div>
             </AccordionContent>
           </AccordionItem>
+          {/* Personalization Settings */}
           <AccordionItem value="item-2" className="text-dark">
             <AccordionTrigger className="font-bw-70 cursor-pointer">
               {t('personalizationSettings')}
             </AccordionTrigger>
-            <AccordionContent>
-              <UserPreferences className="flex flex-col gap-5 px-2" preferences={userPreferences} />
-              <hr className="my-9.5 border-gray-200" />
+            <AccordionContent className="py-8 space-y-8">
+              <UserPreferences className="flex flex-col gap-8 px-2" preferences={userPreferences} />
+              <hr className="border-bw-20 px-2" />
               <UserConfidenceFields
-                className="flex flex-col gap-5 px-2"
+                className="flex flex-col gap-8 px-2"
                 {...confidenceFieldsProps}
               />
             </AccordionContent>
