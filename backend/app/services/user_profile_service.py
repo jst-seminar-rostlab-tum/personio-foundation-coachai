@@ -272,6 +272,14 @@ class UserService:
 
     def delete_user_profile(self, user_profile: UserProfile, delete_user_id: UUID | None) -> dict:
         if delete_user_id and user_profile.account_role == 'admin':
+            # Check if the admin is trying to delete another admin that is not himself
+            if delete_user_id != user_profile.id:
+                delete_user = self.db.get(UserProfile, delete_user_id)
+                if delete_user and delete_user.account_role == 'admin':
+                    raise HTTPException(
+                        status_code=403, detail='Admin cannot delete another admin '
+                    )
+
             return self._delete_user(delete_user_id)
         elif delete_user_id and delete_user_id != user_profile.id:
             raise HTTPException(
