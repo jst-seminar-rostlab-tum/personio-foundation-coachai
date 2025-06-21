@@ -3,7 +3,6 @@ from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
@@ -19,11 +18,6 @@ class ScenarioPreparationStatus(str, Enum):
     pending = 'pending'
     completed = 'completed'
     failed = 'failed'
-
-
-class KeyConcept(BaseModel):
-    header: str
-    value: str
 
 
 class ScenarioPreparation(CamelModel, table=True):
@@ -45,28 +39,3 @@ class ScenarioPreparation(CamelModel, table=True):
 @event.listens_for(ScenarioPreparation, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioPreparation') -> None:
     target.updated_at = datetime.now(UTC)
-
-
-# Schema for creating a new ScenarioPreparation
-class ScenarioPreparationCreate(CamelModel):
-    scenario_id: UUID
-    objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
-    prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    status: ScenarioPreparationStatus = Field(default=ScenarioPreparationStatus.pending)
-
-
-# Schema for reading ScenarioPreparation data
-class ScenarioPreparationRead(CamelModel):
-    id: UUID
-    scenario_id: UUID
-    objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
-    prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    status: ScenarioPreparationStatus
-    category_name: Optional[str] = None
-    context: Optional[str] = None
-    goal: Optional[str] = None
-    other_party: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
