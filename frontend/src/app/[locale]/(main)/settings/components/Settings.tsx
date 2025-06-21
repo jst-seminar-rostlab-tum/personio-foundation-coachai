@@ -37,9 +37,9 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   return score !== undefined ? [score] : [50];
 };
 
-export default function TrainingSettings({ userProfile }: { userProfile: Promise<UserProfile> }) {
-  const t = useTranslations('TrainingSettings');
-  const tOptions = useTranslations('TrainingSettings.leadershipGoals');
+export default function Settings({ userProfile }: { userProfile: Promise<UserProfile> }) {
+  const t = useTranslations('Settings');
+  const tOptions = useTranslations('Settings.leadershipGoals');
   const userProfileData = use(userProfile);
 
   const [storeConversations, setStoreConversations] = useState(
