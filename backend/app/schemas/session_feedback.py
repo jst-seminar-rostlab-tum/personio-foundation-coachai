@@ -1,6 +1,7 @@
 from sqlmodel import JSON, Column, Field
 
 from app.models.camel_case import CamelModel
+from app.models.language import LanguageCode
 
 
 class ExamplesRequest(CamelModel):
@@ -13,6 +14,8 @@ class ExamplesRequest(CamelModel):
     context: str = Field(..., description='Training context')
     other_party: str = Field(..., description='Persona spoken with')
     key_concepts: str  # Can be markdown or plain text
+    language_code: LanguageCode = Field(default=LanguageCode.en,
+                                        description='Language code for the examples')
 
 
 class PositiveExample(CamelModel):
@@ -40,6 +43,8 @@ class GoalsAchievementRequest(CamelModel):
     objectives: list[str] = Field(
         ..., description='List of training objectives the user is expected to achieve'
     )
+    language_code: LanguageCode = Field(default=LanguageCode.en,
+                                        description='Language code for the goals achievement request')
 
 
 class GoalsAchievedCollection(CamelModel):

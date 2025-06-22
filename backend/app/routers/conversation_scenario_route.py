@@ -64,6 +64,7 @@ def create_conversation_scenario_with_preparation(
         other_party=new_conversation_scenario.other_party,
         num_objectives=3,  # Example value, adjust as needed
         num_checkpoints=3,  # Example value, adjust as needed
+        language_code=new_conversation_scenario.language_code,
     )
 
     # 4. Start background task to generate preparation

@@ -5,6 +5,7 @@ from uuid import UUID
 from sqlmodel import JSON, Column, Field
 
 from app.models.camel_case import CamelModel
+from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparationStatus
 
 # Schemas for scenario preparation requests
@@ -17,6 +18,8 @@ class ConversationScenarioBase(CamelModel):
     goal: str = Field(..., description='Training goal')
     context: str = Field(..., description='Training context')
     other_party: str = Field(..., description='Persona to speak with')
+    language_code: LanguageCode = Field(default=LanguageCode.en,
+                                        description='Language code for the scenario preparation')
 
 
 # Schema for genarating objectives / goals

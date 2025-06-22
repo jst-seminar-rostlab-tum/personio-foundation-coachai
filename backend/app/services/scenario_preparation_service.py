@@ -8,6 +8,7 @@ from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
+from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.schemas.scenario_preparation import (
     ChecklistRequest,
@@ -33,7 +34,7 @@ def safe_generate_checklist(request: ChecklistRequest, hr_docs_context: str = ''
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_key_concepts(
-    request: KeyConceptRequest, hr_docs_context: str = ''
+        request: KeyConceptRequest, hr_docs_context: str = ''
 ) -> list[KeyConcept]:
     return generate_key_concept(request, hr_docs_context)
 
@@ -42,14 +43,34 @@ def generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') ->
     """
     Generate a list of training objectives using structured output from the LLM.
     """
-    mock_response = StringListResponse(
-        items=[
-            'Clearly communicate the impact of the missed deadlines',
-            'Understand potential underlying causes',
-            'Collaboratively develop a solution',
-            'End the conversation on a positive note',
-        ]
-    )
+
+    if request.language_code == LanguageCode.de:
+        mock_response = StringListResponse(
+            items=[
+                "Kommuniziere klar die Auswirkungen der verpassten Fristen",
+                "Verstehe mögliche zugrunde liegende Ursachen",
+                "Erarbeite gemeinsam eine Lösung",
+                "Beende das Gespräch mit einer positiven Note",
+            ]
+        )
+        system_prompt = (
+            "Du bist ein Trainingsexperte, der Lernziele formuliert. "
+            "Antworte immer auf Deutsch."
+        )
+    else:  # Default to English
+        mock_response = StringListResponse(
+            items=[
+                "Clearly communicate the impact of the missed deadlines",
+                "Understand potential underlying causes",
+                "Collaboratively develop a solution",
+                "End the conversation on a positive note",
+            ]
+        )
+        system_prompt = (
+            "You are a training expert generating learning objectives. "
+            "Always respond in English."
+        )
+
     example_items = '\n'.join(mock_response.items)
 
     user_prompt = (
@@ -73,7 +94,7 @@ def generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') ->
 
     result = call_structured_llm(
         request_prompt=user_prompt,
-        system_prompt='You are a training expert generating learning objectives.',
+        system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
         output_model=StringListResponse,
         mock_response=mock_response,
@@ -85,17 +106,40 @@ def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> 
     """
     Generate a preparation checklist using structured output from the LLM.
     """
-    mock_response = StringListResponse(
-        items=[
-            'Gather specific examples of missed deadlines',
-            'Document the impact on team and projects',
-            'Consider potential underlying causes',
-            'Prepare open-ended questions',
-            'Think about potential solutions to suggest',
-            'Plan a positive closing statement',
-            'Choose a private, comfortable meeting environment',
-        ]
-    )
+    # --- 1. mock response & system prompt ---
+    if request.language_code == LanguageCode.de:
+        mock_response = StringListResponse(
+            items=[
+                "Sammle konkrete Beispiele für verpasste Fristen",
+                "Dokumentiere die Auswirkungen auf das Team und Projekte",
+                "Ziehe mögliche Ursachen in Betracht",
+                "Bereite offene Fragen vor",
+                "Überlege dir mögliche Lösungsvorschläge",
+                "Plane einen positiven Gesprächsabschluss",
+                "Wähle einen privaten, angenehmen Gesprächsort",
+            ]
+        )
+        system_prompt = (
+            "Du bist ein Trainingsexperte, der Vorbereitung-Checklisten erstellt. "
+            "Antworte immer auf Deutsch."
+        )
+    else:  # Default to English
+        mock_response = StringListResponse(
+            items=[
+                "Gather specific examples of missed deadlines",
+                "Document the impact on team and projects",
+                "Consider potential underlying causes",
+                "Prepare open-ended questions",
+                "Think about potential solutions to suggest",
+                "Plan a positive closing statement",
+                "Choose a private, comfortable meeting environment",
+            ]
+        )
+        system_prompt = (
+            "You are a training expert generating preparation checklists. "
+            "Always respond in English."
+        )
+
     example_items = '\n'.join(mock_response.items)
 
     user_prompt = (
@@ -118,7 +162,7 @@ def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> 
     )
     result = call_structured_llm(
         request_prompt=user_prompt,
-        system_prompt='You are a training expert generating preparation checklists.',
+        system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
         output_model=StringListResponse,
         mock_response=mock_response,
@@ -127,10 +171,10 @@ def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> 
 
 
 def build_key_concept_prompt(
-    request: KeyConceptRequest, example: str, hr_docs_context: str = ''
+        request: KeyConceptRequest, example: str, hr_docs_context: str = ''
 ) -> str:
     return f"""
-You are a training assistant. Based on the HR professionals conversation scenario below, 
+Based on the HR professionals conversation scenario below, 
 generate 3-4 key concepts for the conversation.
 
 Your output must strictly follow this JSON format representing 
@@ -175,19 +219,47 @@ Conversation scenario:
 
 
 def generate_key_concept(request: KeyConceptRequest, hr_docs_context: str = '') -> list[KeyConcept]:
-    mock_key_concept = [
-        KeyConcept(
-            header='Clear Communication',
-            value='Express ideas clearly and listen actively to understand others.',
-        ),
-        KeyConcept(
-            header='Empathy', value="Show understanding and concern for the other party's feelings."
-        ),
-        KeyConcept(
-            header='Effective Questioning',
-            value='Ask open-ended questions to encourage dialogue and exploration.',
-        ),
-    ]
+    # --- 1. mock response & system prompt ---
+    if request.language_code == LanguageCode.de:
+        mock_key_concept = [
+            KeyConcept(
+                header='Klare Kommunikation',
+                value='Drücke Ideen klar aus und höre aktiv zu, um andere zu verstehen.',
+            ),
+            KeyConcept(
+                header='Empathie',
+                value='Zeige Verständnis und Mitgefühl für die Gefühle der anderen Person.',
+            ),
+            KeyConcept(
+                header='Effektives Fragenstellen',
+                value=
+                'Stelle offene Fragen, um einen Dialog und die Erkundung von Themen zu fördern.',
+            ),
+        ]
+        system_prompt = (
+            "Du bist ein Trainingsassistent."
+            "Antworte immer auf Deutsch."
+        )
+
+    else:  # Default English
+        mock_key_concept = [
+            KeyConcept(
+                header='Clear Communication',
+                value='Express ideas clearly and listen actively to understand others.',
+            ),
+            KeyConcept(
+                header='Empathy',
+                value="Show understanding and concern for the other party's feelings.",
+            ),
+            KeyConcept(
+                header='Effective Questioning',
+                value='Ask open-ended questions to encourage dialogue and exploration.',
+            ),
+        ]
+        system_prompt = (
+            "You are a training assistant."
+            "Always respond in English."
+        )
     mock_response = KeyConceptResponse(items=mock_key_concept)
 
     prompt = build_key_concept_prompt(
@@ -196,6 +268,7 @@ def generate_key_concept(request: KeyConceptRequest, hr_docs_context: str = '') 
 
     result = call_structured_llm(
         request_prompt=prompt,
+        system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
         output_model=KeyConceptResponse,
         mock_response=mock_response,
@@ -220,9 +293,9 @@ def create_pending_preparation(scenario_id: UUID, db_session: DBSession) -> Scen
 
 
 def generate_scenario_preparation(
-    preparation_id: UUID,
-    new_preparation: ScenarioPreparationCreate,
-    session_generator_func: Callable[[], Generator[DBSession, None, None]],
+        preparation_id: UUID,
+        new_preparation: ScenarioPreparationCreate,
+        session_generator_func: Callable[[], Generator[DBSession, None, None]],
 ) -> ScenarioPreparation:
     """
     Generate scenario preparation data including objectives, checklist, and key concepts.
@@ -248,6 +321,7 @@ def generate_scenario_preparation(
             context=new_preparation.context,
             other_party=new_preparation.other_party,
             num_objectives=new_preparation.num_objectives,
+            language_code=new_preparation.language_code,
         )
         checklist_request = ChecklistRequest(
             category=new_preparation.category,
@@ -255,12 +329,14 @@ def generate_scenario_preparation(
             context=new_preparation.context,
             other_party=new_preparation.other_party,
             num_checkpoints=new_preparation.num_checkpoints,
+            language_code=new_preparation.language_code,
         )
         key_concept_request = KeyConceptRequest(
             category=new_preparation.category,
             goal=new_preparation.goal,
             context=new_preparation.context,
             other_party=new_preparation.other_party,
+            language_code=new_preparation.language_code,
         )
 
         hr_docs_context = query_vector_db_and_prompt(
@@ -330,6 +406,7 @@ if __name__ == '__main__':
         context='Quarterly review',
         other_party='Junior engineer',
         num_objectives=3,
+        language_code=LanguageCode.de,
     )
     objectives = generate_objectives(objective_request)
     print('Generated Objectives:', objectives)
@@ -340,6 +417,7 @@ if __name__ == '__main__':
         context='1:1 review',
         other_party='Backend engineer',
         num_checkpoints=3,
+        language_code=LanguageCode.de,
     )
     checklist = generate_checklist(checklist_request)
     print('Generated Checklist:', checklist)
@@ -349,6 +427,7 @@ if __name__ == '__main__':
         goal='Give constructive criticism',
         context='Quarterly review',
         other_party='Junior engineer',
+        language_code=LanguageCode.de,
     )
     key_concept = generate_key_concept(key_concept_request)
     print(key_concept)
