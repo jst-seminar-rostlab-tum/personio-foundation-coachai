@@ -58,6 +58,32 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [savedStoreConversations, setSavedStoreConversations] = useState(
+    userProfileData.storeConversations ?? false
+  );
+  const [savedRole, setSavedRole] = useState(userProfileData.professionalRole);
+  const [savedGoals, setSavedGoals] = useState(userProfileData.goals);
+  const [savedDifficulty, setSavedDifficulty] = useState(
+    getConfidenceScores(userProfileData, 'giving_difficult_feedback')[0]
+  );
+  const [savedConflict, setSavedConflict] = useState(
+    getConfidenceScores(userProfileData, 'managing_team_conflicts')[0]
+  );
+  const [savedConversation, setSavedConversation] = useState(
+    getConfidenceScores(userProfileData, 'leading_challenging_conversations')[0]
+  );
+
+  const hasFormChanged = () => {
+    return (
+      storeConversations !== savedStoreConversations ||
+      currentRole !== savedRole ||
+      JSON.stringify(primaryGoals) !== JSON.stringify(savedGoals) ||
+      difficulty[0] !== savedDifficulty ||
+      conflict[0] !== savedConflict ||
+      conversation[0] !== savedConversation
+    );
+  };
+
   const confidenceFieldsProps = {
     difficulty,
     conflict,
@@ -104,6 +130,13 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
         ],
       });
       showSuccessToast(t('saveSettingsSuccess'));
+
+      setSavedStoreConversations(storeConversations);
+      setSavedRole(currentRole);
+      setSavedGoals([...primaryGoals]);
+      setSavedDifficulty(difficulty[0]);
+      setSavedConflict(conflict[0]);
+      setSavedConversation(conversation[0]);
     } catch (error) {
       showErrorToast(error, t('saveSettingsError'));
     } finally {
@@ -189,8 +222,8 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
       <Button
         size="full"
         onClick={handleSaveSettings}
-        variant={isSubmitting ? 'disabled' : 'default'}
-        disabled={isSubmitting}
+        variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
+        disabled={isSubmitting || !hasFormChanged()}
       >
         {isSubmitting ? t('saving') : t('saveSettings')}
       </Button>
