@@ -1,10 +1,8 @@
 {
-  "backToDashboard": "Back to dashboard",
+  "backToHome": "Back to Home",
   "loading": "Loading...",
   "loadMore": "Load more",
   "error": "Error fetching data",
-  "backAbout": "Back to Home",
-  "backDashboard": "Back to Dashboard",
   "notFound": {
     "title": "Page Not Found",
     "description": "The page you're trying to access might have been moved, deleted, or you entered the wrong URL."

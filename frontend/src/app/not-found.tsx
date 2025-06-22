@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/Button';
-import { ChevronLeft, TriangleAlert } from 'lucide-react';
+import { TriangleAlert, Home } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function NotFound() {
@@ -22,9 +22,9 @@ export default async function NotFound() {
 
           <div className="flex md:flex-row flex-col gap-3 w-full max-w-xs justify-center">
             <Button asChild>
-              <Link href="/">
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                {t('backAbout')}
+              <Link href="/dashboard">
+                <Home className="w-4 h-4 mr-2" />
+                {t('backToHome')}
               </Link>
             </Button>
           </div>

@@ -1,10 +1,8 @@
 {
-  "backToDashboard": "Zurück zur Dashboard",
+  "backToHome": "Zurück zur Startseite",
   "loading": "Wird geladen...",
   "loadMore": "Mehr laden",
   "error": "Fehler beim Laden der Daten",
-  "backAbout": "Zurück zur Startseite",
-  "backDashboard": "Zurück zum Dashboard",
   "notFound": {
     "title": "Seite nicht gefunden",
     "description": "Die Seite, die Sie aufrufen möchten, wurde möglicherweise verschoben, gelöscht oder Sie haben eine falsche URL eingegeben."

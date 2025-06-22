@@ -1,10 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { LayoutDashboard, RefreshCw, ServerCrash } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Home, RefreshCw, ServerCrash } from 'lucide-react';
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 interface GlobalErrorProps {
   error: Error & { digest?: string };
@@ -12,7 +12,6 @@ interface GlobalErrorProps {
 }
 
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
-  const router = useRouter();
   const t = useTranslations('Common');
 
   useEffect(() => {
@@ -21,10 +20,6 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
 
   const handleTryAgain = () => {
     reset();
-  };
-
-  const handleBackAbout = () => {
-    router.push('/');
   };
 
   return (
@@ -50,9 +45,11 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                   <RefreshCw className="w-4 h-4 mr-2" />
                   {t('errorPage.tryAgain')}
                 </Button>
-                <Button onClick={handleBackAbout} variant="outline">
-                  <LayoutDashboard className="w-4 h-4 mr-2" />
-                  {t('backAbout')}
+                <Button asChild variant="outline">
+                  <Link href="/dashboard">
+                    <Home className="w-4 h-4 mr-2" />
+                    {t('backToHome')}
+                  </Link>
                 </Button>
               </div>
             </div>
