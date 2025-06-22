@@ -1,3 +1,4 @@
+import React from 'react';
 import Link from 'next/link';
 
 export default function SettingsLoadingPage() {
@@ -12,89 +13,72 @@ export default function SettingsLoadingPage() {
         </Link>
       </div>
 
+      {/* Title */}
+      <div className="h-8 w-32 bg-bw-10 rounded mb-6 animate-pulse" />
+
       {/* Accordion Sections */}
       <div className="mt-6 space-y-4">
-        <div className="">
-          <button className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-t-lg">
-            <span className="font-medium text-gray-700">Data Storage Preferences</span>
-            <svg
-              className="w-5 h-5 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-          <div className="p-4 bg-white rounded-b-lg">
+        {/* Privacy Controls Accordion */}
+        <div className="border border-bw-20 rounded-lg">
+          <div className="flex items-center justify-between p-4 cursor-pointer">
+            <div className="h-5 w-32 bg-bw-10 rounded animate-pulse" />
+            <div className="h-5 w-5 bg-bw-10 rounded-full animate-pulse" />
+          </div>
+          <div className="p-4">
             <div className="space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+              <div className="flex items-center justify-between w-full px-2">
+                <div className="flex flex-col">
+                  <div className="h-4 w-32 bg-bw-10 rounded mb-1 animate-pulse" />
+                  <div className="h-3 w-24 bg-bw-10 rounded animate-pulse" />
+                </div>
+                <div className="h-6 w-12 bg-bw-20 rounded animate-pulse" />
+              </div>
+              <div className="flex items-center justify-between w-full px-2">
+                <div className="h-4 w-24 bg-bw-10 rounded animate-pulse" />
+                <div className="h-8 w-20 bg-bw-10 rounded animate-pulse" />
+              </div>
+              <div className="flex items-center justify-between w-full px-2">
+                <div className="h-4 w-28 bg-bw-10 rounded animate-pulse" />
+                <div className="h-8 w-32 bg-bw-10 rounded animate-pulse" />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="">
-          <button className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-t-lg">
-            <span className="font-medium text-gray-700">Privacy Controls</span>
-            <svg
-              className="w-5 h-5 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-          <div className="p-4 bg-white rounded-b-lg">
-            <div className="space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-            </div>
+        {/* Personalization Settings Accordion */}
+        <div className="border border-bw-20 rounded-lg">
+          <div className="flex items-center justify-between p-4 cursor-pointer">
+            <div className="h-5 w-48 bg-bw-10 rounded animate-pulse" />
+            <div className="h-5 w-5 bg-bw-10 rounded-full animate-pulse" />
           </div>
-        </div>
-
-        <div className="">
-          <button className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-t-lg">
-            <span className="font-medium text-gray-700">Personalization Settings</span>
-            <svg
-              className="w-5 h-5 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-          <div className="p-4 bg-white rounded-b-lg">
+          <div className="p-4">
             <div className="space-y-4">
-              <div className="h-24 bg-gray-200 rounded w-5/6 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+              <div className="h-4 w-32 bg-bw-10 rounded mb-2 animate-pulse" />
+              <div className="space-y-2">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-bw-20 rounded-full animate-pulse" />
+                    <div className="flex-1 h-4 bg-bw-10 rounded animate-pulse" />
+                  </div>
+                ))}
+              </div>
+              <div className="h-px bg-bw-20 my-4" />
+              <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex flex-col gap-2">
+                    <div className="h-4 w-24 bg-bw-10 rounded animate-pulse" />
+                    <div className="h-8 w-full bg-bw-10 rounded animate-pulse" />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-8 w-full sm:w-auto sm:flex sm:justify-end">
-        <button className="w-full sm:w-auto px-6 py-2 bg-gray-200 rounded animate-pulse text-gray-700">
-          Save Settings
-        </button>
+      {/* Save Button */}
+      <div className="mt-8 w-full">
+        <div className="h-10 w-full bg-bw-10 rounded animate-pulse" />
       </div>
     </div>
   );
