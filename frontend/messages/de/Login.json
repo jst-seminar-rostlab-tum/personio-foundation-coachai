@@ -51,6 +51,7 @@
     "verifyButtonLabel": "Bestätigen",
     "verifyingButtonLabel": "Wird überprüft...",
     "cancelButtonLabel": "Abbrechen",
+    "codeLengthError": "Der Code muss 6 Zeichen lang sein",
     "genericError": "Bei der Überprüfung ist ein Fehler aufgetreten"
   },
   "PrivacyPolicyDialog": {
