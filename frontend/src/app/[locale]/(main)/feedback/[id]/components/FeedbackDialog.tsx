@@ -21,6 +21,7 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
   const t = useTranslations('Feedback.reviewDialog');
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const resetForm = () => {
     setRating(0);
@@ -34,6 +35,10 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
   };
 
   const rateFeedback = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       await reviewService.createReview({
         rating,
@@ -43,6 +48,8 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
       showSuccessToast(t('submitReviewSuccess'));
     } catch (error) {
       showErrorToast(error, t('submitReviewError'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -74,11 +81,11 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
 
         <DialogClose asChild>
           <Button
-            variant={rating ? 'default' : 'disabled'}
+            variant={!rating || isSubmitting ? 'disabled' : 'default'}
             onClick={rateFeedback}
-            disabled={!rating}
+            disabled={!rating || isSubmitting}
           >
-            {t('rate')}
+            {isSubmitting ? t('submitting') : t('rate')}
           </Button>
         </DialogClose>
       </DialogContent>
