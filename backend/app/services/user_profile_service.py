@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from math import ceil
 from typing import Union
 from uuid import UUID
@@ -110,7 +111,7 @@ class UserService:
                 status_code=404,
                 detail='User profile not found.',
             )
-
+        self._update_login_streak(user)
         if detailed:
             return self._get_detailed_user_profile_response(user)
         else:
@@ -271,3 +272,27 @@ class UserService:
             )
         else:
             return self._delete_user(user_profile.id)
+
+    def _update_login_streak(self, user_profile: UserProfile) -> None:
+        # Check if the last_logged_in date is available
+        if user_profile.last_logged_in:
+            now = datetime.now(UTC)
+            last_logged_in = user_profile.last_logged_in.replace(tzinfo=UTC)
+
+            # Calculate the difference in days
+            days_difference = (now - last_logged_in).days
+
+            if days_difference == 1:
+                # Increment streak if it's a new day
+                user_profile.current_streak_days += 1
+            elif days_difference > 1:
+                # Reset streak if it's 2+ days later
+                user_profile.current_streak_days = 0
+
+        # Update last_logged_in to the current time
+        user_profile.last_logged_in = datetime.now(UTC)
+
+        # Commit changes to the database
+        self.db.add(user_profile)
+        self.db.commit()
+        self.db.refresh(user_profile)

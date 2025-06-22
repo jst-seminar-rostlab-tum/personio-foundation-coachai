@@ -53,6 +53,7 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     experience: Experience = Field(default=Experience.beginner)
     preferred_learning_style: PreferredLearningStyle = Field(default=PreferredLearningStyle.visual)
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    last_logged_in: datetime = Field(default_factory=lambda: datetime.now(UTC))
     store_conversations: bool = Field(default=True)
     # Relationships
     reviews: list['Review'] = Relationship(back_populates='user_profile', cascade_delete=True)
@@ -70,9 +71,9 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     )
 
     # User Statistics
+    current_streak_days: int = Field(default=0)
     total_sessions: int = Field(default=0)
     training_time: float = Field(default=0)  # in hours
-    current_streak_days: int = Field(default=0)
     average_score: int = Field(default=0)
     goals_achieved: int = Field(default=0)
     # TODO: Add performance_over_time and skills_performance
