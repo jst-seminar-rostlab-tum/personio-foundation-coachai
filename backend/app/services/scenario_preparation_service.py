@@ -231,7 +231,7 @@ def generate_key_concept(request: KeyConceptRequest, hr_docs_context: str = '') 
             KeyConcept(
                 header='Effektives Fragenstellen',
                 value='Stelle offene Fragen, um einen Dialog und '
-                      'die Erkundung von Themen zu fördern.',
+                'die Erkundung von Themen zu fördern.',
             ),
         ]
         system_prompt = 'Du bist ein Trainingsassistent.Antworte immer auf Deutsch.'
