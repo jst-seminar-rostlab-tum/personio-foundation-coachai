@@ -209,7 +209,7 @@ export function SignUpForm() {
                               href="/terms"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-bw-60 hover:text-bw-50 underline"
+                              className="text-blue-600 hover:text-blue-800 underline"
                             >
                               {chunks}
                             </Link>
@@ -219,7 +219,7 @@ export function SignUpForm() {
                               href="/privacy"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-bw-60 hover:text-bw-50 underline"
+                              className="text-blue-600 hover:text-blue-800 underline"
                             >
                               {chunks}
                             </Link>
