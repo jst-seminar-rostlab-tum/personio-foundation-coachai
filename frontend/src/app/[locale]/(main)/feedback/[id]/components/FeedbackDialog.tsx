@@ -81,7 +81,7 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
 
         <DialogClose asChild>
           <Button
-            variant={rating ? 'default' : 'disabled'}
+            variant={!rating || isSubmitting ? 'disabled' : 'default'}
             onClick={rateFeedback}
             disabled={!rating || isSubmitting}
           >

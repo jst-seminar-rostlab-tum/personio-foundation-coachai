@@ -147,7 +147,6 @@ export default function ConversationScenarioForm() {
       router.push(`/preparation/${data.scenarioId}`);
     } catch (error) {
       showErrorToast(error, t('errorMessage'));
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -223,7 +222,7 @@ export default function ConversationScenarioForm() {
         <Button
           size="full"
           onClick={() => submitForm()}
-          variant={!isStepValid(currentStep) ? 'disabled' : 'default'}
+          variant={isSubmitting || !isStepValid(currentStep) ? 'disabled' : 'default'}
           disabled={isSubmitting || !isStepValid(currentStep)}
         >
           {getButtonText()}

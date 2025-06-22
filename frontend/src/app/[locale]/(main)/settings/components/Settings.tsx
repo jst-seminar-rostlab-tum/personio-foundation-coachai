@@ -186,7 +186,12 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
           </AccordionItem>
         </Accordion>
       </div>
-      <Button size="full" onClick={handleSaveSettings} disabled={isSubmitting}>
+      <Button
+        size="full"
+        onClick={handleSaveSettings}
+        variant={isSubmitting ? 'disabled' : 'default'}
+        disabled={isSubmitting}
+      >
         {isSubmitting ? t('saving') : t('saveSettings')}
       </Button>
     </div>

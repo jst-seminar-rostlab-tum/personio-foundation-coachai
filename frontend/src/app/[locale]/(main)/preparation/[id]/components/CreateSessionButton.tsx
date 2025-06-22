@@ -24,13 +24,17 @@ export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) =>
       router.push(`/simulation/${data.id}`);
     } catch (error) {
       showErrorToast(error, t('sessionCreationError'));
-    } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Button onClick={handleCreateSession} size="full" disabled={isSubmitting}>
+    <Button
+      onClick={handleCreateSession}
+      size="full"
+      variant={isSubmitting ? 'disabled' : 'default'}
+      disabled={isSubmitting}
+    >
       <Play />
       {isSubmitting ? t('navigation.starting') : t('navigation.start')}
     </Button>
