@@ -33,9 +33,9 @@ export default function PreviousSessions({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionsStorage, setSessionsStorage] = useState<SessionFromPagination[]>(sessions);
-  const [totalSessionsState, setTotalSessionsState] = useState(totalSessions);
+  const [totalSessionsCount, setTotalSessionsCount] = useState(totalSessions);
   const t = useTranslations('History');
-  const canLoadMore = visibleCount < totalSessionsState;
+  const canLoadMore = visibleCount < totalSessionsCount;
 
   const handleLoadMore = (newPage: number) => {
     setPageNumber(newPage);
@@ -48,7 +48,7 @@ export default function PreviousSessions({
         const response = await sessionService.getPaginatedSessions(api, pageNumber, limit);
         setSessionsStorage((prev) => [...prev, ...response.data.sessions]);
         setVisibleCount((prev) => prev + limit);
-        setTotalSessionsState(response.data.totalSessions);
+        setTotalSessionsCount(response.data.totalSessions);
       } catch (e) {
         console.error(e);
       } finally {
@@ -65,11 +65,8 @@ export default function PreviousSessions({
       setIsDeleting(true);
       await clearAllSessions();
 
-      const response = await sessionService.getPaginatedSessions(api, 1, limit);
-      setSessionsStorage(response.data.sessions);
-      setVisibleCount(response.data.sessions.length);
-      setPageNumber(1);
-      setTotalSessionsState(response.data.totalSessions);
+      setSessionsStorage([]);
+      setTotalSessionsCount(0);
 
       showSuccessToast(t('deleteSuccess'));
     } catch (e) {
