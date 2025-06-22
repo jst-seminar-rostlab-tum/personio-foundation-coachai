@@ -9,7 +9,7 @@ from sqlmodel import col, select
 
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import Goal, UserGoal
-from app.models.user_profile import UserProfile
+from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
     PaginatedUserResponse,
@@ -111,7 +111,8 @@ class UserService:
                 status_code=404,
                 detail='User profile not found.',
             )
-        self._update_login_streak(user)
+        if user.account_role == AccountRole.user:
+            self._update_login_streak(user)
         if detailed:
             return self._get_detailed_user_profile_response(user)
         else:
