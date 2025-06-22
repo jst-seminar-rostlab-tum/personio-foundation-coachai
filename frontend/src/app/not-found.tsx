@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/Button';
-import { ChevronLeft, Home, TriangleAlert } from 'lucide-react';
+import { ChevronLeft, TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function NotFound() {
@@ -15,22 +15,16 @@ export default async function NotFound() {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-bw-70">{t('title')}</h1>
+            <h1 className="text-2xl font-bold text-bw-70">{t('notFound.title')}</h1>
           </div>
 
-          <p className="text-bw-40 text-sm leading-relaxed max-w-sm">{t('description')}</p>
+          <p className="text-bw-40 text-sm leading-relaxed max-w-sm">{t('notFound.description')}</p>
 
           <div className="flex md:flex-row flex-col gap-3 w-full max-w-xs justify-center">
             <Button asChild>
               <Link href="/">
                 <ChevronLeft className="w-4 h-4 mr-2" />
                 {t('backAbout')}
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/dashboard">
-                <Home className="w-4 h-4 mr-2" />
-                {t('backDashboard')}
               </Link>
             </Button>
           </div>

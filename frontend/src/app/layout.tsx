@@ -1,9 +1,12 @@
 import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
+import type { LayoutProps } from '@/interfaces/LayoutProps';
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children, params }: LayoutProps) {
+  const { locale } = await params;
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>

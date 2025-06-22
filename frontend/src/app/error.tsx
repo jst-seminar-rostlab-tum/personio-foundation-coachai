@@ -13,7 +13,7 @@ interface ErrorPageProps {
 
 export default function Error({ error, reset }: ErrorPageProps) {
   const router = useRouter();
-  const t = useTranslations('Common.errorPage');
+  const t = useTranslations('Common');
 
   useEffect(() => {
     console.error(error);
@@ -36,15 +36,17 @@ export default function Error({ error, reset }: ErrorPageProps) {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-bw-70">{t('title')}</h1>
+            <h1 className="text-2xl font-bold text-bw-70">{t('errorPage.title')}</h1>
           </div>
 
-          <p className="text-bw-40 text-sm leading-relaxed max-w-sm">{t('description')}</p>
+          <p className="text-bw-40 text-sm leading-relaxed max-w-sm">
+            {t('errorPage.description')}
+          </p>
 
           <div className="flex md:flex-row flex-col gap-3 w-full max-w-xs justify-center">
             <Button onClick={handleTryAgain}>
               <RefreshCw className="w-4 h-4 mr-2" />
-              {t('tryAgain')}
+              {t('errorPage.tryAgain')}
             </Button>
             <Button onClick={handleBackAbout} variant="outline">
               <Home className="w-4 h-4 mr-2" />
