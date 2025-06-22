@@ -44,7 +44,7 @@ class GoalsAchievementRequest(CamelModel):
         ..., description='List of training objectives the user is expected to achieve'
     )
     language_code: LanguageCode = Field(default=LanguageCode.en,
-                                        description='Language code for the goals achievement request')
+                                    description='Language code for the goals achievement request')
 
 
 class GoalsAchievedCollection(CamelModel):
