@@ -4,7 +4,7 @@ import { ChevronLeft, TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function NotFound() {
-  const t = await getTranslations('Common.notFound');
+  const t = await getTranslations('Common');
 
   return (
     <div className="min-h-screen min-w-screen flex items-center justify-center py-4 px-4">
