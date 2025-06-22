@@ -98,7 +98,8 @@
   "navigation": {
     "back": "Zurück",
     "next": "Weiter",
-    "create": "Training erstellen"
+    "create": "Training erstellen",
+    "creating": "Wird erstellt..."
   },
   "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später erneut."
 }

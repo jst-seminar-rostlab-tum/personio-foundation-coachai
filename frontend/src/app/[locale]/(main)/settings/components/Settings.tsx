@@ -56,6 +56,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
   const [conversation, setConversation] = useState(
     getConfidenceScores(userProfileData, 'leading_challenging_conversations')
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const confidenceFieldsProps = {
     difficulty,
@@ -86,6 +87,10 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
   };
 
   const handleSaveSettings = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       await UserProfileService.updateUserProfile({
         fullName: userProfileData.fullName,
@@ -101,6 +106,8 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
       showSuccessToast(t('saveSettingsSuccess'));
     } catch (error) {
       showErrorToast(error, t('saveSettingsError'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
   return (
@@ -179,8 +186,8 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
           </AccordionItem>
         </Accordion>
       </div>
-      <Button size="full" onClick={handleSaveSettings}>
-        {t('saveSettings')}
+      <Button size="full" onClick={handleSaveSettings} disabled={isSubmitting}>
+        {isSubmitting ? t('saving') : t('saveSettings')}
       </Button>
     </div>
   );

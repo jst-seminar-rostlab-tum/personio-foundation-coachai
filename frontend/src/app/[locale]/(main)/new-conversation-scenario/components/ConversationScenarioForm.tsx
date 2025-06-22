@@ -34,6 +34,7 @@ export default function ConversationScenarioForm() {
   const { locale } = useParams();
   const [currentStep, setCurrentStep] = useState(0);
   const [formState, setFormState] = useState<ConversationScenarioFormState>(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
   const [categories, setCategories] = useState<ConversationCategory[]>(
     t.raw('categories') as ConversationCategory[]
@@ -125,6 +126,10 @@ export default function ConversationScenarioForm() {
       return;
     }
 
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     const scenario: ConversationScenario = {
       categoryId: formState.category,
       customCategoryLabel: formState.customCategory,
@@ -142,7 +147,19 @@ export default function ConversationScenarioForm() {
       router.push(`/preparation/${data.scenarioId}`);
     } catch (error) {
       showErrorToast(error, t('errorMessage'));
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const getButtonText = () => {
+    if (isSubmitting && currentStep === 2) {
+      return t('navigation.creating');
+    }
+    if (currentStep === 2) {
+      return t('navigation.create');
+    }
+    return t('navigation.next');
   };
 
   return (
@@ -207,8 +224,9 @@ export default function ConversationScenarioForm() {
           size="full"
           onClick={() => submitForm()}
           variant={!isStepValid(currentStep) ? 'disabled' : 'default'}
+          disabled={isSubmitting || !isStepValid(currentStep)}
         >
-          {currentStep === 2 ? t('navigation.create') : t('navigation.next')}
+          {getButtonText()}
           <ArrowRightIcon />
         </Button>
       </div>
