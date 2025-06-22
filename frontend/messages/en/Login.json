@@ -35,11 +35,7 @@
     "passwordInputRequirementThreeLabel": "At least one special character (!@#$%^&*)",
     "gdprAdherenceText": "We strictly adhere to GDPR by collecting only essential data, storing nothing unnecessary, and deleting data as soon as possible. ",
     "readMoreOnGdprLink": "read more",
-    "agreeToTermsCheckboxLabel": "I agree to the",
-    "termsOfServiceLink": "Terms of Service",
-    "andText": "and",
-    "privacyPolicyLink": "Privacy Policy",
-    "toText": "",
+    "agreeToTermsCheckboxLabel": "I agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>",
     "signUpButtonLabel": "Sign Up",
     "signUpWithGoogleButtonLabel": "Or Sign Up With Google",
     "genericError": "An error occurred during sign up"

@@ -203,25 +203,28 @@ export function SignUpForm() {
                         />
                       </FormControl>
                       <FormLabel className="text-sm">
-                        {t('agreeToTermsCheckboxLabel')}{' '}
-                        <Link
-                          href="/terms"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-bw-60 hover:text-bw-50 underline"
-                        >
-                          {t('termsOfServiceLink')}
-                        </Link>{' '}
-                        {t('andText')}{' '}
-                        <Link
-                          href="/privacy"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-bw-60 hover:text-bw-50 underline"
-                        >
-                          {t('privacyPolicyLink')}
-                        </Link>{' '}
-                        {t('toText')}
+                        {t.rich('agreeToTermsCheckboxLabel', {
+                          terms: (chunks) => (
+                            <Link
+                              href="/terms"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-bw-60 hover:text-bw-50 underline"
+                            >
+                              {chunks}
+                            </Link>
+                          ),
+                          privacy: (chunks) => (
+                            <Link
+                              href="/privacy"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-bw-60 hover:text-bw-50 underline"
+                            >
+                              {chunks}
+                            </Link>
+                          ),
+                        })}
                       </FormLabel>
                     </div>
                   </FormItem>
