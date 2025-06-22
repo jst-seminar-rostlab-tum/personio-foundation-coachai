@@ -10,36 +10,23 @@ from starlette.responses import JSONResponse
 from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import (
-    ConversationScenario,
-    ConversationScenarioCreate,
-    ConversationScenarioRead,
-)
+from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import (
     ScenarioPreparation,
-    ScenarioPreparationRead,
     ScenarioPreparationStatus,
 )
 from app.models.user_profile import UserProfile
-from app.schemas.scenario_preparation_schema import ScenarioPreparationRequest
+from app.schemas.conversation_scenario import (
+    ConversationScenarioCreate,
+    ConversationScenarioRead,
+)
+from app.schemas.scenario_preparation import ScenarioPreparationCreate, ScenarioPreparationRead
 from app.services.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,
 )
 
 router = APIRouter(prefix='/conversation-scenario', tags=['Conversation Scenarios'])
-
-
-@router.get('', response_model=list[ConversationScenarioRead])
-def get_conversation_scenarios(
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> list[ConversationScenario]:
-    """
-    Retrieve all conversation scenarios.
-    """
-    statement = select(ConversationScenario)
-    conversation_scenarios = db_session.exec(statement).all()
-    return list(conversation_scenarios)
 
 
 @router.post('', response_model=ConversationScenarioRead, dependencies=[Depends(require_user)])
@@ -70,7 +57,7 @@ def create_conversation_scenario_with_preparation(
     # 3. Initialize preparation（status = pending）
     prep = create_pending_preparation(new_conversation_scenario.id, db_session)
 
-    preparation_request = ScenarioPreparationRequest(
+    new_preparation = ScenarioPreparationCreate(
         category=category.name if category else '',
         context=new_conversation_scenario.context,
         goal=new_conversation_scenario.goal,
@@ -81,7 +68,7 @@ def create_conversation_scenario_with_preparation(
 
     # 4. Start background task to generate preparation
     background_tasks.add_task(
-        generate_scenario_preparation, prep.id, preparation_request, get_db_session
+        generate_scenario_preparation, prep.id, new_preparation, get_db_session
     )
     # 5. Return response
     return JSONResponse(
@@ -91,50 +78,6 @@ def create_conversation_scenario_with_preparation(
             'scenarioId': str(new_conversation_scenario.id),
         },
     )
-
-
-@router.put('/{scenario_id}', response_model=ConversationScenarioRead)
-def update_conversation_scenario(
-    scenario_id: UUID,
-    updated_data: ConversationScenarioCreate,
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> ConversationScenario:
-    """
-    Update an existing conversation scenario.
-    """
-    conversation_scenario = db_session.get(ConversationScenario, scenario_id)
-    if not conversation_scenario:
-        raise HTTPException(status_code=404, detail='Conversation scenario not found')
-
-    # Validate foreign keys
-    if updated_data.category_id:
-        category = db_session.get(ConversationCategory, updated_data.category_id)
-        if not category:
-            raise HTTPException(status_code=404, detail='Category not found')
-
-    for key, value in updated_data.dict().items():
-        setattr(conversation_scenario, key, value)
-
-    db_session.add(conversation_scenario)
-    db_session.commit()
-    db_session.refresh(conversation_scenario)
-    return conversation_scenario
-
-
-@router.delete('/{scenario_id}', response_model=dict)
-def delete_conversation_scenario(
-    scenario_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
-) -> dict:
-    """
-    Delete a conversation scenario.
-    """
-    conversation_scenario = db_session.get(ConversationScenario, scenario_id)
-    if not conversation_scenario:
-        raise HTTPException(status_code=404, detail='Conversation scenario not found')
-
-    db_session.delete(conversation_scenario)
-    db_session.commit()
-    return {'message': 'Conversation scenario deleted successfully'}
 
 
 @router.get(
