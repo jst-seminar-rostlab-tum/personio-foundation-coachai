@@ -27,6 +27,7 @@ export default function ConversationScenarioForm() {
     updateForm,
     reset,
   } = useConversationScenarioStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [categories, setCategories] = useState<ConversationCategory[]>(
     t.raw('categories') as ConversationCategory[]
@@ -77,6 +78,10 @@ export default function ConversationScenarioForm() {
       return;
     }
 
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     const scenario: ConversationScenario = {
       categoryId: formState.category,
       customCategoryLabel: formState.customCategory,
@@ -95,7 +100,18 @@ export default function ConversationScenarioForm() {
       setTimeout(reset, 2000);
     } catch (error) {
       showErrorToast(error, t('errorMessage'));
+      setIsSubmitting(false);
     }
+  };
+
+  const getButtonText = () => {
+    if (isSubmitting && currentStep === 2) {
+      return t('navigation.creating');
+    }
+    if (currentStep === 2) {
+      return t('navigation.create');
+    }
+    return t('navigation.next');
   };
 
   return (
@@ -168,9 +184,10 @@ export default function ConversationScenarioForm() {
         <Button
           size="full"
           onClick={submitForm}
-          variant={!isStepValid(currentStep) ? 'disabled' : 'default'}
+          variant={isSubmitting || !isStepValid(currentStep) ? 'disabled' : 'default'}
+          disabled={isSubmitting || !isStepValid(currentStep)}
         >
-          {currentStep === 2 ? t('navigation.create') : t('navigation.next')}
+          {getButtonText()}
           <ArrowRightIcon />
         </Button>
       </div>
