@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
+import { handlePasteEvent } from '@/lib/handlePaste';
 import { createClient } from '@/lib/supabase/client';
 import { showErrorToast } from '@/lib/toast';
 import { authService } from '@/services/client/AuthService';
@@ -149,19 +150,7 @@ export default function ConfirmationForm() {
                               }
                             }}
                             onPaste={(e) => {
-                              e.preventDefault();
-                              const pastedData = e.clipboardData.getData('text');
-                              const numericOnly = pastedData.replace(/\D/g, '');
-                              const codeToUse = numericOnly.slice(0, codeSize);
-
-                              if (codeToUse.length > 0) {
-                                field.onChange(codeToUse);
-                                const nextFieldIndex = Math.min(codeToUse.length, codeSize - 1);
-                                const nextField = document.getElementById(
-                                  `code-cell-${nextFieldIndex}`
-                                );
-                                (nextField as HTMLInputElement)?.focus();
-                              }
+                              handlePasteEvent(e, field, codeSize);
                             }}
                             onKeyDown={(e) => {
                               if (e.key === 'Backspace') {

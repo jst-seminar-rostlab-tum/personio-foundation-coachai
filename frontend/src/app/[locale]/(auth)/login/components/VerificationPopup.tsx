@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { authService } from '@/services/client/AuthService';
 import { verificationService } from '@/services/client/VerificationService';
 import { showErrorToast } from '@/lib/toast';
+import { handlePasteEvent } from '@/lib/handlePaste';
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
@@ -165,19 +166,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                             }
                           }}
                           onPaste={(e) => {
-                            e.preventDefault();
-                            const pastedData = e.clipboardData.getData('text');
-                            const numericOnly = pastedData.replace(/\D/g, '');
-                            const codeToUse = numericOnly.slice(0, codeSize);
-
-                            if (codeToUse.length > 0) {
-                              field.onChange(codeToUse);
-                              const nextFieldIndex = Math.min(codeToUse.length, codeSize - 1);
-                              const nextField = document.getElementById(
-                                `code-cell-${nextFieldIndex}`
-                              );
-                              (nextField as HTMLInputElement)?.focus();
-                            }
+                            handlePasteEvent(e, field, codeSize);
                           }}
                           onKeyDown={(e) => {
                             if (e.key === 'Backspace') {
