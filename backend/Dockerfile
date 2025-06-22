@@ -11,6 +11,9 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#caching
 ENV UV_LINK_MODE=copy
 
+# postgresql client for alembic tests
+RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -21,9 +24,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 ENV PYTHONPATH=/app
 
 # Copy the application into the container.
-COPY ./pyproject.toml ./uv.lock  /app/
+COPY ./pyproject.toml ./uv.lock ./alembic.ini  /app/
 
 COPY ./app /app/app
+
+COPY ./alembic /app/alembic
 
 # Sync the project
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
