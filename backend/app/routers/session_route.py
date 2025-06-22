@@ -310,7 +310,7 @@ def update_session(
             transcript=transcripts,
             objectives=preparation.objectives,
             key_concepts=key_concepts_str,
-            language_code=conversation_scenario.language_code
+            language_code=conversation_scenario.language_code,
         )
 
         # Schedule the feedback generation in the background

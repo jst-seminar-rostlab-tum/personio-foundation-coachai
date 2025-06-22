@@ -18,8 +18,9 @@ class ConversationScenarioBase(CamelModel):
     goal: str = Field(..., description='Training goal')
     context: str = Field(..., description='Training context')
     other_party: str = Field(..., description='Persona to speak with')
-    language_code: LanguageCode = Field(default=LanguageCode.en,
-                                        description='Language code for the scenario preparation')
+    language_code: LanguageCode = Field(
+        default=LanguageCode.en, description='Language code for the scenario preparation'
+    )
 
 
 # Schema for genarating objectives / goals
