@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
@@ -31,6 +31,8 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     code: z.string().length(6, t('codeLengthError')),
   });
   const codeSize = 6;
+
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const form = useForm({
     resolver: zodResolver(verificationSchema),
@@ -154,6 +156,9 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                           className="w-10 text-center text-lg"
                           disabled={isLoading}
                           value={field.value[idx] || ''}
+                          ref={(el) => {
+                            inputRefs.current[idx] = el;
+                          }}
                           onChange={(e) => {
                             const val = e.target.value.replace(/\D/g, '');
                             const codeArr = (field.value || '').split('');
@@ -161,23 +166,20 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                             const newCode = codeArr.join('').slice(0, codeSize);
                             field.onChange(newCode);
                             if (val && idx < codeSize - 1) {
-                              const next = document.getElementById(`code-cell-${idx + 1}`);
-                              (next as HTMLInputElement)?.focus();
+                              inputRefs.current[idx + 1]?.focus();
                             }
                           }}
                           onPaste={(e) => {
-                            handlePasteEvent(e, field, codeSize);
+                            handlePasteEvent(e, field, codeSize, inputRefs.current);
                           }}
                           onKeyDown={(e) => {
                             if (e.key === 'Backspace') {
                               const codeArr = (field.value || '').split('');
                               if (!codeArr[idx] && idx > 0) {
-                                const prev = document.getElementById(`code-cell-${idx - 1}`);
-                                (prev as HTMLInputElement)?.focus();
+                                inputRefs.current[idx - 1]?.focus();
                               }
                             }
                           }}
-                          id={`code-cell-${idx}`}
                           autoFocus={idx === 0}
                         />
                       ))}

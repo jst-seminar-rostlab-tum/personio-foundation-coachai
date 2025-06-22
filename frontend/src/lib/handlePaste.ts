@@ -1,13 +1,10 @@
-interface PasteField {
-  onChange: (code: string) => void;
-  value?: string;
-}
+import { PasteField } from '@/interfaces/PasteField';
 
 export function handlePasteEvent(
   e: React.ClipboardEvent<HTMLInputElement>,
   field: PasteField,
   codeSize: number,
-  idPrefix = 'code-cell-'
+  inputRefs: (HTMLInputElement | null)[]
 ): void {
   e.preventDefault();
   const pastedText = e.clipboardData.getData('text');
@@ -17,7 +14,7 @@ export function handlePasteEvent(
   if (codeToUse.length > 0) {
     field.onChange(codeToUse);
     const nextIndex = Math.min(codeToUse.length, codeSize - 1);
-    const nextEl = document.getElementById(`${idPrefix}${nextIndex}`);
-    (nextEl as HTMLInputElement)?.focus();
+    const nextEl = inputRefs[nextIndex];
+    nextEl?.focus();
   }
 }
