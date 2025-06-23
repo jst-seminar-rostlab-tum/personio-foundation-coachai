@@ -27,13 +27,7 @@ class AppConfigService:
         if existing_config:
             raise HTTPException(status_code=400, detail='AppConfig with this key already exists')
 
-        # Automatically determine the type based on the value
-        if app_config.value.lower() in ['true', 'false']:
-            app_config.type = ConfigType.boolean
-        elif app_config.value.isdigit():
-            app_config.type = ConfigType.int
-        else:
-            app_config.type = ConfigType.string
+        self._validate_config_value(app_config.value, app_config.type)
 
         db_app_config = AppConfig(**app_config.model_dump())
         self.db.add(db_app_config)
