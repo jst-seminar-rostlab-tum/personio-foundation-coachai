@@ -17,7 +17,8 @@
   },
   "navigation": {
     "back": "Zurück",
-    "start": "Training starten"
+    "start": "Training starten",
+    "starting": "Wird gestartet..."
   },
   "loadingText": "Bereite Ziele und Checkliste vor...",
   "sessionCreationError": "Fehler beim Erstellen der Trainingssitzung. Bitte versuchen Sie es später erneut.",

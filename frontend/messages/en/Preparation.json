@@ -17,7 +17,8 @@
   },
   "navigation": {
     "back": "Go Back",
-    "start": "Start Training"
+    "start": "Start Training",
+    "starting": "Starting..."
   },
   "loadingText": "Preparing Objectives and Checklist...",
   "sessionCreationError": "Error creating training session. Please try again later.",
