@@ -1,6 +1,11 @@
 import { UserProfile, UserProfileUpdate } from '@/interfaces/UserProfile';
 import { api } from './Api';
 
+interface KeyConcept {
+  header: string;
+  value: string;
+}
+
 interface UserDataExport {
   profile: {
     user_id: string;
@@ -40,6 +45,16 @@ interface UserDataExport {
     difficulty_level: string;
     tone: string;
     complexity: string;
+    status: string;
+    created_at: string | null;
+    updated_at: string | null;
+  }>;
+  scenario_preparations: Array<{
+    id: string;
+    scenario_id: string;
+    objectives: string[];
+    key_concepts: KeyConcept[];
+    prep_checklist: string[];
     status: string;
     created_at: string | null;
     updated_at: string | null;

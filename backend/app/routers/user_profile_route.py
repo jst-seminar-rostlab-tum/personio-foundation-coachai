@@ -358,6 +358,7 @@ def export_user_data(
         'goals': [],
         'confidence_scores': [],
         'scenarios': [],
+        'scenario_preparations': [],
         'sessions': [],
         'session_turns': [],
         'session_feedback': [],
@@ -409,6 +410,25 @@ def export_user_data(
         }
         for s in scenarios
     ]
+
+    # Scenario Preparations (for all scenarios)
+    scenario_preparations = []
+    for s in scenarios:
+        if hasattr(s, 'preparation') and s.preparation:
+            prep = s.preparation
+            scenario_preparations.append(
+                {
+                    'id': str(prep.id),
+                    'scenario_id': str(prep.scenario_id),
+                    'objectives': prep.objectives,
+                    'key_concepts': prep.key_concepts,
+                    'prep_checklist': prep.prep_checklist,
+                    'status': str(prep.status),
+                    'created_at': prep.created_at.isoformat() if prep.created_at else None,
+                    'updated_at': prep.updated_at.isoformat() if prep.updated_at else None,
+                }
+            )
+    user_data['scenario_preparations'] = scenario_preparations
 
     # Sessions (linked to user's scenarios)
     sessions = []
