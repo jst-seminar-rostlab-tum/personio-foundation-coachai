@@ -14,10 +14,10 @@ export default function DashboardLoading() {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="@container w-full aspect-[1/1] bg-bw-10 rounded-lg flex flex-col items-center justify-center gap-2"
+            className="@container w-full aspect-[2/1] bg-bw-10 rounded-lg flex flex-col justify-center p-8 gap-2"
           >
-            <div className="h-16 w-24 bg-bw-20 rounded-lg animate-pulse" />
-            <div className="h-6 w-32 bg-bw-20 rounded-lg animate-pulse" />
+            <div className="h-6 w-24 bg-bw-20 rounded-lg animate-pulse" />
+            <div className="h-16 w-32 bg-bw-20 rounded-lg animate-pulse" />
           </div>
         ))}
       </div>
