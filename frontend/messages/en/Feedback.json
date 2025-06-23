@@ -9,7 +9,8 @@
     "rate": "Submit Review",
     "submitting": "Submitting...",
     "submitReviewError": "Error while submitting review. Please try again later.",
-    "submitReviewSuccess": "Review submitted successfully. Thank you for your review!"
+    "submitReviewSuccess": "Review submitted successfully. Thank you for your review!",
+    "shareWithAdmin": "Share session with an admin for improvement."
   },
   "progressBars": {
     "structure": "Structure",

@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/Dialog';
 import { Rating, RatingButton } from '@/components/ui/Rating';
 import { Textarea } from '@/components/ui/Textarea';
+import Checkbox from '@/components/ui/Checkbox';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { reviewService } from '@/services/client/ReviewService';
 import { useTranslations } from 'next-intl';
@@ -22,10 +23,12 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shareWithAdmin, setShareWithAdmin] = useState(false);
 
   const resetForm = () => {
     setRating(0);
     setRatingDescription('');
+    setShareWithAdmin(false);
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -78,6 +81,15 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
           value={ratingDescription}
           onChange={(e) => setRatingDescription(e.target.value)}
         />
+
+        {/* Share with Admin Checkbox */}
+        <div
+          className="flex items-center space-x-2 mt-4 cursor-pointer"
+          onClick={() => !isSubmitting && setShareWithAdmin(!shareWithAdmin)}
+        >
+          <Checkbox checked={shareWithAdmin} disabled={isSubmitting} />
+          <label className="text-sm text-bw-70">{t('shareWithAdmin')}</label>
+        </div>
 
         <DialogClose asChild>
           <Button

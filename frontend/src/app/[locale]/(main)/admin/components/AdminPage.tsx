@@ -99,11 +99,9 @@ export default function Admin({ stats, reviews }: AdminProps) {
         </div>
       </div>
       <Reviews {...reviews} />
-      <Accordion type="multiple" className="w-full mt-8">
-        <AccordionItem value="item-1" className="text-dark">
-          <AccordionTrigger className="font-bw-70 cursor-pointer">
-            {t('userManagement')}
-          </AccordionTrigger>
+      <Accordion type="multiple">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>{t('userManagement')}</AccordionTrigger>
           <AccordionContent>
             <div className="mb-4">
               <div className="relative">
@@ -159,16 +157,12 @@ export default function Admin({ stats, reviews }: AdminProps) {
             )}
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-2" className="text-dark">
-          <AccordionTrigger className="font-bw-70 cursor-pointer">
-            {t('trainingCategories')}
-          </AccordionTrigger>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>{t('trainingCategories')}</AccordionTrigger>
           <AccordionContent></AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-3" className="text-dark">
-          <AccordionTrigger className="font-bw-70 cursor-pointer">
-            {t('trainingScenarios')}
-          </AccordionTrigger>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>{t('trainingScenarios')}</AccordionTrigger>
           <AccordionContent></AccordionContent>
         </AccordionItem>
       </Accordion>

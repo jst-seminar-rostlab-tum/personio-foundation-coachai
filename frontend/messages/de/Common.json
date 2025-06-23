@@ -19,5 +19,11 @@
   "confirm": "Bestätigen",
   "deleting": "Lösche...",
   "deleteAccountSuccess": "Konto wurde erfolgreich gelöscht.",
-  "deleteAccountError": "Beim Löschen des Kontos ist ein Fehler aufgetreten."
+  "deleteAccountError": "Beim Löschen des Kontos ist ein Fehler aufgetreten.",
+  "emptyList": {
+    "title": "Noch keine {itemType}",
+    "description": "Ihre {itemType} werden hier in Zukunft erscheinen!",
+    "sessions": "Sitzungen",
+    "reviews": "Bewertungen"
+  }
 }
