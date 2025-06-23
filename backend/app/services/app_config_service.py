@@ -35,7 +35,7 @@ class AppConfigService:
         else:
             app_config.type = ConfigType.string
 
-        db_app_config = AppConfig(**app_config.dict())
+        db_app_config = AppConfig(**app_config.model_dump())
         self.db.add(db_app_config)
         self.db.commit()
         self.db.refresh(db_app_config)
@@ -51,16 +51,10 @@ class AppConfigService:
         if not app_config:
             raise HTTPException(status_code=404, detail='AppConfig not found')
 
-        # Automatically determine the type based on the value
-        if updated_data.value.lower() in ['true', 'false']:
-            updated_data.type = ConfigType.boolean
-        elif updated_data.value.isdigit():
-            updated_data.type = ConfigType.int
-        else:
-            updated_data.type = ConfigType.string
-
         for field, value in updated_data.model_dump().items():
             setattr(app_config, field, value)
+
+        self._validate_config_value(app_config.value, app_config.type)
 
         self.db.add(app_config)
         self.db.commit()
@@ -82,20 +76,12 @@ class AppConfigService:
             if not app_config:
                 raise HTTPException(status_code=404, detail=f"AppConfig with key '{key}' not found")
 
-            # Automatically determine the type based on the value
-            value = config_data.value
-            if value:
-                if value.lower() in ['true', 'false']:
-                    config_data.type = ConfigType.boolean
-                elif self._is_int(value):
-                    config_data.type = ConfigType.int
-                else:
-                    config_data.type = ConfigType.string
-
             # Update only the provided fields
             for field, value in config_data.model_dump().items():
                 if field != 'key' and hasattr(app_config, field):
                     setattr(app_config, field, value)
+
+            self._validate_config_value(config_data.value, config_data.type)
 
             self.db.add(app_config)
             updated_configs.append(app_config)
@@ -120,9 +106,23 @@ class AppConfigService:
         self.db.commit()
         return {'message': 'AppConfig deleted successfully'}
 
-    def _is_int(self, text: str) -> bool:
+    def _validate_config_value(self, value: str, config_type: ConfigType) -> None:
+        """
+        Validate if the value can be typecasted to the specified ConfigType.
+        Raises a 422 error if the typecast fails.
+        """
         try:
-            int(text)
-            return True
+            if config_type == ConfigType.int:
+                int(value)  # Try to cast to int
+            elif config_type == ConfigType.boolean:
+                if value.lower() not in ['true', 'false']:
+                    raise ValueError('Invalid boolean value')
+            elif config_type == ConfigType.string:
+                str(value)  # Strings are always valid
+            else:
+                raise ValueError('Unsupported ConfigType')
         except ValueError:
-            return False
+            raise HTTPException(
+                status_code=422,
+                detail=f"Value '{value}' cannot be typecasted to {config_type}",
+            ) from None
