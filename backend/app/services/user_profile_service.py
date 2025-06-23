@@ -64,7 +64,7 @@ class UserService:
         )
 
     def get_user_profiles(
-        self, detailed: bool, page: int = 1, page_size: int = 10, email_substring: str | None = None
+        self, page: int = 1, page_size: int = 10, email_substring: str | None = None
     ) -> PaginatedUserResponse:
         statement = select(UserProfile)
         if email_substring:
@@ -88,10 +88,7 @@ class UserService:
 
         users = self.db.exec(statement.offset((page - 1) * page_size).limit(page_size)).all()
 
-        if detailed:
-            user_list = [self._get_detailed_user_profile_response(user) for user in users]
-        else:
-            user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
+        user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
 
         return PaginatedUserResponse(
             page=page,

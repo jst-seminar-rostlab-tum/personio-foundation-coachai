@@ -31,7 +31,6 @@ def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserS
 )
 def get_user_profiles(
     service: Annotated[UserService, Depends(get_user_service)],
-    detailed: bool = False,
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
     email_substring: str | None = Query(
@@ -43,13 +42,9 @@ def get_user_profiles(
 ) -> PaginatedUserResponse:
     """
     Retrieve all user profiles.
-
-    - If `detailed` is False (default), returns simplified profiles.
-
-    - If `detailed` is True, returns extended profiles including goals and confidence scores.
     """
     return service.get_user_profiles(
-        detailed=detailed, page=page, page_size=page_size, email_substring=email_substring
+        page=page, page_size=page_size, email_substring=email_substring
     )
 
 
