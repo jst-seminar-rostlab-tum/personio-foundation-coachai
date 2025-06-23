@@ -35,7 +35,9 @@ DEFAULT_PROMPT = """
 DEFAULT_POPULATE_DB = False
 
 
-def load_and_index_documents(vector_db: SupabaseVectorStore) -> None:
+def load_and_index_documents(
+    vector_db: SupabaseVectorStore, doc_folder: str = DOC_FOLDER, table_name: str = TABLE_NAME
+) -> None:
     """
     Loads and indexes PDF documents from the configured folder into the provided vector store.
 
@@ -46,15 +48,16 @@ def load_and_index_documents(vector_db: SupabaseVectorStore) -> None:
 
     Parameters:
         vector_db (SupabaseVectorStore): The vector store where documents will be added.
+        doc_folder (str): The folder where the documents are stored.
     """
-    os.makedirs(DOC_FOLDER, exist_ok=True)
-    docs = prepare_vector_db_docs(str(DOC_FOLDER))
+    os.makedirs(doc_folder, exist_ok=True)
+    docs = prepare_vector_db_docs(str(doc_folder))
     if not docs:
-        print(f'⚠️ No documents found in folder: {DOC_FOLDER}')
+        print(f'⚠️ No documents found in folder: {doc_folder}')
         return
 
     vector_db.add_documents(docs)
-    print(f'Added {len(docs)} documents to vector store: {TABLE_NAME}')
+    print(f'Added {len(docs)} documents to vector store: {table_name}')
 
 
 def build_vector_db_retriever(
