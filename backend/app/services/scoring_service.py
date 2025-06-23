@@ -69,7 +69,7 @@ class ScoringService:
         response = call_structured_llm(
             request_prompt=user_prompt,
             system_prompt=system_prompt,
-            model='gpt-4o-2024-08-06',
+            model='o4-mini-2025-04-16',
             output_model=ScoringResult,
             temperature=0.0,
         )
