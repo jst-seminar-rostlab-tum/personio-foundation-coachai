@@ -41,6 +41,7 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
 export default function Settings({ userProfile }: { userProfile: Promise<UserProfile> }) {
   const t = useTranslations('Settings');
   const tOptions = useTranslations('Settings.leadershipGoals');
+  const common = useTranslations('Common');
   const userProfileData = use(userProfile);
 
   const [storeConversations, setStoreConversations] = useState(
@@ -185,19 +186,19 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive">{t('requestDeletion')}</Button>
+                    <Button variant="destructive">{t('deleteAccount')}</Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>{t('deleteAccountConfirmTitle')}</AlertDialogTitle>
+                      <AlertDialogTitle>{common('deleteAccountConfirmTitle')}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        {t('deleteAccountConfirmDesc')}
+                        {common('deleteAccountConfirmDesc')}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                      <AlertDialogCancel>{common('cancel')}</AlertDialogCancel>
                       <AlertDialogAction onClick={() => handleDeleteUser()} disabled={loading}>
-                        {loading ? t('deleting') : t('confirm')}
+                        {loading ? common('deleting') : common('confirm')}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

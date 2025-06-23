@@ -8,16 +8,11 @@
   "export": "Exportieren",
   "exportData": "Persönliche Daten exportieren",
   "deleteAccount": "Konto löschen",
-  "requestDeletion": "Löschung anfordern",
   "personalizationSettings": "Personalisierungseinstellungen",
   "saveSettings": "Einstellungen speichern",
   "saving": "Wird gespeichert...",
   "ninetyDays": "Ihre Audiodateien und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf einsehbar.",
   "zeroDays": "Ihre Audiodateien und Transkripte werden nicht gespeichert.",
-  "deleteAccountConfirmTitle": "Sind Sie sicher?",
-  "deleteAccountConfirmDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
-  "cancel": "Abbrechen",
-  "confirm": "Bestätigen",
   "preferences": {
     "language": {
       "label": "Bevorzugte Sprache",
@@ -50,6 +45,5 @@
     }
   },
   "saveSettingsSuccess": "Ihre Einstellungen wurden erfolgreich gespeichert.",
-  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
-  "deleting": "Lösche..."
+  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
 }

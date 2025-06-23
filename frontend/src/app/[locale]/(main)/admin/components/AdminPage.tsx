@@ -31,7 +31,7 @@ import Reviews from './Reviews';
 
 export default function Admin({ stats, reviews }: AdminProps) {
   const t = useTranslations('Admin');
-  const tr = useTranslations('Settings');
+  const common = useTranslations('Common');
   const [tokenLimit, setTokenLimit] = useState<number>(stats.dailyTokenLimit);
   const [savedTokenLimit, setSavedTokenLimit] = useState<number>(stats.dailyTokenLimit);
   const [saving, setSaving] = useState(false);
@@ -160,18 +160,20 @@ export default function Admin({ stats, reviews }: AdminProps) {
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>{tr('deleteAccountConfirmTitle')}</AlertDialogTitle>
+                              <AlertDialogTitle>
+                                {common('deleteAccountConfirmTitle')}
+                              </AlertDialogTitle>
                               <AlertDialogDescription>
-                                {tr('deleteAccountConfirmDesc', { user })}
+                                {common('deleteAccountConfirmDesc', { user })}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>{tr('cancel')}</AlertDialogCancel>
+                              <AlertDialogCancel>{common('cancel')}</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() => handleDeleteUser(user)}
                                 disabled={loading}
                               >
-                                {loading ? tr('deleting') : tr('confirm')}
+                                {loading ? common('deleting') : common('confirm')}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>

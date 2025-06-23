@@ -8,16 +8,11 @@
   "export": "Export",
   "exportData": "Export personal data",
   "deleteAccount": "Delete account",
-  "requestDeletion": "Request Deletion",
   "personalizationSettings": "Personalization Settings",
   "saveSettings": "Save Settings",
   "saving": "Saving...",
   "ninetyDays": "Your audio and transcripts will be retained and viewable in the training history for 90 days.",
   "zeroDays": "Your audio and transcripts will not be saved.",
-  "deleteAccountConfirmTitle": "Are you sure?",
-  "deleteAccountConfirmDesc": "This action cannot be undone.",
-  "cancel": "Cancel",
-  "confirm": "Confirm",
   "preferences": {
     "language": {
       "label": "Preferred Language",
@@ -50,6 +45,5 @@
     }
   },
   "saveSettingsSuccess": "Your settings have been saved successfully.",
-  "saveSettingsError": "There was an error saving your settings. Please try again later.",
-  "deleting": "Deleting..."
+  "saveSettingsError": "There was an error saving your settings. Please try again later."
 }
