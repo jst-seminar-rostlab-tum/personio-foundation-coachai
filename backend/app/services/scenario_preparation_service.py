@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import concurrent.futures
+import json
+import os
 from collections.abc import Callable, Generator
+from functools import lru_cache
 from uuid import UUID
 
 from sqlmodel import Session as DBSession
@@ -10,6 +13,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from app.connections.openai_client import call_structured_llm
 from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
+from app.schemas.scenario_prep_config import ScenarioPrepConfig
 from app.schemas.scenario_preparation import (
     ChecklistRequest,
     KeyConcept,
@@ -20,6 +24,18 @@ from app.schemas.scenario_preparation import (
     StringListResponse,
 )
 from app.services.vector_db_context_service import query_vector_db_and_prompt
+
+
+@lru_cache
+def load_scenario_prep_config() -> ScenarioPrepConfig:
+    config_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'scenario_prep_config.json')
+    with open(config_path, encoding='utf-8') as f:
+        data = json.load(f)  # Python dict
+    return ScenarioPrepConfig.model_validate(data)
+
+
+CONFIG_PATH = os.path.join('app', 'config', 'scenario_prep_config.json')
+config = load_scenario_prep_config()
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
@@ -44,30 +60,11 @@ def generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') ->
     Generate a list of training objectives using structured output from the LLM.
     """
 
-    if request.language_code == LanguageCode.de:
-        mock_response = StringListResponse(
-            items=[
-                'Kommuniziere klar die Auswirkungen der verpassten Fristen',
-                'Verstehe mögliche zugrunde liegende Ursachen',
-                'Erarbeite gemeinsam eine Lösung',
-                'Beende das Gespräch mit einer positiven Note',
-            ]
-        )
-        system_prompt = (
-            'Du bist ein Trainingsexperte, der Lernziele formuliert. Antworte immer auf Deutsch.'
-        )
-    else:  # Default to English
-        mock_response = StringListResponse(
-            items=[
-                'Clearly communicate the impact of the missed deadlines',
-                'Understand potential underlying causes',
-                'Collaboratively develop a solution',
-                'End the conversation on a positive note',
-            ]
-        )
-        system_prompt = (
-            'You are a training expert generating learning objectives. Always respond in English.'
-        )
+    lang = request.language_code
+    settings = config.root[lang]
+
+    mock_response = settings.mocks.objectives
+    system_prompt = settings.system_prompts.objectives
 
     example_items = '\n'.join(mock_response.items)
 
@@ -104,39 +101,11 @@ def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> 
     """
     Generate a preparation checklist using structured output from the LLM.
     """
-    # --- 1. mock response & system prompt ---
-    if request.language_code == LanguageCode.de:
-        mock_response = StringListResponse(
-            items=[
-                'Sammle konkrete Beispiele für verpasste Fristen',
-                'Dokumentiere die Auswirkungen auf das Team und Projekte',
-                'Ziehe mögliche Ursachen in Betracht',
-                'Bereite offene Fragen vor',
-                'Überlege dir mögliche Lösungsvorschläge',
-                'Plane einen positiven Gesprächsabschluss',
-                'Wähle einen privaten, angenehmen Gesprächsort',
-            ]
-        )
-        system_prompt = (
-            'Du bist ein Trainingsexperte, der Vorbereitung-Checklisten erstellt. '
-            'Antworte immer auf Deutsch.'
-        )
-    else:  # Default to English
-        mock_response = StringListResponse(
-            items=[
-                'Gather specific examples of missed deadlines',
-                'Document the impact on team and projects',
-                'Consider potential underlying causes',
-                'Prepare open-ended questions',
-                'Think about potential solutions to suggest',
-                'Plan a positive closing statement',
-                'Choose a private, comfortable meeting environment',
-            ]
-        )
-        system_prompt = (
-            'You are a training expert generating preparation checklists. '
-            'Always respond in English.'
-        )
+    lang = request.language_code
+    settings = config.root[lang]
+
+    mock_response = settings.mocks.checklist
+    system_prompt = settings.system_prompts.checklist
 
     example_items = '\n'.join(mock_response.items)
 
@@ -217,42 +186,11 @@ Conversation scenario:
 
 
 def generate_key_concept(request: KeyConceptRequest, hr_docs_context: str = '') -> list[KeyConcept]:
-    # --- 1. mock response & system prompt ---
-    if request.language_code == LanguageCode.de:
-        mock_key_concept = [
-            KeyConcept(
-                header='Klare Kommunikation',
-                value='Drücke Ideen klar aus und höre aktiv zu, um andere zu verstehen.',
-            ),
-            KeyConcept(
-                header='Empathie',
-                value='Zeige Verständnis und Mitgefühl für die Gefühle der anderen Person.',
-            ),
-            KeyConcept(
-                header='Effektives Fragenstellen',
-                value='Stelle offene Fragen, um einen Dialog und '
-                'die Erkundung von Themen zu fördern.',
-            ),
-        ]
-        system_prompt = 'Du bist ein Trainingsassistent.Antworte immer auf Deutsch.'
+    lang = request.language_code
+    settings = config.root[lang]
 
-    else:  # Default English
-        mock_key_concept = [
-            KeyConcept(
-                header='Clear Communication',
-                value='Express ideas clearly and listen actively to understand others.',
-            ),
-            KeyConcept(
-                header='Empathy',
-                value="Show understanding and concern for the other party's feelings.",
-            ),
-            KeyConcept(
-                header='Effective Questioning',
-                value='Ask open-ended questions to encourage dialogue and exploration.',
-            ),
-        ]
-        system_prompt = 'You are a training assistant.Always respond in English.'
-    mock_response = KeyConceptResponse(items=mock_key_concept)
+    mock_response = settings.mocks.key_concepts
+    system_prompt = settings.system_prompts.key_concepts
 
     prompt = build_key_concept_prompt(
         request, mock_response.model_dump_json(indent=4), hr_docs_context

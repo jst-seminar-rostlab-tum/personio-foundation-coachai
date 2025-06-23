@@ -1,5 +1,8 @@
 import concurrent.futures
+import json
+import os
 from datetime import datetime
+from functools import lru_cache
 from uuid import UUID, uuid4
 
 from sqlmodel import Session as DBSession
@@ -13,14 +16,26 @@ from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
     GoalsAchievementRequest,
-    NegativeExample,
-    PositiveExample,
-    Recommendation,
     RecommendationsCollection,
     RecommendationsRequest,
     SessionExamplesCollection,
 )
+from app.schemas.session_feedback_config import SessionFeedbackConfig
 from app.services.vector_db_context_service import query_vector_db_and_prompt
+
+
+@lru_cache
+def load_session_feedback_config() -> SessionFeedbackConfig:
+    config_path = os.path.join(
+        os.path.dirname(__file__), '..', 'data', 'session_feedback_config.json'
+    )
+    with open(config_path, encoding='utf-8') as f:
+        data = json.load(f)  # Python dict
+    return SessionFeedbackConfig.model_validate(data)
+
+
+CONFIG_PATH = os.path.join('app', 'config', 'session_feedback_config.json')
+config = load_session_feedback_config()
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
@@ -47,52 +62,11 @@ def safe_generate_recommendations(
 def generate_training_examples(
     request: ExamplesRequest, hr_docs_context: str = ''
 ) -> SessionExamplesCollection:
-    if request.language_code == LanguageCode.de:
-        mock_response = SessionExamplesCollection(
-            positive_examples=[
-                PositiveExample(
-                    heading='Klares Ziel angesprochen',
-                    feedback='Der Benutzer hat das Ziel erfolgreich zusammengefasst.',
-                    quote='Ich möchte sicherstellen, dass wir beide gehört'
-                    ' werden und gemeinsam eine Lösung finden.',
-                )
-            ],
-            negative_examples=[
-                NegativeExample(
-                    heading='Fehlende Empathie',
-                    feedback='Der Benutzer hat die Bedenken der anderen Person abgewiesen.',
-                    quote='Das ist jetzt nicht wichtig.',
-                    improved_quote='Ich verstehe Ihre Bedenken – '
-                    'lassen Sie uns später darauf zurückkommen.',
-                )
-            ],
-        )
-        system_prompt = (
-            'Du bist ein Kommunikationstrainer, der Trainingssitzungen analysiert. '
-            'Antworte immer auf Deutsch und verwende die angegebene Modellstruktur.'
-        )
-    else:  # English as default
-        mock_response = SessionExamplesCollection(
-            positive_examples=[
-                PositiveExample(
-                    heading='Clear Objective Addressed',
-                    feedback='The user successfully summarized the objective.',
-                    quote='I want to make sure we both feel heard and find a solution together.',
-                )
-            ],
-            negative_examples=[
-                NegativeExample(
-                    heading='Missed Empathy',
-                    feedback="The user dismissed the other party's concern.",
-                    quote="That's not important right now.",
-                    improved_quote="I understand your concern—let's come back to it in a moment.",
-                )
-            ],
-        )
-        system_prompt = (
-            'You are an expert communication coach analyzing training sessions. '
-            'Always respond in English using the specified output model format.'
-        )
+    lang = request.language_code
+    settings = config.root[lang]
+
+    mock_response = settings.mocks.session_examples
+    system_prompt = settings.system_prompts.session_examples
 
     user_prompt = f"""
     The following is a training session transcript in which you are practicing 
@@ -162,30 +136,11 @@ def generate_training_examples(
 def get_achieved_goals(
     request: GoalsAchievementRequest, hr_docs_context: str = ''
 ) -> GoalsAchievedCollection:
-    # --- 1. mock response & system prompt ---
-    if request.language_code == LanguageCode.de:
-        mock_response = GoalsAchievedCollection(
-            goals_achieved=[
-                'Die Auswirkungen verpasster Fristen klar kommunizieren',
-                'Mögliche zugrunde liegende Ursachen verstehen',
-            ]
-        )
-        system_prompt = (
-            'Du bist ein Kommunikationstrainer, der analysiert, '
-            'welche Ziele in einer Trainingssitzung '
-            'Antworte immer auf Deutsch und verwende die angegebene Modellstruktur.'
-        )
-    else:  # English as default
-        mock_response = GoalsAchievedCollection(
-            goals_achieved=[
-                'Clearly communicate the impact of the missed deadlines',
-                'Understand potential underlying causes',
-            ]
-        )
-        system_prompt = (
-            'You are an expert communication coach analyzing training sessions. '
-            'Always respond in English using the specified output model format.'
-        )
+    lang = request.language_code
+    settings = config.root[lang]
+
+    mock_response = settings.mocks.goals_achieved
+    system_prompt = settings.system_prompts.goals_achieved
 
     user_prompt = f"""
     The following is a transcript of a training session.
@@ -229,59 +184,11 @@ def get_achieved_goals(
 def generate_recommendations(
     request: RecommendationsRequest, hr_docs_context: str = ''
 ) -> RecommendationsCollection:
-    # --------- 多语言 mock response + system prompt -----------
-    if request.language_code == LanguageCode.de:
-        mock_response = RecommendationsCollection(
-            recommendations=[
-                Recommendation(
-                    heading='STAR-Methode üben',
-                    recommendation='Nutzen Sie bei Feedbackgesprächen das STAR-Modell '
-                    '(Situation, Task, Action, Result), '
-                    'um konkretere Beispiele zu geben.',
-                ),
-                Recommendation(
-                    heading='Mehr diagnostische Fragen stellen',
-                    recommendation='Verbringen Sie mehr Zeit damit, die Ursachen zu verstehen, '
-                    'bevor Sie Lösungen anbieten. '
-                    'Das stärkt das Einfühlungsvermögen und '
-                    'führt zu besseren Ergebnissen.',
-                ),
-                Recommendation(
-                    heading='Klare nächste Schritte definieren',
-                    recommendation='Beenden Sie Feedbackgespräche mit klaren Handlungsplänen,'
-                    ' Zeitrahmen und Follow-up-Vereinbarungen.',
-                ),
-            ]
-        )
-        system_prompt = (
-            'Du bist ein Kommunikationstrainer, der Trainingstranskripte analysiert. '
-            'Antworte immer auf Deutsch und verwende die angegebene Modellstruktur.'
-        )
-    else:  # English as default
-        mock_response = RecommendationsCollection(
-            recommendations=[
-                Recommendation(
-                    heading='Practice the STAR method',
-                    recommendation='When giving feedback, use the Situation, Task, Action, '
-                    'Result ' + 'framework to provide more concrete examples.',
-                ),
-                Recommendation(
-                    heading='Ask more diagnostic questions',
-                    recommendation='Spend more time understanding root causes before moving to '
-                    + 'solutions. '
-                    'This builds empathy and leads to more effective outcomes.',
-                ),
-                Recommendation(
-                    heading='Define clear next steps',
-                    recommendation='End feedback conversations with agreed-upon action items, '
-                    + 'timelines, and follow-up plans.',
-                ),
-            ]
-        )
-        system_prompt = (
-            'You are an expert communication coach analyzing training sessions. '
-            'Always respond in English using the specified output model format.'
-        )
+    lang = request.language_code
+    settings = config.root[lang]
+
+    mock_response = settings.mocks.recommendations
+    system_prompt = settings.system_prompts.recommendations
 
     user_prompt = f"""
     Analyze the following transcript from a training session.
