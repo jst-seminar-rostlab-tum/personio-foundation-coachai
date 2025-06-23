@@ -57,6 +57,33 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
   const [conversation, setConversation] = useState(
     getConfidenceScores(userProfileData, 'leading_challenging_conversations')
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [savedStoreConversations, setSavedStoreConversations] = useState(
+    userProfileData.storeConversations ?? false
+  );
+  const [savedRole, setSavedRole] = useState(userProfileData.professionalRole);
+  const [savedGoals, setSavedGoals] = useState(userProfileData.goals);
+  const [savedDifficulty, setSavedDifficulty] = useState(
+    getConfidenceScores(userProfileData, 'giving_difficult_feedback')[0]
+  );
+  const [savedConflict, setSavedConflict] = useState(
+    getConfidenceScores(userProfileData, 'managing_team_conflicts')[0]
+  );
+  const [savedConversation, setSavedConversation] = useState(
+    getConfidenceScores(userProfileData, 'leading_challenging_conversations')[0]
+  );
+
+  const hasFormChanged = () => {
+    return (
+      storeConversations !== savedStoreConversations ||
+      currentRole !== savedRole ||
+      JSON.stringify(primaryGoals) !== JSON.stringify(savedGoals) ||
+      difficulty[0] !== savedDifficulty ||
+      conflict[0] !== savedConflict ||
+      conversation[0] !== savedConversation
+    );
+  };
 
   const confidenceFieldsProps = {
     difficulty,
@@ -87,6 +114,10 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
   };
 
   const handleSaveSettings = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       await UserProfileService.updateUserProfile({
         fullName: userProfileData.fullName,
@@ -100,8 +131,17 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
         ],
       });
       showSuccessToast(t('saveSettingsSuccess'));
+
+      setSavedStoreConversations(storeConversations);
+      setSavedRole(currentRole);
+      setSavedGoals([...primaryGoals]);
+      setSavedDifficulty(difficulty[0]);
+      setSavedConflict(conflict[0]);
+      setSavedConversation(conversation[0]);
     } catch (error) {
       showErrorToast(error, t('saveSettingsError'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -184,8 +224,13 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
           </AccordionItem>
         </Accordion>
       </div>
-      <Button size="full" onClick={handleSaveSettings}>
-        {t('saveSettings')}
+      <Button
+        size="full"
+        onClick={handleSaveSettings}
+        variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
+        disabled={isSubmitting || !hasFormChanged()}
+      >
+        {isSubmitting ? t('saving') : t('saveSettings')}
       </Button>
     </div>
   );
