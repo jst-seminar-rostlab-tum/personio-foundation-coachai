@@ -334,7 +334,7 @@ class SessionService:
             )
         return scenario
 
-    def _authorize_access(self, scenario: ConversationScenario, user_profile: UserProfile):
+    def _authorize_access(self, scenario: ConversationScenario, user_profile: UserProfile) -> None:
         if scenario.user_id != user_profile.id and user_profile.account_role != AccountRole.admin:
             raise HTTPException(
                 status_code=403, detail='You do not have permission to access this session'
