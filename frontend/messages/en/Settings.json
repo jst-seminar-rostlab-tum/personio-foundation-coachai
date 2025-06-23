@@ -11,6 +11,7 @@
   "requestDeletion": "Request",
   "personalizationSettings": "Personalization Settings",
   "saveSettings": "Save Settings",
+  "saving": "Saving...",
   "ninetyDays": "Your audio and transcripts will be retained and viewable in the training history for 90 days.",
   "zeroDays": "Your audio and transcripts will not be saved.",
   "deleteAccountConfirmTitle": "Are you sure?",

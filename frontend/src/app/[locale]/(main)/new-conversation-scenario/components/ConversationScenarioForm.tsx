@@ -7,43 +7,39 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { ConversationCategory } from '@/interfaces/ConversationCategory';
-import { ConversationScenarioFormState } from '@/interfaces/ConversationScenarioFormState';
 import { ConversationScenario } from '@/interfaces/ConversationScenario';
 import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
 import { showErrorToast } from '@/lib/toast';
+import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
-
-const initialFormState: ConversationScenarioFormState = {
-  category: '',
-  customCategory: '',
-  name: '',
-  otherParty: '',
-  context: '',
-  goal: '',
-  difficulty: '',
-  emotionalTone: '',
-  complexity: '',
-  isCustom: false,
-};
 
 export default function ConversationScenarioForm() {
   const t = useTranslations('ConversationScenario');
   const router = useRouter();
   const { locale } = useParams();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formState, setFormState] = useState<ConversationScenarioFormState>(initialFormState);
-  const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
+
+  const {
+    step: currentStep,
+    setStep,
+    formState,
+    updateForm,
+    reset,
+  } = useConversationScenarioStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [categories, setCategories] = useState<ConversationCategory[]>(
     t.raw('categories') as ConversationCategory[]
   );
 
+  const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
+
   useEffect(() => {
     async function fetchCategories() {
       const response = await conversationScenarioService.getConversationCategories();
-      setCategories((prevCategories) =>
-        prevCategories.map((cat) => {
+      setCategories((prev) =>
+        prev.map((cat) => {
           const match = response.data.find((f: ConversationCategory) => f.id === cat.id);
           return match ? { ...cat, defaultContext: match.defaultContext } : cat;
         })
@@ -54,7 +50,7 @@ export default function ConversationScenarioForm() {
 
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
-      setCurrentStep(step);
+      setStep(step);
     }
   };
 
@@ -76,54 +72,15 @@ export default function ConversationScenarioForm() {
     }
   };
 
-  const handleCategorySelect = (category: ConversationCategory) => {
-    setFormState((prev: ConversationScenarioFormState) => ({
-      ...prev,
-      category: category.id,
-      name: category.name,
-      context: category.defaultContext || prev.context,
-      goal: category.defaultGoal || prev.goal,
-      otherParty: category.defaultOtherParty || '',
-      isCustom: category.isCustom || false,
-    }));
-  };
-
-  const handleCustomCategoryInput = (customCategory: string) => {
-    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, customCategory }));
-  };
-
-  const handlePartyChange = (otherParty: string) => {
-    setFormState((prev: ConversationScenarioFormState) => ({
-      ...prev,
-      otherParty,
-    }));
-  };
-
-  const handleContextChange = (context: string) => {
-    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, context }));
-  };
-
-  const handleGoalChange = (goal: string) => {
-    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, goal }));
-  };
-
-  const handleDifficultyChange = (difficulty: string) => {
-    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, difficulty }));
-  };
-
-  const handleEmotionalToneChange = (emotionalTone: string) => {
-    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, emotionalTone }));
-  };
-
-  const handleComplexityChange = (complexity: string) => {
-    setFormState((prev: ConversationScenarioFormState) => ({ ...prev, complexity }));
-  };
-
   const submitForm = async () => {
     if (currentStep !== 2) {
-      setCurrentStep(() => currentStep + 1);
+      setStep(currentStep + 1);
       return;
     }
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
 
     const scenario: ConversationScenario = {
       categoryId: formState.category,
@@ -140,9 +97,21 @@ export default function ConversationScenarioForm() {
     try {
       const { data } = await conversationScenarioService.createConversationScenario(scenario);
       router.push(`/preparation/${data.scenarioId}`);
+      setTimeout(reset, 2000);
     } catch (error) {
       showErrorToast(error, t('errorMessage'));
+      setIsSubmitting(false);
     }
+  };
+
+  const getButtonText = () => {
+    if (isSubmitting && currentStep === 2) {
+      return t('navigation.creating');
+    }
+    if (currentStep === 2) {
+      return t('navigation.create');
+    }
+    return t('navigation.next');
   };
 
   return (
@@ -161,7 +130,16 @@ export default function ConversationScenarioForm() {
       {currentStep === 0 && (
         <CategoryStep
           selectedCategory={formState.category}
-          onCategorySelect={handleCategorySelect}
+          onCategorySelect={(category) =>
+            updateForm({
+              category: category.id,
+              name: category.name,
+              context: category.defaultContext || '',
+              goal: category.defaultGoal || '',
+              otherParty: category.defaultOtherParty || '',
+              isCustom: category.isCustom || false,
+            })
+          }
           categories={categories}
         />
       )}
@@ -171,10 +149,10 @@ export default function ConversationScenarioForm() {
           otherParty={formState.otherParty}
           context={formState.context}
           goal={formState.goal}
-          onPartyChange={handlePartyChange}
-          onContextChange={handleContextChange}
-          onCustomCategoryInput={handleCustomCategoryInput}
-          onGoalChange={handleGoalChange}
+          onPartyChange={(val) => updateForm({ otherParty: val })}
+          onContextChange={(val) => updateForm({ context: val })}
+          onGoalChange={(val) => updateForm({ goal: val })}
+          onCustomCategoryInput={(val) => updateForm({ customCategory: val })}
           isCustom={formState.isCustom}
           customCategory={formState.customCategory}
         />
@@ -185,9 +163,9 @@ export default function ConversationScenarioForm() {
           difficulty={formState.difficulty}
           emotionalTone={formState.emotionalTone}
           complexity={formState.complexity}
-          onDifficultyChange={handleDifficultyChange}
-          onEmotionalToneChange={handleEmotionalToneChange}
-          onComplexityChange={handleComplexityChange}
+          onDifficultyChange={(val) => updateForm({ difficulty: val })}
+          onEmotionalToneChange={(val) => updateForm({ emotionalTone: val })}
+          onComplexityChange={(val) => updateForm({ complexity: val })}
         />
       )}
 
@@ -196,7 +174,7 @@ export default function ConversationScenarioForm() {
           <Button
             size="full"
             variant="outline"
-            onClick={() => setCurrentStep(() => currentStep - 1)}
+            onClick={() => setStep(currentStep - 1)}
             disabled={currentStep === 0}
           >
             <ArrowLeftIcon />
@@ -205,10 +183,11 @@ export default function ConversationScenarioForm() {
         )}
         <Button
           size="full"
-          onClick={() => submitForm()}
-          variant={!isStepValid(currentStep) ? 'disabled' : 'default'}
+          onClick={submitForm}
+          variant={isSubmitting || !isStepValid(currentStep) ? 'disabled' : 'default'}
+          disabled={isSubmitting || !isStepValid(currentStep)}
         >
-          {currentStep === 2 ? t('navigation.create') : t('navigation.next')}
+          {getButtonText()}
           <ArrowRightIcon />
         </Button>
       </div>

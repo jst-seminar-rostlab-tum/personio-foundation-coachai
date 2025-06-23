@@ -32,8 +32,11 @@ export default function Admin({ stats, reviews }: AdminProps) {
   const t = useTranslations('Admin');
   const tr = useTranslations('Settings');
   const [tokenLimit, setTokenLimit] = useState<number>(stats.dailyTokenLimit);
+  const [savedTokenLimit, setSavedTokenLimit] = useState<number>(stats.dailyTokenLimit);
   const [saving, setSaving] = useState(false);
   const [visibleUsers, setVisibleUsers] = useState(5);
+
+  const hasTokenLimitChanged = tokenLimit !== savedTokenLimit;
 
   const statsArray = [
     { value: stats.totalUsers, label: t('statActiveUsers') },
@@ -53,6 +56,7 @@ export default function Admin({ stats, reviews }: AdminProps) {
     try {
       await adminService.updateDailyUserTokenLimit(tokenLimit);
       showSuccessToast(t('tokenSuccess'));
+      setSavedTokenLimit(tokenLimit);
     } catch (error) {
       showErrorToast(error, t('tokenFailed'));
     } finally {
@@ -96,7 +100,11 @@ export default function Admin({ stats, reviews }: AdminProps) {
             onChange={(e) => setTokenLimit(Number(e.target.value))}
             disabled={saving}
           />
-          <Button onClick={handleSaveTokenLimit} disabled={saving}>
+          <Button
+            onClick={handleSaveTokenLimit}
+            disabled={saving || !hasTokenLimitChanged}
+            variant={saving || !hasTokenLimitChanged ? 'disabled' : 'default'}
+          >
             {saving ? t('saving') : t('save')}
           </Button>
         </div>
