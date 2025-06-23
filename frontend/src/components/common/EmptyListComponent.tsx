@@ -1,16 +1,11 @@
-'use client';
-
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-
-interface EmptyListComponentProps {
-  itemType: string;
-}
+import { EmptyListComponentProps } from '@/interfaces/EmptyListComponentProps';
 
 export default function EmptyListComponent({ itemType }: EmptyListComponentProps) {
   const t = useTranslations('Common.emptyList');
   return (
-    <div className="flex flex-col items-center justify-center w-full border border-bw-20 rounded-lg bg-transparent gap-1 p-8">
+    <div className="flex flex-col items-center justify-center w-full border border-bw-20 rounded-lg bg-transparent gap-1 p-8 text-center">
       <Image
         src="/images/empty_list.png"
         alt="Empty list illustration"

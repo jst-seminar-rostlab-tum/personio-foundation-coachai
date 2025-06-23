@@ -47,14 +47,14 @@ export default function HistoryItems({ sessionsPromise }: HistoryItemsProps) {
               </div>
             </Link>
           ))}
+          <Link href="/history">
+            <Button size="full">
+              {t('recentSessions.cta')}
+              <ArrowRightIcon />
+            </Button>
+          </Link>
         </>
       )}
-      <Link href="/history">
-        <Button size="full">
-          {t('recentSessions.cta')}
-          <ArrowRightIcon />
-        </Button>
-      </Link>
     </section>
   );
 }
