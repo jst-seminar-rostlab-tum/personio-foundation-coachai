@@ -17,5 +17,7 @@
   "deleteAccountConfirmDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
   "cancel": "Abbrechen",
   "confirm": "Bestätigen",
-  "deleting": "Lösche..."
+  "deleting": "Lösche...",
+  "deleteAccountSuccess": "Konto wurde erfolgreich gelöscht.",
+  "deleteAccountError": "Beim Löschen des Kontos ist ein Fehler aufgetreten."
 }

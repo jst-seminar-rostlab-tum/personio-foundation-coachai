@@ -11,19 +11,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import Switch from '@/components/ui/Switch';
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/components/ui/AlertDialog';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
-import { useDeleteUser } from '@/components/common/DeleteUserHandler';
+import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import { UserProfileService } from '@/services/client/UserProfileService';
 import { UserPreference } from '@/interfaces/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
@@ -41,7 +30,6 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
 export default function Settings({ userProfile }: { userProfile: Promise<UserProfile> }) {
   const t = useTranslations('Settings');
   const tOptions = useTranslations('Settings.leadershipGoals');
-  const common = useTranslations('Common');
   const userProfileData = use(userProfile);
 
   const [storeConversations, setStoreConversations] = useState(
@@ -146,7 +134,6 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     }
   };
 
-  const { handleDeleteUser, loading } = useDeleteUser();
   return (
     <div>
       <h1 className="text-2xl">{t('title')}</h1>
@@ -184,25 +171,9 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('deleteAccount')}</div>
                 </div>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive">{t('deleteAccount')}</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{common('deleteAccountConfirmTitle')}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {common('deleteAccountConfirmDesc')}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{common('cancel')}</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDeleteUser()} disabled={loading}>
-                        {loading ? common('deleting') : common('confirm')}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <DeleteUserHandler>
+                  <Button variant="destructive">{t('deleteAccount')}</Button>
+                </DeleteUserHandler>
               </div>
             </AccordionContent>
           </AccordionItem>

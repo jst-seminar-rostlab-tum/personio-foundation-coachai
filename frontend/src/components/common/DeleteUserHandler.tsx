@@ -1,19 +1,53 @@
 import { useState } from 'react';
-import { deleteUser } from '@/services/client/DeleteUserService';
+import { UserProfileService } from '@/services/client/UserProfileService';
+import { useTranslations } from 'next-intl';
+import { DeleteUserHandlerProps } from '@/interfaces/DeleteUserHandlerProps';
+import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../ui/AlertDialog';
 
-export function useDeleteUser() {
+export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
   const [loading, setLoading] = useState(false);
+  const t = useTranslations('Common');
 
   async function handleDeleteUser(deleteUserId?: string) {
     setLoading(true);
     try {
-      await deleteUser(deleteUserId);
+      await UserProfileService.deleteUser(deleteUserId);
+      showSuccessToast(t('deleteAccountSuccess'));
     } catch (error) {
-      console.error({ error });
+      showErrorToast(error, t('deleteAccountError'));
     } finally {
       setLoading(false);
     }
   }
 
-  return { handleDeleteUser, loading };
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t('deleteAccountConfirmTitle')}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t('deleteAccountConfirmDesc', { id: id ?? '' })}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+          <AlertDialogAction onClick={() => handleDeleteUser(id)} disabled={loading}>
+            {loading ? t('deleting') : t('confirm')}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 }

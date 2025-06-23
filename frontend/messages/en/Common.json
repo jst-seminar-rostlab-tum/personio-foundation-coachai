@@ -17,5 +17,7 @@
   "deleteAccountConfirmDesc": "This action cannot be undone.",
   "cancel": "Cancel",
   "confirm": "Confirm",
-  "deleting": "Deleting..."
+  "deleting": "Deleting...",
+  "deleteAccountSuccess": "Account deleted successfully.",
+  "deleteAccountError": "There was an error deleting the account."
 }
