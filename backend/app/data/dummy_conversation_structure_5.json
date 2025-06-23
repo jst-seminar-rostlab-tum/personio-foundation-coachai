@@ -1,7 +1,7 @@
 {
   "scenario": {
-    "title": "Feedback on Project Communication (Structure 5 Example)",
-    "description": "A User (manager) is giving feedback to an Assistant (Sam, direct report) about their communication during a recent project. This example demonstrates flawless structure: clear opening, logical flow, smooth transitions, and a strong closing.",
+    "title": "Feedback on Project Communication (Structure 5)",
+    "description": "A User (manager) gives feedback to an Assistant (Sam, direct report) about communication during a recent project. Structure is excellent: clear opening, logical flow, smooth transitions, and a strong closing.",
     "participants": {
       "user_role": "Manager",
       "assistant_role": "Sam, Direct Report"
