@@ -1,73 +1,69 @@
 'use client';
 
-import Stepper from '@/components/common/Stepper';
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import UserConfidenceFields from '@/components/common/UserConfidenceFields';
-import { UserOption } from '@/interfaces/UserInputFields';
-import Checkbox from '@/components/ui/Checkbox';
-import Label from '@/components/ui/Label';
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
-import Link from 'next/link';
+
+import Stepper from '@/components/common/Stepper';
+import { Button } from '@/components/ui/Button';
+import Checkbox from '@/components/ui/Checkbox';
+import Label from '@/components/ui/Label';
+import UserConfidenceFields from '@/components/common/UserConfidenceFields';
+
+import { UserOption } from '@/interfaces/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfileService } from '@/services/client/UserProfileService';
-import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/toast';
 import { useUser } from '@/lib/context/user';
+import { useOnboardingStore } from '@/store/OnboardingStore';
 import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
-  const onboardingSteps = ['Step1', 'Step2', 'Step3'];
   const t = useTranslations('Onboarding');
   const router = useRouter();
-  const roleQuestion: UserOption[] = UserRoles();
-  const primaryGoals: UserOption[] = PrimaryGoals();
   const userProfile = useUser();
 
-  const [currentOnboardingStep, setCurrentOnboardingStep] = useState(0);
-  const [selectedRole, setSelectedRole] = useState<string>('');
-  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
-  const [difficulty, setDifficulty] = useState([50]);
-  const [conflict, setConflict] = useState([50]);
-  const [conversation, setConversation] = useState([50]);
+  const onboardingSteps = ['Step1', 'Step2', 'Step3'];
+  const roleQuestion: UserOption[] = UserRoles();
+  const primaryGoals: UserOption[] = PrimaryGoals();
 
-  const confidenceFieldsProps = {
+  const {
+    step,
+    setStep,
+    role,
+    setRole,
+    goals,
+    setGoals,
     difficulty,
-    conflict,
-    conversation,
     setDifficulty,
+    conflict,
     setConflict,
+    conversation,
     setConversation,
-  };
+    reset,
+  } = useOnboardingStore();
+
   const isValidStep = (stepIndex: number) => {
-    if (stepIndex === 0) return selectedRole !== '';
-    if (stepIndex === 1) return selectedGoals.length > 0;
+    if (stepIndex === 0) return role !== '';
+    if (stepIndex === 1) return goals.length > 0;
     return true;
   };
+
   const handleStepChange = (stepIndex: number) => {
-    if (!isValidStep(stepIndex - 1)) {
-      return;
+    if (!isValidStep(stepIndex - 1)) return;
+    if (stepIndex <= step || stepIndex === step + 1) {
+      setStep(stepIndex);
     }
-    if (stepIndex <= currentOnboardingStep || stepIndex === currentOnboardingStep + 1) {
-      setCurrentOnboardingStep(stepIndex);
-    }
-  };
-
-  const goToNextStep = () => {
-    setCurrentOnboardingStep((prev) => Math.min(prev + 1, onboardingSteps.length - 1));
-  };
-
-  const goToPreviousStep = () => {
-    setCurrentOnboardingStep((prev) => Math.max(prev - 1, 0));
   };
 
   const updateUserProfile = async () => {
     try {
       await UserProfileService.updateUserProfile({
         fullName: userProfile.fullName,
-        professionalRole: selectedRole,
-        goals: selectedGoals,
+        professionalRole: role,
+        goals,
         confidenceScores: [
           { confidenceArea: 'giving_difficult_feedback', score: difficulty[0] },
           { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
@@ -75,6 +71,7 @@ export default function OnboardingPageComponent() {
         ],
       });
       router.push('/dashboard');
+      setTimeout(reset, 2000);
     } catch (error) {
       showErrorToast(error, t('updateProfileError'));
     }
@@ -86,26 +83,27 @@ export default function OnboardingPageComponent() {
         <span className="text-2xl">{t('title')}</span>
         <span className="text-base text-bw-40">{t('subtitle')}</span>
       </div>
+
       <Stepper
         steps={onboardingSteps}
-        currentStep={currentOnboardingStep}
+        currentStep={step}
         onStepClick={handleStepChange}
         showAllStepNumbers={true}
         showStepLabels={false}
-        currentStepValid={isValidStep(currentOnboardingStep)}
+        currentStepValid={isValidStep(step)}
       />
 
-      {currentOnboardingStep === 0 && (
+      {step === 0 && (
         <UserRadioComponent
           question={t('steps.step1')}
           options={roleQuestion}
-          selectedValue={selectedRole}
-          onValueChange={setSelectedRole}
+          selectedValue={role}
+          onValueChange={setRole}
           labelHintAlign="vertical"
         />
       )}
 
-      {currentOnboardingStep === 1 && (
+      {step === 1 && (
         <>
           <div className="text-center flex flex-col justify-around min-h-20">
             <div className="text-xl">{t('steps.step2')}</div>
@@ -117,12 +115,12 @@ export default function OnboardingPageComponent() {
                 <div key={goal.id} className="flex items-center gap-2">
                   <Checkbox
                     id={goal.id}
-                    checked={selectedGoals.includes(goal.id)}
+                    checked={goals.includes(goal.id)}
                     onCheckedChange={(checked) => {
-                      if (checked && selectedGoals.length < 3) {
-                        setSelectedGoals((prev) => [...prev, goal.id]);
-                      } else {
-                        setSelectedGoals((prev) => prev.filter((g) => g !== goal.id));
+                      if (checked && goals.length < 3) {
+                        setGoals([...goals, goal.id]);
+                      } else if (!checked) {
+                        setGoals(goals.filter((g: string) => g !== goal.id));
                       }
                     }}
                   />
@@ -136,32 +134,36 @@ export default function OnboardingPageComponent() {
         </>
       )}
 
-      {currentOnboardingStep === 2 && (
+      {step === 2 && (
         <>
           <div className="text-xl self-center min-h-20 text-center max-w-70 flex items-center">
             {t('steps.step3')}
           </div>
-          <UserConfidenceFields {...confidenceFieldsProps} />
+          <UserConfidenceFields
+            difficulty={difficulty}
+            conflict={conflict}
+            conversation={conversation}
+            setDifficulty={setDifficulty}
+            setConflict={setConflict}
+            setConversation={setConversation}
+          />
         </>
       )}
 
       <div className="flex flex-col gap-3 items-center">
-        <div
-          className={`grid w-full gap-3 ${currentOnboardingStep > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}
-        >
-          {currentOnboardingStep > 0 && (
+        <div className={`grid w-full gap-3 ${step > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          {step > 0 && (
             <Button
               className="w-full"
               variant="outline"
-              onClick={goToPreviousStep}
-              disabled={currentOnboardingStep === 0}
+              onClick={() => setStep(step - 1)}
+              disabled={step === 0}
             >
               <ArrowLeftIcon />
               {t('navigation.back')}
             </Button>
           )}
-
-          {currentOnboardingStep === onboardingSteps.length - 1 ? (
+          {step === onboardingSteps.length - 1 ? (
             <Button className="w-full" onClick={updateUserProfile}>
               {t('navigation.finish')}
               <ArrowRightIcon />
@@ -169,16 +171,15 @@ export default function OnboardingPageComponent() {
           ) : (
             <Button
               className="w-full"
-              onClick={goToNextStep}
-              variant={isValidStep(currentOnboardingStep) ? 'default' : 'disabled'}
+              onClick={() => setStep(step + 1)}
+              variant={isValidStep(step) ? 'default' : 'disabled'}
             >
               {t('navigation.next')}
               <ArrowRightIcon />
             </Button>
           )}
         </div>
-
-        <Link href={'/dashboard'} className="text-base text-bw-40 hover:underline hover:text-bw-60">
+        <Link href="/dashboard" className="text-base text-bw-40 hover:underline hover:text-bw-60">
           {t('navigation.skip')}
         </Link>
       </div>
