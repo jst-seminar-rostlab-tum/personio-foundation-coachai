@@ -30,7 +30,7 @@ from app.schemas.sessions_paginated import (
     SessionItem,
     SkillScores,
 )
-from app.services.session_feedback_service import generate_and_store_feedback
+from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
 

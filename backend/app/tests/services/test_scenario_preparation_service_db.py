@@ -9,7 +9,7 @@ from sqlmodel import SQLModel
 
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.schemas.scenario_preparation import KeyConcept, ScenarioPreparationCreate
-from app.services.scenario_preparation_service import (
+from app.services.scenario_preparation.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,
 )

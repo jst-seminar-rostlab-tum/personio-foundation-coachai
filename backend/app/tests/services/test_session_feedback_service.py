@@ -16,7 +16,7 @@ from app.schemas.session_feedback import (
     RecommendationsRequest,
     SessionExamplesCollection,
 )
-from app.services.session_feedback_service import (
+from app.services.session_feedback.session_feedback_service import (
     generate_and_store_feedback,
     generate_recommendations,
 )

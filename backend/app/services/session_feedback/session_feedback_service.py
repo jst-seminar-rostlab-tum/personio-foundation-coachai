@@ -26,9 +26,7 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 @lru_cache
 def load_session_feedback_config() -> SessionFeedbackConfig:
-    config_path = os.path.join(
-        os.path.dirname(__file__), '..', 'data', 'session_feedback_config.json'
-    )
+    config_path = os.path.join(os.path.dirname(__file__), 'session_feedback_config.json')
     with open(config_path, encoding='utf-8') as f:
         data = json.load(f)  # Python dict
     return SessionFeedbackConfig.model_validate(data)

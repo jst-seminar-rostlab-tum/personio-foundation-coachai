@@ -15,7 +15,7 @@ from app.schemas.session_feedback import (
     RecommendationsCollection,
     SessionExamplesCollection,
 )
-from app.services.session_feedback_service import generate_and_store_feedback
+from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 
 
 class TestSessionFeedbackService(unittest.TestCase):

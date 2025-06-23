@@ -9,7 +9,7 @@ from app.schemas.scenario_preparation import (
     ObjectiveRequest,
     StringListResponse,
 )
-from app.services.scenario_preparation_service import (
+from app.services.scenario_preparation.scenario_preparation_service import (
     generate_checklist,
     generate_key_concept,
     generate_objectives,

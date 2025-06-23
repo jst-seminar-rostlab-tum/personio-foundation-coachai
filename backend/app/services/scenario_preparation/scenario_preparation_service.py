@@ -28,7 +28,7 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 @lru_cache
 def load_scenario_prep_config() -> ScenarioPrepConfig:
-    config_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'scenario_prep_config.json')
+    config_path = os.path.join(os.path.dirname(__file__), 'scenario_prep_config.json')
     with open(config_path, encoding='utf-8') as f:
         data = json.load(f)  # Python dict
     return ScenarioPrepConfig.model_validate(data)
