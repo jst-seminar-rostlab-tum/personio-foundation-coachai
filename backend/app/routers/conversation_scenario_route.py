@@ -2,13 +2,15 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends
-from fastapi.responses import JSONResponse
 from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.user_profile import UserProfile
-from app.schemas.conversation_scenario import ConversationScenarioCreate
+from app.schemas.conversation_scenario import (
+    ConversationScenarioCreate,
+    ConversationScenarioCreateResponse,
+)
 from app.schemas.scenario_preparation import ScenarioPreparationRead
 from app.services.conversation_scenario_service import ConversationScenarioService
 
@@ -24,13 +26,15 @@ def get_conversation_scenario_service(
     return ConversationScenarioService(db_session)
 
 
-@router.post('', response_model=None, dependencies=[Depends(require_user)])
+@router.post(
+    '', response_model=ConversationScenarioCreateResponse, dependencies=[Depends(require_user)]
+)
 def create_conversation_scenario_with_preparation(
     conversation_scenario: ConversationScenarioCreate,
     background_tasks: BackgroundTasks,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
-) -> JSONResponse:
+) -> ConversationScenarioCreateResponse:
     """
     Create a new conversation scenario and start the preparation process in the background.
     """

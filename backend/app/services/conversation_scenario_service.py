@@ -1,7 +1,6 @@
 from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
-from fastapi.responses import JSONResponse
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
@@ -10,7 +9,10 @@ from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.user_profile import UserProfile
-from app.schemas.conversation_scenario import ConversationScenarioCreate
+from app.schemas.conversation_scenario import (
+    ConversationScenarioCreate,
+    ConversationScenarioCreateResponse,
+)
 from app.schemas.scenario_preparation import ScenarioPreparationCreate, ScenarioPreparationRead
 from app.services.scenario_preparation_service import (
     create_pending_preparation,
@@ -27,7 +29,7 @@ class ConversationScenarioService:
         conversation_scenario: ConversationScenarioCreate,
         user_profile: UserProfile,
         background_tasks: BackgroundTasks,
-    ) -> JSONResponse:
+    ) -> ConversationScenarioCreateResponse:
         """
         Create a new conversation scenario and start the preparation process in the background.
         """
@@ -48,13 +50,9 @@ class ConversationScenarioService:
         # Start background task for preparation
         self._start_preparation_task(prep.id, new_conversation_scenario, category, background_tasks)
 
-        # Return a JSONResponse
-        return JSONResponse(
-            status_code=202,
-            content={
-                'message': 'Conversation scenario created, preparation started.',
-                'scenarioId': str(new_conversation_scenario.id),
-            },
+        return ConversationScenarioCreateResponse(
+            message='Conversation scenario created, preparation started.',
+            scenario_id=new_conversation_scenario.id,
         )
 
     def get_scenario_preparation_by_scenario_id(
