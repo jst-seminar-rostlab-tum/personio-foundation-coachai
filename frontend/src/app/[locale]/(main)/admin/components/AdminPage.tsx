@@ -32,8 +32,11 @@ export default function Admin({ stats, reviews }: AdminProps) {
   const t = useTranslations('Admin');
   const tr = useTranslations('Settings');
   const [tokenLimit, setTokenLimit] = useState<number>(stats.dailyTokenLimit);
+  const [savedTokenLimit, setSavedTokenLimit] = useState<number>(stats.dailyTokenLimit);
   const [saving, setSaving] = useState(false);
   const [visibleUsers, setVisibleUsers] = useState(5);
+
+  const hasTokenLimitChanged = tokenLimit !== savedTokenLimit;
 
   const statsArray = [
     { value: stats.totalUsers, label: t('statActiveUsers') },
@@ -53,6 +56,7 @@ export default function Admin({ stats, reviews }: AdminProps) {
     try {
       await adminService.updateDailyUserTokenLimit(tokenLimit);
       showSuccessToast(t('tokenSuccess'));
+      setSavedTokenLimit(tokenLimit);
     } catch (error) {
       showErrorToast(error, t('tokenFailed'));
     } finally {
@@ -96,17 +100,19 @@ export default function Admin({ stats, reviews }: AdminProps) {
             onChange={(e) => setTokenLimit(Number(e.target.value))}
             disabled={saving}
           />
-          <Button onClick={handleSaveTokenLimit} disabled={saving}>
+          <Button
+            onClick={handleSaveTokenLimit}
+            disabled={saving || !hasTokenLimitChanged}
+            variant={saving || !hasTokenLimitChanged ? 'disabled' : 'default'}
+          >
             {saving ? t('saving') : t('save')}
           </Button>
         </div>
       </div>
       <Reviews {...reviews} />
-      <Accordion type="multiple" className="w-full mt-8">
-        <AccordionItem value="item-1" className="text-dark">
-          <AccordionTrigger className="font-bw-70 cursor-pointer">
-            {t('userManagement')}
-          </AccordionTrigger>
+      <Accordion type="multiple">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>{t('userManagement')}</AccordionTrigger>
           <AccordionContent>
             <div className="mb-4">
               <div className="relative">
@@ -176,16 +182,12 @@ export default function Admin({ stats, reviews }: AdminProps) {
             )}
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-2" className="text-dark">
-          <AccordionTrigger className="font-bw-70 cursor-pointer">
-            {t('trainingCategories')}
-          </AccordionTrigger>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>{t('trainingCategories')}</AccordionTrigger>
           <AccordionContent></AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-3" className="text-dark">
-          <AccordionTrigger className="font-bw-70 cursor-pointer">
-            {t('trainingScenarios')}
-          </AccordionTrigger>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>{t('trainingScenarios')}</AccordionTrigger>
           <AccordionContent></AccordionContent>
         </AccordionItem>
       </Accordion>
