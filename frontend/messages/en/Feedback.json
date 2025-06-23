@@ -7,6 +7,7 @@
     "title": "Review",
     "description": "How was the training session? Help us improve by providing your review.",
     "rate": "Submit Review",
+    "submitting": "Submitting...",
     "submitReviewError": "Error while submitting review. Please try again later.",
     "submitReviewSuccess": "Review submitted successfully. Thank you for your review!"
   },
