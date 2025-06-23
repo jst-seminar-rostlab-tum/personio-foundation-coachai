@@ -35,9 +35,9 @@ class TestSessionFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    @patch('app.services.session_feedback_service.generate_training_examples')
-    @patch('app.services.session_feedback_service.get_achieved_goals')
-    @patch('app.services.session_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
     def test_generate_and_store_feedback(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
@@ -133,9 +133,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
 
-    @patch('app.services.session_feedback_service.generate_training_examples')
-    @patch('app.services.session_feedback_service.get_achieved_goals')
-    @patch('app.services.session_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
     def test_generate_and_store_feedback_with_errors(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
@@ -183,7 +183,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(feedback.overall_score, 0)
         self.assertEqual(feedback.transcript_uri, '')
 
-    @patch('app.services.session_feedback_service.call_structured_llm')
+    @patch('app.services.session_feedback.session_feedback_service.call_structured_llm')
     def test_generate_recommendation_with_hr_docs_context(self, mock_llm: MagicMock) -> None:
         # Analogically for examples and goals
         transcript = "User: Let's explore what might be causing these delays."
