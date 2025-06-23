@@ -27,37 +27,12 @@ class SessionService:
     def fetch_session_details(
         self, session_id: UUID, user_profile: UserProfile
     ) -> SessionDetailsRead:
-        session = self.db.get(Session, session_id)
-        if not session:
-            raise HTTPException(status_code=404, detail='No session found with the given ID')
+        session = self._get_session(session_id)
+        scenario = self._get_conversation_scenario(session.scenario_id)
+        self._authorize_access(scenario, user_profile)
 
-        conversation_scenario = self.db.get(ConversationScenario, session.scenario_id)
-        if not conversation_scenario:
-            raise HTTPException(
-                status_code=404, detail='No conversation scenario found for the session'
-            )
-
-        if (
-            conversation_scenario.user_id != user_profile.id
-            and user_profile.account_role != AccountRole.admin
-        ):
-            raise HTTPException(
-                status_code=403, detail='You do not have permission to access this session'
-            )
-
-        training_title = (
-            conversation_scenario.category.name
-            if conversation_scenario.category
-            else conversation_scenario.custom_category_label
-            if conversation_scenario.custom_category_label
-            else 'No Title available'
-        )
-
-        goals = (
-            conversation_scenario.preparation.objectives
-            if conversation_scenario.preparation
-            else []
-        )
+        title = self._get_training_title(scenario)
+        goals = scenario.preparation.objectives if scenario.preparation else []
 
         session_response = SessionDetailsRead(
             id=session.id,
@@ -69,119 +44,34 @@ class SessionService:
             status=session.status,
             created_at=session.created_at,
             updated_at=session.updated_at,
-            title=training_title,
-            summary='The person giving feedback was rude but the person receiving feedback/'
-            ' took it well.',  # mocked
+            title=title,
+            summary='The person giving feedback was rude but the person receiving feedback took it well.',
             goals_total=goals,
         )
 
-        session_turns = self.db.exec(
-            select(SessionTurn).where(SessionTurn.session_id == session_id)
-        ).all()
-        if session_turns:
-            session_response.audio_uris = [turn.audio_uri for turn in session_turns]
-
-        feedback = self.db.exec(
-            select(SessionFeedback).where(SessionFeedback.session_id == session_id)
-        ).first()
-        if not feedback or feedback.status == FeedbackStatusEnum.pending:
-            raise HTTPException(status_code=202, detail='Session feedback in progress.')
-        elif feedback.status == FeedbackStatusEnum.failed:
-            raise HTTPException(status_code=500, detail='Session feedback failed.')
-        else:
-            session_response.feedback = SessionFeedbackMetrics(
-                scores=feedback.scores,
-                tone_analysis=feedback.tone_analysis,
-                overall_score=feedback.overall_score,
-                transcript_uri=feedback.transcript_uri,
-                speak_time_percent=feedback.speak_time_percent,
-                questions_asked=feedback.questions_asked,
-                session_length_s=feedback.session_length_s,
-                goals_achieved=feedback.goals_achieved,
-                example_positive=feedback.example_positive,  # type: ignore
-                example_negative=feedback.example_negative,  # type: ignore
-                recommendations=feedback.recommendations,  # type: ignore
-            )
+        session_response.audio_uris = self._get_session_audio_uris(session_id)
+        session_response.feedback = self._get_session_feedback(session_id)
 
         return session_response
 
     def fetch_paginated_sessions(
         self, user_profile: UserProfile, page: int, page_size: int
     ) -> PaginatedSessionsResponse:
-        user_id = user_profile.id
-        scenario_ids = self.db.exec(
-            select(ConversationScenario.id).where(ConversationScenario.user_id == user_id)
-        ).all()
+        scenario_ids = self._get_user_scenario_ids(user_profile.id)
 
         if not scenario_ids:
             return PaginatedSessionsResponse(
                 page=page, limit=page_size, total_pages=0, total_sessions=0, sessions=[]
             )
 
-        total_sessions = self.db.exec(
-            select(func.count()).where(col(Session.scenario_id).in_(scenario_ids))
-        ).one()
-
+        total_sessions = self._count_sessions(scenario_ids)
         if total_sessions == 0:
             return PaginatedSessionsResponse(
-                page=page,
-                limit=page_size,
-                total_pages=0,
-                total_sessions=0,
-                sessions=[],
+                page=page, limit=page_size, total_pages=0, total_sessions=0, sessions=[]
             )
 
-        sessions = self.db.exec(
-            select(Session)
-            .where(col(Session.scenario_id).in_(scenario_ids))
-            .order_by(col(Session.created_at).desc())
-            .offset((page - 1) * page_size)
-            .limit(page_size)
-        ).all()
-
-        session_list = []
-        for sess in sessions:
-            conversation_scenario = self.db.exec(
-                select(ConversationScenario).where(ConversationScenario.id == sess.scenario_id)
-            ).first()
-            if not conversation_scenario:
-                raise HTTPException(status_code=404, detail='Conversation scenario not found')
-
-            conversation_category = None
-            if conversation_scenario.category_id:
-                conversation_category = self.db.exec(
-                    select(ConversationCategory).where(
-                        ConversationCategory.id == conversation_scenario.category_id
-                    )
-                ).first()
-                if not conversation_category:
-                    raise HTTPException(status_code=404, detail='Conversation Category not found')
-
-            item = SessionItem(
-                session_id=sess.id,
-                title=conversation_category.name if conversation_category else 'No Title',
-                summary=conversation_category.name if conversation_category else 'No Summary',
-                status=sess.status,
-                date=sess.ended_at,
-                score=sess.feedback.overall_score if sess.feedback else -1,  # mocked
-                skills=SkillScores(
-                    structure=sess.feedback.scores['structure']
-                    if sess.feedback and 'structure' in sess.feedback.scores
-                    else -1,
-                    empathy=sess.feedback.scores['empathy']
-                    if sess.feedback and 'empathy' in sess.feedback.scores
-                    else -1,
-                    solution_focus=sess.feedback.scores['solutionFocus']
-                    if sess.feedback and 'solutionFocus' in sess.feedback.scores
-                    else -1,
-                    clarity=sess.feedback.scores['clarity']
-                    if sess.feedback and 'clarity' in sess.feedback.scores
-                    else -1,
-                )
-                if sess.feedback
-                else SkillScores(structure=-1, empathy=-1, solution_focus=-1, clarity=-1),
-            )
-            session_list.append(item)
+        sessions = self._get_sessions_paginated(scenario_ids, page, page_size)
+        session_list = [self._build_session_item(sess) for sess in sessions]
 
         return PaginatedSessionsResponse(
             page=page,
@@ -429,3 +319,122 @@ class SessionService:
             stats = AdminDashboardStats()
             self.db.add(stats)
         stats.total_trainings = (stats.total_trainings or 0) + 1
+
+    def _get_session(self, session_id: UUID) -> Session:
+        session = self.db.get(Session, session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail='No session found with the given ID')
+        return session
+
+    def _get_conversation_scenario(self, scenario_id: UUID) -> ConversationScenario:
+        scenario = self.db.get(ConversationScenario, scenario_id)
+        if not scenario:
+            raise HTTPException(
+                status_code=404, detail='No conversation scenario found for the session'
+            )
+        return scenario
+
+    def _authorize_access(self, scenario: ConversationScenario, user_profile: UserProfile):
+        if scenario.user_id != user_profile.id and user_profile.account_role != AccountRole.admin:
+            raise HTTPException(
+                status_code=403, detail='You do not have permission to access this session'
+            )
+
+    def _get_training_title(self, scenario: ConversationScenario) -> str:
+        if scenario.category:
+            return scenario.category.name
+        if scenario.custom_category_label:
+            return scenario.custom_category_label
+        return 'No Title available'
+
+    def _get_session_audio_uris(self, session_id: UUID) -> list[str]:
+        session_turns = self.db.exec(
+            select(SessionTurn).where(SessionTurn.session_id == session_id)
+        ).all()
+        return [turn.audio_uri for turn in session_turns] if session_turns else []
+
+    def _get_session_feedback(self, session_id: UUID) -> SessionFeedbackMetrics | None:
+        feedback = self.db.exec(
+            select(SessionFeedback).where(SessionFeedback.session_id == session_id)
+        ).first()
+        if not feedback or feedback.status == FeedbackStatusEnum.pending:
+            raise HTTPException(status_code=202, detail='Session feedback in progress.')
+        if feedback.status == FeedbackStatusEnum.failed:
+            raise HTTPException(status_code=500, detail='Session feedback failed.')
+
+        return SessionFeedbackMetrics(
+            scores=feedback.scores,
+            tone_analysis=feedback.tone_analysis,
+            overall_score=feedback.overall_score,
+            transcript_uri=feedback.transcript_uri,
+            speak_time_percent=feedback.speak_time_percent,
+            questions_asked=feedback.questions_asked,
+            session_length_s=feedback.session_length_s,
+            goals_achieved=feedback.goals_achieved,
+            example_positive=feedback.example_positive,  # type: ignore
+            example_negative=feedback.example_negative,  # type: ignore
+            recommendations=feedback.recommendations,  # type: ignore
+        )
+
+    def _get_user_scenario_ids(self, user_id: UUID) -> list[UUID]:
+        result = self.db.exec(
+            select(ConversationScenario.id).where(ConversationScenario.user_id == user_id)
+        ).all()
+        return list(result)
+
+    def _count_sessions(self, scenario_ids: list[UUID]) -> int:
+        return self.db.exec(
+            select(func.count()).where(col(Session.scenario_id).in_(scenario_ids))
+        ).one()
+
+    def _get_sessions_paginated(
+        self, scenario_ids: list[UUID], page: int, page_size: int
+    ) -> list[Session]:
+        sessions = self.db.exec(
+            select(Session)
+            .where(col(Session.scenario_id).in_(scenario_ids))
+            .order_by(col(Session.created_at).desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        ).all()
+        return list(sessions)
+
+    def _build_session_item(self, sess: Session) -> SessionItem:
+        scenario = self.db.exec(
+            select(ConversationScenario).where(ConversationScenario.id == sess.scenario_id)
+        ).first()
+        if not scenario:
+            raise HTTPException(status_code=404, detail='Conversation scenario not found')
+
+        category = (
+            self.db.exec(
+                select(ConversationCategory).where(ConversationCategory.id == scenario.category_id)
+            ).first()
+            if scenario.category_id
+            else None
+        )
+
+        title = category.name if category else 'No Title'
+        summary = category.name if category else 'No Summary'
+        feedback = sess.feedback
+
+        scores = (
+            SkillScores(
+                structure=feedback.scores.get('structure', -1) if feedback else -1,
+                empathy=feedback.scores.get('empathy', -1) if feedback else -1,
+                solution_focus=feedback.scores.get('solutionFocus', -1) if feedback else -1,
+                clarity=feedback.scores.get('clarity', -1) if feedback else -1,
+            )
+            if feedback
+            else SkillScores(structure=-1, empathy=-1, solution_focus=-1, clarity=-1)
+        )
+
+        return SessionItem(
+            session_id=sess.id,
+            title=title,
+            summary=summary,
+            status=sess.status,
+            date=sess.ended_at,
+            score=feedback.overall_score if feedback else -1,
+            skills=scores,
+        )
