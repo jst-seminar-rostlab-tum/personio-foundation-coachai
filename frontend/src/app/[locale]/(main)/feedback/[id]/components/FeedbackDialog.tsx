@@ -83,12 +83,11 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
         />
 
         {/* Share with Admin Checkbox */}
-        <div className="flex items-center space-x-2 mt-4">
-          <Checkbox
-            checked={shareWithAdmin}
-            onClick={() => setShareWithAdmin(!shareWithAdmin)}
-            disabled={isSubmitting}
-          />
+        <div
+          className="flex items-center space-x-2 mt-4 cursor-pointer"
+          onClick={() => !isSubmitting && setShareWithAdmin(!shareWithAdmin)}
+        >
+          <Checkbox checked={shareWithAdmin} disabled={isSubmitting} />
           <label className="text-sm text-bw-70">{t('shareWithAdmin')}</label>
         </div>
 
