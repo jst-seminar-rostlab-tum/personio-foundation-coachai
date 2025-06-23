@@ -1,16 +1,11 @@
 import React from 'react';
-import Link from 'next/link';
 
 export default function SettingsLoadingPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <div className="text-xl font-bold text-gray-700">Settings</div>
-        <Link href="/dashboard">
-          <button className="px-3 py-2 bg-gray-200 rounded text-gray-700 text-sm">
-            Back to Dashboard
-          </button>
-        </Link>
+        <div className="h-7 w-24 bg-bw-10 rounded animate-pulse" />
+        <div className="h-9 w-32 bg-bw-10 rounded animate-pulse" />
       </div>
 
       {/* Title */}
