@@ -56,6 +56,33 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
   const [conversation, setConversation] = useState(
     getConfidenceScores(userProfileData, 'leading_challenging_conversations')
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [savedStoreConversations, setSavedStoreConversations] = useState(
+    userProfileData.storeConversations ?? false
+  );
+  const [savedRole, setSavedRole] = useState(userProfileData.professionalRole);
+  const [savedGoals, setSavedGoals] = useState(userProfileData.goals);
+  const [savedDifficulty, setSavedDifficulty] = useState(
+    getConfidenceScores(userProfileData, 'giving_difficult_feedback')[0]
+  );
+  const [savedConflict, setSavedConflict] = useState(
+    getConfidenceScores(userProfileData, 'managing_team_conflicts')[0]
+  );
+  const [savedConversation, setSavedConversation] = useState(
+    getConfidenceScores(userProfileData, 'leading_challenging_conversations')[0]
+  );
+
+  const hasFormChanged = () => {
+    return (
+      storeConversations !== savedStoreConversations ||
+      currentRole !== savedRole ||
+      JSON.stringify(primaryGoals) !== JSON.stringify(savedGoals) ||
+      difficulty[0] !== savedDifficulty ||
+      conflict[0] !== savedConflict ||
+      conversation[0] !== savedConversation
+    );
+  };
 
   const confidenceFieldsProps = {
     difficulty,
@@ -86,6 +113,10 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
   };
 
   const handleSaveSettings = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       await UserProfileService.updateUserProfile({
         fullName: userProfileData.fullName,
@@ -99,22 +130,31 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
         ],
       });
       showSuccessToast(t('saveSettingsSuccess'));
+
+      setSavedStoreConversations(storeConversations);
+      setSavedRole(currentRole);
+      setSavedGoals([...primaryGoals]);
+      setSavedDifficulty(difficulty[0]);
+      setSavedConflict(conflict[0]);
+      setSavedConversation(conversation[0]);
     } catch (error) {
       showErrorToast(error, t('saveSettingsError'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
   return (
     <div>
       <h1 className="text-2xl">{t('title')}</h1>
 
-      <div className="mt-6 space-y-4 flex items-center rounded-t-lg">
-        <Accordion type="multiple" className="w-full" defaultValue={['item-1', 'item-2']}>
-          <AccordionItem value="item-1" className="text-dark">
-            <AccordionTrigger className="font-bw-70 cursor-pointer">
-              {t('privacyControls')}
-            </AccordionTrigger>
+      <div className="space-y-4 flex items-center rounded-t-lg">
+        <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
+          {/* Privacy Controls */}
+          <AccordionItem value="item-1">
+            <AccordionTrigger>{t('privacyControls')}</AccordionTrigger>
             <AccordionContent>
-              <div className="flex items-center justify-between w-full px-2">
+              {/* Store Conversations */}
+              <div className="flex items-center justify-between w-full px-2 gap-8">
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
                   <div className="text-bw-40">
@@ -125,7 +165,8 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
                   <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
                 </div>
               </div>
-              <div className="flex items-center justify-between w-full mt-4 px-2">
+              {/* Export data */}
+              <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('exportData')}</div>
                 </div>
@@ -136,7 +177,8 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
                   </Button>
                 </div>
               </div>
-              <div className="flex items-center justify-between w-full mt-4  px-2">
+              {/* Delete Account */}
+              <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('deleteAccount')}</div>
                 </div>
@@ -160,27 +202,31 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
               </div>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2" className="text-dark">
-            <AccordionTrigger className="font-bw-70 cursor-pointer">
-              {t('personalizationSettings')}
-            </AccordionTrigger>
+          {/* Personalization Settings */}
+          <AccordionItem value="item-2">
+            <AccordionTrigger>{t('personalizationSettings')}</AccordionTrigger>
             <AccordionContent>
               <UserPreferences
-                className="flex flex-col gap-5 px-2"
+                className="flex flex-col gap-8 px-2"
                 currentRole={currentRoleSelect}
                 primaryGoals={primaryGoalsSelect}
               />
-              <hr className="my-9.5 border-gray-200" />
+              <hr className="border-bw-20 px-2" />
               <UserConfidenceFields
-                className="flex flex-col gap-5 px-2"
+                className="flex flex-col gap-8 px-2"
                 {...confidenceFieldsProps}
               />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
       </div>
-      <Button size="full" onClick={handleSaveSettings}>
-        {t('saveSettings')}
+      <Button
+        size="full"
+        onClick={handleSaveSettings}
+        variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
+        disabled={isSubmitting || !hasFormChanged()}
+      >
+        {isSubmitting ? t('saving') : t('saveSettings')}
       </Button>
     </div>
   );
