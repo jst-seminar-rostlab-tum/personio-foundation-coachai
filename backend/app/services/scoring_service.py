@@ -33,7 +33,7 @@ class ScoringService:
             "disruptive, you must ONLY evaluate the User's performance based on the rubric. "
             "Ignore all Assistant content for scoring purposes. If the Assistant's responses are "
             'poor, do NOT mention this in your justification or summary.\n'
-            "Only evaluate the 'User'.\n"
+            'Only evaluate the "User".\n'
             'Here is the evaluation rubric:\n'
             f'{json.dumps(self.rubric, indent=2)}'
         )
