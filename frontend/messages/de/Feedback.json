@@ -9,7 +9,8 @@
     "rate": "Bewertung abgeben",
     "submitting": "Wird abgegeben...",
     "submitReviewError": "Fehler beim Abgeben der Bewertung. Bitte versuchen Sie es später erneut.",
-    "submitReviewSuccess": "Bewertung erfolgreich abgegeben. Vielen Dank für Ihre Bewertung!"
+    "submitReviewSuccess": "Bewertung erfolgreich abgegeben. Vielen Dank für Ihre Bewertung!",
+    "shareWithAdmin": "Sitzung zur Verbesserung mit einem Administrator teilen."
   },
   "progressBars": {
     "structure": "Struktur",
