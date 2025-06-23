@@ -143,6 +143,25 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
       setIsSubmitting(false);
     }
   };
+
+  const handleExport = async () => {
+    try {
+      const data = await UserProfileService.exportUserData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'user_data_export.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      showSuccessToast(t('exportSuccess'));
+    } catch (error) {
+      showErrorToast(error, t('exportError'));
+    }
+  };
+
   return (
     <div>
       <h1 className="text-2xl">{t('title')}</h1>
@@ -170,7 +189,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
                   <div className="text-bw-70">{t('exportData')}</div>
                 </div>
                 <div className="flex items-center">
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" onClick={handleExport}>
                     <Download className="w-4 h-4" />
                     <span className="hidden sm:inline">{t('export')}</span>
                   </Button>

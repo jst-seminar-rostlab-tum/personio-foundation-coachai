@@ -76,30 +76,12 @@ export default function PreviousSessions({
     }
   };
 
-  const handleExport = async () => {
-    try {
-      const response = await api.get('/user-profile/export');
-      const { data } = response;
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'user_history_export.json';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      showErrorToast(e, t('exportError') || 'Export failed');
-    }
-  };
-
   return (
     <div className="w-full">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-2 md:gap-0">
         <div className="text-xl">{t('previousSessions')}</div>
         <div className="flex justify-between md:gap-6">
-          <Button variant="ghost" onClick={handleExport}>
+          <Button variant="ghost">
             {t('exportHistory')} <Download />
           </Button>
           <AlertDialog>
