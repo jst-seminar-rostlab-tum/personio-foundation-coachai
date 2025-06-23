@@ -48,15 +48,16 @@ def get_sessions(
     return service.fetch_paginated_sessions(user_profile, page, page_size)
 
 
-@router.post('', response_model=SessionRead, dependencies=[Depends(require_user)])
+@router.post('', response_model=SessionRead)
 def create_session(
     session_data: SessionCreate,
     service: Annotated[SessionService, Depends(get_session_service)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> SessionRead:
     """
     Create a new session.
     """
-    return service.create_new_session(session_data)
+    return service.create_new_session(session_data, user_profile)
 
 
 @router.put('/{session_id}', response_model=SessionRead)

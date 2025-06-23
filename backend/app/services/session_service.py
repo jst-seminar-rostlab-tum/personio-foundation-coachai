@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
 from sqlmodel import Session as DBSession
-from sqlmodel import col, select
+from sqlmodel import col, func, select
 
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.conversation_category import ConversationCategory
@@ -118,14 +118,26 @@ class SessionService:
                 page=page, limit=page_size, total_pages=0, total_sessions=0, sessions=[]
             )
 
-        session_query = (
+        total_sessions = self.db.exec(
+            select(func.count()).where(col(Session.scenario_id).in_(scenario_ids))
+        ).one()
+
+        if total_sessions == 0:
+            return PaginatedSessionsResponse(
+                page=page,
+                limit=page_size,
+                total_pages=0,
+                total_sessions=0,
+                sessions=[],
+            )
+
+        sessions = self.db.exec(
             select(Session)
             .where(col(Session.scenario_id).in_(scenario_ids))
             .order_by(col(Session.created_at).desc())
-        )
-
-        total_sessions = len(self.db.exec(session_query).all())
-        sessions = self.db.exec(session_query.offset((page - 1) * page_size).limit(page_size)).all()
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        ).all()
 
         session_list = []
         for sess in sessions:
@@ -151,10 +163,23 @@ class SessionService:
                 summary=conversation_category.name if conversation_category else 'No Summary',
                 status=sess.status,
                 date=sess.ended_at,
-                score=82,  # mocked
+                score=sess.feedback.overall_score if sess.feedback else -1,  # mocked
                 skills=SkillScores(
-                    structure=85, empathy=70, solution_focus=75, clarity=70
-                ),  # mocked
+                    structure=sess.feedback.scores['structure']
+                    if sess.feedback and 'structure' in sess.feedback.scores
+                    else -1,
+                    empathy=sess.feedback.scores['empathy']
+                    if sess.feedback and 'empathy' in sess.feedback.scores
+                    else -1,
+                    solution_focus=sess.feedback.scores['solutionFocus']
+                    if sess.feedback and 'solutionFocus' in sess.feedback.scores
+                    else -1,
+                    clarity=sess.feedback.scores['clarity']
+                    if sess.feedback and 'clarity' in sess.feedback.scores
+                    else -1,
+                )
+                if sess.feedback
+                else SkillScores(structure=-1, empathy=-1, solution_focus=-1, clarity=-1),
             )
             session_list.append(item)
 
@@ -166,11 +191,20 @@ class SessionService:
             sessions=session_list,
         )
 
-    def create_new_session(self, session_data: SessionCreate) -> SessionRead:
+    def create_new_session(
+        self, session_data: SessionCreate, user_profile: UserProfile
+    ) -> SessionRead:
         conversation_scenario = self.db.get(ConversationScenario, session_data.scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
-
+        if (
+            conversation_scenario.user_id != user_profile.id
+            and user_profile.account_role != AccountRole.admin
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail='You do not have permission to create a session for this scenario',
+            )
         new_session = Session(**session_data.model_dump())
         new_session.status = SessionStatus.started
         new_session.started_at = datetime.now(UTC)
@@ -207,91 +241,8 @@ class SessionService:
         for key, value in updated_data.model_dump(exclude_unset=True).items():
             setattr(session, key, value)
 
-        if (
-            previous_status != SessionStatus.completed
-            and updated_data.status == SessionStatus.completed
-            and session.feedback is None
-        ):
-            session.ended_at = datetime.now(UTC)
-
-            statement = select(ScenarioPreparation).where(
-                ScenarioPreparation.scenario_id == session.scenario_id
-            )
-            preparation = self.db.exec(statement).first()
-            if not preparation:
-                raise HTTPException(
-                    status_code=400, detail='No preparation steps found for the given scenario'
-                )
-            if preparation.status != ScenarioPreparationStatus.completed:
-                raise HTTPException(
-                    status_code=400,
-                    detail='Preparation steps must be completed before generating feedback',
-                )
-
-            session_turns = self.db.exec(
-                select(SessionTurn).where(SessionTurn.session_id == session.id)
-            ).all()
-            transcripts = None
-            if session_turns:
-                transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
-
-            category = self.db.exec(
-                select(ConversationCategory).where(
-                    ConversationCategory.id == conversation_scenario.category_id
-                )
-            ).first()
-            if not category:
-                raise HTTPException(
-                    status_code=404, detail='Conversation category not found for the session'
-                )
-
-            key_concepts = preparation.key_concepts
-            key_concepts_str = '\n'.join(
-                f'{item["header"]}: {item["value"]}' for item in key_concepts
-            )
-
-            request = ExamplesRequest(
-                category=category.name,
-                goal=conversation_scenario.goal,
-                context=conversation_scenario.context,
-                other_party=conversation_scenario.other_party,
-                transcript=transcripts,
-                objectives=preparation.objectives,
-                key_concepts=key_concepts_str,
-            )
-
-            background_tasks.add_task(
-                generate_and_store_feedback,
-                session_id=session.id,
-                example_request=request,
-                db_session=self.db,
-            )
-
-            started_at = (
-                session.started_at.replace(tzinfo=UTC)
-                if session.started_at and session.started_at.tzinfo is None
-                else session.started_at
-            )
-            ended_at = (
-                session.ended_at.replace(tzinfo=UTC)
-                if session.ended_at.tzinfo is None
-                else session.ended_at
-            )
-            if ended_at and started_at:
-                session_length = (ended_at - started_at).total_seconds() / 3600  # in hours
-            else:
-                session_length = 0  # Default to 0 if either datetime is None
-            user_profile.total_sessions = (user_profile.total_sessions or 0) + 1
-            user_profile.training_time = (user_profile.training_time or 0) + session_length
-            user_profile.updated_at = datetime.now(UTC)
-            self.db.add(user_profile)
-
-            stats = self.db.exec(select(AdminDashboardStats)).first()
-            if not stats:
-                stats = AdminDashboardStats()
-                self.db.add(stats)
-            stats.total_trainings = (stats.total_trainings or 0) + 1
-            self.db.commit()
+        if self._is_session_being_completed(previous_status, updated_data.status, session.feedback):
+            self._handle_completion(session, conversation_scenario, user_profile, background_tasks)
 
         self.db.add(session)
         self.db.commit()
@@ -305,19 +256,23 @@ class SessionService:
         if not conversation_scenarios:
             raise HTTPException(status_code=404, detail='No sessions found for the given user ID')
 
-        count_of_deleted_sessions = 0
-        audios = []
-        for conversation_scenario in conversation_scenarios:
-            count_of_deleted_sessions += len(conversation_scenario.sessions)
-            for session in conversation_scenario.sessions:
-                for session_turn in session.session_turns:
-                    audios.append(session_turn.audio_uri)
-                self.db.delete(session)
-            self.db.commit()
+        total_deleted_sessions = 0
+        audio_uris = []
+        for scenario in conversation_scenarios:
+            for session in scenario.sessions:
+                for turn in session.session_turns:
+                    if turn.audio_uri:
+                        audio_uris.append(turn.audio_uri)
+                        total_deleted_sessions += 1
+        # Let the database handle cascade deletes by just deleting the scenarios
+        for scenario in conversation_scenarios:
+            self.db.delete(scenario)
+        self.db.commit()
 
+        # TODO: Delete audio File self._delete_audio_files(audio_uris)
         return {
-            'message': f'Deleted {count_of_deleted_sessions} sessions for user ID {user_id}',
-            'audios': audios,
+            'message': f'Deleted {total_deleted_sessions} sessions for user ID {user_id}',
+            'audios': audio_uris,
         }
 
     def delete_session_by_id(self, session_id: UUID, user_profile: UserProfile) -> dict:
@@ -334,3 +289,143 @@ class SessionService:
         self.db.delete(session)
         self.db.commit()
         return {'message': 'Session deleted successfully'}
+
+    def _is_session_being_completed(
+        self,
+        previous_status: SessionStatus,
+        updated_status: SessionStatus | None,
+        feedback: SessionFeedback | None,
+    ) -> bool:
+        """
+        Helper function to check if the session is transitioning to 'completed' status
+        and has no feedback associated with it.
+        """
+        return (
+            previous_status != SessionStatus.completed
+            and updated_status == SessionStatus.completed
+            and feedback is None
+        )
+
+    def _handle_completion(
+        self,
+        session: Session,
+        conversation_scenario: ConversationScenario,
+        user_profile: UserProfile,
+        background_tasks: BackgroundTasks,
+    ) -> None:
+        """
+        Handle the logic for completing a session, including generating feedback,
+        updating user statistics, and admin dashboard stats.
+        """
+        session.ended_at = datetime.now(UTC)
+
+        # Fetch preparation for the session
+        statement = select(ScenarioPreparation).where(
+            ScenarioPreparation.scenario_id == session.scenario_id
+        )
+        preparation = self.db.exec(statement).first()
+        if not preparation:
+            raise HTTPException(
+                status_code=400, detail='No preparation steps found for the given scenario'
+            )
+        if preparation.status != ScenarioPreparationStatus.completed:
+            raise HTTPException(
+                status_code=400,
+                detail='Preparation steps must be completed before generating feedback',
+            )
+
+        # Fetch session turns and generate transcript
+        session_turns = self.db.exec(
+            select(SessionTurn).where(SessionTurn.session_id == session.id)
+        ).all()
+        transcripts = None
+        if session_turns:
+            transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
+
+        # Fetch conversation category
+        category = None
+        if conversation_scenario.category_id is not None:
+            category = self.db.exec(
+                select(ConversationCategory).where(
+                    ConversationCategory.id == conversation_scenario.category_id
+                )
+            ).first()
+            if not category:
+                raise HTTPException(
+                    status_code=404, detail='Conversation category not found for the session'
+                )
+
+        # Use the helper function to update user stats and schedule feedback
+        self._update_user_stats(
+            session=session,
+            user_profile=user_profile,
+            background_tasks=background_tasks,
+            conversation_scenario=conversation_scenario,
+            preparation=preparation,
+            transcripts=transcripts,
+            category=category,
+        )
+
+    def _update_user_stats(
+        self,
+        session: Session,
+        user_profile: UserProfile,
+        background_tasks: BackgroundTasks,
+        conversation_scenario: ConversationScenario,
+        preparation: ScenarioPreparation,
+        transcripts: str | None,
+        category: ConversationCategory | None,
+    ) -> None:
+        """
+        Update user statistics, schedule feedback generation, and update admin dashboard stats.
+        """
+        # Prepare key concepts string
+        key_concepts = preparation.key_concepts
+
+        key_concepts_str = '\n'.join(f'{item["header"]}: {item["value"]}' for item in key_concepts)
+
+        request = ExamplesRequest(
+            category=category.name
+            if category
+            else conversation_scenario.custom_category_label or 'Unknown Category',
+            goal=conversation_scenario.goal,
+            context=conversation_scenario.context,
+            other_party=conversation_scenario.other_party,
+            transcript=transcripts,
+            objectives=preparation.objectives,
+            key_concepts=key_concepts_str,
+        )
+
+        background_tasks.add_task(
+            generate_and_store_feedback,
+            session_id=session.id,
+            example_request=request,
+            db_session=self.db,
+        )
+
+        # Calculate session length
+        started_at = (
+            session.started_at.replace(tzinfo=UTC)
+            if session.started_at and session.started_at.tzinfo is None
+            else session.started_at
+        )
+        ended_at = (
+            session.ended_at.replace(tzinfo=UTC)
+            if session.ended_at and session.ended_at.tzinfo is None
+            else session.ended_at
+        )
+
+        if ended_at and started_at:
+            session_length = (ended_at - started_at).total_seconds() / 3600  # in hours
+        else:
+            session_length = 0  # Default to 0 if either datetime is None
+        user_profile.total_sessions = (user_profile.total_sessions or 0) + 1
+        user_profile.training_time = (user_profile.training_time or 0) + session_length
+        user_profile.updated_at = datetime.now(UTC)
+        self.db.add(user_profile)
+
+        stats = self.db.exec(select(AdminDashboardStats)).first()
+        if not stats:
+            stats = AdminDashboardStats()
+            self.db.add(stats)
+        stats.total_trainings = (stats.total_trainings or 0) + 1
