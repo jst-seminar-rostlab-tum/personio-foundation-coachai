@@ -1,4 +1,3 @@
-import os
 from datetime import timedelta
 from pathlib import Path
 from typing import Literal
@@ -17,19 +16,20 @@ class GCSManager:
             'type': 'service_account',
             'project_id': settings.GCP_PROJECT_ID,
             'private_key_id': settings.GCP_PRIVATE_KEY_ID,
-            'private_key': settings.GCP_PRIVATE_KEY,
+            'private_key': settings.GCP_PRIVATE_KEY.replace('\\n', '\n'),
             'client_email': settings.GCP_CLIENT_EMAIL,
             'client_id': settings.GCP_CLIENT_ID,
-            'auth_uri': settings.GCP_AUTH_URI,
-            'token_uri': settings.GCP_TOKEN_URI,
-            'auth_provider_x509_cert_url': settings.GCP_AUTH_PROVIDER_CERT_URL,
-            'client_x509_cert_url': settings.GCP_CLIENT_CERT_URL,
-            'universe_domain': settings.GCP_UNIVERSE_DOMAIN,
+            'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+            'token_uri': 'https://oauth2.googleapis.com/token',
+            'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs',
+            'client_x509_cert_url': f'https://www.googleapis.com/robot/v1/metadata/x509/{settings.GCP_CLIENT_EMAIL}',
+            'universe_domain': 'googleapis.com',
         }
+        print(creds_info)
 
         credentials = service_account.Credentials.from_service_account_info(creds_info)
 
-        self.bucket_name: str = os.getenv('GCP_BUCKET', 'coachai')
+        self.bucket_name: str = settings.GCP_BUCKET
         self.prefix: str = f'{folder}/'
         base_dir = Path(__file__).resolve().parent.parent / 'rag'
         self.local_dir = base_dir / 'documents'
