@@ -2,5 +2,10 @@
   "backToDashboard": "Zurück zur Dashboard",
   "loading": "Wird geladen...",
   "loadMore": "Mehr laden",
-  "error": "Fehler beim Laden der Daten"
+  "error": "Fehler beim Laden der Daten",
+  "resources": {
+    "title": "Ressourcen",
+    "subtitle": "Hilfreiche Materialien zum Herunterladen, um Ihr Wissen zu vertiefen.",
+    "by": "von"
+  }
 }

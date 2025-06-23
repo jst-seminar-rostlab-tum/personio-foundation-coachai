@@ -2,5 +2,10 @@
   "backToDashboard": "Back to dashboard",
   "loading": "Loading...",
   "loadMore": "Load more",
-  "error": "Error fetching data"
+  "error": "Error fetching data",
+  "resources": {
+    "title": "Resources",
+    "subtitle": "Helpful materials to download to deepen your knowledge.",
+    "by": "by"
+  }
 }
