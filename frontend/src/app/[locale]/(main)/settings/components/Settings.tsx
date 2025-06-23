@@ -147,14 +147,14 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     <div>
       <h1 className="text-2xl">{t('title')}</h1>
 
-      <div className="mt-6 space-y-4 flex items-center rounded-t-lg">
-        <Accordion type="multiple" className="w-full" defaultValue={['item-1', 'item-2']}>
-          <AccordionItem value="item-1" className="text-dark">
-            <AccordionTrigger className="font-bw-70 cursor-pointer">
-              {t('privacyControls')}
-            </AccordionTrigger>
+      <div className="space-y-4 flex items-center rounded-t-lg">
+        <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
+          {/* Privacy Controls */}
+          <AccordionItem value="item-1">
+            <AccordionTrigger>{t('privacyControls')}</AccordionTrigger>
             <AccordionContent>
-              <div className="flex items-center justify-between w-full px-2">
+              {/* Store Conversations */}
+              <div className="flex items-center justify-between w-full px-2 gap-8">
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
                   <div className="text-bw-40">
@@ -165,7 +165,8 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
                   <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
                 </div>
               </div>
-              <div className="flex items-center justify-between w-full mt-4 px-2">
+              {/* Export data */}
+              <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('exportData')}</div>
                 </div>
@@ -176,7 +177,8 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
                   </Button>
                 </div>
               </div>
-              <div className="flex items-center justify-between w-full mt-4  px-2">
+              {/* Delete Account */}
+              <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('deleteAccount')}</div>
                 </div>
@@ -200,19 +202,18 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
               </div>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2" className="text-dark">
-            <AccordionTrigger className="font-bw-70 cursor-pointer">
-              {t('personalizationSettings')}
-            </AccordionTrigger>
+          {/* Personalization Settings */}
+          <AccordionItem value="item-2">
+            <AccordionTrigger>{t('personalizationSettings')}</AccordionTrigger>
             <AccordionContent>
               <UserPreferences
-                className="flex flex-col gap-5 px-2"
+                className="flex flex-col gap-8 px-2"
                 currentRole={currentRoleSelect}
                 primaryGoals={primaryGoalsSelect}
               />
-              <hr className="my-9.5 border-gray-200" />
+              <hr className="border-bw-20 px-2" />
               <UserConfidenceFields
-                className="flex flex-col gap-5 px-2"
+                className="flex flex-col gap-8 px-2"
                 {...confidenceFieldsProps}
               />
             </AccordionContent>
