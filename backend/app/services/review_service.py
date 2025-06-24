@@ -44,6 +44,7 @@ class ReviewService:
             .select_from(Review)
             .join(UserProfile, Review.user_id == UserProfile.id)  # type: ignore
             .order_by(order_by)
+            .where(Review.allow_admin_access)
         )
 
         if offset:
@@ -100,7 +101,9 @@ class ReviewService:
         """Retrieve paginated reviews with optional sorting."""
 
         # Pagination
-        total_count = self.db.exec(select(func.count()).select_from(Review)).one()
+        total_count = self.db.exec(
+            select(func.count()).select_from(Review).where(Review.allow_admin_access)
+        ).one()
         if total_count == 0:
             return PaginatedReviewsResponse(
                 reviews=[],
