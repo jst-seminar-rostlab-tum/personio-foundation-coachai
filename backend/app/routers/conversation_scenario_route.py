@@ -21,7 +21,7 @@ from app.schemas.conversation_scenario import (
     ConversationScenarioRead,
 )
 from app.schemas.scenario_preparation import ScenarioPreparationCreate, ScenarioPreparationRead
-from app.services.scenario_preparation_service import (
+from app.services.scenario_preparation.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,
 )
@@ -64,6 +64,7 @@ def create_conversation_scenario_with_preparation(
         other_party=new_conversation_scenario.other_party,
         num_objectives=3,  # Example value, adjust as needed
         num_checkpoints=3,  # Example value, adjust as needed
+        language_code=new_conversation_scenario.language_code,
     )
 
     # 4. Start background task to generate preparation
