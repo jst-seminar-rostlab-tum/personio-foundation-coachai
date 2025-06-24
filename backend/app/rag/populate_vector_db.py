@@ -35,6 +35,12 @@ if __name__ == '__main__':
         exit()
     supabase_url = settings.SUPABASE_URL
 
+    table_name_user = input(
+        "Enter the table name (press Enter for default 'hr_information'): "
+    ).strip()
+    if not table_name_user:
+        table_name_user = 'hr_information'
+
     doc_folder_user = input(
         f'\nEnter the absolute path to the document directory (press Enter '
         f"for default '{DOC_FOLDER}'): "
