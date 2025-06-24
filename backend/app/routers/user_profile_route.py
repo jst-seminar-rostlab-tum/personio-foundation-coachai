@@ -322,14 +322,14 @@ def delete_user(
         raise HTTPException(status_code=403, detail='Admin access required to delete other users')
 
     try:
-        delete_user_profile(str(user_id), db_session)
+        delete_user_profile(user_id, db_session)
     except HTTPException as db_error:
         raise db_error
     except Exception as e:
         raise HTTPException(status_code=500, detail='Deleting user profile failed') from e
 
     try:
-        delete_supabase_user(str(user_id))
+        delete_supabase_user(user_id)
     except Exception as e:
         logging.warning(f'Failed to delete user from Supabase Auth: user_id={user_id}, error={e}')
 

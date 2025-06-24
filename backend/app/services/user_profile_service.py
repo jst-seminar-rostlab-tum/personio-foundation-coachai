@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, HTTPException
 from sqlmodel import Session as DBSession
@@ -8,9 +9,9 @@ from app.database import get_db_session, supabase
 from app.models.user_profile import UserProfile
 
 
-def delete_supabase_user(user_id: str) -> None:
+def delete_supabase_user(user_id: UUID) -> None:
     try:
-        supabase.auth.admin.delete_user(user_id.__str__())
+        supabase.auth.admin.delete_user(str(user_id))
     except AuthError as e:
         if e.code != 'user_not_found':
             raise e
@@ -19,7 +20,7 @@ def delete_supabase_user(user_id: str) -> None:
 
 
 def delete_user_profile(
-    user_id: str, db_session: Annotated[DBSession, Depends(get_db_session)]
+    user_id: UUID, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> None:
     user_profile = db_session.get(UserProfile, user_id)
     if not user_profile:
