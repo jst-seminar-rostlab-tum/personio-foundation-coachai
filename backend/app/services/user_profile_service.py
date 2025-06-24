@@ -8,7 +8,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 from supabase import AuthError
 
-from app.database import supabase
+from app.database import get_supabase_client
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import Goal, UserGoal
 from app.models.user_profile import UserProfile
@@ -270,6 +270,7 @@ class UserService:
 
     def _delete_supabase_user(self, user_id: UUID) -> None:
         try:
+            supabase = get_supabase_client()
             supabase.auth.admin.delete_user(str(user_id))
         except AuthError as e:
             if e.code != 'user_not_found':

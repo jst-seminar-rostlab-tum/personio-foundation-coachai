@@ -7,7 +7,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import SupabaseVectorStore
 
 from app.config import Settings
-from app.database import supabase
+from app.database import get_supabase_client
 
 settings = Settings()
 
@@ -95,7 +95,7 @@ def load_vector_db(
         SupabaseVectorStore: A vector store instance connected to the specified Supabase table.
     """
     return SupabaseVectorStore(
-        client=supabase,
+        client=get_supabase_client(),
         embedding=embedding,
         table_name=table_name,
         query_name=query_name,

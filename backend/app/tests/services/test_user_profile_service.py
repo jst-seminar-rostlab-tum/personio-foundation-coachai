@@ -32,7 +32,9 @@ def user_service(mock_db: MagicMock) -> UserService:
 
 @pytest.fixture
 def mock_supabase(mocker: MockerFixture) -> MagicMock:
-    return mocker.patch('app.services.user_profile_service.supabase')
+    mock_client = MagicMock()
+    mocker.patch('app.services.user_profile_service.get_supabase_client', return_value=mock_client)
+    return mock_client
 
 
 def test__delete_user_success(
