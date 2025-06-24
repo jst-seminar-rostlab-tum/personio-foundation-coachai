@@ -62,14 +62,14 @@ class ScoringService:
         )
         return prompt
 
-    def score_conversation(self) -> ScoringResult:
+    def score_conversation(self, model: str = 'o4-mini-2025-04-16') -> ScoringResult:
         user_prompt = self._build_user_prompt()
         system_prompt = self._build_system_prompt()
 
         response = call_structured_llm(
             request_prompt=user_prompt,
             system_prompt=system_prompt,
-            model='o4-mini-2025-04-16',
+            model=model,
             output_model=ScoringResult,
             temperature=0.0,
         )
