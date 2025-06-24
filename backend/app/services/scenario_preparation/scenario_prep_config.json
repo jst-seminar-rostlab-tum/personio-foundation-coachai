@@ -1,0 +1,90 @@
+{
+  "en": {
+    "systemPrompts": {
+      "objectives": "You are a training expert generating learning objectives. Always respond in English.",
+      "checklist": "You are a training expert generating preparation checklists. Always respond in English.",
+      "keyConcepts": "You are a training assistant generating key-concepts. Always respond in English."
+    },
+    "mocks": {
+      "objectives": {
+        "items": [
+          "Clearly communicate the impact of the missed deadlines",
+          "Understand potential underlying causes",
+          "Collaboratively develop a solution",
+          "End the conversation on a positive note"
+        ]
+      },
+      "checklist": {
+        "items": [
+          "Gather specific examples of missed deadlines",
+          "Document the impact on team and projects",
+          "Consider potential underlying causes",
+          "Prepare open-ended questions",
+          "Think about potential solutions to suggest",
+          "Plan a positive closing statement",
+          "Choose a private, comfortable meeting environment"
+        ]
+      },
+      "keyConcepts": {
+        "items": [
+          {
+            "header": "Clear Communication",
+            "value": "Express ideas clearly and listen actively to understand others."
+          },
+          {
+            "header": "Empathy",
+            "value": "Show understanding and concern for the other party's feelings."
+          },
+          {
+            "header": "Effective Questioning",
+            "value": "Ask open-ended questions to encourage dialogue and exploration."
+          }
+        ]
+      }
+    }
+  },
+  "de": {
+    "systemPrompts": {
+      "objectives": "Du bist ein Trainingsexperte, der Lernziele formuliert. Antworte immer auf Deutsch.",
+      "checklist": "Du bist ein Trainingsexperte, der Vorbereitung-Checklisten erstellt. Antworte immer auf Deutsch.",
+      "keyConcepts": "Du bist ein Trainingsassistent.Antworte immer auf Deutsch."
+    },
+    "mocks": {
+      "objectives": {
+        "items": [
+          "Kommuniziere klar die Auswirkungen der verpassten Fristen",
+          "Verstehe mögliche zugrunde liegende Ursachen",
+          "Erarbeite gemeinsam eine Lösung",
+          "Beende das Gespräch mit einer positiven Note"
+        ]
+      },
+      "checklist": {
+        "items": [
+          "Sammle konkrete Beispiele für verpasste Fristen",
+          "Dokumentiere die Auswirkungen auf das Team und Projekte",
+          "Ziehe mögliche Ursachen in Betracht",
+          "Bereite offene Fragen vor",
+          "Überlege dir mögliche Lösungsvorschläge",
+          "Plane einen positiven Gesprächsabschluss",
+          "Wähle einen privaten, angenehmen Gesprächsort"
+        ]
+      },
+      "keyConcepts": {
+        "items": [
+          {
+            "header": "Klare Kommunikation",
+            "value": "Drücke Ideen klar aus und höre aktiv zu, um andere zu verstehen."
+          },
+          {
+            "header": "Empathie",
+            "value": "Zeige Verständnis und Mitgefühl für die Gefühle der anderen Person."
+          },
+          {
+            "header": "Effektives Fragenstellen",
+            "value": "Stelle offene Fragen, um einen Dialog und die Erkundung von Themen zu fördern."
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 import concurrent.futures
+import json
+import os
 from collections.abc import Callable, Generator
+from functools import lru_cache
 from uuid import UUID
 
 from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
+from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
+from app.schemas.scenario_prep_config import ScenarioPrepConfig
 from app.schemas.scenario_preparation import (
     ChecklistRequest,
     KeyConcept,
@@ -18,35 +23,49 @@ from app.schemas.scenario_preparation import (
     ScenarioPreparationCreate,
     StringListResponse,
 )
+from app.services.vector_db_context_service import query_vector_db_and_prompt
+
+
+@lru_cache
+def load_scenario_prep_config() -> ScenarioPrepConfig:
+    config_path = os.path.join(os.path.dirname(__file__), 'scenario_prep_config.json')
+    with open(config_path, encoding='utf-8') as f:
+        data = json.load(f)  # Python dict
+    return ScenarioPrepConfig.model_validate(data)
+
+
+CONFIG_PATH = os.path.join('app', 'config', 'scenario_prep_config.json')
+config = load_scenario_prep_config()
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_objectives(request: ObjectiveRequest) -> list[str]:
-    return generate_objectives(request)
+def safe_generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') -> list[str]:
+    return generate_objectives(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_checklist(request: ChecklistRequest) -> list[str]:
-    return generate_checklist(request)
+def safe_generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> list[str]:
+    return generate_checklist(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_key_concepts(request: KeyConceptRequest) -> list[KeyConcept]:
-    return generate_key_concept(request)
+def safe_generate_key_concepts(
+    request: KeyConceptRequest, hr_docs_context: str = ''
+) -> list[KeyConcept]:
+    return generate_key_concept(request, hr_docs_context)
 
 
-def generate_objectives(request: ObjectiveRequest) -> list[str]:
+def generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') -> list[str]:
     """
     Generate a list of training objectives using structured output from the LLM.
     """
-    mock_response = StringListResponse(
-        items=[
-            'Clearly communicate the impact of the missed deadlines',
-            'Understand potential underlying causes',
-            'Collaboratively develop a solution',
-            'End the conversation on a positive note',
-        ]
-    )
+
+    lang = request.language_code
+    settings = config.root[lang]
+
+    mock_response = settings.mocks.objectives
+    system_prompt = settings.system_prompts.objectives
+
     example_items = '\n'.join(mock_response.items)
 
     user_prompt = (
@@ -62,13 +81,15 @@ def generate_objectives(request: ObjectiveRequest) -> list[str]:
         f'Goal: {request.goal}\n'
         f'Context: {request.context}\n'
         f'Other Party: {request.other_party}'
+        f'HR Document Context:\n'
+        f'{hr_docs_context}'
         f'Here are example objectives items(for style and length reference only):\n'
         f'{example_items}'
     )
 
     result = call_structured_llm(
         request_prompt=user_prompt,
-        system_prompt='You are a training expert generating learning objectives.',
+        system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
         output_model=StringListResponse,
         mock_response=mock_response,
@@ -76,22 +97,18 @@ def generate_objectives(request: ObjectiveRequest) -> list[str]:
     return result.items
 
 
-def generate_checklist(request: ChecklistRequest) -> list[str]:
+def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> list[str]:
     """
     Generate a preparation checklist using structured output from the LLM.
     """
-    mock_response = StringListResponse(
-        items=[
-            'Gather specific examples of missed deadlines',
-            'Document the impact on team and projects',
-            'Consider potential underlying causes',
-            'Prepare open-ended questions',
-            'Think about potential solutions to suggest',
-            'Plan a positive closing statement',
-            'Choose a private, comfortable meeting environment',
-        ]
-    )
+    lang = request.language_code
+    settings = config.root[lang]
+
+    mock_response = settings.mocks.checklist
+    system_prompt = settings.system_prompts.checklist
+
     example_items = '\n'.join(mock_response.items)
+
     user_prompt = (
         f'Generate {request.num_checkpoints} checklist items for'
         f' the following conversation scenario:\n'
@@ -105,12 +122,14 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
         f'Goal: {request.goal}\n'
         f'Context: {request.context}\n'
         f'Other Party: {request.other_party}'
+        f'HR Document Context:\n'
+        f'{hr_docs_context}'
         f'Here are example checklist items(for style and length reference only):\n'
         f'{example_items}'
     )
     result = call_structured_llm(
         request_prompt=user_prompt,
-        system_prompt='You are a training expert generating preparation checklists.',
+        system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
         output_model=StringListResponse,
         mock_response=mock_response,
@@ -118,9 +137,11 @@ def generate_checklist(request: ChecklistRequest) -> list[str]:
     return result.items
 
 
-def build_key_concept_prompt(request: KeyConceptRequest, example: str) -> str:
+def build_key_concept_prompt(
+    request: KeyConceptRequest, example: str, hr_docs_context: str = ''
+) -> str:
     return f"""
-You are a training assistant. Based on the HR professionals conversation scenario below, 
+Based on the HR professionals conversation scenario below, 
 generate 3-4 key concepts for the conversation.
 
 Your output must strictly follow this JSON format representing 
@@ -138,6 +159,9 @@ a Pydantic model `KeyConceptResponse`:
     }}
   ]
 }}
+
+HR Document Context:
+{hr_docs_context}
 
 Instructions:
 - Do not include any text outside of the JSON structure.
@@ -161,26 +185,20 @@ Conversation scenario:
 """
 
 
-def generate_key_concept(request: KeyConceptRequest) -> list[KeyConcept]:
-    mock_key_concept = [
-        KeyConcept(
-            header='Clear Communication',
-            value='Express ideas clearly and listen actively to understand others.',
-        ),
-        KeyConcept(
-            header='Empathy', value="Show understanding and concern for the other party's feelings."
-        ),
-        KeyConcept(
-            header='Effective Questioning',
-            value='Ask open-ended questions to encourage dialogue and exploration.',
-        ),
-    ]
-    mock_response = KeyConceptResponse(items=mock_key_concept)
+def generate_key_concept(request: KeyConceptRequest, hr_docs_context: str = '') -> list[KeyConcept]:
+    lang = request.language_code
+    settings = config.root[lang]
 
-    prompt = build_key_concept_prompt(request, mock_response.model_dump_json(indent=4))
+    mock_response = settings.mocks.key_concepts
+    system_prompt = settings.system_prompts.key_concepts
+
+    prompt = build_key_concept_prompt(
+        request, mock_response.model_dump_json(indent=4), hr_docs_context
+    )
 
     result = call_structured_llm(
         request_prompt=prompt,
+        system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
         output_model=KeyConceptResponse,
         mock_response=mock_response,
@@ -233,6 +251,7 @@ def generate_scenario_preparation(
             context=new_preparation.context,
             other_party=new_preparation.other_party,
             num_objectives=new_preparation.num_objectives,
+            language_code=new_preparation.language_code,
         )
         checklist_request = ChecklistRequest(
             category=new_preparation.category,
@@ -240,20 +259,38 @@ def generate_scenario_preparation(
             context=new_preparation.context,
             other_party=new_preparation.other_party,
             num_checkpoints=new_preparation.num_checkpoints,
+            language_code=new_preparation.language_code,
         )
         key_concept_request = KeyConceptRequest(
             category=new_preparation.category,
             goal=new_preparation.goal,
             context=new_preparation.context,
             other_party=new_preparation.other_party,
+            language_code=new_preparation.language_code,
+        )
+
+        hr_docs_context = query_vector_db_and_prompt(
+            session_context=[
+                new_preparation.category,
+                new_preparation.goal,
+                new_preparation.context,
+                new_preparation.other_party,
+            ],
+            generated_object='output',
         )
 
         has_error = False
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_key_concepts = executor.submit(safe_generate_key_concepts, key_concept_request)
-            future_objectives = executor.submit(safe_generate_objectives, objectives_request)
-            future_checklist = executor.submit(safe_generate_checklist, checklist_request)
+            future_key_concepts = executor.submit(
+                safe_generate_key_concepts, key_concept_request, hr_docs_context
+            )
+            future_objectives = executor.submit(
+                safe_generate_objectives, objectives_request, hr_docs_context
+            )
+            future_checklist = executor.submit(
+                safe_generate_checklist, checklist_request, hr_docs_context
+            )
 
             try:
                 preparation.objectives = future_objectives.result()
@@ -299,6 +336,7 @@ if __name__ == '__main__':
         context='Quarterly review',
         other_party='Junior engineer',
         num_objectives=3,
+        language_code=LanguageCode.de,
     )
     objectives = generate_objectives(objective_request)
     print('Generated Objectives:', objectives)
@@ -309,6 +347,7 @@ if __name__ == '__main__':
         context='1:1 review',
         other_party='Backend engineer',
         num_checkpoints=3,
+        language_code=LanguageCode.de,
     )
     checklist = generate_checklist(checklist_request)
     print('Generated Checklist:', checklist)
@@ -318,6 +357,7 @@ if __name__ == '__main__':
         goal='Give constructive criticism',
         context='Quarterly review',
         other_party='Junior engineer',
+        language_code=LanguageCode.de,
     )
     key_concept = generate_key_concept(key_concept_request)
     print(key_concept)

@@ -13,9 +13,13 @@ from app.schemas.session_feedback import (
     PositiveExample,
     Recommendation,
     RecommendationsCollection,
+    RecommendationsRequest,
     SessionExamplesCollection,
 )
-from app.services.session_feedback_service import generate_and_store_feedback
+from app.services.session_feedback.session_feedback_service import (
+    generate_and_store_feedback,
+    generate_recommendations,
+)
 
 
 class TestSessionFeedbackService(unittest.TestCase):
@@ -31,9 +35,9 @@ class TestSessionFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    @patch('app.services.session_feedback_service.generate_training_examples')
-    @patch('app.services.session_feedback_service.get_achieved_goals')
-    @patch('app.services.session_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
     def test_generate_and_store_feedback(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
@@ -129,9 +133,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
 
-    @patch('app.services.session_feedback_service.generate_training_examples')
-    @patch('app.services.session_feedback_service.get_achieved_goals')
-    @patch('app.services.session_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
     def test_generate_and_store_feedback_with_errors(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
@@ -178,6 +182,59 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         self.assertEqual(feedback.overall_score, 0)
         self.assertEqual(feedback.transcript_uri, '')
+
+    @patch('app.services.session_feedback.session_feedback_service.call_structured_llm')
+    def test_generate_recommendation_with_hr_docs_context(self, mock_llm: MagicMock) -> None:
+        # Analogically for examples and goals
+        transcript = "User: Let's explore what might be causing these delays."
+        objectives = ['Understand root causes', 'Collaboratively develop a solution']
+        goal = 'Improve team communication'
+        key_concepts = '### Active Listening\nAsk open-ended questions.'
+        context = 'Project delay review'
+        category = 'Project Management'
+        other_party = 'Colleague'
+
+        # Set up llm mock and vector db prompt extension
+        mock_llm.return_value = RecommendationsCollection(
+            recommendations=[
+                Recommendation(
+                    heading='Practice the STAR method',
+                    recommendation='When giving feedback, use the Situation, Task, Action, Result '
+                    + 'framework to  provide more concrete examples.',
+                )
+            ]
+        )
+
+        req = RecommendationsRequest(
+            category=category,
+            context=context,
+            other_party=other_party,
+            transcript=transcript,
+            objectives=objectives,
+            goal=goal,
+            key_concepts=key_concepts,
+        )
+
+        hr_docs_context_base = (
+            'The output you generate should comply with the following HR Guideline excerpts:\n'
+        )
+        hr_docs_context_1 = f'{hr_docs_context_base}Respect\n2. Clarity\n'
+        hr_docs_context_2 = ''
+
+        # Assert for hr_docs_context_1
+        _ = generate_recommendations(req, hr_docs_context=hr_docs_context_1)
+        self.assertTrue(mock_llm.called)
+        args, kwargs = mock_llm.call_args
+        request_prompt = kwargs['request_prompt']
+        self.assertTrue(hr_docs_context_1 in request_prompt)
+
+        # Assert for hr_docs_context_2
+        _ = generate_recommendations(req, hr_docs_context=hr_docs_context_2)
+        self.assertTrue(mock_llm.called)
+        args, kwargs = mock_llm.call_args
+        request_prompt = kwargs['request_prompt']
+        self.assertTrue(hr_docs_context_base not in request_prompt)
+        self.assertTrue(len(request_prompt) > 0)
 
 
 if __name__ == '__main__':

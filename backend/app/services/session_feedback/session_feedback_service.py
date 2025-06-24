@@ -1,5 +1,8 @@
 import concurrent.futures
+import json
+import os
 from datetime import datetime
+from functools import lru_cache
 from uuid import UUID, uuid4
 
 from sqlmodel import Session as DBSession
@@ -8,52 +11,60 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
 from app.models import FeedbackStatusEnum, SessionFeedback, UserProfile
+from app.models.language import LanguageCode
 from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
     GoalsAchievementRequest,
-    NegativeExample,
-    PositiveExample,
-    Recommendation,
     RecommendationsCollection,
     RecommendationsRequest,
     SessionExamplesCollection,
 )
+from app.schemas.session_feedback_config import SessionFeedbackConfig
+from app.services.vector_db_context_service import query_vector_db_and_prompt
+
+
+@lru_cache
+def load_session_feedback_config() -> SessionFeedbackConfig:
+    config_path = os.path.join(os.path.dirname(__file__), 'session_feedback_config.json')
+    with open(config_path, encoding='utf-8') as f:
+        data = json.load(f)  # Python dict
+    return SessionFeedbackConfig.model_validate(data)
+
+
+CONFIG_PATH = os.path.join('app', 'config', 'session_feedback_config.json')
+config = load_session_feedback_config()
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_training_examples(request: ExamplesRequest) -> SessionExamplesCollection:
-    return generate_training_examples(request)
+def safe_generate_training_examples(
+    request: ExamplesRequest, hr_docs_context: str = ''
+) -> SessionExamplesCollection:
+    return generate_training_examples(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollection:
-    return get_achieved_goals(request)
+def safe_get_achieved_goals(
+    request: GoalsAchievementRequest, hr_docs_context: str = ''
+) -> GoalsAchievedCollection:
+    return get_achieved_goals(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_recommendations(request: RecommendationsRequest) -> RecommendationsCollection:
-    return generate_recommendations(request)
+def safe_generate_recommendations(
+    request: RecommendationsRequest, hr_docs_context: str = ''
+) -> RecommendationsCollection:
+    return generate_recommendations(request, hr_docs_context)
 
 
-def generate_training_examples(request: ExamplesRequest) -> SessionExamplesCollection:
-    mock_response = SessionExamplesCollection(
-        positive_examples=[
-            PositiveExample(
-                heading='Clear Objective Addressed',
-                feedback='The user successfully summarized the objective.',
-                quote='I want to make sure we both feel heard and find a solution together.',
-            )
-        ],
-        negative_examples=[
-            NegativeExample(
-                heading='Missed Empathy',
-                feedback="The user dismissed the other party's concern.",
-                quote="That's not important right now.",
-                improved_quote="I understand your concern—let's come back to it in a moment.",
-            )
-        ],
-    )
+def generate_training_examples(
+    request: ExamplesRequest, hr_docs_context: str = ''
+) -> SessionExamplesCollection:
+    lang = request.language_code
+    settings = config.root[lang]
+
+    mock_response = settings.mocks.session_examples
+    system_prompt = settings.system_prompts.session_examples
 
     user_prompt = f"""
     The following is a training session transcript in which you are practicing 
@@ -76,6 +87,9 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
     - Goal: {request.goal}
     - Context: {request.context}
     - Key Concepts: {request.key_concepts}
+    
+    HR Document Context:
+    {hr_docs_context}
 
     Instructions:
     Carefully analyze the provided transcript and evaluate **only your own statements** 
@@ -108,7 +122,7 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
 
     response = call_structured_llm(
         request_prompt=user_prompt,
-        system_prompt='You are an expert communication coach analyzing training sessions.',
+        system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
         output_model=SessionExamplesCollection,
         mock_response=mock_response,
@@ -117,13 +131,15 @@ def generate_training_examples(request: ExamplesRequest) -> SessionExamplesColle
     return response
 
 
-def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollection:
-    mock_response = GoalsAchievedCollection(
-        goals_achieved=[
-            'Clearly communicate the impact of the missed deadlines',
-            'Understand potential underlying causes',
-        ]
-    )
+def get_achieved_goals(
+    request: GoalsAchievementRequest, hr_docs_context: str = ''
+) -> GoalsAchievedCollection:
+    lang = request.language_code
+    settings = config.root[lang]
+
+    mock_response = settings.mocks.goals_achieved
+    system_prompt = settings.system_prompts.goals_achieved
+
     user_prompt = f"""
     The following is a transcript of a training session.
     Please evaluate which of the listed goals were clearly achieved by the user 
@@ -134,6 +150,9 @@ def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollect
 
     Goals:
     {request.objectives}
+    
+    HR Document Context:
+    {hr_docs_context}
 
     Instructions:
     - For each goal, determine if the user's speech aligns with 
@@ -151,7 +170,7 @@ def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollect
 
     response = call_structured_llm(
         request_prompt=user_prompt,
-        system_prompt='You are an expert communication coach analyzing training sessions.',
+        system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
         output_model=GoalsAchievedCollection,
         mock_response=mock_response,
@@ -160,26 +179,14 @@ def get_achieved_goals(request: GoalsAchievementRequest) -> GoalsAchievedCollect
     return response
 
 
-def generate_recommendations(request: RecommendationsRequest) -> RecommendationsCollection:
-    mock_response = RecommendationsCollection(
-        recommendations=[
-            Recommendation(
-                heading='Practice the STAR method',
-                recommendation='When giving feedback, use the Situation, Task, Action, Result '
-                + 'framework to provide more concrete examples.',
-            ),
-            Recommendation(
-                heading='Ask more diagnostic questions',
-                recommendation='Spend more time understanding root causes before moving to '
-                + 'solutions. This builds empathy and leads to more effective outcomes.',
-            ),
-            Recommendation(
-                heading='Define clear next steps',
-                recommendation='End feedback conversations with agreed-upon action items,'
-                + ' timelines, and follow-up plans.',
-            ),
-        ]
-    )
+def generate_recommendations(
+    request: RecommendationsRequest, hr_docs_context: str = ''
+) -> RecommendationsCollection:
+    lang = request.language_code
+    settings = config.root[lang]
+
+    mock_response = settings.mocks.recommendations
+    system_prompt = settings.system_prompts.recommendations
 
     user_prompt = f"""
     Analyze the following transcript from a training session.
@@ -204,6 +211,9 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
 
     Context:
     {request.context}
+    
+    HR Document Context:
+    {hr_docs_context}
 
     Situation:
     - The conversation of this training session is about {request.category}
@@ -233,7 +243,7 @@ def generate_recommendations(request: RecommendationsRequest) -> Recommendations
     """
     response = call_structured_llm(
         request_prompt=user_prompt,
-        system_prompt='You are an expert communication coach analyzing training sessions.',
+        system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
         output_model=RecommendationsCollection,
         mock_response=mock_response,
@@ -256,6 +266,7 @@ def generate_and_store_feedback(
     goals_request = GoalsAchievementRequest(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
+        language_code=example_request.language_code,
     )
     recommendations_request = RecommendationsRequest(
         category=example_request.category,
@@ -265,6 +276,7 @@ def generate_and_store_feedback(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         key_concepts=example_request.key_concepts,
+        language_code=example_request.language_code,
     )
 
     # initialize fallback values
@@ -272,6 +284,19 @@ def generate_and_store_feedback(
     examples_negative_dicts = []
     goals = GoalsAchievedCollection(goals_achieved=[])
     recommendations = []
+
+    hr_docs_context = query_vector_db_and_prompt(
+        session_context=[
+            recommendations_request.category,
+            recommendations_request.goal,
+            recommendations_request.context,
+            recommendations_request.other_party,
+            recommendations_request.transcript,
+            recommendations_request.objectives,
+            recommendations_request.key_concepts,
+        ],
+        generated_object='output',
+    )
 
     if example_request.transcript is None:
         # No transcript: leave examples empty and goals achieved as zero
@@ -281,10 +306,12 @@ def generate_and_store_feedback(
         recommendations = []
     else:
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_examples = executor.submit(safe_generate_training_examples, examples_request)
-            future_goals = executor.submit(safe_get_achieved_goals, goals_request)
+            future_examples = executor.submit(
+                safe_generate_training_examples, examples_request, hr_docs_context
+            )
+            future_goals = executor.submit(safe_get_achieved_goals, goals_request, hr_docs_context)
             future_recommendations = executor.submit(
-                safe_generate_recommendations, recommendations_request
+                safe_generate_recommendations, recommendations_request, hr_docs_context
             )
 
             try:
@@ -361,7 +388,8 @@ if __name__ == '__main__':
         + "I'm willing to work late, come in early, take on extra tasks—anything "
         + 'to meet your expectations. Just please give me a chance to prove myself. \n'
         + "User:  You can't do anything it's too late to improve. \n"
-        + "Assistant: Please, don't say that. I'm a hard worker, and I'm a quick learner."
+        + "Assistant: Please, don't say that. I'm a hard worker, "
+        "and I'm a quick learner."
         + "If you give me another chance, I promise I won't let you down."
         + 'Is there anything, anything at all, I can do to change your mind? \n',
         objectives=[
@@ -373,6 +401,7 @@ if __name__ == '__main__':
             'End on a positive note',
         ],
         key_concepts='### Active Listening\nShow empathy and paraphrase concerns.',
+        language_code=LanguageCode.de,
     )
 
     examples = generate_training_examples(example_request)
@@ -398,6 +427,7 @@ if __name__ == '__main__':
     goals_achievement_request = GoalsAchievementRequest(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
+        language_code=example_request.language_code,
     )
     goals_achieved = get_achieved_goals(goals_achievement_request)
     print(
@@ -413,6 +443,7 @@ if __name__ == '__main__':
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         key_concepts=example_request.key_concepts,
+        language_code=example_request.language_code,
     )
     recommendations = generate_recommendations(recommendation_request)
     for recommendation in recommendations.recommendations:

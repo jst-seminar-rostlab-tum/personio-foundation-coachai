@@ -11,18 +11,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import Switch from '@/components/ui/Switch';
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/components/ui/AlertDialog';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
+import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import { UserProfileService } from '@/services/client/UserProfileService';
 import { UserPreference } from '@/interfaces/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
@@ -37,18 +27,16 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   return score !== undefined ? [score] : [50];
 };
 
-export default function TrainingSettings({ userProfile }: { userProfile: Promise<UserProfile> }) {
-  const t = useTranslations('TrainingSettings');
-  const tOptions = useTranslations('TrainingSettings.leadershipGoals');
+export default function Settings({ userProfile }: { userProfile: Promise<UserProfile> }) {
+  const t = useTranslations('Settings');
+  const tOptions = useTranslations('Settings.leadershipGoals');
   const userProfileData = use(userProfile);
 
   const [storeConversations, setStoreConversations] = useState(
     userProfileData.storeConversations ?? false
   );
   const [currentRole, setCurrentRole] = useState(userProfileData.professionalRole);
-  const [primaryGoal, setPrimaryGoal] = useState(
-    userProfileData.goals.length > 0 ? userProfileData.goals[0] : ''
-  );
+  const [primaryGoals, setPrimaryGoals] = useState(userProfileData.goals);
   const [difficulty, setDifficulty] = useState(
     getConfidenceScores(userProfileData, 'giving_difficult_feedback')
   );
@@ -58,6 +46,33 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
   const [conversation, setConversation] = useState(
     getConfidenceScores(userProfileData, 'leading_challenging_conversations')
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [savedStoreConversations, setSavedStoreConversations] = useState(
+    userProfileData.storeConversations ?? false
+  );
+  const [savedRole, setSavedRole] = useState(userProfileData.professionalRole);
+  const [savedGoals, setSavedGoals] = useState(userProfileData.goals);
+  const [savedDifficulty, setSavedDifficulty] = useState(
+    getConfidenceScores(userProfileData, 'giving_difficult_feedback')[0]
+  );
+  const [savedConflict, setSavedConflict] = useState(
+    getConfidenceScores(userProfileData, 'managing_team_conflicts')[0]
+  );
+  const [savedConversation, setSavedConversation] = useState(
+    getConfidenceScores(userProfileData, 'leading_challenging_conversations')[0]
+  );
+
+  const hasFormChanged = () => {
+    return (
+      storeConversations !== savedStoreConversations ||
+      currentRole !== savedRole ||
+      JSON.stringify(primaryGoals) !== JSON.stringify(savedGoals) ||
+      difficulty[0] !== savedDifficulty ||
+      conflict[0] !== savedConflict ||
+      conversation[0] !== savedConversation
+    );
+  };
 
   const confidenceFieldsProps = {
     difficulty,
@@ -67,34 +82,37 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
     setConflict,
     setConversation,
   };
-  const userPreferences: UserPreference[] = [
-    {
-      label: tOptions('currentRole.label'),
-      options: UserRoles(),
-      value: currentRole,
-      defaultValue: 'team_leader',
-      onChange: (value: string) => {
-        setCurrentRole(value);
-      },
+  const currentRoleSelect: UserPreference = {
+    label: tOptions('currentRole.label'),
+    options: UserRoles(),
+    value: currentRole,
+    defaultValue: 'team_leader',
+    onChange: (value: string) => {
+      setCurrentRole(value);
     },
-    {
-      label: tOptions('primaryGoals.label'),
-      options: PrimaryGoals(),
-      value: primaryGoal,
-      defaultValue: 'managing_team_conflicts',
-      onChange: (value: string) => {
-        setPrimaryGoal(value);
-      },
+  };
+  const primaryGoalsSelect: UserPreference<string[]> = {
+    label: tOptions('primaryGoals.label'),
+    options: PrimaryGoals(),
+    value: primaryGoals.slice(0, 3),
+    placeholder: tOptions('primaryGoals.placeholder'),
+    maxSelectedDisclaimer: tOptions('primaryGoals.maxOptionsSelected'),
+    onChange: (value: string[]) => {
+      setPrimaryGoals(value);
     },
-  ];
+  };
 
   const handleSaveSettings = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       await UserProfileService.updateUserProfile({
         fullName: userProfileData.fullName,
         storeConversations,
         professionalRole: currentRole,
-        goals: [primaryGoal],
+        goals: primaryGoals,
         confidenceScores: [
           { confidenceArea: 'giving_difficult_feedback', score: difficulty[0] },
           { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
@@ -102,22 +120,32 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
         ],
       });
       showSuccessToast(t('saveSettingsSuccess'));
+
+      setSavedStoreConversations(storeConversations);
+      setSavedRole(currentRole);
+      setSavedGoals([...primaryGoals]);
+      setSavedDifficulty(difficulty[0]);
+      setSavedConflict(conflict[0]);
+      setSavedConversation(conversation[0]);
     } catch (error) {
       showErrorToast(error, t('saveSettingsError'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
   return (
     <div>
       <h1 className="text-2xl">{t('title')}</h1>
 
-      <div className="mt-6 space-y-4 flex items-center rounded-t-lg">
-        <Accordion type="multiple" className="w-full" defaultValue={['item-1', 'item-2']}>
-          <AccordionItem value="item-1" className="text-dark">
-            <AccordionTrigger className="font-bw-70 cursor-pointer">
-              {t('privacyControls')}
-            </AccordionTrigger>
+      <div className="space-y-4 flex items-center rounded-t-lg">
+        <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
+          {/* Privacy Controls */}
+          <AccordionItem value="item-1">
+            <AccordionTrigger>{t('privacyControls')}</AccordionTrigger>
             <AccordionContent>
-              <div className="flex items-center justify-between w-full px-2">
+              {/* Store Conversations */}
+              <div className="flex items-center justify-between w-full px-2 gap-8">
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
                   <div className="text-bw-40">
@@ -128,7 +156,8 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
                   <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
                 </div>
               </div>
-              <div className="flex items-center justify-between w-full mt-4 px-2">
+              {/* Export data */}
+              <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('exportData')}</div>
                 </div>
@@ -139,47 +168,42 @@ export default function TrainingSettings({ userProfile }: { userProfile: Promise
                   </Button>
                 </div>
               </div>
-              <div className="flex items-center justify-between w-full mt-4  px-2">
+              {/* Delete Account */}
+              <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('deleteAccount')}</div>
                 </div>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive">{t('requestDeletion')}</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{t('deleteAccountConfirmTitle')}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {t('deleteAccountConfirmDesc')}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                      <AlertDialogAction>{t('confirm')}</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <DeleteUserHandler>
+                  <Button variant="destructive">{t('deleteAccount')}</Button>
+                </DeleteUserHandler>
               </div>
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2" className="text-dark">
-            <AccordionTrigger className="font-bw-70 cursor-pointer">
-              {t('personalizationSettings')}
-            </AccordionTrigger>
+          {/* Personalization Settings */}
+          <AccordionItem value="item-2">
+            <AccordionTrigger>{t('personalizationSettings')}</AccordionTrigger>
             <AccordionContent>
-              <UserPreferences className="flex flex-col gap-5 px-2" preferences={userPreferences} />
-              <hr className="my-9.5 border-gray-200" />
+              <UserPreferences
+                className="flex flex-col gap-8 px-2"
+                currentRole={currentRoleSelect}
+                primaryGoals={primaryGoalsSelect}
+              />
+              <hr className="border-bw-20 px-2" />
               <UserConfidenceFields
-                className="flex flex-col gap-5 px-2"
+                className="flex flex-col gap-8 px-2"
                 {...confidenceFieldsProps}
               />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
       </div>
-      <Button size="full" onClick={handleSaveSettings}>
-        {t('saveSettings')}
+      <Button
+        size="full"
+        onClick={handleSaveSettings}
+        variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
+        disabled={isSubmitting || !hasFormChanged()}
+      >
+        {isSubmitting ? t('saving') : t('saveSettings')}
       </Button>
     </div>
   );
