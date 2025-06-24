@@ -3,6 +3,7 @@ import { UserProfileService } from '@/services/client/UserProfileService';
 import { useTranslations } from 'next-intl';
 import { DeleteUserHandlerProps } from '@/interfaces/DeleteUserHandlerProps';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import { redirect } from 'next/navigation';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +25,9 @@ export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
     try {
       await UserProfileService.deleteUser(deleteUserId);
       showSuccessToast(t('deleteAccountSuccess'));
+      if (!deleteUserId) {
+        redirect('/');
+      }
     } catch (error) {
       showErrorToast(error, t('deleteAccountError'));
     } finally {
@@ -37,9 +41,7 @@ export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{t('deleteAccountConfirmTitle')}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t('deleteAccountConfirmDesc', { id: id ?? '' })}
-          </AlertDialogDescription>
+          <AlertDialogDescription>{t('deleteAccountConfirmDesc')}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
