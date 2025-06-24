@@ -7,7 +7,6 @@ import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
 import { Button } from '@/components/ui/Button';
 import { sessionService } from '@/services/server/SessionService';
-import { api } from '@/services/server/Api';
 import { UserProfileService } from '@/services/server/UserProfileService';
 import HistoryItems from './components/HistoryItems';
 import DashboardStats from './components/DashboardStats';
@@ -22,7 +21,7 @@ export default async function DashboardPage() {
   const PAGE_SIZE = 3;
   const userProfile = await UserProfileService.getUserProfile();
   const userStatsData = UserProfileService.getUserStats();
-  const sessions = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
+  const sessions = sessionService.getPaginatedSessions(1, PAGE_SIZE);
 
   return (
     <div className="flex flex-col gap-12">

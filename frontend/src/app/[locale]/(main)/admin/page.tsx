@@ -4,7 +4,6 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import { MetadataProps } from '@/interfaces/MetadataProps';
 import { adminService } from '@/services/server/AdminService';
 import { reviewService } from '@/services/server/ReviewService';
-import { api } from '@/services/server/Api';
 import { UserProfileService } from '@/services/server/UserProfileService';
 import { AccountRole } from '@/interfaces/UserProfile';
 import { redirect } from 'next/navigation';
@@ -24,7 +23,7 @@ export default async function AdminPage() {
 
   const PAGE_SIZE = 4;
   const statsData = adminService.getAdminStats();
-  const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
+  const reviewsData = reviewService.getPaginatedReviews(1, PAGE_SIZE, 'newest');
   const [stats, reviews] = await Promise.all([statsData, reviewsData]);
 
   return (

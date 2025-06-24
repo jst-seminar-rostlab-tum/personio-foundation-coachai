@@ -1,6 +1,6 @@
-import { AxiosInstance } from 'axios';
+import { api } from './Api';
 
-const getPaginatedSessions = async (api: AxiosInstance, page: number, pageSize: number) => {
+const getPaginatedSessions = async (page: number, pageSize: number) => {
   try {
     const response = await api.get(`/session`, {
       params: {

@@ -7,6 +7,7 @@ import AboutFooter from '@/components/layout/AboutFooter';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { LayoutProps } from '@/interfaces/LayoutProps';
 import { MetadataProps } from '@/interfaces/MetadataProps';
+import Head from 'next/head';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,8 +20,8 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
 
   return (
-    <html lang={locale}>
-      <head>
+    <>
+      <Head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -32,14 +33,13 @@ export default async function RootLayout({ children, params }: LayoutProps) {
             }),
           }}
         />
-      </head>
-      <body className={inter.className}>
-        <NextIntlClientProvider>
-          <AboutHeader />
-          <main className="container mx-auto p-6 md:p-12 mt-16">{children}</main>
-          <AboutFooter />
-        </NextIntlClientProvider>
-      </body>
-    </html>
+      </Head>
+
+      <NextIntlClientProvider locale={locale}>
+        <AboutHeader />
+        <main className={`container mx-auto p-6 md:p-12 mt-16 ${inter.className}`}>{children}</main>
+        <AboutFooter />
+      </NextIntlClientProvider>
+    </>
   );
 }

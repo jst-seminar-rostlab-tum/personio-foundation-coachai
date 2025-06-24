@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
 import { Review, ReviewsPaginated } from '@/interfaces/Review';
-import { api } from '@/services/client/Api';
 import { reviewService } from '@/services/server/ReviewService';
 import { showErrorToast } from '@/lib/toast';
 import {
@@ -48,7 +47,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
     setVisibleCount(limit);
     try {
       setIsLoading(true);
-      const response = await reviewService.getPaginatedReviews(api, 1, limit, value);
+      const response = await reviewService.getPaginatedReviews(1, limit, value);
       setReviewsStorage(response.reviews);
     } catch (e) {
       showErrorToast(e, tCommon('error'));
@@ -61,7 +60,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
     const getSessions = async () => {
       try {
         setIsLoading(true);
-        const response = await reviewService.getPaginatedReviews(api, pageNumber, limit, sortBy);
+        const response = await reviewService.getPaginatedReviews(pageNumber, limit, sortBy);
         setReviewsStorage((prev) => [...prev, ...response.reviews]);
         setVisibleCount((prev) => prev + limit);
       } catch (e) {

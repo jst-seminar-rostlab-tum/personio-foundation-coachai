@@ -16,7 +16,7 @@ api.interceptors.request.use(
       return config;
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.DEV_MODE_SKIP_AUTH === true) {
       return config;
     }
 

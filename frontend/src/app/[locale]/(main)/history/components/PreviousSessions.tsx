@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/AlertDialog';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { SessionPaginated, SessionFromPagination } from '@/interfaces/Session';
-import { api } from '@/services/client/Api';
 import { sessionService } from '@/services/server/SessionService';
 import Link from 'next/link';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
@@ -47,7 +46,7 @@ export default function PreviousSessions({
     const getSessions = async () => {
       try {
         setIsLoading(true);
-        const response = await sessionService.getPaginatedSessions(api, pageNumber, limit);
+        const response = await sessionService.getPaginatedSessions(pageNumber, limit);
         setSessionsStorage((prev) => [...prev, ...response.data.sessions]);
         setVisibleCount((prev) => prev + limit);
         setTotalSessionsCount(response.data.totalSessions);

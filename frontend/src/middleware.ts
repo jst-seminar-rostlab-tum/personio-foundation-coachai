@@ -8,8 +8,8 @@ const i18nMiddleware = createMiddleware(routing);
 export default async function middleware(request: NextRequest) {
   const response = i18nMiddleware(request);
 
-  // Skip authentication if in development mode and the environment variable is set
-  if (process.env.NODE_ENV === 'development') {
+  // Skip authentication if the environment variable is set
+  if (process.env.DEV_MODE_SKIP_AUTH === true) {
     return response;
   }
 

@@ -3,7 +3,6 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
 import { sessionService } from '@/services/server/SessionService';
-import { api } from '@/services/server/Api';
 import { UserProfileService } from '@/services/server/UserProfileService';
 import HistoryHeader from './components/HistoryHeader';
 import HistoryStats from './components/HistoryStats';
@@ -17,7 +16,7 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 
 export default async function HistoryPage() {
   const PAGE_SIZE = 3;
-  const sessions = await sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
+  const sessions = await sessionService.getPaginatedSessions(1, PAGE_SIZE);
   const userStatsData = UserProfileService.getUserStats();
 
   return (

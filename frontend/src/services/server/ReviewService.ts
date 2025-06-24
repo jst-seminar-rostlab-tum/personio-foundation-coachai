@@ -1,11 +1,6 @@
-import { AxiosInstance } from 'axios';
+import { api } from './Api';
 
-const getPaginatedReviews = async (
-  api: AxiosInstance,
-  page: number,
-  pageSize: number,
-  sort: string = 'newest'
-) => {
+const getPaginatedReviews = async (page: number, pageSize: number, sort: string = 'newest') => {
   try {
     const { data } = await api.get(`/review`, {
       params: {
