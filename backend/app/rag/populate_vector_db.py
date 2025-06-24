@@ -14,10 +14,10 @@ BASE_DIR = Path(__file__).parent
 DOC_FOLDER = BASE_DIR / 'documents'
 
 
-def populate_vector_db(table_name: str = TABLE_NAME, doc_folder: str = DOC_FOLDER) -> None:
+def populate_vector_db(doc_folder: str = DOC_FOLDER) -> None:
     embedding = get_embedding_model(EMBEDDING_TYPE)
-    vector_db = load_vector_db(embedding, table_name)
-    load_and_index_documents(vector_db, doc_folder, table_name)
+    vector_db = load_vector_db(embedding)
+    load_and_index_documents(vector_db, doc_folder)
 
 
 if __name__ == '__main__':
@@ -35,14 +35,9 @@ if __name__ == '__main__':
         exit()
     supabase_url = settings.SUPABASE_URL
 
-    table_name_user = input(
-        "Enter the table name (press Enter for default 'hr_information'): "
-    ).strip()
-    if not table_name_user:
-        table_name_user = 'hr_information'
-
     doc_folder_user = input(
-        f"\nEnter the path to the document directory (press Enter for default '{DOC_FOLDER}'): "
+        f'\nEnter the absolute path to the document directory (press Enter '
+        f"for default '{DOC_FOLDER}'): "
     ).strip()
     if not doc_folder_user:
         doc_folder_user = DOC_FOLDER
@@ -58,8 +53,8 @@ if __name__ == '__main__':
 
     # Final configuration output
     print('\nUsing the following configuration:')
-    print(f'Table Name: {table_name_user}')
+    print(f'Table Name: {TABLE_NAME}')
     print(f'Document Folder: {doc_folder_user}')
     print(f'Supabase URL: {supabase_url}')
 
-    populate_vector_db(table_name=table_name_user, doc_folder=doc_folder_user)
+    populate_vector_db(doc_folder=doc_folder_user)
