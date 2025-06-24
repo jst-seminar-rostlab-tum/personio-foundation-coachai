@@ -5,6 +5,7 @@ from typing import Any
 
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine
+from supabase import Client, create_client
 
 from app.config import Settings
 
@@ -37,3 +38,10 @@ def get_db_session() -> Generator[DBSession, Any, None]:
             yield db_session
         finally:
             db_session.close()
+
+
+def get_supabase_client() -> Client:
+    return create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+
+
+supabase: Client = get_supabase_client()

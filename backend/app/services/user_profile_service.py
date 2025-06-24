@@ -1,3 +1,4 @@
+import logging
 from math import ceil
 from typing import Union
 from uuid import UUID
@@ -5,7 +6,9 @@ from uuid import UUID
 from fastapi import HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
+from supabase import AuthError
 
+from app.database import supabase
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import Goal, UserGoal
 from app.models.user_profile import UserProfile
@@ -244,12 +247,35 @@ class UserService:
         return self._get_detailed_user_profile_response(user)
 
     def _delete_user(self, user_id: UUID) -> dict:
-        user = self.db.get(UserProfile, user_id)  # type: ignore
+        user = self.db.get(UserProfile, user_id)
         if not user:
             raise HTTPException(status_code=404, detail='User profile not found')
-        self.db.delete(user)
-        self.db.commit()
+
+        try:
+            self.db.delete(user)
+            self.db.commit()
+        except Exception as e:
+            self.db.rollback()
+            raise HTTPException(status_code=500, detail='Failed to delete user') from e
+
+        try:
+            self._delete_supabase_user(user_id)
+        except Exception:
+            logging.warning(
+                f'Deleted user {user_id} from user_profiles table but not from supabase auth table'
+                '. Admin action required!'
+            )
+
         return {'message': 'User profile deleted successfully'}
+
+    def _delete_supabase_user(self, user_id: UUID) -> None:
+        try:
+            supabase.auth.admin.delete_user(str(user_id))
+        except AuthError as e:
+            if e.code != 'user_not_found':
+                raise e
+        except Exception as e:
+            raise e
 
     def delete_user_profile(self, user_profile: UserProfile, delete_user_id: UUID | None) -> dict:
         if delete_user_id and user_profile.account_role == 'admin':
