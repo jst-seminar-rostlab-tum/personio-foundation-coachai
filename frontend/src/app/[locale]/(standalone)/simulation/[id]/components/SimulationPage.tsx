@@ -239,7 +239,6 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
 
 export default function SimulationPageComponent({ sessionId }: SimulationPageComponentProps) {
   const [time, setTime] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const {
     isMicActive,
     setIsMicActive,
@@ -254,14 +253,11 @@ export default function SimulationPageComponent({ sessionId }: SimulationPageCom
   } = useOpenAIRealtimeWebRTC(sessionId);
 
   useEffect(() => {
-    if (!isPaused) {
-      const interval = setInterval(() => {
-        setTime((prev) => prev + 1);
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-    return undefined;
-  }, [isPaused]);
+    const interval = setInterval(() => {
+      setTime((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     initWebRTC();
@@ -295,8 +291,6 @@ export default function SimulationPageComponent({ sessionId }: SimulationPageCom
       <SimulationRealtimeSuggestions />
 
       <SimulationFooter
-        isPaused={isPaused}
-        setIsPaused={setIsPaused}
         isMicActive={isMicActive}
         toggleMicrophone={toggleMic}
         isConnected={isConnected && isDataChannelReady}
