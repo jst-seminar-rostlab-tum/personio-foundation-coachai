@@ -62,7 +62,11 @@ class ScoringService:
         )
         return prompt
 
-    def score_conversation(self, model: str = 'o4-mini-2025-04-16') -> ScoringResult:
+    def score_conversation(
+        self,
+        model: str = 'o4-mini-2025-04-16',
+        temperature: float = 0.0,
+    ) -> ScoringResult:
         user_prompt = self._build_user_prompt()
         system_prompt = self._build_system_prompt()
 
@@ -71,7 +75,7 @@ class ScoringService:
             system_prompt=system_prompt,
             model=model,
             output_model=ScoringResult,
-            temperature=0.0,
+            temperature=temperature,
         )
 
         return response
