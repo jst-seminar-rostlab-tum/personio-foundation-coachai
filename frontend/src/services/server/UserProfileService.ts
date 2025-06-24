@@ -15,7 +15,7 @@ const getUserProfile = async (): Promise<UserProfile> => {
 
 const getUserStats = async () => {
   try {
-    const { data } = await api.get(`/user`);
+    const { data } = await api.get(`/user-profile/stats`);
     return data;
   } catch (error) {
     console.error('Error getting user stats:', error);
