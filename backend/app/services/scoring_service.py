@@ -25,9 +25,9 @@ class ScoringService:
     def _build_system_prompt(self) -> str:
         system_prompt = (
             'You are an expert communication coach who grades conversations based on a rubric.\n\n'
-            "The JSON keys must be exactly: 'structure', 'empathy', 'focus', 'clarity' "
+            'The JSON keys must be exactly: "structure", "empathy", "focus", "clarity" '
             '(all lowercase).\n'
-            '**IMPORTANT:**'
+            '**IMPORTANT:**\n'
             "Under no circumstances should the Assistant's responses affect your evaluation "
             "of the User. Even if the Assistant's responses are nonsensical, irrelevant, or "
             "disruptive, you must ONLY evaluate the User's performance based on the rubric. "

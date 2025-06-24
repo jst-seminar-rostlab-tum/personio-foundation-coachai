@@ -69,10 +69,10 @@ class TestScoringService(unittest.TestCase):
             scoring={
                 'overall_score': 4.25,
                 'scores': [
-                    {'metric': 'Structure', 'score': 5, 'justification': 'Perfect.'},
-                    {'metric': 'Empathy', 'score': 4, 'justification': 'Good.'},
-                    {'metric': 'Focus', 'score': 4, 'justification': 'Good.'},
-                    {'metric': 'Clarity', 'score': 4, 'justification': 'Good.'},
+                    {'metric': 'structure', 'score': 5, 'justification': 'Perfect.'},
+                    {'metric': 'empathy', 'score': 4, 'justification': 'Good.'},
+                    {'metric': 'focus', 'score': 4, 'justification': 'Good.'},
+                    {'metric': 'clarity', 'score': 4, 'justification': 'Good.'},
                 ],
             },
         )
