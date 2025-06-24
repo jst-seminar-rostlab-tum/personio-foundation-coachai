@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated, Optional, Union
 from uuid import UUID
 
@@ -6,7 +7,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.database import get_db_session
-from app.dependencies import require_user
+from app.dependencies import require_admin, require_user
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import Goal, UserGoal
 from app.models.user_profile import UserProfile
@@ -17,11 +18,16 @@ from app.schemas.user_profile import (
     UserProfileReplace,
     UserProfileUpdate,
 )
+from app.services.user_profile_service import delete_supabase_user, delete_user_profile
 
 router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
 
 
-@router.get('', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
+@router.get(
+    '',
+    response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]],
+    dependencies=[Depends(require_admin)],
+)
 def get_user_profiles(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     detailed: bool = False,
@@ -300,7 +306,7 @@ def update_user_profile(
 
 
 @router.delete('', response_model=dict)
-def delete_user_profile(
+def delete_user(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
     delete_user_id: Optional[UUID] = None,
@@ -315,9 +321,16 @@ def delete_user_profile(
     elif delete_user_id and delete_user_id != user_profile.id:
         raise HTTPException(status_code=403, detail='Admin access required to delete other users')
 
-    user_profile = db_session.get(UserProfile, user_id)  # type: ignore
-    if not user_profile:
-        raise HTTPException(status_code=404, detail='User profile not found')
-    db_session.delete(user_profile)
-    db_session.commit()
+    try:
+        delete_user_profile(str(user_id), db_session)
+    except HTTPException as db_error:
+        raise db_error
+    except Exception as e:
+        raise HTTPException(status_code=500, detail='Deleting user profile failed') from e
+
+    try:
+        delete_supabase_user(str(user_id))
+    except Exception as e:
+        logging.warning(f'Failed to delete user from Supabase Auth: user_id={user_id}, error={e}')
+
     return {'message': 'User profile deleted successfully'}

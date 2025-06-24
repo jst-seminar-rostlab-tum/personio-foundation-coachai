@@ -315,7 +315,7 @@ requires-dist = [
     { name = "python-multipart", specifier = ">=0.0.6" },
     { name = "sqlalchemy", specifier = ">=2.0.22" },
     { name = "sqlmodel", specifier = ">=0.0.24" },
-    { name = "supabase", specifier = ">=2.15.2" },
+    { name = "supabase", specifier = ">=2.16.0" },
     { name = "twilio", specifier = ">=8.12.0" },
 ]
 
@@ -2191,7 +2191,7 @@ wheels = [
 
 [[package]]
 name = "supabase"
-version = "2.15.3"
+version = "2.16.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gotrue" },
@@ -2201,9 +2201,9 @@ dependencies = [
     { name = "storage3" },
     { name = "supafunc" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7f/55/ac9544fb0013142e224469828255f4f520b87217582339525bec728f6278/supabase-2.15.3.tar.gz", hash = "sha256:24013e3bcb7b86fcbd220476048de080c61fbe5fb234ee182b7a6eab96d35d3d", size = 14562, upload-time = "2025-06-10T11:23:10.726Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c6/93/335b91e8d09a95a337f051f84e85495f7732400f10c1bcb698a7571f8f1c/supabase-2.16.0.tar.gz", hash = "sha256:98f3810158012d4ec0e3083f2e5515f5e10b32bd71e7d458662140e963c1d164", size = 14595, upload-time = "2025-06-23T16:09:29.504Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5f/fe/f47d98a2fc0c5b08483b4e1afdb78f649bc69035644329d51c45ccdb79d2/supabase-2.15.3-py3-none-any.whl", hash = "sha256:d6c7abfd0e6db9667428e77c6f623487140acf3d7342edff1a1072ab8c77e537", size = 17479, upload-time = "2025-06-10T11:23:09.392Z" },
+    { url = "https://files.pythonhosted.org/packages/7e/75/2ab71e6605d20a740ff041c6176a328cfaa3fcee0dd0db885e081d98df06/supabase-2.16.0-py3-none-any.whl", hash = "sha256:99065caab3d90a56650bf39fbd0e49740995da3738ab28706c61bd7f2401db55", size = 17713, upload-time = "2025-06-23T16:09:28.299Z" },
 ]
 
 [[package]]
