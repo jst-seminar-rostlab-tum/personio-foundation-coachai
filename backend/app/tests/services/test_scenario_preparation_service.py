@@ -9,7 +9,7 @@ from app.schemas.scenario_preparation import (
     ObjectiveRequest,
     StringListResponse,
 )
-from app.services.scenario_preparation_service import (
+from app.services.scenario_preparation.scenario_preparation_service import (
     generate_checklist,
     generate_key_concept,
     generate_objectives,
@@ -17,7 +17,7 @@ from app.services.scenario_preparation_service import (
 
 
 class TestScenarioPreparationService(unittest.TestCase):
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_objectives_returns_correct_list(self, mock_llm: MagicMock) -> None:
         items = ['1. Prepare outline', '2. Rehearse responses', '3. Stay calm']
         mock_llm.return_value = StringListResponse(items=items)
@@ -36,7 +36,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         for i in range(len(result)):
             self.assertEqual(result[i], items[i])
 
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_checklist_returns_correct_list(self, mock_llm: MagicMock) -> None:
         items = ['1. Review past performance', '2. Prepare documents', '3. Set up private room']
         mock_llm.return_value = StringListResponse(items=items)
@@ -54,7 +54,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         for i in range(len(result)):
             self.assertEqual(result[i], items[i])
 
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_key_concept_parses_json(self, mock_llm: MagicMock) -> None:
         mock_key_concept_response = [
             KeyConcept(
@@ -84,7 +84,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         self.assertTrue(all(isinstance(x, KeyConcept) for x in result))
         self.assertEqual(result, mock_key_concept_response)
 
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_objectives_with_hr_docs_context(self, mock_llm: MagicMock) -> None:
         # Analogically for checklist and concepts
 

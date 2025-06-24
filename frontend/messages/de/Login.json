@@ -35,7 +35,7 @@
     "passwordInputRequirementThreeLabel": "Mindestens ein Sonderzeichen (!@#$%^&*)",
     "gdprAdherenceText": "Wir halten uns strikt an die DSGVO, indem wir nur erforderliche Daten erheben, nichts Unnötiges speichern und Daten so schnell wie möglich löschen. ",
     "readMoreOnGdprLink": "Mehr erfahren",
-    "agreeToTermsCheckboxLabel": "Ich stimme den Nutzungsbedingungen und der Datenschutzrichtlinie zu",
+    "agreeToTermsCheckboxLabel": "Ich stimme den <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu",
     "signUpButtonLabel": "Registrieren",
     "signUpWithGoogleButtonLabel": "Oder mit Google registrieren",
     "genericError": "Ein Fehler ist während der Registrierung aufgetreten"
@@ -51,6 +51,7 @@
     "verifyButtonLabel": "Bestätigen",
     "verifyingButtonLabel": "Wird überprüft...",
     "cancelButtonLabel": "Abbrechen",
+    "codeLengthError": "Der Code muss 6 Zeichen lang sein",
     "genericError": "Bei der Überprüfung ist ein Fehler aufgetreten"
   },
   "PrivacyPolicyDialog": {

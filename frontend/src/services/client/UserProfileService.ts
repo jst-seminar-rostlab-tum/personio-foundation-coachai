@@ -11,6 +11,18 @@ const updateUserProfile = async (userProfile: UserProfileUpdate): Promise<UserPr
   }
 };
 
+const deleteUser = async (deleteUserId?: string) => {
+  try {
+    const url = `/user-profile${deleteUserId ? `?delete_user_id=${deleteUserId}` : ''}`;
+    const { data } = await api.delete(url);
+    return data;
+  } catch (error) {
+    console.error('Error deleting user ', error);
+    throw error;
+  }
+};
+
 export const UserProfileService = {
   updateUserProfile,
+  deleteUser,
 };

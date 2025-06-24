@@ -29,7 +29,7 @@ services:
       - /app/.venv
     environment:
       DEV_MODE_SKIP_AUTH: ${DEV_MODE_SKIP_AUTH:-True}
-      DEV_MODE_MOCK_USER_ID: ${DEV_MODE_MOCK_USER_ID:-3a9a8970-afbe-4ee1-bc11-9dcad7875ddf}
+      DEV_MODE_MOCK_USER_ID: ${DEV_MODE_MOCK_USER_ID:-763c76f3-e5a4-479c-8b53-e3418d5e2ef5}
       STAGE: dev
       POSTGRES_HOST: db
       POSTGRES_USER: postgres
