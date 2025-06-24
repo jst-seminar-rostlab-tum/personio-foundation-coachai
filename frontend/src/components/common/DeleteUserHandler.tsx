@@ -3,7 +3,7 @@ import { UserProfileService } from '@/services/client/UserProfileService';
 import { useTranslations } from 'next-intl';
 import { DeleteUserHandlerProps } from '@/interfaces/DeleteUserHandlerProps';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
-import { redirect } from 'next/navigation';
+import { authService } from '@/services/client/AuthService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,9 +24,10 @@ export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
     setLoading(true);
     try {
       await UserProfileService.deleteUser(deleteUserId);
-      showSuccessToast(t('deleteAccountSuccess'));
       if (!deleteUserId) {
-        redirect('/');
+        authService.logoutUser();
+      } else {
+        showSuccessToast(t('deleteAccountSuccess'));
       }
     } catch (error) {
       showErrorToast(error, t('deleteAccountError'));
