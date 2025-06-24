@@ -2,7 +2,8 @@ from collections.abc import Sequence
 from uuid import UUID
 
 from fastapi import HTTPException, Query
-from sqlalchemy import func
+from sqlalchemy import case, func
+from sqlalchemy import select as sqlalchemy_select
 from sqlmodel import Session as DBSession
 from sqlmodel import asc, desc, select
 
@@ -70,6 +71,26 @@ class ReviewService:
             )
         return review_list
 
+    def _get_review_statistics(self) -> ReviewStatistics:
+        stmt = sqlalchemy_select(
+            func.avg(Review.rating),
+            func.count(case((Review.rating == 5, 1))),  # type: ignore
+            func.count(case((Review.rating == 4, 1))),  # type: ignore
+            func.count(case((Review.rating == 3, 1))),  # type: ignore
+            func.count(case((Review.rating == 2, 1))),  # type: ignore
+            func.count(case((Review.rating == 1, 1))),  # type: ignore
+        )
+
+        avg, five, four, three, two, one = self.db.exec(stmt).one()  # type: ignore
+        return ReviewStatistics(
+            average=round(avg or 0, 2),
+            num_five_star=five,
+            num_four_star=four,
+            num_three_star=three,
+            num_two_star=two,
+            num_one_star=one,
+        )
+
     def _get_paginated_reviews(
         self,
         page: int | None = Query(None),
@@ -107,8 +128,7 @@ class ReviewService:
         )
         review_list = self._build_review_read_list(joined_reviews_users)
 
-        # Get all reviews for rating statistics
-        reviews = self.db.exec(select(Review)).all()
+        review_statistics = self._get_review_statistics()
 
         return PaginatedReviewsResponse(
             reviews=review_list,
@@ -118,14 +138,7 @@ class ReviewService:
                 'totalCount': total_count,
                 'pageSize': page_size,
             },
-            rating_statistics=ReviewStatistics(
-                average=round(sum(review.rating for review in reviews) / len(reviews), 2),
-                num_five_star=sum(1 for review in reviews if review.rating == 5),
-                num_four_star=sum(1 for review in reviews if review.rating == 4),
-                num_three_star=sum(1 for review in reviews if review.rating == 3),
-                num_two_star=sum(1 for review in reviews if review.rating == 2),
-                num_one_star=sum(1 for review in reviews if review.rating == 1),
-            ),
+            rating_statistics=review_statistics,
         )
 
     def get_reviews(
