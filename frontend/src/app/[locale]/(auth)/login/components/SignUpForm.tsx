@@ -23,6 +23,7 @@ import { VerificationPopup } from '@/app/[locale]/(auth)/login/components/Verifi
 import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordInput';
 import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
 import { showErrorToast } from '@/lib/toast';
+import Link from 'next/link';
 
 export function SignUpForm() {
   const t = useTranslations('Login.SignUpTab');
@@ -201,7 +202,30 @@ export function SignUpForm() {
                           disabled={isLoading}
                         />
                       </FormControl>
-                      <FormLabel>{t('agreeToTermsCheckboxLabel')}</FormLabel>
+                      <FormLabel className="text-sm">
+                        {t.rich('agreeToTermsCheckboxLabel', {
+                          terms: (chunks) => (
+                            <Link
+                              href="/terms"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800 underline"
+                            >
+                              {chunks}
+                            </Link>
+                          ),
+                          privacy: (chunks) => (
+                            <Link
+                              href="/privacy"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800 underline"
+                            >
+                              {chunks}
+                            </Link>
+                          ),
+                        })}
+                      </FormLabel>
                     </div>
                   </FormItem>
                 )}
