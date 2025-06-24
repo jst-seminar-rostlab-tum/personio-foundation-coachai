@@ -42,12 +42,11 @@ if __name__ == '__main__':
         table_name_user = 'hr_information'
 
     doc_folder_user = input(
-        f"Enter the path to the document directory (press Enter for default '{DOC_FOLDER}'): "
+        f"\nEnter the path to the document directory (press Enter for default '{DOC_FOLDER}'): "
     ).strip()
     if not doc_folder_user:
-        doc_folder_user = '/documents'
+        doc_folder_user = DOC_FOLDER
 
-    # Show Supabase URL from environment and confirm
     print(f"\nSupabase URL from settings: '{supabase_url}'")
     confirm = input('Do you want to proceed with this Supabase URL? (y/n): ').strip().lower()
     if confirm != 'y':
@@ -63,4 +62,4 @@ if __name__ == '__main__':
     print(f'Document Folder: {doc_folder_user}')
     print(f'Supabase URL: {supabase_url}')
 
-    populate_vector_db()
+    populate_vector_db(table_name=table_name_user, doc_folder=doc_folder_user)
