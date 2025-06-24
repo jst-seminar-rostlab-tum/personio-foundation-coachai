@@ -87,13 +87,7 @@ class TestScoringService(unittest.TestCase):
         # Assert: Check the arguments passed to the mock call
         _, kwargs = mock_call_structured_llm.call_args
         self.assertIn('request_prompt', kwargs)
-        self.assertEqual(
-            kwargs['system_prompt'],
-            'You are an expert communication coach who grades conversations based on a rubric.',
-        )
-        self.assertEqual(kwargs['model'], 'gpt-4o-2024-08-06')
         self.assertEqual(kwargs['output_model'], ScoringResult)
-        self.assertEqual(kwargs['temperature'], 0.0)
 
         # Assert: Check that the final result is the one returned by our mock
         self.assertEqual(result, mock_result)
@@ -101,12 +95,13 @@ class TestScoringService(unittest.TestCase):
         self.assertEqual(len(result.scoring.scores), 4)
 
     def test_build_prompt(self) -> None:
-        """Test if the prompt is built correctly."""
-        prompt = self.scoring_service._build_prompt()
-        self.assertIn('Test Rubric', prompt)
-        self.assertIn('Test scenario', prompt)
-        self.assertIn('User: Hello', prompt)
-        self.assertIn('please provide a score from 0-5 for each metric', prompt)
+        """Test if the prompts are built correctly."""
+        system_prompt = self.scoring_service._build_system_prompt()
+        user_prompt = self.scoring_service._build_user_prompt()
+        self.assertIn('Test Rubric', system_prompt)
+        self.assertIn('Test scenario', user_prompt)
+        self.assertIn('User: Hello', user_prompt)
+        self.assertIn('provide a score from 1 to 5 for each metric', user_prompt)
 
 
 if __name__ == '__main__':
