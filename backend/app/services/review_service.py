@@ -211,6 +211,9 @@ class ReviewService:
             session_id=review.session_id,
             rating=review.rating,
             comment=review.comment,
+            allow_admin_access=review.allow_admin_access
+            if hasattr(review, 'allow_admin_access')
+            else False,
         )
         self.db.add(new_review)
         self.db.commit()

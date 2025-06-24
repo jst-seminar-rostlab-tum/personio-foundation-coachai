@@ -9,6 +9,7 @@ class ReviewCreate(CamelModel):
     session_id: UUID | None = None  # Optional, can be None if not related to a session
     rating: int
     comment: str
+    allow_admin_access: bool = False  # Default to False, admin access not allowed by default
 
 
 class ReviewResponse(CamelModel):

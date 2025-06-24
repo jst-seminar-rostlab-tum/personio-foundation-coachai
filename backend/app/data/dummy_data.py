@@ -105,6 +105,7 @@ def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session])
             session_id=sessions[0].id,  # Link to the first session
             rating=5,
             comment='Excellent service!',
+            allow_admin_access=True,  # Allow admin access to this review
         ),
         Review(
             id=uuid4(),
@@ -112,6 +113,7 @@ def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session])
             session_id=sessions[1].id,  # Link to a second session
             rating=2,
             comment='I found the sessions a bit too fast-paced.',
+            allow_admin_access=True,  # Do not allow admin access to this review
         ),
         Review(
             id=uuid4(),
@@ -119,6 +121,7 @@ def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session])
             session_id=None,  # No session linked --> App Review
             rating=4,
             comment='Good overall, but could use more examples.',
+            allow_admin_access=True,  # Allow admin access to this review
         ),
         Review(
             id=uuid4(),
@@ -126,6 +129,7 @@ def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session])
             session_id=None,  # No session linked --> App Review
             rating=4,
             comment='Great experience overall, but could use more examples.',
+            allow_admin_access=True,  # Do not allow admin access to this review
         ),
         Review(
             id=uuid4(),
@@ -133,6 +137,7 @@ def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session])
             session_id=sessions[0].id,  # Link to the first session
             rating=3,
             comment='Good, but I expected more personalized feedback.',
+            allow_admin_access=False,  # Allow admin access to this review
         ),
         Review(
             id=uuid4(),
