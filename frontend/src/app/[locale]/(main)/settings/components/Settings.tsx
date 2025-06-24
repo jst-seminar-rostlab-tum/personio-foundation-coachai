@@ -11,18 +11,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import Switch from '@/components/ui/Switch';
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/components/ui/AlertDialog';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
+import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import { UserProfileService } from '@/services/client/UserProfileService';
 import { UserPreference } from '@/interfaces/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
@@ -143,6 +133,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
       setIsSubmitting(false);
     }
   };
+
   return (
     <div>
       <h1 className="text-2xl">{t('title')}</h1>
@@ -182,23 +173,9 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
                 <div className="flex flex-col">
                   <div className="text-bw-70">{t('deleteAccount')}</div>
                 </div>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive">{t('requestDeletion')}</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{t('deleteAccountConfirmTitle')}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {t('deleteAccountConfirmDesc')}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                      <AlertDialogAction>{t('confirm')}</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <DeleteUserHandler>
+                  <Button variant="destructive">{t('deleteAccount')}</Button>
+                </DeleteUserHandler>
               </div>
             </AccordionContent>
           </AccordionItem>
