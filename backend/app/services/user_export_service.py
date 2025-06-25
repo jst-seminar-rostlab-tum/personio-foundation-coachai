@@ -248,7 +248,6 @@ def _build_export_reviews(reviews: list[Review]) -> list[ExportReview]:
     return [
         ExportReview(
             id=str(r.id),
-            user_id=str(r.user_id),
             session_id=str(r.session_id) if r.session_id else None,
             rating=r.rating,
             comment=r.comment,

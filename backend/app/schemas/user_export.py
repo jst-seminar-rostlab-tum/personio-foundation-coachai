@@ -105,7 +105,6 @@ class ExportSessionFeedback(BaseModel):
 
 class ExportReview(BaseModel):
     id: str
-    user_id: str
     session_id: Optional[str]
     rating: int
     comment: str
