@@ -7,33 +7,28 @@ import { ChevronDownIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 function Accordion({ ...props }: React.ComponentProps<typeof AccordionPrimitive.Root>) {
-  return <AccordionPrimitive.Root data-slot="accordion" {...props} />;
+  return (
+    <AccordionPrimitive.Root data-slot="accordion" className="w-full py-4 space-y-4" {...props} />
+  );
 }
 
-function AccordionItem({
-  className,
-  ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Item>) {
-  return <AccordionPrimitive.Item data-slot="accordion-item" className={className} {...props} />;
+function AccordionItem({ ...props }: React.ComponentProps<typeof AccordionPrimitive.Item>) {
+  return <AccordionPrimitive.Item data-slot="accordion-item" className="text-bw-90" {...props} />;
 }
 
 function AccordionTrigger({
-  className,
   children,
   ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Trigger>) {
   return (
-    <AccordionPrimitive.Header className="flex">
+    <AccordionPrimitive.Header className="flex text-bw-90 cursor-pointer">
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
-        className={cn(
-          'px-2 text-xl focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left transition-all outline-none focus-visible:ring-[3px] hover:bg-bw-10 disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 cursor-pointer',
-          className
-        )}
+        className="px-2 text-xl focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-center justify-between gap-4 rounded-md py-4 text-left transition-all outline-none focus-visible:ring-[3px] hover:bg-bw-10 disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180 cursor-pointer"
         {...props}
       >
         {children}
-        <ChevronDownIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200" />
+        <ChevronDownIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 transition-transform duration-200" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   );
@@ -50,7 +45,7 @@ function AccordionContent({
       className="accordionContent overflow-hidden text-sm"
       {...props}
     >
-      <div className={cn('pt-0 pb-4', className)}>{children}</div>
+      <div className={cn('py-8 space-y-8', className)}>{children}</div>
     </AccordionPrimitive.Content>
   );
 }

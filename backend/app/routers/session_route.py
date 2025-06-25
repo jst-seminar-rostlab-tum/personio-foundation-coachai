@@ -30,7 +30,7 @@ from app.schemas.sessions_paginated import (
     SessionItem,
     SkillScores,
 )
-from app.services.session_feedback_service import generate_and_store_feedback
+from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
 
@@ -310,6 +310,7 @@ def update_session(
             transcript=transcripts,
             objectives=preparation.objectives,
             key_concepts=key_concepts_str,
+            language_code=conversation_scenario.language_code,
         )
 
         # Schedule the feedback generation in the background

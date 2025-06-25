@@ -12,5 +12,18 @@
     "title": "Etwas ist schiefgelaufen",
     "description": "Es tut uns leid, aber etwas ist schiefgelaufen. Bitte versuchen Sie, die Seite zu aktualisieren, oder kontaktieren Sie den Support, falls das Problem weiterhin besteht.",
     "tryAgain": "Erneut versuchen"
+  },
+  "deleteAccountConfirmTitle": "Sind Sie sicher?",
+  "deleteAccountConfirmDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
+  "cancel": "Abbrechen",
+  "confirm": "Bestätigen",
+  "deleting": "Lösche...",
+  "deleteAccountSuccess": "Konto wurde erfolgreich gelöscht.",
+  "deleteAccountError": "Beim Löschen des Kontos ist ein Fehler aufgetreten.",
+  "emptyList": {
+    "title": "Noch keine {itemType}",
+    "description": "Ihre {itemType} werden hier in Zukunft erscheinen!",
+    "sessions": "Sitzungen",
+    "reviews": "Bewertungen"
   }
 }
