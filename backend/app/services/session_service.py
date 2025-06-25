@@ -17,7 +17,7 @@ from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
 from app.schemas.session_feedback import ExamplesRequest, SessionFeedbackMetrics
 from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
-from app.services.session_feedback_service import generate_and_store_feedback
+from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 
 
 class SessionService:

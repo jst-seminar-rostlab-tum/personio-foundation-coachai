@@ -12,5 +12,18 @@
     "title": "Something Went Wrong",
     "description": "We're sorry, but something went wrong. Please try refreshing the page or contact support if the problem persists.",
     "tryAgain": "Try Again"
+  },
+  "deleteAccountConfirmTitle": "Are you sure?",
+  "deleteAccountConfirmDesc": "This action cannot be undone.",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "deleting": "Deleting...",
+  "deleteAccountSuccess": "Account deleted successfully.",
+  "deleteAccountError": "There was an error deleting the account.",
+  "emptyList": {
+    "title": "No {itemType} yet",
+    "description": "Your {itemType} will appear here in the future!",
+    "sessions": "sessions",
+    "reviews": "reviews"
   }
 }
