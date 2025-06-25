@@ -17,9 +17,6 @@ class Review(CamelModel, table=True):
     session_id: Optional[UUID] = Field(foreign_key='session.id', default=None, ondelete='CASCADE')
     rating: int = Field(ge=1, le=5)
     comment: str
-    allow_admin_access: bool = Field(
-        default=False, description='If True, admin can view this review'
-    )
     created_at: datetime = Field(default_factory=datetime.utcnow)
     # Relationships
 
