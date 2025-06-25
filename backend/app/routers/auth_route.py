@@ -78,6 +78,7 @@ def create_user(req: CreateUserRequest) -> None:
 
     try:
         supabase = get_supabase_client
+
         attributes: AdminUserAttributes = {
             'email': req.email,
             'password': req.password,
