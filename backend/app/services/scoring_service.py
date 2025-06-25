@@ -78,6 +78,11 @@ class ScoringService:
             temperature=temperature,
         )
 
+        # Recalculate the overall score based on the rubric
+        response.overall_score = (
+            response.structure + response.empathy + response.focus + response.clarity
+        ) / 4
+
         return response
 
 
