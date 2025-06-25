@@ -181,9 +181,22 @@ class SessionService:
             raise HTTPException(
                 status_code=403, detail='You do not have permission to delete this session'
             )
+        # TODO: Delete audio File self._delete_audio_files(session.audio_uris)
+        total_deleted_sessions = 0
+        audio_uris = []
+        for turn in session.session_turns:
+            if turn.audio_uri:
+                audio_uris.append(turn.audio_uri)
+                total_deleted_sessions += 1
+        # TODO: Delete audio File self._delete_audio_files(audio_uris)
+        self._delete_audio_files(audio_uris=audio_uris)  # Dummy function to delete audios
+
         self.db.delete(session)
         self.db.commit()
-        return {'message': 'Session deleted successfully'}
+        return {
+            'message': 'Session deleted successfully',
+            'audios': audio_uris,
+        }
 
     def _is_session_being_completed(
         self,
