@@ -792,7 +792,7 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[0].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            scores={'structure': 82, 'empathy': 85, 'solutionFocus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=85,
             transcript_uri='https://example.com/transcripts/session1.txt',
