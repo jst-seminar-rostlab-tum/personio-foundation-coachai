@@ -62,6 +62,16 @@ def get_session_by_id(
         raise HTTPException(
             status_code=403, detail='You do not have permission to access this session'
         )
+    # If the user is an admin, check if they have permission to access the session
+    if (
+        conversation_scenario.user_id != user_id
+        and user_profile.account_role == AccountRole.admin
+        and not session.allow_admin_access
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail='You do not have permission to access this session as an admin',
+        )
 
     if conversation_scenario.category:
         training_title = conversation_scenario.category.name
