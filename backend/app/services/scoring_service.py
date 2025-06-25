@@ -79,9 +79,14 @@ class ScoringService:
         )
 
         # Recalculate the overall score based on the rubric
-        response.overall_score = (
-            response.structure + response.empathy + response.focus + response.clarity
+        scores = {s.metric.lower(): s.score for s in response.scoring.scores}
+        overall = (
+            scores.get('structure', 0)
+            + scores.get('empathy', 0)
+            + scores.get('focus', 0)
+            + scores.get('clarity', 0)
         ) / 4
+        response.scoring.overall_score = overall
 
         return response
 
