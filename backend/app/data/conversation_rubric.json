@@ -1,0 +1,57 @@
+{
+  "title": "Conversation Quality Rubric",
+  "description": "A rubric for scoring conversation quality based on key metrics.",
+  "criteria": [
+    {
+      "id": "structure",
+      "name": "Structure",
+      "description": "Evaluates the organization and logical flow of the conversation.",
+      "levels": {
+        "5": "Excellent: Clear opening (greeting, purpose), well-organized body, and conclusive closing. Information is presented in a natural, logical order with smooth transitions. No jumps, repetitions, or omissions. Example: The speaker greets, states the feedback purpose, gives examples in order, and ends with a summary and next steps.",
+        "4": "Good: Obvious opening, body, and closing. Mostly logical and clear, with only minor lapses in order or transitions. Example: The conversation is complete but has a small sequence issue or a minor missing transition.",
+        "3": "Adequate: Basic structure present, but some parts are out of order, missing, or abrupt. The flow is sometimes choppy or confusing. Example: Feedback includes unrelated details or the summary is unclear.",
+        "2": "Poor: Lacks clear structure. Information is scattered, topics jump frequently, and it is hard to identify the beginning, middle, or end. Example: The speaker jumps between unrelated points and the logic is weak.",
+        "1": "Very Poor: No structure at all. Utterances are random, fragmented, or unrelated. No clear beginning, middle, or end. The listener cannot understand the main topic or purpose. Example: Each sentence mixes unrelated words, personal trivia, or meaningless phrases."
+      }
+    },
+    {
+      "id": "empathy",
+      "name": "Empathy",
+      "description": "Evaluates the ability to understand, acknowledge, and validate the other person's feelings and perspective.",
+      "levels": {
+        "5": "Excellent: Every response accurately identifies and addresses the other person's emotions and viewpoint. Proactively expresses understanding, support, or comfort with specific language. Example: 'I understand you are under a lot of pressure lately, that must be tough.'",
+        "4": "Good: Most responses show attention to the other person's feelings. Occasional lapses or less detailed empathy, but overall supportive. Example: Most of the time there is comfort or understanding, but sometimes it is less deep.",
+        "3": "Adequate: Sometimes acknowledges feelings, but often in a generic or formulaic way. Lacks depth or specific follow-up. Example: 'I understand how you feel.' but does not elaborate.",
+        "2": "Poor: Rarely shows empathy. May be dismissive or ignore the other person's emotions. Example: Responds to stress with 'Okay' and no further comfort.",
+        "1": "Very Poor: Ignores or denies the other person's feelings, or is cold or impatient. Example: 'That's not an excuse.' or simply ignores the other person's emotions."
+      }
+    },
+    {
+      "id": "focus",
+      "name": "Focus",
+      "description": "Evaluates the ability to stay on topic and maintain relevance to the conversation's goals.",
+      "levels": {
+        "5": "Excellent: Always on topic. Every statement is directly relevant to the conversation's main goal. Example: Only discusses project communication, no unrelated topics.",
+        "4": "Good: Mostly focused, with only brief, minor digressions that do not disrupt the flow. Example: Briefly mentions a personal anecdote but quickly returns to the main topic.",
+        "3": "Adequate: Several noticeable or lengthy digressions, but the main topic is still addressed. Example: Discusses another project in the middle, but returns to the main subject.",
+        "2": "Poor: Frequently off-topic, making it hard to follow the main thread. The original purpose is often obscured. Example: Feedback is interrupted by frequent unrelated topics, making the main point unclear.",
+        "1": "Very Poor: Almost always off-topic. The original purpose is completely lost or ignored. Example: Instead of discussing the project, the speaker talks about the weather or unrelated personal matters throughout."
+      }
+    },
+    {
+      "id": "clarity",
+      "name": "Clarity",
+      "description": "Evaluates the clarity, precision, and understandability of the language used.",
+      "levels": {
+        "5": "Excellent: Language is always clear, concise, and unambiguous. Complex ideas are explained in an organized way. No confusing parts. Example: Every sentence is easy to understand and precise.",
+        "4": "Good: Mostly clear and understandable, with only minor ambiguity or imprecise wording. Example: One or two unclear words, but overall easy to follow.",
+        "3": "Adequate: Generally understandable, but several vague, convoluted, or poorly chosen words. Listener must make an effort to understand. Example: Some sentences are complex or awkward, requiring clarification.",
+        "2": "Poor: Often unclear, ambiguous, or confusing, leading to misunderstandings. Example: Multiple word errors or jumbled sentences cause confusion.",
+        "1": "Very Poor: Most of the content is incomprehensible, muddled, or nonsensical. Example: Sentences are mixed up, illogical, or the listener cannot understand the intent."
+      }
+    }
+  ],
+  "common_levels": {
+    "0": "Complete failure to demonstrate the skill. The response is irrelevant, incomprehensible, or shows no attempt to engage with the metric."
+  }
+}
