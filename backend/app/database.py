@@ -5,6 +5,7 @@ from typing import Any
 
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine
+from supabase import Client, create_client
 
 from app.config import Settings
 
@@ -37,3 +38,9 @@ def get_db_session() -> Generator[DBSession, Any, None]:
             yield db_session
         finally:
             db_session.close()
+
+
+def get_supabase_client() -> Client:
+    if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_ROLE_KEY:
+        return create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+    raise RuntimeError('Supabase client configuration is missing in environment variables.')

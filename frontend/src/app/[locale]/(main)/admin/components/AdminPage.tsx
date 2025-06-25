@@ -12,17 +12,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import StatCard from '@/components/common/StatCard';
 import Input from '@/components/ui/Input';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/AlertDialog';
+import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import { AdminProps } from '@/interfaces/AdminProps';
 import { adminService } from '@/services/client/AdminService';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
@@ -30,7 +20,6 @@ import Reviews from './Reviews';
 
 export default function Admin({ stats, reviews }: AdminProps) {
   const t = useTranslations('Admin');
-  const tr = useTranslations('Settings');
   const [tokenLimit, setTokenLimit] = useState<number>(stats.dailyTokenLimit);
   const [savedTokenLimit, setSavedTokenLimit] = useState<number>(stats.dailyTokenLimit);
   const [saving, setSaving] = useState(false);
@@ -143,30 +132,16 @@ export default function Admin({ stats, reviews }: AdminProps) {
                     <tr key={user} className="border-t border-bw-10">
                       <td className="py-2 px-2 truncate">{user}</td>
                       <td className="py-2 px-2">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label={t('deleteUser')}
-                              className="group"
-                            >
-                              <Trash2 className="w-4 h-4 text-bw-40 group-hover:text-flame-50" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>{tr('deleteAccountConfirmTitle')}</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                {tr('deleteAccountConfirmDesc', { user })}
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>{tr('cancel')}</AlertDialogCancel>
-                              <AlertDialogAction>{tr('confirm')}</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        <DeleteUserHandler id={user}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label={t('deleteUser')}
+                            className="group"
+                          >
+                            <Trash2 className="w-4 h-4 text-bw-40 group-hover:text-flame-50" />
+                          </Button>
+                        </DeleteUserHandler>
                       </td>
                     </tr>
                   ))}

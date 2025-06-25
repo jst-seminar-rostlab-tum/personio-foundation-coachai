@@ -1,0 +1,98 @@
+{
+  "en": {
+    "systemPrompts": {
+      "sessionExamples": "You are an expert communication coach analyzing training sessions. Always respond in English using the specified output model format.",
+      "goalsAchieved": "You are an expert communication coach analyzing training sessions. Always respond in English using the specified output model format.",
+      "recommendations": "You are an expert communication coach analyzing training sessions. Always respond in English using the specified output model format."
+    },
+    "mocks": {
+      "sessionExamples": {
+        "positive_examples": [
+          {
+            "heading": "Clear Objective Addressed",
+            "feedback": "The user successfully summarized the objective.",
+            "quote": "I want to make sure we both feel heard and find a solution together."
+          }
+        ],
+        "negative_examples": [
+          {
+            "heading": "Missed Empathy",
+            "feedback": "The user dismissed the other party's concern.",
+            "quote": "That's not important right now.",
+            "improved_quote": "I understand your concern—let's come back to it in a moment."
+          }
+        ]
+      },
+      "goalsAchieved": {
+        "goals_achieved": [
+          "Clearly communicate the impact of the missed deadlines",
+          "Understand potential underlying causes"
+        ]
+      },
+      "recommendations": {
+        "recommendations": [
+          {
+            "heading": "Practice the STAR method",
+            "recommendation": "When giving feedback, use the Situation, Task, Action, Result framework to provide more concrete examples."
+          },
+          {
+            "heading": "Ask more diagnostic questions",
+            "recommendation": "Spend more time understanding root causes before moving to solutions. This builds empathy and leads to more effective outcomes."
+          },
+          {
+            "heading": "Define clear next steps",
+            "recommendation": "End feedback conversations with agreed-upon action items, timelines, and follow-up plans."
+          }
+        ]
+      }
+    }
+  },
+  "de": {
+    "systemPrompts": {
+      "sessionExamples": "Du bist ein Kommunikationstrainer, der Trainingssitzungen analysiert. Antworte immer auf Deutsch und verwende die angegebene Modellstruktur.",
+      "goalsAchieved": "Du bist ein Kommunikationstrainer, der analysiert, welche Ziele in einer Trainingssitzung erreicht wurden. Antworte immer auf Deutsch und verwende die angegebene Modellstruktur.",
+      "recommendations": "Du bist ein Kommunikationstrainer, der Trainingstranskripte analysiert. Antworte immer auf Deutsch und verwende die angegebene Modellstruktur."
+    },
+    "mocks": {
+      "sessionExamples": {
+        "positive_examples": [
+          {
+            "heading": "Klares Ziel angesprochen",
+            "feedback": "Der Benutzer hat das Ziel erfolgreich zusammengefasst.",
+            "quote": "Ich möchte sicherstellen, dass wir beide gehört werden und gemeinsam eine Lösung finden."
+          }
+        ],
+        "negative_examples": [
+          {
+            "heading": "Fehlende Empathie",
+            "feedback": "Der Benutzer hat die Bedenken der anderen Person abgewiesen.",
+            "quote": "Das ist jetzt nicht wichtig.",
+            "improved_quote": "Ich verstehe Ihre Bedenken – lassen Sie uns später darauf zurückkommen."
+          }
+        ]
+      },
+      "goalsAchieved": {
+        "goals_achieved": [
+          "Die Auswirkungen verpasster Fristen klar kommunizieren",
+          "Mögliche zugrunde liegende Ursachen verstehen"
+        ]
+      },
+      "recommendations": {
+        "recommendations": [
+          {
+            "heading": "STAR-Methode üben",
+            "recommendation": "Nutzen Sie bei Feedbackgesprächen das STAR-Modell (Situation, Task, Action, Result), um konkretere Beispiele zu geben."
+          },
+          {
+            "heading": "Mehr diagnostische Fragen stellen",
+            "recommendation": "Verbringen Sie mehr Zeit damit, die Ursachen zu verstehen, bevor Sie Lösungen anbieten. Das stärkt das Einfühlungsvermögen und führt zu besseren Ergebnissen."
+          },
+          {
+            "heading": "Klare nächste Schritte definieren",
+            "recommendation": "Beenden Sie Feedbackgespräche mit klaren Handlungsplänen, Zeitrahmen und Follow-up-Vereinbarungen."
+          }
+        ]
+      }
+    }
+  }
+}

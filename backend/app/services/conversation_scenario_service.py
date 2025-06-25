@@ -14,7 +14,7 @@ from app.schemas.conversation_scenario import (
     ConversationScenarioCreateResponse,
 )
 from app.schemas.scenario_preparation import ScenarioPreparationCreate, ScenarioPreparationRead
-from app.services.scenario_preparation_service import (
+from app.services.scenario_preparation.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,
 )
@@ -133,6 +133,7 @@ class ConversationScenarioService:
             other_party=conversation_scenario.other_party,
             num_objectives=3,  # Example value, adjust as needed
             num_checkpoints=3,  # Example value, adjust as needed
+            language_code=conversation_scenario.language_code,
         )
         background_tasks.add_task(
             generate_scenario_preparation, prep_id, new_preparation, get_db_session
