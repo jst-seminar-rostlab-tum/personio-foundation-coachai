@@ -4,9 +4,10 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 from gotrue import AdminUserAttributes
-from supabase import AuthError, create_client
+from supabase import AuthError
 
 from app.config import settings
+from app.database import get_supabase_client
 from app.interfaces import MockUserIdsEnum
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig, ConfigType
@@ -1539,9 +1540,9 @@ def get_mock_user_data() -> tuple[AdminUserAttributes, AdminUserAttributes]:
 
 
 def create_mock_users() -> None:
-    supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
-
     attributes, admin_attributes = get_mock_user_data()
+
+    supabase = get_supabase_client()
 
     # Create mock user
     try:
@@ -1557,7 +1558,8 @@ def create_mock_users() -> None:
 
 
 def delete_mock_users() -> None:
-    supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+    supabase = get_supabase_client()
+
     for user_id in [MockUserIdsEnum.USER.value, MockUserIdsEnum.ADMIN.value]:
         try:
             supabase.auth.admin.delete_user(user_id.__str__())

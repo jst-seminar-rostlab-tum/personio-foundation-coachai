@@ -1,22 +1,18 @@
 {
-  "metaTitle": "Training Settings - Coach AI",
+  "metaTitle": "Settings - Coach AI",
   "metaDescription": "Customize your training preferences and goals",
-  "title": "Training Settings",
+  "title": "Settings",
   "backToDashboard": "Back to Dashboard",
   "privacyControls": "Privacy Controls",
   "storeAudioTranscripts": "Store Conversation Audio and Transcripts",
   "export": "Export",
   "exportData": "Export personal data",
   "deleteAccount": "Delete account",
-  "requestDeletion": "Request Deletion",
   "personalizationSettings": "Personalization Settings",
   "saveSettings": "Save Settings",
+  "saving": "Saving...",
   "ninetyDays": "Your audio and transcripts will be retained and viewable in the training history for 90 days.",
   "zeroDays": "Your audio and transcripts will not be saved.",
-  "deleteAccountConfirmTitle": "Are you sure?",
-  "deleteAccountConfirmDesc": "This action cannot be undone.",
-  "cancel": "Cancel",
-  "confirm": "Confirm",
   "preferences": {
     "language": {
       "label": "Preferred Language",
@@ -40,16 +36,12 @@
   },
   "leadershipGoals": {
     "currentRole": {
-      "label": "Current Role",
-      "tl": "Team Leader",
-      "rec": "Recruitment Specialist",
-      "tr": "Trainee"
+      "label": "Current Role"
     },
     "primaryGoals": {
       "label": "Primary Goals",
-      "feedback": "Give Constructive Feedback",
-      "coaching": "Coaching & Mentoring",
-      "coping": "Coping Mechanisms"
+      "placeholder": "Please select up to 3 goals",
+      "maxOptionsSelected": "Max. options selected"
     }
   },
   "saveSettingsSuccess": "Your settings have been saved successfully.",

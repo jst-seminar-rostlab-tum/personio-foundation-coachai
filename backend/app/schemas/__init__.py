@@ -44,6 +44,18 @@ from app.schemas.session_turn import (
     SessionTurnRead,
 )
 from app.schemas.user_confidence_score import ConfidenceScoreRead
+from app.schemas.user_export import (
+    ExportConfidenceScore,
+    ExportConversationScenario,
+    ExportReview,
+    ExportScenarioPreparation,
+    ExportSession,
+    ExportSessionFeedback,
+    ExportSessionTurn,
+    ExportUserGoal,
+    ExportUserProfile,
+    UserDataExport,
+)
 from app.schemas.user_profile import (
     UserProfileExtendedRead,
     UserProfileRead,
@@ -97,4 +109,14 @@ __all__ = [
     'UserProfileRead',
     'UserProfileExtendedRead',
     'UserStatisticsRead',
+    'ExportConfidenceScore',
+    'ExportConversationScenario',
+    'ExportReview',
+    'ExportScenarioPreparation',
+    'ExportSession',
+    'ExportSessionFeedback',
+    'ExportSessionTurn',
+    'ExportUserGoal',
+    'ExportUserProfile',
+    'UserDataExport',
 ]

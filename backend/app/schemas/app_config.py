@@ -1,5 +1,3 @@
-from typing import Optional
-
 from app.models.app_config import ConfigType
 from app.models.camel_case import CamelModel
 
@@ -8,7 +6,7 @@ from app.models.camel_case import CamelModel
 class AppConfigCreate(CamelModel):
     key: str
     value: str
-    type: Optional[ConfigType] = None
+    type: ConfigType
 
 
 # Schema for reading AppConfig data

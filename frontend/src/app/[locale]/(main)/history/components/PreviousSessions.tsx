@@ -21,6 +21,7 @@ import { SessionPaginated, SessionFromPagination } from '@/interfaces/Session';
 import { api } from '@/services/client/Api';
 import { sessionService } from '@/services/server/SessionService';
 import Link from 'next/link';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
 
 export default function PreviousSessions({
   limit,
@@ -33,8 +34,10 @@ export default function PreviousSessions({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionsStorage, setSessionsStorage] = useState<SessionFromPagination[]>(sessions);
+  const [totalSessionsCount, setTotalSessionsCount] = useState(totalSessions);
   const t = useTranslations('History');
-  const canLoadMore = visibleCount < totalSessions;
+  const tCommon = useTranslations('Common');
+  const canLoadMore = visibleCount < totalSessionsCount;
 
   const handleLoadMore = (newPage: number) => {
     setPageNumber(newPage);
@@ -47,6 +50,7 @@ export default function PreviousSessions({
         const response = await sessionService.getPaginatedSessions(api, pageNumber, limit);
         setSessionsStorage((prev) => [...prev, ...response.data.sessions]);
         setVisibleCount((prev) => prev + limit);
+        setTotalSessionsCount(response.data.totalSessions);
       } catch (e) {
         console.error(e);
       } finally {
@@ -62,7 +66,10 @@ export default function PreviousSessions({
     try {
       setIsDeleting(true);
       await clearAllSessions();
-      setVisibleCount(0);
+
+      setSessionsStorage([]);
+      setTotalSessionsCount(0);
+
       showSuccessToast(t('deleteSuccess'));
     } catch (e) {
       showErrorToast(e, t('deleteError'));
@@ -101,23 +108,27 @@ export default function PreviousSessions({
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        {sessionsStorage.map((session: SessionFromPagination) => (
-          <Link
-            key={session.sessionId}
-            href={`/feedback/${session.sessionId}`}
-            className="border border-bw-20 rounded-xl px-4 py-3 flex justify-between items-center cursor-pointer transition-all duration-300 hover:shadow-md"
-          >
-            <div>
-              <div className="font-semibold text-bw-70 text-sm mb-1">{session.title}</div>
-              <div className="text-xs text-bw-40 leading-tight">{session.summary}</div>
-            </div>
-            <div className="text-xs text-bw-70 text-center whitespace-nowrap ml-4">
-              {session.score}%
-              <br />
-              {session.status}
-            </div>
-          </Link>
-        ))}
+        {!sessionsStorage || sessionsStorage.length === 0 ? (
+          <EmptyListComponent itemType={tCommon('emptyList.sessions')} />
+        ) : (
+          sessionsStorage.map((session: SessionFromPagination) => (
+            <Link
+              key={session.sessionId}
+              href={`/feedback/${session.sessionId}`}
+              className="border border-bw-20 rounded-xl px-4 py-3 flex justify-between items-center cursor-pointer transition-all duration-300 hover:shadow-md"
+            >
+              <div>
+                <div className="font-semibold text-bw-70 text-sm mb-1">{session.title}</div>
+                <div className="text-xs text-bw-40 leading-tight">{session.summary}</div>
+              </div>
+              <div className="text-xs text-bw-70 text-center whitespace-nowrap ml-4">
+                {session.score}%
+                <br />
+                {session.status}
+              </div>
+            </Link>
+          ))
+        )}
       </div>
       {canLoadMore && (
         <div className="flex justify-center mt-4">

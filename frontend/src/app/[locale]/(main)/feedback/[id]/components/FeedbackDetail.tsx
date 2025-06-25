@@ -11,7 +11,6 @@ import {
   PlayIcon,
 } from 'lucide-react';
 import Progress from '@/components/ui/Progress';
-import { Button } from '@/components/ui/Button';
 import {
   Accordion,
   AccordionContent,
@@ -178,13 +177,10 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           </div>
         </div>
       </div>
-      <Button variant="outline" size="full">
-        {t('yourApproach')}
-      </Button>
-      <Accordion type="multiple" className="w-full">
+      <Accordion type="multiple">
         <AccordionItem value="feedback">
           <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
-          <AccordionContent className="px-5">
+          <AccordionContent>
             <div className="flex items-center gap-2 mt-3">
               <CheckCircle size={24} className="text-forest-50" />
               <span className="text-xl">{t('detailedFeedback.positive')}</span>

@@ -1,14 +1,17 @@
+import logging
 from math import ceil
 from typing import Union
 from uuid import UUID
 
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
+from supabase import AuthError
 
+from app.database import get_supabase_client
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import Goal, UserGoal
-from app.models.user_profile import UserProfile
+from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
     PaginatedUserResponse,
@@ -64,7 +67,7 @@ class UserService:
         )
 
     def get_user_profiles(
-        self, detailed: bool, page: int = 1, page_size: int = 10, email_substring: str | None = None
+        self, page: int = 1, page_size: int = 10, email_substring: str | None = None
     ) -> PaginatedUserResponse:
         statement = select(UserProfile)
         if email_substring:
@@ -75,23 +78,20 @@ class UserService:
         total_users = len(self.db.exec(statement).all())
         if total_users == 0:
             raise HTTPException(
-                status_code=404,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail='No user profiles found.',
             )
 
         total_pages = ceil(total_users / page_size)
         if page < 1 or page > total_pages:
             raise HTTPException(
-                status_code=400,
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Invalid page number.',
             )
 
         users = self.db.exec(statement.offset((page - 1) * page_size).limit(page_size)).all()
 
-        if detailed:
-            user_list = [self._get_detailed_user_profile_response(user) for user in users]
-        else:
-            user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
+        user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
 
         return PaginatedUserResponse(
             page=page,
@@ -120,7 +120,7 @@ class UserService:
         user = self.db.get(UserProfile, user_id)
         if not user:
             raise HTTPException(
-                status_code=404,
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail='User profile not found.',
             )
 
@@ -188,7 +188,7 @@ class UserService:
             user.account_role = data.account_role
         elif data.account_role:
             raise HTTPException(
-                status_code=403,
+                status_code=status.HTTP_403_FORBIDDEN,
                 detail='Only admins can change the account role.',
             )
 
@@ -196,12 +196,16 @@ class UserService:
 
         # Update goals
         if not data.goals:
-            raise HTTPException(status_code=400, detail='Goals cannot be empty')
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail='Goals cannot be empty'
+            )
         self._update_goals(user.id, data.goals)
 
         # Update confidence scores
         if not data.confidence_scores:
-            raise HTTPException(status_code=400, detail='Confidence scores cannot be empty')
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail='Confidence scores cannot be empty'
+            )
         self._update_confidence_scores(user.id, data.confidence_scores)
 
         self.db.refresh(user)
@@ -228,7 +232,7 @@ class UserService:
                 user.account_role = data.account_role
             else:
                 raise HTTPException(
-                    status_code=403,
+                    status_code=status.HTTP_403_FORBIDDEN,
                     detail='Only admins can change the account role.',
                 )
 
@@ -247,9 +251,57 @@ class UserService:
         return self._get_detailed_user_profile_response(user)
 
     def _delete_user(self, user_id: UUID) -> dict:
-        user = self.db.get(UserProfile, user_id)  # type: ignore
+        user = self.db.get(UserProfile, user_id)
         if not user:
-            raise HTTPException(status_code=404, detail='User profile not found')
-        self.db.delete(user)
-        self.db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail='User profile not found'
+            )
+
+        try:
+            self.db.delete(user)
+            self.db.commit()
+        except Exception as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to delete user'
+            ) from e
+
+        try:
+            self._delete_supabase_user(user_id)
+        except Exception:
+            logging.warning(
+                f'Deleted user {user_id} from user_profiles table but not from supabase auth table'
+                '. Admin action required!'
+            )
+
         return {'message': 'User profile deleted successfully'}
+
+    def _delete_supabase_user(self, user_id: UUID) -> None:
+        try:
+            supabase = get_supabase_client()
+            supabase.auth.admin.delete_user(str(user_id))
+        except AuthError as e:
+            if e.code != 'user_not_found':
+                raise e
+        except Exception as e:
+            raise e
+
+    def delete_user_profile(self, user_profile: UserProfile, delete_user_id: UUID | None) -> dict:
+        if delete_user_id and user_profile.account_role == AccountRole.admin:
+            # Check if the admin is trying to delete another admin that is not himself
+            if delete_user_id != user_profile.id:
+                delete_user = self.db.get(UserProfile, delete_user_id)
+                if delete_user and delete_user.account_role == AccountRole.admin:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail='Admin cannot delete another admin ',
+                    )
+
+            return self._delete_user(delete_user_id)
+        elif delete_user_id and delete_user_id != user_profile.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail='Admin access required to delete other users',
+            )
+        else:
+            return self._delete_user(user_profile.id)

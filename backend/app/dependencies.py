@@ -82,7 +82,11 @@ def require_user(
     user_id = token['sub']
     statement = select(UserProfile).where(UserProfile.id == user_id)
     user = db.exec(statement).first()
-    if not user or user.account_role not in [AccountRole.user, AccountRole.admin]:
+    if not user:
+        logging.warning('User not found for ID: ', user_id)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Cannot find user')
+    if user.account_role not in [AccountRole.user, AccountRole.admin]:
+        logging.warning('User role is not one of: ', AccountRole.user, AccountRole.admin)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail='User does not have access'
         )
@@ -100,7 +104,11 @@ def require_admin(
     user_id = token['sub']
     statement = select(UserProfile).where(UserProfile.id == user_id)
     user = db.exec(statement).first()
-    if not user or user.account_role != AccountRole.admin:
+    if not user:
+        logging.warning('User not found for ID: ', user_id)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Cannot find user')
+    if user.account_role != AccountRole.admin:
+        logging.warning('User role is not: ', AccountRole.admin)
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Admin access required')
     return user
 

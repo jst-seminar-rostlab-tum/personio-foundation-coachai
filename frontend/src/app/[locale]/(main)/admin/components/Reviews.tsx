@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/Select';
 import { useRouter } from 'next/navigation';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
 
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
   const limit = pagination?.pageSize;
@@ -110,7 +111,9 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
           </div>
         </div>
       </div>
-      {reviewsStorage && (
+      {!reviewsStorage || reviewsStorage.length === 0 ? (
+        <EmptyListComponent itemType={tCommon('emptyList.reviews')} />
+      ) : (
         <div className="w-full mb-8 text-left">
           <div className="flex items-center justify-between mb-4">
             <div className="text-lg font-semibold text-bw-70">{t('userReviews')}</div>
