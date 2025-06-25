@@ -145,7 +145,10 @@ class SessionService:
         statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
         conversation_scenarios = self.db.exec(statement).all()
         if not conversation_scenarios:
-            raise HTTPException(status_code=404, detail='No sessions found for the given user ID')
+            return {
+                'message': f'No sessions found for user ID {user_id}',
+                'audios': [],
+            }
 
         total_deleted_sessions = 0
         audio_uris = []
@@ -161,6 +164,7 @@ class SessionService:
         self.db.commit()
 
         # TODO: Delete audio File self._delete_audio_files(audio_uris)
+        self._delete_audio_files(audio_uris=audio_uris)  # Dummy function to delete audios
         return {
             'message': f'Deleted {total_deleted_sessions} sessions for user ID {user_id}',
             'audios': audio_uris,
@@ -439,3 +443,9 @@ class SessionService:
             score=feedback.overall_score if feedback else -1,
             skills=scores,
         )
+
+    def _delete_audio_files(self, audio_uris: list[str]) -> None:
+        """Mock function to delete audio files from object storage.
+        Replace this with your actual object storage client logic."""
+        for uri in audio_uris:  # TODO: delete audios on object storage.  # noqa: B007
+            pass
