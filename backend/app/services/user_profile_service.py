@@ -1,4 +1,3 @@
-from datetime import UTC, datetime
 from math import ceil
 from typing import Union
 from uuid import UUID
@@ -9,7 +8,7 @@ from sqlmodel import col, select
 
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import Goal, UserGoal
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
     PaginatedUserResponse,
@@ -111,8 +110,7 @@ class UserService:
                 status_code=404,
                 detail='User profile not found.',
             )
-        if user.account_role == AccountRole.user:
-            self._update_login_streak(user)
+
         if detailed:
             return self._get_detailed_user_profile_response(user)
         else:
@@ -255,45 +253,3 @@ class UserService:
         self.db.delete(user)
         self.db.commit()
         return {'message': 'User profile deleted successfully'}
-
-    def delete_user_profile(self, user_profile: UserProfile, delete_user_id: UUID | None) -> dict:
-        if delete_user_id and user_profile.account_role == 'admin':
-            # Check if the admin is trying to delete another admin that is not himself
-            if delete_user_id != user_profile.id:
-                delete_user = self.db.get(UserProfile, delete_user_id)
-                if delete_user and delete_user.account_role == 'admin':
-                    raise HTTPException(
-                        status_code=403, detail='Admin cannot delete another admin '
-                    )
-
-            return self._delete_user(delete_user_id)
-        elif delete_user_id and delete_user_id != user_profile.id:
-            raise HTTPException(
-                status_code=403, detail='Admin access required to delete other users'
-            )
-        else:
-            return self._delete_user(user_profile.id)
-
-    def _update_login_streak(self, user_profile: UserProfile) -> None:
-        # Check if the last_logged_in date is available
-        if user_profile.last_logged_in:
-            now = datetime.now(UTC)
-            last_logged_in = user_profile.last_logged_in.replace(tzinfo=UTC)
-
-            # Calculate the difference in days
-            days_difference = (now - last_logged_in).days
-
-            if days_difference == 1:
-                # Increment streak if it's a new day
-                user_profile.current_streak_days += 1
-            elif days_difference > 1:
-                # Reset streak if it's 2+ days later
-                user_profile.current_streak_days = 0
-
-        # Update last_logged_in to the current time
-        user_profile.last_logged_in = datetime.now(UTC)
-
-        # Commit changes to the database
-        self.db.add(user_profile)
-        self.db.commit()
-        self.db.refresh(user_profile)

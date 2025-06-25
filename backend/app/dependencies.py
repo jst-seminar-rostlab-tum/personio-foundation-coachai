@@ -1,4 +1,5 @@
 import logging
+from datetime import UTC, datetime
 from typing import Annotated, Any, TypedDict
 
 import jwt
@@ -85,6 +86,7 @@ def require_user(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail='User does not have access'
         )
+    _update_login_streak(db, user)
     return user
 
 
@@ -101,3 +103,29 @@ def require_admin(
     if not user or user.account_role != AccountRole.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Admin access required')
     return user
+
+
+def _update_login_streak(db: Session, user_profile: UserProfile) -> None:
+    # Check if the last_logged_in date is available
+    if user_profile.last_logged_in:
+        now = datetime.now(UTC)
+        last_logged_in = user_profile.last_logged_in.replace(tzinfo=UTC)
+
+        # Calculate the difference in days
+        days_difference = (now - last_logged_in).days
+
+        if days_difference == 1:
+            # Increment streak if it's a new day
+            user_profile.current_streak_days += 1
+        elif days_difference > 1:
+            # Reset streak if it's 2+ days later
+            user_profile.current_streak_days = 0
+
+        if days_difference != 0:
+            # Update last_logged_in to the current time only if there is a streak increment or reset
+            user_profile.last_logged_in = datetime.now(UTC)
+
+            # Commit changes to the database
+            db.add(user_profile)
+            db.commit()
+            db.refresh(user_profile)
