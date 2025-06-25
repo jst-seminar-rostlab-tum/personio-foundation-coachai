@@ -27,7 +27,7 @@ if __name__ == '__main__':
             'Please update your .env and rerun the script'
         )
         exit()
-    if not settings.SUPABASE_URL or len(settings.SUPABASE_URL) == 0:
+    if not settings.SUPABASE_URL.strip():
         print(
             "Can't populate vector database. No SUPABASE URL available! "
             'Please update your .env and rerun the script'
@@ -42,8 +42,9 @@ if __name__ == '__main__':
     if not doc_folder_user:
         doc_folder_user = DOC_FOLDER
 
-    print(f"\nSupabase URL from settings: '{supabase_url}'")
-    confirm = input('Do you want to proceed with this Supabase URL? (y/n): ').strip().lower()
+    confirm = input(
+        f'Do you want to proceed with this Supabase URL ({supabase_url})? (y/n): '
+    ).strip()
     if confirm != 'y':
         print(
             'If you want to change the Supabase URL, '
