@@ -216,6 +216,15 @@ class ReviewService:
         self.db.commit()
         self.db.refresh(new_review)
 
+        # if allow_admin_access allows admin access to the session of the review
+        if review.allow_admin_access and new_review.session_id:
+            session = self.db.get(Session, new_review.session_id)
+            if session:
+                session.allow_admin_access = True
+                self.db.add(session)
+                self.db.commit()
+                self.db.refresh(session)
+
         return ReviewResponse(
             message='Review submitted successfully',
             review_id=new_review.id,
