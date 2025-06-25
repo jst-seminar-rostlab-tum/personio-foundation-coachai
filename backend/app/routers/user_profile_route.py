@@ -15,6 +15,7 @@ from app.schemas.user_profile import (
     UserProfileUpdate,
     UserStatisticsRead,
 )
+from app.services.user_export_service import build_user_data_export
 from app.services.user_profile_service import UserService
 
 router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
@@ -113,3 +114,15 @@ def delete_user_profile(
         user_profile=user_profile,
         delete_user_id=delete_user_id,
     )
+
+
+@router.get('/export', response_model=dict)
+def export_user_data(
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> dict:
+    """
+    Export all user-related data (history) for the currently authenticated user.
+    """
+    export_data = build_user_data_export(user_profile, db_session)
+    return export_data.dict()
