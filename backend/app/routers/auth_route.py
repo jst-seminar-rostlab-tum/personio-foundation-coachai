@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from sqlmodel import Session as DBSession
 
 from app.config import Settings
-from app.database import get_db_session, supabase
+from app.database import get_db_session, get_supabase_client
 from app.dependencies import JWTPayload, verify_jwt
 from app.models.user_profile import UserProfile
 from app.services.twilio_service import check_verification_code, send_verification_code
@@ -77,6 +77,7 @@ def create_user(req: CreateUserRequest) -> None:
         ) from e
 
     try:
+        supabase = get_supabase_client
         attributes: AdminUserAttributes = {
             'email': req.email,
             'password': req.password,
