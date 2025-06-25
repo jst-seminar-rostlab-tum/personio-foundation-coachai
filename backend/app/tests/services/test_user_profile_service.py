@@ -11,11 +11,7 @@ from app.services.user_profile_service import UserService
 
 @pytest.fixture
 def mock_user() -> UserProfile:
-    return UserProfile(
-        id=uuid4(),
-        email='test@example.com',
-        account_role='user',
-    )
+    return UserProfile(id=uuid4())
 
 
 @pytest.fixture
