@@ -1,0 +1,21 @@
+{
+  "scenario": {
+    "title": "Feedback on Project Communication (Structure 2)",
+    "description": "A User (manager) gives feedback to an Assistant (Sam, direct report) about communication during a recent project. Structure is poor, information is scattered, topics jump frequently, and it is hard to identify the beginning, middle, or end.",
+    "participants": {
+      "user_role": "Manager",
+      "assistant_role": "Sam, Direct Report"
+    }
+  },
+  "transcript": [
+    {"speaker": "User", "turn": 1, "message": "Sam, about the project, emails, syncs, requirements, team lost time, you know?"},
+    {"speaker": "Assistant", "turn": 2, "message": "Hi. Thanks for asking. Overall, I think it's going okay, but I admit I've felt a bit overwhelmed lately and I might have let some things slip."},
+    {"speaker": "User", "turn": 3, "message": "Designers, old spec, busy, appreciate, but next time, reminders, support, responsibility."},
+    {"speaker": "Assistant", "turn": 4, "message": "You're right. I sincerely apologize for that. I was trying to manage another urgent deadline and also had a family matter come up, but I should have communicated that to you proactively. It's my responsibility, and I'm sorry for the impact it had on the team."},
+    {"speaker": "User", "turn": 5, "message": "Check in, plan, thanks, improvements, Sam."},
+    {"speaker": "Assistant", "turn": 6, "message": "I completely understand. Seeing it from that perspective, I realize the downstream effects were more significant than I thought. I'm committed to making sure this doesn't happen again."},
+    {"speaker": "User", "turn": 7, "message": "Responsibilities, calendar, emails, received, solve, ok."},
+    {"speaker": "Assistant", "turn": 8, "message": "Thank you for that. It's on me to manage my responsibilities. I will block out the syncs in my calendar as non-negotiable and will make a point to acknowledge all critical emails within a few hours, even if it's just to say 'received'. That should solve the issue."},
+    {"speaker": "User", "turn": 9, "message": "Bye, Sam."}
+  ]
+}
