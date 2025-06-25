@@ -58,6 +58,10 @@ class ReviewService:
     ) -> list[ReviewRead]:
         review_list = []
         for review, user in joined_reviews_users:
+            session = None
+            if review.session_id:
+                session = self.db.get(Session, review.session_id)
+
             review_list.append(
                 ReviewRead(
                     id=review.id,
@@ -66,6 +70,7 @@ class ReviewService:
                     session_id=review.session_id,
                     rating=review.rating,
                     comment=review.comment,
+                    allow_admin_access=session.allow_admin_access if session else False,
                     date=review.created_at.date(),
                 )
             )
