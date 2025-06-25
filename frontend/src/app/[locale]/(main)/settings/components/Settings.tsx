@@ -18,6 +18,7 @@ import { UserPreference } from '@/interfaces/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfile } from '@/interfaces/UserProfile';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import JSZip from 'jszip';
 import UserPreferences from './UserPreferences';
 
 const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
@@ -134,6 +135,26 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const data = await UserProfileService.exportUserData();
+      const zip = new JSZip();
+      zip.file('user_data_export.json', JSON.stringify(data, null, 2));
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'user_data_export.zip';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      showSuccessToast(t('exportSuccess'));
+    } catch (error) {
+      showErrorToast(error, t('exportError'));
+    }
+  };
+
   return (
     <div>
       <h1 className="text-2xl">{t('title')}</h1>
@@ -162,7 +183,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
                   <div className="text-bw-70">{t('exportData')}</div>
                 </div>
                 <div className="flex items-center">
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" onClick={handleExport}>
                     <Download className="w-4 h-4" />
                     <span className="hidden sm:inline">{t('export')}</span>
                   </Button>

@@ -5,9 +5,9 @@ from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import SupabaseVectorStore
-from supabase import Client, create_client
 
 from app.config import Settings
+from app.database import get_supabase_client
 
 settings = Settings()
 
@@ -79,16 +79,6 @@ def format_docs_with_metadata(docs: list[Document]) -> tuple[str, list[dict]]:
     return '\n\n'.join([doc.page_content for doc in docs]), [doc.metadata for doc in docs]
 
 
-def get_supabase_client() -> Client:
-    """
-    Initializes and returns a Supabase client using credentials from settings.
-
-    Returns:
-        Client: An authenticated Supabase client instance.
-    """
-    return create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
-
-
 def load_vector_db(
     embedding: Embeddings, table_name: str, query_name: str = 'match_documents'
 ) -> SupabaseVectorStore:
@@ -104,10 +94,8 @@ def load_vector_db(
     Returns:
         SupabaseVectorStore: A vector store instance connected to the specified Supabase table.
     """
-    db_client = get_supabase_client()
-
     return SupabaseVectorStore(
-        client=db_client,
+        client=get_supabase_client(),
         embedding=embedding,
         table_name=table_name,
         query_name=query_name,
