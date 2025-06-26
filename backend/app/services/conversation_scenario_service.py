@@ -159,6 +159,44 @@ class ConversationScenarioService:
             for row in rows
         ]
 
+    def get_scenario_summary(
+        self, scenario_id: UUID, user_profile: UserProfile
+    ) -> ConversationScenarioSummary:
+        scenario = self.db.get(ConversationScenario, scenario_id)
+        if not scenario:
+            raise HTTPException(status_code=404, detail='Conversation scenario not found')
+
+        if scenario.user_id != user_profile.id and user_profile.account_role != 'admin':
+            raise HTTPException(
+                status_code=403,
+                detail='You do not have permission to access this scenario.',
+            )
+
+        total_sessions = len(scenario.sessions) if scenario.sessions else 0
+        average_score = (
+            sum(
+                [
+                    session.feedback.overall_score
+                    for session in scenario.sessions
+                    if session.feedback and session.feedback.status == FeedbackStatusEnum.completed
+                ]
+            )
+            / total_sessions
+            if total_sessions > 0
+            else None
+        )
+        category_name = (
+            scenario.category.name if scenario.category else scenario.custom_category_label or ''
+        )
+
+        return ConversationScenarioSummary(
+            scenario_id=scenario.id,
+            language_code=scenario.language_code,
+            category_name=category_name,
+            total_sessions=total_sessions,
+            average_score=average_score,
+        )
+
     def _validate_category(self, category_id: str | None) -> ConversationCategory | None:
         """
         Validate that the category exists in the database.

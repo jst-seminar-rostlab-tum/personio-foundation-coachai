@@ -1,19 +1,13 @@
 from datetime import datetime
-from typing import Any, Optional, cast
+from typing import Optional
 from uuid import UUID
-
-from sqlalchemy.sql.elements import ColumnElement
 
 from app.models.camel_case import CamelModel
 from app.models.conversation_scenario import (
-    ConversationScenario,
     ConversationScenarioStatus,
     DifficultyLevel,
 )
 from app.models.language import LanguageCode
-
-lang_col: ColumnElement[Any] = cast(ColumnElement[Any], ConversationScenario.language_code)
-cust_col: ColumnElement[Any] = cast(ColumnElement[Any], ConversationScenario.custom_category_label)
 
 
 # Schema for creating a new ConversationScenario

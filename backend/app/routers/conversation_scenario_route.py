@@ -43,20 +43,20 @@ def list_conversation_scenarios(
     return service.list_scenarios_summary(user_profile)
 
 
-# @router.get(
-#     '/{scenario_id}',
-#     response_model=ConversationScenarioSummary,
-#     dependencies=[Depends(require_user)],
-# )
-# def get_conversation_scenario_metadata(
-#     scenario_id: UUID,
-#     user_profile: Annotated[UserProfile, Depends(require_user)],
-#     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
-# ) -> ConversationScenarioSummary:
-#     """
-#     Retrieve detailed metadata for a single conversation scenario.
-#     """
-#     return service.get_scenario_metadata(scenario_id, user_profile)
+@router.get(
+    '/{scenario_id}',
+    response_model=ConversationScenarioSummary,
+    dependencies=[Depends(require_user)],
+)
+def get_conversation_scenario_metadata(
+    scenario_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
+) -> ConversationScenarioSummary:
+    """
+    Retrieve detailed metadata for a single conversation scenario.
+    """
+    return service.get_scenario_summary(scenario_id, user_profile)
 
 
 @router.post(
