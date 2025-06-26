@@ -1,0 +1,52 @@
+{
+  "scenario": {
+    "title": "Feedback on Project Communication (User has Low Clarity and Structure)",
+    "description": "An Assistant (playing a direct report, Sam) asks for specific feedback, but the User (playing a manager) responds with vague corporate jargon and lacks a clear, structured message.",
+    "participants": {
+      "user_role": "Manager",
+      "assistant_role": "Sam, Direct Report"
+    }
+  },
+  "transcript": [
+    {
+      "speaker": "Assistant",
+      "turn": 1,
+      "message": "Hi, thanks for meeting. You mentioned you had some feedback for me about the Phoenix project?"
+    },
+    {
+      "speaker": "User",
+      "turn": 2,
+      "message": "Hey. Yeah, so, about that... we need to leverage our synergies better. The deliverables aren't aligning with our core competencies right now."
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 3,
+      "message": "Okay, I appreciate that perspective. Could you give me a specific example of a deliverable that I worked on where you see a misalignment? That would help me understand better."
+    },
+    {
+      "speaker": "User",
+      "turn": 4,
+      "message": "It's about the bigger picture. The holistic view. We need to operationalize our key learnings and pivot our strategy to be more results-oriented. It's a paradigm shift."
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 5,
+      "message": "I see. I'm trying to translate that into concrete actions for myself. For instance, regarding the Q3 report I submitted, was there a specific part that you felt missed the mark or needed to be more results-oriented?"
+    },
+    {
+      "speaker": "User",
+      "turn": 6,
+      "message": "It's not about one report, it's about the whole... process. We need to streamline the value-add and minimize the friction points. Just be more proactive."
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 7,
+      "message": "Okay, 'be more proactive' is something I can work with. Would it be helpful, for example, if I sent a daily summary of my progress to increase transparency?"
+    },
+    {
+      "speaker": "User",
+      "turn": 8,
+      "message": "Let's blue-sky that offline. Just keep pushing the envelope. We'll circle back."
+    }
+  ]
+} 
