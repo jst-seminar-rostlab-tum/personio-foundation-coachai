@@ -6,6 +6,7 @@ import Stepper from '@/components/common/Stepper';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
+import { ConversationScenarioFormProps } from '@/interfaces/ConversationScenarioFormProps';
 import { ConversationCategory } from '@/interfaces/ConversationCategory';
 import { ConversationScenario } from '@/interfaces/ConversationScenario';
 import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
@@ -15,7 +16,9 @@ import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
 
-export default function ConversationScenarioForm() {
+export default function ConversationScenarioForm({
+  categoriesData,
+}: ConversationScenarioFormProps) {
   const t = useTranslations('ConversationScenario');
   const router = useRouter();
   const { locale } = useParams();
@@ -36,17 +39,13 @@ export default function ConversationScenarioForm() {
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
 
   useEffect(() => {
-    async function fetchCategories() {
-      const response = await conversationScenarioService.getConversationCategories();
-      setCategories((prev) =>
-        prev.map((cat) => {
-          const match = response.data.find((f: ConversationCategory) => f.id === cat.id);
-          return match ? { ...cat, defaultContext: match.defaultContext } : cat;
-        })
-      );
-    }
-    fetchCategories();
-  }, []);
+    setCategories((prev) =>
+      prev.map((cat) => {
+        const match = categoriesData.find((f: ConversationCategory) => f.id === cat.id);
+        return match ? { ...cat, defaultContext: match.defaultContext } : cat;
+      })
+    );
+  }, [categoriesData]);
 
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
