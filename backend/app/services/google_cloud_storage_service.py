@@ -25,8 +25,6 @@ class GCSManager:
             'client_x509_cert_url': f'https://www.googleapis.com/robot/v1/metadata/x509/{settings.GCP_CLIENT_EMAIL}',
             'universe_domain': 'googleapis.com',
         }
-        print(creds_info)
-
         credentials = service_account.Credentials.from_service_account_info(creds_info)
 
         self.bucket_name: str = settings.GCP_BUCKET
