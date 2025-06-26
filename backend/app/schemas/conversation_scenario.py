@@ -37,3 +37,8 @@ class ConversationScenarioRead(CamelModel):
     status: ConversationScenarioStatus
     created_at: datetime
     updated_at: datetime
+
+
+class ConversationScenarioCreateResponse(CamelModel):
+    message: str
+    scenario_id: UUID
