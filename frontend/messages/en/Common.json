@@ -25,5 +25,11 @@
     "description": "Your {itemType} will appear here in the future!",
     "sessions": "sessions",
     "reviews": "reviews"
-  }
+  },
+  "search": "Search...",
+  "name": "Name",
+  "email": "Email",
+  "role": "Role",
+  "actions": "Actions",
+  "deleteUser": "Delete user"
 }
