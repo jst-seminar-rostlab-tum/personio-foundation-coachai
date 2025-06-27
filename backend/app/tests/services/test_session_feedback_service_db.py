@@ -1,11 +1,20 @@
 import unittest
+from datetime import datetime
 from unittest.mock import MagicMock, patch
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine, select
 
 from app.models import FeedbackStatusEnum
+from app.models.conversation_scenario import (
+    ConversationScenario,
+    ConversationScenarioStatus,
+    DifficultyLevel,
+)
+from app.models.session import Session
+from app.models.session_turn import SessionTurn, SpeakerEnum
+from app.schemas.conversation_scenario import ConversationData
 from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -15,7 +24,10 @@ from app.schemas.session_feedback import (
     RecommendationsCollection,
     SessionExamplesCollection,
 )
-from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
+from app.services.session_feedback.session_feedback_service import (
+    generate_and_store_feedback,
+    get_conversation_data,
+)
 
 
 class TestSessionFeedbackService(unittest.TestCase):
@@ -31,12 +43,65 @@ class TestSessionFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
+    def insert_minimal_conversation(self) -> UUID:
+        scenario_id = uuid4()
+        user_id = uuid4()
+        scenario = ConversationScenario(
+            id=scenario_id,
+            user_id=user_id,
+            category_id='feedback',
+            context='Feedback context',
+            goal='Improve communication',
+            other_party='Sam',
+            difficulty_level=DifficultyLevel.medium,
+            tone='professional',
+            complexity='normal',
+            language_code='en',
+            status=ConversationScenarioStatus.ready,
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
+        self.session.add(scenario)
+        session_id = uuid4()
+        session_obj = Session(
+            id=session_id,
+            scenario_id=scenario_id,
+            status='started',
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
+        self.session.add(session_obj)
+        turn = SessionTurn(
+            id=uuid4(),
+            session_id=session_id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=0,
+            end_offset_ms=1000,
+            text='Hello, Sam!',
+            audio_uri='',
+            ai_emotion='neutral',
+            created_at=datetime.now(),
+        )
+        self.session.add(turn)
+        self.session.commit()
+        return session_id
+
+    def test_get_conversation_data(self) -> None:
+        session_id = self.insert_minimal_conversation()
+        conversation = get_conversation_data(self.session, session_id)
+        self.assertIsInstance(conversation, ConversationData)
+        self.assertEqual(conversation.scenario.context, 'Feedback context')
+        self.assertEqual(len(conversation.transcript), 1)
+        self.assertEqual(conversation.transcript[0].text, 'Hello, Sam!')
+        self.assertEqual(conversation.transcript[0].speaker, SpeakerEnum.user)
+
     @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
     @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
     @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
     def test_generate_and_store_feedback(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
+        session_id = self.insert_minimal_conversation()
         mock_examples.return_value = SessionExamplesCollection(
             positive_examples=[
                 PositiveExample(
@@ -108,8 +173,6 @@ class TestSessionFeedbackService(unittest.TestCase):
             key_concepts='KC1',
         )
 
-        session_id = uuid4()
-
         feedback = generate_and_store_feedback(
             session_id=session_id,
             example_request=example_request,
@@ -161,6 +224,7 @@ class TestSessionFeedbackService(unittest.TestCase):
     def test_generate_and_store_feedback_with_errors(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
+        session_id = self.insert_minimal_conversation()
         mock_examples.side_effect = Exception('Failed to generate examples')
 
         mock_goals.return_value = GoalsAchievedCollection(goals_achieved=['G1'])
@@ -182,8 +246,6 @@ class TestSessionFeedbackService(unittest.TestCase):
             category='Category',
             key_concepts='KeyConcept',
         )
-
-        session_id = uuid4()
 
         feedback = generate_and_store_feedback(
             session_id=session_id, example_request=example_request, db_session=self.session
@@ -241,11 +303,21 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
-        # 创建user_profile和admin_dashboard_stats
+        from datetime import datetime
+
         from app.models.admin_dashboard_stats import AdminDashboardStats
+        from app.models.conversation_scenario import (
+            ConversationScenario,
+            ConversationScenarioStatus,
+            DifficultyLevel,
+        )
+        from app.models.session import Session
+        from app.models.session_turn import SessionTurn, SpeakerEnum
         from app.models.user_profile import UserProfile
 
         user_id = uuid4()
+        scenario_id = uuid4()
+        session_id = uuid4()
         self.session.add(
             UserProfile(
                 id=user_id,
@@ -256,6 +328,44 @@ class TestSessionFeedbackService(unittest.TestCase):
             )
         )
         self.session.add(AdminDashboardStats())
+        # Insert scenario
+        scenario = ConversationScenario(
+            id=scenario_id,
+            user_id=user_id,
+            category_id='feedback',
+            context='Feedback context',
+            goal='Improve communication',
+            other_party='Sam',
+            difficulty_level=DifficultyLevel.medium,
+            tone='professional',
+            complexity='normal',
+            language_code='en',
+            status=ConversationScenarioStatus.ready,
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
+        self.session.add(scenario)
+        session_obj = Session(
+            id=session_id,
+            scenario_id=scenario_id,
+            status='started',
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
+        self.session.add(session_obj)
+        # Insert at least one turn
+        turn = SessionTurn(
+            id=uuid4(),
+            session_id=session_id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=0,
+            end_offset_ms=1000,
+            text='Hello, Sam!',
+            audio_uri='',
+            ai_emotion='neutral',
+            created_at=datetime.now(),
+        )
+        self.session.add(turn)
         self.session.commit()
 
         example_request = ExamplesRequest(
@@ -268,23 +378,23 @@ class TestSessionFeedbackService(unittest.TestCase):
             key_concepts='KC1',
         )
         feedback = generate_and_store_feedback(
-            session_id=user_id,
+            session_id=session_id,
             example_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
         )
-        # 检查feedback分数结构
+        # Check feedback score structure
         self.assertEqual(feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4})
         self.assertEqual(feedback.overall_score, 4.0)
-        # 检查user_profile统计
+        # Check user_profile statistics
         user = self.session.get(UserProfile, user_id)
         self.assertEqual(user.score_sum, 4.0)
         self.assertEqual(user.total_sessions, 1)
-        # 检查admin_dashboard_stats统计
+        # Check admin_dashboard_stats statistics
         stats = self.session.exec(select(AdminDashboardStats)).first()
         self.assertEqual(stats.score_sum, 4.0)
         self.assertEqual(stats.total_trainings, 1)
-        # 平均分计算
+        # Check average score
         self.assertAlmostEqual(user.score_sum / user.total_sessions, 4.0)
         self.assertAlmostEqual(stats.score_sum / stats.total_trainings, 4.0)
 

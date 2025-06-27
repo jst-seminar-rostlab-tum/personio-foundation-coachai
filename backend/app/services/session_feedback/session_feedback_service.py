@@ -12,7 +12,10 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from app.connections.openai_client import call_structured_llm
 from app.models import FeedbackStatusEnum, SessionFeedback, UserProfile
 from app.models.admin_dashboard_stats import AdminDashboardStats
+from app.models.conversation_scenario import ConversationScenario
 from app.models.language import LanguageCode
+from app.models.session import Session
+from app.models.session_turn import SessionTurn
 from app.schemas.conversation_scenario import ConversationData, ConversationScenarioRead
 from app.schemas.session_feedback import (
     ExamplesRequest,
@@ -316,42 +319,7 @@ def generate_and_store_feedback(
         goals = GoalsAchievedCollection(goals_achieved=[])
         recommendations = []
     else:
-        # Mock scenario TODO: replace with actual scenario
-        scenario = ConversationScenarioRead(
-            id=uuid4(),
-            user_id=uuid4(),
-            category_id=example_request.category,
-            custom_category_label=None,
-            context=example_request.context,
-            goal=example_request.goal,
-            other_party=example_request.other_party,
-            difficulty_level='medium',
-            tone='professional',
-            complexity='normal',
-            language_code=example_request.language_code,
-            status='ready',
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
-        )
-        transcript = []
-        if example_request.transcript:
-            for idx, line in enumerate(example_request.transcript.split('\n')):
-                if ':' in line:
-                    speaker, text = line.split(':', 1)
-                    transcript.append(
-                        SessionTurnRead(
-                            id=uuid4(),
-                            session_id=uuid4(),
-                            speaker=speaker.strip().lower(),
-                            start_offset_ms=idx * 2000,
-                            end_offset_ms=(idx + 1) * 2000,
-                            text=text.strip(),
-                            audio_uri='',
-                            ai_emotion='neutral',
-                            created_at=datetime.now(),
-                        )
-                    )
-        conversation = ConversationData(scenario=scenario, transcript=transcript)
+        conversation = get_conversation_data(db_session, session_id)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_examples = executor.submit(
@@ -396,7 +364,16 @@ def generate_and_store_feedback(
                 overall_score = 0.0
 
     # update user profile and admin dashboard stats
-    user = db_session.exec(select(UserProfile).where(UserProfile.id == session_id)).first()
+    user = None
+    session_obj = db_session.exec(select(Session).where(Session.id == session_id)).first()
+    if session_obj:
+        scenario_obj = db_session.exec(
+            select(ConversationScenario).where(ConversationScenario.id == session_obj.scenario_id)
+        ).first()
+        if scenario_obj:
+            user = db_session.exec(
+                select(UserProfile).where(UserProfile.id == scenario_obj.user_id)
+            ).first()
     admin_stats = db_session.exec(select(AdminDashboardStats)).first()
     try:
         if user:
@@ -437,6 +414,27 @@ def generate_and_store_feedback(
     db_session.add(feedback)
     db_session.commit()
     return feedback
+
+
+def get_conversation_data(db_session: DBSession, session_id: UUID) -> ConversationData:
+    """
+    Get conversation data from the database in a single transaction.
+    """
+    with db_session.begin():
+        session = db_session.exec(select(Session).where(Session.id == session_id)).first()
+        if not session:
+            raise ValueError('Session not found')
+        scenario = db_session.exec(
+            select(ConversationScenario).where(ConversationScenario.id == session.scenario_id)
+        ).first()
+        if not scenario:
+            raise ValueError('Scenario not found')
+        scenario_read = ConversationScenarioRead.model_validate(scenario)
+        turns = db_session.exec(
+            select(SessionTurn).where(SessionTurn.session_id == session_id)
+        ).all()
+        transcript = [SessionTurnRead.model_validate(turn) for turn in turns]
+        return ConversationData(scenario=scenario_read, transcript=transcript)
 
 
 if __name__ == '__main__':
