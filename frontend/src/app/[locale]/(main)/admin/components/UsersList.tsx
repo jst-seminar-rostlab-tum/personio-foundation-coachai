@@ -109,7 +109,12 @@ export default function UsersList({
                 <td className="py-2 px-2 truncate">{user.email}</td>
                 <td className="py-2 px-2 truncate">{user.accountRole}</td>
                 <td className="py-2 px-2">
-                  <DeleteUserHandler id={user.userId}>
+                  <DeleteUserHandler
+                    id={user.userId}
+                    onSuccess={() =>
+                      setUsers((prev) => prev.filter((u) => u.userId !== user.userId))
+                    }
+                  >
                     <Button
                       variant="ghost"
                       size="icon"

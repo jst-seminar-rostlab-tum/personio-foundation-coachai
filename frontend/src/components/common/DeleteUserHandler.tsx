@@ -16,7 +16,11 @@ import {
   AlertDialogTrigger,
 } from '../ui/AlertDialog';
 
-export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
+export function DeleteUserHandler({
+  children,
+  id,
+  onSuccess,
+}: DeleteUserHandlerProps & { onSuccess?: () => void }) {
   const [loading, setLoading] = useState(false);
   const t = useTranslations('Common');
 
@@ -25,6 +29,7 @@ export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
     try {
       await UserProfileService.deleteUser(deleteUserId);
       showSuccessToast(t('deleteAccountSuccess'));
+      if (onSuccess) onSuccess();
       if (!deleteUserId) {
         redirect('/');
       }
