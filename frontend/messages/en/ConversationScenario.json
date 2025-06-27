@@ -8,14 +8,14 @@
     "customize": "Customize"
   },
   "category": {
-    "title": "Choose a Conversation Category *",
+    "title": "Choose a Scenario",
     "customPlaceholder": "E.g., Promotion discussion, Onboarding new team member...",
     "customInput": "Define your own conversation topic *"
   },
   "situation": {
     "title": "Describe your Situation",
     "otherParty": {
-      "title": "Who is the other party? *",
+      "title": "Who is the other party?",
       "placeholder": "Enter name"
     },
     "context": {
@@ -59,6 +59,7 @@
       "id": "giving_feedback",
       "name": "Giving Feedback",
       "iconUri": "/icons/category-giving_feedback.svg",
+      "description": "Give constructive feedback to help others improve.",
       "defaultContext": "One-on-one meeting with a team member.",
       "defaultGoal": "Provide constructive feedback effectively.",
       "defaultOtherParty": "Team member"
@@ -67,6 +68,7 @@
       "id": "performance_reviews",
       "name": "Performance Reviews",
       "iconUri": "/icons/category-performance_reviews.svg",
+      "description": "Motivate and guide with effective reviews.",
       "defaultContext": "Formal performance review meeting.",
       "defaultGoal": "Evaluate and discuss employee performance.",
       "defaultOtherParty": "Employee"
@@ -75,6 +77,7 @@
       "id": "conflict_resolution",
       "name": "Conflict Resolution",
       "iconUri": "/icons/category-conflict_resolution.svg",
+      "description": "Resolve conflicts and build a positive team.",
       "defaultContext": "Conflict resolution meeting between team members.",
       "defaultGoal": "Resolve conflicts and improve team dynamics.",
       "defaultOtherParty": "Team members"
@@ -83,6 +86,7 @@
       "id": "salary_discussions",
       "name": "Salary Discussions",
       "iconUri": "/icons/category-salary_discussions.svg",
+      "description": "Prepare for open salary conversations.",
       "defaultContext": "Salary negotiation meeting.",
       "defaultGoal": "Reach a mutually beneficial agreement on salary.",
       "defaultOtherParty": "Employer"

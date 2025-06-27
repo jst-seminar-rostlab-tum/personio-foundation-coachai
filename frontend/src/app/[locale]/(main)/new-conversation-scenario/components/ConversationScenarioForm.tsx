@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/Button';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
-import Stepper from '@/components/common/Stepper';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
@@ -36,8 +35,6 @@ export default function ConversationScenarioForm({
     t.raw('categories') as ConversationCategory[]
   );
 
-  const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
-
   useEffect(() => {
     setCategories((prev) =>
       prev.map((cat) => {
@@ -46,12 +43,6 @@ export default function ConversationScenarioForm({
       })
     );
   }, [categoriesData]);
-
-  const handleStepClick = (step: number) => {
-    if (step <= currentStep + 1) {
-      setStep(step);
-    }
-  };
 
   const isStepValid = (step: number): boolean => {
     switch (step) {
@@ -114,17 +105,8 @@ export default function ConversationScenarioForm({
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="text-2xl text-font-dark text-center w-full mb-8">{t('title')}</div>
-      <Stepper
-        steps={steps}
-        currentStep={currentStep}
-        showAllStepNumbers
-        showStepLabels
-        className="px-6 py-2 mb-16"
-        onStepClick={handleStepClick}
-        currentStepValid={isStepValid(currentStep)}
-      />
+    <div>
+      <h1 className="text-2xl text-font-dark text-left w-full mb-8">{t('title')}</h1>
 
       {currentStep === 0 && (
         <CategoryStep
@@ -168,7 +150,7 @@ export default function ConversationScenarioForm({
         />
       )}
 
-      <div className="flex gap-4 w-full justify-center mt-8 max-w-4xl mx-auto">
+      <div className="flex gap-4 w-full justify-center mt-8 mx-auto">
         {currentStep !== 0 && (
           <Button
             size="full"
