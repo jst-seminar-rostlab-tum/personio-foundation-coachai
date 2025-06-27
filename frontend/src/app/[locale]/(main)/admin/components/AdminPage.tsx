@@ -85,7 +85,10 @@ export default function Admin({ stats, reviews, users }: AdminProps) {
           <AccordionTrigger>{t('userManagement')}</AccordionTrigger>
           <AccordionContent>
             <UsersList
-              initialUsers={users.users}
+              initialUsers={users.users.map((u) => ({
+                ...u,
+                id: u.userId,
+              }))}
               totalCount={users.totalCount}
               initialPage={1}
               pageSize={10}
