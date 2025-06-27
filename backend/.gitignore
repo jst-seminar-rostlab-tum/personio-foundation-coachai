@@ -163,3 +163,9 @@ cython_debug/
 
 # ruff
 .ruff_cache/
+
+# Downloaded docs from GCP
+/app/rag/downloads/
+
+# credentials
+coachai-dev-service-account.json
