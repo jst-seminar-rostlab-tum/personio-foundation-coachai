@@ -1,4 +1,4 @@
-import { UserProfile, UserProfileUpdate, UserDataExport } from '@/interfaces/UserProfile';
+import { UserProfile, UserProfileUpdate } from '@/interfaces/UserProfile';
 import { api } from './Api';
 
 const updateUserProfile = async (userProfile: UserProfileUpdate): Promise<UserProfile> => {
@@ -11,9 +11,9 @@ const updateUserProfile = async (userProfile: UserProfileUpdate): Promise<UserPr
   }
 };
 
-const exportUserData = async (): Promise<UserDataExport> => {
+const exportUserData = async (): Promise<Blob> => {
   try {
-    const { data } = await api.get<UserDataExport>('/user-profile/export');
+    const { data } = await api.get('/user-profile/export', { responseType: 'blob' });
     return data;
   } catch (error) {
     console.error('Error exporting user data:', error);
