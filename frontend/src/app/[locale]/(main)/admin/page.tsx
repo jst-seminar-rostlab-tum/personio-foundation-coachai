@@ -8,6 +8,7 @@ import { api } from '@/services/server/Api';
 import { UserProfileService } from '@/services/server/UserProfileService';
 import { AccountRole } from '@/interfaces/UserProfile';
 import { redirect } from 'next/navigation';
+import { UsersPaginated } from '@/interfaces/AdminProps';
 import Admin from './components/AdminPage';
 import AdminLoadingPage from './loading';
 
@@ -25,11 +26,12 @@ export default async function AdminPage() {
   const PAGE_SIZE = 4;
   const statsData = adminService.getAdminStats();
   const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
-  const [stats, reviews] = await Promise.all([statsData, reviewsData]);
+  const usersData = UserProfileService.getPaginatedUsers(api, { page: 1, pageSize: 10 });
+  const [stats, reviews, users] = await Promise.all([statsData, reviewsData, usersData]);
 
   return (
     <Suspense fallback={<AdminLoadingPage />}>
-      <Admin stats={stats} reviews={reviews} />
+      <Admin stats={stats} reviews={reviews} users={users as UsersPaginated} />
     </Suspense>
   );
 }

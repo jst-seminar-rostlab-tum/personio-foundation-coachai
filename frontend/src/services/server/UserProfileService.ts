@@ -23,7 +23,34 @@ const getUserStats = async () => {
   }
 };
 
+interface PaginatedUsersParams {
+  page?: number;
+  pageSize?: number;
+  limit?: number;
+  emailSubstring?: string;
+}
+
+const getPaginatedUsers = async (
+  apiInstance = api,
+  { page = 1, pageSize = 10, limit, emailSubstring }: PaginatedUsersParams = {}
+) => {
+  try {
+    const { data } = await apiInstance.get('/user-profile', {
+      params: {
+        page,
+        page_size: pageSize || limit,
+        email_substring: emailSubstring,
+      },
+    });
+    return data;
+  } catch (error) {
+    console.error('Error getting users:', error);
+    throw error;
+  }
+};
+
 export const UserProfileService = {
   getUserProfile,
   getUserStats,
+  getPaginatedUsers,
 };

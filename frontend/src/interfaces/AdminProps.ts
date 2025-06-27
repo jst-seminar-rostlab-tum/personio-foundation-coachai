@@ -1,3 +1,4 @@
+import { UserProfile } from '@/interfaces/UserProfile';
 import { Review, ReviewsPaginated } from './Review';
 
 export interface RatingStatistics {
@@ -30,4 +31,10 @@ export interface AdminProps {
     dailyTokenLimit: number;
   };
   reviews: ReviewsPaginated;
+  users: UsersPaginated;
+}
+
+export interface UsersPaginated {
+  users: UserProfile[];
+  totalCount: number;
 }

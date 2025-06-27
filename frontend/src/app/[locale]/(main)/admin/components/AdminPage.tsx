@@ -17,8 +17,9 @@ import { AdminProps } from '@/interfaces/AdminProps';
 import { adminService } from '@/services/client/AdminService';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
 import Reviews from './Reviews';
+import UsersList from './UsersList';
 
-export default function Admin({ stats, reviews }: AdminProps) {
+export default function Admin({ stats, reviews, users }: AdminProps) {
   const t = useTranslations('Admin');
   const [tokenLimit, setTokenLimit] = useState<number>(stats.dailyTokenLimit);
   const [savedTokenLimit, setSavedTokenLimit] = useState<number>(stats.dailyTokenLimit);
@@ -99,6 +100,12 @@ export default function Admin({ stats, reviews }: AdminProps) {
         </div>
       </div>
       <Reviews {...reviews} />
+      <UsersList
+        initialUsers={users.users}
+        totalCount={users.totalCount}
+        initialPage={1}
+        pageSize={10}
+      />
       <Accordion type="multiple">
         <AccordionItem value="item-1">
           <AccordionTrigger>{t('userManagement')}</AccordionTrigger>
