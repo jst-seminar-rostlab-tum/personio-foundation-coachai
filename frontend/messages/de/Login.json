@@ -1,14 +1,14 @@
 {
   "metaTitle": "Login und Registrierung - Coach AI",
-  "metaDescription": "Melde dich an oder registriere dich um deine Reise mit Coach AI zu beginnen",
+  "metaDescription": "Melden Sie sich an oder registrieren Sie sich, um Ihre Reise mit Coach AI zu beginnen",
   "welcome": "Willkommen bei Leadership Coach",
-  "description": "Beginne deine Reise im Leadership Coaching",
+  "description": "Starten Sie Ihre Reise im Führungstraining",
   "SignInTab": {
     "title": "Anmelden",
     "stayLoggedInCheckboxLabel": "Angemeldet bleiben",
     "signInWithGoogleButtonLabel": "Mit Google anmelden",
     "alertErrorTitle401": "Ungültige E-Mail oder Passwort",
-    "alertErrorTitleGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    "alertErrorTitleGeneric": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut."
   },
   "SignUpTab": {
     "title": "Registrieren",
@@ -22,9 +22,9 @@
     "signUpWithGoogleButtonLabel": "Oder mit Google registrieren"
   },
   "VerificationPopup": {
-    "title": "Bestätige deine Telefonnummer",
+    "title": "Bestätigen Sie Ihre Telefonnummer",
     "descriptionPartOne": "Wir haben einen Bestätigungscode an ",
-    "descriptionPartTwo": " gesendet. Bitte gib ihn unten ein.",
+    "descriptionPartTwo": " gesendet. Bitte geben Sie ihn unten ein.",
     "codeInputPlaceholder": "6-stelligen Code eingeben",
     "resendButtonLabel": "Code erneut senden"
   },
@@ -78,7 +78,7 @@
         },
         "usageMetrics": {
           "title": "Nutzungsmetriken",
-          "description": "Tage mit Login, Trainingssitzungen, verwendete KI-Tokens, ...",
+          "description": "Nutzungstage, Trainingssitzungen, verwendete KI-Tokens, ...",
           "purposes": {
             "trackProgress": "Benutzerfortschritt verfolgen",
             "markAchievements": "Erfolge kennzeichnen",
@@ -122,8 +122,8 @@
     }
   },
   "PasswordInput": {
-    "showPasswordSpan": "Zeige Passwort",
-    "hidePasswordSpan": "Verstecke Passwort"
+    "showPasswordSpan": "Passwort anzeigen",
+    "hidePasswordSpan": "Passwort verbergen"
   },
   "fullNameInputLabel": "Vollständiger Name",
   "fullNameInputPlaceholder": "Geben Sie Ihren vollständigen Namen ein",

@@ -1,11 +1,11 @@
 {
   "metaTitle": "Datenschutzerklärung - Coach AI",
-  "metaDescription": "Erfahren Sie, wie Coach AI Ihre Daten schützt",
+  "metaDescription": "Informieren Sie sich über den Datenschutz bei Coach AI",
   "title": "Datenschutzerklärung",
   "sections": {
     "dataCollection": {
-      "title": "Datensammlung",
-      "content": "Die Personio Foundation erhebt personenbezogene Daten ausschließlich im Rahmen der geltenden Datenschutzgesetze und nur zu legitimen, klar definierten Zwecken. Zu den gesammelten Daten können unter anderem Name, E-Mail-Adresse, IP-Adresse, Nutzungsdaten und weitere Informationen gehören, die für die Bereitstellung und Verbesserung unserer Dienste erforderlich sind. Die Erhebung erfolgt transparent, zweckgebunden und unter Einsatz angemessener technischer sowie organisatorischer Maßnahmen zum Schutz Ihrer Daten."
+      "title": "Datenerhebung",
+      "content": "Die Personio Foundation erhebt personenbezogene Daten ausschließlich im Rahmen der geltenden Datenschutzgesetze und nur zu legitimen, klar definierten Zwecken. Zu den erhobenen Daten gehören unter anderem Name, E-Mail-Adresse, IP-Adresse, Nutzungsdaten und weitere Informationen, die für die Bereitstellung und Verbesserung unserer Dienste erforderlich sind. Die Erhebung erfolgt transparent, zweckgebunden und mit angemessenen technischen und organisatorischen Maßnahmen zum Schutz Ihrer Daten."
     }
   }
 }

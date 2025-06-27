@@ -2,14 +2,14 @@
   "metaTitle": "Einstellungen - Coach AI",
   "metaDescription": "Passen Sie Ihre Trainingsseinstellungen an",
   "privacyControls": "Datenschutzeinstellungen",
-  "storeAudioTranscripts": "Gesprächsaudio und Transkripte speichern",
+  "storeAudioTranscripts": "Gesprächsaufnahmen und Transkripte speichern",
   "exportData": "Persönliche Daten exportieren",
   "deleteAccount": "Konto löschen",
   "personalizationSettings": "Personalisierungseinstellungen",
   "saveSettings": "Einstellungen speichern",
   "saving": "Wird gespeichert...",
-  "ninetyDays": "Ihre Audiodateien und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf einsehbar.",
-  "zeroDays": "Ihre Audiodateien und Transkripte werden nicht gespeichert.",
+  "ninetyDays": "Ihre Aufnahmen und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf verfügbar.",
+  "zeroDays": "Ihre Aufnahmen und Transkripte werden nicht gespeichert.",
   "preferences": {
     "language": {
       "label": "Bevorzugte Sprache",
@@ -36,11 +36,11 @@
       "label": "Aktuelle Rolle"
     },
     "primaryGoals": {
-      "label": "Hauptziele",
+      "label": "Wichtigste Ziele",
       "placeholder": "Bitte wählen Sie bis zu 3 Ziele aus",
       "maxOptionsSelected": "Max. Optionen ausgewählt"
     }
   },
   "saveSettingsSuccess": "Ihre Einstellungen wurden erfolgreich gespeichert.",
-  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal."
 }

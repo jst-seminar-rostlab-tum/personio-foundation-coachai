@@ -1,23 +1,23 @@
 {
   "metaTitle": "Dashboard - Coach AI",
-  "metaDescription": "Sieh dir deinen Trainingsfortschritt an, starte neue Sitzungen und verfolge deine Leistung",
+  "metaDescription": "Trainingsfortschritt ansehen, neue Sitzungen starten und Leistung verfolgen",
   "header": {
     "greeting": "Hallo, ",
-    "cta": "Neue Trainingseinheit"
+    "cta": "Neue Trainingssitzung"
   },
   "currentSession": {
     "title": "Aktuelle Sitzung",
-    "subtitle": "Fahre mit deiner aktiven Trainingseinheit fort",
+    "subtitle": "Setzen Sie Ihre aktive Trainingssitzung fort",
     "sessionCard": {
       "title": "Konstruktives Feedback geben",
-      "subtitle": "Übe, einem Teammitglied Rückmeldung zu verpassten Fristen zu geben"
+      "subtitle": "Üben Sie, einem Teammitglied Rückmeldung zu verpassten Fristen zu geben"
     }
   },
   "userStats": {
-    "trainingTime": "Trainingzeit",
-    "currentStreak": "Streak"
+    "trainingTime": "Trainingszeit",
+    "currentStreak": "Aktuelle Serie"
   },
   "recentSessions": {
-    "subtitle": "Deine zuletzt abgeschlossenen Trainings"
+    "subtitle": "Ihre letzten Trainingssitzungen"
   }
 }

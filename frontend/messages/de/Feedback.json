@@ -1,10 +1,10 @@
 {
   "metaTitle": "Auswertung - Coach AI",
-  "metaDescription": "Detaillierte Auswertung und Analyse Ihrer Trainingssitzung",
+  "metaDescription": "Detaillierte Analyse Ihrer Trainingssitzung",
   "title": "Auswertung",
   "reviewDialog": {
-    "description": "Wie war die Trainingssitzung? Helfen Sie uns, indem Sie Ihre Bewertung abgeben.",
-    "shareWithAdmin": "Sitzung zur Verbesserung mit einem Administrator teilen."
+    "description": "Wie war die Trainingssitzung? Helfen Sie uns mit Ihrer Bewertung.",
+    "shareWithAdmin": "Sitzung mit einem Administrator zur Verbesserung teilen."
   },
   "progressBars": {
     "structure": "Struktur",
@@ -22,11 +22,11 @@
   "compareAI": "Mit KI vergleichen",
   "accordian": {
     "feedback": "Detailliertes Feedback",
-    "suggestion": "Vorgeschlagene Ressourcen",
+    "suggestion": "Empfohlene Ressourcen",
     "sessions": "Empfohlene Sitzungen"
   },
   "detailedFeedback": {
     "recommendations": "Empfehlungen",
-    "nextTime": "Verbesserungsvorschlag:"
+    "nextTime": "Für das nächste Mal:"
   }
 }

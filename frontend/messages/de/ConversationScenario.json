@@ -1,7 +1,7 @@
 {
   "metaTitle": "Neues Training - Coach AI",
   "metaDescription": "Starten Sie eine neue Trainingssitzung mit persönlichem Coaching",
-  "title": "Neue Trainingssession",
+  "title": "Neue Trainingssitzung",
   "steps": {
     "category": "Kategorie",
     "situation": "Situation",
@@ -16,22 +16,22 @@
       "salary": "Gehaltsgespräch",
       "custom": "Individuell"
     },
-    "customPlaceholder": "Z. B. Beförderungsdiskussion, Onboarding neuer Teammitglieder ...",
-    "customInput": "Definieren Sie Ihren eigenen Gesprächsgegenstand *"
+    "customPlaceholder": "z.B. Beförderungsgespräch, Einarbeitung neuer Kollegen ...",
+    "customInput": "Definieren Sie Ihr eigenes Gesprächsthema *"
   },
   "situation": {
     "title": "Beschreiben Sie Ihre Situation",
     "otherParty": {
       "title": "Wer ist der Gesprächspartner? *",
-      "placeholder": "Name eingeben"
+      "placeholder": "Namen eingeben"
     },
     "context": {
       "title": "Was ist der Kontext? *",
-      "placeholder": "Bitte beschreiben Sie hier den Kontext des Gesprächs."
+      "placeholder": "Beschreiben Sie hier den Gesprächskontext."
     },
     "goal": {
       "title": "Was ist Ihr Ziel? *",
-      "placeholder": "Welches Ergebnis möchten Sie erreichen?"
+      "placeholder": "Welches Ergebnis möchten Sie erzielen?"
     }
   },
   "customize": {
@@ -60,7 +60,7 @@
       "name": "Leistungsbeurteilungen",
       "iconUri": "/icons/category-performance_reviews.svg",
       "defaultContext": "Formelles Gespräch zur Leistungsbeurteilung.",
-      "defaultGoal": "Leistung von Mitarbeitenden evaluieren und besprechen.",
+      "defaultGoal": "Leistung von Mitarbeitern evaluieren und besprechen.",
       "defaultOtherParty": "Mitarbeiter/in"
     },
     {
@@ -75,10 +75,10 @@
       "id": "salary_discussions",
       "name": "Gehaltsgespräche",
       "iconUri": "/icons/category-salary_discussions.svg",
-      "defaultContext": "Verhandlungsgespräch über das Gehalt.",
-      "defaultGoal": "Eine für beide Seiten vorteilhafte Einigung zum Gehalt erzielen.",
+      "defaultContext": "Gehaltsverhandlungsgespräch.",
+      "defaultGoal": "Eine für beide Seiten vorteilhafte Gehaltsvereinbarung treffen.",
       "defaultOtherParty": "Arbeitgeber"
     }
   ],
-  "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später erneut."
+  "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später noch einmal."
 }

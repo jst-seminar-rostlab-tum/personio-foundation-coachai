@@ -1,9 +1,9 @@
 {
   "metaTitle": "Coach AI",
-  "metaDescription": "Trainieren Sie anspruchsvolle Gesprächssituationen und erhalten Sie direktes Feedback für Ihre persönliche Weiterentwicklung als Führungskraft.",
+  "metaDescription": "Entwickeln Sie Ihre Führungskompetenzen durch KI-gestütztes Coaching.",
   "hero": {
     "badge": "KI-gestütztes Führungstraining",
-    "title": "Starke Führungs-Persönlichkeit dank KI-Coaching",
+    "title": "Starke Führungspersönlichkeit durch KI-Coaching",
     "description": "Trainieren Sie anspruchsvolle Gesprächssituationen und erhalten Sie direktes Feedback für Ihre persönliche Weiterentwicklung als Führungskraft.",
     "cta": {
       "secondary": "Mehr erfahren"
@@ -23,13 +23,13 @@
       },
       "3": {
         "title": "Feedback erhalten",
-        "description": "Bekommen Sie eine detaillierte Analyse Ihrer Gesprächsführung mit konkreten Handlungsempfehlungen."
+        "description": "Erhalten Sie eine detaillierte Analyse Ihrer Gesprächsführung mit konkreten Handlungsempfehlungen."
       }
     },
     "cta": "Erstes Training starten"
   },
   "features": {
-    "title": "Ihre Vorteile im Überblick",
+    "title": "Ihre Vorteile",
     "description": "Alles, was Sie für Ihre erfolgreiche Führungskräfteentwicklung benötigen.",
     "items": {
       "simulations": {
@@ -45,7 +45,7 @@
         "description": "Erhalten Sie nach jedem Training eine detaillierte Auswertung mit konkreten Verbesserungsvorschlägen."
       },
       "progress": {
-        "title": "Fortschrittskontrolle",
+        "title": "Fortschrittsverfolgung",
         "description": "Verfolgen Sie Ihre Entwicklung mit aussagekräftigen Kennzahlen und Einblicken."
       },
       "gamification": {

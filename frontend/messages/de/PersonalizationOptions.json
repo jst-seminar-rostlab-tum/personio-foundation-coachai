@@ -10,32 +10,32 @@
     },
     "executive": {
       "label": "Führungskraft",
-      "description": "Ich bin Direktor, VP oder C-Level-Executive"
+      "description": "Ich bin Direktor, Vizepräsident oder C-Level-Führungskraft"
     },
     "other": {
       "label": "Andere",
-      "description": "Keine der oben genannten"
+      "description": "Keine der genannten Optionen"
     }
   },
   "leadership_skill_focus": {
     "giving_constructive_feedback": "Konstruktives Feedback geben",
-    "managing_team_conflicts": "Teamkonflikte managen",
+    "managing_team_conflicts": "Teamkonflikte lösen",
     "performance_reviews": "Leistungsbeurteilungen",
     "motivating_team_members": "Teammitglieder motivieren",
     "leading_difficult_conversations": "Schwierige Gespräche führen",
-    "communicating_organizational_change": "Kommunikation von organisatorischen Veränderungen",
+    "communicating_organizational_change": "Organisationsveränderungen kommunizieren",
     "develop_emotional_intelligence": "Emotionale Intelligenz entwickeln",
-    "building_inclusive_teams": "Inklusive Teams aufbauen",
+    "building_inclusive_teams": "Vielfältige Teams aufbauen",
     "negotiation_skills": "Verhandlungskompetenzen",
-    "coaching_mentoring": "Coaching & Mentoring"
+    "coaching_mentoring": "Coaching und Mentoring"
   },
   "confidence_areas": {
     "giving_difficult_feedback": "Schwieriges Feedback geben",
-    "managing_team_conflicts": "Teamkonflikte managen",
+    "managing_team_conflicts": "Teamkonflikte lösen",
     "leading_challenging_conversations": "Herausfordernde Gespräche führen",
     "labels": {
-      "min": "Nicht selbstsicher",
-      "max": "Sehr selbstsicher"
+      "min": "Nicht sicher",
+      "max": "Sehr sicher"
     }
   }
 }
