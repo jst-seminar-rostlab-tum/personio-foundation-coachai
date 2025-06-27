@@ -7,21 +7,24 @@ import AboutFooter from '@/components/layout/AboutFooter';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { LayoutProps } from '@/interfaces/LayoutProps';
 import { MetadataProps } from '@/interfaces/MetadataProps';
+import { headers } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
+
   return generateDynamicMetadata(locale, '', false);
 }
 
 export default async function RootLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
-
+  const nonce = (await headers()).get('x-nonce') || undefined;
   return (
     <html lang={locale}>
       <head>
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -43,3 +46,5 @@ export default async function RootLayout({ children, params }: LayoutProps) {
     </html>
   );
 }
+
+export const dynamic = 'force-dynamic';

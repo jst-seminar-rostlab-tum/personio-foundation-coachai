@@ -7,6 +7,7 @@ import BackButton from '@/components/common/BackButton';
 import { Toaster } from '@/components/ui/Sonner';
 import { UserContextProvider } from '@/lib/context/user';
 import { UserProfileService } from '@/services/server/UserProfileService';
+import { headers } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] });
 const bebasNeue = BebasNeue({ subsets: ['latin'], weight: '400' });
@@ -14,11 +15,13 @@ const bebasNeue = BebasNeue({ subsets: ['latin'], weight: '400' });
 export default async function RootLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
   const userProfile = await UserProfileService.getUserProfile();
+  const nonce = (await headers()).get('x-nonce') || undefined;
 
   return (
     <html lang={locale} className={bebasNeue.className}>
       <head>
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -45,3 +48,5 @@ export default async function RootLayout({ children, params }: LayoutProps) {
     </html>
   );
 }
+
+export const dynamic = 'force-dynamic';

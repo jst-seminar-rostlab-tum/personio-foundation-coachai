@@ -13,3 +13,4 @@ export default async function RootLayout({ children, params }: LayoutProps) {
     </html>
   );
 }
+export const dynamic = 'force-dynamic';

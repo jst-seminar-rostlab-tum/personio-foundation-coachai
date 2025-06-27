@@ -3,16 +3,19 @@ import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { LayoutProps } from '@/interfaces/LayoutProps';
 import { Toaster } from '@/components/ui/Sonner';
+import { headers } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export default async function StandaloneLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
+  const nonce = (await headers()).get('x-nonce') || undefined;
 
   return (
     <html lang={locale}>
       <head>
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -33,3 +36,5 @@ export default async function StandaloneLayout({ children, params }: LayoutProps
     </html>
   );
 }
+
+export const dynamic = 'force-dynamic';
