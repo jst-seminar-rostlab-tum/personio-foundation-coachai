@@ -1,52 +1,108 @@
 {
   "scenario": {
-    "title": "Feedback on Project Communication (User has Low Empathy)",
-    "description": "An Assistant (playing a direct report, Sam) expresses that they are struggling, and the User (playing a manager) responds with a lack of empathy.",
-    "participants": {
-      "user_role": "Manager",
-      "assistant_role": "Sam, Direct Report"
-    }
+    "id": "11111111-1111-1111-1111-111111111114",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "category_id": "feedback",
+    "custom_category_label": null,
+    "context": "An Assistant (Sam) expresses that they are struggling, and the User (manager) responds with a lack of empathy.",
+    "goal": "Give feedback on project communication",
+    "other_party": "Sam, Direct Report",
+    "difficulty_level": "medium",
+    "tone": "professional",
+    "complexity": "normal",
+    "language_code": "en",
+    "status": "ready",
+    "created_at": "2024-06-28T10:00:00Z",
+    "updated_at": "2024-06-28T10:00:00Z"
   },
   "transcript": [
     {
-      "speaker": "Assistant",
-      "turn": 1,
-      "message": "Thanks for meeting with me. To be honest, I've been having a hard time keeping up with the project's demands lately, and I know my communication has suffered. I apologize for that."
+      "id": "a2559dfa-7109-431f-9567-a32f20d1c933",
+      "session_id": "64c427dc-7fbd-419f-b8cd-ab90cbdfbe54",
+      "speaker": "assistant",
+      "start_offset_ms": 0,
+      "end_offset_ms": 2000,
+      "text": "Thanks for meeting with me. To be honest, I've been having a hard time keeping up with the project's demands lately, and I know my communication has suffered. I apologize for that.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:01Z"
     },
     {
-      "speaker": "User",
-      "turn": 2,
-      "message": "So you're saying you can't handle the workload."
+      "id": "bd598aef-8a2a-4842-9d2c-7295a6feaebe",
+      "session_id": "64c427dc-7fbd-419f-b8cd-ab90cbdfbe54",
+      "speaker": "user",
+      "start_offset_ms": 2000,
+      "end_offset_ms": 4000,
+      "text": "So you're saying you can't handle the workload.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:03Z"
     },
     {
-      "speaker": "Assistant",
-      "turn": 3,
-      "message": "It's not that. I had a personal family matter that was very stressful, and it temporarily affected my focus. I'm confident I can get back on track now."
+      "id": "240e56be-ae29-4cda-85da-f289082bcafc",
+      "session_id": "64c427dc-7fbd-419f-b8cd-ab90cbdfbe54",
+      "speaker": "assistant",
+      "start_offset_ms": 4000,
+      "end_offset_ms": 6000,
+      "text": "It's not that. I had a personal family matter that was very stressful, and it temporarily affected my focus. I'm confident I can get back on track now.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:05Z"
     },
     {
-      "speaker": "User",
-      "turn": 4,
-      "message": "Look, everyone has personal problems. Your family issues shouldn't impact the team's deadlines. We have a project to deliver."
+      "id": "6cd2c1ff-9b41-498a-a90d-dd17d9fd683a",
+      "session_id": "64c427dc-7fbd-419f-b8cd-ab90cbdfbe54",
+      "speaker": "user",
+      "start_offset_ms": 6000,
+      "end_offset_ms": 8000,
+      "text": "Look, everyone has personal problems. Your family issues shouldn't impact the team's deadlines. We have a project to deliver.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:07Z"
     },
     {
-      "speaker": "Assistant",
-      "turn": 5,
-      "message": "I understand my responsibilities. I'm not making excuses, just providing context. I am fully committed to my work and the team."
+      "id": "be728b76-f0fc-41e9-bebc-bb605e083e8b",
+      "session_id": "64c427dc-7fbd-419f-b8cd-ab90cbdfbe54",
+      "speaker": "assistant",
+      "start_offset_ms": 8000,
+      "end_offset_ms": 10000,
+      "text": "I understand my responsibilities. I'm not making excuses, just providing context. I am fully committed to my work and the team.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:09Z"
     },
     {
-      "speaker": "User",
-      "turn": 6,
-      "message": "Good. Then just make sure you answer your emails from now on. The team can't afford any more mistakes from you."
+      "id": "33fb4466-6649-417f-8c5e-f89364e5d45b",
+      "session_id": "64c427dc-7fbd-419f-b8cd-ab90cbdfbe54",
+      "speaker": "user",
+      "start_offset_ms": 10000,
+      "end_offset_ms": 12000,
+      "text": "Good. Then just make sure you answer your emails from now on. The team can't afford any more mistakes from you.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:11Z"
     },
     {
-      "speaker": "Assistant",
-      "turn": 7,
-      "message": "I will. I want to assure you that my performance will return to its usual high standard immediately."
+      "id": "d24815ee-3938-4139-9077-f97705f520ca",
+      "session_id": "64c427dc-7fbd-419f-b8cd-ab90cbdfbe54",
+      "speaker": "assistant",
+      "start_offset_ms": 12000,
+      "end_offset_ms": 14000,
+      "text": "I will. I want to assure you that my performance will return to its usual high standard immediately.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:13Z"
     },
     {
-      "speaker": "User",
-      "turn": 8,
-      "message": "Fine. Let's move on."
+      "id": "5909a763-a4a5-4f66-84ca-ed6f06f0b757",
+      "session_id": "64c427dc-7fbd-419f-b8cd-ab90cbdfbe54",
+      "speaker": "user",
+      "start_offset_ms": 14000,
+      "end_offset_ms": 16000,
+      "text": "Fine. Let's move on.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:15Z"
     }
   ]
-} 
+}

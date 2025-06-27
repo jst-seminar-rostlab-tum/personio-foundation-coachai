@@ -13,6 +13,7 @@ from app.connections.openai_client import call_structured_llm
 from app.models import FeedbackStatusEnum, SessionFeedback, UserProfile
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.language import LanguageCode
+from app.schemas.conversation_scenario import ConversationData, ConversationScenarioRead
 from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -22,6 +23,7 @@ from app.schemas.session_feedback import (
     SessionExamplesCollection,
 )
 from app.schemas.session_feedback_config import SessionFeedbackConfig
+from app.schemas.session_turn import SessionTurnRead
 from app.services.scoring_service import ScoringService, get_scoring_service
 from app.services.vector_db_context_service import query_vector_db_and_prompt
 
@@ -314,6 +316,43 @@ def generate_and_store_feedback(
         goals = GoalsAchievedCollection(goals_achieved=[])
         recommendations = []
     else:
+        # Mock scenario TODO: replace with actual scenario
+        scenario = ConversationScenarioRead(
+            id=uuid4(),
+            user_id=uuid4(),
+            category_id=example_request.category,
+            custom_category_label=None,
+            context=example_request.context,
+            goal=example_request.goal,
+            other_party=example_request.other_party,
+            difficulty_level='medium',
+            tone='professional',
+            complexity='normal',
+            language_code=example_request.language_code,
+            status='ready',
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
+        transcript = []
+        if example_request.transcript:
+            for idx, line in enumerate(example_request.transcript.split('\n')):
+                if ':' in line:
+                    speaker, text = line.split(':', 1)
+                    transcript.append(
+                        SessionTurnRead(
+                            id=uuid4(),
+                            session_id=uuid4(),
+                            speaker=speaker.strip().lower(),
+                            start_offset_ms=idx * 2000,
+                            end_offset_ms=(idx + 1) * 2000,
+                            text=text.strip(),
+                            audio_uri='',
+                            ai_emotion='neutral',
+                            created_at=datetime.now(),
+                        )
+                    )
+        conversation = ConversationData(scenario=scenario, transcript=transcript)
+
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_examples = executor.submit(
                 safe_generate_training_examples, examples_request, hr_docs_context
@@ -322,7 +361,7 @@ def generate_and_store_feedback(
             future_recommendations = executor.submit(
                 safe_generate_recommendations, recommendations_request, hr_docs_context
             )
-            future_scoring = executor.submit(scoring_service.score_conversation)
+            future_scoring = executor.submit(scoring_service.score_conversation, conversation)
 
             try:
                 examples = future_examples.result()
