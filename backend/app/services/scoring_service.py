@@ -90,9 +90,30 @@ class ScoringService:
 
         return response
 
+    def rubric_to_markdown(self) -> str:
+        """
+        Convert the rubric content to a human-readable Markdown format (English only).
+        """
+        rubric = self.rubric
+        md = f'# {rubric.get("title", "")}\n\n{rubric.get("description", "")}\n\n'
+        for criterion in rubric.get('criteria', []):
+            md += f'## {criterion.get("name", "")}\n'
+            md += f'**Criterion**: {criterion.get("description", "")}\n\n'
+            levels = criterion.get('levels', {})
+            for score in sorted(levels.keys(), key=lambda x: int(x), reverse=True):
+                desc = levels[score]
+                md += f'- **Score {score}**: {desc}\n'
+            md += '\n'
+        common_levels = rubric.get('common_levels', {})
+        if common_levels:
+            md += '## Common Levels\n'
+            for score, desc in common_levels.items():
+                md += f'- **Score {score}**: {desc}\n'
+        return md
 
-# Example of how to use the service
-if __name__ == '__main__':
-    scoring_service = ScoringService()
-    scoring_result = scoring_service.score_conversation()
-    print(json.dumps(scoring_result.model_dump(), indent=2))
+
+scoring_service = ScoringService()
+
+
+def get_scoring_service() -> ScoringService:
+    return scoring_service

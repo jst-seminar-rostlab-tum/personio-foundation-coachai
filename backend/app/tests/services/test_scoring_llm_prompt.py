@@ -19,10 +19,7 @@ def format_scores(result: ScoringResult) -> str:
     )
 
 
-@unittest.skipIf(
-    os.getenv('RUN_INTEGRATION_TESTS', 'false').lower() != 'true',
-    'Skipping integration tests by default. Set RUN_INTEGRATION_TESTS=true to run.',
-)
+@unittest.skipUnless(os.environ.get('RUN_AI_TESTS') == 'true', 'AI test not enabled')
 class TestScoringServiceIntegration(unittest.TestCase):
     def setUp(self) -> None:
         """Set up the scoring service for an integration test."""

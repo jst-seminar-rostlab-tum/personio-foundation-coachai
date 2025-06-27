@@ -103,6 +103,21 @@ class TestScoringService(unittest.TestCase):
         self.assertIn('User: Hello', user_prompt)
         self.assertIn('provide a score from 1 to 5 for each metric', user_prompt)
 
+    def test_rubric_to_markdown_real_rubric(self) -> None:
+        """Test rubric_to_markdown with the real conversation_rubric.json."""
+        real_rubric_path = Path(__file__).parent.parent.parent / 'data' / 'conversation_rubric.json'
+        self.scoring_service.rubric = self.scoring_service._load_json(real_rubric_path)
+        md = self.scoring_service.rubric_to_markdown()
+        print(md)
+        self.assertIn('# Conversation Quality Rubric', md)
+        self.assertIn('A rubric for scoring conversation quality', md)
+        self.assertIn('## Structure', md)
+        self.assertIn('## Empathy', md)
+        self.assertIn('## Focus', md)
+        self.assertIn('## Clarity', md)
+        self.assertIn('## Common Levels', md)
+        self.assertIn('- **Score 0**: Complete failure to demonstrate the skill.', md)
+
 
 if __name__ == '__main__':
     unittest.main()

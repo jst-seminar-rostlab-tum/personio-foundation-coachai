@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
 from sqlmodel import Session as DBSession
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import SQLModel, create_engine, select
 
 from app.models import FeedbackStatusEnum
 from app.schemas.session_feedback import (
@@ -75,6 +75,29 @@ class TestSessionFeedbackService(unittest.TestCase):
             ]
         )
 
+        # Inject mock scoring_service
+        class MockScore:
+            def __init__(self, metric: str, score: float) -> None:
+                self.metric = metric
+                self.score = score
+
+        class MockScoringResult:
+            class Scoring:
+                def __init__(self) -> None:
+                    self.scores = [
+                        MockScore('structure', 4),
+                        MockScore('empathy', 5),
+                        MockScore('focus', 3),
+                        MockScore('clarity', 4),
+                    ]
+                    self.overall_score = 4.0
+
+            def __init__(self) -> None:
+                self.scoring = self.Scoring()
+
+        mock_scoring_service = MagicMock()
+        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+
         example_request = ExamplesRequest(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
@@ -88,7 +111,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         session_id = uuid4()
 
         feedback = generate_and_store_feedback(
-            session_id=session_id, example_request=example_request, db_session=self.session
+            session_id=session_id,
+            example_request=example_request,
+            db_session=self.session,
+            scoring_service=mock_scoring_service,
         )
 
         self.assertEqual(feedback.session_id, session_id)
@@ -178,6 +204,89 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         self.assertEqual(feedback.overall_score, 0)
         self.assertEqual(feedback.transcript_uri, '')
+
+    @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
+    def test_scoring_and_stats_update(
+        self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
+    ) -> None:
+        # Mock AI scoring
+        mock_examples.return_value = SessionExamplesCollection(
+            positive_examples=[], negative_examples=[]
+        )
+        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=[])
+        mock_recommendations.return_value = RecommendationsCollection(recommendations=[])
+
+        # Mock scoring_service
+        class MockScore:
+            def __init__(self, metric: str, score: float) -> None:
+                self.metric = metric
+                self.score = score
+
+        class MockScoringResult:
+            class Scoring:
+                def __init__(self) -> None:
+                    self.scores = [
+                        MockScore('structure', 4),
+                        MockScore('empathy', 5),
+                        MockScore('focus', 3),
+                        MockScore('clarity', 4),
+                    ]
+                    self.overall_score = 4.0
+
+            def __init__(self) -> None:
+                self.scoring = self.Scoring()
+
+        mock_scoring_service = MagicMock()
+        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+
+        # 创建user_profile和admin_dashboard_stats
+        from app.models.admin_dashboard_stats import AdminDashboardStats
+        from app.models.user_profile import UserProfile
+
+        user_id = uuid4()
+        self.session.add(
+            UserProfile(
+                id=user_id,
+                full_name='Test',
+                email='a@b.com',
+                phone_number='123',
+                preferred_language_code='en',
+            )
+        )
+        self.session.add(AdminDashboardStats())
+        self.session.commit()
+
+        example_request = ExamplesRequest(
+            transcript='Sample transcript...',
+            objectives=['Obj1', 'Obj2'],
+            goal='Goal',
+            context='Context',
+            other_party='Someone',
+            category='Feedback',
+            key_concepts='KC1',
+        )
+        feedback = generate_and_store_feedback(
+            session_id=user_id,
+            example_request=example_request,
+            db_session=self.session,
+            scoring_service=mock_scoring_service,
+        )
+        # 检查feedback分数结构
+        self.assertEqual(feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4})
+        self.assertEqual(feedback.overall_score, 4.0)
+        # 检查user_profile统计
+        user = self.session.get(UserProfile, user_id)
+        self.assertEqual(user.score_sum, 4.0)
+        self.assertEqual(user.total_sessions, 1)
+        # 检查admin_dashboard_stats统计
+        stats = self.session.exec(select(AdminDashboardStats)).first()
+        self.assertEqual(stats.score_sum, 4.0)
+        self.assertEqual(stats.total_trainings, 1)
+        # 平均分计算
+        self.assertAlmostEqual(user.score_sum / user.total_sessions, 4.0)
+        self.assertAlmostEqual(stats.score_sum / stats.total_trainings, 4.0)
 
 
 if __name__ == '__main__':

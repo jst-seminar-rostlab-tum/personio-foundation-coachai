@@ -11,6 +11,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
 from app.models import FeedbackStatusEnum, SessionFeedback, UserProfile
+from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.language import LanguageCode
 from app.schemas.session_feedback import (
     ExamplesRequest,
@@ -21,6 +22,7 @@ from app.schemas.session_feedback import (
     SessionExamplesCollection,
 )
 from app.schemas.session_feedback_config import SessionFeedbackConfig
+from app.services.scoring_service import ScoringService, get_scoring_service
 from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 
@@ -95,7 +97,7 @@ def generate_training_examples(
     Carefully analyze the provided transcript and evaluate **only your own statements** 
     (what you said as the User).  
     **Do not analyze, quote, or critique any statements made by the Assistant.**  
-    The Assistant’s lines are for context only.
+    The Assistant's lines are for context only.
 
     Extract up to 3 positive and up to 3 negative examples of your own communication, comparing 
     them to the training guidelines. 
@@ -253,14 +255,21 @@ def generate_recommendations(
 
 
 def generate_and_store_feedback(
-    session_id: UUID, example_request: ExamplesRequest, db_session: DBSession
+    session_id: UUID,
+    example_request: ExamplesRequest,
+    db_session: DBSession,
+    scoring_service: ScoringService = None,
 ) -> SessionFeedback:
     """
     Generate feedback based on session_id and transcript data,
     and write it to the session_feedback table
     """
+    if scoring_service is None:
+        scoring_service = get_scoring_service()
 
     has_error = False
+    overall_score = 0.0
+    scores_json = {}
 
     examples_request = example_request
     goals_request = GoalsAchievementRequest(
@@ -313,6 +322,7 @@ def generate_and_store_feedback(
             future_recommendations = executor.submit(
                 safe_generate_recommendations, recommendations_request, hr_docs_context
             )
+            future_scoring = executor.submit(scoring_service.score_conversation)
 
             try:
                 examples = future_examples.result()
@@ -335,15 +345,44 @@ def generate_and_store_feedback(
                 has_error = True
                 print('[ERROR] Failed to generate key recommendations:', e)
 
-    # correct placement
-    status = FeedbackStatusEnum.failed if has_error else FeedbackStatusEnum.completed
+            # call ScoringService to score the conversation
+            try:
+                scoring_result = future_scoring.result()
+                scores_json = {s.metric: s.score for s in scoring_result.scoring.scores}
+                overall_score = scoring_result.scoring.overall_score
+            except Exception as e:
+                has_error = True
+                print('[ERROR] Failed to call ScoringService:', e)
+                scores_json = {}
+                overall_score = 0.0
+
+    # update user profile and admin dashboard stats
+    user = db_session.exec(select(UserProfile).where(UserProfile.id == session_id)).first()
+    admin_stats = db_session.exec(select(AdminDashboardStats)).first()
+    try:
+        if user:
+            user.score_sum += overall_score
+            user.total_sessions += 1
+            user.goals_achieved += len(goals.goals_achieved)
+            db_session.add(user)
+        if admin_stats:
+            admin_stats.score_sum += overall_score
+            admin_stats.total_trainings += 1
+            db_session.add(admin_stats)
+        db_session.commit()
+        status = FeedbackStatusEnum.completed if not has_error else FeedbackStatusEnum.failed
+    except Exception as e:
+        db_session.rollback()
+        status = FeedbackStatusEnum.failed
+        has_error = True
+        print('[ERROR] Failed to update statistics:', e)
 
     feedback = SessionFeedback(
         id=uuid4(),
         session_id=session_id,
-        scores={},
+        scores=scores_json,
         tone_analysis={},
-        overall_score=0,
+        overall_score=overall_score,
         transcript_uri='',
         speak_time_percent=0,
         questions_asked=0,
@@ -356,17 +395,8 @@ def generate_and_store_feedback(
         created_at=datetime.now(),
         updated_at=datetime.now(),
     )
-
-    # Update user profile with feedback
-    user = db_session.exec(select(UserProfile).where(UserProfile.id == session_id)).first()
-    if user:
-        user.goals_achieved += len(goals.goals_achieved)
-        db_session.add(user)
-        db_session.commit()
-
     db_session.add(feedback)
     db_session.commit()
-
     return feedback
 
 
