@@ -8,6 +8,7 @@ import {
   PlayIcon,
 } from 'lucide-react';
 import Progress from '@/components/ui/Progress';
+import SegmentedProgress from '@/components/ui/SegmentedProgress';
 import {
   Accordion,
   AccordionContent,
@@ -179,20 +180,23 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           </div>
         </div>
         {/* Progress Bars */}
-        <div className="flex flex-col gap-6 flex-1 w-full p-2">
+        <div className="flex flex-col gap-8 flex-1 w-full p-2">
           {progressBarData.map((item) => (
-            <div key={item.key} className="flex flex-col gap-2">
-              <div className="flex justify-between text-base">
+            <div key={item.key} className="flex flex-col">
+              <div className="text-lg">
                 <span>{item.key}</span>
-                <span>{item.value}%</span>
               </div>
-              <Progress className="w-full" value={item.value} />
+              <div className="flex justify-between items-center text-lg gap-4">
+                <SegmentedProgress className="w-full" value={Math.round(item.value / 20)} />
+                <span>{Math.round(item.value / 20)}/5</span>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
       <FeedbackDialog sessionId={sessionId} />
+
       {/* Replay Conversation */}
       <div className="flex items-center justify-center gap-3 mx-1 px-3 w-full h-20 bg-bw-10 rounded-md">
         <div className="size-11 rounded-full bg-marigold-50 flex items-center justify-center">
