@@ -119,6 +119,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
           { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
           { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
         ],
+        userId: '',
       });
       showSuccessToast(t('saveSettingsSuccess'));
 

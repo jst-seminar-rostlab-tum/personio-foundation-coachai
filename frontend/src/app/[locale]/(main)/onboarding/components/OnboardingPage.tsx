@@ -69,6 +69,7 @@ export default function OnboardingPageComponent() {
           { confidenceArea: 'managing_team_conflicts', score: conflict[0] },
           { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
         ],
+        userId: '',
       });
       router.push('/dashboard');
       setTimeout(reset, 2000);
