@@ -35,6 +35,11 @@ export default function ConversationScenarioForm({
     t.raw('categories') as ConversationCategory[]
   );
 
+  // Reset form state when component mounts
+  useEffect(() => {
+    reset();
+  }, [reset]);
+
   useEffect(() => {
     setCategories((prev) =>
       prev.map((cat) => {
