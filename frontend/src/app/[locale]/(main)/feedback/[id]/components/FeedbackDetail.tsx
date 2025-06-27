@@ -5,9 +5,6 @@ import {
   CheckCircle,
   CircleX,
   Clock,
-  MessageCircle,
-  MessageCircleQuestion,
-  Mic,
   PlayIcon,
 } from 'lucide-react';
 import Progress from '@/components/ui/Progress';
@@ -84,44 +81,50 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
     { key: t('progressBars.clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
 
-  const roundCardStats = [
-    {
-      key: t('stats.sessionLength'),
-      value: convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0),
-      icon: 'Clock',
-    },
-    {
-      key: t('stats.goalsAchieved'),
-      value: `${feedbackDetail?.feedback?.goalsAchieved.length ?? 0} / ${
-        feedbackDetail?.goalsTotal.length ?? 0
-      }`,
-      icon: 'Check',
-    },
-  ];
-
   const examplePositive = feedbackDetail?.feedback?.examplePositive || [];
 
   const exampleNegative = feedbackDetail?.feedback?.exampleNegative || [];
 
   const recommendations = feedbackDetail?.feedback?.recommendations || [];
 
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'Mic':
-        return <Mic size={20} />;
-      case 'Message':
-        return <MessageCircle size={20} />;
-      case 'Clock':
-        return <Clock size={20} />;
-      default:
-        return <MessageCircleQuestion size={20} />;
+  // Calculate values for the donut chart
+  const radius = 70;
+  const stroke = 8;
+  const normalizedRadius = radius;
+  const circumference = 2 * Math.PI * normalizedRadius;
+  const percent = feedbackDetail?.feedback?.overallScore ?? 0;
+
+  // Animation state for the donut fill
+  const [animatedPercent, setAnimatedPercent] = useState(0);
+  useEffect(() => {
+    function animate(now: number) {
+      const elapsed = now - startRef.current;
+      const progress = Math.min(elapsed / durationRef.current, 1);
+      setAnimatedPercent(Math.round(percentRef.current * progress));
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
     }
-  };
+    const durationRef = { current: 500 };
+    const startRef = { current: 0 };
+    const percentRef = { current: percent };
+    if (percent > 0) {
+      setAnimatedPercent(0);
+      durationRef.current = 500;
+      startRef.current = performance.now();
+      percentRef.current = percent;
+      requestAnimationFrame(animate);
+    } else {
+      setAnimatedPercent(0);
+    }
+  }, [percent]);
+  const offset = circumference * (1 - animatedPercent / 100);
+
   if (isLoading) {
     return <FeedbackDetailLoadingPage />;
   }
   return (
-    <div className="flex flex-col items-center gap-8">
+    <div className="flex flex-col items-center gap-16">
       <div className="text-2xl ">{t('title')}</div>
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
         <div className="text-lg text-marigold-90">{feedbackDetail?.title}</div>
@@ -129,9 +132,54 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           {formatDateTime(feedbackDetail?.createdAt ?? '')}
         </div>
       </div>
-      <FeedbackDialog sessionId={sessionId} />
-      <div className="flex gap-3 items-center w-full justify-between">
-        <div className="flex flex-col gap-4 p-2.5 flex-1">
+
+      <div className="flex flex-col md:flex-row gap-12 items-center w-full justify-between">
+        {/* Donut Chart */}
+        <div className="flex items-center w-64 h-64 aspect-square max-w-xs flex-shrink-0 mx-auto md:mx-0">
+          <div className="relative w-full h-full flex items-center justify-center">
+            <svg
+              className="w-full h-full"
+              viewBox="0 0 160 160"
+              aria-label="Overall Score Donut Chart"
+            >
+              <circle
+                cx="80"
+                cy="80"
+                r={radius}
+                fill="none"
+                strokeWidth={stroke}
+                className="stroke-bw-20"
+              />
+              <circle
+                cx="80"
+                cy="80"
+                r={radius}
+                fill="none"
+                strokeWidth={stroke}
+                className="stroke-marigold-50"
+                strokeDasharray={circumference}
+                strokeDashoffset={offset}
+                strokeLinecap="round"
+                transform="rotate(-90 80 80)"
+              />
+            </svg>
+            <div
+              className="absolute top-1/2 left-1/2 flex flex-col items-center justify-center w-full gap-2"
+              style={{ transform: 'translate(-50%, -50%)' }}
+            >
+              <span className="font-medium text-5xl fill-bw-60 text-bw-60">{percent}%</span>{' '}
+              <span className="text-base text-bw-40 mt-1 flex items-baseline gap-1.5">
+                <span className="text-xl font-semibold">
+                  {feedbackDetail?.feedback?.goalsAchieved.length ?? 0}/
+                  {feedbackDetail?.goalsTotal.length ?? 0}
+                </span>
+                {t('stats.goalsAchieved')}
+              </span>
+            </div>
+          </div>
+        </div>
+        {/* Progress Bars */}
+        <div className="flex flex-col gap-6 flex-1 w-full p-2">
           {progressBarData.map((item) => (
             <div key={item.key} className="flex flex-col gap-2">
               <div className="flex justify-between text-base">
@@ -142,26 +190,10 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
             </div>
           ))}
         </div>
-        <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
-          {feedbackDetail?.feedback?.overallScore ?? 0}%
-        </div>
       </div>
-      <div className="my-4 mx-2 h-px w-full bg-bw-30" />
 
-      <div className="flex justify-evenly w-full">
-        {roundCardStats.map((stat) => (
-          <div className="flex gap-2 items-center" key={stat.key}>
-            <div className="rounded-full size-11 border-1 border-bw-30 bg-bw-10 flex items-center justify-center">
-              {getIcon(stat.icon)}
-            </div>
-            <div className="flex flex-col gap-1 justify-between">
-              <span className="text-base">{stat.key}</span>
-              <span className="text-md">{stat.value}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="my-4 mx-2 h-px w-full bg-bw-30" />
+      <FeedbackDialog sessionId={sessionId} />
+      {/* Replay Conversation */}
       <div className="flex items-center justify-center gap-3 mx-1 px-3 w-full h-20 bg-bw-10 rounded-md">
         <div className="size-11 rounded-full bg-marigold-50 flex items-center justify-center">
           <PlayIcon size={20} className="text-white" />
