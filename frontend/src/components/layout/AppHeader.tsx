@@ -45,7 +45,7 @@ export function AppHeader() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 bg-background z-50 shadow">
-        <div className="flex h-16 items-center justify-between mx-auto px-[clamp(1.25rem,4vw,4rem)] max-w-8xl">
+        <div className="flex h-16 items-center justify-between mx-auto px-[clamp(1.25rem,4vw,4rem)]">
           <Link
             href="/dashboard"
             className="text-bw-70 text-xl font-semibold"
