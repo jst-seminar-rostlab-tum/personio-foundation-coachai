@@ -18,11 +18,6 @@
   "keyConcepts": {
     "title": "Wichtige Begriffe"
   },
-  "navigation": {
-    "back": "Zurück",
-    "start": "Training starten",
-    "starting": "Wird gestartet..."
-  },
   "loadingText": "Bereite Ziele und Checkliste vor...",
   "sessionCreationError": "Fehler beim Erstellen der Trainingssitzung. Bitte versuchen Sie es später erneut.",
   "getPreparationError": "Fehler beim Abrufen der Vorbereitungsdaten. Bitte versuchen Sie es später erneut."

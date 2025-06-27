@@ -1,11 +1,8 @@
 {
   "metaTitle": "Settings - Coach AI",
   "metaDescription": "Customize your training preferences and goals",
-  "title": "Settings",
-  "backToDashboard": "Back to Dashboard",
   "privacyControls": "Privacy Controls",
   "storeAudioTranscripts": "Store Conversation Audio and Transcripts",
-  "export": "Export",
   "exportData": "Export personal data",
   "deleteAccount": "Delete account",
   "personalizationSettings": "Personalization Settings",

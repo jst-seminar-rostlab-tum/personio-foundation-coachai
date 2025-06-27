@@ -3,13 +3,7 @@
   "metaDescription": "Detailed analysis and evaluation of your training session",
   "title": "Performance Summary",
   "reviewDialog": {
-    "open": "Give Review",
-    "title": "Review",
     "description": "How was the training session? Help us improve by providing your review.",
-    "rate": "Submit Review",
-    "submitting": "Submitting...",
-    "submitReviewError": "Error while submitting review. Please try again later.",
-    "submitReviewSuccess": "Review submitted successfully. Thank you for your review!",
     "shareWithAdmin": "Share session with an admin for improvement."
   },
   "progressBars": {
@@ -32,11 +26,7 @@
     "sessions": "Recommended Sessions"
   },
   "detailedFeedback": {
-    "positive": "What Went Well",
-    "negative": "Areas for Improvement",
     "recommendations": "Recommendations",
-    "nextTime": "Next time, try asking:"
-  },
-  "return": "Return to Dashboard",
-  "getSessionDetailError": "Error while fetching session feedback. Please try again later."
+    "nextTime": "Next time, try:"
+  }
 }

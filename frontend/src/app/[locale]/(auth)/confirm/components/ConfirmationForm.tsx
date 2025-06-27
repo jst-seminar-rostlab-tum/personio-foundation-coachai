@@ -18,6 +18,7 @@ import z from 'zod';
 
 export default function ConfirmationForm() {
   const t = useTranslations('Confirm.ConfirmationForm');
+  const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>();
   const [showResendButton, setShowResendButton] = useState(false);
@@ -33,7 +34,7 @@ export default function ConfirmationForm() {
   }, [error]);
 
   const confirmationFormSchema = z.object({
-    email: z.string().email(t('emailInputError')),
+    email: z.string().email(tCommon('emailInputError')),
     code: z.string(),
   });
   const codeSize = 6;
@@ -128,7 +129,7 @@ export default function ConfirmationForm() {
                   name="code"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-center">{t('codeInputLabel')}</FormLabel>
+                      <FormLabel className="text-center">{tCommon('codeInputLabel')}</FormLabel>
 
                       <div className="flex justify-center gap-2">
                         {[...Array(codeSize)].map((_, idx) => (
@@ -183,7 +184,7 @@ export default function ConfirmationForm() {
                   type="submit"
                   disabled={isLoading || form.watch('code').length !== codeSize}
                 >
-                  {isLoading ? t('confirmingButtonLabel') : t('confirmButtonLabel')}
+                  {isLoading ? tCommon('confirming') : tCommon('confirm')}
                 </Button>
               )}
 
@@ -194,7 +195,7 @@ export default function ConfirmationForm() {
                   onClick={resendConfirmationEmail}
                   disabled={isLoading}
                 >
-                  {t('resendCodeButtonLabel')}
+                  {tCommon('resendCodeButtonLabel')}
                 </Button>
               )}
             </CardFooter>

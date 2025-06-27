@@ -5,13 +5,6 @@
     "title": "Confirm Your Account",
     "description": "Please enter the confirmation code sent to your email address.",
     "expiredDescription": "Your confirmation code has expired. Please request a new code to continue.",
-    "emailInputLabel": "Email Address",
-    "emailInputPlaceholder": "Enter your email address",
-    "emailInputError": "Please enter a valid email address",
-    "codeInputLabel": "Confirmation Code",
-    "confirmButtonLabel": "Confirm",
-    "confirmingButtonLabel": "Confirming...",
-    "resendCodeButtonLabel": "Resend Code",
     "expiredOtpError": "The confirmation code has expired. Please request a new code.",
     "genericError": "An error occurred while confirming your account. Please try again later."
   }

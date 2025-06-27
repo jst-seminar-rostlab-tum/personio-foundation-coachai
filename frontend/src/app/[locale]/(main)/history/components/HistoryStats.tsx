@@ -6,6 +6,7 @@ import { use } from 'react';
 
 export default function HistoryStats({ stats }: UserStatsResponse) {
   const t = useTranslations('History');
+  const tCommon = useTranslations('Common');
   const data = use(stats);
 
   return (
@@ -31,9 +32,9 @@ export default function HistoryStats({ stats }: UserStatsResponse) {
           <div className="flex flex-row gap-2 md:gap-6 min-w-0 overflow-x-auto">
             {data && (
               <>
-                <StatCard value={data.totalSessions} label={t('totalSessions')} />
-                <StatCard value={`${data.averageScore}%`} label={t('avgScore')} />
-                <StatCard value={data.goalsAchieved} label={t('goalsAchieved')} />
+                <StatCard value={data.totalSessions} label={tCommon('totalSessions')} />
+                <StatCard value={`${data.averageScore}%`} label={tCommon('avgScore')} />
+                <StatCard value={data.goalsAchieved} label={tCommon('goalsAchieved')} />
               </>
             )}
           </div>

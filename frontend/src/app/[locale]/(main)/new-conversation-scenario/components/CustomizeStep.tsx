@@ -12,6 +12,7 @@ export function CustomizeStep({
   onComplexityChange,
 }: CustomizeStepProps) {
   const t = useTranslations('ConversationScenario.customize');
+  const tCommon = useTranslations('Common');
 
   return (
     <div>
@@ -23,33 +24,23 @@ export function CustomizeStep({
         className="mb-8 flex flex-row justify-between gap-4"
       >
         <label htmlFor="d1" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image
-            src="/icons/difficulty-easy.svg"
-            alt={t('difficulty.options.easy')}
-            width={56}
-            height={56}
-          />
-          <span className="text-sm">{t('difficulty.options.easy')}</span>
+          <Image src="/icons/difficulty-easy.svg" alt={tCommon('easy')} width={56} height={56} />
+          <span className="text-sm">{tCommon('easy')}</span>
           <RadioGroupItem value="easy" id="d1" />
         </label>
         <label htmlFor="d2" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
             src="/icons/difficulty-medium.svg"
-            alt={t('difficulty.options.medium')}
+            alt={tCommon('medium')}
             width={56}
             height={56}
           />
-          <span className="text-sm">{t('difficulty.options.medium')}</span>
+          <span className="text-sm">{tCommon('medium')}</span>
           <RadioGroupItem value="medium" id="d2" />
         </label>
         <label htmlFor="d3" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image
-            src="/icons/difficulty-hard.svg"
-            alt={t('difficulty.options.hard')}
-            width={56}
-            height={56}
-          />
-          <span className="text-sm">{t('difficulty.options.hard')}</span>
+          <Image src="/icons/difficulty-hard.svg" alt={tCommon('hard')} width={56} height={56} />
+          <span className="text-sm">{tCommon('hard')}</span>
           <RadioGroupItem value="hard" id="d3" />
         </label>
       </RadioGroup>
@@ -61,33 +52,18 @@ export function CustomizeStep({
         className="mb-8 flex flex-row justify-between gap-4"
       >
         <label htmlFor="e1" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image
-            src="/icons/mood-positive.svg"
-            alt={t('emotionalTone.options.positive')}
-            width={56}
-            height={56}
-          />
-          <span className="text-sm">{t('emotionalTone.options.positive')}</span>
+          <Image src="/icons/mood-positive.svg" alt={tCommon('positive')} width={56} height={56} />
+          <span className="text-sm">{tCommon('positive')}</span>
           <RadioGroupItem value="positive" id="e1" />
         </label>
         <label htmlFor="e2" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image
-            src="/icons/mood-neutral.svg"
-            alt={t('emotionalTone.options.neutral')}
-            width={56}
-            height={56}
-          />
-          <span className="text-sm">{t('emotionalTone.options.neutral')}</span>
+          <Image src="/icons/mood-neutral.svg" alt={tCommon('neutral')} width={56} height={56} />
+          <span className="text-sm">{tCommon('neutral')}</span>
           <RadioGroupItem value="neutral" id="e2" />
         </label>
         <label htmlFor="e3" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image
-            src="/icons/mood-negative.svg"
-            alt={t('emotionalTone.options.negative')}
-            width={56}
-            height={56}
-          />
-          <span className="text-sm">{t('emotionalTone.options.negative')}</span>
+          <Image src="/icons/mood-negative.svg" alt={tCommon('negative')} width={56} height={56} />
+          <span className="text-sm">{tCommon('negative')}</span>
           <RadioGroupItem value="negative" id="e3" />
         </label>
       </RadioGroup>
@@ -101,31 +77,31 @@ export function CustomizeStep({
         <label htmlFor="c1" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
             src="/icons/complexity-simple.svg"
-            alt={t('complexity.options.simple')}
+            alt={tCommon('simple')}
             width={56}
             height={56}
           />
-          <span className="text-sm">{t('complexity.options.simple')}</span>
+          <span className="text-sm">{tCommon('simple')}</span>
           <RadioGroupItem value="simple" id="c1" />
         </label>
         <label htmlFor="c2" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
             src="/icons/complexity-medium.svg"
-            alt={t('complexity.options.medium')}
+            alt={tCommon('medium')}
             width={56}
             height={56}
           />
-          <span className="text-sm">{t('complexity.options.medium')}</span>
+          <span className="text-sm">{tCommon('medium')}</span>
           <RadioGroupItem value="medium" id="c2" />
         </label>
         <label htmlFor="c3" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
             src="/icons/complexity-complex.svg"
-            alt={t('complexity.options.complex')}
+            alt={tCommon('complex')}
             width={56}
             height={56}
           />
-          <span className="text-sm">{t('complexity.options.complex')}</span>
+          <span className="text-sm">{tCommon('complex')}</span>
           <RadioGroupItem value="complex" id="c3" />
         </label>
       </RadioGroup>

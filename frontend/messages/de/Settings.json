@@ -1,11 +1,8 @@
 {
   "metaTitle": "Einstellungen - Coach AI",
   "metaDescription": "Passen Sie Ihre Trainingsseinstellungen an",
-  "title": "Einstellungen",
-  "backToDashboard": "Zurück zum Dashboard",
   "privacyControls": "Datenschutzeinstellungen",
   "storeAudioTranscripts": "Gesprächsaudio und Transkripte speichern",
-  "export": "Exportieren",
   "exportData": "Persönliche Daten exportieren",
   "deleteAccount": "Konto löschen",
   "personalizationSettings": "Personalisierungseinstellungen",

@@ -1,9 +1,4 @@
 {
   "title": "Leadership Coach",
-  "dashboard": "Dashboard",
-  "newConversationScenario": "New Training",
-  "admin": "Admin",
-  "history": "History",
-  "settings": "Settings",
-  "logout": "Logout"
+  "newConversationScenario": "New Training"
 }

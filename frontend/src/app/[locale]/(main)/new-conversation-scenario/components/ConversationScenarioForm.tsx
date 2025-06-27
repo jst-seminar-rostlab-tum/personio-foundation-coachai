@@ -20,6 +20,7 @@ export default function ConversationScenarioForm({
   categoriesData,
 }: ConversationScenarioFormProps) {
   const t = useTranslations('ConversationScenario');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const { locale } = useParams();
 
@@ -105,12 +106,12 @@ export default function ConversationScenarioForm({
 
   const getButtonText = () => {
     if (isSubmitting && currentStep === 2) {
-      return t('navigation.creating');
+      return tCommon('creating');
     }
     if (currentStep === 2) {
-      return t('navigation.create');
+      return tCommon('create');
     }
-    return t('navigation.next');
+    return tCommon('nextStep');
   };
 
   return (
@@ -177,7 +178,7 @@ export default function ConversationScenarioForm({
             disabled={currentStep === 0}
           >
             <ArrowLeftIcon />
-            {t('navigation.back')}
+            {tCommon('goBack')}
           </Button>
         )}
         <Button

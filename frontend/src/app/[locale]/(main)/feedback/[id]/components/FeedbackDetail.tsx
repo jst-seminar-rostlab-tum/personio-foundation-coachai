@@ -28,6 +28,7 @@ import FeedbackDetailLoadingPage from '../loading';
 
 export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
   const t = useTranslations('Feedback');
+  const tCommon = useTranslations('Common');
   const [feedbackDetail, setFeedbackDetail] = useState<FeedbackResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const getFeedbackDetail = useCallback(
@@ -50,10 +51,10 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
         throw new Error('Failed to get session feedback');
       } catch (error) {
         setIsLoading(false);
-        showErrorToast(error, t('getSessionDetailError'));
+        showErrorToast(error, tCommon('fetchError'));
       }
     },
-    [setFeedbackDetail, setIsLoading, t]
+    [setFeedbackDetail, setIsLoading, tCommon]
   );
 
   useEffect(() => {
@@ -183,7 +184,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           <AccordionContent>
             <div className="flex items-center gap-2 mt-3">
               <CheckCircle size={24} className="text-forest-50" />
-              <span className="text-xl">{t('detailedFeedback.positive')}</span>
+              <span className="text-xl">{tCommon('positive')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
               {examplePositive.map((example, index) => (
@@ -193,7 +194,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
 
             <div className="flex items-center gap-2 mt-10">
               <CircleX size={24} className="text-flame-50" />
-              <span className="text-xl">{t('detailedFeedback.negative')}</span>
+              <span className="text-xl">{tCommon('negative')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
               {exampleNegative.map((negative, index) => (

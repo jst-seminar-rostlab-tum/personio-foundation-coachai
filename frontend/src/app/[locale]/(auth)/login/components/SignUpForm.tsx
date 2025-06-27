@@ -27,6 +27,8 @@ import Link from 'next/link';
 
 export function SignUpForm() {
   const t = useTranslations('Login.SignUpTab');
+  const tCommon = useTranslations('Common');
+  const tLogin = useTranslations('Login');
   const [isLoading, setIsLoading] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
@@ -39,9 +41,9 @@ export function SignUpForm() {
   }, [error]);
 
   const signUpFormSchema = z.object({
-    fullName: z.string().min(1, t('fullNameInputError')),
-    email: z.string().email(t('emailInputError')),
-    phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, t('phoneNumberInputError')),
+    fullName: z.string().min(1, tLogin('fullNameInputError')),
+    email: z.string().email(tCommon('emailInputError')),
+    phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
     password: z
       .string()
       .regex(/^.{8,}$/)
@@ -101,10 +103,10 @@ export function SignUpForm() {
                 name="fullName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('fullNameInputLabel')}</FormLabel>
+                    <FormLabel>{tLogin('fullNameInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('fullNameInputPlaceholder')}
+                        placeholder={tLogin('fullNameInputPlaceholder')}
                         {...field}
                         className="w-full"
                         disabled={isLoading}
@@ -120,10 +122,10 @@ export function SignUpForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('emailInputLabel')}</FormLabel>
+                    <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('emailInputPlaceholder')}
+                        placeholder={tCommon('emailInputPlaceholder')}
                         {...field}
                         className="w-full"
                         type="email"
@@ -140,10 +142,10 @@ export function SignUpForm() {
                 name="phone_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('phoneNumberInputLabel')}</FormLabel>
+                    <FormLabel>{tLogin('phoneNumberInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('phoneNumberInputPlaceholder')}
+                        placeholder={tLogin('phoneNumberInputPlaceholder')}
                         {...field}
                         className="w-full"
                         type="tel"
@@ -160,10 +162,10 @@ export function SignUpForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('passwordInputLabel')}</FormLabel>
+                    <FormLabel>{tLogin('passwordInputLabel')}</FormLabel>
                     <FormControl>
                       <PasswordInput
-                        placeholder={t('passwordInputPlaceholder')}
+                        placeholder={tLogin('passwordInputPlaceholder')}
                         disabled={isLoading}
                         requirements={passwordRequirements}
                         {...field}

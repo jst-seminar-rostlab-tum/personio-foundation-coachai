@@ -1,20 +1,11 @@
 {
   "metaTitle": "Coach AI",
   "metaDescription": "Practice difficult workplace conversations and receive real-time feedback to improve your communication and leadership skills.",
-  "welcome": "Welcome to ",
-  "appName": "CoachAI",
-  "description": "Full-stack application with TypeScript and Python",
-  "header": {
-    "appName": "Leadership Coach",
-    "signIn": "Sign In",
-    "getStarted": "Get Started"
-  },
   "hero": {
     "badge": "AI-Powered Leadership Training",
     "title": "Develop exceptional leadership skills with AI coaching",
     "description": "Practice difficult workplace conversations and receive real-time feedback to improve your communication and leadership skills.",
     "cta": {
-      "primary": "Get Started Now",
       "secondary": "Watch How It Works"
     }
   },
@@ -69,16 +60,6 @@
   },
   "cta": {
     "title": "Ready to transform your leadership skills?",
-    "description": "Join thousands of professionals who are using AI to become more effective leaders.",
-    "button": "Get Started Now"
-  },
-  "footer": {
-    "appName": "Leadership Coach",
-    "links": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "cookies": "Cookie Policy"
-    },
-    "copyright": "© 2025 AI Leadership Coach. All rights reserved."
+    "description": "Join thousands of professionals who are using AI to become more effective leaders."
   }
 }

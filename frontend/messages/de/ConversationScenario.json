@@ -37,28 +37,13 @@
   "customize": {
     "title": "Passen Sie Ihr Training an",
     "difficulty": {
-      "title": "Schwierigkeitsgrad *",
-      "options": {
-        "easy": "Einfach",
-        "medium": "Mittel",
-        "hard": "Schwer"
-      }
+      "title": "Schwierigkeitsgrad *"
     },
     "emotionalTone": {
-      "title": "Emotionaler Ton *",
-      "options": {
-        "positive": "Positiv",
-        "neutral": "Neutral",
-        "negative": "Negativ"
-      }
+      "title": "Emotionaler Ton *"
     },
     "complexity": {
-      "title": "Antwortkomplexität *",
-      "options": {
-        "simple": "Einfach",
-        "medium": "Mittel",
-        "complex": "Komplex"
-      }
+      "title": "Antwortkomplexität *"
     }
   },
   "categories": [
@@ -95,11 +80,5 @@
       "defaultOtherParty": "Arbeitgeber"
     }
   ],
-  "navigation": {
-    "back": "Zurück",
-    "next": "Weiter",
-    "create": "Training erstellen",
-    "creating": "Wird erstellt..."
-  },
   "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später erneut."
 }

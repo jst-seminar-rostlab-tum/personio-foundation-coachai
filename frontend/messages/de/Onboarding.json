@@ -9,11 +9,5 @@
     "step2Subtitle": "Wählen Sie bis zu 3 Bereiche",
     "step3": "Bewerten Sie Ihr Vertrauen in diese Bereiche"
   },
-  "navigation": {
-    "back": "Zurück",
-    "next": "Nächster Schritt",
-    "finish": "Setup abschließen",
-    "skip": "Überspringen"
-  },
   "updateProfileError": "Beim Aktualisieren Ihres Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
 }

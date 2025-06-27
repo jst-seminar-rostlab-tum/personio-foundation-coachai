@@ -84,12 +84,12 @@ export default function PreviousSessions({
         <div className="text-xl">{t('previousSessions')}</div>
         <div className="flex justify-between md:gap-6">
           <Button variant="ghost">
-            {t('exportHistory')} <Download />
+            {tCommon('export')} <Download />
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" className="hover:text-flame-50" disabled={isDeleting}>
-                {t('clearAll')} <Trash2 />
+                {tCommon('clearAll')} <Trash2 />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -100,8 +100,8 @@ export default function PreviousSessions({
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteAll}>{t('delete')}</AlertDialogAction>
+                <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteAll}>{tCommon('delete')}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -133,7 +133,7 @@ export default function PreviousSessions({
       {canLoadMore && (
         <div className="flex justify-center mt-4">
           <Button variant="ghost" onClick={() => handleLoadMore(pageNumber + 1)}>
-            {isLoading ? t('loading') : t('loadMore')} <ChevronDown />
+            {isLoading ? tCommon('loading') : tCommon('loadMore')} <ChevronDown />
           </Button>
         </div>
       )}

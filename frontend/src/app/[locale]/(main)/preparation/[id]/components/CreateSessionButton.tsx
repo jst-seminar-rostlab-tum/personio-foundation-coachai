@@ -11,6 +11,7 @@ import { useState } from 'react';
 
 export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) => {
   const t = useTranslations('Preparation');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,7 +37,7 @@ export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) =>
       disabled={isSubmitting}
     >
       <Play />
-      {isSubmitting ? t('navigation.starting') : t('navigation.start')}
+      {isSubmitting ? tCommon('starting') : tCommon('start')}
     </Button>
   );
 };

@@ -40,7 +40,7 @@ export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t('deleteAccountConfirmTitle')}</AlertDialogTitle>
+          <AlertDialogTitle>{t('areYouSure')}</AlertDialogTitle>
           <AlertDialogDescription>{t('deleteAccountConfirmDesc')}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

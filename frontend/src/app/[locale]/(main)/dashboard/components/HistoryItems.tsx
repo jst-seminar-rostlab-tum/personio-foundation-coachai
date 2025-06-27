@@ -25,7 +25,7 @@ export default function HistoryItems({ sessionsPromise }: HistoryItemsProps) {
   return (
     <section className="flex flex-col gap-4">
       <div>
-        <h2 className="text-xl">{t('recentSessions.title')}</h2>
+        <h2 className="text-xl">{tCommon('recentTrainingHistory')}</h2>
         <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
       </div>
       {!sessions || sessions.length === 0 ? (
@@ -49,7 +49,7 @@ export default function HistoryItems({ sessionsPromise }: HistoryItemsProps) {
           ))}
           <Link href="/history">
             <Button size="full">
-              {t('recentSessions.cta')}
+              {tCommon('showEntireHistory')}
               <ArrowRightIcon />
             </Button>
           </Link>

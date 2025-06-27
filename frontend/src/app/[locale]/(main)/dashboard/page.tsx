@@ -19,6 +19,7 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 
 export default async function DashboardPage() {
   const t = await getTranslations('Dashboard');
+
   const PAGE_SIZE = 3;
   const userProfile = await UserProfileService.getUserProfile();
   const userStatsData = UserProfileService.getUserStats();
@@ -53,7 +54,7 @@ export default async function DashboardPage() {
           <Link href="/simulation/1">
             <Button size="full" className="mx-auto">
               <Play />
-              {t('currentSession.sessionCard.cta')}
+              {tCommon('continue')}
             </Button>
           </Link>
         </div>

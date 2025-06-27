@@ -20,6 +20,7 @@ import Reviews from './Reviews';
 
 export default function Admin({ stats, reviews }: AdminProps) {
   const t = useTranslations('Admin');
+  const tCommon = useTranslations('Common');
   const [tokenLimit, setTokenLimit] = useState<number>(stats.dailyTokenLimit);
   const [savedTokenLimit, setSavedTokenLimit] = useState<number>(stats.dailyTokenLimit);
   const [saving, setSaving] = useState(false);
@@ -30,8 +31,8 @@ export default function Admin({ stats, reviews }: AdminProps) {
   const statsArray = [
     { value: stats.totalUsers, label: t('statActiveUsers') },
     { value: stats.totalTrainings, label: t('statTotalTrainings') },
-    { value: stats.totalReviews, label: t('statReviews') },
-    { value: `${stats.averageScore}%`, label: t('statAverageScore') },
+    { value: stats.totalReviews, label: tCommon('reviews') },
+    { value: `${stats.averageScore}%`, label: tCommon('avgScore') },
   ];
 
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
@@ -94,7 +95,7 @@ export default function Admin({ stats, reviews }: AdminProps) {
             disabled={saving || !hasTokenLimitChanged}
             variant={saving || !hasTokenLimitChanged ? 'disabled' : 'default'}
           >
-            {saving ? t('saving') : t('save')}
+            {saving ? tCommon('saving') : tCommon('save')}
           </Button>
         </div>
       </div>
@@ -110,7 +111,7 @@ export default function Admin({ stats, reviews }: AdminProps) {
                 </span>
                 <Input
                   type="text"
-                  placeholder={t('search')}
+                  placeholder={tCommon('search')}
                   className="w-full pl-10 pr-3 py-2 border border-bw-20 rounded text-sm text-bw-70 placeholder-bw-40 focus:border-bw-20 focus-visible:outline-none focus-visible:ring-0"
                 />
               </div>
@@ -123,8 +124,12 @@ export default function Admin({ stats, reviews }: AdminProps) {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('users')}</th>
-                    <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('actions')}</th>
+                    <th className="text-left font-semibold text-bw-70 py-2 px-2">
+                      {tCommon('users')}
+                    </th>
+                    <th className="text-left font-semibold text-bw-70 py-2 px-2">
+                      {tCommon('actions')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -151,7 +156,7 @@ export default function Admin({ stats, reviews }: AdminProps) {
             {canLoadMore && (
               <div className="flex justify-center mt-4">
                 <Button variant="ghost" onClick={handleLoadMore}>
-                  {t('loadMore')} <ChevronDown className="ml-2 w-4 h-4" />
+                  {tCommon('loadMore')} <ChevronDown className="ml-2 w-4 h-4" />
                 </Button>
               </div>
             )}

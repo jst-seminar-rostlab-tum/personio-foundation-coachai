@@ -1,6 +1,9 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function FeedbackDetailLoadingPage() {
+  const tCommon = useTranslations('Common');
+
   return (
     <div>
       {/* Header */}
@@ -114,7 +117,7 @@ export default function FeedbackDetailLoadingPage() {
       {/* Return to dashboard button */}
       <div className="w-full flex justify-center pb-8">
         <Link href="/dashboard" className="text-gray-400 hover:text-gray-500 text-sm underline">
-          Return to dashboard
+          {tCommon('backToDashboard')}
         </Link>
       </div>
     </div>

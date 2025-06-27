@@ -30,6 +30,7 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
 
 export default function Settings({ userProfile }: { userProfile: Promise<UserProfile> }) {
   const t = useTranslations('Settings');
+  const tCommon = useTranslations('Common');
   const tOptions = useTranslations('Settings.leadershipGoals');
   const userProfileData = use(userProfile);
 
@@ -157,75 +158,77 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
 
   return (
     <div>
-      <h1 className="text-2xl">{t('title')}</h1>
+      <div className="flex flex-col gap-8 p-8">
+        <h1 className="text-2xl">{tCommon('settings')}</h1>
 
-      <div className="space-y-4 flex items-center rounded-t-lg">
-        <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
-          {/* Privacy Controls */}
-          <AccordionItem value="item-1">
-            <AccordionTrigger>{t('privacyControls')}</AccordionTrigger>
-            <AccordionContent>
-              {/* Store Conversations */}
-              <div className="flex items-center justify-between w-full px-2 gap-8">
-                <div className="flex flex-col">
-                  <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
-                  <div className="text-bw-40">
-                    {storeConversations ? t('ninetyDays') : t('zeroDays')}
+        <div className="space-y-4 flex items-center rounded-t-lg">
+          <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
+            {/* Privacy Controls */}
+            <AccordionItem value="item-1">
+              <AccordionTrigger>{t('privacyControls')}</AccordionTrigger>
+              <AccordionContent>
+                {/* Store Conversations */}
+                <div className="flex items-center justify-between w-full px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
+                    <div className="text-bw-40">
+                      {storeConversations ? t('ninetyDays') : t('zeroDays')}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
                   </div>
                 </div>
-                <div className="flex flex-col items-center">
-                  <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
+                {/* Export data */}
+                <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{t('exportData')}</div>
+                  </div>
+                  <div className="flex items-center">
+                    <Button variant="outline" className="w-full" onClick={handleExport}>
+                      <Download className="w-4 h-4" />
+                      <span className="hidden sm:inline">{tCommon('export')}</span>
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              {/* Export data */}
-              <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
-                <div className="flex flex-col">
-                  <div className="text-bw-70">{t('exportData')}</div>
+                {/* Delete Account */}
+                <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{t('deleteAccount')}</div>
+                  </div>
+                  <DeleteUserHandler>
+                    <Button variant="destructive">{t('deleteAccount')}</Button>
+                  </DeleteUserHandler>
                 </div>
-                <div className="flex items-center">
-                  <Button variant="outline" className="w-full" onClick={handleExport}>
-                    <Download className="w-4 h-4" />
-                    <span className="hidden sm:inline">{t('export')}</span>
-                  </Button>
-                </div>
-              </div>
-              {/* Delete Account */}
-              <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
-                <div className="flex flex-col">
-                  <div className="text-bw-70">{t('deleteAccount')}</div>
-                </div>
-                <DeleteUserHandler>
-                  <Button variant="destructive">{t('deleteAccount')}</Button>
-                </DeleteUserHandler>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          {/* Personalization Settings */}
-          <AccordionItem value="item-2">
-            <AccordionTrigger>{t('personalizationSettings')}</AccordionTrigger>
-            <AccordionContent>
-              <UserPreferences
-                className="flex flex-col gap-8 px-2"
-                currentRole={currentRoleSelect}
-                primaryGoals={primaryGoalsSelect}
-              />
-              <hr className="border-bw-20 px-2" />
-              <UserConfidenceFields
-                className="flex flex-col gap-8 px-2"
-                {...confidenceFieldsProps}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+              </AccordionContent>
+            </AccordionItem>
+            {/* Personalization Settings */}
+            <AccordionItem value="item-2">
+              <AccordionTrigger>{t('personalizationSettings')}</AccordionTrigger>
+              <AccordionContent>
+                <UserPreferences
+                  className="flex flex-col gap-8 px-2"
+                  currentRole={currentRoleSelect}
+                  primaryGoals={primaryGoalsSelect}
+                />
+                <hr className="border-bw-20 px-2" />
+                <UserConfidenceFields
+                  className="flex flex-col gap-8 px-2"
+                  {...confidenceFieldsProps}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+        <Button
+          size="full"
+          onClick={handleSaveSettings}
+          variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
+          disabled={isSubmitting || !hasFormChanged()}
+        >
+          {isSubmitting ? t('saving') : t('saveSettings')}
+        </Button>
       </div>
-      <Button
-        size="full"
-        onClick={handleSaveSettings}
-        variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
-        disabled={isSubmitting || !hasFormChanged()}
-      >
-        {isSubmitting ? t('saving') : t('saveSettings')}
-      </Button>
     </div>
   );
 }

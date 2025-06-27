@@ -37,7 +37,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
           <div className="flex md:flex-row flex-col gap-3 w-full max-w-xs justify-center">
             <Button onClick={handleTryAgain}>
               <RefreshCw className="w-4 h-4 mr-2" />
-              {t('errorPage.tryAgain')}
+              {t('tryAgain')}
             </Button>
             <Button asChild variant="outline">
               <Link href="/dashboard">

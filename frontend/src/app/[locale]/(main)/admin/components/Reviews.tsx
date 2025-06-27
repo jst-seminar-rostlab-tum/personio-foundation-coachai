@@ -3,7 +3,6 @@
 import { ChevronDown, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
 import { Review, ReviewsPaginated } from '@/interfaces/Review';
@@ -23,7 +22,6 @@ import EmptyListComponent from '@/components/common/EmptyListComponent';
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
   const limit = pagination?.pageSize;
   const router = useRouter();
-  const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
   const [visibleCount, setVisibleCount] = useState(limit);
   const [pageNumber, setPageNumber] = useState(pagination?.currentPage);
@@ -78,7 +76,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
   return (
     <div>
       <div className="w-full max-w-md mb-8 text-left">
-        <div className="text-lg font-semibold text-bw-70 mb-4">{t('userReviews')}</div>
+        <div className="text-lg font-semibold text-bw-70 mb-4">{tCommon('reviews')}</div>
         <div className="flex flex-col sm:flex-row items-start gap-4">
           <div className="flex flex-col items-start justify-center min-w-0">
             <Star className="w-14 h-14 fill-marigold-30 mb-2" strokeWidth={0} />
@@ -116,16 +114,16 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
       ) : (
         <div className="w-full mb-8 text-left">
           <div className="flex items-center justify-between mb-4">
-            <div className="text-lg font-semibold text-bw-70">{t('userReviews')}</div>
+            <div className="text-lg font-semibold text-bw-70">{tCommon('reviews')}</div>
             <Select value={sortBy} onValueChange={handleSortChange}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={t('sortBy')} />
+                <SelectValue placeholder={tCommon('sortBy')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">{t('sortNewest')}</SelectItem>
-                <SelectItem value="oldest">{t('sortOldest')}</SelectItem>
-                <SelectItem value="highest">{t('sortHighest')}</SelectItem>
-                <SelectItem value="lowest">{t('sortLowest')}</SelectItem>
+                <SelectItem value="newest">{tCommon('sortNewest')}</SelectItem>
+                <SelectItem value="oldest">{tCommon('sortOldest')}</SelectItem>
+                <SelectItem value="highest">{tCommon('sortHighest')}</SelectItem>
+                <SelectItem value="lowest">{tCommon('sortLowest')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
