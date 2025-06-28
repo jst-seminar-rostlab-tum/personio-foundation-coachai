@@ -6,7 +6,7 @@ export interface ConversationScenarioFormState {
   context: string;
   goal: string;
   difficulty: string;
-  emotionalTone: string;
   complexity: string;
+  persona: string;
   isCustom: boolean;
 }

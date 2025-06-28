@@ -11,8 +11,8 @@ const initialFormState: ConversationScenarioFormState = {
   context: '',
   goal: '',
   difficulty: '',
-  emotionalTone: '',
   complexity: '',
+  persona: '',
   isCustom: false,
 };
 

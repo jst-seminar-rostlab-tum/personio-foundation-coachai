@@ -10,7 +10,7 @@
   "category": {
     "title": "Choose a Scenario",
     "customPlaceholder": "E.g., Promotion discussion, Onboarding new team member...",
-    "customInput": "Define your own conversation topic *"
+    "customInput": "Define your own conversation topic"
   },
   "situation": {
     "title": "Describe your Situation",
@@ -19,18 +19,106 @@
       "placeholder": "Enter name"
     },
     "context": {
-      "title": "What is the context? *",
+      "title": "What is the context?",
       "placeholder": "Please specify the context of the conversation here."
     },
     "goal": {
-      "title": "What is your goal? *",
+      "title": "What is your goal?",
       "placeholder": "What outcome do you hope to achieve?"
     }
   },
   "customize": {
-    "title": "Customize your Training",
+    "title": "Customize other Party",
+    "persona": {
+      "title": "Choose a Persona",
+      "about": "About",
+      "behavioralTraits": "Behavioral Traits",
+      "trainingFocus": "Training Focus",
+      "personas": {
+        "positive": {
+          "traits": [
+            "Optimistic and enthusiastic",
+            "Encouraging and supportive",
+            "Sees opportunities in challenges",
+            "Builds positive relationships",
+            "Motivates others naturally"
+          ],
+          "trainingFocus": [
+            "Maintain their positive energy",
+            "Channel enthusiasm constructively",
+            "Balance optimism with realism",
+            "Use their energy to inspire others",
+            "Leverage their natural motivation"
+          ]
+        },
+        "angry": {
+          "traits": [
+            "Frustrated and defensive",
+            "May interrupt or raise voice",
+            "Focuses on problems and blame",
+            "Resistant to suggestions",
+            "Emotionally charged responses"
+          ],
+          "trainingFocus": [
+            "Stay calm and composed",
+            "Acknowledge their feelings",
+            "Avoid escalating conflicts",
+            "Focus on solutions, not blame",
+            "Give them space to vent safely"
+          ]
+        },
+        "shy": {
+          "traits": [
+            "Quiet and reserved",
+            "Hesitant to share opinions",
+            "Prefers listening over speaking",
+            "May avoid eye contact",
+            "Needs time to process thoughts"
+          ],
+          "trainingFocus": [
+            "Create a safe, non-judgmental space",
+            "Ask open-ended questions",
+            "Give them time to respond",
+            "Validate their contributions",
+            "Build confidence gradually"
+          ]
+        },
+        "casual": {
+          "traits": [
+            "Relaxed and informal",
+            "May use casual language",
+            "Prefers friendly atmosphere",
+            "Values personal connection",
+            "Less focused on formalities"
+          ],
+          "trainingFocus": [
+            "Match their casual tone appropriately",
+            "Build rapport through conversation",
+            "Keep discussions friendly but professional",
+            "Use relatable examples",
+            "Maintain boundaries while being approachable"
+          ]
+        },
+        "sad": {
+          "traits": [
+            "Withdrawn and quiet",
+            "May appear disengaged",
+            "Focuses on negative aspects",
+            "Low energy and motivation",
+            "Needs emotional support"
+          ],
+          "trainingFocus": [
+            "Show empathy and understanding",
+            "Offer emotional support",
+            "Help them see positive aspects",
+            "Be patient with their pace",
+            "Encourage small steps forward"
+          ]
+        }
+      }
+    },
     "difficulty": {
-      "title": "Difficulty Level *",
+      "title": "Difficulty Level",
       "options": {
         "easy": "Easy",
         "medium": "Medium",
@@ -38,7 +126,7 @@
       }
     },
     "emotionalTone": {
-      "title": "Emotional Tone *",
+      "title": "Emotional Tone",
       "options": {
         "positive": "Positive",
         "neutral": "Neutral",
@@ -46,7 +134,7 @@
       }
     },
     "complexity": {
-      "title": "Response Complexity *",
+      "title": "Response Complexity",
       "options": {
         "simple": "Simple",
         "medium": "Medium",
