@@ -17,10 +17,6 @@ export interface Session {
   updatedAt: string;
 }
 
-export interface SessionCreate {
-  scenarioId: string;
-}
-
 export interface SessionPaginated {
   page: number;
   limit: number;
