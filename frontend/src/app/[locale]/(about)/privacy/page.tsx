@@ -1,15 +1,15 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/privacy', false);
 }
 
-export default function PrivacyPolicyPage() {
-  const t = useTranslations('PrivacyPolicy');
+export default async function PrivacyPolicyPage() {
+  const t = await getTranslations('PrivacyPolicy');
 
   return (
     <div className="flex flex-col justify-between min-h-screen">

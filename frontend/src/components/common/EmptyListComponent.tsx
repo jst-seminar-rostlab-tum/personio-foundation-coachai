@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
@@ -10,7 +12,7 @@ export default function EmptyListComponent({ itemType }: EmptyListComponentProps
   return (
     <div className="flex flex-col items-center justify-center w-full border border-bw-20 rounded-lg bg-transparent gap-1 p-8 text-center">
       <Image
-        src="/images/empty_list.png"
+        src="/images/common/empty-list.png"
         alt="Empty list illustration"
         width={128}
         height={128}

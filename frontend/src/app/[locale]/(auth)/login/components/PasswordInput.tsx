@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, InputHTMLAttributes } from 'react';
 import { EyeIcon, EyeOffIcon, CheckIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';

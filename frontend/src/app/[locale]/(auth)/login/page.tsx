@@ -5,15 +5,15 @@ import { SignInForm } from '@/app/[locale]/(auth)/login/components/SignInForm';
 import { SignUpForm } from '@/app/[locale]/(auth)/login/components/SignUpForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/login', true);
 }
 
-export default function LoginPage() {
-  const t = useTranslations('Login');
+export default async function LoginPage() {
+  const t = await getTranslations('Login');
 
   return (
     <div className="min-h-screen flex items-center justify-center py-4">
