@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Checkbox from '@/components/ui/Checkbox';
 import { useEffect, useState } from 'react';
-import { PasswordRequirement } from '@/interfaces/PasswordInput';
 import Image from 'next/image';
 import {
   Form,
@@ -20,7 +19,10 @@ import {
   FormMessage,
 } from '@/components/ui/Form';
 import { VerificationPopup } from '@/app/[locale]/(auth)/login/components/VerificationPopup';
-import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordInput';
+import {
+  PasswordInput,
+  PasswordRequirement,
+} from '@/app/[locale]/(auth)/login/components/PasswordInput';
 import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
 import { showErrorToast } from '@/lib/toast';
 import Link from 'next/link';
@@ -239,7 +241,12 @@ export function SignUpForm() {
               </Button>
               <div className="w-full border-t border-gray-300" />
               <Button size="full" variant="secondary" disabled={isLoading}>
-                <Image src="/icons/google-icon.svg" alt="Google Icon" width={20} height={20} />
+                <Image
+                  src="/images/icons/google-icon.svg"
+                  alt="Google Icon"
+                  width={20}
+                  height={20}
+                />
                 {t('signUpWithGoogleButtonLabel')}
               </Button>
             </CardFooter>

@@ -6,15 +6,20 @@ import Stepper from '@/components/common/Stepper';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { ConversationScenarioFormProps } from '@/interfaces/ConversationScenarioFormProps';
-import { ConversationCategory } from '@/interfaces/ConversationCategory';
-import { ConversationScenario } from '@/interfaces/ConversationScenario';
+import {
+  ConversationScenario,
+  ConversationCategory,
+} from '@/interfaces/models/ConversationScenario';
 import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
 import { showErrorToast } from '@/lib/toast';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
+
+interface ConversationScenarioFormProps {
+  categoriesData: ConversationCategory[];
+}
 
 export default function ConversationScenarioForm({
   categoriesData,

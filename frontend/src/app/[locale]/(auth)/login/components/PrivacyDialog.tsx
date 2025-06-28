@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Download, Trash2, Server, Lock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -8,7 +10,7 @@ import {
   DataProcessingTableProps,
   DataProcessingTopic,
   PrivacyDialogProps,
-} from '@/interfaces/PrivacyDialog';
+} from '@/interfaces/models/PrivacyDialog';
 
 export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps) {
   const t = useTranslations('Login.PrivacyPolicyDialog');

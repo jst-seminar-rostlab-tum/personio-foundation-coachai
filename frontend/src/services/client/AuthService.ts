@@ -1,4 +1,4 @@
-import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
+import { CreateUserRequest } from '@/interfaces/models/Auth';
 import { createClient } from '@/lib/supabase/client';
 import { redirect } from 'next/navigation';
 import { api } from './Api';

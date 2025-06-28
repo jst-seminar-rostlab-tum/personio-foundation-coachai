@@ -1,13 +1,5 @@
+import { SendVerificationCodeRequest, VerifyCodeRequest } from '@/interfaces/models/Auth';
 import { api } from './Api';
-
-interface SendVerificationCodeRequest {
-  phone_number: string;
-}
-
-interface VerifyCodeRequest {
-  phone_number: string;
-  code: string;
-}
 
 const sendVerificationCode = async (data: SendVerificationCodeRequest) => {
   const response = await api.post('/auth/send-verification', data);

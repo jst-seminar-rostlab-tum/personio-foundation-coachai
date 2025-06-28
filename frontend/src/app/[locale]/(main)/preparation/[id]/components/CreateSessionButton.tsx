@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/Button';
 import { sessionService } from '@/services/client/SessionService';
 import { Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { CreateSessionButtonProps } from '@/interfaces/CreateSessionButtonProps';
 import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/toast';
 import { useState } from 'react';
+
+interface CreateSessionButtonProps {
+  scenarioId: string;
+}
 
 export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) => {
   const t = useTranslations('Preparation');

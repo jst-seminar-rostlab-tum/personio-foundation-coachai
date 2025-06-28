@@ -14,12 +14,16 @@ import Switch from '@/components/ui/Switch';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import { UserProfileService } from '@/services/client/UserProfileService';
-import { UserPreference } from '@/interfaces/UserInputFields';
+import { UserPreference } from '@/interfaces/models/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
-import { UserProfile } from '@/interfaces/UserProfile';
+import { UserProfile } from '@/interfaces/models/UserProfile';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import JSZip from 'jszip';
 import UserPreferences from './UserPreferences';
+
+interface SettingsProps {
+  userProfile: Promise<UserProfile>;
+}
 
 const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   const score = userProfileData.confidenceScores?.find(
@@ -28,7 +32,7 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   return score !== undefined ? [score] : [50];
 };
 
-export default function Settings({ userProfile }: { userProfile: Promise<UserProfile> }) {
+export default function Settings({ userProfile }: SettingsProps) {
   const t = useTranslations('Settings');
   const tCommon = useTranslations('Common');
   const tOptions = useTranslations('Settings.leadershipGoals');

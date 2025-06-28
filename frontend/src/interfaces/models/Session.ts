@@ -1,3 +1,5 @@
+import { SessionScores } from './SessionFeedback';
+
 export enum SessionStatus {
   STARTED = 'started',
   COMPLETED = 'completed',
@@ -15,20 +17,12 @@ export interface Session {
   updatedAt: string;
 }
 
-export interface SessionCreate {
-  scenarioId: string;
-}
-
 export interface SessionPaginated {
   page: number;
   limit: number;
   totalPages: number;
   totalSessions: number;
   sessions: SessionFromPagination[];
-}
-
-export interface SessionPaginatedResponse {
-  data: SessionPaginated;
 }
 
 export interface SessionFromPagination {
@@ -38,10 +32,5 @@ export interface SessionFromPagination {
   status: SessionStatus;
   title: string;
   summary: string;
-  skills: {
-    structure: number;
-    empathy: number;
-    solutionFocus: number;
-    clarity: number;
-  };
+  skills: SessionScores;
 }

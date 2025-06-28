@@ -16,5 +16,5 @@ export type UserStats = {
 };
 
 export type UserStatsResponse = {
-  stats: Promise<UserStats>;
+  stats: UserStats;
 };

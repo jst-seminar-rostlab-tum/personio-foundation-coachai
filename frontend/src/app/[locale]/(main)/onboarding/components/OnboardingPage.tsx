@@ -12,11 +12,11 @@ import Checkbox from '@/components/ui/Checkbox';
 import Label from '@/components/ui/Label';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 
-import { UserOption } from '@/interfaces/UserInputFields';
+import { UserOption } from '@/interfaces/models/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfileService } from '@/services/client/UserProfileService';
 import { showErrorToast } from '@/lib/toast';
-import { useUser } from '@/lib/context/user';
+import { useUser } from '@/contexts/User';
 import { useOnboardingStore } from '@/store/OnboardingStore';
 import { UserRadioComponent } from './UserRadioComponent';
 

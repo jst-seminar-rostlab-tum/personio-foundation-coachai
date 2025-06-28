@@ -1,12 +1,3 @@
-export interface FeedbackQuoteProps {
-  heading: string;
-  feedback?: string;
-  quote?: string;
-  improvedQuote?: string;
-  recommendation?: string;
-  icon?: string;
-}
-
 export interface FeedbackResponse {
   title: string;
   createdAt: string;
@@ -14,13 +5,15 @@ export interface FeedbackResponse {
   goalsTotal: string[];
 }
 
+export interface SessionScores {
+  clarity: number;
+  empathy: number;
+  structure: number;
+  focus: number;
+}
+
 export interface SessionFeedback {
-  scores: {
-    clarity: number;
-    empathy: number;
-    structure: number;
-    focus: number;
-  };
+  scores: SessionScores;
   overallScore: number;
   sessionLengthS: number;
   goalsAchieved: string[];
@@ -39,8 +32,4 @@ export interface SessionFeedback {
     heading: string;
     recommendation: string;
   }[];
-}
-
-export interface FeedbackPageProps {
-  params: Promise<{ id: string }>;
 }

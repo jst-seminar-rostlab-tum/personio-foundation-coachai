@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { authService } from '@/services/client/AuthService';
-import { useUser } from '@/lib/context/user';
-import { AccountRole } from '@/interfaces/UserProfile';
+import { useUser } from '@/contexts/User';
+import { AccountRole } from '@/interfaces/models/UserProfile';
 import { Button } from '../ui/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 

@@ -1,6 +1,6 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
-import { MetadataProps } from '@/interfaces/MetadataProps';
+import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { conversationScenarioService } from '@/services/server/ConversationScenarioService';
 import ConversationScenarioForm from './components/ConversationScenarioForm';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { UserProfile } from '@/interfaces/UserProfile';
+import { UserProfile } from '@/interfaces/models/UserProfile';
 import { createContext, useContext } from 'react';
 
 const UserContext = createContext<UserProfile>(undefined!);

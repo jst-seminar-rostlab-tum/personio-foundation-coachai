@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
-import { ConversationScenarioPreparation } from '@/interfaces/ConversationScenario';
+import { ConversationScenarioPreparation } from '@/interfaces/models/ConversationScenario';
 import { showErrorToast } from '@/lib/toast';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';

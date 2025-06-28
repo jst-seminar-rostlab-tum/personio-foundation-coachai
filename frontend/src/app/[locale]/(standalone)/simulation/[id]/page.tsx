@@ -1,7 +1,7 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
-import { MetadataProps } from '@/interfaces/MetadataProps';
-import { PagesProps } from '@/interfaces/PagesProps';
+import { MetadataProps } from '@/interfaces/props/MetadataProps';
+import { PagesProps } from '@/interfaces/props/PagesProps';
 import SimulationPageComponent from './components/SimulationPage';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {

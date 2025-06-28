@@ -1,4 +1,4 @@
-import { Session } from '@/interfaces/Session';
+import { Session } from '@/interfaces/models/Session';
 import { api } from './Api';
 
 export const getSessionFeedback = async (sessionId: string) => {

@@ -1,11 +1,11 @@
 'use client';
 
 import { ChevronDown, Star } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
-import { Review, ReviewsPaginated } from '@/interfaces/Review';
+import { Review, ReviewsPaginated } from '@/interfaces/models/Review';
 import { api } from '@/services/client/Api';
 import { reviewService } from '@/services/server/ReviewService';
 import { showErrorToast } from '@/lib/toast';
@@ -18,10 +18,12 @@ import {
 } from '@/components/ui/Select';
 import { useRouter } from 'next/navigation';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
+import { formattedDate } from '@/lib/utils';
 
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
   const limit = pagination?.pageSize;
   const router = useRouter();
+  const locale = useLocale();
   const tCommon = useTranslations('Common');
   const tAdmin = useTranslations('Admin');
   const [visibleCount, setVisibleCount] = useState(limit);
@@ -150,9 +152,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                   ))}
                 </div>
                 <div className="text-sm text-bw-70 mb-2">{review.comment}</div>
-                <div className="text-sm text-bw-40">
-                  {new Date(review.date).toLocaleDateString()}
-                </div>
+                <div className="text-sm text-bw-40">{formattedDate(review.date, locale)}</div>
               </div>
             ))}
           </div>
