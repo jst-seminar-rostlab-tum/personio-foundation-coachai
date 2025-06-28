@@ -1,11 +1,14 @@
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { Button } from '@/components/ui/Button';
 import { Link } from '@/i18n/navigation';
-import { HistoryItemsProps } from '@/interfaces/HistoryItemsProps';
-import { SessionFromPagination } from '@/interfaces/Session';
+import { SessionFromPagination, SessionPaginatedResponse } from '@/interfaces/Session';
 import { ArrowRightIcon } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { use } from 'react';
+
+interface HistoryItemsProps {
+  sessionsPromise: Promise<SessionPaginatedResponse>;
+}
 
 export default function HistoryItems({ sessionsPromise }: HistoryItemsProps) {
   const t = useTranslations('Dashboard');

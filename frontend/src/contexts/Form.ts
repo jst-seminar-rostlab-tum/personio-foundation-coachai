@@ -1,4 +1,4 @@
-import { FormFieldContextValue, FormItemContextValue } from '@/interfaces/Form';
+import { FormFieldContextValue, FormItemContextValue } from '@/interfaces/inputs/Form';
 import React from 'react';
 
 export const FormFieldContext = React.createContext<FormFieldContextValue>(

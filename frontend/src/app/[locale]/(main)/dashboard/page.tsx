@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
-import { MetadataProps } from '@/interfaces/MetadataProps';
+import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { Button } from '@/components/ui/Button';
 import { sessionService } from '@/services/server/SessionService';
 import { api } from '@/services/server/Api';

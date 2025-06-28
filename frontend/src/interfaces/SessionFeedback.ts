@@ -1,12 +1,3 @@
-export interface FeedbackQuoteProps {
-  heading: string;
-  feedback?: string;
-  quote?: string;
-  improvedQuote?: string;
-  recommendation?: string;
-  icon?: string;
-}
-
 export interface FeedbackResponse {
   title: string;
   createdAt: string;
@@ -39,8 +30,4 @@ export interface SessionFeedback {
     heading: string;
     recommendation: string;
   }[];
-}
-
-export interface FeedbackPageProps {
-  params: Promise<{ id: string }>;
 }

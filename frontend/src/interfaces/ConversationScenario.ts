@@ -11,6 +11,16 @@ export interface ConversationScenario {
   languageCode: string;
 }
 
+export interface ConversationCategory {
+  id: string;
+  name: string;
+  iconUri: string;
+  defaultContext?: string;
+  defaultGoal?: string;
+  defaultOtherParty?: string;
+  isCustom?: boolean;
+}
+
 export interface ConversationScenarioResponse {
   message: string;
   scenarioId: string;

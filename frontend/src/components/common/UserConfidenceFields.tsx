@@ -1,9 +1,19 @@
 'use client';
 
-import { UserConfidenceField, UserConfidenceFieldProps } from '@/interfaces/UserInputFields';
+import { UserConfidenceField } from '@/interfaces/inputs/UserInputFields';
 import Slider from '@/components/ui/Slider';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
+
+interface UserConfidenceFieldProps {
+  className?: string;
+  difficulty: number[];
+  conflict: number[];
+  conversation: number[];
+  setDifficulty: (value: number[]) => void;
+  setConflict: (value: number[]) => void;
+  setConversation: (value: number[]) => void;
+}
 
 export default function UserConfidenceFields({
   className,

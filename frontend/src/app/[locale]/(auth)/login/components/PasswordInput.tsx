@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { EyeIcon, EyeOffIcon, CheckIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { PasswordInputProps } from '@/interfaces/PasswordInput';
+import { PasswordInputProps } from '@/interfaces/inputs/PasswordInput';
 import Input from '@/components/ui/Input';
 
 export function PasswordInput({

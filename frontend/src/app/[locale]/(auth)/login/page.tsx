@@ -1,6 +1,6 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
-import { MetadataProps } from '@/interfaces/MetadataProps';
+import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { SignInForm } from '@/app/[locale]/(auth)/login/components/SignInForm';
 import { SignUpForm } from '@/app/[locale]/(auth)/login/components/SignUpForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';

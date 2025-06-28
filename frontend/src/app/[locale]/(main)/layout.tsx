@@ -1,7 +1,7 @@
 import { Inter, Bebas_Neue as BebasNeue } from 'next/font/google';
 import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
-import { LayoutProps } from '@/interfaces/LayoutProps';
+import { LayoutProps } from '@/interfaces/props/LayoutProps';
 import { AppHeader } from '@/components/layout/AppHeader';
 import BackButton from '@/components/common/BackButton';
 import { Toaster } from '@/components/ui/Sonner';

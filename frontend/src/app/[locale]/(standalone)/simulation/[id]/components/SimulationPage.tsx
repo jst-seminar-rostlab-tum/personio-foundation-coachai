@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { SimulationPageComponentProps } from '@/interfaces/SimulationPageComponentProps';
 import { useRouter } from 'next/navigation';
 import { SessionStatus } from '@/interfaces/Session';
 import { sessionService } from '@/services/client/SessionService';
@@ -11,6 +10,10 @@ import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages, { Message } from './SimulationMessages';
+
+interface SimulationPageComponentProps {
+  sessionId: string;
+}
 
 function useOpenAIRealtimeWebRTC(sessionId: string) {
   const [isMicActive, setIsMicActive] = useState(false);

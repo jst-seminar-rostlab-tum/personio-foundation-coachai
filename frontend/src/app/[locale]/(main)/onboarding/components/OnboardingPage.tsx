@@ -12,7 +12,7 @@ import Checkbox from '@/components/ui/Checkbox';
 import Label from '@/components/ui/Label';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 
-import { UserOption } from '@/interfaces/UserInputFields';
+import { UserOption } from '@/interfaces/inputs/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfileService } from '@/services/client/UserProfileService';
 import { showErrorToast } from '@/lib/toast';

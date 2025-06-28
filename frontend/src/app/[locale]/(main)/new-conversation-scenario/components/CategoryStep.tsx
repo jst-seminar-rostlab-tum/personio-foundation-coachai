@@ -2,8 +2,14 @@
 
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { CategoryStepProps } from '@/interfaces/CategoryStepProps';
+import { ConversationCategory } from '@/interfaces/ConversationScenario';
 import { CategoryButton } from './CategoryButton';
+
+interface CategoryStepProps {
+  selectedCategory: string;
+  onCategorySelect: (category: ConversationCategory) => void;
+  categories: ConversationCategory[];
+}
 
 export function CategoryStep({
   selectedCategory,

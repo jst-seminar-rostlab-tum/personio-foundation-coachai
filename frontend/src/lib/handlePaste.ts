@@ -1,4 +1,4 @@
-import { PasteField } from '@/interfaces/PasteField';
+import { PasteField } from '@/interfaces/inputs/PasteField';
 
 export function handlePasteEvent(
   e: React.ClipboardEvent<HTMLInputElement>,

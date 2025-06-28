@@ -5,7 +5,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { StarIcon } from 'lucide-react';
 import { Children, cloneElement, useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
-import { RatingButtonProps, RatingContextValue, RatingProps } from '@/interfaces/Rating';
+import { RatingButtonProps, RatingContextValue, RatingProps } from '@/interfaces/inputs/Rating';
 import { RatingContext, useRating } from '@/contexts/Rating';
 
 export const RatingButton = ({

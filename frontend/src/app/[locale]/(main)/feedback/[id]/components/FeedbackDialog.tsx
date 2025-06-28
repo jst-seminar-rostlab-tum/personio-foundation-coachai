@@ -18,7 +18,11 @@ import { reviewService } from '@/services/client/ReviewService';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-export default function ReviewDialog({ sessionId }: { sessionId: string }) {
+interface ReviewDialogProps {
+  sessionId: string;
+}
+
+export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
   const t = useTranslations('Feedback.reviewDialog');
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');

@@ -1,4 +1,4 @@
-import { RatingContextValue } from '@/interfaces/Rating';
+import { RatingContextValue } from '@/interfaces/inputs/Rating';
 import React, { useContext } from 'react';
 
 export const RatingContext = React.createContext<RatingContextValue | null>(null);

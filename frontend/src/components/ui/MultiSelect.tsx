@@ -6,7 +6,16 @@ import { X } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/Command';
 import { Command as CommandPrimitive } from 'cmdk';
-import { MultiSelectProps } from '@/interfaces/MultiSelectProps';
+import { UserOption } from '@/interfaces/inputs/UserInputFields';
+
+interface MultiSelectProps {
+  options: UserOption[];
+  value: string[];
+  onChange: (value: string[]) => void;
+  placeholder?: string;
+  maxSelectedDisclaimer?: string;
+  maxSelected?: number;
+}
 
 export function MultiSelect({
   options,

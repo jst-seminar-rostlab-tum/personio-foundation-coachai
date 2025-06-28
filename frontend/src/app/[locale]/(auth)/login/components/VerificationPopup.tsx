@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { RotateCcw } from 'lucide-react';
-import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
 import { useRouter } from 'next/navigation';
@@ -17,6 +16,18 @@ import { authService } from '@/services/client/AuthService';
 import { verificationService } from '@/services/client/VerificationService';
 import { showErrorToast } from '@/lib/toast';
 import { handlePasteEvent } from '@/lib/handlePaste';
+
+interface VerificationPopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+  signUpFormData: {
+    fullName: string;
+    email: string;
+    phone_number: string;
+    password: string;
+    terms: boolean;
+  };
+}
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');

@@ -1,7 +1,7 @@
 import React from 'react';
 import Label from '@/components/ui/Label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
-import { UserRadioQuestion } from '@/interfaces/UserInputFields';
+import { UserRadioQuestion } from '@/interfaces/inputs/UserInputFields';
 import { cn } from '@/lib/utils';
 
 export const UserRadioComponent: React.FC<UserRadioQuestion> = ({

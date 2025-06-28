@@ -17,7 +17,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/Accordion';
-import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
+import { FeedbackResponse } from '@/interfaces/SessionFeedback';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/client/SessionService';
@@ -26,7 +26,11 @@ import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
 
-export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
+interface FeedbackDetailProps {
+  sessionId: string;
+}
+
+export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   const t = useTranslations('Feedback');
   const [feedbackDetail, setFeedbackDetail] = useState<FeedbackResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);

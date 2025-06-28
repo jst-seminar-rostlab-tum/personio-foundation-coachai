@@ -13,10 +13,21 @@ import { Button } from '@/components/ui/Button';
 import StatCard from '@/components/common/StatCard';
 import Input from '@/components/ui/Input';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
-import { AdminProps } from '@/interfaces/AdminProps';
 import { adminService } from '@/services/client/AdminService';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
+import { ReviewsPaginated } from '@/interfaces/Review';
 import Reviews from './Reviews';
+
+interface AdminProps {
+  stats: {
+    totalUsers: number;
+    totalTrainings: number;
+    totalReviews: number;
+    averageScore: number;
+    dailyTokenLimit: number;
+  };
+  reviews: ReviewsPaginated;
+}
 
 export default function Admin({ stats, reviews }: AdminProps) {
   const t = useTranslations('Admin');

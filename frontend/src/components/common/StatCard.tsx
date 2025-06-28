@@ -1,6 +1,9 @@
 'use client';
 
-import { StatCardProps } from '@/interfaces/StatCardProps';
+interface StatCardProps {
+  value: string | number;
+  label: string;
+}
 
 export default function StatCard({ value, label }: StatCardProps) {
   return (

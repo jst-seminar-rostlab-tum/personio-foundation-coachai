@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Checkbox from '@/components/ui/Checkbox';
 import { useEffect, useState } from 'react';
-import { PasswordRequirement } from '@/interfaces/PasswordInput';
+import { PasswordRequirement } from '@/interfaces/inputs/PasswordInput';
 import Image from 'next/image';
 import {
   Form,

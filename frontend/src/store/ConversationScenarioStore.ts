@@ -1,5 +1,7 @@
-import { ConversationScenarioFormState } from '@/interfaces/ConversationScenarioFormState';
-import { ConversationScenarioState } from '@/interfaces/state/ConversationScenarioState';
+import {
+  ConversationScenarioFormState,
+  ConversationScenarioState,
+} from '@/interfaces/state/ConversationScenarioState';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
