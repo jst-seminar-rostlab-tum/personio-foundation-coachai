@@ -1,56 +1,56 @@
-import Link from 'next/link';
+import React from 'react';
 
 export default function AdminLoadingPage() {
   return (
-    <div>
+    <div className="max-w-full">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard">
-          <button className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center text-gray-700 font-bold text-lg hover:bg-gray-300 transition-colors">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-        </Link>
-        <div className="text-xl font-bold text-gray-700">Admin Dashboard</div>
+      <div className="text-2xl font-bold text-bw-70 text-center mb-2">
+        <div className="h-8 w-48 bg-bw-10 rounded-lg mx-auto animate-pulse" />
       </div>
-      {/* 2x2 Grid of Skeleton Cards */}
-      <div className="grid grid-cols-2 gap-4 w-full mx-auto mb-8">
+      <div className="text-sm text-bw-40 text-center mb-8">
+        <div className="h-5 w-64 bg-bw-10 rounded-lg mx-auto animate-pulse" />
+      </div>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[1, 2, 3, 4].map((_, i) => (
-          <div
-            key={i}
-            className="bg-gray-100 rounded-lg p-6 flex flex-col items-center animate-pulse"
-          >
-            <div className="h-8 w-16 bg-gray-200 rounded mb-2" />
-            <div className="h-4 w-24 bg-gray-200 rounded" />
+          <div key={i} className="bg-bw-10 rounded-lg p-6 flex flex-col items-center animate-pulse">
+            <div className="h-8 w-16 bg-bw-20 rounded mb-2" />
+            <div className="h-4 w-24 bg-bw-20 rounded" />
           </div>
         ))}
       </div>
-      {/* Skeleton Select */}
-      <div className="w-full max-w-sm mb-8">
-        <div className="h-10 bg-gray-100 rounded-lg animate-pulse" />
+      {/* Token Limit Input */}
+      <div className="w-full max-w-md mb-8 text-left">
+        <div className="h-4 w-32 bg-bw-10 rounded mb-2 animate-pulse" />
+        <div className="flex gap-2 items-center">
+          <div className="h-10 w-24 bg-bw-10 rounded animate-pulse" />
+          <div className="h-10 w-20 bg-bw-20 rounded animate-pulse" />
+        </div>
       </div>
-      {/* Skeleton Accordions */}
-      <div className="space-y-4 w-full mx-auto mb-8">
+      {/* Reviews Section Skeleton */}
+      <div className="w-full mb-8">
+        <div className="h-6 w-32 bg-bw-10 rounded mb-4 animate-pulse" />
         {[1, 2, 3, 4].map((_, i) => (
-          <div key={i} className="bg-gray-100 rounded-lg shadow-md animate-pulse">
-            {/* Accordion Header */}
+          <div key={i} className="flex flex-col md:flex-row gap-4 mb-4 animate-pulse">
+            <div className="h-8 w-32 bg-bw-10 rounded mb-2" />
+            <div className="h-5 w-64 bg-bw-10 rounded" />
+          </div>
+        ))}
+      </div>
+      {/* Accordions Skeleton */}
+      <div className="w-full mt-8">
+        {[1, 2, 3].map((_, i) => (
+          <div key={i} className="mb-4 border border-bw-20 rounded-lg animate-pulse">
             <div className="flex items-center justify-between p-4 cursor-pointer">
-              <div className="h-5 w-32 bg-gray-200 rounded" />
-              <div className="h-5 w-5 bg-gray-200 rounded-full" />
+              <div className="h-5 w-32 bg-bw-10 rounded" />
+              <div className="h-5 w-5 bg-bw-10 rounded-full" />
             </div>
-            {/* Only the second accordion is open */}
-            {i === 1 && (
-              <div className="px-4 pb-4">
-                <div className="h-12 w-full bg-gray-200 rounded mb-2" />
-                <div className="h-20 w-2/3 bg-gray-200 rounded" />
+            {/* Only the first accordion is open for skeleton */}
+            {i === 0 && (
+              <div className="p-4">
+                <div className="h-10 w-full bg-bw-10 rounded mb-2" />
+                <div className="h-10 w-1/2 bg-bw-10 rounded" />
+                <div className="h-10 w-1/3 bg-bw-10 rounded mt-2" />
               </div>
             )}
           </div>
