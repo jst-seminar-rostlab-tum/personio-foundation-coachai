@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { UserProfileService } from '@/services/client/UserProfileService';
 import { useTranslations } from 'next-intl';
