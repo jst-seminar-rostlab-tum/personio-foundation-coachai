@@ -6,7 +6,55 @@ import { getTranslations } from 'next-intl/server';
 
 export default async function AboutPage() {
   const t = await getTranslations('HomePage');
-
+  const howItWorks = [
+    {
+      number: 1,
+      title: t('howItWorks.steps.1.title'),
+      description: t('howItWorks.steps.1.description'),
+    },
+    {
+      number: 2,
+      title: t('howItWorks.steps.2.title'),
+      description: t('howItWorks.steps.2.description'),
+    },
+    {
+      number: 3,
+      title: t('howItWorks.steps.3.title'),
+      description: t('howItWorks.steps.3.description'),
+    },
+  ];
+  const features = [
+    {
+      icon: MessageSquare,
+      title: t('features.items.simulations.title'),
+      description: t('features.items.simulations.description'),
+    },
+    {
+      icon: Video,
+      title: t('features.items.voice.title'),
+      description: t('features.items.voice.description'),
+    },
+    {
+      icon: BrainCircuit,
+      title: t('features.items.feedback.title'),
+      description: t('features.items.feedback.description'),
+    },
+    {
+      icon: TrendingUp,
+      title: t('features.items.progress.title'),
+      description: t('features.items.progress.description'),
+    },
+    {
+      icon: Award,
+      title: t('features.items.gamification.title'),
+      description: t('features.items.gamification.description'),
+    },
+    {
+      icon: Target,
+      title: t('features.items.personalized.title'),
+      description: t('features.items.personalized.description'),
+    },
+  ];
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex-1">
@@ -63,23 +111,7 @@ export default async function AboutPage() {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  number: 1,
-                  title: t('howItWorks.steps.1.title'),
-                  description: t('howItWorks.steps.1.description'),
-                },
-                {
-                  number: 2,
-                  title: t('howItWorks.steps.2.title'),
-                  description: t('howItWorks.steps.2.description'),
-                },
-                {
-                  number: 3,
-                  title: t('howItWorks.steps.3.title'),
-                  description: t('howItWorks.steps.3.description'),
-                },
-              ].map((step) => (
+              {howItWorks.map((step) => (
                 <div key={step.number} className="flex flex-col items-center text-center p-6">
                   <div className="w-16 h-16 rounded-full bg-marigold-30 text-marigold-90 flex items-center justify-center text-xl font-bold mb-6">
                     {step.number}
@@ -111,38 +143,7 @@ export default async function AboutPage() {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: MessageSquare,
-                  title: t('features.items.simulations.title'),
-                  description: t('features.items.simulations.description'),
-                },
-                {
-                  icon: Video,
-                  title: t('features.items.voice.title'),
-                  description: t('features.items.voice.description'),
-                },
-                {
-                  icon: BrainCircuit,
-                  title: t('features.items.feedback.title'),
-                  description: t('features.items.feedback.description'),
-                },
-                {
-                  icon: TrendingUp,
-                  title: t('features.items.progress.title'),
-                  description: t('features.items.progress.description'),
-                },
-                {
-                  icon: Award,
-                  title: t('features.items.gamification.title'),
-                  description: t('features.items.gamification.description'),
-                },
-                {
-                  icon: Target,
-                  title: t('features.items.personalized.title'),
-                  description: t('features.items.personalized.description'),
-                },
-              ].map((feature) => (
+              {features.map((feature) => (
                 <div
                   key={feature.title}
                   className="p-6 rounded-xl border-none bg-white shadow-sm transition-all hover:shadow-md"

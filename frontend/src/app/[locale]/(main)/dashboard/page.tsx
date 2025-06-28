@@ -44,26 +44,6 @@ export default async function DashboardPage() {
         </Link>
       </section>
 
-      {/* <section className="flex flex-col gap-4">
-         <div>
-          <h2 className="text-xl">{t('currentSession.title')}</h2>
-          <p className="text-base text-bw-40">{t('currentSession.subtitle')}</p>
-        </div> 
-
-        <div className="bg-marigold-5 border border-marigold-30 rounded-lg p-8 gap-8 flex flex-col">
-          <div>
-            <h2 className="text-xl">{t('currentSession.sessionCard.title')}</h2>
-            <p className="text-base text-bw-40">{t('currentSession.sessionCard.subtitle')}</p>
-          </div>
-          <Link href="/simulation/1">
-            <Button size="full" className="mx-auto">
-              <Play />
-              {t('currentSession.sessionCard.cta')}
-            </Button>
-          </Link>
-        </div>
-      </section> */}
-
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard value={userStatsData.totalSessions} label={t('userStats.totalSessions')} />
         <StatCard

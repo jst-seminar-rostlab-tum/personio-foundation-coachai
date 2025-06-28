@@ -10,8 +10,10 @@ import { AccountRole } from '@/interfaces/UserProfile';
 import { redirect } from 'next/navigation';
 import StatCard from '@/components/common/StatCard';
 import { getTranslations } from 'next-intl/server';
-import Admin from './components/AdminPage';
 import AdminLoadingPage from './loading';
+import TokenSetter from './components/TokenSetter';
+import Reviews from './components/Reviews';
+import UserManagement from './components/UserManagement';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -46,7 +48,9 @@ export default async function AdminPage() {
             <StatCard key={i} value={stat.value} label={stat.label} />
           ))}
         </div>
-        <Admin stats={stats} reviews={reviews} />
+        <TokenSetter stats={stats} />
+        <Reviews {...reviews} />
+        <UserManagement />
       </div>
     </Suspense>
   );
