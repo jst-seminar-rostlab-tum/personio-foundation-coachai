@@ -20,6 +20,7 @@ class SessionItem(CamelModel):
     score: int
     skills: SkillScores
     status: SessionStatus
+    allow_admin_access: bool = False
 
 
 class PaginatedSessionsResponse(CamelModel):
