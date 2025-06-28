@@ -1,15 +1,15 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/MetadataProps';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/terms', false);
 }
 
-export default function TermsOfServicePage() {
-  const t = useTranslations('TermsOfService');
+export default async function TermsOfServicePage() {
+  const t = await getTranslations('TermsOfService');
 
   return (
     <div className="flex flex-col justify-between min-h-screen">

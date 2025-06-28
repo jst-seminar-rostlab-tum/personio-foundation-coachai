@@ -1,12 +1,11 @@
-import { useTranslations } from 'next-intl';
 import Progress from '@/components/ui/Progress';
 import StatCard from '@/components/common/StatCard';
 import { UserStatsResponse } from '@/interfaces/UserStats';
-import { use } from 'react';
+import { getTranslations } from 'next-intl/server';
 
-export default function HistoryStats({ stats }: UserStatsResponse) {
-  const t = useTranslations('History');
-  const data = use(stats);
+export default async function HistoryStats({ stats }: UserStatsResponse) {
+  const t = await getTranslations('History');
+  const data = await stats;
 
   return (
     <div className="w-full">

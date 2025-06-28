@@ -10,7 +10,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import { Button } from '@/components/ui/Button';
-import StatCard from '@/components/common/StatCard';
 import Input from '@/components/ui/Input';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import { AdminProps } from '@/interfaces/AdminProps';
@@ -26,13 +25,6 @@ export default function Admin({ stats, reviews }: AdminProps) {
   const [visibleUsers, setVisibleUsers] = useState(5);
 
   const hasTokenLimitChanged = tokenLimit !== savedTokenLimit;
-
-  const statsArray = [
-    { value: stats.totalUsers, label: t('statActiveUsers') },
-    { value: stats.totalTrainings, label: t('statTotalTrainings') },
-    { value: stats.totalReviews, label: t('statReviews') },
-    { value: `${stats.averageScore}%`, label: t('statAverageScore') },
-  ];
 
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
 
@@ -69,14 +61,7 @@ export default function Admin({ stats, reviews }: AdminProps) {
   const canLoadMore = visibleUsers < allUsers.length;
 
   return (
-    <div className="max-w-full">
-      <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
-      <div className="text-sm text-bw-40 text-center mb-8">{t('dashboardSubtitle')}</div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {statsArray.map((stat, i) => (
-          <StatCard key={i} value={stat.value} label={stat.label} />
-        ))}
-      </div>
+    <>
       <div className="w-full max-w-md mb-8 text-left">
         <label className="block text-bw-70 font-semibold text-sm mb-1">
           {t('tokensPerUserLabel')}
@@ -166,6 +151,6 @@ export default function Admin({ stats, reviews }: AdminProps) {
           <AccordionContent></AccordionContent>
         </AccordionItem>
       </Accordion>
-    </div>
+    </>
   );
 }

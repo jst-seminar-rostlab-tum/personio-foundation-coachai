@@ -71,3 +71,11 @@ export function PrimaryGoals(): UserOption[] {
     { id: 'coaching_mentoring', label: tOptions('leadership_skill_focus.coaching_mentoring') },
   ];
 }
+
+export const formattedDate = (date: string, locale: string) => {
+  return new Date(date).toLocaleDateString(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+};
