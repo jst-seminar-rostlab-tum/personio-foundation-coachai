@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
 import { ConversationScenarioPreparation } from '@/interfaces/ConversationScenario';
 import { showErrorToast } from '@/lib/toast';
+import ResourcesSection from '@/components/common/ResourcesSection';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
@@ -71,29 +72,30 @@ export default function PreparationContent() {
         </section>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Objectives */}
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
             <h2 className="text-xl">{t('objectives.title')}</h2>
           </div>
           {preparationData && <ObjectivesList objectives={preparationData.objectives} />}
         </section>
-
+        {/* Preparation Checklist */}
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
             <h2 className="text-xl">{t('preparation.title')}</h2>
           </div>
           {preparationData && <PreparationChecklist checklist={preparationData.prepChecklist} />}
         </section>
-        <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl">{t('keyConcepts.title')}</h2>
-          </div>
-          {preparationData && <PreparationKeyConcepts keyConcepts={preparationData.keyConcepts} />}
-        </section>
-        <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
-          <h2 className="text-xl">{t('resources.title')}</h2>
-        </section>
       </div>
+      {/* Key Concepts */}
+      <section className="flex flex-col gap-8 w-full border border-bw-20 rounded-lg p-8">
+        <div className="flex items-center gap-2">
+          <h2 className="text-xl">{t('keyConcepts.title')}</h2>
+        </div>
+        {preparationData && <PreparationKeyConcepts keyConcepts={preparationData.keyConcepts} />}
+      </section>
+      {/* Resources */}
+      <ResourcesSection />
     </>
   );
 }

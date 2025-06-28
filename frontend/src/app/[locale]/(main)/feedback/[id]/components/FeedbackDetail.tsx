@@ -22,6 +22,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/client/SessionService';
 import { showErrorToast } from '@/lib/toast';
+import ResourcesSection from '@/components/common/ResourcesSection';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
@@ -219,6 +220,8 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           <AccordionTrigger>{t('accordian.sessions')}</AccordionTrigger>
         </AccordionItem>
       </Accordion>
+
+      <ResourcesSection />
     </div>
   );
 }

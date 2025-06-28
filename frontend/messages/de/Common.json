@@ -25,5 +25,10 @@
     "description": "Ihre {itemType} werden hier in Zukunft erscheinen!",
     "sessions": "Sitzungen",
     "reviews": "Bewertungen"
+  },
+  "resources": {
+    "title": "Ressourcen",
+    "subtitle": "Hilfreiche Materialien zum Herunterladen, um Ihr Wissen zu vertiefen.",
+    "by": "von"
   }
 }

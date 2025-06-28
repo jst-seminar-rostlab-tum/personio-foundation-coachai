@@ -25,5 +25,10 @@
     "description": "Your {itemType} will appear here in the future!",
     "sessions": "sessions",
     "reviews": "reviews"
+  },
+  "resources": {
+    "title": "Resources",
+    "subtitle": "Helpful materials to download to deepen your knowledge.",
+    "by": "by"
   }
 }
