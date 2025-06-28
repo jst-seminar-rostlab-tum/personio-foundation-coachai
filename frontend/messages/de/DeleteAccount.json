@@ -1,0 +1,7 @@
+{
+  "deleteAccountSuccess": "Konto erfolgreich gelöscht.",
+  "deleteAccountError": "Beim Löschen des Kontos ist ein Fehler aufgetreten.",
+  "areYouSure": "Sind Sie sicher?",
+  "deleteAccountConfirmDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
+  "deleting": "Wird gelöscht..."
+}

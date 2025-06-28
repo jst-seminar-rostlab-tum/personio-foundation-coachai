@@ -14,6 +14,7 @@ import { LanguageSwitcher } from '../common/LanguageSwitcher';
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const t = useTranslations('AppHeader');
+  const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const user = useUser();
 
@@ -42,6 +43,11 @@ export function AppHeader() {
     };
   }, [isMenuOpen]);
 
+  const getTranslation = (key: string) => {
+    const commonKeys = ['dashboard', 'admin', 'history', 'settings', 'logout'];
+    return commonKeys.includes(key) ? tCommon(key) : t(key);
+  };
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 bg-background z-50 shadow">
@@ -63,7 +69,7 @@ export function AppHeader() {
                     pathname.includes(href) ? 'text-marigold-50' : ''
                   }`}
                 >
-                  {t(key)}
+                  {getTranslation(key)}
                 </Link>
               ))}
             </div>
@@ -83,7 +89,7 @@ export function AppHeader() {
                 await authService.logoutUser();
               }}
             >
-              <span className="text-xs font-medium">{t('logout')}</span>
+              <span className="text-xs font-medium">{tCommon('logout')}</span>
             </Button>
           </div>
         </div>
@@ -111,7 +117,7 @@ export function AppHeader() {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                {t(key)}
+                {getTranslation(key)}
               </Link>
             ))}
             <span
@@ -121,7 +127,7 @@ export function AppHeader() {
                 setIsMenuOpen(false);
               }}
             >
-              {t('logout')}
+              {tCommon('logout')}
             </span>
           </nav>
         </div>

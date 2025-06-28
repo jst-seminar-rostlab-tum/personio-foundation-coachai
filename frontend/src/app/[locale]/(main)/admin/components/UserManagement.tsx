@@ -15,6 +15,7 @@ import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 
 export default function UserManagement() {
   const t = useTranslations('Admin');
+  const tCommon = useTranslations('Common');
   const [visibleUsers, setVisibleUsers] = useState(5);
 
   const handleLoadMore = () => setVisibleUsers((v) => Math.min(v + 5, allUsers.length));
@@ -87,7 +88,7 @@ export default function UserManagement() {
           {canLoadMore && (
             <div className="flex justify-center mt-4">
               <Button variant="ghost" onClick={handleLoadMore}>
-                {t('loadMore')} <ChevronDown className="ml-2 w-4 h-4" />
+                {tCommon('loadMore')} <ChevronDown className="ml-2 w-4 h-4" />
               </Button>
             </div>
           )}

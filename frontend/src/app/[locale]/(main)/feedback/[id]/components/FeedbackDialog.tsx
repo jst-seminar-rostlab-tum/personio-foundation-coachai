@@ -24,6 +24,7 @@ interface ReviewDialogProps {
 
 export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
   const t = useTranslations('Feedback.reviewDialog');
+  const tCommon = useTranslations('Common');
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,9 +53,9 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
         comment: ratingDescription,
         sessionId,
       });
-      showSuccessToast(t('submitReviewSuccess'));
+      showSuccessToast(t('submitSuccess'));
     } catch (error) {
-      showErrorToast(error, t('submitReviewError'));
+      showErrorToast(error, t('submitError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -63,11 +64,11 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
   return (
     <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="full">{t('open')}</Button>
+        <Button size="full">{t('submitReview')}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl">{t('title')}</DialogTitle>
+          <DialogTitle className="text-2xl">{tCommon('reviews')}</DialogTitle>
           <DialogDescription className="text-marigold-90">{t('description')}</DialogDescription>
         </DialogHeader>
 
@@ -101,7 +102,7 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
             onClick={rateFeedback}
             disabled={!rating || isSubmitting}
           >
-            {isSubmitting ? t('submitting') : t('rate')}
+            {isSubmitting ? t('submitting') : t('submitReview')}
           </Button>
         </DialogClose>
       </DialogContent>

@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 
 export default async function HistoryStats({ stats }: UserStatsResponse) {
   const t = await getTranslations('History');
+  const tCommon = await getTranslations('Common');
 
   return (
     <div className="w-full">
@@ -27,8 +28,8 @@ export default async function HistoryStats({ stats }: UserStatsResponse) {
         <div className="mt-10">
           <div className="text-xl mb-4">{t('activity')}</div>
           <div className="flex flex-row gap-2 md:gap-6 min-w-0 overflow-x-auto">
-            <StatCard value={stats.totalSessions} label={t('totalSessions')} />
-            <StatCard value={`${stats.averageScore}%`} label={t('avgScore')} />
+            <StatCard value={stats.totalSessions} label={tCommon('totalSessions')} />
+            <StatCard value={`${stats.averageScore}%`} label={tCommon('avgScore')} />
             <StatCard value={stats.goalsAchieved} label={t('goalsAchieved')} />
           </div>
         </div>

@@ -18,6 +18,7 @@ import z from 'zod';
 
 export default function ConfirmationForm() {
   const t = useTranslations('Confirm.ConfirmationForm');
+  const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>();
   const [showResendButton, setShowResendButton] = useState(false);
@@ -33,7 +34,7 @@ export default function ConfirmationForm() {
   }, [error]);
 
   const confirmationFormSchema = z.object({
-    email: z.string().email(t('emailInputError')),
+    email: z.string().email(tCommon('emailInputError')),
     code: z.string(),
   });
   const codeSize = 6;
@@ -42,8 +43,8 @@ export default function ConfirmationForm() {
     resolver: zodResolver(confirmationFormSchema),
     mode: 'onTouched',
     defaultValues: {
-      email: useSearchParams().get('email') ?? '',
-      code: useSearchParams().get('token') ?? '',
+      email: useSearchParams().get('ConfirmationForm.email') ?? '',
+      code: useSearchParams().get('ConfirmationForm.token') ?? '',
     },
   });
 
@@ -66,11 +67,11 @@ export default function ConfirmationForm() {
       if (verifyError.code) {
         switch (verifyError.code) {
           case 'otp_expired':
-            setError(t('expiredOtpError'));
+            setError(t('ConfirmationForm.expiredOtpError'));
             setShowResendButton(true);
             break;
           default:
-            setError(t('genericError'));
+            setError(t('ConfirmationForm.genericError'));
         }
       }
 
@@ -80,7 +81,7 @@ export default function ConfirmationForm() {
     try {
       await authService.confirmUser();
     } catch {
-      setError(t('genericError'));
+      setError(t('ConfirmationForm.genericError'));
       setIsLoading(false);
       return;
     }
@@ -119,7 +120,9 @@ export default function ConfirmationForm() {
             <CardContent className="space-y-4 p-4">
               <h2 className="text-xl text-center">{t('title')}</h2>
               <p className="text-base text-center text-bw-50">
-                {!showResendButton ? t('description') : t('expiredDescription')}
+                {!showResendButton
+                  ? t('ConfirmationForm.description')
+                  : t('ConfirmationForm.expiredDescription')}
               </p>
 
               {!showResendButton && (
@@ -128,7 +131,7 @@ export default function ConfirmationForm() {
                   name="code"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-center">{t('codeInputLabel')}</FormLabel>
+                      <FormLabel className="text-center">{tCommon('codeInputLabel')}</FormLabel>
 
                       <div className="flex justify-center gap-2">
                         {[...Array(codeSize)].map((_, idx) => (
@@ -183,7 +186,7 @@ export default function ConfirmationForm() {
                   type="submit"
                   disabled={isLoading || form.watch('code').length !== codeSize}
                 >
-                  {isLoading ? t('confirmingButtonLabel') : t('confirmButtonLabel')}
+                  {isLoading ? t('confirming') : tCommon('confirm')}
                 </Button>
               )}
 
@@ -194,7 +197,7 @@ export default function ConfirmationForm() {
                   onClick={resendConfirmationEmail}
                   disabled={isLoading}
                 >
-                  {t('resendCodeButtonLabel')}
+                  {tCommon('resendCodeButtonLabel')}
                 </Button>
               )}
             </CardFooter>

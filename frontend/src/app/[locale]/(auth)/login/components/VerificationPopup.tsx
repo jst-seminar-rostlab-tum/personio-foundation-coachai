@@ -31,6 +31,8 @@ interface VerificationPopupProps {
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
+  const tCommon = useTranslations('Common');
+  const tLogin = useTranslations('Login');
   const [isLoading, setIsLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [error, setError] = useState<string | null>();
@@ -39,7 +41,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
   const router = useRouter();
 
   const verificationSchema = z.object({
-    code: z.string().length(6, t('codeLengthError')),
+    code: z.string().length(6, tLogin('codeLengthError')),
   });
   const codeSize = 6;
 
@@ -114,7 +116,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
 
       router.push(`/confirm?email=${encodeURIComponent(signUpFormData.email)}`);
     } catch (err) {
-      setError(err instanceof z.ZodError ? err.errors[0].message : t('genericError'));
+      setError(err instanceof z.ZodError ? err.errors[0].message : tCommon('genericError'));
       setIsLoading(false);
     }
   };
@@ -155,7 +157,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-center">{t('codeInputLabel')}</FormLabel>
+                    <FormLabel className="text-center">{tCommon('codeInputLabel')}</FormLabel>
 
                     <div className="flex justify-center gap-2">
                       {[...Array(codeSize)].map((_, idx) => (
@@ -236,10 +238,10 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                     : ''
                 }
               >
-                {isLoading ? t('verifyingButtonLabel') : t('verifyButtonLabel')}
+                {isLoading ? tLogin('verifying') : tLogin('verify')}
               </Button>
               <Button size="full" variant="secondary" onClick={onClose} disabled={isLoading}>
-                {t('cancelButtonLabel')}
+                {tCommon('cancel')}
               </Button>
             </CardFooter>
           </form>

@@ -1,10 +1,10 @@
 {
-  "experience_roles": {
-    "hr_professional": {
+  "experienceRoles": {
+    "hrProfessional": {
       "label": "HR Professional",
       "description": "I work in human resources or people operations"
     },
-    "team_leader": {
+    "teamLeader": {
       "label": "Team Leader",
       "description": "I manage a team or department"
     },
@@ -17,22 +17,22 @@
       "description": "None of them above"
     }
   },
-  "leadership_skill_focus": {
-    "giving_constructive_feedback": "Giving constructive feedback",
-    "managing_team_conflicts": "Managing team conflicts",
-    "performance_reviews": "Performance reviews",
-    "motivating_team_members": "Motivating team members",
-    "leading_difficult_conversations": "Leading difficult conversations",
-    "communicating_organizational_change": "Communicating organizational change",
-    "develop_emotional_intelligence": "Develop emotional intelligence",
-    "building_inclusive_teams": "Building inclusive teams",
-    "negotiation_skills": "Negotiation skills",
-    "coaching_mentoring": "Coaching & Mentoring"
+  "leadershipSkillFocus": {
+    "givingConstructiveFeedback": "Giving constructive feedback",
+    "managingTeamConflicts": "Managing team conflicts",
+    "performanceReviews": "Performance reviews",
+    "motivatingTeamMembers": "Motivating team members",
+    "leadingDifficultConversations": "Leading difficult conversations",
+    "communicatingOrganizationalChange": "Communicating organizational change",
+    "developEmotionalIntelligence": "Develop emotional intelligence",
+    "buildingInclusiveTeams": "Building inclusive teams",
+    "negotiationSkills": "Negotiation skills",
+    "coachingMentoring": "Coaching & Mentoring"
   },
-  "confidence_areas": {
-    "giving_difficult_feedback": "Giving difficult feedback",
-    "managing_team_conflicts": "Managing team conflicts",
-    "leading_challenging_conversations": "Leading challenging conversations",
+  "confidenceAreas": {
+    "givingDifficultFeedback": "Giving difficult feedback",
+    "managingTeamConflicts": "Managing team conflicts",
+    "leadingChallengingConversations": "Leading challenging conversations",
     "labels": {
       "min": "Not confident",
       "max": "Very confident"
