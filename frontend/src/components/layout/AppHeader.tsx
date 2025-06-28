@@ -46,7 +46,7 @@ export function AppHeader() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 bg-background z-50 shadow">
-        <div className="container flex h-16 items-center justify-between mx-auto px-4">
+        <div className="flex h-16 items-center justify-between mx-auto px-[clamp(1.25rem,4vw,4rem)]">
           <Link
             href="/dashboard"
             className="text-bw-70 text-xl font-semibold"
@@ -54,8 +54,9 @@ export function AppHeader() {
           >
             {t('title')}
           </Link>
-          <div className="flex items-center gap-0 md:gap-4">
-            <div className="hidden md:flex items-center gap-6">
+          <div className="flex items-center gap-4">
+            {/* Navigation Elements */}
+            <div className="hidden lg:flex items-center gap-10">
               {navigationLinks.map(({ key, href }) => (
                 <Link
                   key={key}
@@ -69,8 +70,9 @@ export function AppHeader() {
               ))}
             </div>
             <LanguageSwitcher />
+            {/* Burger Menu Item */}
             <Button
-              className="md:hidden pl-0"
+              className="lg:hidden p-0"
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -79,7 +81,7 @@ export function AppHeader() {
             </Button>
             <Button
               variant="secondary"
-              className="hidden md:flex h-8"
+              className="hidden lg:flex h-8"
               onClick={async () => {
                 await logoutUser(createClient);
               }}
