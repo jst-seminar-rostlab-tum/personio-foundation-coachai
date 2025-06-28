@@ -48,7 +48,7 @@ export default async function AdminPage() {
             <StatCard key={i} value={stat.value} label={stat.label} />
           ))}
         </div>
-        <TokenSetter stats={stats} />
+        <TokenSetter dailyTokenLimit={stats.dailyTokenLimit} />
         <Reviews {...reviews} />
         <UserManagement />
       </div>

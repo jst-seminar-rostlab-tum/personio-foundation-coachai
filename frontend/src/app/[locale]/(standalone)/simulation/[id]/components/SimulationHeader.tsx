@@ -1,3 +1,5 @@
+'use client';
+
 import { User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
 import { SimulationHeaderProps } from '@/interfaces/SimulationHeaderProps';

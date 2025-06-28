@@ -8,19 +8,13 @@ import { adminService } from '@/services/client/AdminService';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
 
 interface TokenSetterProps {
-  stats: {
-    totalUsers: number;
-    totalTrainings: number;
-    totalReviews: number;
-    averageScore: number;
-    dailyTokenLimit: number;
-  };
+  dailyTokenLimit: number;
 }
 
-export default function TokenSetter({ stats }: TokenSetterProps) {
+export default function TokenSetter({ dailyTokenLimit }: TokenSetterProps) {
   const t = useTranslations('Admin');
-  const [tokenLimit, setTokenLimit] = useState<number>(stats.dailyTokenLimit);
-  const [savedTokenLimit, setSavedTokenLimit] = useState<number>(stats.dailyTokenLimit);
+  const [tokenLimit, setTokenLimit] = useState<number>(dailyTokenLimit);
+  const [savedTokenLimit, setSavedTokenLimit] = useState<number>(dailyTokenLimit);
   const [saving, setSaving] = useState(false);
 
   const hasTokenLimitChanged = tokenLimit !== savedTokenLimit;

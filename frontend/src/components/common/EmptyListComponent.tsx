@@ -1,9 +1,11 @@
+'use client';
+
 import Image from 'next/image';
 import { EmptyListComponentProps } from '@/interfaces/EmptyListComponentProps';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 
-export default async function EmptyListComponent({ itemType }: EmptyListComponentProps) {
-  const t = await getTranslations('Common.emptyList');
+export default function EmptyListComponent({ itemType }: EmptyListComponentProps) {
+  const t = useTranslations('Common.emptyList');
   return (
     <div className="flex flex-col items-center justify-center w-full border border-bw-20 rounded-lg bg-transparent gap-1 p-8 text-center">
       <Image
