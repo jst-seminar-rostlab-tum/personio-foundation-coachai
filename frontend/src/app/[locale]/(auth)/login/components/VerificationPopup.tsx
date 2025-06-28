@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
-import { CreateUserRequest } from '@/interfaces/models/CreateUserRequest';
+import { CreateUserRequest } from '@/interfaces/models/Auth';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/client/AuthService';
 import { verificationService } from '@/services/client/VerificationService';
