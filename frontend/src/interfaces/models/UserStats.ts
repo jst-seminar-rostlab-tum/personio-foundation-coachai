@@ -1,7 +1,7 @@
 type SkillsPerformance = {
   structure: number;
   empathy: number;
-  solutionFocus: number;
+  focus: number;
   clarity: number;
 };
 
