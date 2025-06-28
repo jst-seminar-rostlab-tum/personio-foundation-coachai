@@ -1,8 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { EmptyListComponentProps } from '@/interfaces/EmptyListComponentProps';
 import { useTranslations } from 'next-intl';
+
+interface EmptyListComponentProps {
+  itemType: string;
+}
 
 export default function EmptyListComponent({ itemType }: EmptyListComponentProps) {
   const t = useTranslations('Common.emptyList');

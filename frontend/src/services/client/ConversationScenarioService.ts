@@ -1,7 +1,7 @@
 import {
   ConversationScenarioResponse,
   ConversationScenario,
-} from '@/interfaces/ConversationScenario';
+} from '@/interfaces/models/ConversationScenario';
 import { api } from './Api';
 
 const createConversationScenario = async (scenario: ConversationScenario) => {

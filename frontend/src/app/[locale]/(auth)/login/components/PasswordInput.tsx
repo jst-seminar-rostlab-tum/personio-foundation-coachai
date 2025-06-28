@@ -1,11 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, InputHTMLAttributes } from 'react';
 import { EyeIcon, EyeOffIcon, CheckIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { PasswordInputProps } from '@/interfaces/PasswordInput';
 import Input from '@/components/ui/Input';
+
+export interface PasswordRequirement {
+  id: string;
+  label: string;
+  test: (password: string) => boolean;
+}
+
+interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+  placeholder: string;
+  disabled: boolean;
+  requirements?: PasswordRequirement[];
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
 export function PasswordInput({
   placeholder,

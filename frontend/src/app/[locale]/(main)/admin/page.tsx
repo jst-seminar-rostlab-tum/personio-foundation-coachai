@@ -1,12 +1,12 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
-import { MetadataProps } from '@/interfaces/MetadataProps';
+import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { adminService } from '@/services/server/AdminService';
 import { reviewService } from '@/services/server/ReviewService';
 import { api } from '@/services/server/Api';
 import { UserProfileService } from '@/services/server/UserProfileService';
-import { AccountRole } from '@/interfaces/UserProfile';
+import { AccountRole } from '@/interfaces/models/UserProfile';
 import { redirect } from 'next/navigation';
 import StatCard from '@/components/common/StatCard';
 import { getTranslations } from 'next-intl/server';

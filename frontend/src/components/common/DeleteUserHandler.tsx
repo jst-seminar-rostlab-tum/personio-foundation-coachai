@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { UserProfileService } from '@/services/client/UserProfileService';
 import { useTranslations } from 'next-intl';
-import { DeleteUserHandlerProps } from '@/interfaces/DeleteUserHandlerProps';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { redirect } from 'next/navigation';
 import {
@@ -17,6 +16,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '../ui/AlertDialog';
+
+interface DeleteUserHandlerProps {
+  id?: string;
+  children: React.ReactNode;
+}
 
 export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
   const [loading, setLoading] = useState(false);

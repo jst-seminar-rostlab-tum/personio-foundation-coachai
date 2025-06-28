@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
-import { SessionPaginated, SessionFromPagination } from '@/interfaces/Session';
+import { SessionPaginated, SessionFromPagination } from '@/interfaces/models/Session';
 import { api } from '@/services/client/Api';
 import { sessionService } from '@/services/server/SessionService';
 import Link from 'next/link';

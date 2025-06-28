@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
-import { MetadataProps } from '@/interfaces/MetadataProps';
+import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { sessionService } from '@/services/server/SessionService';
 import { api } from '@/services/server/Api';
 import { UserProfileService } from '@/services/server/UserProfileService';

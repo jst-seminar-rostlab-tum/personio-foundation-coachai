@@ -1,7 +1,15 @@
 import Image from 'next/image';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { useTranslations } from 'next-intl';
-import { CustomizeStepProps } from '@/interfaces/CustomizeStepProps';
+
+interface CustomizeStepProps {
+  difficulty: string;
+  emotionalTone: string;
+  complexity: string;
+  onDifficultyChange: (difficulty: string) => void;
+  onEmotionalToneChange: (emotionalTone: string) => void;
+  onComplexityChange: (complexity: string) => void;
+}
 
 export function CustomizeStep({
   difficulty,
