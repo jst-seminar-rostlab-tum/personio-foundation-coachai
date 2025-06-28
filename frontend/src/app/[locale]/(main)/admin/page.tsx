@@ -31,11 +31,12 @@ export default async function AdminPage() {
   const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
   const [stats, reviews] = await Promise.all([statsData, reviewsData]);
   const t = await getTranslations('Admin');
+  const tCommon = await getTranslations('Common');
   const statsArray = [
     { value: stats.totalUsers, label: t('statActiveUsers') },
     { value: stats.totalTrainings, label: t('statTotalTrainings') },
-    { value: stats.totalReviews, label: t('statReviews') },
-    { value: `${stats.averageScore}%`, label: t('statAverageScore') },
+    { value: stats.totalReviews, label: tCommon('reviews') },
+    { value: `${stats.averageScore}%`, label: tCommon('avgScore') },
   ];
 
   return (

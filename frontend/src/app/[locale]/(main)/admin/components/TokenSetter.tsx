@@ -13,6 +13,7 @@ interface TokenSetterProps {
 
 export default function TokenSetter({ dailyTokenLimit }: TokenSetterProps) {
   const t = useTranslations('Admin');
+  const tCommon = useTranslations('Common');
   const [tokenLimit, setTokenLimit] = useState<number>(dailyTokenLimit);
   const [savedTokenLimit, setSavedTokenLimit] = useState<number>(dailyTokenLimit);
   const [saving, setSaving] = useState(false);
@@ -54,7 +55,7 @@ export default function TokenSetter({ dailyTokenLimit }: TokenSetterProps) {
           disabled={saving || !hasTokenLimitChanged}
           variant={saving || !hasTokenLimitChanged ? 'disabled' : 'default'}
         >
-          {saving ? t('saving') : t('save')}
+          {saving ? tCommon('saving') : tCommon('save')}
         </Button>
       </div>
     </div>
