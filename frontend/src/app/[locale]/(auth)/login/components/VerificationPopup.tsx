@@ -13,7 +13,6 @@ import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/
 import { CreateUserRequest } from '@/interfaces/models/Auth';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/AuthService';
-import { verificationService } from '@/services/VerificationService';
 import { showErrorToast } from '@/lib/toast';
 import { handlePasteEvent } from '@/lib/handlePaste';
 import { api } from '@/services/ApiClient';
@@ -67,7 +66,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
   const sendInitialVerificationCode = useCallback(async () => {
     try {
       setIsLoading(true);
-      await verificationService.sendVerificationCode(api, {
+      await authService.sendVerificationCode(api, {
         phone_number: signUpFormData.phone_number,
       });
       setVerificationSent(true);
@@ -97,7 +96,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
 
     try {
       // First verify the code
-      await verificationService.verifyCode(api, {
+      await authService.verifyCode(api, {
         phone_number: signUpFormData.phone_number,
         code: form.getValues('code'),
       });
@@ -124,7 +123,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     if (resendCooldown > 0) return;
     try {
       setIsLoading(true);
-      await verificationService.sendVerificationCode(api, {
+      await authService.sendVerificationCode(api, {
         phone_number: signUpFormData.phone_number,
       });
       setResendCooldown(30);

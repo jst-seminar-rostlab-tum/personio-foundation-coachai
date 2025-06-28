@@ -1,7 +1,9 @@
-import { CreateUserRequest } from '@/interfaces/models/Auth';
-import { createClient } from '@/lib/supabase/client';
+import {
+  CreateUserRequest,
+  SendVerificationCodeRequest,
+  VerifyCodeRequest,
+} from '@/interfaces/models/Auth';
 import { AxiosInstance } from 'axios';
-import { redirect } from 'next/navigation';
 
 const createUser = async (api: AxiosInstance, data: CreateUserRequest) => {
   const response = await api.post('/auth', data);
@@ -13,19 +15,19 @@ const confirmUser = async (api: AxiosInstance) => {
   return response.data;
 };
 
-const logoutUser = async () => {
-  const supabase = await createClient();
+const sendVerificationCode = async (api: AxiosInstance, data: SendVerificationCodeRequest) => {
+  const response = await api.post('/auth/send-verification', data);
+  return response.data;
+};
 
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    console.error('Error signing out:', error);
-  }
-
-  redirect('/');
+const verifyCode = async (api: AxiosInstance, data: VerifyCodeRequest) => {
+  const response = await api.post('/auth/verify-code', data);
+  return response.data;
 };
 
 export const authService = {
   createUser,
   confirmUser,
-  logoutUser,
+  sendVerificationCode,
+  verifyCode,
 };
