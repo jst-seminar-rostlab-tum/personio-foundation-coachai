@@ -5,7 +5,7 @@ import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { LucideProps, StarIcon } from 'lucide-react';
 import { Children, cloneElement, useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, MouseEvent, ReactElement, ReactNode } from 'react';
-import { RatingContext, useRating } from '@/contexts/Rating';
+import { RatingContext, RatingContextValue, useRating } from '@/contexts/Rating';
 
 type RatingButtonProps = LucideProps & {
   index?: number;
@@ -23,20 +23,6 @@ type RatingProps = {
   readOnly?: boolean;
   className?: string;
   children?: ReactNode;
-};
-
-export type RatingContextValue = {
-  value: number;
-  readOnly: boolean;
-  hoverValue: number | null;
-  focusedStar: number | null;
-  handleValueChange: (
-    event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>,
-    value: number
-  ) => void;
-  handleKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
-  setHoverValue: (value: number | null) => void;
-  setFocusedStar: (value: number | null) => void;
 };
 
 export const RatingButton = ({
