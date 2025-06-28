@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { UserProfileService } from '@/services/client/UserProfileService';
+import { UserProfileService } from '@/services/UserProfileService';
 import { useTranslations } from 'next-intl';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { redirect } from 'next/navigation';
+import { api } from '@/services/ApiClient';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +30,7 @@ export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
   async function handleDeleteUser(deleteUserId?: string) {
     setLoading(true);
     try {
-      await UserProfileService.deleteUser(deleteUserId);
+      await UserProfileService.deleteUser(api, deleteUserId);
       showSuccessToast(t('deleteAccountSuccess'));
       if (!deleteUserId) {
         redirect('/');

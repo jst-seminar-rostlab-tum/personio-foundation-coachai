@@ -3,9 +3,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { ConversationScenarioPreparation } from '@/interfaces/models/ConversationScenario';
 import { showErrorToast } from '@/lib/toast';
+import { api } from '@/services/ApiClient';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
@@ -22,7 +23,7 @@ export default function PreparationContent() {
   const getTrainingPreparation = useCallback(
     async (id: string) => {
       try {
-        const response = await conversationScenarioService.getPreparation(id);
+        const response = await conversationScenarioService.getPreparation(api, id);
 
         if (response.status === 202) {
           setTimeout(() => {

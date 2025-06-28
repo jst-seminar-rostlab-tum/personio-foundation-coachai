@@ -4,8 +4,9 @@ import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { adminService } from '@/services/client/AdminService';
+import { adminService } from '@/services/AdminService';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
+import { api } from '@/services/ApiClient';
 
 interface TokenSetterProps {
   dailyTokenLimit: number;
@@ -26,7 +27,7 @@ export default function TokenSetter({ dailyTokenLimit }: TokenSetterProps) {
     }
     setSaving(true);
     try {
-      await adminService.updateDailyUserTokenLimit(tokenLimit);
+      await adminService.updateDailyUserTokenLimit(api, tokenLimit);
       showSuccessToast(t('tokenSuccess'));
       setSavedTokenLimit(tokenLimit);
     } catch (error) {

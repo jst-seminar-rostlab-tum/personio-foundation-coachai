@@ -20,9 +20,10 @@ import {
 import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { getSessionFeedback } from '@/services/client/SessionService';
+import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/toast';
 import { convertTimeToMinutes, formattedDate } from '@/lib/utils';
+import { api } from '@/services/ApiClient';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
@@ -39,7 +40,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   const getFeedbackDetail = useCallback(
     async (id: string) => {
       try {
-        const response = await getSessionFeedback(id);
+        const response = await getSessionFeedback(api, id);
         if (response.status === 202) {
           setTimeout(() => {
             getFeedbackDetail(id);
