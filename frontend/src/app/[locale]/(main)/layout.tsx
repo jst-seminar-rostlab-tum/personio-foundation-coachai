@@ -19,7 +19,17 @@ export default async function RootLayout({ children, params }: LayoutProps) {
 
   return (
     <html lang={locale} className={bebasNeue.className}>
-      <head>
+      <body className={inter.className}>
+        <NextIntlClientProvider>
+          <UserContextProvider user={userProfile}>
+            <AppHeader />
+            <main className="container mx-auto p-6 md:p-12 mt-16">
+              <BackButton />
+              {children}
+            </main>
+            <Toaster richColors />
+          </UserContextProvider>
+        </NextIntlClientProvider>
         <script
           nonce={nonce}
           type="application/ld+json"
@@ -32,18 +42,6 @@ export default async function RootLayout({ children, params }: LayoutProps) {
             }),
           }}
         />
-      </head>
-      <body className={inter.className}>
-        <NextIntlClientProvider>
-          <UserContextProvider user={userProfile}>
-            <AppHeader />
-            <main className="container mx-auto p-6 md:p-12 mt-16">
-              <BackButton />
-              {children}
-            </main>
-            <Toaster richColors />
-          </UserContextProvider>
-        </NextIntlClientProvider>
       </body>
     </html>
   );

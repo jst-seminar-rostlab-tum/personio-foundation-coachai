@@ -13,7 +13,11 @@ export default async function StandaloneLayout({ children, params }: LayoutProps
 
   return (
     <html lang={locale}>
-      <head>
+      <body className={inter.className}>
+        <main className="w-full">
+          <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        </main>
+        <Toaster richColors />
         <script
           nonce={nonce}
           type="application/ld+json"
@@ -26,12 +30,6 @@ export default async function StandaloneLayout({ children, params }: LayoutProps
             }),
           }}
         />
-      </head>
-      <body className={inter.className}>
-        <main className="w-full">
-          <NextIntlClientProvider>{children}</NextIntlClientProvider>
-        </main>
-        <Toaster richColors />
       </body>
     </html>
   );
