@@ -136,5 +136,11 @@
   "passwordInputError": "Please enter a valid password",
   "codeLengthError": "The code must be 6 characters long",
   "verify": "Verify",
-  "verifying": "Verifying..."
+  "verifying": "Verifying...",
+  "emailInputLabel": "Email Address",
+  "emailInputPlaceholder": "Enter your email address",
+  "emailInputError": "Please enter a valid email address",
+  "codeInputLabel": "Confirmation Code",
+  "resendCodeButtonLabel": "Resend Code",
+  "signIn": "Sign In"
 }

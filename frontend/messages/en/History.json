@@ -12,5 +12,10 @@
   "previousSessions": "Previous Sessions",
   "exportHistory": "Export History",
   "deleteAllSessions": "Delete All Sessions",
-  "deleteAllSessionsConfirmation": "Are you sure you want to delete all sessions? This action cannot be undone."
+  "deleteAllSessionsConfirmation": "Are you sure you want to delete all sessions? This action cannot be undone.",
+  "deleteSuccess": "Deleted successfully.",
+  "deleteError": "Error deleting. Please try again later.",
+  "goalsAchieved": "Goals Achieved",
+  "clearAll": "Clear All",
+  "showEntireHistory": "Show Entire History"
 }

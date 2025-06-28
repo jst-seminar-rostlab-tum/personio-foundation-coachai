@@ -49,9 +49,9 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
         comment: ratingDescription,
         sessionId,
       });
-      showSuccessToast(tCommon('submitSuccess'));
+      showSuccessToast(t('submitSuccess'));
     } catch (error) {
-      showErrorToast(error, tCommon('submitError'));
+      showErrorToast(error, t('submitError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -60,7 +60,7 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
   return (
     <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="full">{tCommon('submitReview')}</Button>
+        <Button size="full">{t('submitReview')}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -98,7 +98,7 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
             onClick={rateFeedback}
             disabled={!rating || isSubmitting}
           >
-            {isSubmitting ? tCommon('submitting') : tCommon('submitReview')}
+            {isSubmitting ? t('submitting') : t('submitReview')}
           </Button>
         </DialogClose>
       </DialogContent>

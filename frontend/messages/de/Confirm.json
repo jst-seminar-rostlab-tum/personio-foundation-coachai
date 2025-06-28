@@ -7,5 +7,6 @@
     "expiredDescription": "Ihr Bestätigungscode ist abgelaufen. Bitte fordern Sie einen neuen Code an.",
     "expiredOtpError": "Der Bestätigungscode ist abgelaufen. Bitte fordern Sie einen neuen Code an.",
     "genericError": "Bei der Konto-Bestätigung ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal."
-  }
+  },
+  "confirming": "Wird bestätigt..."
 }

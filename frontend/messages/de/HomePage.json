@@ -61,5 +61,12 @@
   "cta": {
     "title": "Bereit für den nächsten Karriereschritt?",
     "description": "Werden Sie Teil unserer Community erfolgreicher Führungskräfte, die KI für ihre persönliche Entwicklung nutzen."
-  }
+  },
+  "getStarted": "Jetzt starten",
+  "getStartedNow": "Jetzt starten",
+  "privacy": "Datenschutz",
+  "terms": "AGB",
+  "cookies": "Cookie-Einstellungen",
+  "copyright": "© 2025 AI Leadership Coach. Alle Rechte vorbehalten.",
+  "appName": "Leadership Coach"
 }

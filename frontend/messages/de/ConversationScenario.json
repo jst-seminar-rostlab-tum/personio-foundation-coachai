@@ -80,5 +80,13 @@
       "defaultOtherParty": "Arbeitgeber"
     }
   ],
-  "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später noch einmal."
+  "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später noch einmal.",
+  "easy": "Einfach",
+  "medium": "Mittel",
+  "hard": "Schwer",
+  "simple": "Einfach",
+  "complex": "Komplex",
+  "neutral": "Neutral",
+  "creating": "Wird erstellt...",
+  "create": "Erstellen"
 }

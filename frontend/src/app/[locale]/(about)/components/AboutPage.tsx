@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/Button';
 
 export default function AboutPageComponent() {
   const t = useTranslations('HomePage');
-  const tCommon = useTranslations('Common');
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -29,7 +28,7 @@ export default function AboutPageComponent() {
                 <div className="flex flex-col lg:flex-row gap-4 w-full">
                   <Button asChild variant="default" className="w-full md:w-auto text-center">
                     <Link href="/login" className="w-full md:w-auto">
-                      {tCommon('getStartedNow')}
+                      {t('getStarted')}
                     </Link>
                   </Button>
                   <Button asChild variant="secondary" className="w-full md:w-auto text-center">
@@ -171,7 +170,7 @@ export default function AboutPageComponent() {
               <div className="w-full">
                 <Link href="/login" className="inline-flex items-center justify-center w-full">
                   <Button variant="default" className="w-full md:w-auto">
-                    {tCommon('getStartedNow')}
+                    {t('getStartedNow')}
                   </Button>
                 </Link>
               </div>

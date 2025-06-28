@@ -1,0 +1,7 @@
+{
+  "deleteAccountSuccess": "Account deleted successfully.",
+  "deleteAccountError": "There was an error deleting the account.",
+  "areYouSure": "Are you sure?",
+  "deleteAccountConfirmDesc": "This action cannot be undone.",
+  "deleting": "Deleting..."
+}

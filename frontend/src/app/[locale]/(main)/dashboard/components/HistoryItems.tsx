@@ -49,7 +49,7 @@ export default function HistoryItems({ sessionsPromise }: HistoryItemsProps) {
           ))}
           <Link href="/history">
             <Button size="full">
-              {tCommon('showEntireHistory')}
+              {t('showEntireHistory')}
               <ArrowRightIcon />
             </Button>
           </Link>

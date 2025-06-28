@@ -89,7 +89,7 @@ export default function PreviousSessions({
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" className="hover:text-flame-50" disabled={isDeleting}>
-                {tCommon('clearAll')} <Trash2 />
+                {t('clearAll')} <Trash2 />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

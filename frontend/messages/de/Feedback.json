@@ -4,7 +4,8 @@
   "title": "Auswertung",
   "reviewDialog": {
     "description": "Wie war die Trainingssitzung? Helfen Sie uns mit Ihrer Bewertung.",
-    "shareWithAdmin": "Sitzung mit einem Administrator zur Verbesserung teilen."
+    "shareWithAdmin": "Sitzung mit einem Administrator zur Verbesserung teilen.",
+    "submitReview": "Bewertung abgeben"
   },
   "progressBars": {
     "structure": "Struktur",
@@ -28,5 +29,10 @@
   "detailedFeedback": {
     "recommendations": "Empfehlungen",
     "nextTime": "Für das nächste Mal:"
-  }
+  },
+  "submitting": "Wird abgegeben...",
+  "submitError": "Fehler beim Abgeben. Bitte versuchen Sie es später erneut.",
+  "submitSuccess": "Erfolgreich abgegeben. Vielen Dank!",
+  "submitReview": "Bewertung abgeben",
+  "fetchError": "Fehler beim Abrufen der Daten. Bitte versuchen Sie es später erneut."
 }

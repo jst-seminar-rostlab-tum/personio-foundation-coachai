@@ -51,10 +51,10 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
         throw new Error('Failed to get session feedback');
       } catch (error) {
         setIsLoading(false);
-        showErrorToast(error, tCommon('fetchError'));
+        showErrorToast(error, t('fetchError'));
       }
     },
-    [setFeedbackDetail, setIsLoading, tCommon]
+    [setFeedbackDetail, setIsLoading, t]
   );
 
   useEffect(() => {

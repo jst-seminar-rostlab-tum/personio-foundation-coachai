@@ -34,7 +34,7 @@ export default function HistoryStats({ stats }: UserStatsResponse) {
               <>
                 <StatCard value={data.totalSessions} label={tCommon('totalSessions')} />
                 <StatCard value={`${data.averageScore}%`} label={tCommon('avgScore')} />
-                <StatCard value={data.goalsAchieved} label={tCommon('goalsAchieved')} />
+                <StatCard value={data.goalsAchieved} label={t('goalsAchieved')} />
               </>
             )}
           </div>

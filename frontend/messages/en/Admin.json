@@ -12,5 +12,13 @@
   "deleteUser": "Delete User",
   "tokenSuccess": "Token limit saved successfully",
   "tokenFailed": "Error saving token limit",
-  "tokenNumberFailed": "Please enter a valid number (1-1000000)"
+  "tokenNumberFailed": "Please enter a valid number (1-1000000)",
+  "search": "Search...",
+  "actions": "Actions",
+  "users": "Users",
+  "sortBy": "Sort By",
+  "sortNewest": "Newest",
+  "sortOldest": "Oldest",
+  "sortHighest": "Highest",
+  "sortLowest": "Lowest"
 }

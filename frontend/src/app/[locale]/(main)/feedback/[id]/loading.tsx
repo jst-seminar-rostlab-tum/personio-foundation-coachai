@@ -117,7 +117,7 @@ export default function FeedbackDetailLoadingPage() {
       {/* Return to dashboard button */}
       <div className="w-full flex justify-center pb-8">
         <Link href="/dashboard" className="text-gray-400 hover:text-gray-500 text-sm underline">
-          {tCommon('backToDashboard')}
+          {tCommon('backToHome')}
         </Link>
       </div>
     </div>

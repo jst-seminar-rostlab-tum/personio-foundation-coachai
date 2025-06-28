@@ -23,6 +23,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
   const limit = pagination?.pageSize;
   const router = useRouter();
   const tCommon = useTranslations('Common');
+  const tAdmin = useTranslations('Admin');
   const [visibleCount, setVisibleCount] = useState(limit);
   const [pageNumber, setPageNumber] = useState(pagination?.currentPage);
   const [isLoading, setIsLoading] = useState(false);
@@ -117,13 +118,13 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
             <div className="text-lg font-semibold text-bw-70">{tCommon('reviews')}</div>
             <Select value={sortBy} onValueChange={handleSortChange}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={tCommon('sortBy')} />
+                <SelectValue placeholder={tAdmin('sortBy')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">{tCommon('sortNewest')}</SelectItem>
-                <SelectItem value="oldest">{tCommon('sortOldest')}</SelectItem>
-                <SelectItem value="highest">{tCommon('sortHighest')}</SelectItem>
-                <SelectItem value="lowest">{tCommon('sortLowest')}</SelectItem>
+                <SelectItem value="newest">{tAdmin('sortNewest')}</SelectItem>
+                <SelectItem value="oldest">{tAdmin('sortOldest')}</SelectItem>
+                <SelectItem value="highest">{tAdmin('sortHighest')}</SelectItem>
+                <SelectItem value="lowest">{tAdmin('sortLowest')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

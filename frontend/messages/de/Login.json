@@ -136,5 +136,11 @@
   "passwordInputError": "Bitte geben Sie ein gültiges Passwort ein",
   "codeLengthError": "Der Code muss 6 Zeichen lang sein",
   "verify": "Bestätigen",
-  "verifying": "Wird überprüft..."
+  "verifying": "Wird überprüft...",
+  "emailInputLabel": "E-Mail-Adresse",
+  "emailInputPlaceholder": "Bitte geben Sie Ihre E-Mail-Adresse ein",
+  "emailInputError": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+  "codeInputLabel": "Bestätigungscode",
+  "resendCodeButtonLabel": "Code erneut senden",
+  "signIn": "Anmelden"
 }

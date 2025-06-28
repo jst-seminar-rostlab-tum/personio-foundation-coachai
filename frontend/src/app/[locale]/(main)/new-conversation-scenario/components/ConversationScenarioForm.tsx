@@ -106,12 +106,12 @@ export default function ConversationScenarioForm({
 
   const getButtonText = () => {
     if (isSubmitting && currentStep === 2) {
-      return tCommon('creating');
+      return t('creating');
     }
     if (currentStep === 2) {
-      return tCommon('create');
+      return t('create');
     }
-    return tCommon('nextStep');
+    return tCommon('next');
   };
 
   return (
@@ -178,7 +178,7 @@ export default function ConversationScenarioForm({
             disabled={currentStep === 0}
           >
             <ArrowLeftIcon />
-            {tCommon('goBack')}
+            {tCommon('back')}
           </Button>
         )}
         <Button

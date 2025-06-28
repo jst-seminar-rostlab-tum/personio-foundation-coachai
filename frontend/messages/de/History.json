@@ -12,5 +12,10 @@
   "previousSessions": "Vorherige Sitzungen",
   "exportHistory": "Verlauf exportieren",
   "deleteAllSessions": "Alle Sitzungen löschen",
-  "deleteAllSessionsConfirmation": "Sind Sie sicher, dass Sie alle Sitzungen löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+  "deleteAllSessionsConfirmation": "Sind Sie sicher, dass Sie alle Sitzungen löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "deleteSuccess": "Erfolgreich gelöscht.",
+  "deleteError": "Fehler beim Löschen. Bitte versuchen Sie es erneut.",
+  "goalsAchieved": "Erreichte Ziele",
+  "clearAll": "Alle löschen",
+  "showEntireHistory": "Gesamte Historie anzeigen"
 }

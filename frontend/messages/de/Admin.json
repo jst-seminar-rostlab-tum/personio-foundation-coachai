@@ -12,5 +12,13 @@
   "deleteUser": "Benutzer löschen",
   "tokenSuccess": "Token-Limit wurde erfolgreich gespeichert",
   "tokenFailed": "Fehler beim Speichern des Token-Limits",
-  "tokenNumberFailed": "Bitte geben Sie eine gültige Zahl zwischen 1 und 1.000.000 ein"
+  "tokenNumberFailed": "Bitte geben Sie eine gültige Zahl zwischen 1 und 1.000.000 ein",
+  "search": "Suchen...",
+  "actions": "Aktionen",
+  "users": "Benutzer",
+  "sortBy": "Sortieren nach",
+  "sortNewest": "Neueste",
+  "sortOldest": "Älteste",
+  "sortHighest": "Höchste",
+  "sortLowest": "Niedrigste"
 }

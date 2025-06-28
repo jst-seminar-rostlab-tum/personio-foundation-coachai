@@ -18,18 +18,19 @@ import {
 
 export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
   const [loading, setLoading] = useState(false);
-  const t = useTranslations('Common');
+  const tCommon = useTranslations('Common');
+  const tDeleteAccount = useTranslations('DeleteAccount');
 
   async function handleDeleteUser(deleteUserId?: string) {
     setLoading(true);
     try {
       await UserProfileService.deleteUser(deleteUserId);
-      showSuccessToast(t('deleteAccountSuccess'));
+      showSuccessToast(tDeleteAccount('deleteAccountSuccess'));
       if (!deleteUserId) {
         redirect('/');
       }
     } catch (error) {
-      showErrorToast(error, t('deleteAccountError'));
+      showErrorToast(error, tDeleteAccount('deleteAccountError'));
     } finally {
       setLoading(false);
     }
@@ -40,13 +41,15 @@ export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t('areYouSure')}</AlertDialogTitle>
-          <AlertDialogDescription>{t('deleteAccountConfirmDesc')}</AlertDialogDescription>
+          <AlertDialogTitle>{tDeleteAccount('areYouSure')}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {tDeleteAccount('deleteAccountConfirmDesc')}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+          <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
           <AlertDialogAction onClick={() => handleDeleteUser(id)} disabled={loading}>
-            {loading ? t('deleting') : t('confirm')}
+            {loading ? tDeleteAccount('deleting') : tCommon('confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

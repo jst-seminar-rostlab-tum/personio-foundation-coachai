@@ -111,7 +111,7 @@ export default function Admin({ stats, reviews }: AdminProps) {
                 </span>
                 <Input
                   type="text"
-                  placeholder={tCommon('search')}
+                  placeholder={t('search')}
                   className="w-full pl-10 pr-3 py-2 border border-bw-20 rounded text-sm text-bw-70 placeholder-bw-40 focus:border-bw-20 focus-visible:outline-none focus-visible:ring-0"
                 />
               </div>
@@ -124,12 +124,8 @@ export default function Admin({ stats, reviews }: AdminProps) {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th className="text-left font-semibold text-bw-70 py-2 px-2">
-                      {tCommon('users')}
-                    </th>
-                    <th className="text-left font-semibold text-bw-70 py-2 px-2">
-                      {tCommon('actions')}
-                    </th>
+                    <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('users')}</th>
+                    <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
