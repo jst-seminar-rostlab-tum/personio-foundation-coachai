@@ -7,8 +7,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
 import { Review, ReviewsPaginated } from '@/interfaces/models/Review';
-import { api } from '@/services/client/Api';
-import { reviewService } from '@/services/server/ReviewService';
+import { reviewService } from '@/services/ReviewService';
 import { showErrorToast } from '@/lib/toast';
 import {
   Select,
@@ -20,6 +19,7 @@ import {
 import { useRouter } from 'next/navigation';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { formattedDate } from '@/lib/utils';
+import { api } from '@/services/ApiClient';
 
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
   const limit = pagination?.pageSize;

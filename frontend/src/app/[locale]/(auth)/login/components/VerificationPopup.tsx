@@ -12,10 +12,11 @@ import { RotateCcw } from 'lucide-react';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { CreateUserRequest } from '@/interfaces/models/Auth';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services/client/AuthService';
-import { verificationService } from '@/services/client/VerificationService';
+import { authService } from '@/services/AuthService';
+import { verificationService } from '@/services/VerificationService';
 import { showErrorToast } from '@/lib/toast';
 import { handlePasteEvent } from '@/lib/handlePaste';
+import { api } from '@/services/ApiClient';
 
 interface VerificationPopupProps {
   isOpen: boolean;
@@ -66,7 +67,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
   const sendInitialVerificationCode = useCallback(async () => {
     try {
       setIsLoading(true);
-      await verificationService.sendVerificationCode({
+      await verificationService.sendVerificationCode(api, {
         phone_number: signUpFormData.phone_number,
       });
       setVerificationSent(true);
@@ -96,7 +97,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
 
     try {
       // First verify the code
-      await verificationService.verifyCode({
+      await verificationService.verifyCode(api, {
         phone_number: signUpFormData.phone_number,
         code: form.getValues('code'),
       });
@@ -109,7 +110,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
         password: signUpFormData.password,
         // code: form.getValues('code'),
       };
-      await authService.createUser(data);
+      await authService.createUser(api, data);
       setIsLoading(false);
 
       router.push(`/confirm?email=${encodeURIComponent(signUpFormData.email)}`);
@@ -123,7 +124,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     if (resendCooldown > 0) return;
     try {
       setIsLoading(true);
-      await verificationService.sendVerificationCode({
+      await verificationService.sendVerificationCode(api, {
         phone_number: signUpFormData.phone_number,
       });
       setResendCooldown(30);

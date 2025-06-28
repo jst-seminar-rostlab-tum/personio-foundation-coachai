@@ -1,3 +1,4 @@
+import { ReviewCreate } from '@/interfaces/models/Review';
 import { AxiosInstance } from 'axios';
 
 const getPaginatedReviews = async (
@@ -21,6 +22,17 @@ const getPaginatedReviews = async (
   }
 };
 
+const createReview = async (api: AxiosInstance, review: ReviewCreate) => {
+  try {
+    const { data } = await api.post('/review', review);
+    return data;
+  } catch (error) {
+    console.error('Error creating review:', error);
+    throw error;
+  }
+};
+
 export const reviewService = {
   getPaginatedReviews,
+  createReview,
 };

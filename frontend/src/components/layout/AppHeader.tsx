@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { authService } from '@/services/client/AuthService';
+import { authService } from '@/services/AuthService';
 import { useUser } from '@/contexts/User';
 import { AccountRole } from '@/interfaces/models/UserProfile';
 import { Button } from '../ui/Button';
