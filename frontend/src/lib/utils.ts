@@ -12,24 +12,24 @@ export function UserRoles(): UserOption[] {
   const tOptions = useTranslations('PersonalizationOptions');
   return [
     {
-      id: 'hr_professional',
-      label: tOptions('experience_roles.hr_professional.label'),
-      labelHint: tOptions('experience_roles.hr_professional.description'),
+      id: 'hrProfessional',
+      label: tOptions('experienceRoles.hrProfessional.label'),
+      labelHint: tOptions('experienceRoles.hrProfessional.description'),
     },
     {
-      id: 'team_leader',
-      label: tOptions('experience_roles.team_leader.label'),
-      labelHint: tOptions('experience_roles.team_leader.description'),
+      id: 'teamLeader',
+      label: tOptions('experienceRoles.teamLeader.label'),
+      labelHint: tOptions('experienceRoles.teamLeader.description'),
     },
     {
       id: 'executive',
-      label: tOptions('experience_roles.executive.label'),
-      labelHint: tOptions('experience_roles.executive.description'),
+      label: tOptions('experienceRoles.executive.label'),
+      labelHint: tOptions('experienceRoles.executive.description'),
     },
     {
       id: 'other',
-      label: tOptions('experience_roles.other.label'),
-      labelHint: tOptions('experience_roles.other.description'),
+      label: tOptions('experienceRoles.other.label'),
+      labelHint: tOptions('experienceRoles.other.description'),
     },
   ];
 }
@@ -39,35 +39,35 @@ export function PrimaryGoals(): UserOption[] {
 
   return [
     {
-      id: 'giving_constructive_feedback',
-      label: tOptions('leadership_skill_focus.giving_constructive_feedback'),
+      id: 'givingConstructiveFeedback',
+      label: tOptions('leadershipSkillFocus.givingConstructiveFeedback'),
     },
     {
-      id: 'managing_team_conflicts',
-      label: tOptions('leadership_skill_focus.managing_team_conflicts'),
+      id: 'managingTeamConflicts',
+      label: tOptions('leadershipSkillFocus.managingTeamConflicts'),
     },
-    { id: 'performance_reviews', label: tOptions('leadership_skill_focus.performance_reviews') },
+    { id: 'performanceReviews', label: tOptions('leadershipSkillFocus.performanceReviews') },
     {
-      id: 'motivating_team_members',
-      label: tOptions('leadership_skill_focus.motivating_team_members'),
-    },
-    {
-      id: 'leading_difficult_conversations',
-      label: tOptions('leadership_skill_focus.leading_difficult_conversations'),
+      id: 'motivatingTeamMembers',
+      label: tOptions('leadershipSkillFocus.motivatingTeamMembers'),
     },
     {
-      id: 'communicating_organizational_change',
-      label: tOptions('leadership_skill_focus.communicating_organizational_change'),
+      id: 'leadingDifficultConversations',
+      label: tOptions('leadershipSkillFocus.leadingDifficultConversations'),
     },
     {
-      id: 'develop_emotional_intelligence',
-      label: tOptions('leadership_skill_focus.develop_emotional_intelligence'),
+      id: 'communicatingOrganizationalChange',
+      label: tOptions('leadershipSkillFocus.communicatingOrganizationalChange'),
     },
     {
-      id: 'building_inclusive_teams',
-      label: tOptions('leadership_skill_focus.building_inclusive_teams'),
+      id: 'developEmotionalIntelligence',
+      label: tOptions('leadershipSkillFocus.developEmotionalIntelligence'),
     },
-    { id: 'negotiation_skills', label: tOptions('leadership_skill_focus.negotiation_skills') },
-    { id: 'coaching_mentoring', label: tOptions('leadership_skill_focus.coaching_mentoring') },
+    {
+      id: 'buildingInclusiveTeams',
+      label: tOptions('leadershipSkillFocus.buildingInclusiveTeams'),
+    },
+    { id: 'negotiationSkills', label: tOptions('leadershipSkillFocus.negotiationSkills') },
+    { id: 'coachingMentoring', label: tOptions('leadershipSkillFocus.coachingMentoring') },
   ];
 }

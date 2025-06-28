@@ -89,7 +89,53 @@
             "retained": "Gespeichert bis zur Kontolöschung"
           }
         }
-      }
+      },
+      "topics": [
+        {
+          "key": "accountInfo",
+          "title": "Kontoinformationen",
+          "description": "E-Mail, Telefonnummer, bevorzugte Sprache",
+          "purposes": [
+            "Anmeldung und Kontoverwaltung",
+            "Telefonnummernverifizierung",
+            "Sprache für Benutzeroberfläche und KI festlegen"
+          ],
+          "storage": ["Erhoben bei der Anmeldung", "Gespeichert bis zur Kontolöschung"]
+        },
+        {
+          "key": "aiPersonalization",
+          "title": "KI-Personalisierung",
+          "description": "Rolle, Führungserfahrung, Ziele, Selbstvertrauen",
+          "purposes": [
+            "Tipps vor Sitzungen bereitstellen",
+            "Antworten während Sitzungen personalisieren",
+            "Feedback nach Sitzungen geben"
+          ],
+          "storage": ["Erhoben bei der Anmeldung", "Gespeichert bis zur Kontolöschung"]
+        },
+        {
+          "key": "voiceRecordings",
+          "title": "Sprachaufzeichnungen",
+          "description": "Audioaufnahmen während Trainingssitzungen",
+          "purposes": ["Ermöglicht das Anhören vergangener Trainingssitzungen"],
+          "storage": [
+            "Erhoben zum Zeitpunkt der Aufnahme",
+            "Für 90 Tage gespeichert, wenn Zustimmung erteilt wurde",
+            "Sofort und dauerhaft gelöscht, wenn keine Zustimmung"
+          ]
+        },
+        {
+          "key": "usageMetrics",
+          "title": "Nutzungsmetriken",
+          "description": "Nutzungstage, Trainingssitzungen, verwendete KI-Tokens, ...",
+          "purposes": [
+            "Benutzerfortschritt verfolgen",
+            "Erfolge kennzeichnen",
+            "Nutzungsstatistiken bereitstellen"
+          ],
+          "storage": ["Erhoben während der Nutzung der App", "Gespeichert bis zur Kontolöschung"]
+        }
+      ]
     },
     "security": {
       "title": "Sicherheit & Datenschutz",
@@ -106,7 +152,13 @@
         "vercel": "Vercel – EU-Server und globales CDN",
         "supabase": "Supabase – EU-Server",
         "fly": "Fly.io – EU-Server",
-        "gcp": "GCP – EU-Server"
+        "gcp": "GCP – EU-Server",
+        "services": [
+          "Vercel – EU-Server und globales CDN",
+          "Supabase – EU-Server",
+          "Fly.io – EU-Server",
+          "GCP – EU-Server"
+        ]
       }
     },
     "userRights": {

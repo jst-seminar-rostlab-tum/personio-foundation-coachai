@@ -6,10 +6,6 @@ export interface DataProcessingTopic {
   storage: string[];
 }
 
-export interface ExternalService {
-  name: string;
-}
-
 export interface PrivacyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
