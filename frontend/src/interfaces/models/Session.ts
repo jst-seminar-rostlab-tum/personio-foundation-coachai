@@ -25,10 +25,6 @@ export interface SessionPaginated {
   sessions: SessionFromPagination[];
 }
 
-export interface SessionPaginatedResponse {
-  data: SessionPaginated;
-}
-
 export interface SessionFromPagination {
   date: string;
   sessionId: string;

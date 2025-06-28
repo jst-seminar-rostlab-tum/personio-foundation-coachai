@@ -20,8 +20,3 @@ export enum AccountRole {
   user = 'user',
   admin = 'admin',
 }
-
-export interface KeyConcept {
-  header: string;
-  value: string;
-}
