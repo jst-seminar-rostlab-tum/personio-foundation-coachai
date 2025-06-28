@@ -364,9 +364,13 @@ def generate_and_store_feedback(
                 overall_score = 0.0
 
     # update user profile and admin dashboard stats
-    user = db_session.exec(
-        select(UserProfile).where(UserProfile.id == conversation.scenario.user_id)
-    ).first()
+    if conversation and conversation.scenario and conversation.scenario.user_id:
+        user = db_session.exec(
+            select(UserProfile).where(UserProfile.id == conversation.scenario.user_id)
+        ).first()
+    else:
+        user = None
+
     admin_stats = db_session.exec(select(AdminDashboardStats)).first()
     try:
         if user:
