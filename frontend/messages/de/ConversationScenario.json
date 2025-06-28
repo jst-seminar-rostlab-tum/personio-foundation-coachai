@@ -8,7 +8,7 @@
     "customize": "Anpassen"
   },
   "category": {
-    "title": "Wählen Sie eine Gesprächskategorie *",
+    "title": "Wählen Sie ein Szenario",
     "options": {
       "feedback": "Feedback geben",
       "conflict": "Konfliktlösung",
@@ -17,27 +17,115 @@
       "custom": "Individuell"
     },
     "customPlaceholder": "Z. B. Beförderungsdiskussion, Onboarding neuer Teammitglieder ...",
-    "customInput": "Definieren Sie Ihren eigenen Gesprächsgegenstand *"
+    "customInput": "Definieren Sie Ihren eigenen Gesprächsgegenstand"
   },
   "situation": {
     "title": "Beschreiben Sie Ihre Situation",
     "otherParty": {
-      "title": "Wer ist der Gesprächspartner? *",
+      "title": "Wer ist der Gesprächspartner?",
       "placeholder": "Name eingeben"
     },
     "context": {
-      "title": "Was ist der Kontext? *",
+      "title": "Was ist der Kontext?",
       "placeholder": "Bitte beschreiben Sie hier den Kontext des Gesprächs."
     },
     "goal": {
-      "title": "Was ist Ihr Ziel? *",
+      "title": "Was ist Ihr Ziel?",
       "placeholder": "Welches Ergebnis möchten Sie erreichen?"
     }
   },
   "customize": {
-    "title": "Passen Sie Ihr Training an",
+    "title": "Andere Partei anpassen",
+    "persona": {
+      "title": "Wählen Sie eine Persona",
+      "about": "Über",
+      "behavioralTraits": "Verhaltensmerkmale",
+      "trainingFocus": "Trainingsfokus",
+      "personas": {
+        "positive": {
+          "traits": [
+            "Optimistisch und enthusiastisch",
+            "Ermutigend und unterstützend",
+            "Sieht Chancen in Herausforderungen",
+            "Baut positive Beziehungen auf",
+            "Motiviert andere natürlich"
+          ],
+          "trainingFocus": [
+            "Ihre positive Energie aufrechterhalten",
+            "Enthusiasmus konstruktiv kanalisieren",
+            "Optimismus mit Realismus ausbalancieren",
+            "Ihre Energie nutzen, um andere zu inspirieren",
+            "Ihre natürliche Motivation nutzen"
+          ]
+        },
+        "angry": {
+          "traits": [
+            "Frustriert und defensiv",
+            "Kann unterbrechen oder die Stimme erheben",
+            "Fokussiert sich auf Probleme und Schuld",
+            "Widersteht Vorschlägen",
+            "Emotional aufgeladene Reaktionen"
+          ],
+          "trainingFocus": [
+            "Ruhig und gelassen bleiben",
+            "Ihre Gefühle anerkennen",
+            "Konflikte nicht eskalieren lassen",
+            "Auf Lösungen, nicht auf Schuld fokussieren",
+            "Ihnen Raum zum Auslassen geben"
+          ]
+        },
+        "shy": {
+          "traits": [
+            "Leise und zurückhaltend",
+            "Zögert, Meinungen zu teilen",
+            "Zieht Zuhören dem Sprechen vor",
+            "Kann Augenkontakt vermeiden",
+            "Braucht Zeit zum Nachdenken"
+          ],
+          "trainingFocus": [
+            "Einen sicheren, wertungsfreien Raum schaffen",
+            "Offene Fragen stellen",
+            "Ihnen Zeit zum Antworten geben",
+            "Ihre Beiträge wertschätzen",
+            "Vertrauen schrittweise aufbauen"
+          ]
+        },
+        "casual": {
+          "traits": [
+            "Entspannt und informell",
+            "Kann lockere Sprache verwenden",
+            "Bevorzugt freundliche Atmosphäre",
+            "Schätzt persönliche Verbindung",
+            "Weniger fokussiert auf Formalitäten"
+          ],
+          "trainingFocus": [
+            "Ihren lockeren Ton angemessen anpassen",
+            "Rapport durch Gespräch aufbauen",
+            "Diskussionen freundlich aber professionell halten",
+            "Verständliche Beispiele verwenden",
+            "Grenzen wahren, aber zugänglich bleiben"
+          ]
+        },
+        "sad": {
+          "traits": [
+            "Zurückgezogen und still",
+            "Kann desinteressiert wirken",
+            "Fokussiert sich auf negative Aspekte",
+            "Niedrige Energie und Motivation",
+            "Braucht emotionale Unterstützung"
+          ],
+          "trainingFocus": [
+            "Empathie und Verständnis zeigen",
+            "Emotionale Unterstützung anbieten",
+            "Ihnen helfen, positive Aspekte zu sehen",
+            "Geduldig mit ihrem Tempo sein",
+            "Kleine Schritte nach vorne ermutigen"
+          ]
+        }
+      }
+    },
     "difficulty": {
-      "title": "Schwierigkeitsgrad *",
+      "title": "Schwierigkeitsgrad",
       "options": {
         "easy": "Einfach",
         "medium": "Mittel",
@@ -45,7 +133,7 @@
       }
     },
     "emotionalTone": {
-      "title": "Emotionaler Ton *",
+      "title": "Emotionaler Ton",
       "options": {
         "positive": "Positiv",
         "neutral": "Neutral",
@@ -53,7 +141,7 @@
       }
     },
     "complexity": {
-      "title": "Antwortkomplexität *",
+      "title": "Antwortkomplexität",
       "options": {
         "simple": "Einfach",
         "medium": "Mittel",
@@ -66,6 +154,7 @@
       "id": "giving_feedback",
       "name": "Feedback geben",
       "iconUri": "/icons/category-giving_feedback.svg",
+      "description": "Fördern Sie Entwicklung durch klares, konstruktives Feedback in jeder Situation.",
       "defaultContext": "Einzelgespräch mit einem Teammitglied.",
       "defaultGoal": "Konstruktives Feedback effektiv geben.",
       "defaultOtherParty": "Teammitglied"
@@ -74,6 +163,7 @@
       "id": "performance_reviews",
       "name": "Leistungsbeurteilungen",
       "iconUri": "/icons/category-performance_reviews.svg",
+      "description": "Motivieren und begleiten Sie Mitarbeitende mit wertschätzenden Beurteilungen.",
       "defaultContext": "Formelles Gespräch zur Leistungsbeurteilung.",
       "defaultGoal": "Leistung von Mitarbeitenden evaluieren und besprechen.",
       "defaultOtherParty": "Mitarbeiter/in"
@@ -82,6 +172,7 @@
       "id": "conflict_resolution",
       "name": "Konfliktlösung",
       "iconUri": "/icons/category-conflict_resolution.svg",
+      "description": "Lernen Sie, Konflikte zu lösen und ein positives Teamklima zu schaffen.",
       "defaultContext": "Konfliktlösungsgespräch zwischen Teammitgliedern.",
       "defaultGoal": "Konflikte lösen und Teamdynamik verbessern.",
       "defaultOtherParty": "Teammitglieder"
@@ -90,6 +181,7 @@
       "id": "salary_discussions",
       "name": "Gehaltsgespräche",
       "iconUri": "/icons/category-salary_discussions.svg",
+      "description": "Bereiten Sie sich auf offene, selbstbewusste und erfolgreiche Gehaltsgespräche vor.",
       "defaultContext": "Verhandlungsgespräch über das Gehalt.",
       "defaultGoal": "Eine für beide Seiten vorteilhafte Einigung zum Gehalt erzielen.",
       "defaultOtherParty": "Arbeitgeber"

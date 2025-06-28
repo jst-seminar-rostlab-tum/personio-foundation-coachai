@@ -2,18 +2,17 @@
 
 import { Button } from '@/components/ui/Button';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
-import Stepper from '@/components/common/Stepper';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { ConversationScenarioFormProps } from '@/interfaces/ConversationScenarioFormProps';
 import { ConversationCategory } from '@/interfaces/ConversationCategory';
 import { ConversationScenario } from '@/interfaces/ConversationScenario';
+import { Persona } from '@/interfaces/Persona';
 import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
 import { showErrorToast } from '@/lib/toast';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { CategoryStep } from './CategoryStep';
-import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
 
 export default function ConversationScenarioForm({
@@ -36,7 +35,10 @@ export default function ConversationScenarioForm({
     t.raw('categories') as ConversationCategory[]
   );
 
-  const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
+  // Reset form state when component mounts
+  useEffect(() => {
+    reset();
+  }, [reset]);
 
   useEffect(() => {
     setCategories((prev) =>
@@ -47,32 +49,19 @@ export default function ConversationScenarioForm({
     );
   }, [categoriesData]);
 
-  const handleStepClick = (step: number) => {
-    if (step <= currentStep + 1) {
-      setStep(step);
-    }
-  };
-
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 0:
         return !!formState.category;
       case 1:
-        return (
-          (!formState.isCustom || !!formState.customCategory) &&
-          !!formState.otherParty &&
-          !!formState.context &&
-          !!formState.goal
-        );
-      case 2:
-        return !!formState.difficulty && !!formState.emotionalTone && !!formState.complexity;
+        return !!formState.difficulty && !!formState.complexity && !!formState.persona;
       default:
         return false;
     }
   };
 
   const submitForm = async () => {
-    if (currentStep !== 2) {
+    if (currentStep !== 1) {
       setStep(currentStep + 1);
       return;
     }
@@ -88,7 +77,7 @@ export default function ConversationScenarioForm({
       goal: formState.goal,
       otherParty: formState.otherParty,
       difficultyLevel: formState.difficulty,
-      tone: formState.emotionalTone,
+      tone: '',
       complexity: formState.complexity,
       languageCode: locale as string,
     };
@@ -104,27 +93,18 @@ export default function ConversationScenarioForm({
   };
 
   const getButtonText = () => {
-    if (isSubmitting && currentStep === 2) {
+    if (isSubmitting && currentStep === 1) {
       return t('navigation.creating');
     }
-    if (currentStep === 2) {
+    if (currentStep === 1) {
       return t('navigation.create');
     }
     return t('navigation.next');
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="text-2xl text-font-dark text-center w-full mb-8">{t('title')}</div>
-      <Stepper
-        steps={steps}
-        currentStep={currentStep}
-        showAllStepNumbers
-        showStepLabels
-        className="px-6 py-2 mb-16"
-        onStepClick={handleStepClick}
-        currentStepValid={isStepValid(currentStep)}
-      />
+    <div>
+      <h1 className="text-2xl text-font-dark text-left w-full mb-8">{t('title')}</h1>
 
       {currentStep === 0 && (
         <CategoryStep
@@ -144,31 +124,17 @@ export default function ConversationScenarioForm({
       )}
 
       {currentStep === 1 && (
-        <SituationStep
-          otherParty={formState.otherParty}
-          context={formState.context}
-          goal={formState.goal}
-          onPartyChange={(val) => updateForm({ otherParty: val })}
-          onContextChange={(val) => updateForm({ context: val })}
-          onGoalChange={(val) => updateForm({ goal: val })}
-          onCustomCategoryInput={(val) => updateForm({ customCategory: val })}
-          isCustom={formState.isCustom}
-          customCategory={formState.customCategory}
-        />
-      )}
-
-      {currentStep === 2 && (
         <CustomizeStep
           difficulty={formState.difficulty}
-          emotionalTone={formState.emotionalTone}
           complexity={formState.complexity}
+          selectedPersona={formState.persona}
           onDifficultyChange={(val) => updateForm({ difficulty: val })}
-          onEmotionalToneChange={(val) => updateForm({ emotionalTone: val })}
           onComplexityChange={(val) => updateForm({ complexity: val })}
+          onPersonaSelect={(persona: Persona) => updateForm({ persona: persona.id })}
         />
       )}
 
-      <div className="flex gap-4 w-full justify-center mt-8 max-w-4xl mx-auto">
+      <div className="flex gap-4 w-full justify-center mt-8 mx-auto">
         {currentStep !== 0 && (
           <Button
             size="full"

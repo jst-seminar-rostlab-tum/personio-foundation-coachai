@@ -2,25 +2,78 @@ import Image from 'next/image';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { useTranslations } from 'next-intl';
 import { CustomizeStepProps } from '@/interfaces/CustomizeStepProps';
+import { Persona } from '@/interfaces/Persona';
+import { PersonaButton } from './PersonaButton';
+import { PersonaInfo } from './PersonaInfo';
 
 export function CustomizeStep({
   difficulty,
-  emotionalTone,
   complexity,
+  selectedPersona,
   onDifficultyChange,
-  onEmotionalToneChange,
   onComplexityChange,
+  onPersonaSelect,
 }: CustomizeStepProps) {
   const t = useTranslations('ConversationScenario.customize');
+
+  const personas: Persona[] = [
+    {
+      id: 'positive',
+      name: 'Positive Pam',
+      imageUri: '/images/personas/persona-positive.png',
+    },
+    {
+      id: 'angry',
+      name: 'Angry Alex',
+      imageUri: '/images/personas/persona-angry.png',
+    },
+    {
+      id: 'shy',
+      name: 'Shy Sarah',
+      imageUri: '/images/personas/persona-shy.png',
+    },
+    {
+      id: 'casual',
+      name: 'Casual Candice',
+      imageUri: '/images/personas/persona-casual.png',
+    },
+    {
+      id: 'sad',
+      name: 'Sad Steve',
+      imageUri: '/images/personas/persona-sad.png',
+    },
+  ];
 
   return (
     <div>
       <div className="text-xl text-font-dark text-center w-full mb-8">{t('title')}</div>
-      <div className="text-lg text-font-dark text-center mb-2">{t('difficulty.title')}</div>
+
+      {/* Persona Selection */}
+      <div className="text-xl text-font-dark text-left mb-2">{t('persona.title')}</div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 w-full mx-auto mb-16">
+        {personas.map((persona) => (
+          <PersonaButton
+            key={persona.id}
+            onClick={() => onPersonaSelect(persona)}
+            selected={selectedPersona === persona.id}
+            className="w-full"
+          >
+            <div className="relative w-28 h-28 rounded-full overflow-hidden bg-white mb-3 flex-shrink-0">
+              <Image src={persona.imageUri} alt={persona.name} fill className="object-cover" />
+            </div>
+            <span className="text-sm text-center">{persona.name}</span>
+          </PersonaButton>
+        ))}
+      </div>
+
+      {/* Persona Information */}
+      <PersonaInfo selectedPersona={selectedPersona} personas={personas} />
+
+      <div className="text-xl text-font-dark text-left mb-2">{t('difficulty.title')}</div>
       <RadioGroup
         value={difficulty}
         onValueChange={onDifficultyChange}
-        className="mb-8 flex flex-row justify-between gap-4"
+        className="mb-16 flex flex-row justify-between gap-4"
       >
         <label htmlFor="d1" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
@@ -54,45 +107,7 @@ export function CustomizeStep({
         </label>
       </RadioGroup>
 
-      <div className="text-lg text-font-dark text-center mb-2">{t('emotionalTone.title')}</div>
-      <RadioGroup
-        value={emotionalTone}
-        onValueChange={onEmotionalToneChange}
-        className="mb-8 flex flex-row justify-between gap-4"
-      >
-        <label htmlFor="e1" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image
-            src="/icons/mood-positive.svg"
-            alt={t('emotionalTone.options.positive')}
-            width={56}
-            height={56}
-          />
-          <span className="text-sm">{t('emotionalTone.options.positive')}</span>
-          <RadioGroupItem value="positive" id="e1" />
-        </label>
-        <label htmlFor="e2" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image
-            src="/icons/mood-neutral.svg"
-            alt={t('emotionalTone.options.neutral')}
-            width={56}
-            height={56}
-          />
-          <span className="text-sm">{t('emotionalTone.options.neutral')}</span>
-          <RadioGroupItem value="neutral" id="e2" />
-        </label>
-        <label htmlFor="e3" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image
-            src="/icons/mood-negative.svg"
-            alt={t('emotionalTone.options.negative')}
-            width={56}
-            height={56}
-          />
-          <span className="text-sm">{t('emotionalTone.options.negative')}</span>
-          <RadioGroupItem value="negative" id="e3" />
-        </label>
-      </RadioGroup>
-
-      <div className="text-lg text-font-dark text-center mb-2">{t('complexity.title')}</div>
+      <div className="text-xl text-font-dark text-left mb-2">{t('complexity.title')}</div>
       <RadioGroup
         value={complexity}
         onValueChange={onComplexityChange}

@@ -14,21 +14,19 @@ export function CategoryStep({
   return (
     <div className="space-y-8">
       <div className="text-xl text-font-dark text-center">{t('title')}</div>
-      <div className="flex flex-wrap justify-center gap-5 w-full max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full mx-auto">
         {categories.map((category) => (
           <CategoryButton
             key={category.id}
             onClick={() => onCategorySelect(category)}
             selected={selectedCategory === category.id}
+            className="w-full"
           >
-            <Image
-              src={category.iconUri}
-              alt={category.name}
-              width={56}
-              height={56}
-              className="mb-4"
-            />
-            <span className="text-center">{category.name}</span>
+            <div className="relative w-1/4 min-w-20 max-w-24 aspect-square mb-4">
+              <Image src={category.iconUri} alt={category.name} fill className="object-contain" />
+            </div>
+            {category.name}
+            {category.description}
           </CategoryButton>
         ))}
       </div>

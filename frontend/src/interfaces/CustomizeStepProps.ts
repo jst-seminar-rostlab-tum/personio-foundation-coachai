@@ -1,8 +1,10 @@
+import { Persona } from './Persona';
+
 export interface CustomizeStepProps {
   difficulty: string;
-  emotionalTone: string;
   complexity: string;
+  selectedPersona: string;
   onDifficultyChange: (difficulty: string) => void;
-  onEmotionalToneChange: (emotionalTone: string) => void;
   onComplexityChange: (complexity: string) => void;
+  onPersonaSelect: (persona: Persona) => void;
 }
