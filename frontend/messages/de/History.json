@@ -16,6 +16,5 @@
   "deleteSuccess": "Erfolgreich gelöscht.",
   "deleteError": "Fehler beim Löschen. Bitte versuchen Sie es erneut.",
   "goalsAchieved": "Erreichte Ziele",
-  "clearAll": "Alle löschen",
-  "showEntireHistory": "Gesamte Historie anzeigen"
+  "clearAll": "Alle löschen"
 }

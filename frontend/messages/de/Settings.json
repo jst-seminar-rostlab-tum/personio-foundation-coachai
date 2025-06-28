@@ -7,30 +7,8 @@
   "deleteAccount": "Konto löschen",
   "personalizationSettings": "Personalisierungseinstellungen",
   "saveSettings": "Einstellungen speichern",
-  "saving": "Wird gespeichert...",
   "ninetyDays": "Ihre Aufnahmen und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf verfügbar.",
   "zeroDays": "Ihre Aufnahmen und Transkripte werden nicht gespeichert.",
-  "preferences": {
-    "language": {
-      "label": "Bevorzugte Sprache",
-      "en": "Englisch",
-      "es": "Spanisch",
-      "fr": "Französisch"
-    },
-    "learningStyle": {
-      "label": "Bevorzugter Lernstil",
-      "visual": "Visuell",
-      "handson": "Praktische Übungen",
-      "auditory": "Auditiv",
-      "kinesthetic": "Kinästhetisch"
-    },
-    "session": {
-      "label": "Bevorzugte Sitzungsdauer",
-      "short": "Weniger als 30 Minuten",
-      "medium": "30–60 Minuten",
-      "long": "Über 1 Stunde"
-    }
-  },
   "leadershipGoals": {
     "currentRole": {
       "label": "Aktuelle Rolle"

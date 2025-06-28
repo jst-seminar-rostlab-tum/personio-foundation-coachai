@@ -7,30 +7,8 @@
   "deleteAccount": "Delete account",
   "personalizationSettings": "Personalization Settings",
   "saveSettings": "Save Settings",
-  "saving": "Saving...",
   "ninetyDays": "Your audio and transcripts will be retained and viewable in the training history for 90 days.",
   "zeroDays": "Your audio and transcripts will not be saved.",
-  "preferences": {
-    "language": {
-      "label": "Preferred Language",
-      "en": "English",
-      "es": "Spanish",
-      "fr": "French"
-    },
-    "learningStyle": {
-      "label": "Preferred Learning Style",
-      "visual": "Visual",
-      "handson": "Hands-on practice",
-      "auditory": "Auditory",
-      "kinesthetic": "Kinesthetic"
-    },
-    "session": {
-      "label": "Preferred Session",
-      "short": "Less than 30 minutes",
-      "medium": "30–60 minutes",
-      "long": "Over 1 hour"
-    }
-  },
   "leadershipGoals": {
     "currentRole": {
       "label": "Current Role"

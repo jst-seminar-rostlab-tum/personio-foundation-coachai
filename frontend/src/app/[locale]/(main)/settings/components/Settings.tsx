@@ -226,7 +226,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
           variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
           disabled={isSubmitting || !hasFormChanged()}
         >
-          {isSubmitting ? t('saving') : t('saveSettings')}
+          {isSubmitting ? tCommon('saving') : t('saveSettings')}
         </Button>
       </div>
     </div>

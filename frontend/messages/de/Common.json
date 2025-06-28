@@ -32,5 +32,7 @@
   "start": "Starten",
   "starting": "Wird gestartet...",
   "positive": "Positiv",
-  "negative": "Negativ"
+  "negative": "Negativ",
+  "newConversationScenario": "Neues Training",
+  "appName": "Leadership Coach"
 }

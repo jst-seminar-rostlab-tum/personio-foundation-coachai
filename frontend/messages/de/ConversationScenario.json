@@ -9,13 +9,6 @@
   },
   "category": {
     "title": "Wählen Sie eine Gesprächskategorie *",
-    "options": {
-      "feedback": "Feedback geben",
-      "conflict": "Konfliktlösung",
-      "performance": "Leistungsbeurteilung",
-      "salary": "Gehaltsgespräch",
-      "custom": "Individuell"
-    },
     "customPlaceholder": "z.B. Beförderungsgespräch, Einarbeitung neuer Kollegen ...",
     "customInput": "Definieren Sie Ihr eigenes Gesprächsthema *"
   },

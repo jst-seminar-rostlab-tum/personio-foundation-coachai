@@ -16,6 +16,5 @@
   "deleteSuccess": "Deleted successfully.",
   "deleteError": "Error deleting. Please try again later.",
   "goalsAchieved": "Goals Achieved",
-  "clearAll": "Clear All",
-  "showEntireHistory": "Show Entire History"
+  "clearAll": "Clear All"
 }

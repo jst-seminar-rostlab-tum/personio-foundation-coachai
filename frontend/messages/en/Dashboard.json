@@ -19,5 +19,6 @@
   },
   "recentSessions": {
     "subtitle": "Your last completed training sessions"
-  }
+  },
+  "showEntireHistory": "Show Entire History"
 }

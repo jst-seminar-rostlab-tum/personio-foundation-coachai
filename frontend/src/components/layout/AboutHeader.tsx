@@ -9,6 +9,7 @@ import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
 export default function AboutHeader() {
   const t = useTranslations('HomePage');
+  const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const isLoginPath = pathname.includes('/login');
 
@@ -17,7 +18,7 @@ export default function AboutHeader() {
       <div className="container flex h-16 items-center justify-between mx-auto px-4">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-semibold text-black">{t('appName')}</span>
+            <span className="text-xl font-semibold text-black">{tCommon('appName')}</span>
           </Link>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
