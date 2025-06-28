@@ -13,10 +13,8 @@ import {
 export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps) {
   const t = useTranslations('Login.PrivacyPolicyDialog');
 
-  // Get data processing topics from translation file
   const dataProcessingTopics = t.raw('dataProcessing.topics') as DataProcessingTopic[];
 
-  // Get external services from translation file
   const externalServices = t.raw('security.externalServices.services') as string[];
 
   const DataProcessingCard = ({ item }: DataProcessingCardProps) => (

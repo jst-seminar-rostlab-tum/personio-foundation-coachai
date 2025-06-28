@@ -12,12 +12,12 @@ export function UserRoles(): UserOption[] {
   const tOptions = useTranslations('PersonalizationOptions');
   return [
     {
-      id: 'hrProfessional',
+      id: 'hr_professional',
       label: tOptions('experienceRoles.hrProfessional.label'),
       labelHint: tOptions('experienceRoles.hrProfessional.description'),
     },
     {
-      id: 'teamLeader',
+      id: 'team_leader',
       label: tOptions('experienceRoles.teamLeader.label'),
       labelHint: tOptions('experienceRoles.teamLeader.description'),
     },
@@ -39,35 +39,35 @@ export function PrimaryGoals(): UserOption[] {
 
   return [
     {
-      id: 'givingConstructiveFeedback',
+      id: 'giving_constructive_feedback',
       label: tOptions('leadershipSkillFocus.givingConstructiveFeedback'),
     },
     {
-      id: 'managingTeamConflicts',
+      id: 'managing_team_conflicts',
       label: tOptions('leadershipSkillFocus.managingTeamConflicts'),
     },
-    { id: 'performanceReviews', label: tOptions('leadershipSkillFocus.performanceReviews') },
+    { id: 'performance_reviews', label: tOptions('leadershipSkillFocus.performanceReviews') },
     {
-      id: 'motivatingTeamMembers',
+      id: 'motivating_team_members',
       label: tOptions('leadershipSkillFocus.motivatingTeamMembers'),
     },
     {
-      id: 'leadingDifficultConversations',
+      id: 'leading_difficult_conversations',
       label: tOptions('leadershipSkillFocus.leadingDifficultConversations'),
     },
     {
-      id: 'communicatingOrganizationalChange',
+      id: 'communicating_organizational_change',
       label: tOptions('leadershipSkillFocus.communicatingOrganizationalChange'),
     },
     {
-      id: 'developEmotionalIntelligence',
+      id: 'develop_emotional_intelligence',
       label: tOptions('leadershipSkillFocus.developEmotionalIntelligence'),
     },
     {
-      id: 'buildingInclusiveTeams',
+      id: 'building_inclusive_teams',
       label: tOptions('leadershipSkillFocus.buildingInclusiveTeams'),
     },
-    { id: 'negotiationSkills', label: tOptions('leadershipSkillFocus.negotiationSkills') },
-    { id: 'coachingMentoring', label: tOptions('leadershipSkillFocus.coachingMentoring') },
+    { id: 'negotiation_skills', label: tOptions('leadershipSkillFocus.negotiationSkills') },
+    { id: 'coaching_mentoring', label: tOptions('leadershipSkillFocus.coachingMentoring') },
   ];
 }
