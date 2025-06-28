@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/Command';
 import { Command as CommandPrimitive } from 'cmdk';
-import { UserOption } from '@/interfaces/inputs/UserInputFields';
+import { UserOption } from '@/interfaces/models/UserInputFields';
 
 interface MultiSelectProps {
   options: UserOption[];

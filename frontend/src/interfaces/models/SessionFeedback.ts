@@ -5,13 +5,15 @@ export interface FeedbackResponse {
   goalsTotal: string[];
 }
 
+export interface SessionScores {
+  clarity: number;
+  empathy: number;
+  structure: number;
+  focus: number;
+}
+
 export interface SessionFeedback {
-  scores: {
-    clarity: number;
-    empathy: number;
-    structure: number;
-    focus: number;
-  };
+  scores: SessionScores;
   overallScore: number;
   sessionLengthS: number;
   goalsAchieved: string[];

@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { UserOption } from '@/interfaces/inputs/UserInputFields';
+import { UserOption } from '@/interfaces/models/UserInputFields';
 import { useTranslations } from 'next-intl';
 
 export function cn(...inputs: ClassValue[]) {

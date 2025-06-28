@@ -1,6 +1,6 @@
 'use client';
 
-import { UserConfidenceField } from '@/interfaces/inputs/UserInputFields';
+import { UserConfidenceField } from '@/interfaces/models/UserInputFields';
 import Slider from '@/components/ui/Slider';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';

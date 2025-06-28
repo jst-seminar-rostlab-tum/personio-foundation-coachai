@@ -15,7 +15,7 @@ import Input from '@/components/ui/Input';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import { adminService } from '@/services/client/AdminService';
 import { showSuccessToast, showErrorToast } from '@/lib/toast';
-import { ReviewsPaginated } from '@/interfaces/Review';
+import { ReviewsPaginated } from '@/interfaces/models/Review';
 import Reviews from './Reviews';
 
 interface AdminProps {

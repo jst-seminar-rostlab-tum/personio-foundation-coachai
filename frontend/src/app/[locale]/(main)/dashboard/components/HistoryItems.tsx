@@ -1,7 +1,7 @@
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { Button } from '@/components/ui/Button';
 import { Link } from '@/i18n/navigation';
-import { SessionFromPagination, SessionPaginatedResponse } from '@/interfaces/Session';
+import { SessionFromPagination, SessionPaginatedResponse } from '@/interfaces/models/Session';
 import { ArrowRightIcon } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { use } from 'react';

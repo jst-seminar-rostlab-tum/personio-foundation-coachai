@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { ConversationCategory } from '@/interfaces/ConversationScenario';
+import { ConversationCategory } from '@/interfaces/models/ConversationScenario';
 import { CategoryButton } from './CategoryButton';
 
 interface CategoryStepProps {

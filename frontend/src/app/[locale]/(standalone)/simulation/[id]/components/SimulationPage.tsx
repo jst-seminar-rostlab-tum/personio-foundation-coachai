@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { SessionStatus } from '@/interfaces/Session';
+import { SessionStatus } from '@/interfaces/models/Session';
 import { sessionService } from '@/services/client/SessionService';
 import { useTranslations } from 'next-intl';
 import { showErrorToast } from '@/lib/toast';

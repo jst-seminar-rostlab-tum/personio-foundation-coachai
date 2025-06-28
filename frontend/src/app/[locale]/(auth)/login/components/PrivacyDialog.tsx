@@ -9,7 +9,7 @@ import {
   DataProcessingTopic,
   ExternalService,
   PrivacyDialogProps,
-} from '@/interfaces/PrivacyDialog';
+} from '@/interfaces/models/PrivacyDialog';
 
 export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps) {
   const t = useTranslations('Login.PrivacyPolicyDialog');

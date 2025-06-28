@@ -1,4 +1,4 @@
-import { UserProfile } from '@/interfaces/UserProfile';
+import { UserProfile } from '@/interfaces/models/UserProfile';
 import { api } from './Api';
 
 const getUserProfile = async (): Promise<UserProfile> => {

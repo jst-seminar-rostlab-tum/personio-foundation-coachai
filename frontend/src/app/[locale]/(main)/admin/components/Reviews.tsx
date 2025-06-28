@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
-import { Review, ReviewsPaginated } from '@/interfaces/Review';
+import { Review, ReviewsPaginated } from '@/interfaces/models/Review';
 import { api } from '@/services/client/Api';
 import { reviewService } from '@/services/server/ReviewService';
 import { showErrorToast } from '@/lib/toast';

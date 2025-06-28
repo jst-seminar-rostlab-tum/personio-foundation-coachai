@@ -1,4 +1,7 @@
-import { PasteField } from '@/interfaces/inputs/PasteField';
+interface PasteField {
+  onChange: (code: string) => void;
+  value?: string;
+}
 
 export function handlePasteEvent(
   e: React.ClipboardEvent<HTMLInputElement>,

@@ -1,4 +1,4 @@
-import { KeyConcept } from '@/interfaces/ConversationScenario';
+import { KeyConcept } from '@/interfaces/models/ConversationScenario';
 
 interface PreparationKeyConceptsProps {
   keyConcepts: KeyConcept[];

@@ -6,7 +6,10 @@ import Stepper from '@/components/common/Stepper';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { ConversationScenario, ConversationCategory } from '@/interfaces/ConversationScenario';
+import {
+  ConversationScenario,
+  ConversationCategory,
+} from '@/interfaces/models/ConversationScenario';
 import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
 import { showErrorToast } from '@/lib/toast';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';

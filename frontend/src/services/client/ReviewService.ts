@@ -1,4 +1,4 @@
-import { ReviewCreate } from '@/interfaces/Review';
+import { ReviewCreate } from '@/interfaces/models/Review';
 import { api } from './Api';
 
 const createReview = async (review: ReviewCreate) => {

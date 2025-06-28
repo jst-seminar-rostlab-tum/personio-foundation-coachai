@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Checkbox from '@/components/ui/Checkbox';
 import { useEffect, useState } from 'react';
-import { PasswordRequirement } from '@/interfaces/inputs/PasswordInput';
 import Image from 'next/image';
 import {
   Form,
@@ -20,7 +19,10 @@ import {
   FormMessage,
 } from '@/components/ui/Form';
 import { VerificationPopup } from '@/app/[locale]/(auth)/login/components/VerificationPopup';
-import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordInput';
+import {
+  PasswordInput,
+  PasswordRequirement,
+} from '@/app/[locale]/(auth)/login/components/PasswordInput';
 import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
 import { showErrorToast } from '@/lib/toast';
 import Link from 'next/link';

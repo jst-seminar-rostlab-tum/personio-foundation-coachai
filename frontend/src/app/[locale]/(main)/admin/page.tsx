@@ -6,7 +6,7 @@ import { adminService } from '@/services/server/AdminService';
 import { reviewService } from '@/services/server/ReviewService';
 import { api } from '@/services/server/Api';
 import { UserProfileService } from '@/services/server/UserProfileService';
-import { AccountRole } from '@/interfaces/UserProfile';
+import { AccountRole } from '@/interfaces/models/UserProfile';
 import { redirect } from 'next/navigation';
 import Admin from './components/AdminPage';
 import AdminLoadingPage from './loading';

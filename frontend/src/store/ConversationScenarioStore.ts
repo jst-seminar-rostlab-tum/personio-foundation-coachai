@@ -1,7 +1,7 @@
 import {
   ConversationScenarioFormState,
   ConversationScenarioState,
-} from '@/interfaces/state/ConversationScenarioState';
+} from '@/interfaces/store/ConversationScenarioState';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 

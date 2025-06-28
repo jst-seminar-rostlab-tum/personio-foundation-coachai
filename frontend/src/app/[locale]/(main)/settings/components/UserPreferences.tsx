@@ -1,4 +1,4 @@
-import { UserPreference } from '@/interfaces/inputs/UserInputFields';
+import { UserPreference } from '@/interfaces/models/UserInputFields';
 import { cn } from '@/lib/utils';
 import {
   Select,

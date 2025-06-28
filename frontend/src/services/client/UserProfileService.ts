@@ -1,4 +1,4 @@
-import { UserProfile, UserProfileUpdate, UserDataExport } from '@/interfaces/UserProfile';
+import { UserProfile, UserProfileUpdate, UserDataExport } from '@/interfaces/models/UserProfile';
 import { api } from './Api';
 
 const updateUserProfile = async (userProfile: UserProfileUpdate): Promise<UserProfile> => {

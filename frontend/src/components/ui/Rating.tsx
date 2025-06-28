@@ -2,11 +2,42 @@
 
 import { cn } from '@/lib/utils';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
-import { StarIcon } from 'lucide-react';
+import { LucideProps, StarIcon } from 'lucide-react';
 import { Children, cloneElement, useCallback, useEffect, useRef, useState } from 'react';
-import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
-import { RatingButtonProps, RatingContextValue, RatingProps } from '@/interfaces/inputs/Rating';
+import type { KeyboardEvent, MouseEvent, ReactElement, ReactNode } from 'react';
 import { RatingContext, useRating } from '@/contexts/Rating';
+
+type RatingButtonProps = LucideProps & {
+  index?: number;
+  icon?: ReactElement<LucideProps>;
+};
+
+type RatingProps = {
+  defaultValue: number;
+  value?: number;
+  onChange?: (
+    event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>,
+    value: number
+  ) => void;
+  onValueChange?: (value: number) => void;
+  readOnly?: boolean;
+  className?: string;
+  children?: ReactNode;
+};
+
+export type RatingContextValue = {
+  value: number;
+  readOnly: boolean;
+  hoverValue: number | null;
+  focusedStar: number | null;
+  handleValueChange: (
+    event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>,
+    value: number
+  ) => void;
+  handleKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
+  setHoverValue: (value: number | null) => void;
+  setFocusedStar: (value: number | null) => void;
+};
 
 export const RatingButton = ({
   index: providedIndex,

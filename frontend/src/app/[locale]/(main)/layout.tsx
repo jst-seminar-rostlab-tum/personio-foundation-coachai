@@ -5,7 +5,7 @@ import { LayoutProps } from '@/interfaces/props/LayoutProps';
 import { AppHeader } from '@/components/layout/AppHeader';
 import BackButton from '@/components/common/BackButton';
 import { Toaster } from '@/components/ui/Sonner';
-import { UserContextProvider } from '@/lib/context/user';
+import { UserContextProvider } from '@/contexts/User';
 import { UserProfileService } from '@/services/server/UserProfileService';
 
 const inter = Inter({ subsets: ['latin'] });
