@@ -5,9 +5,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { authService } from '@/services/client/AuthService';
 import { useUser } from '@/contexts/User';
 import { AccountRole } from '@/interfaces/models/UserProfile';
+import { createClient } from '@/lib/supabase/client';
+import { logoutUser } from '@/lib/supabase/logout';
 import { Button } from '../ui/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
@@ -80,7 +81,7 @@ export function AppHeader() {
               variant="secondary"
               className="hidden md:flex h-8"
               onClick={async () => {
-                await authService.logoutUser();
+                await logoutUser(createClient);
               }}
             >
               <span className="text-xs font-medium">{t('logout')}</span>
@@ -117,7 +118,7 @@ export function AppHeader() {
             <span
               className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50"
               onClick={async () => {
-                await authService.logoutUser();
+                await logoutUser(createClient);
                 setIsMenuOpen(false);
               }}
             >

@@ -13,12 +13,13 @@ import {
 import Switch from '@/components/ui/Switch';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
-import { UserProfileService } from '@/services/client/UserProfileService';
+import { UserProfileService } from '@/services/UserProfileService';
 import { UserPreference } from '@/interfaces/models/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfile } from '@/interfaces/models/UserProfile';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import JSZip from 'jszip';
+import { api } from '@/services/ApiClient';
 import UserPreferences from './UserPreferences';
 
 interface SettingsProps {
@@ -113,7 +114,7 @@ export default function Settings({ userProfile }: SettingsProps) {
     setIsSubmitting(true);
 
     try {
-      await UserProfileService.updateUserProfile({
+      await UserProfileService.updateUserProfile(api, {
         fullName: userProfileData.fullName,
         storeConversations,
         professionalRole: currentRole,
@@ -141,7 +142,7 @@ export default function Settings({ userProfile }: SettingsProps) {
 
   const handleExport = async () => {
     try {
-      const data = await UserProfileService.exportUserData();
+      const data = await UserProfileService.exportUserData(api);
       const zip = new JSZip();
       zip.file('user_data_export.json', JSON.stringify(data, null, 2));
       const blob = await zip.generateAsync({ type: 'blob' });

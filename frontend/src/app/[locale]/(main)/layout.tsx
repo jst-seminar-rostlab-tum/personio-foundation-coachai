@@ -6,14 +6,15 @@ import { AppHeader } from '@/components/layout/AppHeader';
 import BackButton from '@/components/common/BackButton';
 import { Toaster } from '@/components/ui/Sonner';
 import { UserContextProvider } from '@/contexts/User';
-import { UserProfileService } from '@/services/server/UserProfileService';
+import { UserProfileService } from '@/services/UserProfileService';
+import { api } from '@/services/ApiServer';
 
 const inter = Inter({ subsets: ['latin'] });
 const bebasNeue = BebasNeue({ subsets: ['latin'], weight: '400' });
 
 export default async function RootLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
-  const userProfile = await UserProfileService.getUserProfile();
+  const userProfile = await UserProfileService.getUserProfile(api);
 
   return (
     <html lang={locale} className={bebasNeue.className}>
