@@ -18,7 +18,6 @@ import { UserPreference } from '@/interfaces/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfile } from '@/interfaces/UserProfile';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
-import JSZip from 'jszip';
 import UserPreferences from './UserPreferences';
 
 const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
@@ -137,10 +136,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
 
   const handleExport = async () => {
     try {
-      const data = await UserProfileService.exportUserData();
-      const zip = new JSZip();
-      zip.file('user_data_export.json', JSON.stringify(data, null, 2));
-      const blob = await zip.generateAsync({ type: 'blob' });
+      const blob = await UserProfileService.exportUserData();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
