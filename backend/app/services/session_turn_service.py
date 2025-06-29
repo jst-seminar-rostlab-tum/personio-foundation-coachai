@@ -44,7 +44,7 @@ class SessionTurnService:
 
         # Check if the audio file is valid
         ext = os.path.splitext(audio_file.filename)[-1].lower()
-        if ext not in ['.mp3', '.wav']:
+        if ext not in ['.webm', '.mp3', '.wav']:
             raise HTTPException(status_code=400, detail='Only .mp3 or .wav files are allowed')
 
         local_path = os.path.join(RECORDING_DIR, audio_name)
