@@ -82,9 +82,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         example_request = ExamplesRequest(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
-            goal='Goal',
-            context='Context',
-            other_party='Someone',
+            persona='**Name**: Someone\n**Training Focus**: Goal\n'
+            '**Company Position**: Team Member',
+            situational_facts='Context',
             category='Feedback',
             key_concepts='KC1',
         )
@@ -154,9 +154,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         example_request = ExamplesRequest(
             transcript='Error case transcript...',
             objectives=['ObjX'],
-            goal='Goal',
-            context='Context',
-            other_party='Other',
+            persona='**Name**: Example User\n**Training Focus**: Goal\n'
+            '**Company Position**: Example Position',
+            situational_facts='Context',
             category='Category',
             key_concepts='KeyConcept',
         )
@@ -188,11 +188,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         # Analogically for examples and goals
         transcript = "User: Let's explore what might be causing these delays."
         objectives = ['Understand root causes', 'Collaboratively develop a solution']
-        goal = 'Improve team communication'
         key_concepts = '### Active Listening\nAsk open-ended questions.'
-        context = 'Project delay review'
         category = 'Project Management'
-        other_party = 'Colleague'
 
         # Set up llm mock and vector db prompt extension
         mock_llm.return_value = RecommendationsCollection(
@@ -207,11 +204,11 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         req = RecommendationsRequest(
             category=category,
-            context=context,
-            other_party=other_party,
             transcript=transcript,
             objectives=objectives,
-            goal=goal,
+            persona='**Name**: John\n**Training Focus**: Improve team communication\n'
+            '**Company Position**: Colleague',
+            situational_facts='Project delay review',
             key_concepts=key_concepts,
         )
 

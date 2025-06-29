@@ -10,9 +10,10 @@ class ExamplesRequest(CamelModel):
         ..., description='List of training objectives the user is expected to achieve'
     )
     category: str = Field(..., description='Training category')
-    goal: str = Field(..., description='Training goal')
-    context: str = Field(..., description='Training context')
-    other_party: str = Field(..., description='Persona spoken with')
+    persona: str = Field(..., description='Persona or role the chatbot adopts during the session')
+    situational_facts: str = Field(
+        ..., description='Facts or context relevant to the training scenario'
+    )
     key_concepts: str  # Can be markdown or plain text
     language_code: LanguageCode = Field(
         default=LanguageCode.en, description='Language code for the examples'

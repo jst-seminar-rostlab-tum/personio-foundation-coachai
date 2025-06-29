@@ -99,10 +99,9 @@ class ConversationScenarioService:
 
         return ScenarioPreparationRead(
             **scenario_preparation.model_dump(),
-            context=conversation_scenario.context,
-            goal=conversation_scenario.goal,
-            other_party=conversation_scenario.other_party,
             category_name=category_name,
+            persona=conversation_scenario.persona,
+            situational_facts=conversation_scenario.situational_facts,
         )
 
     def _validate_category(self, category_id: str | None) -> ConversationCategory | None:
@@ -128,9 +127,8 @@ class ConversationScenarioService:
         """
         new_preparation = ScenarioPreparationCreate(
             category=category.name if category else '',
-            context=conversation_scenario.context,
-            goal=conversation_scenario.goal,
-            other_party=conversation_scenario.other_party,
+            persona=conversation_scenario.persona,
+            situational_facts=conversation_scenario.situational_facts,
             num_objectives=3,  # Example value, adjust as needed
             num_checkpoints=3,  # Example value, adjust as needed
             language_code=conversation_scenario.language_code,

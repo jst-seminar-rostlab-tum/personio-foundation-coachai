@@ -38,12 +38,9 @@ class ExportConversationScenario(BaseModel):
     category_id: Optional[str]
     custom_category_label: Optional[str]
     language_code: str
-    context: str
-    goal: str
-    other_party: str
+    persona: str
+    situational_facts: str
     difficulty_level: str
-    tone: str
-    complexity: str
     status: str
     created_at: Optional[str]
     updated_at: Optional[str]

@@ -39,12 +39,9 @@ class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a d
     )
     custom_category_label: Optional[str] = None
     language_code: LanguageCode = Field(default=LanguageCode.en)
-    context: str
-    goal: str
-    other_party: str
+    persona: str
+    situational_facts: str
     difficulty_level: DifficultyLevel = Field(default=DifficultyLevel.easy)
-    tone: Optional[str] = None
-    complexity: Optional[str] = None
     status: ConversationScenarioStatus = Field(default=ConversationScenarioStatus.draft)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
