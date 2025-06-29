@@ -10,7 +10,7 @@ from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
 from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
-from app.models.user_profile import UserProfile
+from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenarioCreate,
     ConversationScenarioCreateResponse,
@@ -70,7 +70,7 @@ class ConversationScenarioService:
 
         if (
             conversation_scenario.user_id != user_profile.id
-            and user_profile.account_role != 'admin'
+            and user_profile.account_role != AccountRole.admin
         ):
             raise HTTPException(
                 status_code=403,
@@ -111,7 +111,24 @@ class ConversationScenarioService:
     def list_scenarios_summary(
         self, user_profile: UserProfile
     ) -> list[ConversationScenarioSummary]:
-        """ """
+        """
+        Retrieve a summary of all conversation scenarios for the given user profile.
+
+        The summary includes:
+        - `scenario_id`: Unique identifier for the scenario.
+        - `language_code`: Language code of the scenario.
+        - `category_name`: Name of the category or custom category label.
+        - `total_sessions`: Total number of sessions associated with the scenario.
+        - `average_score`: Average score of completed session feedback.
+
+        If the user is not an admin, only scenarios owned by the user are included.
+
+        Args:
+            user_profile (UserProfile): The profile of the user requesting the summary.
+
+        Returns:
+            list[ConversationScenarioSummary]: A list of summaries for all conversation scenarios.
+        """
         stmt = (
             select(
                 ConversationScenario.id.label('scenario_id'),  # type: ignore
@@ -143,7 +160,7 @@ class ConversationScenarioService:
             )
         )
 
-        if user_profile.account_role != 'admin':
+        if user_profile.account_role != AccountRole.admin:
             stmt = stmt.where(ConversationScenario.user_id == user_profile.id)
 
         rows = self.db.exec(stmt).all()
@@ -162,11 +179,34 @@ class ConversationScenarioService:
     def get_scenario_summary(
         self, scenario_id: UUID, user_profile: UserProfile
     ) -> ConversationScenarioSummary:
+        """
+        Retrieve a summary for a specific conversation scenario.
+
+        The summary includes:
+        - `scenario_id`: Unique identifier for the scenario.
+        - `language_code`: Language code of the scenario.
+        - `category_name`: Name of the category or custom category label.
+        - `total_sessions`: Total number of sessions associated with the scenario.
+        - `average_score`: Average score of completed session feedback.
+
+        Validates that the scenario exists and that the user has permission to access it.
+
+        Args:
+            scenario_id (UUID): The unique identifier of the conversation scenario.
+            user_profile (UserProfile): The profile of the user requesting the summary.
+
+        Returns:
+            ConversationScenarioSummary: A summary of the specified conversation scenario.
+
+        Raises:
+            HTTPException: If the scenario does not exist or the user does not have permission to
+            access it.
+        """
         scenario = self.db.get(ConversationScenario, scenario_id)
         if not scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
-        if scenario.user_id != user_profile.id and user_profile.account_role != 'admin':
+        if scenario.user_id != user_profile.id and user_profile.account_role != AccountRole.admin:
             raise HTTPException(
                 status_code=403,
                 detail='You do not have permission to access this scenario.',
