@@ -6,15 +6,21 @@ import Stepper from '@/components/common/Stepper';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { ConversationScenarioFormProps } from '@/interfaces/ConversationScenarioFormProps';
-import { ConversationCategory } from '@/interfaces/ConversationCategory';
-import { ConversationScenario } from '@/interfaces/ConversationScenario';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
+import {
+  ConversationScenario,
+  ConversationCategory,
+} from '@/interfaces/models/ConversationScenario';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { showErrorToast } from '@/lib/toast';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
+import { api } from '@/services/ApiClient';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
+
+interface ConversationScenarioFormProps {
+  categoriesData: ConversationCategory[];
+}
 
 export default function ConversationScenarioForm({
   categoriesData,
@@ -94,7 +100,7 @@ export default function ConversationScenarioForm({
     };
 
     try {
-      const { data } = await conversationScenarioService.createConversationScenario(scenario);
+      const { data } = await conversationScenarioService.createConversationScenario(api, scenario);
       router.push(`/preparation/${data.scenarioId}`);
       setTimeout(reset, 2000);
     } catch (error) {

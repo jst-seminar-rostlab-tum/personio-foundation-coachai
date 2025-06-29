@@ -865,7 +865,7 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[1].id,  # Link to the second session
-            scores={'structure': 76, 'empathy': 88, 'solutionFocus': 80, 'clarity': 81},
+            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=90,
             transcript_uri='https://example.com/transcripts/session2.txt',
@@ -937,7 +937,7 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[2].id,  # Link to the second session
-            scores={'structure': 76, 'empathy': 88, 'solutionFocus': 80, 'clarity': 81},
+            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=90,
             transcript_uri='https://example.com/transcripts/session2.txt',
@@ -1009,7 +1009,7 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[3].id,  # Link to the second session
-            scores={'structure': 76, 'empathy': 88, 'solutionFocus': 80, 'clarity': 81},
+            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=90,
             transcript_uri='https://example.com/transcripts/session2.txt',
@@ -1083,7 +1083,7 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[4].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'solutionFocus': 84, 'clarity': 83},
+            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=85,
             transcript_uri='https://example.com/transcripts/session1.txt',
@@ -1155,7 +1155,7 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[5].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'solutionFocus': 84, 'clarity': 83},
+            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=85,
             transcript_uri='https://example.com/transcripts/session1.txt',
@@ -1226,7 +1226,7 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[6].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'solutionFocus': 84, 'clarity': 83},
+            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=85,
             transcript_uri='https://example.com/transcripts/session1.txt',
@@ -1300,7 +1300,7 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[7].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'solutionFocus': 84, 'clarity': 83},
+            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=85,
             transcript_uri='https://example.com/transcripts/session1.txt',
