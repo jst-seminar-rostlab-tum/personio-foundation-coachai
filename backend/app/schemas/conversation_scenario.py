@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -16,21 +15,6 @@ class ConversationScenarioCreate(CamelModel):
     difficulty_level: DifficultyLevel
     language_code: LanguageCode = LanguageCode.en
     status: ConversationScenarioStatus = ConversationScenarioStatus.draft
-
-
-# Schema for reading ConversationScenario data
-class ConversationScenarioRead(CamelModel):
-    id: UUID
-    user_id: UUID
-    category_id: Optional[str]
-    custom_category_label: Optional[str]
-    persona: str
-    situational_facts: str
-    difficulty_level: DifficultyLevel
-    language_code: LanguageCode
-    status: ConversationScenarioStatus
-    created_at: datetime
-    updated_at: datetime
 
 
 class ConversationScenarioCreateResponse(CamelModel):
