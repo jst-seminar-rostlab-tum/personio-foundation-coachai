@@ -188,11 +188,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         # Analogically for examples and goals
         transcript = "User: Let's explore what might be causing these delays."
         objectives = ['Understand root causes', 'Collaboratively develop a solution']
-        goal = 'Improve team communication'
         key_concepts = '### Active Listening\nAsk open-ended questions.'
-        context = 'Project delay review'
         category = 'Project Management'
-        other_party = 'Colleague'
 
         # Set up llm mock and vector db prompt extension
         mock_llm.return_value = RecommendationsCollection(
@@ -207,11 +204,11 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         req = RecommendationsRequest(
             category=category,
-            context=context,
-            other_party=other_party,
             transcript=transcript,
             objectives=objectives,
-            goal=goal,
+            persona='**Name**: John\n**Training Focus**: Improve team communication\n'
+            '**Company Position**: Colleague',
+            situational_facts='Project delay review',
             key_concepts=key_concepts,
         )
 
