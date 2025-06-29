@@ -34,3 +34,25 @@ export interface SessionFromPagination {
   summary: string;
   skills: SessionScores;
 }
+
+export interface CreateSessionTurnRequest {
+  sessionId: string;
+  speaker: MessageSender;
+  text: string;
+  startOffsetMs: number;
+  endOffsetMs: number;
+  audioUri: string;
+  aiEmotion: string;
+}
+
+export interface Message {
+  id: number;
+  text: string;
+  sender: MessageSender;
+  startOffsetMs: number;
+}
+
+export enum MessageSender {
+  USER = 'user',
+  ASSISTANT = 'assistant',
+}

@@ -3,25 +3,35 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { sessionService } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/toast';
-import { SessionStatus } from '@/interfaces/models/Session';
+import { MessageSender, SessionStatus } from '@/interfaces/models/Session';
 import { api } from '@/services/ApiClient';
-import { MessageSender } from '@/interfaces/models/Simulation';
 import { useMessageReducer } from './MessageReducer';
 import { useMediaStream } from './MediaStream';
+import { useElapsedTime } from './ElapsedTime';
 
 export function useWebRTC(sessionId: string) {
   const { localStreamRef, startStream, stopStream } = useMediaStream();
-  const { messages, addPlaceholderMessage, appendDeltaToLastMessage, setMessages } =
-    useMessageReducer();
+  const {
+    messages,
+    addPlaceholderMessage,
+    appendDeltaToLastMessage,
+    setMessages,
+    getLastMessageStartOffsetMsBySender,
+  } = useMessageReducer();
+
+  const { elapsedTimeS, elapsedTimeMsRef, startTimer, stopTimer } = useElapsedTime();
 
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isDataChannelReady, setIsDataChannelReady] = useState(false);
+
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const cleanupRef = useRef<boolean | null>(null);
   const hasInitializedRef = useRef(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const router = useRouter();
   const t = useTranslations('Simulation');
 
@@ -36,6 +46,7 @@ export function useWebRTC(sessionId: string) {
     setIsConnected(false);
     setIsDataChannelReady(false);
     setMessages([]);
+    intervalRef.current = null;
   }, [stopStream, setMessages]);
 
   const disconnect = useCallback(async () => {
@@ -63,7 +74,7 @@ export function useWebRTC(sessionId: string) {
 
       const pc = new RTCPeerConnection();
       peerConnectionRef.current = pc;
-      localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+      localStream.getTracks().forEach((track: MediaStreamTrack) => pc.addTrack(track, localStream));
 
       pc.ontrack = (e) => {
         if (e.track.kind === 'audio' && remoteAudioRef.current) {
@@ -74,9 +85,18 @@ export function useWebRTC(sessionId: string) {
 
       const dc = pc.createDataChannel('oai-events');
       dataChannelRef.current = dc;
-      dc.onopen = () => setIsDataChannelReady(true);
-      dc.onclose = () => setIsDataChannelReady(false);
-      dc.onerror = () => setIsDataChannelReady(false);
+      dc.onopen = () => {
+        setIsDataChannelReady(true);
+        startTimer();
+      };
+      dc.onclose = () => {
+        setIsDataChannelReady(false);
+        stopTimer();
+      };
+      dc.onerror = () => {
+        setIsDataChannelReady(false);
+        stopTimer();
+      };
 
       dc.onmessage = async (event) => {
         try {
@@ -85,12 +105,12 @@ export function useWebRTC(sessionId: string) {
           switch (parsed.type) {
             case 'conversation.item.created':
               if (parsed.item.role === 'user' && parsed.item.status === 'completed') {
-                addPlaceholderMessage(MessageSender.USER);
+                addPlaceholderMessage(MessageSender.USER, elapsedTimeMsRef.current);
               }
               break;
 
             case 'response.created':
-              addPlaceholderMessage(MessageSender.ASSISTANT);
+              addPlaceholderMessage(MessageSender.ASSISTANT, elapsedTimeMsRef.current);
               break;
 
             case 'conversation.item.input_audio_transcription.delta':
@@ -98,16 +118,15 @@ export function useWebRTC(sessionId: string) {
               break;
 
             case 'conversation.item.input_audio_transcription.completed':
-              await sessionService.createSessionTurn(
-                api,
+              await sessionService.createSessionTurn(api, {
                 sessionId,
-                MessageSender.USER,
-                parsed.transcript,
-                '',
-                '',
-                0,
-                0
-              );
+                speaker: MessageSender.USER,
+                text: parsed.transcript,
+                startOffsetMs: getLastMessageStartOffsetMsBySender(MessageSender.USER) ?? 0,
+                endOffsetMs: elapsedTimeMsRef.current,
+                audioUri: '',
+                aiEmotion: '',
+              });
               break;
 
             case 'response.audio_transcript.delta':
@@ -115,20 +134,18 @@ export function useWebRTC(sessionId: string) {
               break;
 
             case 'response.audio_transcript.done':
-              await sessionService.createSessionTurn(
-                api,
+              await sessionService.createSessionTurn(api, {
                 sessionId,
-                MessageSender.ASSISTANT,
-                parsed.transcript,
-                '',
-                '',
-                0,
-                0
-              );
+                speaker: MessageSender.ASSISTANT,
+                text: parsed.transcript,
+                startOffsetMs: getLastMessageStartOffsetMsBySender(MessageSender.ASSISTANT) ?? 0,
+                endOffsetMs: elapsedTimeMsRef.current,
+                audioUri: '',
+                aiEmotion: '',
+              });
               break;
 
             default:
-              // Handle unknown types or ignore
               break;
           }
         } catch {
@@ -153,7 +170,17 @@ export function useWebRTC(sessionId: string) {
       setIsMicActive(false);
       disconnect();
     }
-  }, [disconnect, sessionId, startStream, addPlaceholderMessage, appendDeltaToLastMessage]);
+  }, [
+    disconnect,
+    sessionId,
+    startStream,
+    addPlaceholderMessage,
+    appendDeltaToLastMessage,
+    getLastMessageStartOffsetMsBySender,
+    elapsedTimeMsRef,
+    startTimer,
+    stopTimer,
+  ]);
 
   return {
     isMicActive,
@@ -166,5 +193,6 @@ export function useWebRTC(sessionId: string) {
     remoteAudioRef,
     localStreamRef,
     messages,
+    elapsedTimeS,
   };
 }

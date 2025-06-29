@@ -1,7 +1,7 @@
 'use client';
 
-import { Message } from '@/interfaces/models/Simulation';
 import React, { useEffect, useRef, useState } from 'react';
+import { Message } from '@/interfaces/models/Session';
 
 interface MessageItemProps {
   message: Message;

@@ -1,5 +1,4 @@
-import { Session } from '@/interfaces/models/Session';
-import { MessageSender } from '@/interfaces/models/Simulation';
+import { CreateSessionTurnRequest, Session } from '@/interfaces/models/Session';
 import { AxiosInstance } from 'axios';
 
 const getPaginatedSessions = async (api: AxiosInstance, page: number, pageSize: number) => {
@@ -59,26 +58,9 @@ const updateSession = async (api: AxiosInstance, sessionId: string, session: Par
   }
 };
 
-const createSessionTurn = async (
-  api: AxiosInstance,
-  sessionId: string,
-  speaker: MessageSender,
-  text: string,
-  audioUri: string = '',
-  aiEmotion: string = '',
-  startOffsetMs: number = 0,
-  endOffsetMs: number = 0
-) => {
+const createSessionTurn = async (api: AxiosInstance, sessionTurn: CreateSessionTurnRequest) => {
   try {
-    const response = await api.post(`/session-turns`, {
-      sessionId,
-      speaker,
-      text,
-      audioUri,
-      aiEmotion,
-      startOffsetMs,
-      endOffsetMs,
-    });
+    const response = await api.post(`/session-turns`, sessionTurn);
     return response;
   } catch (error) {
     console.error(error);

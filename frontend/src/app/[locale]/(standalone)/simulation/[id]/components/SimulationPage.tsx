@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useWebRTC } from '@/hooks/WebRTC';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
@@ -8,7 +8,6 @@ import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages from './SimulationMessages';
 
 export default function SimulationPageComponent({ sessionId }: { sessionId: string }) {
-  const [time, setTime] = useState(0);
   const {
     isMicActive,
     setIsMicActive,
@@ -20,12 +19,8 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
     remoteAudioRef,
     localStreamRef,
     messages,
+    elapsedTimeS,
   } = useWebRTC(sessionId);
-
-  useEffect(() => {
-    const interval = setInterval(() => setTime((t) => t + 1), 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     initWebRTC();
@@ -33,7 +28,7 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
   }, [cleanup, initWebRTC]);
 
   const toggleMic = () => {
-    localStreamRef.current?.getAudioTracks().forEach((track) => {
+    localStreamRef.current?.getAudioTracks().forEach((track: MediaStreamTrack) => {
       // eslint-disable-next-line no-param-reassign
       track.enabled = !isMicActive;
     });
@@ -43,7 +38,7 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
   return (
     <div className="flex flex-col h-screen">
       <div className="mb-2">
-        <SimulationHeader time={time} />
+        <SimulationHeader time={elapsedTimeS} />
       </div>
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
