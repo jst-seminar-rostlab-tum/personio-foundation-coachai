@@ -163,6 +163,14 @@ A pre-push hook is executed when committing changes to `backend/app/models`, `ba
 Twilio is used for phone number verification by sending verification codes via SMS.
 You can skip these steps below if you don't want to use phone number verification, the default is to auto-approve any verification code.
 
+### Knowledge Database (Vector DB)
+If you want to use the vector knowledge base, make sure you have a Gemini API Key and a Supabase URL in your `.env` file.
+Run the following command to populate it:
+
+```bash
+uv run -m app.data.populate_dummy_data
+```
+
 #### Setup Instructions
 
 1. Create a Twilio account at https://www.twilio.com/try-twilio
