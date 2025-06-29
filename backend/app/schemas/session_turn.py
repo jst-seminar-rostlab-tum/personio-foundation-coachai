@@ -12,7 +12,7 @@ class SessionTurnCreate(CamelModel):
     start_offset_ms: int
     end_offset_ms: int
     text: str
-    audio_uri: str
+    audio_name: str
     ai_emotion: str
 
 

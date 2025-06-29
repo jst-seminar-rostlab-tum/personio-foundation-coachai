@@ -53,6 +53,26 @@ class GCSManager:
             blob.upload_from_filename(path)
             print(f'{path.name} → gs://{self.bucket.name}/{blob_name}')
 
+    def upload_single_document(self, file_path: Path) -> str:
+        """
+        Upload a single file to GCS.
+        Returns the gs:// URI if uploaded, or None if skipped.
+        """
+        print(f'[DEBUG] file_path type: {type(file_path)}')
+        if not file_path.exists() or not file_path.is_file():
+            raise ValueError(f'Invalid file: {file_path}')
+
+        blob_name = f'{self.prefix}{file_path.name}'
+        blob = self.bucket.blob(blob_name)
+
+        if blob.exists(self.client):
+            print(f'Skipped (already exists): {blob_name}')
+            return f'gs://{self.bucket.name}/{blob_name}'
+
+        blob.upload_from_filename(str(file_path))
+        print(f'{file_path.name} → gs://{self.bucket.name}/{blob_name}')
+        return f'gs://{self.bucket.name}/{blob_name}'
+
     def download_documents(self, directory: Path = None) -> None:
         target_dir = Path(directory) if directory else self.download_dir
         target_dir.mkdir(parents=True, exist_ok=True)
