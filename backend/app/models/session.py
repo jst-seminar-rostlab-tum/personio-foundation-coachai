@@ -31,6 +31,9 @@ class Session(CamelModel, table=True):
     ended_at: datetime | None = None
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: SessionStatus = Field(default=SessionStatus.started)
+    allow_admin_access: bool = Field(
+        default=False, description='If True, admin can view this session details'
+    )
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 

@@ -1,8 +1,19 @@
+'use client';
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { CheckIcon } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { StepperProps } from '@/interfaces/StepperProps';
+
+interface StepperProps {
+  steps: string[];
+  currentStep: number;
+  onStepClick?: (stepIndex: number) => void;
+  className?: string;
+  showAllStepNumbers?: boolean;
+  showStepLabels?: boolean;
+  currentStepValid?: boolean;
+}
 
 const Stepper: React.FC<StepperProps> = ({
   steps,

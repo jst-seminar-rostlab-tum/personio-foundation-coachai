@@ -6,16 +6,25 @@ import Stepper from '@/components/common/Stepper';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { ConversationCategory } from '@/interfaces/ConversationCategory';
-import { ConversationScenario } from '@/interfaces/ConversationScenario';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
+import {
+  ConversationScenario,
+  ConversationCategory,
+} from '@/interfaces/models/ConversationScenario';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { showErrorToast } from '@/lib/toast';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
+import { api } from '@/services/ApiClient';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
 
-export default function ConversationScenarioForm() {
+interface ConversationScenarioFormProps {
+  categoriesData: ConversationCategory[];
+}
+
+export default function ConversationScenarioForm({
+  categoriesData,
+}: ConversationScenarioFormProps) {
   const t = useTranslations('ConversationScenario');
   const router = useRouter();
   const { locale } = useParams();
@@ -36,17 +45,13 @@ export default function ConversationScenarioForm() {
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
 
   useEffect(() => {
-    async function fetchCategories() {
-      const response = await conversationScenarioService.getConversationCategories();
-      setCategories((prev) =>
-        prev.map((cat) => {
-          const match = response.data.find((f: ConversationCategory) => f.id === cat.id);
-          return match ? { ...cat, defaultContext: match.defaultContext } : cat;
-        })
-      );
-    }
-    fetchCategories();
-  }, []);
+    setCategories((prev) =>
+      prev.map((cat) => {
+        const match = categoriesData.find((f: ConversationCategory) => f.id === cat.id);
+        return match ? { ...cat, defaultContext: match.defaultContext } : cat;
+      })
+    );
+  }, [categoriesData]);
 
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
@@ -95,7 +100,7 @@ export default function ConversationScenarioForm() {
     };
 
     try {
-      const { data } = await conversationScenarioService.createConversationScenario(scenario);
+      const { data } = await conversationScenarioService.createConversationScenario(api, scenario);
       router.push(`/preparation/${data.scenarioId}`);
       setTimeout(reset, 2000);
     } catch (error) {

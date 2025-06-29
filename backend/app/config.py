@@ -47,6 +47,14 @@ class Settings(BaseSettings):
     DEMO_ADMIN_EMAIL: str = 'mockadmin@example.com'
     DEMO_ADMIN_PASSWORD: str = 'mockadminpassword'
 
+    # GCP settings
+    GCP_PRIVATE_KEY_ID: str = ''
+    GCP_PRIVATE_KEY: str = ''
+    GCP_CLIENT_EMAIL: str = ''
+    GCP_CLIENT_ID: str = ''
+    GCP_BUCKET: str = 'coachai'
+    GCP_PROJECT_ID: str = 'personio-foundation'
+
     @property
     def mock_user_data(self) -> MockUser:
         return MockUser(

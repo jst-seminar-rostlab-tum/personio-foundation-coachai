@@ -1,7 +1,15 @@
 import Image from 'next/image';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { useTranslations } from 'next-intl';
-import { CustomizeStepProps } from '@/interfaces/CustomizeStepProps';
+
+interface CustomizeStepProps {
+  difficulty: string;
+  emotionalTone: string;
+  complexity: string;
+  onDifficultyChange: (difficulty: string) => void;
+  onEmotionalToneChange: (emotionalTone: string) => void;
+  onComplexityChange: (complexity: string) => void;
+}
 
 export function CustomizeStep({
   difficulty,
@@ -24,7 +32,7 @@ export function CustomizeStep({
       >
         <label htmlFor="d1" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/difficulty-easy.svg"
+            src="/images/difficulty/easy.svg"
             alt={t('difficulty.options.easy')}
             width={56}
             height={56}
@@ -34,7 +42,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="d2" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/difficulty-medium.svg"
+            src="/images/difficulty/medium.svg"
             alt={t('difficulty.options.medium')}
             width={56}
             height={56}
@@ -44,7 +52,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="d3" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/difficulty-hard.svg"
+            src="/images/difficulty/hard.svg"
             alt={t('difficulty.options.hard')}
             width={56}
             height={56}
@@ -62,7 +70,7 @@ export function CustomizeStep({
       >
         <label htmlFor="e1" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/mood-positive.svg"
+            src="/images/mood/positive.svg"
             alt={t('emotionalTone.options.positive')}
             width={56}
             height={56}
@@ -72,7 +80,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="e2" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/mood-neutral.svg"
+            src="/images/mood/neutral.svg"
             alt={t('emotionalTone.options.neutral')}
             width={56}
             height={56}
@@ -82,7 +90,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="e3" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/mood-negative.svg"
+            src="/images/mood/negative.svg"
             alt={t('emotionalTone.options.negative')}
             width={56}
             height={56}
@@ -100,7 +108,7 @@ export function CustomizeStep({
       >
         <label htmlFor="c1" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/complexity-simple.svg"
+            src="/images/complexity/simple.svg"
             alt={t('complexity.options.simple')}
             width={56}
             height={56}
@@ -110,7 +118,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="c2" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/complexity-medium.svg"
+            src="/images/complexity/medium.svg"
             alt={t('complexity.options.medium')}
             width={56}
             height={56}
@@ -120,7 +128,7 @@ export function CustomizeStep({
         </label>
         <label htmlFor="c3" className="flex flex-col items-center space-y-2 cursor-pointer">
           <Image
-            src="/icons/complexity-complex.svg"
+            src="/images/complexity/complex.svg"
             alt={t('complexity.options.complex')}
             width={56}
             height={56}

@@ -38,6 +38,7 @@ class SessionRead(CamelModel):
     ended_at: datetime | None
     ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: SessionStatus = Field(default=SessionStatus.started)
+    allow_admin_access: bool = Field(default=False)
     created_at: datetime
     updated_at: datetime
 
