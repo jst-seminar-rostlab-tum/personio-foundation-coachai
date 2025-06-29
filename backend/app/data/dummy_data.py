@@ -70,6 +70,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             professional_role=ProfessionalRole.executive,
             experience=Experience.expert,
             preferred_learning_style=PreferredLearningStyle.kinesthetic,
+            last_logged_in=datetime.now(UTC) - timedelta(days=2),
             store_conversations=True,
             total_sessions=5,
             training_time=4.2,
