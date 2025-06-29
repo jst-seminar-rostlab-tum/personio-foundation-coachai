@@ -39,13 +39,14 @@ def get_session_by_id(
 def get_sessions(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[SessionService, Depends(get_session_service)],
+    scenario_id: UUID | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
 ) -> PaginatedSessionsResponse:
     """
     Return paginated list of completed sessions for a user.
     """
-    return service.fetch_paginated_sessions(user_profile, page, page_size)
+    return service.fetch_paginated_sessions(user_profile, page, page_size, scenario_id)
 
 
 @router.post('', response_model=SessionRead)

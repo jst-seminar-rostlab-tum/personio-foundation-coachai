@@ -10,6 +10,7 @@ from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenarioCreate,
     ConversationScenarioCreateResponse,
+    ConversationScenarioSummary,
 )
 from app.schemas.scenario_preparation import ScenarioPreparationRead
 from app.services.conversation_scenario_service import ConversationScenarioService
@@ -24,6 +25,38 @@ def get_conversation_scenario_service(
     Dependency factory to inject the ConversationScenarioService.
     """
     return ConversationScenarioService(db_session)
+
+
+@router.get(
+    '',  # /conversation-scenario
+    response_model=list[ConversationScenarioSummary],
+    dependencies=[Depends(require_user)],
+)
+def list_conversation_scenarios(
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
+) -> list[ConversationScenarioSummary]:
+    """
+    Retrieve **all** conversation scenarios for the current user with summary data.
+    Admins receive every scenario in the system.
+    """
+    return service.list_scenarios_summary(user_profile)
+
+
+@router.get(
+    '/{scenario_id}',
+    response_model=ConversationScenarioSummary,
+    dependencies=[Depends(require_user)],
+)
+def get_conversation_scenario_metadata(
+    scenario_id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
+) -> ConversationScenarioSummary:
+    """
+    Retrieve detailed metadata for a single conversation scenario.
+    """
+    return service.get_scenario_summary(scenario_id, user_profile)
 
 
 @router.post(
