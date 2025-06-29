@@ -7,9 +7,11 @@ import { reviewService } from '@/services/ReviewService';
 import { UserProfileService } from '@/services/UserProfileService';
 import { AccountRole } from '@/interfaces/models/UserProfile';
 import { redirect } from 'next/navigation';
+import { UsersPaginated } from '@/interfaces/AdminProps';
 import StatCard from '@/components/common/StatCard';
 import { getTranslations } from 'next-intl/server';
 import { api } from '@/services/ApiServer';
+import Admin from './components/AdminPage';
 import AdminLoadingPage from './loading';
 import TokenSetter from './components/TokenSetter';
 import Reviews from './components/Reviews';
@@ -29,7 +31,8 @@ export default async function AdminPage() {
   const PAGE_SIZE = 4;
   const statsData = adminService.getAdminStats(api);
   const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
-  const [stats, reviews] = await Promise.all([statsData, reviewsData]);
+  const usersData = UserProfileService.getPaginatedUsers(api, { page: 1, pageSize: 10 });
+  const [stats, reviews, users] = await Promise.all([statsData, reviewsData, usersData]);
   const t = await getTranslations('Admin');
   const statsArray = [
     { value: stats.totalUsers, label: t('statActiveUsers') },
@@ -40,6 +43,7 @@ export default async function AdminPage() {
 
   return (
     <Suspense fallback={<AdminLoadingPage />}>
+      <Admin stats={stats} reviews={reviews} users={users as UsersPaginated} />
       <div className="max-w-full">
         <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
         <div className="text-sm text-bw-40 text-center mb-8">{t('dashboardSubtitle')}</div>

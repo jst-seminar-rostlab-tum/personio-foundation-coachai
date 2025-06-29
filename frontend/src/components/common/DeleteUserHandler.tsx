@@ -21,9 +21,10 @@ import {
 interface DeleteUserHandlerProps {
   id?: string;
   children: React.ReactNode;
+  onSuccess?: () => void;
 }
 
-export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
+export function DeleteUserHandler({ children, id, onSuccess }: DeleteUserHandlerProps) {
   const [loading, setLoading] = useState(false);
   const t = useTranslations('Common');
 
@@ -32,6 +33,7 @@ export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
     try {
       await UserProfileService.deleteUser(api, deleteUserId);
       showSuccessToast(t('deleteAccountSuccess'));
+      if (onSuccess) onSuccess();
       if (!deleteUserId) {
         redirect('/');
       }

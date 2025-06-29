@@ -25,5 +25,11 @@
     "description": "Ihre {itemType} werden hier in Zukunft erscheinen!",
     "sessions": "Sitzungen",
     "reviews": "Bewertungen"
-  }
+  },
+  "search": "Suchen...",
+  "name": "Name",
+  "email": "E-Mail",
+  "role": "Rolle",
+  "actions": "Aktionen",
+  "deleteUser": "Benutzer löschen"
 }
