@@ -78,9 +78,9 @@ def generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') ->
         f'Do not include markdown or ```json formatting.\n\n'
         f"Simply include the content and ignore 'Objective:'\n"
         f'Category: {request.category}\n'
-        f'Goal: {request.goal}\n'
-        f'Context: {request.context}\n'
-        f'Other Party: {request.other_party}'
+        f'Persona the user is talking to including the training focus the user is focussing on '
+        f'when talking to that persona: {request.persona}\n'
+        f'Situational Facts: {request.situational_facts}\n'
         f'HR Document Context:\n'
         f'{hr_docs_context}'
         f'Here are example objectives items(for style and length reference only):\n'
@@ -119,9 +119,8 @@ def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> 
         f'Do not include markdown or ```json formatting.\n\n'
         f"Simply include the content and ignore 'Objective:'\n"
         f'Category: {request.category}\n'
-        f'Goal: {request.goal}\n'
-        f'Context: {request.context}\n'
-        f'Other Party: {request.other_party}'
+        f'Persona (other party) incl. Training Focus: {request.persona}\n'
+        f'Situational Facts: {request.situational_facts}\n'
         f'HR Document Context:\n'
         f'{hr_docs_context}'
         f'Here are example checklist items(for style and length reference only):\n'
@@ -179,9 +178,8 @@ Example output:
 
 Conversation scenario:
 - Category: {request.category}
-- Goal: {request.goal}
-- Context: {request.context}
-- Other Party: {request.other_party}
+- Persona (other party) incl. Training Focus: {request.persona}
+- Situational Facts: {request.situational_facts}
 """
 
 
@@ -247,34 +245,30 @@ def generate_scenario_preparation(
         # 2. build request objects
         objectives_request = ObjectiveRequest(
             category=new_preparation.category,
-            goal=new_preparation.goal,
-            context=new_preparation.context,
-            other_party=new_preparation.other_party,
+            persona=new_preparation.persona,
+            situational_facts=new_preparation.situational_facts,
             num_objectives=new_preparation.num_objectives,
             language_code=new_preparation.language_code,
         )
         checklist_request = ChecklistRequest(
             category=new_preparation.category,
-            goal=new_preparation.goal,
-            context=new_preparation.context,
-            other_party=new_preparation.other_party,
+            persona=new_preparation.persona,
+            situational_facts=new_preparation.situational_facts,
             num_checkpoints=new_preparation.num_checkpoints,
             language_code=new_preparation.language_code,
         )
         key_concept_request = KeyConceptRequest(
             category=new_preparation.category,
-            goal=new_preparation.goal,
-            context=new_preparation.context,
-            other_party=new_preparation.other_party,
+            persona=new_preparation.persona,
+            situational_facts=new_preparation.situational_facts,
             language_code=new_preparation.language_code,
         )
 
         hr_docs_context = query_vector_db_and_prompt(
             session_context=[
                 new_preparation.category,
-                new_preparation.goal,
-                new_preparation.context,
-                new_preparation.other_party,
+                new_preparation.persona,
+                new_preparation.situational_facts,
             ],
             generated_object='output',
         )
@@ -332,9 +326,10 @@ if __name__ == '__main__':
     # Example usage
     objective_request = ObjectiveRequest(
         category='Performance Feedback',
-        goal='Give constructive criticism',
-        context='Quarterly review',
-        other_party='Junior engineer',
+        persona='**Name**: Andrew '
+        '**Training Focus**: Giving constructive criticism '
+        '**Company Positon**: Junior engineer',
+        situational_facts='Quarterly review',
         num_objectives=3,
         language_code=LanguageCode.de,
     )
@@ -343,9 +338,10 @@ if __name__ == '__main__':
 
     checklist_request = ChecklistRequest(
         category='Performance Review',
-        goal='Address underperformance',
-        context='1:1 review',
-        other_party='Backend engineer',
+        persona='**Name**: Sarah '
+        '**Training Focus**: Addressing underperformance '
+        '**Company Position**: Backend engineer',
+        situational_facts='1:1 review',
         num_checkpoints=3,
         language_code=LanguageCode.de,
     )
@@ -354,9 +350,10 @@ if __name__ == '__main__':
 
     key_concept_request = KeyConceptRequest(
         category='Performance Feedback',
-        goal='Give constructive criticism',
-        context='Quarterly review',
-        other_party='Junior engineer',
+        persona='**Name**: Jenny'
+        '**Training Focus**: Giving constructive criticism '
+        '**Company Position**: Junior engineer',
+        situational_facts='Quarterly review',
         language_code=LanguageCode.de,
     )
     key_concept = generate_key_concept(key_concept_request)

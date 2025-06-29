@@ -173,13 +173,42 @@ def get_dummy_conversation_scenarios(
         ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[0].id,
-            category_id=categories[0].id,
-            context='Context',
-            goal='Goal 1',
-            other_party='Other Party 1',
+            category_id=categories[0].id,  # Giving Feedback
+            persona="""
+                **Name**: Angry Alex
+                **Personality**: Confrontational, defensive, emotionally volatile
+                **Behavioral Traits**:
+                - Assumes bad intent
+                - Easily offended, especially with criticism
+                - Challenges authority or decisions
+                - Might raise voice
+                **Training Focus**:
+                - De-escalation techniques
+                - Delivering negative feedback calmly
+                - Maintaining control in heated situations
+                - Validating emotions without losing authority
+                **Company Position**: Development Coordinator (5 years experience)""",
+            situational_facts="""
+                **Missed Deadlines**
+                - Quarterly partner-impact report arrived 5 days late despite reminders.
+                - Field-visit summary incomplete; colleague had to rewrite it under pressure.
+
+                **Attendance**
+                - In the last 2 months, Alex skipped 4 of 8 team check-ins without notice.
+                - When present, often keeps camera off and engages minimally.
+                
+                **Peer Feedback**
+                - Two colleagues needed multiple nudges for inputs.
+                - One now avoids assigning shared tasks to Alex due to reliability concerns.
+                
+                **Prior Support**
+                - Six weeks ago, the manager set clear expectations and a prioritization plan.
+                - Calendar tips and admin help were offered; little improvement seen.
+
+                **Silver Lining**
+                - Alex shows real creativity in outreach planning and still has growth potential.
+            """,
             difficulty_level=DifficultyLevel.easy,
-            tone='Friendly',
-            complexity='Low',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -187,14 +216,52 @@ def get_dummy_conversation_scenarios(
         ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[1].id,
-            category_id=categories[1].id,
+            category_id=categories[1].id,  # Performance Review
             custom_category_label='Custom Category 2',
-            context='Context 2',
-            goal='Goal 2',
-            other_party='Other Party 2',
+            persona="""
+                **Name**: Positive Pam
+                **Personality**: Upbeat, eager to please, growth-oriented, avoids negativity
+                **Behavioral Traits**:
+                - Overly agreeable 
+                — avoids conflict or disagreement
+                - Deflects criticism with enthusiasm (“I’ll fix it!”)
+                - Often hides stress or burnout behind optimism
+                - Pushes for promotions or more responsibility before ready
+                - Uses toxic positivity to dismiss serious concerns
+                
+                **Training Focus**:
+                - Delivering constructive feedback without sugarcoating
+                - Encouraging honest reflection and accountability
+                - Identifying signs of masked stress or burnout
+                - Setting realistic growth expectations
+                - Navigating emotionally complex conversations with high performers
+                
+                **Company Position**: Development Coordinator (5 years experience)""",
+            situational_facts="""
+                **Positive Performance**
+                - Pam developed two successful community outreach pilots.
+                - Partners often compliment Pam’s creativity and energy.
+
+                **Areas for Improvement**
+                - Pam sometimes misses internal deadlines for reports and data submissions.
+                - Team members report Pam can be hard to reach on short notice.
+
+                **Review Outcome**
+                - Overall rating is "Meets Expectations" — strong external impact but inconsistency 
+                in internal follow-through prevented "Exceeds Expectations".
+                - A standard 3% merit raise will be applied, same as most peers.
+
+                **Organizational Context**
+                - The NGO emphasizes reliability to secure renewed donor funding.
+                - This review cycle is slightly stricter due to new funder accountability 
+                requirements.
+
+                **Silver Lining**
+                - The manager believes Pam can reach "Exceeds Expectations" next year with more 
+                consistent internal coordination.
+
+            """,
             difficulty_level=DifficultyLevel.medium,
-            tone='Professional',
-            complexity='Medium',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -202,13 +269,46 @@ def get_dummy_conversation_scenarios(
         ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[0].id,
-            category_id=categories[2].id,
-            context='Context 1',
-            goal='Goal 1',
-            other_party='Other Party 1',
+            category_id=categories[2].id,  # Conflict Resolution
+            persona="""
+                **Name**: Casual Candice
+                **Personality**: Laid-back, informal, friendly but sometimes unfocused
+                **Behavioral Traits**:
+                - Uses humor or casual language
+                - May not take feedback seriously
+                - Tends to deflect or joke under pressure
+                - Values flexibility over structure
+                **Training Focus**:
+                - Redirecting conversations professionally
+                - Setting boundaries and expectations
+                - Addressing underperformance without being overly formal
+                - Keeping focus during relaxed interactions
+                **Company Position**: Development Coordinator (5 years experience)""",
+            situational_facts="""
+                **Conflict Background**
+                - Candice and Jordan collaborated on a partner event that went off-track due to 
+                miscommunication.
+                - Candice feels Jordan oversteps boundaries and takes credit for ideas.
+                - Jordan has privately complained that Candice misses deadlines and ignores 
+                messages.
+
+                **Prior Attempts**
+                - Two team meetings were held to clarify roles; tension persists.
+                - Candice agreed to share updates more frequently; Jordan promised to check before 
+                redoing Candice’s work.
+
+                **Current Impact**
+                - Other teammates feel awkward and avoid putting Candice and Jordan on the same 
+                tasks.
+                - The manager is under pressure to ensure team cohesion before a major donor site 
+                visit.
+
+                **Silver Lining**
+                - Both Candice and Jordan care deeply about partner success and have complementary 
+                skills when working well together.
+
+            """,
             difficulty_level=DifficultyLevel.easy,
-            tone='Friendly',
-            complexity='Low',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -216,13 +316,48 @@ def get_dummy_conversation_scenarios(
         ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[0].id,
-            category_id=categories[3].id,
-            context='Context 1',
-            goal='Goal 1',
-            other_party='Other Party 1',
+            category_id=categories[3].id,  # Salary Discussion
+            persona="""
+                **Name**: Shy Sandra
+                **Personality**: Quiet, reserved, conflict-avoidant, anxious about saying the wrong
+                  thing
+                **Behavioral Traits:**
+                - Speaks in a soft, hesitant voice with frequent pauses
+                - Uses filler words (“um…”, “I guess…”, “maybe…”) and trails off mid-sentenceAgrees 
+                verbally (“yeah… sure… okay”) even when uncertain or uncomfortable
+                - Avoids asserting opinions or asking questions
+                - Long silences when asked direct or emotional questions
+                - May apologize unnecessarily or downplay her own contributions
+                **Training Focus:**
+                - Encouraging open and honest communication through tone and phrasing
+                - Actively checking for true understanding and comfort (not just verbal agreement)
+                - Using silence constructively without rushing to fill it
+                - Creating psychological safety so Sandra feels safe to speak up
+                - Practicing empathetic, patient listening
+                - Learning to gently draw out insights from passive participants
+                **Company Position**: Development Coordinator (5 years experience)""",
+            situational_facts="""
+                **Current Salary**
+                - Sandra earns slightly below the midpoint for Program Officers in this NGO.
+                - Last annual raise was 4%.
+
+                **Performance Context**
+                - Solid on creative outreach and community partnerships.
+                - Mixed record on deadlines and internal coordination.
+
+                **Recent Request**
+                - Last week, Sandra emailed HR asking for a 10% raise, citing cost of living and 
+                workload growth.
+
+                **Organizational Context**
+                - The NGO faces tight budgets due to a new funder’s spending cap.
+                - Managers can approve up to 3% merit raise without director sign-off.
+
+                **Silver Lining**
+                - Peers respect Sandra’s community engagement; manager has praised initiative on 
+                outreach campaigns.
+            """,
             difficulty_level=DifficultyLevel.easy,
-            tone='Friendly',
-            complexity='Low',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),

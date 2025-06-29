@@ -11,12 +11,9 @@ from app.models.language import LanguageCode
 class ConversationScenarioCreate(CamelModel):
     category_id: Optional[str] = None
     custom_category_label: Optional[str] = None
-    context: str
-    goal: str
-    other_party: str
+    persona: str
+    situational_facts: str
     difficulty_level: DifficultyLevel
-    tone: Optional[str] = None
-    complexity: Optional[str] = None
     language_code: LanguageCode = LanguageCode.en
     status: ConversationScenarioStatus = ConversationScenarioStatus.draft
 
@@ -27,12 +24,9 @@ class ConversationScenarioRead(CamelModel):
     user_id: UUID
     category_id: Optional[str]
     custom_category_label: Optional[str]
-    context: str
-    goal: str
-    other_party: str
+    persona: str
+    situational_facts: str
     difficulty_level: DifficultyLevel
-    tone: Optional[str]
-    complexity: Optional[str]
     language_code: LanguageCode
     status: ConversationScenarioStatus
     created_at: datetime

@@ -15,7 +15,7 @@ def build_query_prep_feedback(
 
     Args:
         session_context (ConversationScenarioBase): The scenario for the current session,
-            including category, other party, context, and goal
+            including category, persona, and situational background facts
         user_audio_analysis (str, optional): Description of the tone, emotion, or delivery
             of the user
         user_transcript (str, optional): Transcript of what the user said
@@ -28,14 +28,11 @@ def build_query_prep_feedback(
     if session_context.category:
         parts.append(f'This is a/an {session_context.category}.')
 
-    if session_context.other_party:
-        parts.append(f'The HR employee is speaking to {session_context.other_party}.')
+    if session_context.persona:
+        parts.append(f'The HR employee is speaking to {session_context.persona}.')
 
-    if session_context.context:
-        parts.append(f'The context is: {session_context.context}')
-
-    if session_context.goal:
-        parts.append(f'The goal is {session_context.goal}.')
+    if session_context.situational_facts:
+        parts.append(f'The context is: {session_context.situational_facts}')
 
     if user_transcript:
         parts.append(f'The HR employee said: {user_transcript}.')

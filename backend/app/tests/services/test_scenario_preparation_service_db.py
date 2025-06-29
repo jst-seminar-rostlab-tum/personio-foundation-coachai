@@ -86,9 +86,10 @@ class TestScenarioPreparationService(unittest.TestCase):
 
         new_preparation = ScenarioPreparationCreate(
             category='Feedback',
-            goal='Improve communication',
-            context='Team review',
-            other_party='Product manager',
+            persona='**Name**: Jenny'
+            '**Training Focus**: Improve communication'
+            '**Company Position**: Product manager',
+            situational_facts='Team review',
             num_objectives=2,
             num_checkpoints=2,
         )
@@ -151,9 +152,10 @@ class TestScenarioPreparationService(unittest.TestCase):
 
         new_preparation = ScenarioPreparationCreate(
             category='Feedback',
-            goal='Improve communication',
-            context='Team review',
-            other_party='Product manager',
+            persona='**Name**: Jenny'
+            '**Training Focus**: Improve communication'
+            '**Company Position**: Product manager',
+            situational_facts='Team review',
             num_objectives=2,
             num_checkpoints=2,
         )
