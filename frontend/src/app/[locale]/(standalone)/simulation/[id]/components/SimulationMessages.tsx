@@ -15,6 +15,10 @@ interface MessageItemProps {
   message: Message;
 }
 
+interface SimulationMessagesProps {
+  messages: Message[];
+}
+
 // Component to render each text chunk with a fade-in
 const Chunk: React.FC<{ text: string }> = ({ text }) => {
   const [visible, setVisible] = useState(false);
@@ -69,7 +73,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   );
 };
 
-export default function SimulationMessages({ messages }: { messages: Message[] }) {
+export default function SimulationMessages({ messages }: SimulationMessagesProps) {
   const messageEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

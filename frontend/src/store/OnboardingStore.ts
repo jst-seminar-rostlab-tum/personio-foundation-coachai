@@ -1,4 +1,4 @@
-import { OnboardingState } from '@/interfaces/state/OnboardingState';
+import { OnboardingState } from '@/interfaces/store/OnboardingState';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
