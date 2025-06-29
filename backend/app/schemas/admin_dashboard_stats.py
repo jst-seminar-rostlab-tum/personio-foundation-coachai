@@ -6,5 +6,5 @@ class AdminDashboardStatsRead(CamelModel):
     total_users: int  # number of users in the system
     total_trainings: int
     total_reviews: int  # number of reviews
-    average_score: int
+    score_sum: float
     daily_token_limit: int | None  # daily token limit retrieved from app_config table

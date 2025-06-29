@@ -2,9 +2,12 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
+from pydantic import BaseModel
+
 from app.models.camel_case import CamelModel
 from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
 from app.models.language import LanguageCode
+from app.schemas.session_turn import SessionTurnRead
 
 
 # Schema for creating a new ConversationScenario
@@ -42,3 +45,8 @@ class ConversationScenarioRead(CamelModel):
 class ConversationScenarioCreateResponse(CamelModel):
     message: str
     scenario_id: UUID
+
+
+class ConversationData(BaseModel):
+    scenario: ConversationScenarioRead
+    transcript: list[SessionTurnRead]
