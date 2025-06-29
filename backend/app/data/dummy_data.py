@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 from gotrue import AdminUserAttributes
@@ -52,7 +52,6 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             professional_role=ProfessionalRole.hr_professional,
             experience=Experience.beginner,
             preferred_learning_style=PreferredLearningStyle.visual,
-            last_logged_in=datetime.now(UTC) - timedelta(days=2),
             store_conversations=False,
             total_sessions=32,
             training_time=4.5,
@@ -70,7 +69,6 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             professional_role=ProfessionalRole.executive,
             experience=Experience.expert,
             preferred_learning_style=PreferredLearningStyle.kinesthetic,
-            last_logged_in=datetime.now(UTC) - timedelta(days=2),
             store_conversations=True,
             total_sessions=5,
             training_time=4.2,
