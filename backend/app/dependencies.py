@@ -110,6 +110,7 @@ def require_admin(
     if user.account_role != AccountRole.admin:
         logging.warning('User role is not: ', AccountRole.admin)
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Admin access required')
+    _update_login_streak(db, user)
     return user
 
 
