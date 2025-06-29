@@ -125,4 +125,4 @@ def export_user_data(
     Export all user-related data (history) for the currently authenticated user.
     """
     export_data = build_user_data_export(user_profile, db_session)
-    return export_data.dict()
+    return export_data.model_dump()
