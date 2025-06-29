@@ -51,6 +51,8 @@ class TestScenarioPreparationService(unittest.TestCase):
         self.assertIsNotNone(retrieved)
 
         # assert preparation is still pending
+        if retrieved is None:
+            self.fail('Preparation not found in the database after creation')
         self.assertEqual(retrieved.status, ScenarioPreparationStatus.pending)
 
     @patch(

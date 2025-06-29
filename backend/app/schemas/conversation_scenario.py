@@ -1,4 +1,3 @@
-from typing import Optional
 from uuid import UUID
 
 from app.models.camel_case import CamelModel
@@ -8,8 +7,8 @@ from app.models.language import LanguageCode
 
 # Schema for creating a new ConversationScenario
 class ConversationScenarioCreate(CamelModel):
-    category_id: Optional[str] = None
-    custom_category_label: Optional[str] = None
+    category_id: str | None = None
+    custom_category_label: str | None = None
     persona: str
     situational_facts: str
     difficulty_level: DifficultyLevel

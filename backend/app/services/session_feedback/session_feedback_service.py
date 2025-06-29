@@ -288,7 +288,7 @@ def generate_and_store_feedback(
             recommendations_request.category,
             recommendations_request.persona,
             recommendations_request.situational_facts,
-            recommendations_request.transcript,
+            recommendations_request.transcript or '',
             recommendations_request.objectives,
             recommendations_request.key_concepts,
         ],

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
 from sqlmodel import JSON, Column, Field
@@ -69,7 +68,7 @@ class ScenarioPreparationRead(CamelModel):
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: ScenarioPreparationStatus
-    category_name: Optional[str] = None
+    category_name: str | None = None
     persona: str
     situational_facts: str
     created_at: datetime
