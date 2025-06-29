@@ -1,4 +1,5 @@
 import { Session } from '@/interfaces/models/Session';
+import { MessageSender } from '@/interfaces/models/Simulation';
 import { AxiosInstance } from 'axios';
 
 const getPaginatedSessions = async (api: AxiosInstance, page: number, pageSize: number) => {
@@ -61,7 +62,7 @@ const updateSession = async (api: AxiosInstance, sessionId: string, session: Par
 const createSessionTurn = async (
   api: AxiosInstance,
   sessionId: string,
-  speaker: string,
+  speaker: MessageSender,
   text: string,
   audioUri: string = '',
   aiEmotion: string = '',

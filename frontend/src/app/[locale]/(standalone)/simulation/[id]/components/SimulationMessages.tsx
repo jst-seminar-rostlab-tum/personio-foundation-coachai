@@ -1,15 +1,7 @@
 'use client';
 
+import { Message } from '@/interfaces/models/Simulation';
 import React, { useEffect, useRef, useState } from 'react';
-
-export interface Message {
-  id?: number;
-  text: string;
-  sender: 'user' | 'assistant';
-  start_offset_ms?: number;
-  end_offset_ms?: number;
-  created_at?: string;
-}
 
 interface MessageItemProps {
   message: Message;
