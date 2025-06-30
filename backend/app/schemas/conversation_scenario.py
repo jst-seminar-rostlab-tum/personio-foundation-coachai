@@ -50,11 +50,11 @@ class ConversationScenarioCreateResponse(CamelModel):
     scenario_id: UUID
 
 
-
 class ConversationData(BaseModel):
     scenario: ConversationScenarioRead
     transcript: list[SessionTurnRead]
-      
+
+
 class ConversationScenarioSummary(CamelModel):
     scenario_id: UUID
     language_code: LanguageCode
