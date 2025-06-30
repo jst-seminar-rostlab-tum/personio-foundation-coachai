@@ -11,7 +11,7 @@ import { authService } from '@/services/client/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResendParams, VerifyEmailOtpParams } from '@supabase/supabase-js';
 import { useTranslations } from 'next-intl';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
@@ -23,6 +23,7 @@ export default function ConfirmationForm() {
   const [showResendButton, setShowResendButton] = useState(false);
 
   const router = useRouter();
+  const pathname = usePathname();
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -109,6 +110,26 @@ export default function ConfirmationForm() {
     setIsLoading(false);
     setShowResendButton(false);
   };
+
+  useEffect(() => {
+    // Handler to delete unconfirmed user on navigation away from this page
+    const handleUrlChange = () => {
+      const email = form.getValues('email');
+      if (!email) return;
+      // If the current path is not the confirmation page, delete the user
+      if (window.location.pathname !== pathname) {
+        authService.deleteUnconfirmedUser(email).catch(() => {});
+      }
+    };
+
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+    };
+  }, [form, pathname]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">

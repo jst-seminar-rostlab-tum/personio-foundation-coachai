@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status
 from gotrue import AdminUserAttributes, SignUpWithPasswordCredentials
 from pydantic import BaseModel
 from sqlmodel import Session as DBSession
@@ -123,3 +123,28 @@ def confirm_user(
     )
     db_session.add(user_data)
     db_session.commit()
+
+
+@router.post('/delete-unconfirmed', response_model=None, status_code=status.HTTP_200_OK)
+def delete_unconfirmed_user(email: str = Body(..., embed=True)) -> None:
+    """
+    Delete a user from Supabase Auth by email if not confirmed.
+    """
+    try:
+        supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+        # List all users with this email
+        users = supabase.auth.admin.list_users(email=email)
+        user = None
+        for u in users['users']:
+            if u['email'] == email:
+                user = u
+                break
+        if not user:
+            raise HTTPException(status_code=404, detail='User not found')
+        # Check if user is confirmed (email_confirmed_at is not None)
+        if user.get('email_confirmed_at'):
+            raise HTTPException(status_code=400, detail='User already confirmed')
+        # Delete user
+        supabase.auth.admin.delete_user(user['id'])
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Failed to delete user: {e}') from e

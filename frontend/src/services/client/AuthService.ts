@@ -23,8 +23,14 @@ const logoutUser = async () => {
   redirect('/');
 };
 
+const deleteUnconfirmedUser = async (email: string) => {
+  const response = await api.post('/auth/delete-unconfirmed', { email });
+  return response.data;
+};
+
 export const authService = {
   createUser,
   confirmUser,
   logoutUser,
+  deleteUnconfirmedUser,
 };
