@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useWebRTC } from '@/hooks/WebRTC';
+import { useWebRTC } from '@/hooks/useWebRTC';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
@@ -20,6 +20,8 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
     localStreamRef,
     messages,
     elapsedTimeS,
+    localAudioUrls,
+    remoteAudioUrls,
   } = useWebRTC(sessionId);
 
   useEffect(() => {
@@ -54,6 +56,26 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
         onDisconnect={disconnect}
       />
       <audio ref={remoteAudioRef} autoPlay playsInline />
+      {localAudioUrls.map((url, idx) => (
+        <a
+          key={url}
+          href={url}
+          download={`recording-segment-${idx + 1}.wav`}
+          className="block mt-2 text-blue-600 underline"
+        >
+          Download local segment {idx + 1}
+        </a>
+      ))}
+      {remoteAudioUrls.map((url, idx) => (
+        <a
+          key={url}
+          href={url}
+          download={`recording-segment-${idx + 1}.wav`}
+          className="block mt-2 text-blue-600 underline"
+        >
+          Download remote segment {idx + 1}
+        </a>
+      ))}
     </div>
   );
 }

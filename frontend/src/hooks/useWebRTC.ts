@@ -1,13 +1,14 @@
 import { useCallback, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { sessionService } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/toast';
-import { MessageSender, SessionStatus } from '@/interfaces/models/Session';
+import { MessageSender } from '@/interfaces/models/Session';
 import { api } from '@/services/ApiClient';
-import { useMessageReducer } from './MessageReducer';
-import { useMediaStream } from './MediaStream';
-import { useElapsedTime } from './ElapsedTime';
+import { useMessageReducer } from './useMessageReducer';
+import { useMediaStream } from './useMediaStream';
+import { useElapsedTime } from './useElapsedTime';
+import { useLocalAudioRecorder } from './useLocalAudioRecorder';
+import { useRemoteAudioRecorder } from './useRemoteAudioRecorder';
 
 export function useWebRTC(sessionId: string) {
   const { localStreamRef, startStream, stopStream } = useMediaStream();
@@ -21,6 +22,11 @@ export function useWebRTC(sessionId: string) {
 
   const { elapsedTimeS, elapsedTimeMsRef, startTimer, stopTimer } = useElapsedTime();
 
+  const { startLocalRecording, stopLocalRecording, extractSegment, localAudioUrls } =
+    useLocalAudioRecorder();
+
+  const { startRemoteRecording, stopRemoteRecording, remoteAudioUrls } = useRemoteAudioRecorder();
+
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isDataChannelReady, setIsDataChannelReady] = useState(false);
@@ -31,8 +37,9 @@ export function useWebRTC(sessionId: string) {
   const cleanupRef = useRef<boolean | null>(null);
   const hasInitializedRef = useRef(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const inputAudioBufferSpeechStartedOffsetMsRef = useRef<number>(0);
 
-  const router = useRouter();
+  // const router = useRouter();
   const t = useTranslations('Simulation');
 
   const cleanup = useCallback(() => {
@@ -54,14 +61,14 @@ export function useWebRTC(sessionId: string) {
     cleanupRef.current = false;
     hasInitializedRef.current = false;
     try {
-      const { data } = await sessionService.updateSession(api, sessionId, {
+      /* const { data } = await sessionService.updateSession(api, sessionId, {
         status: SessionStatus.COMPLETED,
       });
-      router.push(`/feedback/${data.id}`);
+      router.push(`/feedback/${data.id}`); */
     } catch (err) {
       showErrorToast(err, t('sessionEndError'));
     }
-  }, [cleanup, sessionId, router, t]);
+  }, [cleanup, t]);
 
   const initWebRTC = useCallback(async () => {
     if (hasInitializedRef.current) return;
@@ -87,14 +94,20 @@ export function useWebRTC(sessionId: string) {
       dataChannelRef.current = dc;
       dc.onopen = () => {
         setIsDataChannelReady(true);
+        startLocalRecording(localStream);
+        // startRemoteRecording(rem);
         startTimer();
       };
       dc.onclose = () => {
         setIsDataChannelReady(false);
+        stopLocalRecording();
+        stopRemoteRecording();
         stopTimer();
       };
       dc.onerror = () => {
         setIsDataChannelReady(false);
+        stopLocalRecording();
+        stopRemoteRecording();
         stopTimer();
       };
 
@@ -105,11 +118,13 @@ export function useWebRTC(sessionId: string) {
           switch (parsed.type) {
             case 'conversation.item.created':
               if (parsed.item.role === 'user' && parsed.item.status === 'completed') {
+                // console.log('Conversation item created: ', parsed);
                 addPlaceholderMessage(MessageSender.USER, elapsedTimeMsRef.current);
               }
               break;
 
             case 'response.created':
+              // console.log('Response created: ', parsed);
               addPlaceholderMessage(MessageSender.ASSISTANT, elapsedTimeMsRef.current);
               break;
 
@@ -118,6 +133,7 @@ export function useWebRTC(sessionId: string) {
               break;
 
             case 'conversation.item.input_audio_transcription.completed':
+              // console.log('Input audio transcription completed: ', parsed);
               await sessionService.createSessionTurn(api, {
                 sessionId,
                 speaker: MessageSender.USER,
@@ -134,6 +150,7 @@ export function useWebRTC(sessionId: string) {
               break;
 
             case 'response.audio_transcript.done':
+              // console.log('Response audio transcription done: ', parsed);
               await sessionService.createSessionTurn(api, {
                 sessionId,
                 speaker: MessageSender.ASSISTANT,
@@ -143,6 +160,41 @@ export function useWebRTC(sessionId: string) {
                 audioUri: '',
                 aiEmotion: '',
               });
+              break;
+
+            case 'response.audio.delta':
+              // console.log('Response audio delta: ', parsed);
+              break;
+
+            case 'response.audio.done':
+              // console.log('Response audio done: ', parsed);
+              break;
+
+            case 'input_audio_buffer.speech_started':
+              inputAudioBufferSpeechStartedOffsetMsRef.current = parsed.audio_start_ms;
+              stopRemoteRecording();
+              // console.log('input audio started: ', parsed);
+              // console.log(elapsedTimeMsRef.current);
+              break;
+
+            case 'input_audio_buffer.speech_stopped':
+              extractSegment(inputAudioBufferSpeechStartedOffsetMsRef.current, parsed.audio_end_ms);
+              // console.log('input audio stopped: ', parsed);
+              // console.log(elapsedTimeMsRef.current);
+              break;
+
+            case 'response.done':
+              // console.log('Response done: ', parsed);
+              break;
+
+            case 'output_audio_buffer.started':
+              startRemoteRecording(remoteAudioRef.current?.srcObject as MediaStream);
+              // console.log('Output audio buffer started: ', parsed);
+              break;
+
+            case 'output_audio_buffer.stopped':
+              stopRemoteRecording();
+              // console.log('Output audio buffer stopped: ', parsed);
               break;
 
             default:
@@ -180,6 +232,11 @@ export function useWebRTC(sessionId: string) {
     elapsedTimeMsRef,
     startTimer,
     stopTimer,
+    extractSegment,
+    startLocalRecording,
+    stopLocalRecording,
+    startRemoteRecording,
+    stopRemoteRecording,
   ]);
 
   return {
@@ -194,5 +251,7 @@ export function useWebRTC(sessionId: string) {
     localStreamRef,
     messages,
     elapsedTimeS,
+    localAudioUrls,
+    remoteAudioUrls,
   };
 }
