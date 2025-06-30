@@ -1,6 +1,10 @@
 import { Goal } from 'lucide-react';
 
-export default function ObjectivesList({ objectives }: { objectives: string[] }) {
+interface ObjectivesListProps {
+  objectives: string[];
+}
+
+export default function ObjectivesList({ objectives }: ObjectivesListProps) {
   return (
     <div className="space-y-4">
       {objectives.map((label, i) => (

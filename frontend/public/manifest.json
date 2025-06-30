@@ -5,17 +5,17 @@
     {
       "purpose": "maskable",
       "sizes": "512x512",
-      "src": "/icons/icon512_maskable.png",
+      "src": "/images/icons/icon512-maskable.png",
       "type": "image/png"
     },
     {
       "purpose": "any",
       "sizes": "512x512",
-      "src": "/icons/icon512_rounded.png",
+      "src": "/images/icons/icon512-rounded.png",
       "type": "image/png"
     },
     {
-      "src": "/icons/personio_foundation_favicon.png",
+      "src": "/images/icons/personio-foundation-favicon.png",
       "sizes": "256x256",
       "type": "image/png"
     }

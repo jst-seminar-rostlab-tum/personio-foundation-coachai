@@ -1,7 +1,7 @@
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export default function HistoryHeader() {
-  const t = useTranslations('History');
+export default async function HistoryHeader() {
+  const t = await getTranslations('History');
 
   return (
     <div className="flex flex-col items-center md:items-start text-center md:text-left">
