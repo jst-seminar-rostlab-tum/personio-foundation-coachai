@@ -12,10 +12,14 @@ from app.schemas.live_feedback_schema import LiveFeedbackRead
 from app.services.voice_analysis_service import analyze_voice_gemini_from_file
 
 
+def format_feedback_lines(feedback_items: list[LiveFeedbackRead]) -> list[str]:
+    return [f'{item.heading}: {item.feedback_text}' for item in feedback_items]
+
+
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_live_feedback_item(
     session_turn_context: SessionTurnCreate,
-    previous_feedback: [str] = None,
+    previous_feedback: str = '',
     hr_docs_context: str = '',
 ) -> LiveFeedback:
     if previous_feedback is None:
@@ -23,7 +27,7 @@ def safe_generate_live_feedback_item(
     return generate_live_feedback_item(
         session_turn_context.audio_uri,
         session_turn_context.text,
-        previous_feedback.join('\n'),
+        previous_feedback,
         hr_docs_context,
     )
 
@@ -95,7 +99,9 @@ class LiveFeedbackService:
         self, session_id: UUID, session_turn_context: SessionTurnCreate
     ) -> LiveFeedback | None:
         hr_docs_context = ''
-        previous_feedback = self.fetch_all_for_session(session_id)
+        feedback_items = self.fetch_all_for_session(session_id)
+        formatted_lines = format_feedback_lines(feedback_items)
+        previous_feedback = '\n'.join(formatted_lines)
 
         if (
             not session_turn_context.audio_uri
