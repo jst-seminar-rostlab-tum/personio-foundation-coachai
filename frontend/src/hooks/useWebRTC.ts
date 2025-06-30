@@ -118,13 +118,11 @@ export function useWebRTC(sessionId: string) {
           switch (parsed.type) {
             case 'conversation.item.created':
               if (parsed.item.role === 'user' && parsed.item.status === 'completed') {
-                // console.log('Conversation item created: ', parsed);
                 addPlaceholderMessage(MessageSender.USER, elapsedTimeMsRef.current);
               }
               break;
 
             case 'response.created':
-              // console.log('Response created: ', parsed);
               addPlaceholderMessage(MessageSender.ASSISTANT, elapsedTimeMsRef.current);
               break;
 
@@ -133,7 +131,6 @@ export function useWebRTC(sessionId: string) {
               break;
 
             case 'conversation.item.input_audio_transcription.completed':
-              // console.log('Input audio transcription completed: ', parsed);
               await sessionService.createSessionTurn(api, {
                 sessionId,
                 speaker: MessageSender.USER,
@@ -150,7 +147,6 @@ export function useWebRTC(sessionId: string) {
               break;
 
             case 'response.audio_transcript.done':
-              // console.log('Response audio transcription done: ', parsed);
               await sessionService.createSessionTurn(api, {
                 sessionId,
                 speaker: MessageSender.ASSISTANT,
@@ -162,39 +158,23 @@ export function useWebRTC(sessionId: string) {
               });
               break;
 
-            case 'response.audio.delta':
-              // console.log('Response audio delta: ', parsed);
-              break;
-
-            case 'response.audio.done':
-              // console.log('Response audio done: ', parsed);
-              break;
-
             case 'input_audio_buffer.speech_started':
               inputAudioBufferSpeechStartedOffsetMsRef.current = parsed.audio_start_ms;
               stopRemoteRecording();
-              // console.log('input audio started: ', parsed);
-              // console.log(elapsedTimeMsRef.current);
               break;
 
             case 'input_audio_buffer.speech_stopped':
               extractSegment(inputAudioBufferSpeechStartedOffsetMsRef.current, parsed.audio_end_ms);
-              // console.log('input audio stopped: ', parsed);
-              // console.log(elapsedTimeMsRef.current);
               break;
 
-            case 'response.done':
-              // console.log('Response done: ', parsed);
-              break;
-
-            case 'output_audio_buffer.started':
-              startRemoteRecording(remoteAudioRef.current?.srcObject as MediaStream);
-              // console.log('Output audio buffer started: ', parsed);
+            case 'response.content_part.added':
+              if (parsed.part.type === 'audio') {
+                startRemoteRecording(remoteAudioRef.current?.srcObject as MediaStream);
+              }
               break;
 
             case 'output_audio_buffer.stopped':
               stopRemoteRecording();
-              // console.log('Output audio buffer stopped: ', parsed);
               break;
 
             default:
