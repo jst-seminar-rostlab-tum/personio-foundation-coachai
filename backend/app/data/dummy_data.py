@@ -55,7 +55,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             store_conversations=False,
             total_sessions=32,
             training_time=4.5,
-            current_streak_days=3,
+            current_streak_days=5,
             average_score=82,
             goals_achieved=4,  # Summation of all goals achieved
         ),
@@ -921,7 +921,7 @@ def get_dummy_session_feedback(
             session_id=sessions[0].id,  # Link to the first session
             scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=85,
+            overall_score=83,
             transcript_uri='https://example.com/transcripts/session1.txt',
             speak_time_percent=60.5,
             questions_asked=5,
@@ -994,7 +994,7 @@ def get_dummy_session_feedback(
             session_id=sessions[1].id,  # Link to the second session
             scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=90,
+            overall_score=81,
             transcript_uri='https://example.com/transcripts/session2.txt',
             speak_time_percent=55.0,
             questions_asked=7,
@@ -1066,7 +1066,7 @@ def get_dummy_session_feedback(
             session_id=sessions[2].id,  # Link to the second session
             scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=90,
+            overall_score=81,
             transcript_uri='https://example.com/transcripts/session2.txt',
             speak_time_percent=55.0,
             questions_asked=7,
@@ -1138,7 +1138,7 @@ def get_dummy_session_feedback(
             session_id=sessions[3].id,  # Link to the second session
             scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=90,
+            overall_score=81,
             transcript_uri='https://example.com/transcripts/session2.txt',
             speak_time_percent=55.0,
             questions_asked=7,
@@ -1212,7 +1212,7 @@ def get_dummy_session_feedback(
             session_id=sessions[4].id,  # Link to the first session
             scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=85,
+            overall_score=83,
             transcript_uri='https://example.com/transcripts/session1.txt',
             speak_time_percent=60.5,
             questions_asked=5,
@@ -1284,7 +1284,7 @@ def get_dummy_session_feedback(
             session_id=sessions[5].id,  # Link to the first session
             scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=85,
+            overall_score=83,
             transcript_uri='https://example.com/transcripts/session1.txt',
             speak_time_percent=60.5,
             questions_asked=5,
@@ -1355,7 +1355,7 @@ def get_dummy_session_feedback(
             session_id=sessions[6].id,  # Link to the first session
             scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=85,
+            overall_score=83,
             transcript_uri='https://example.com/transcripts/session1.txt',
             speak_time_percent=60.5,
             questions_asked=5,
@@ -1429,7 +1429,7 @@ def get_dummy_session_feedback(
             session_id=sessions[7].id,  # Link to the first session
             scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=85,
+            overall_score=83,
             transcript_uri='https://example.com/transcripts/session1.txt',
             speak_time_percent=60.5,
             questions_asked=5,

@@ -1,7 +1,10 @@
 from uuid import UUID
 
 from app.models.camel_case import CamelModel
-from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
+from app.models.conversation_scenario import (
+    ConversationScenarioStatus,
+    DifficultyLevel,
+)
 from app.models.language import LanguageCode
 
 
@@ -19,3 +22,11 @@ class ConversationScenarioCreate(CamelModel):
 class ConversationScenarioCreateResponse(CamelModel):
     message: str
     scenario_id: UUID
+
+
+class ConversationScenarioSummary(CamelModel):
+    scenario_id: UUID
+    language_code: LanguageCode
+    category_name: str
+    total_sessions: int
+    average_score: Optional[float] = None  # None if there are no sessions
