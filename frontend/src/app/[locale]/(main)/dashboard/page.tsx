@@ -59,8 +59,8 @@ export default async function DashboardPage() {
 
       <section className="flex flex-col gap-4">
         <div>
-          <h2 className="text-xl">{tCommon('recentTrainingHistory')}</h2>
-          <p className="text-base text-bw-40">{tCommon('recentSessions.subtitle')}</p>
+          <h2 className="text-xl">{t('recentSessions.title')}</h2>
+          <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
         </div>
         {!sessions || sessions.length === 0 ? (
           <EmptyListComponent itemType={tCommon('emptyList.sessions')} />
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
             ))}
             <Link href="/history">
               <Button size="full">
-                {t('showEntireHistory')}
+                {t('recentSessions.showEntireHistory')}
                 <ArrowRightIcon />
               </Button>
             </Link>

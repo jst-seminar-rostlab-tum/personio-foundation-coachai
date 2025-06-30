@@ -154,9 +154,9 @@ export default function Settings({ userProfile }: SettingsProps) {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-      showSuccessToast(t('exportSuccess'));
+      showSuccessToast(t('exportSettingsSuccess'));
     } catch (error) {
-      showErrorToast(error, t('exportError'));
+      showErrorToast(error, t('exportSettingsError'));
     }
   };
 

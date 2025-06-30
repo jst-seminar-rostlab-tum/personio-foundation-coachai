@@ -19,6 +19,8 @@
       "maxOptionsSelected": "Max. Optionen ausgewählt"
     }
   },
+  "exportSettingsSuccess": "Ihre Daten wurden erfolgreich exportiert.",
+  "exportSettingsError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.",
   "saveSettingsSuccess": "Ihre Einstellungen wurden erfolgreich gespeichert.",
   "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal."
 }

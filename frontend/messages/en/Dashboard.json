@@ -18,7 +18,8 @@
     "currentStreak": "Current Streak"
   },
   "recentSessions": {
-    "subtitle": "Your last completed training sessions"
-  },
-  "showEntireHistory": "Show Entire History"
+    "title": "Recent Training Sessions",
+    "subtitle": "Your last completed training sessions",
+    "showEntireHistory": "Show Entire History"
+  }
 }

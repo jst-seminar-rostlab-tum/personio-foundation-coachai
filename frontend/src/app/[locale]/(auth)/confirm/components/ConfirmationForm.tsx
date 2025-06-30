@@ -17,7 +17,7 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 
 export default function ConfirmationForm() {
-  const t = useTranslations('Confirm.ConfirmationForm');
+  const t = useTranslations('Login');
   const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>();
@@ -34,7 +34,7 @@ export default function ConfirmationForm() {
   }, [error]);
 
   const confirmationFormSchema = z.object({
-    email: z.string().email(tCommon('emailInputError')),
+    email: z.string().email(t('emailInputError')),
     code: z.string(),
   });
   const codeSize = 6;
@@ -67,7 +67,7 @@ export default function ConfirmationForm() {
       if (verifyError.code) {
         switch (verifyError.code) {
           case 'otp_expired':
-            setError(t('ConfirmationForm.expiredOtpError'));
+            setError(t('expiredOtpError'));
             setShowResendButton(true);
             break;
           default:
@@ -118,7 +118,7 @@ export default function ConfirmationForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(verifyOTP)}>
             <CardContent className="space-y-4 p-4">
-              <h2 className="text-xl text-center">{t('title')}</h2>
+              <h2 className="text-xl text-center">{t('ConfirmationForm.title')}</h2>
               <p className="text-base text-center text-bw-50">
                 {!showResendButton
                   ? t('ConfirmationForm.description')
@@ -131,7 +131,7 @@ export default function ConfirmationForm() {
                   name="code"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-center">{tCommon('codeInputLabel')}</FormLabel>
+                      <FormLabel className="text-center">{t('codeInputLabel')}</FormLabel>
 
                       <div className="flex justify-center gap-2">
                         {[...Array(codeSize)].map((_, idx) => (
@@ -197,7 +197,7 @@ export default function ConfirmationForm() {
                   onClick={resendConfirmationEmail}
                   disabled={isLoading}
                 >
-                  {tCommon('resendCodeButtonLabel')}
+                  {t('resendCodeButtonLabel')}
                 </Button>
               )}
             </CardFooter>

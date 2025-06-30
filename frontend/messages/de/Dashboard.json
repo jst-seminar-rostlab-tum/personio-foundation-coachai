@@ -18,7 +18,8 @@
     "currentStreak": "Aktuelle Serie"
   },
   "recentSessions": {
-    "subtitle": "Ihre letzten Trainingssitzungen"
-  },
-  "showEntireHistory": "Gesamte Historie anzeigen"
+    "title": "Letzte Trainingssitzungen",
+    "subtitle": "Ihre letzten abgeschlossenen Trainingssitzungen im Überblick",
+    "showEntireHistory": "Gesamten Verlauf anzeigen"
+  }
 }

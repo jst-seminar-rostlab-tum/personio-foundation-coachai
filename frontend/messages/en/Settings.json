@@ -19,6 +19,8 @@
       "maxOptionsSelected": "Max. options selected"
     }
   },
+  "exportSettingsSuccess": "Your data has been exported successfully.",
+  "exportSettingsError": "There was an error exporting your data. Please try again later.",
   "saveSettingsSuccess": "Your settings have been saved successfully.",
   "saveSettingsError": "There was an error saving your settings. Please try again later."
 }

@@ -43,11 +43,6 @@ export function AppHeader() {
     };
   }, [isMenuOpen]);
 
-  const getTranslation = (key: string) => {
-    const commonKeys = ['dashboard', 'admin', 'history', 'settings', 'logout'];
-    return commonKeys.includes(key) ? tCommon(key) : t(key);
-  };
-
   return (
     <>
       <header className="fixed top-0 left-0 right-0 bg-background z-50 shadow">
@@ -69,7 +64,7 @@ export function AppHeader() {
                     pathname.includes(href) ? 'text-marigold-50' : ''
                   }`}
                 >
-                  {getTranslation(key)}
+                  {tCommon(key)}
                 </Link>
               ))}
             </div>
@@ -117,7 +112,7 @@ export function AppHeader() {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                {getTranslation(key)}
+                {tCommon(key)}
               </Link>
             ))}
             <span

@@ -195,5 +195,15 @@
   "emailInputError": "Please enter a valid email address",
   "codeInputLabel": "Confirmation Code",
   "resendCodeButtonLabel": "Resend Code",
-  "signIn": "Sign In"
+  "signIn": "Sign In",
+  "confirming": "Confirming...",
+  "ConfirmationForm": {
+    "metaTitle": "Confirm - Coach AI",
+    "metaDescription": "Confirm Your Account - Coach AI",
+    "title": "Confirm Your Account",
+    "description": "Please enter the confirmation code sent to your email address.",
+    "expiredDescription": "Your confirmation code has expired. Please request a new code to continue.",
+    "expiredOtpError": "The confirmation code has expired. Please request a new code.",
+    "genericError": "An error occurred while confirming your account. Please try again later."
+  }
 }

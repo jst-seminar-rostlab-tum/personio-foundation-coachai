@@ -20,6 +20,7 @@ export function CustomizeStep({
   onComplexityChange,
 }: CustomizeStepProps) {
   const t = useTranslations('ConversationScenario');
+  const tCommon = useTranslations('Common');
   return (
     <div>
       <div className="text-xl text-font-dark text-center w-full mb-8">{t('customize.title')}</div>
@@ -57,8 +58,8 @@ export function CustomizeStep({
         className="mb-8 flex flex-row justify-between gap-4"
       >
         <label htmlFor="e1" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/mood/positive.svg" alt={t('positive')} width={56} height={56} />
-          <span className="text-sm">{t('positive')}</span>
+          <Image src="/images/mood/positive.svg" alt={tCommon('positive')} width={56} height={56} />
+          <span className="text-sm">{tCommon('positive')}</span>
           <RadioGroupItem value="positive" id="e1" />
         </label>
         <label htmlFor="e2" className="flex flex-col items-center space-y-2 cursor-pointer">
@@ -67,8 +68,8 @@ export function CustomizeStep({
           <RadioGroupItem value="neutral" id="e2" />
         </label>
         <label htmlFor="e3" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/mood/negative.svg" alt={t('negative')} width={56} height={56} />
-          <span className="text-sm">{t('negative')}</span>
+          <Image src="/images/mood/negative.svg" alt={tCommon('negative')} width={56} height={56} />
+          <span className="text-sm">{tCommon('negative')}</span>
           <RadioGroupItem value="negative" id="e3" />
         </label>
       </RadioGroup>

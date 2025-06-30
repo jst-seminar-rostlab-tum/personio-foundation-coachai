@@ -194,5 +194,13 @@
   "emailInputError": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
   "codeInputLabel": "Bestätigungscode",
   "resendCodeButtonLabel": "Code erneut senden",
-  "signIn": "Anmelden"
+  "signIn": "Anmelden",
+  "ConfirmationForm": {
+    "title": "Bestätigen Sie Ihr Konto",
+    "description": "Bitte geben Sie den Bestätigungscode ein, der an Ihre E-Mail-Adresse gesendet wurde.",
+    "expiredDescription": "Ihr Bestätigungscode ist abgelaufen. Bitte fordern Sie einen neuen Code an.",
+    "expiredOtpError": "Der Bestätigungscode ist abgelaufen. Bitte fordern Sie einen neuen Code an.",
+    "genericError": "Bei der Konto-Bestätigung ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal."
+  },
+  "confirming": "Wird bestätigt..."
 }
