@@ -135,7 +135,7 @@ class UserService:
             # skills_performance=user.skills_performance
             # Mockked data for now
             performance_over_time=[72, 65, 70, 68, 74, 71, 78, 80, 69, 82],
-            skills_performance={'structure': 85, 'empathy': 70, 'solutionFocus': 75, 'clarity': 75},
+            skills_performance={'structure': 85, 'empathy': 70, 'focus': 75, 'clarity': 75},
         )
 
     def _update_goals(self, user_id: UUID, goals: list[Goal]) -> None:

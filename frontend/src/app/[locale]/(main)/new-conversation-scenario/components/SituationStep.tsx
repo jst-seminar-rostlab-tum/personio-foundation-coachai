@@ -2,8 +2,19 @@
 
 import { Textarea } from '@/components/ui/Textarea';
 import { useTranslations } from 'next-intl';
-import { SituationStepProps } from '@/interfaces/SituationStepProps';
 import Input from '@/components/ui/Input';
+
+interface SituationStepProps {
+  otherParty: string;
+  context: string;
+  goal: string;
+  onPartyChange: (otherParty: string) => void;
+  onContextChange: (context: string) => void;
+  onGoalChange: (goal: string) => void;
+  isCustom: boolean;
+  onCustomCategoryInput: (category: string) => void;
+  customCategory: string;
+}
 
 export function SituationStep({
   otherParty,

@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { UserOption } from '@/interfaces/UserInputFields';
+import { UserOption } from '@/interfaces/models/UserInputFields';
 import { useTranslations } from 'next-intl';
 
 export function cn(...inputs: ClassValue[]) {
@@ -71,3 +71,17 @@ export function PrimaryGoals(): UserOption[] {
     { id: 'coaching_mentoring', label: tOptions('leadership_skill_focus.coaching_mentoring') },
   ];
 }
+
+export const formattedDate = (date: string | undefined, locale: string) => {
+  if (!date) return '';
+
+  return new Date(date).toLocaleDateString(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+};
+
+export const convertTimeToMinutes = (seconds: number) => {
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+};
