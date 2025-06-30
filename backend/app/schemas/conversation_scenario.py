@@ -5,7 +5,10 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from app.models.camel_case import CamelModel
-from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
+from app.models.conversation_scenario import (
+    ConversationScenarioStatus,
+    DifficultyLevel,
+)
 from app.models.language import LanguageCode
 from app.schemas.session_turn import SessionTurnRead
 
@@ -47,6 +50,14 @@ class ConversationScenarioCreateResponse(CamelModel):
     scenario_id: UUID
 
 
+
 class ConversationData(BaseModel):
     scenario: ConversationScenarioRead
     transcript: list[SessionTurnRead]
+      
+class ConversationScenarioSummary(CamelModel):
+    scenario_id: UUID
+    language_code: LanguageCode
+    category_name: str
+    total_sessions: int
+    average_score: Optional[float] = None  # None if there are no sessions
