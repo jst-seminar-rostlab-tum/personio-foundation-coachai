@@ -18,6 +18,7 @@ import { UserPreference } from '@/interfaces/models/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
 import { UserProfile } from '@/interfaces/models/UserProfile';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import { api } from '@/services/ApiClient';
 import UserPreferences from './UserPreferences';
 
 interface SettingsProps {
@@ -140,7 +141,7 @@ export default function Settings({ userProfile }: SettingsProps) {
 
   const handleExport = async () => {
     try {
-      const blob = await UserProfileService.exportUserData();
+      const blob = await UserProfileService.exportUserData(api);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
