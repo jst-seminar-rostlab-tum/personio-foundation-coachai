@@ -28,6 +28,7 @@ export default function ConfirmationForm() {
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const hasDeletedRef = useRef(false);
+  const isConfirmedRef = useRef(false);
 
   useEffect(() => {
     if (error) {
@@ -82,6 +83,7 @@ export default function ConfirmationForm() {
 
     try {
       await authService.confirmUser(api);
+      isConfirmedRef.current = true;
     } catch {
       setError(t('genericError'));
       setIsLoading(false);
@@ -116,7 +118,7 @@ export default function ConfirmationForm() {
   useEffect(() => {
     const handleDelete = async () => {
       const email = form.getValues('email');
-      if (!email || hasDeletedRef.current) return;
+      if (!email || hasDeletedRef.current || isConfirmedRef.current) return;
       hasDeletedRef.current = true;
       try {
         await UserProfileService.deleteUnconfirmedUser(api, email);

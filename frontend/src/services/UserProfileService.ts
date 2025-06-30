@@ -67,6 +67,16 @@ const deleteUnconfirmedUser = async (api: AxiosInstance, email: string) => {
   }
 };
 
+const checkUnique = async (api: AxiosInstance, email: string, phone: string) => {
+  try {
+    const { data } = await api.post('/auth/check-unique', { email, phone });
+    return data;
+  } catch (error) {
+    console.error('Error checking unique email/phone:', error);
+    throw error;
+  }
+};
+
 export const UserProfileService = {
   getUserProfile,
   getUserStats,
@@ -74,4 +84,5 @@ export const UserProfileService = {
   exportUserData,
   deleteUser,
   deleteUnconfirmedUser,
+  checkUnique,
 };

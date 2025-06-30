@@ -26,6 +26,8 @@ import {
 import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
 import { showErrorToast } from '@/lib/toast';
 import Link from 'next/link';
+import { UserProfileService } from '@/services/UserProfileService';
+import { api } from '@/services/ApiClient';
 
 export function SignUpForm() {
   const t = useTranslations('Login.SignUpTab');
@@ -82,13 +84,34 @@ export function SignUpForm() {
     },
   ];
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
     setError(null);
     setIsLoading(true);
 
-    setShowVerification(true);
+    // Check uniqueness of email and phone
+    try {
+      const { emailExists, phoneExists } = await UserProfileService.checkUnique(
+        api,
+        values.email,
+        values.phone_number
+      );
+      if (emailExists) {
+        setError(t('emailAlreadyExistsError'));
+        setIsLoading(false);
+        return;
+      }
+      if (phoneExists) {
+        setError(t('phoneAlreadyExistsError'));
+        setIsLoading(false);
+        return;
+      }
+    } catch {
+      setError(t('genericError'));
+      setIsLoading(false);
+      return;
+    }
 
+    setShowVerification(true);
     setIsLoading(false);
   };
 

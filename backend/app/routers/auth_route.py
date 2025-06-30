@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from gotrue import AdminUserAttributes, SignUpWithPasswordCredentials
 from pydantic import BaseModel
+from sqlalchemy import select
 from sqlmodel import Session as DBSession
 
 from app.config import Settings
@@ -32,6 +33,11 @@ class SendVerificationRequest(BaseModel):
 class VerifyCodeRequest(BaseModel):
     phone_number: str
     code: str
+
+
+class CheckUniqueRequest(BaseModel):
+    email: str
+    phone: str
 
 
 @router.post('/send-verification', response_model=None)
@@ -142,3 +148,32 @@ def delete_unconfirmed_user(email: str = Body(..., embed=True)) -> None:
         supabase.auth.admin.delete_user(user.id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f'Failed to delete user: {e}') from e
+
+
+@router.post('/check-unique', status_code=200)
+def check_unique(
+    req: CheckUniqueRequest, db_session: Annotated[DBSession, Depends(get_db_session)]
+) -> dict:
+    # Remove '+' from phone number for database comparison
+    phone_for_db = req.phone.lstrip('+')
+
+    # Check UserProfile table
+    email_exists_db = (
+        db_session.exec(select(UserProfile).where(UserProfile.email == req.email)).first()
+        is not None
+    )
+    phone_exists_db = (
+        db_session.exec(select(UserProfile).where(UserProfile.phone_number == phone_for_db)).first()
+        is not None
+    )
+
+    # Check Supabase Auth
+    supabase = get_supabase_client()
+    users = supabase.auth.admin.list_users()
+    email_exists_auth = any(getattr(u, 'email', None) == req.email for u in users)
+    phone_exists_auth = any(getattr(u, 'phone', None) == req.phone for u in users)
+
+    return {
+        'emailExists': email_exists_db or email_exists_auth,
+        'phoneExists': phone_exists_db or phone_exists_auth,
+    }
