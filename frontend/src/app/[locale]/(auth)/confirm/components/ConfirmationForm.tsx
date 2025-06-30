@@ -119,7 +119,7 @@ export default function ConfirmationForm() {
       if (!email) return;
       // If the current path is not the confirmation page, delete the user
       if (window.location.pathname !== pathname) {
-        authService.deleteUnconfirmedUser(email).catch(() => {});
+        // authService.deleteUnconfirmedUser(email).catch(() => {});
       }
     };
 
