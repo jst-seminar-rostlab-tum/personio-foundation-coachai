@@ -46,7 +46,7 @@ export function AppHeader() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 bg-background z-50 shadow">
-        <div className="flex h-16 items-center justify-between mx-auto px-[clamp(1.25rem,4vw,4rem)]">
+        <div className="flex h-16 items-center justify-between mx-auto px-[clamp(1.25rem,4vw,4rem)] max-w-7xl">
           <Link
             href="/dashboard"
             className="text-bw-70 text-xl font-semibold"
@@ -66,7 +66,7 @@ export function AppHeader() {
                   {t(key)}
                   <span
                     className={`block h-0.5 absolute left-1/2 -translate-x-1/2 -bottom-1 transition-transform duration-300 ease-in-out origin-left w-[90%] ${
-                      pathname === href
+                      pathname.includes(href)
                         ? 'scale-x-100 bg-marigold-50'
                         : 'scale-x-0 group-hover:scale-x-100 bg-bw-60'
                     }`}
@@ -121,7 +121,7 @@ export function AppHeader() {
                 {t(key)}
                 <span
                   className={`block h-1 sm:h-1.5 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left w-[95%] ${
-                    pathname === href
+                    pathname.includes(href)
                       ? 'scale-x-100 bg-marigold-50'
                       : 'scale-x-0 group-hover:scale-x-100 bg-bw-60'
                   }`}
