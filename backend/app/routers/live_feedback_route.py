@@ -7,7 +7,7 @@ from sqlmodel import Session as DBSession
 from app.database import get_db_session
 from app.dependencies import require_user
 from app.schemas.live_feedback_schema import LiveFeedbackRead
-from app.services.live_feedback_service import LiveFeedbackService
+from app.services.live_feedback_service import fetch_all_for_session
 
 router = APIRouter(
     prefix='/live-feedback',
@@ -16,15 +16,9 @@ router = APIRouter(
 )
 
 
-def get_live_feedback_service(
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> LiveFeedbackService:
-    return LiveFeedbackService(db_session)
-
-
 @router.get('/session/{session_id}', response_model=list[LiveFeedbackRead])
 def get_feedback_for_session(
     session_id: UUID,
-    service: Annotated[LiveFeedbackService, Depends(get_live_feedback_service)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[LiveFeedbackRead]:
-    return service.fetch_all_for_session(session_id)
+    return fetch_all_for_session(db_session, session_id)

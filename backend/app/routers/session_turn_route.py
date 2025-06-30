@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
@@ -26,8 +26,9 @@ def get_session_turn_service(
 def create_session_turn(
     turn: SessionTurnCreate,
     service: Annotated[SessionTurnService, Depends(get_session_turn_service)],
+    background_tasks: BackgroundTasks,
 ) -> SessionTurnRead:
     """
     Create a new session turn.
     """
-    return service.create_session_turn(turn)
+    return service.create_session_turn(turn, background_tasks)
