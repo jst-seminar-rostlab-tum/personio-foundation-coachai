@@ -12,7 +12,7 @@ import { authService } from '@/services/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResendParams, VerifyEmailOtpParams } from '@supabase/supabase-js';
 import { useTranslations } from 'next-intl';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
@@ -25,9 +25,9 @@ export default function ConfirmationForm() {
   const [showResendButton, setShowResendButton] = useState(false);
 
   const router = useRouter();
-  const pathname = usePathname();
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const hasDeletedRef = useRef(false);
 
   useEffect(() => {
     if (error) {
@@ -114,30 +114,32 @@ export default function ConfirmationForm() {
   };
 
   useEffect(() => {
-    let hasDeleted = false;
-    const handleUrlChange = async () => {
+    const handleDelete = async () => {
       const email = form.getValues('email');
-      if (!email) return;
-      if (window.location.pathname !== pathname && !hasDeleted) {
-        hasDeleted = true;
-        try {
-          await UserProfileService.deleteUser(api);
-        } catch {
-          // Optionally handle/log error
-        }
+      if (!email || hasDeletedRef.current) return;
+      hasDeletedRef.current = true;
+      try {
+        await UserProfileService.deleteUnconfirmedUser(api, email);
+      } catch {
+        // Optionally handle/log error
       }
+    };
+
+    const handleUrlChange = () => {
+      handleDelete();
     };
 
     window.addEventListener('popstate', handleUrlChange);
     window.addEventListener('hashchange', handleUrlChange);
+    window.addEventListener('beforeunload', handleDelete);
 
     return () => {
       window.removeEventListener('popstate', handleUrlChange);
       window.removeEventListener('hashchange', handleUrlChange);
-      // Also call on unmount, in case of direct navigation away
-      handleUrlChange();
+      window.removeEventListener('beforeunload', handleDelete);
+      handleDelete(); // Always attempt on unmount
     };
-  }, [form, pathname]);
+  }, [form]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
