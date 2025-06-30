@@ -78,9 +78,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         example_request = ExamplesRequest(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
-            goal='Goal',
-            context='Context',
-            other_party='Someone',
+            persona='**Name**: Someone **Training Focus**: Goal',
+            situational_facts='Context',
             category='Feedback',
             key_concepts='KC1',
         )
@@ -150,9 +149,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         example_request = ExamplesRequest(
             transcript='Error case transcript...',
             objectives=['ObjX'],
-            goal='Goal',
-            context='Context',
-            other_party='Other',
+            persona='**Name**: Other **Training Focus**: Goal',
+            situational_facts='Context',
             category='Category',
             key_concepts='KeyConcept',
         )

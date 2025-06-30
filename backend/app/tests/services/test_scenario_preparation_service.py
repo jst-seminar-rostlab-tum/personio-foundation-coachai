@@ -24,9 +24,10 @@ class TestScenarioPreparationService(unittest.TestCase):
 
         req = ObjectiveRequest(
             category='Performance Feedback',
-            goal='Give constructive criticism',
-            context='Quarterly review',
-            other_party='Junior engineer',
+            persona='**Name**: Andrew '
+            '**Training Focus**: Giving constructive criticism '
+            '**Company Positon**: Junior engineer',
+            situational_facts='Quarterly review',
             num_objectives=3,
         )
 
@@ -43,9 +44,10 @@ class TestScenarioPreparationService(unittest.TestCase):
 
         req = ChecklistRequest(
             category='Performance Review',
-            goal='Address underperformance',
-            context='1:1 review',
-            other_party='Backend engineer',
+            persona='**Name**: Sarah '
+            '**Training Focus**: Addressing underperformance '
+            '**Company Position**: Backend engineer',
+            situational_facts='1:1 review',
             num_checkpoints=3,
         )
 
@@ -75,9 +77,10 @@ class TestScenarioPreparationService(unittest.TestCase):
 
         req = KeyConceptRequest(
             category='Feedback',
-            goal='Deliver effective criticism',
-            context='Post-project debrief',
-            other_party='Project manager',
+            persona='**Name**: Jenny'
+            '**Training Focus**: Deliver effective criticism'
+            '**Company Position**: Project manager',
+            situational_facts='Post-project debrief',
         )
 
         result = generate_key_concept(req)
@@ -93,9 +96,10 @@ class TestScenarioPreparationService(unittest.TestCase):
 
         req = ObjectiveRequest(
             category='Feedback',
-            goal='Improve team dynamics',
-            context='Team meeting',
-            other_party='Team lead',
+            persona='**Name**: Glenda'
+            '**Training Focus**: Improve team dynamics '
+            '**Company Position**: Team lead',
+            situational_facts='Team meeting',
             num_objectives=2,
         )
 
