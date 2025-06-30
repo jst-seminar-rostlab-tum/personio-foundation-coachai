@@ -52,6 +52,7 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
         rating,
         comment: ratingDescription,
         sessionId,
+        allowAdminAccess: shareWithAdmin,
       });
       showSuccessToast(t('submitReviewSuccess'));
     } catch (error) {

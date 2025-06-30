@@ -2,6 +2,7 @@ export interface ReviewCreate {
   rating: number;
   comment: string;
   sessionId: string;
+  allowAdminAccess: boolean;
 }
 export interface Review {
   id: string;
