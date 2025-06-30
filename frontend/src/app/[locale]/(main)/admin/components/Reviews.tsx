@@ -1,14 +1,13 @@
 'use client';
 
 import { ChevronDown, Star } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
-import { Review, ReviewsPaginated } from '@/interfaces/Review';
-import { api } from '@/services/client/Api';
-import { reviewService } from '@/services/server/ReviewService';
+import { Review, ReviewsPaginated } from '@/interfaces/models/Review';
+import { reviewService } from '@/services/ReviewService';
 import { showErrorToast } from '@/lib/toast';
 import {
   Select,
@@ -18,12 +17,16 @@ import {
   SelectValue,
 } from '@/components/ui/Select';
 import { useRouter } from 'next/navigation';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
+import { formattedDate } from '@/lib/utils';
+import { api } from '@/services/ApiClient';
 
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
   const limit = pagination?.pageSize;
   const router = useRouter();
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
+  const locale = useLocale();
   const [visibleCount, setVisibleCount] = useState(limit);
   const [pageNumber, setPageNumber] = useState(pagination?.currentPage);
   const [isLoading, setIsLoading] = useState(false);
@@ -110,7 +113,9 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
           </div>
         </div>
       </div>
-      {reviewsStorage && (
+      {!reviewsStorage || reviewsStorage.length === 0 ? (
+        <EmptyListComponent itemType={tCommon('emptyList.reviews')} />
+      ) : (
         <div className="w-full mb-8 text-left">
           <div className="flex items-center justify-between mb-4">
             <div className="text-lg font-semibold text-bw-70">{t('userReviews')}</div>
@@ -148,9 +153,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                   ))}
                 </div>
                 <div className="text-sm text-bw-70 mb-2">{review.comment}</div>
-                <div className="text-sm text-bw-40">
-                  {new Date(review.date).toLocaleDateString()}
-                </div>
+                <div className="text-sm text-bw-40">{formattedDate(review.date, locale)}</div>
               </div>
             ))}
           </div>

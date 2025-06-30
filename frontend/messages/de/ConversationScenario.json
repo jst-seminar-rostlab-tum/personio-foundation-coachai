@@ -65,7 +65,7 @@
     {
       "id": "giving_feedback",
       "name": "Feedback geben",
-      "iconUri": "/icons/category-giving_feedback.svg",
+      "iconUri": "/images/category/giving-feedback.svg",
       "defaultContext": "Einzelgespräch mit einem Teammitglied.",
       "defaultGoal": "Konstruktives Feedback effektiv geben.",
       "defaultOtherParty": "Teammitglied"
@@ -73,7 +73,7 @@
     {
       "id": "performance_reviews",
       "name": "Leistungsbeurteilungen",
-      "iconUri": "/icons/category-performance_reviews.svg",
+      "iconUri": "/images/category/performance-reviews.svg",
       "defaultContext": "Formelles Gespräch zur Leistungsbeurteilung.",
       "defaultGoal": "Leistung von Mitarbeitenden evaluieren und besprechen.",
       "defaultOtherParty": "Mitarbeiter/in"
@@ -81,7 +81,7 @@
     {
       "id": "conflict_resolution",
       "name": "Konfliktlösung",
-      "iconUri": "/icons/category-conflict_resolution.svg",
+      "iconUri": "/images/category/conflict-resolution.svg",
       "defaultContext": "Konfliktlösungsgespräch zwischen Teammitgliedern.",
       "defaultGoal": "Konflikte lösen und Teamdynamik verbessern.",
       "defaultOtherParty": "Teammitglieder"
@@ -89,7 +89,7 @@
     {
       "id": "salary_discussions",
       "name": "Gehaltsgespräche",
-      "iconUri": "/icons/category-salary_discussions.svg",
+      "iconUri": "/images/category/salary-discussions.svg",
       "defaultContext": "Verhandlungsgespräch über das Gehalt.",
       "defaultGoal": "Eine für beide Seiten vorteilhafte Einigung zum Gehalt erzielen.",
       "defaultOtherParty": "Arbeitgeber"
@@ -98,7 +98,8 @@
   "navigation": {
     "back": "Zurück",
     "next": "Weiter",
-    "create": "Training erstellen"
+    "create": "Training erstellen",
+    "creating": "Wird erstellt..."
   },
   "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später erneut."
 }

@@ -1,6 +1,10 @@
-import { KeyConcept } from '@/interfaces/ConversationScenario';
+import { KeyConcept } from '@/interfaces/models/ConversationScenario';
 
-export default function PreparationKeyConcepts({ keyConcepts }: { keyConcepts: KeyConcept[] }) {
+interface PreparationKeyConceptsProps {
+  keyConcepts: KeyConcept[];
+}
+
+export default function PreparationKeyConcepts({ keyConcepts }: PreparationKeyConceptsProps) {
   return (
     <div className="space-y-4">
       {keyConcepts.map((concept, index) => (

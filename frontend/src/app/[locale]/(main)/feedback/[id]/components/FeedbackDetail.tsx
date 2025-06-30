@@ -17,23 +17,30 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/Accordion';
-import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
+import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 import { useCallback, useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { getSessionFeedback } from '@/services/client/SessionService';
+import { useLocale, useTranslations } from 'next-intl';
+import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/toast';
+import { convertTimeToMinutes, formattedDate } from '@/lib/utils';
+import { api } from '@/services/ApiClient';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
 
-export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
+interface FeedbackDetailProps {
+  sessionId: string;
+}
+
+export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   const t = useTranslations('Feedback');
+  const locale = useLocale();
   const [feedbackDetail, setFeedbackDetail] = useState<FeedbackResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const getFeedbackDetail = useCallback(
     async (id: string) => {
       try {
-        const response = await getSessionFeedback(id);
+        const response = await getSessionFeedback(api, id);
         if (response.status === 202) {
           setTimeout(() => {
             getFeedbackDetail(id);
@@ -59,23 +66,6 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
   useEffect(() => {
     getFeedbackDetail(sessionId);
   }, [getFeedbackDetail, sessionId]);
-
-  const convertTimeToMinutes = (seconds: number) => {
-    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-  };
-
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-
-    return `${day}.${month}.${year}, ${hours}:${minutes}`;
-  };
 
   const progressBarData = [
     { key: t('progressBars.structure'), value: feedbackDetail?.feedback?.scores.structure ?? 0 },
@@ -126,7 +116,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
         <div className="text-lg text-marigold-90">{feedbackDetail?.title}</div>
         <div className="text-base text-marigold-95">
-          {formatDateTime(feedbackDetail?.createdAt ?? '')}
+          {formattedDate(feedbackDetail?.createdAt, locale)}
         </div>
       </div>
       <FeedbackDialog sessionId={sessionId} />
@@ -177,10 +167,10 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           </div>
         </div>
       </div>
-      <Accordion type="multiple" className="w-full">
+      <Accordion type="multiple">
         <AccordionItem value="feedback">
           <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
-          <AccordionContent className="px-5">
+          <AccordionContent>
             <div className="flex items-center gap-2 mt-3">
               <CheckCircle size={24} className="text-forest-50" />
               <span className="text-xl">{t('detailedFeedback.positive')}</span>

@@ -4,14 +4,16 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
+import { handlePasteEvent } from '@/lib/handlePaste';
 import { createClient } from '@/lib/supabase/client';
 import { showErrorToast } from '@/lib/toast';
-import { authService } from '@/services/client/AuthService';
+import { api } from '@/services/ApiClient';
+import { authService } from '@/services/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResendParams, VerifyEmailOtpParams } from '@supabase/supabase-js';
 import { useTranslations } from 'next-intl';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
@@ -22,6 +24,8 @@ export default function ConfirmationForm() {
   const [showResendButton, setShowResendButton] = useState(false);
 
   const router = useRouter();
+
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (error) {
@@ -75,7 +79,7 @@ export default function ConfirmationForm() {
     }
 
     try {
-      await authService.confirmUser();
+      await authService.confirmUser(api);
     } catch {
       setError(t('genericError'));
       setIsLoading(false);
@@ -137,6 +141,9 @@ export default function ConfirmationForm() {
                             className="w-10 text-center text-lg"
                             disabled={isLoading}
                             value={field.value[idx] || ''}
+                            ref={(el) => {
+                              inputRefs.current[idx] = el;
+                            }}
                             onChange={(e) => {
                               const val = e.target.value.replace(/\D/g, '');
                               const codeArr = (field.value || '').split('');
@@ -144,20 +151,20 @@ export default function ConfirmationForm() {
                               const newCode = codeArr.join('').slice(0, codeSize);
                               field.onChange(newCode);
                               if (val && idx < codeSize - 1) {
-                                const next = document.getElementById(`code-cell-${idx + 1}`);
-                                (next as HTMLInputElement)?.focus();
+                                inputRefs.current[idx + 1]?.focus();
                               }
+                            }}
+                            onPaste={(e) => {
+                              handlePasteEvent(e, field, codeSize, inputRefs.current);
                             }}
                             onKeyDown={(e) => {
                               if (e.key === 'Backspace') {
                                 const codeArr = (field.value || '').split('');
                                 if (!codeArr[idx] && idx > 0) {
-                                  const prev = document.getElementById(`code-cell-${idx - 1}`);
-                                  (prev as HTMLInputElement)?.focus();
+                                  inputRefs.current[idx - 1]?.focus();
                                 }
                               }
                             }}
-                            id={`code-cell-${idx}`}
                             autoFocus={idx === 0}
                           />
                         ))}

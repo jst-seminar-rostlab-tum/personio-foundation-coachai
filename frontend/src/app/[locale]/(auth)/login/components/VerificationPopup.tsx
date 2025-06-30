@@ -7,15 +7,27 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { RotateCcw } from 'lucide-react';
-import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
-import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
+import { CreateUserRequest } from '@/interfaces/models/Auth';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services/client/AuthService';
-import { verificationService } from '@/services/client/VerificationService';
+import { authService } from '@/services/AuthService';
 import { showErrorToast } from '@/lib/toast';
+import { handlePasteEvent } from '@/lib/handlePaste';
+import { api } from '@/services/ApiClient';
+
+interface VerificationPopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+  signUpFormData: {
+    fullName: string;
+    email: string;
+    phone_number: string;
+    password: string;
+    terms: boolean;
+  };
+}
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
@@ -30,6 +42,8 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     code: z.string().length(6, t('codeLengthError')),
   });
   const codeSize = 6;
+
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const form = useForm({
     resolver: zodResolver(verificationSchema),
@@ -52,7 +66,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
   const sendInitialVerificationCode = useCallback(async () => {
     try {
       setIsLoading(true);
-      await verificationService.sendVerificationCode({
+      await authService.sendVerificationCode(api, {
         phone_number: signUpFormData.phone_number,
       });
       setVerificationSent(true);
@@ -82,7 +96,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
 
     try {
       // First verify the code
-      await verificationService.verifyCode({
+      await authService.verifyCode(api, {
         phone_number: signUpFormData.phone_number,
         code: form.getValues('code'),
       });
@@ -95,7 +109,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
         password: signUpFormData.password,
         // code: form.getValues('code'),
       };
-      await authService.createUser(data);
+      await authService.createUser(api, data);
       setIsLoading(false);
 
       router.push(`/confirm?email=${encodeURIComponent(signUpFormData.email)}`);
@@ -109,7 +123,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     if (resendCooldown > 0) return;
     try {
       setIsLoading(true);
-      await verificationService.sendVerificationCode({
+      await authService.sendVerificationCode(api, {
         phone_number: signUpFormData.phone_number,
       });
       setResendCooldown(30);
@@ -153,6 +167,9 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                           className="w-10 text-center text-lg"
                           disabled={isLoading}
                           value={field.value[idx] || ''}
+                          ref={(el) => {
+                            inputRefs.current[idx] = el;
+                          }}
                           onChange={(e) => {
                             const val = e.target.value.replace(/\D/g, '');
                             const codeArr = (field.value || '').split('');
@@ -160,20 +177,20 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                             const newCode = codeArr.join('').slice(0, codeSize);
                             field.onChange(newCode);
                             if (val && idx < codeSize - 1) {
-                              const next = document.getElementById(`code-cell-${idx + 1}`);
-                              (next as HTMLInputElement)?.focus();
+                              inputRefs.current[idx + 1]?.focus();
                             }
+                          }}
+                          onPaste={(e) => {
+                            handlePasteEvent(e, field, codeSize, inputRefs.current);
                           }}
                           onKeyDown={(e) => {
                             if (e.key === 'Backspace') {
                               const codeArr = (field.value || '').split('');
                               if (!codeArr[idx] && idx > 0) {
-                                const prev = document.getElementById(`code-cell-${idx - 1}`);
-                                (prev as HTMLInputElement)?.focus();
+                                inputRefs.current[idx - 1]?.focus();
                               }
                             }
                           }}
-                          id={`code-cell-${idx}`}
                           autoFocus={idx === 0}
                         />
                       ))}
