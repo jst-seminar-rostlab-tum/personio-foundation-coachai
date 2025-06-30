@@ -1,7 +1,7 @@
 # ruff: noqa: E501
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from app.connections.openai_client import call_structured_llm
 from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
@@ -9,7 +9,7 @@ from app.schemas.scoring_schema import ScoringResult
 
 
 class ScoringService:
-    def __init__(self, rubric_path: Path = None) -> None:
+    def __init__(self, rubric_path: Optional[Path] = None) -> None:
         if rubric_path is None:
             rubric_path = Path(__file__).parent.parent / 'data' / 'conversation_rubric.json'
         self.rubric = self._load_json(rubric_path)

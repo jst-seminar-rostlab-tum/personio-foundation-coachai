@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime
 from functools import lru_cache
+from typing import Optional
 from uuid import UUID, uuid4
 
 from sqlmodel import Session as DBSession
@@ -266,7 +267,7 @@ def generate_and_store_feedback(
     session_id: UUID,
     example_request: ExamplesRequest,
     db_session: DBSession,
-    scoring_service: ScoringService = None,
+    scoring_service: Optional[ScoringService] = None,
 ) -> SessionFeedback:
     """
     Generate feedback based on session_id and transcript data,
@@ -321,6 +322,7 @@ def generate_and_store_feedback(
         examples_negative_dicts = []
         goals = GoalsAchievedCollection(goals_achieved=[])
         recommendations = []
+        conversation = None
     else:
         conversation = get_conversation_data(db_session, session_id)
 
