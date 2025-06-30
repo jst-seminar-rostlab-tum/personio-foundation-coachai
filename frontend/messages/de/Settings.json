@@ -45,5 +45,7 @@
     }
   },
   "saveSettingsSuccess": "Ihre Einstellungen wurden erfolgreich gespeichert.",
-  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+  "exportSuccess": "Ihre Daten wurden erfolgreich exportiert.",
+  "exportError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
 }
