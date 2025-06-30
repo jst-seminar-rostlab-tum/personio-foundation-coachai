@@ -1,6 +1,10 @@
 import Checkbox from '@/components/ui/Checkbox';
 
-export default function PreparationChecklist({ checklist }: { checklist: string[] }) {
+interface PreparationChecklistProps {
+  checklist: string[];
+}
+
+export default function PreparationChecklist({ checklist }: PreparationChecklistProps) {
   return (
     <div className="space-y-4">
       {checklist.map((label, index) => (

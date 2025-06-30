@@ -5,7 +5,11 @@ import { Home, RefreshCw, ServerCrash } from 'lucide-react';
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { ErrorPageProps } from '@/interfaces/ErrorPageProps';
+
+interface ErrorPageProps {
+  error: Error & { digest?: string };
+  reset: () => void;
+}
 
 export default function Error({ error, reset }: ErrorPageProps) {
   const t = useTranslations('Common');

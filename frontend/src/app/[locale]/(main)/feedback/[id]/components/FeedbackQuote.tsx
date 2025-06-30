@@ -1,8 +1,16 @@
 'use client';
 
-import { FeedbackQuoteProps } from '@/interfaces/FeedbackQuoteProps';
 import { ChartNoAxesColumnIncreasingIcon, CheckCircle, CircleX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
+interface FeedbackQuoteProps {
+  heading: string;
+  feedback?: string;
+  quote?: string;
+  improvedQuote?: string;
+  recommendation?: string;
+  icon?: string;
+}
 
 export default function FeedbackQuote({
   heading,
