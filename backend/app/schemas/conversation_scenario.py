@@ -29,4 +29,4 @@ class ConversationScenarioSummary(CamelModel):
     language_code: LanguageCode
     category_name: str
     total_sessions: int
-    average_score: Optional[float] = None  # None if there are no sessions
+    average_score: float | None = None  # None if there are no sessions
