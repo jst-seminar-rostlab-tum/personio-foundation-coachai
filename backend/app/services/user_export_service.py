@@ -163,7 +163,6 @@ def _build_export_sessions(scenarios: list[ConversationScenario]) -> list[Export
                 scheduled_at=sess.scheduled_at.isoformat() if sess.scheduled_at else None,
                 started_at=sess.started_at.isoformat() if sess.started_at else None,
                 ended_at=sess.ended_at.isoformat() if sess.ended_at else None,
-                ai_persona=sess.ai_persona,
                 status=str(sess.status),
                 created_at=sess.created_at.isoformat() if sess.created_at else None,
                 updated_at=sess.updated_at.isoformat() if sess.updated_at else None,
@@ -182,7 +181,6 @@ def _build_export_sessions(scenarios: list[ConversationScenario]) -> list[Export
         if sessions:
             sess = sessions[0]  # Use first session for debugging
             print('Sample session data types:')
-            print(f'  ai_persona: {type(sess.ai_persona)} = {sess.ai_persona}')
             print(f'  status: {type(sess.status)} = {sess.status}')
         raise
 

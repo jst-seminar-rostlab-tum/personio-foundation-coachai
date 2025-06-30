@@ -63,7 +63,6 @@ class ExportSession(BaseModel):
     scheduled_at: Optional[str]
     started_at: Optional[str]
     ended_at: Optional[str]
-    ai_persona: dict[str, Any]
     status: str
     created_at: Optional[str]
     updated_at: Optional[str]

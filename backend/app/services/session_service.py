@@ -40,7 +40,6 @@ class SessionService:
             scheduled_at=session.scheduled_at,
             started_at=session.started_at,
             ended_at=session.ended_at,
-            ai_persona=session.ai_persona,
             status=session.status,
             allow_admin_access=session.allow_admin_access,
             created_at=session.created_at,
