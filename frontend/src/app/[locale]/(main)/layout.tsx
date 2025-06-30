@@ -35,7 +35,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
         <NextIntlClientProvider>
           <UserContextProvider user={userProfile}>
             <AppHeader />
-            <main className="mx-auto p-[clamp(1.25rem,4vw,4rem)] max-w-7xl mt-16">
+            <main className="mx-auto py-12 px-[clamp(1.25rem,4vw,4rem)] max-w-7xl mt-16">
               <BackButton />
               {children}
             </main>

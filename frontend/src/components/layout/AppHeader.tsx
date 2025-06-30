@@ -92,8 +92,9 @@ export function AppHeader() {
         </div>
       </header>
 
+      {/* Mobile Navigator */}
       <div
-        className={`md:hidden fixed inset-0 z-40 top-0 transition-transform duration-300 ease-in-out ${
+        className={`lg:hidden fixed inset-0 z-40 top-0 transition-transform duration-300 ease-in-out ${
           isMenuOpen ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
@@ -109,7 +110,7 @@ export function AppHeader() {
               <Link
                 key={key}
                 href={href}
-                className={`bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50 transition-colors ${
+                className={`bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 hover:text-bw-50 transition-colors ${
                   pathname === href ? 'text-marigold-50' : ''
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -118,7 +119,7 @@ export function AppHeader() {
               </Link>
             ))}
             <span
-              className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50"
+              className="bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 hover:text-bw-50"
               onClick={async () => {
                 await logoutUser(createClient);
                 setIsMenuOpen(false);
