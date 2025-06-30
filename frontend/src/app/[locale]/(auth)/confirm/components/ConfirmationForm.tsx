@@ -7,7 +7,8 @@ import Input from '@/components/ui/Input';
 import { handlePasteEvent } from '@/lib/handlePaste';
 import { createClient } from '@/lib/supabase/client';
 import { showErrorToast } from '@/lib/toast';
-import { authService } from '@/services/client/AuthService';
+import { api } from '@/services/ApiClient';
+import { authService } from '@/services/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResendParams, VerifyEmailOtpParams } from '@supabase/supabase-js';
 import { useTranslations } from 'next-intl';
@@ -78,7 +79,7 @@ export default function ConfirmationForm() {
     }
 
     try {
-      await authService.confirmUser();
+      await authService.confirmUser(api);
     } catch {
       setError(t('genericError'));
       setIsLoading(false);

@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from math import ceil
+from typing import Optional
 from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
@@ -29,7 +30,7 @@ class SessionService:
     ) -> SessionDetailsRead:
         session = self._get_session(session_id)
         scenario = self._get_conversation_scenario(session.scenario_id)
-        self._authorize_access(scenario, user_profile)
+        self._authorize_access(scenario, user_profile, session.allow_admin_access)
 
         title = self._get_training_title(scenario)
         goals = scenario.preparation.objectives if scenario.preparation else []
@@ -42,6 +43,7 @@ class SessionService:
             ended_at=session.ended_at,
             ai_persona=session.ai_persona,
             status=session.status,
+            allow_admin_access=session.allow_admin_access,
             created_at=session.created_at,
             updated_at=session.updated_at,
             title=title,
@@ -56,9 +58,17 @@ class SessionService:
         return session_response
 
     def fetch_paginated_sessions(
-        self, user_profile: UserProfile, page: int, page_size: int
+        self,
+        user_profile: UserProfile,
+        page: int,
+        page_size: int,
+        scenario_id: Optional[UUID] = None,
     ) -> PaginatedSessionsResponse:
-        scenario_ids = self._get_user_scenario_ids(user_profile.id)
+        if scenario_id:
+            scenario = self._validate_scenario_access(scenario_id, user_profile)
+            scenario_ids = [scenario.id]
+        else:
+            scenario_ids = self._get_user_scenario_ids(user_profile.id)
 
         if not scenario_ids:
             return PaginatedSessionsResponse(
@@ -352,10 +362,21 @@ class SessionService:
             )
         return scenario
 
-    def _authorize_access(self, scenario: ConversationScenario, user_profile: UserProfile) -> None:
+    def _authorize_access(
+        self, scenario: ConversationScenario, user_profile: UserProfile, allow_admin_access: bool
+    ) -> None:
         if scenario.user_id != user_profile.id and user_profile.account_role != AccountRole.admin:
             raise HTTPException(
                 status_code=403, detail='You do not have permission to access this session'
+            )
+        if (
+            scenario.user_id != user_profile.id
+            and user_profile.account_role == AccountRole.admin
+            and not allow_admin_access
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail='You do not have permission to access this session as an admin',
             )
 
     def _get_training_title(self, scenario: ConversationScenario) -> str:
@@ -440,11 +461,11 @@ class SessionService:
             SkillScores(
                 structure=feedback.scores.get('structure', -1) if feedback else -1,
                 empathy=feedback.scores.get('empathy', -1) if feedback else -1,
-                solution_focus=feedback.scores.get('solutionFocus', -1) if feedback else -1,
+                focus=feedback.scores.get('focus', -1) if feedback else -1,
                 clarity=feedback.scores.get('clarity', -1) if feedback else -1,
             )
             if feedback
-            else SkillScores(structure=-1, empathy=-1, solution_focus=-1, clarity=-1)
+            else SkillScores(structure=-1, empathy=-1, focus=-1, clarity=-1)
         )
 
         return SessionItem(
@@ -455,6 +476,7 @@ class SessionService:
             date=sess.ended_at,
             score=feedback.overall_score if feedback else -1,
             skills=scores,
+            allow_admin_access=sess.allow_admin_access,
         )
 
     def _delete_audio_files(self, audio_uris: list[str]) -> None:
@@ -462,3 +484,19 @@ class SessionService:
         Replace this with your actual object storage client logic."""
         for uri in audio_uris:  # TODO: delete audios on object storage.  # noqa: B007
             pass
+
+    def _validate_scenario_access(
+        self, scenario_id: UUID, user_profile: UserProfile
+    ) -> ConversationScenario:
+        """
+        Validate access to a specific conversation scenario.
+        Ensures the scenario exists and the user has permission to access it.
+        """
+        scenario = self.db.get(ConversationScenario, scenario_id)
+        if not scenario:
+            raise HTTPException(status_code=404, detail='Scenario not found')
+        if scenario.user_id != user_profile.id and user_profile.account_role != AccountRole.admin:
+            raise HTTPException(
+                status_code=403, detail='You do not have permission to access this scenario'
+            )
+        return scenario
