@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 class ConversationCategory(CamelModel, table=True):  # `table=True` makes it a database table
     id: str = Field(primary_key=True)  # Changed from UUID to str
     name: str = Field(unique=True)
-    system_prompt: str = Field(default='')
     initial_prompt: str = Field(default='')
     ai_setup: dict = Field(default_factory=dict, sa_column=Column(JSON))
     default_context: str = Field(default='')

@@ -385,7 +385,6 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
         ConversationCategory(
             id='giving_feedback',
             name='Giving Feedback',
-            system_prompt='You are an expert in providing constructive feedback.',
             initial_prompt=initial_prompt_data.get(
                 'giving_feedback', 'One-on-one meeting with a team member.'
             ),
@@ -403,7 +402,6 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
         ConversationCategory(
             id='performance_reviews',
             name='Performance Reviews',
-            system_prompt='You are a manager conducting performance reviews.',
             initial_prompt=initial_prompt_data.get(
                 'performance_reviews', 'Formal performance review meeting.'
             ),
@@ -421,7 +419,6 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
         ConversationCategory(
             id='conflict_resolution',
             name='Conflict Resolution',
-            system_prompt='You are a mediator resolving conflicts.',
             initial_prompt=initial_prompt_data.get(
                 'conflict_resolution', 'Conflict resolution meeting between team members.'
             ),
@@ -439,7 +436,6 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
         ConversationCategory(
             id='salary_discussions',
             name='Salary Discussions',
-            system_prompt='You are a negotiator discussing salary expectations.',
             initial_prompt=initial_prompt_data.get(
                 'salary_discussions', 'Salary negotiation meeting.'
             ),
@@ -457,7 +453,6 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
         ConversationCategory(
             id='custom',
             name='Custom Category',
-            system_prompt='',
             initial_prompt='',
             ai_setup={},
             default_context='',
