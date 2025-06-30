@@ -54,18 +54,23 @@ export function AppHeader() {
           >
             {t('title')}
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             {/* Navigation Elements */}
             <div className="hidden lg:flex items-center gap-10">
               {navigationLinks.map(({ key, href }) => (
                 <Link
                   key={key}
                   href={href}
-                  className={`text-bw-60 hover:text-marigold-50 font-medium text-lg transition-colors ${
-                    pathname.includes(href) ? 'text-marigold-50' : ''
-                  }`}
+                  className="relative group text-bw-60 font-medium text-lg transition-colors cursor-pointer"
                 >
                   {t(key)}
+                  <span
+                    className={`block h-0.5 absolute left-1/2 -translate-x-1/2 -bottom-1 transition-transform duration-300 ease-in-out origin-left w-[90%] ${
+                      pathname === href
+                        ? 'scale-x-100 bg-marigold-50'
+                        : 'scale-x-0 group-hover:scale-x-100 bg-bw-60'
+                    }`}
+                  />
                 </Link>
               ))}
             </div>
@@ -105,27 +110,33 @@ export function AppHeader() {
           </Button>
         </div>
         <div className="flex flex-col items-center justify-center h-[calc(100vh-56px)] bg-background-light">
-          <nav className="flex flex-col items-center justify-center space-y-10">
+          <nav className="flex flex-col items-center justify-center space-y-10 sm:space-y-14">
             {navigationLinks.map(({ key, href }) => (
               <Link
                 key={key}
                 href={href}
-                className={`bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 hover:text-bw-50 transition-colors ${
-                  pathname === href ? 'text-marigold-50' : ''
-                }`}
+                className={`bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 transition-colors relative group`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {t(key)}
+                <span
+                  className={`block h-1 sm:h-1.5 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left w-[95%] ${
+                    pathname === href
+                      ? 'scale-x-100 bg-marigold-50'
+                      : 'scale-x-0 group-hover:scale-x-100 bg-bw-60'
+                  }`}
+                />
               </Link>
             ))}
             <span
-              className="bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 hover:text-bw-50"
+              className="bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 transition-colors relative group cursor-pointer"
               onClick={async () => {
                 await logoutUser(createClient);
                 setIsMenuOpen(false);
               }}
             >
               {t('logout')}
+              <span className="block h-1 sm:h-1.5 bg-bw-60 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left scale-x-0 group-hover:scale-x-100 w-[95%]" />
             </span>
           </nav>
         </div>
