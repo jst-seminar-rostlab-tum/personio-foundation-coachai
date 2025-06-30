@@ -56,7 +56,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             total_sessions=32,
             training_time=4.5,
             current_streak_days=5,
-            average_score=82,
+            score_sum=32 * 82,
             goals_achieved=4,  # Summation of all goals achieved
         ),
         UserProfile(
@@ -73,7 +73,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             total_sessions=5,
             training_time=4.2,
             current_streak_days=2,
-            average_score=87,
+            score_sum=5 * 87,
             goals_achieved=2,  # Summation of all goals achieved
         ),
     ]
@@ -1503,7 +1503,7 @@ def get_dummy_admin_stats() -> list[AdminDashboardStats]:
         AdminDashboardStats(
             id=uuid4(),
             total_trainings=34533,
-            average_score=86,
+            score_sum=34533 * 3.5,
         )
     ]
 

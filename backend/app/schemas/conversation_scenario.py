@@ -2,8 +2,6 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel
-
 from app.models.camel_case import CamelModel
 from app.models.conversation_scenario import (
     ConversationScenarioStatus,
@@ -50,7 +48,7 @@ class ConversationScenarioCreateResponse(CamelModel):
     scenario_id: UUID
 
 
-class ConversationData(BaseModel):
+class ConversationScenarioWithTranscript(CamelModel):
     scenario: ConversationScenarioRead
     transcript: list[SessionTurnRead]
 

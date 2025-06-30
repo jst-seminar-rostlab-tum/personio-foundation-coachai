@@ -128,7 +128,7 @@ class UserService:
             total_sessions=user.total_sessions,
             training_time=user.training_time,
             current_streak_days=user.current_streak_days,
-            average_score=user.average_score,
+            score_sum=user.score_sum,
             goals_achieved=user.goals_achieved,
             # TODO: Uncomment and implement these fields when ready
             # performance_over_time=user.performance_over_time,

@@ -16,7 +16,10 @@ from app.models.conversation_scenario import ConversationScenario
 from app.models.language import LanguageCode
 from app.models.session import Session
 from app.models.session_turn import SessionTurn
-from app.schemas.conversation_scenario import ConversationData, ConversationScenarioRead
+from app.schemas.conversation_scenario import (
+    ConversationScenarioRead,
+    ConversationScenarioWithTranscript,
+)
 from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -413,7 +416,9 @@ def generate_and_store_feedback(
     return feedback
 
 
-def get_conversation_data(db_session: DBSession, session_id: UUID) -> ConversationData:
+def get_conversation_data(
+    db_session: DBSession, session_id: UUID
+) -> ConversationScenarioWithTranscript:
     """
     Get conversation data from the database in a single transaction.
     """
@@ -431,7 +436,7 @@ def get_conversation_data(db_session: DBSession, session_id: UUID) -> Conversati
             select(SessionTurn).where(SessionTurn.session_id == session_id)
         ).all()
         transcript = [SessionTurnRead.model_validate(turn) for turn in turns]
-        return ConversationData(scenario=scenario_read, transcript=transcript)
+        return ConversationScenarioWithTranscript(scenario=scenario_read, transcript=transcript)
 
 
 if __name__ == '__main__':

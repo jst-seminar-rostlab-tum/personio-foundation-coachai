@@ -8,7 +8,10 @@ from uuid import uuid4
 from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
 from app.models.language import LanguageCode
 from app.models.session_turn import SpeakerEnum
-from app.schemas.conversation_scenario import ConversationData, ConversationScenarioRead
+from app.schemas.conversation_scenario import (
+    ConversationScenarioRead,
+    ConversationScenarioWithTranscript,
+)
 from app.schemas.session_turn import SessionTurnRead
 from app.services.scoring_service import scoring_service
 
@@ -67,7 +70,7 @@ class TestSessionFeedbackAI(unittest.TestCase):
                 created_at=datetime.now(),
             ),
         ]
-        conversation = ConversationData(
+        conversation = ConversationScenarioWithTranscript(
             scenario=scenario,
             transcript=transcript,
         )

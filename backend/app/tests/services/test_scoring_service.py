@@ -8,7 +8,10 @@ from uuid import uuid4
 from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
 from app.models.language import LanguageCode
 from app.models.session_turn import SpeakerEnum
-from app.schemas.conversation_scenario import ConversationData, ConversationScenarioRead
+from app.schemas.conversation_scenario import (
+    ConversationScenarioRead,
+    ConversationScenarioWithTranscript,
+)
 from app.schemas.scoring_schema import ConversationScore, MetricScore, ScoringResult
 from app.schemas.session_turn import SessionTurnRead
 from app.services.scoring_service import ScoringService
@@ -51,7 +54,9 @@ class TestScoringService(unittest.TestCase):
                 created_at=datetime(2024, 6, 28, 10, 0, 1),
             )
         ]
-        self.conversation = ConversationData(scenario=self.scenario, transcript=self.transcript)
+        self.conversation = ConversationScenarioWithTranscript(
+            scenario=self.scenario, transcript=self.transcript
+        )
         self.scoring_service = ScoringService(rubric_path=self.rubric_path)
 
     def tearDown(self) -> None:

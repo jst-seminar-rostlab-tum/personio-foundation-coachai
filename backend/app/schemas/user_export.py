@@ -18,7 +18,7 @@ class ExportUserProfile(BaseModel):
     total_sessions: int
     training_time: float
     current_streak_days: int
-    average_score: int
+    score_sum: int
     goals_achieved: int
 
 

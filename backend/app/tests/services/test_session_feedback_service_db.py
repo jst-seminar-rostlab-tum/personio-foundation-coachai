@@ -14,7 +14,7 @@ from app.models.conversation_scenario import (
 )
 from app.models.session import Session
 from app.models.session_turn import SessionTurn, SpeakerEnum
-from app.schemas.conversation_scenario import ConversationData
+from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
 from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -89,7 +89,7 @@ class TestSessionFeedbackService(unittest.TestCase):
     def test_get_conversation_data(self) -> None:
         session_id = self.insert_minimal_conversation()
         conversation = get_conversation_data(self.session, session_id)
-        self.assertIsInstance(conversation, ConversationData)
+        self.assertIsInstance(conversation, ConversationScenarioWithTranscript)
         self.assertEqual(conversation.scenario.context, 'Feedback context')
         self.assertEqual(len(conversation.transcript), 1)
         self.assertEqual(conversation.transcript[0].text, 'Hello, Sam!')

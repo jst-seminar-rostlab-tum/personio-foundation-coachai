@@ -7,7 +7,10 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine
 
 from app.models import FeedbackStatusEnum
-from app.schemas.conversation_scenario import ConversationData, ConversationScenarioRead
+from app.schemas.conversation_scenario import (
+    ConversationScenarioRead,
+    ConversationScenarioWithTranscript,
+)
 from app.schemas.session_feedback import (
     ExamplesRequest,
     GoalsAchievedCollection,
@@ -38,7 +41,9 @@ class TestSessionFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    def _mock_conversation_data(self, user_id: UUID | None = None) -> ConversationData:
+    def _mock_conversation_data(
+        self, user_id: UUID | None = None
+    ) -> ConversationScenarioWithTranscript:
         if user_id is None:
             user_id = uuid4()
         scenario = ConversationScenarioRead(
@@ -70,7 +75,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 created_at=datetime.now(),
             )
         ]
-        return ConversationData(scenario=scenario, transcript=transcript)
+        return ConversationScenarioWithTranscript(scenario=scenario, transcript=transcript)
 
     @patch('app.services.session_feedback.session_feedback_service.get_conversation_data')
     @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
