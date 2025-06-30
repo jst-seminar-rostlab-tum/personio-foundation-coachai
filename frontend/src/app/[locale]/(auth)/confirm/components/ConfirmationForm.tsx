@@ -16,6 +16,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { UserProfileService } from '@/services/UserProfileService';
 
 export default function ConfirmationForm() {
   const t = useTranslations('Confirm.ConfirmationForm');
@@ -113,13 +114,17 @@ export default function ConfirmationForm() {
   };
 
   useEffect(() => {
-    // Handler to delete unconfirmed user on navigation away from this page
-    const handleUrlChange = () => {
+    let hasDeleted = false;
+    const handleUrlChange = async () => {
       const email = form.getValues('email');
       if (!email) return;
-      // If the current path is not the confirmation page, delete the user
-      if (window.location.pathname !== pathname) {
-        // authService.deleteUnconfirmedUser(email).catch(() => {});
+      if (window.location.pathname !== pathname && !hasDeleted) {
+        hasDeleted = true;
+        try {
+          await UserProfileService.deleteUser(api);
+        } catch {
+          // Optionally handle/log error
+        }
       }
     };
 
@@ -129,6 +134,8 @@ export default function ConfirmationForm() {
     return () => {
       window.removeEventListener('popstate', handleUrlChange);
       window.removeEventListener('hashchange', handleUrlChange);
+      // Also call on unmount, in case of direct navigation away
+      handleUrlChange();
     };
   }, [form, pathname]);
 
