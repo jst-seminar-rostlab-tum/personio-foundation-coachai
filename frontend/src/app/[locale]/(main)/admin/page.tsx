@@ -2,14 +2,14 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
-import { adminService } from '@/services/server/AdminService';
-import { reviewService } from '@/services/server/ReviewService';
-import { api } from '@/services/server/Api';
-import { UserProfileService } from '@/services/server/UserProfileService';
+import { adminService } from '@/services/AdminService';
+import { reviewService } from '@/services/ReviewService';
+import { UserProfileService } from '@/services/UserProfileService';
 import { AccountRole } from '@/interfaces/models/UserProfile';
 import { redirect } from 'next/navigation';
 import StatCard from '@/components/common/StatCard';
 import { getTranslations } from 'next-intl/server';
+import { api } from '@/services/ApiServer';
 import AdminLoadingPage from './loading';
 import TokenSetter from './components/TokenSetter';
 import Reviews from './components/Reviews';
@@ -21,13 +21,13 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function AdminPage() {
-  const userProfile = await UserProfileService.getUserProfile();
+  const userProfile = await UserProfileService.getUserProfile(api);
   if (userProfile.accountRole !== AccountRole.admin) {
     return redirect('/dashboard');
   }
 
   const PAGE_SIZE = 4;
-  const statsData = adminService.getAdminStats();
+  const statsData = adminService.getAdminStats(api);
   const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
   const [stats, reviews] = await Promise.all([statsData, reviewsData]);
   const t = await getTranslations('Admin');

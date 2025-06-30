@@ -14,10 +14,11 @@ import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 
 import { UserOption } from '@/interfaces/models/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
-import { UserProfileService } from '@/services/client/UserProfileService';
+import { UserProfileService } from '@/services/UserProfileService';
 import { showErrorToast } from '@/lib/toast';
 import { useUser } from '@/contexts/User';
 import { useOnboardingStore } from '@/store/OnboardingStore';
+import { api } from '@/services/ApiClient';
 import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
@@ -61,7 +62,7 @@ export default function OnboardingPageComponent() {
 
   const updateUserProfile = async () => {
     try {
-      await UserProfileService.updateUserProfile({
+      await UserProfileService.updateUserProfile(api, {
         fullName: userProfile.fullName,
         professionalRole: role,
         goals,

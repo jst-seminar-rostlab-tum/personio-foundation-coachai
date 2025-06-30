@@ -10,9 +10,10 @@ import {
   ConversationScenario,
   ConversationCategory,
 } from '@/interfaces/models/ConversationScenario';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { showErrorToast } from '@/lib/toast';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
+import { api } from '@/services/ApiClient';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
@@ -100,7 +101,7 @@ export default function ConversationScenarioForm({
     };
 
     try {
-      const { data } = await conversationScenarioService.createConversationScenario(scenario);
+      const { data } = await conversationScenarioService.createConversationScenario(api, scenario);
       router.push(`/preparation/${data.scenarioId}`);
       setTimeout(reset, 2000);
     } catch (error) {

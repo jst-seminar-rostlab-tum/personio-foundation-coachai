@@ -6,13 +6,13 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { Button } from '@/components/ui/Button';
-import { sessionService } from '@/services/server/SessionService';
-import { api } from '@/services/server/Api';
-import { UserProfileService } from '@/services/server/UserProfileService';
+import { sessionService } from '@/services/SessionService';
+import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { SessionFromPagination } from '@/interfaces/models/Session';
 import { formattedDate } from '@/lib/utils';
+import { api } from '@/services/ApiServer';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -23,8 +23,8 @@ export default async function DashboardPage() {
   const t = await getTranslations('Dashboard');
   const tCommon = await getTranslations('Common');
   const PAGE_SIZE = 3;
-  const userProfile = await UserProfileService.getUserProfile();
-  const userStatsData = await UserProfileService.getUserStats();
+  const userProfile = await UserProfileService.getUserProfile(api);
+  const userStatsData = await UserProfileService.getUserStats(api);
   const sessionsData = await sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
   const sessions = sessionsData?.data?.sessions;
   const locale = await getLocale();

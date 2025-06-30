@@ -452,11 +452,11 @@ class SessionService:
             SkillScores(
                 structure=feedback.scores.get('structure', -1) if feedback else -1,
                 empathy=feedback.scores.get('empathy', -1) if feedback else -1,
-                solution_focus=feedback.scores.get('solutionFocus', -1) if feedback else -1,
+                focus=feedback.scores.get('focus', -1) if feedback else -1,
                 clarity=feedback.scores.get('clarity', -1) if feedback else -1,
             )
             if feedback
-            else SkillScores(structure=-1, empathy=-1, solution_focus=-1, clarity=-1)
+            else SkillScores(structure=-1, empathy=-1, focus=-1, clarity=-1)
         )
 
         return SessionItem(

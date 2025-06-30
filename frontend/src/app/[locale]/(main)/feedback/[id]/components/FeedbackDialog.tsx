@@ -14,9 +14,10 @@ import { Rating, RatingButton } from '@/components/ui/Rating';
 import { Textarea } from '@/components/ui/Textarea';
 import Checkbox from '@/components/ui/Checkbox';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
-import { reviewService } from '@/services/client/ReviewService';
+import { reviewService } from '@/services/ReviewService';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { api } from '@/services/ApiClient';
 
 interface ReviewDialogProps {
   sessionId: string;
@@ -48,7 +49,7 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
     setIsSubmitting(true);
 
     try {
-      await reviewService.createReview({
+      await reviewService.createReview(api, {
         rating,
         comment: ratingDescription,
         sessionId,

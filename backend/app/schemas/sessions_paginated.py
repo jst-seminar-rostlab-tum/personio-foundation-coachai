@@ -8,7 +8,7 @@ from app.models.session import SessionStatus
 class SkillScores(CamelModel):
     structure: int
     empathy: int
-    solution_focus: int
+    focus: int
     clarity: int
 
 
