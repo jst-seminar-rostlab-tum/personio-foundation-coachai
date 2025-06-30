@@ -142,7 +142,8 @@ export default function Settings({ userProfile }: SettingsProps) {
   const handleExport = async () => {
     try {
       const blob = await UserProfileService.exportUserData(api);
-      const url = window.URL.createObjectURL(blob);
+      const zipBlob = blob instanceof Blob ? blob : new Blob([blob], { type: 'application/zip' });
+      const url = window.URL.createObjectURL(zipBlob);
       const a = document.createElement('a');
       a.href = url;
       a.download = 'user_data_export.zip';
