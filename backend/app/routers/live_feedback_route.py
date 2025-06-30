@@ -22,7 +22,7 @@ def get_live_feedback_service(
     return LiveFeedbackService(db_session)
 
 
-@router.get('/live-feedback/{session_id}', response_model=list[LiveFeedbackRead])
+@router.get('/session/{session_id}', response_model=list[LiveFeedbackRead])
 def get_feedback_for_session(
     session_id: UUID,
     service: Annotated[LiveFeedbackService, Depends(get_live_feedback_service)],
