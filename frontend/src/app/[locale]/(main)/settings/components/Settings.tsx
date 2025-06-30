@@ -13,13 +13,18 @@ import {
 import Switch from '@/components/ui/Switch';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
-import { UserProfileService } from '@/services/client/UserProfileService';
-import { UserPreference } from '@/interfaces/UserInputFields';
+import { UserProfileService } from '@/services/UserProfileService';
+import { UserPreference } from '@/interfaces/models/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
-import { UserProfile } from '@/interfaces/UserProfile';
+import { UserProfile } from '@/interfaces/models/UserProfile';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import JSZip from 'jszip';
+import { api } from '@/services/ApiClient';
 import UserPreferences from './UserPreferences';
+
+interface SettingsProps {
+  userProfile: Promise<UserProfile>;
+}
 
 const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   const score = userProfileData.confidenceScores?.find(
@@ -28,7 +33,7 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   return score !== undefined ? [score] : [50];
 };
 
-export default function Settings({ userProfile }: { userProfile: Promise<UserProfile> }) {
+export default function Settings({ userProfile }: SettingsProps) {
   const t = useTranslations('Settings');
   const tOptions = useTranslations('Settings.leadershipGoals');
   const userProfileData = use(userProfile);
@@ -109,7 +114,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     setIsSubmitting(true);
 
     try {
-      await UserProfileService.updateUserProfile({
+      await UserProfileService.updateUserProfile(api, {
         fullName: userProfileData.fullName,
         storeConversations,
         professionalRole: currentRole,
@@ -137,7 +142,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
 
   const handleExport = async () => {
     try {
-      const data = await UserProfileService.exportUserData();
+      const data = await UserProfileService.exportUserData(api);
       const zip = new JSZip();
       zip.file('user_data_export.json', JSON.stringify(data, null, 2));
       const blob = await zip.generateAsync({ type: 'blob' });

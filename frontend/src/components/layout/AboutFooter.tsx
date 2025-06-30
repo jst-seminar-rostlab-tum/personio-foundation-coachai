@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export default function AboutFooter() {
-  const t = useTranslations('HomePage');
+export default async function AboutFooter() {
+  const t = await getTranslations('HomePage');
 
   return (
     <footer>
