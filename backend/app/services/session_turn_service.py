@@ -34,18 +34,18 @@ class SessionTurnService:
         audio_name = turn.audio_name
         if not audio_name:
             raise HTTPException(status_code=400, detail='Audio name is required')
-        if not (audio_name.endswith('.mp3') or audio_name.endswith('.wav')):
-            raise HTTPException(status_code=400, detail='Audio name must end with .mp3 or .wav')
         if not turn.text:
             raise HTTPException(status_code=400, detail='Text is required')
-
-        # Create tmp folder if needed
-        os.makedirs(RECORDING_DIR, exist_ok=True)
 
         # Check if the audio file is valid
         ext = os.path.splitext(audio_file.filename)[-1].lower()
         if ext not in ['.webm', '.mp3', '.wav']:
-            raise HTTPException(status_code=400, detail='Only .mp3 or .wav files are allowed')
+            raise HTTPException(
+                status_code=400, detail='Only .webm, .mp3 or .wav files are allowed'
+            )
+
+        # Create tmp folder if needed
+        os.makedirs(RECORDING_DIR, exist_ok=True)
 
         local_path = os.path.join(RECORDING_DIR, audio_name)
 
@@ -56,10 +56,12 @@ class SessionTurnService:
 
         local_path = Path(local_path)
 
-        # try:
-        gcs.upload_single_document(file_path=local_path)
-        # except Exception as e:
-        #     raise HTTPException(status_code=500, detail=f"Failed to upload audio file: {str(e)}")
+        try:
+            gcs.upload_single_document(file_path=local_path)
+        except Exception as e:
+            raise HTTPException(
+                status_code=500, detail=f'Failed to upload audio file: {str(e)}'
+            ) from e
 
         # Create a new SessionTurn instance
         turn_data = turn.model_dump()

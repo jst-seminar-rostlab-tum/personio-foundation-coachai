@@ -58,7 +58,6 @@ class GCSManager:
         Upload a single file to GCS.
         Returns the gs:// URI if uploaded, or None if skipped.
         """
-        print(f'[DEBUG] file_path type: {type(file_path)}')
         if not file_path.exists() or not file_path.is_file():
             raise ValueError(f'Invalid file: {file_path}')
 
