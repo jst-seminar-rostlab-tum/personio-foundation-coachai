@@ -36,7 +36,6 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
 export default function Settings({ userProfile }: SettingsProps) {
   const t = useTranslations('Settings');
   const tCommon = useTranslations('Common');
-  const tOptions = useTranslations('Settings.leadershipGoals');
   const userProfileData = use(userProfile);
 
   const [storeConversations, setStoreConversations] = useState(
@@ -90,7 +89,7 @@ export default function Settings({ userProfile }: SettingsProps) {
     setConversation,
   };
   const currentRoleSelect: UserPreference = {
-    label: tOptions('currentRole.label'),
+    label: t('currentRole'),
     options: UserRoles(),
     value: currentRole,
     defaultValue: 'team_leader',
@@ -99,11 +98,11 @@ export default function Settings({ userProfile }: SettingsProps) {
     },
   };
   const primaryGoalsSelect: UserPreference<string[]> = {
-    label: tOptions('primaryGoals.label'),
+    label: t('primaryGoals.label'),
     options: PrimaryGoals(),
     value: primaryGoals.slice(0, 3),
-    placeholder: tOptions('primaryGoals.placeholder'),
-    maxSelectedDisclaimer: tOptions('primaryGoals.maxOptionsSelected'),
+    placeholder: t('primaryGoals.placeholder'),
+    maxSelectedDisclaimer: t('primaryGoals.maxOptionsSelected'),
     onChange: (value: string[]) => {
       setPrimaryGoals(value);
     },

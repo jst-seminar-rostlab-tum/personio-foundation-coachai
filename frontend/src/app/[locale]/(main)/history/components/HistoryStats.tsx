@@ -16,7 +16,7 @@ export default async function HistoryStats({ stats }: UserStatsResponse) {
             {Object.entries(stats.skillsPerformance).map(([key, value]) => (
               <div key={key} className="flex-1">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-bw-70">{t(key)}</span>
+                  <span className="text-sm text-bw-70">{tCommon(key)}</span>
                   <span className="text-sm text-bw-70">{value}%</span>
                 </div>
                 <Progress value={value} className="w-full" />
@@ -30,7 +30,7 @@ export default async function HistoryStats({ stats }: UserStatsResponse) {
           <div className="flex flex-row gap-2 md:gap-6 min-w-0 overflow-x-auto">
             <StatCard value={stats.totalSessions} label={tCommon('totalSessions')} />
             <StatCard value={`${stats.averageScore}%`} label={tCommon('avgScore')} />
-            <StatCard value={stats.goalsAchieved} label={t('goalsAchieved')} />
+            <StatCard value={stats.goalsAchieved} label={tCommon('goalsAchieved')} />
           </div>
         </div>
       </div>

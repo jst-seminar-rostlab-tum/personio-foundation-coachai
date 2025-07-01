@@ -69,20 +69,20 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   }, [getFeedbackDetail, sessionId]);
 
   const progressBarData = [
-    { key: t('progressBars.structure'), value: feedbackDetail?.feedback?.scores.structure ?? 0 },
-    { key: t('progressBars.empathy'), value: feedbackDetail?.feedback?.scores.empathy ?? 0 },
-    { key: t('progressBars.focus'), value: feedbackDetail?.feedback?.scores.focus ?? 0 },
-    { key: t('progressBars.clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
+    { key: tCommon('structure'), value: feedbackDetail?.feedback?.scores.structure ?? 0 },
+    { key: tCommon('empathy'), value: feedbackDetail?.feedback?.scores.empathy ?? 0 },
+    { key: tCommon('focus'), value: feedbackDetail?.feedback?.scores.focus ?? 0 },
+    { key: tCommon('clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
 
   const roundCardStats = [
     {
-      key: t('stats.sessionLength'),
+      key: t('sessionLength'),
       value: convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0),
       icon: 'Clock',
     },
     {
-      key: t('stats.goalsAchieved'),
+      key: tCommon('goalsAchieved'),
       value: `${feedbackDetail?.feedback?.goalsAchieved.length ?? 0} / ${
         feedbackDetail?.goalsTotal.length ?? 0
       }`,
@@ -170,7 +170,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
       </div>
       <Accordion type="multiple">
         <AccordionItem value="feedback">
-          <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
+          <AccordionTrigger>{t('accordion.feedback')}</AccordionTrigger>
           <AccordionContent>
             <div className="flex items-center gap-2 mt-3">
               <CheckCircle size={24} className="text-forest-50" />
@@ -204,10 +204,10 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="suggestion">
-          <AccordionTrigger>{t('accordian.suggestion')}</AccordionTrigger>
+          <AccordionTrigger>{t('accordion.suggestion')}</AccordionTrigger>
         </AccordionItem>
         <AccordionItem value="session">
-          <AccordionTrigger>{t('accordian.sessions')}</AccordionTrigger>
+          <AccordionTrigger>{t('accordion.sessions')}</AccordionTrigger>
         </AccordionItem>
       </Accordion>
     </div>

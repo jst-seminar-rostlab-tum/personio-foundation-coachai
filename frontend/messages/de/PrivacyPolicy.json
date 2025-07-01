@@ -1,11 +1,97 @@
 {
   "metaTitle": "Datenschutzerklärung - Coach AI",
   "metaDescription": "Informieren Sie sich über den Datenschutz bei Coach AI",
-  "title": "Datenschutzerklärung",
   "sections": {
     "dataCollection": {
       "title": "Datenerhebung",
       "content": "Die Personio Foundation erhebt personenbezogene Daten ausschließlich im Rahmen der geltenden Datenschutzgesetze und nur zu legitimen, klar definierten Zwecken. Zu den erhobenen Daten gehören unter anderem Name, E-Mail-Adresse, IP-Adresse, Nutzungsdaten und weitere Informationen, die für die Bereitstellung und Verbesserung unserer Dienste erforderlich sind. Die Erhebung erfolgt transparent, zweckgebunden und mit angemessenen technischen und organisatorischen Maßnahmen zum Schutz Ihrer Daten."
+    }
+  },
+  "PrivacyPolicyDialog": {
+    "dataProcessing": {
+      "title": "Datenverarbeitung",
+      "headers": {
+        "personalData": "Verarbeitete personenbezogene Daten",
+        "purpose": "Zweck",
+        "storageDuration": "Speicherdauer"
+      },
+      "topics": [
+        {
+          "key": "accountInfo",
+          "title": "Kontoinformationen",
+          "description": "E-Mail, Telefonnummer, bevorzugte Sprache",
+          "purposes": [
+            "Anmeldung und Kontoverwaltung",
+            "Telefonnummernverifizierung",
+            "Sprache für Benutzeroberfläche und KI festlegen"
+          ],
+          "storage": ["Erhoben bei der Anmeldung", "Gespeichert bis zur Kontolöschung"]
+        },
+        {
+          "key": "aiPersonalization",
+          "title": "KI-Personalisierung",
+          "description": "Rolle, Führungserfahrung, Ziele, Selbstvertrauen",
+          "purposes": [
+            "Tipps vor Sitzungen bereitstellen",
+            "Antworten während Sitzungen personalisieren",
+            "Feedback nach Sitzungen geben"
+          ],
+          "storage": ["Erhoben bei der Anmeldung", "Gespeichert bis zur Kontolöschung"]
+        },
+        {
+          "key": "voiceRecordings",
+          "title": "Sprachaufzeichnungen",
+          "description": "Audioaufnahmen während Trainingssitzungen",
+          "purposes": ["Ermöglicht das Anhören vergangener Trainingssitzungen"],
+          "storage": [
+            "Erhoben zum Zeitpunkt der Aufnahme",
+            "Für 90 Tage gespeichert, wenn Zustimmung erteilt wurde",
+            "Sofort und dauerhaft gelöscht, wenn keine Zustimmung"
+          ]
+        },
+        {
+          "key": "usageMetrics",
+          "title": "Nutzungsmetriken",
+          "description": "Nutzungstage, Trainingssitzungen, verwendete KI-Tokens, ...",
+          "purposes": [
+            "Benutzerfortschritt verfolgen",
+            "Erfolge kennzeichnen",
+            "Nutzungsstatistiken bereitstellen"
+          ],
+          "storage": ["Erhoben während der Nutzung der App", "Gespeichert bis zur Kontolöschung"]
+        }
+      ]
+    },
+    "security": {
+      "title": "Sicherheit & Datenschutz",
+      "euServers": {
+        "title": "EU-basierte Server",
+        "description": "Alle Daten werden auf Servern innerhalb der Europäischen Union gespeichert und verarbeitet"
+      },
+      "encryption": {
+        "title": "Verschlüsselung",
+        "description": "Daten werden sowohl während der Übertragung als auch im Ruhezustand verschlüsselt"
+      },
+      "externalServices": {
+        "title": "Externe Dienstleister",
+        "services": [
+          "Vercel – EU-Server und globales CDN",
+          "Supabase – EU-Server",
+          "Fly.io – EU-Server",
+          "GCP – EU-Server"
+        ]
+      }
+    },
+    "userRights": {
+      "title": "Ihre Rechte",
+      "accountDeletion": {
+        "title": "Kontolöschung",
+        "description": "Fordern Sie die dauerhafte Löschung Ihres Kontos und aller zugehörigen Daten an"
+      },
+      "dataExport": {
+        "title": "Datenexport",
+        "description": "Fordern Sie einen Export aller über Sie gespeicherten Daten an"
+      }
     }
   }
 }

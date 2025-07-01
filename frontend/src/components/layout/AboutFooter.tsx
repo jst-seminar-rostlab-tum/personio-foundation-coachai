@@ -16,10 +16,10 @@ export default async function AboutFooter() {
           </div>
           <div className="md:col-span-3 flex justify-between md:justify-end gap-4 md:gap-8 text-sm">
             <Link href="/privacy" className="text-stone-500 hover:text-stone-900">
-              {t('privacy')}
+              {tCommon('privacyPolicy')}
             </Link>
             <Link href="/terms" className="text-stone-500 hover:text-stone-900">
-              {t('terms')}
+              {tCommon('termsOfService')}
             </Link>
             <Link href="/cookies" className="text-stone-500 hover:text-stone-900">
               {t('cookies')}

@@ -7,18 +7,9 @@
     "shareWithAdmin": "Sitzung mit einem Administrator zur Verbesserung teilen.",
     "submitReview": "Bewertung abgeben"
   },
-  "progressBars": {
-    "structure": "Struktur",
-    "empathy": "Empathie",
-    "focus": "Fokus",
-    "clarity": "Klarheit"
-  },
-  "stats": {
-    "sessionLength": "Sitzungsdauer",
-    "goalsAchieved": "Erreichte Ziele"
-  },
+  "sessionLength": "Sitzungsdauer",
   "listenConversation": "Gespräch anhören",
-  "accordian": {
+  "accordion": {
     "feedback": "Detailliertes Feedback",
     "suggestion": "Empfohlene Ressourcen",
     "sessions": "Empfohlene Sitzungen"

@@ -36,5 +36,12 @@
   "newConversationScenario": "New Training",
   "appName": "Leadership Coach",
   "deleteAccount": "Delete Account",
-  "submitting": "Submitting..."
+  "submitting": "Submitting...",
+  "goalsAchieved": "Goals Achieved",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service",
+  "structure": "Structure",
+  "empathy": "Empathy",
+  "focus": "Focus",
+  "clarity": "Clarity"
 }

@@ -13,8 +13,8 @@ import {
 } from '@/interfaces/models/PrivacyDialog';
 
 export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps) {
-  const t = useTranslations('Login.PrivacyPolicyDialog');
-
+  const t = useTranslations('PrivacyPolicy.PrivacyPolicyDialog');
+  const tCommon = useTranslations('Common');
   const dataProcessingTopics = t.raw('dataProcessing.topics') as DataProcessingTopic[];
 
   const externalServices = t.raw('security.externalServices.services') as string[];
@@ -25,9 +25,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
       <div className="text-base sm:text-base text-gray-600 mb-3">{item.description}</div>
       <div className="space-y-2">
         <div>
-          <div className="font-medium text-base mb-1">
-            {t('dataProcessing.table.headers.purpose')}:
-          </div>
+          <div className="font-medium text-base mb-1">{t('dataProcessing.headers.purpose')}:</div>
           <div className="text-base space-y-1">
             {item.purposes.map((purpose, idx) => (
               <div key={idx}>• {purpose}</div>
@@ -36,7 +34,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
         </div>
         <div>
           <div className="font-medium text-base mb-1">
-            {t('dataProcessing.table.headers.storageDuration')}:
+            {t('dataProcessing.headers.storageDuration')}:
           </div>
           <div className="text-base space-y-1">
             {item.storage.map((storage, idx) => (
@@ -54,13 +52,13 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
         <thead>
           <tr className="border-b">
             <th className="text-left py-3 pr-4 font-semibold text-base sm:text-base" scope="col">
-              {t('dataProcessing.table.headers.personalData')}
+              {t('dataProcessing.headers.personalData')}
             </th>
             <th className="text-left py-3 pr-4 font-semibold text-base sm:text-base" scope="col">
-              {t('dataProcessing.table.headers.purpose')}
+              {t('dataProcessing.headers.purpose')}
             </th>
             <th className="text-left py-3 font-semibold text-base sm:text-base" scope="col">
-              {t('dataProcessing.table.headers.storageDuration')}
+              {t('dataProcessing.headers.storageDuration')}
             </th>
           </tr>
         </thead>
@@ -98,7 +96,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
         className="w-[95vw] max-w-sm sm:max-w-2xl lg:max-w-4xl max-h-[85vh] overflow-y-auto p-4"
         aria-describedby={undefined}
       >
-        <DialogTitle>{t('title')}</DialogTitle>
+        <DialogTitle>{tCommon('privacyPolicy')}</DialogTitle>
 
         <div className="space-y-4 sm:space-y-6 mt-4" role="document">
           <section aria-labelledby="data-processing-title">

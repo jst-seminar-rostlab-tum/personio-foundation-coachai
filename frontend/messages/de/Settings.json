@@ -8,15 +8,11 @@
   "saveSettings": "Einstellungen speichern",
   "ninetyDays": "Ihre Aufnahmen und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf verfügbar.",
   "zeroDays": "Ihre Aufnahmen und Transkripte werden nicht gespeichert.",
-  "leadershipGoals": {
-    "currentRole": {
-      "label": "Aktuelle Rolle"
-    },
-    "primaryGoals": {
-      "label": "Wichtigste Ziele",
-      "placeholder": "Bitte wählen Sie bis zu 3 Ziele aus",
-      "maxOptionsSelected": "Max. Optionen ausgewählt"
-    }
+  "currentRole": "Aktuelle Rolle",
+  "primaryGoals": {
+    "label": "Wichtigste Ziele",
+    "placeholder": "Bitte wählen Sie bis zu 3 Ziele aus",
+    "maxOptionsSelected": "Max. Optionen ausgewählt"
   },
   "exportSettingsSuccess": "Ihre Daten wurden erfolgreich exportiert.",
   "exportSettingsError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.",

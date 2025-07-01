@@ -7,18 +7,9 @@
     "shareWithAdmin": "Share session with an admin for improvement.",
     "submitReview": "Submit Review"
   },
-  "progressBars": {
-    "structure": "Structure",
-    "empathy": "Empathy",
-    "focus": "Focus",
-    "clarity": "Clarity"
-  },
-  "stats": {
-    "sessionLength": "Session Length",
-    "goalsAchieved": "Goals Achieved"
-  },
+  "sessionLength": "Session Length",
   "listenConversation": "Listen to Conversation",
-  "accordian": {
+  "accordion": {
     "feedback": "Detailed Feedback",
     "suggestion": "Suggested Resources",
     "sessions": "Recommended Sessions"

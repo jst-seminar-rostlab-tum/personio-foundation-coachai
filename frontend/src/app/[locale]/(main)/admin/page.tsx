@@ -34,7 +34,7 @@ export default async function AdminPage() {
   const tCommon = await getTranslations('Common');
   const statsArray = [
     { value: stats.totalUsers, label: t('statActiveUsers') },
-    { value: stats.totalTrainings, label: t('statTotalTrainings') },
+    { value: stats.totalTrainings, label: tCommon('totalSessions') },
     { value: stats.totalReviews, label: tCommon('reviews') },
     { value: `${stats.averageScore}%`, label: tCommon('avgScore') },
   ];
