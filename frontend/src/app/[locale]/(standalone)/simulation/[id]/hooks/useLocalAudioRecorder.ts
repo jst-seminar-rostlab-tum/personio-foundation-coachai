@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 type LocalAudioRecorder = {
   recorder: MediaRecorder;
@@ -12,7 +12,6 @@ export function useLocalAudioRecorder() {
   const recorderARef = useRef<LocalAudioRecorder | null>(null);
   const recorderBRef = useRef<LocalAudioRecorder | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
-  const [localAudioUrls, setLocalAudioUrls] = useState<string[]>([]);
 
   function getCurrentRecorderRef() {
     return currentIndexRef.current === 0 ? recorderARef : recorderBRef;
@@ -126,10 +125,7 @@ export function useLocalAudioRecorder() {
       segmentBuffer.copyToChannel(channelData[ch], ch, 0);
     }
 
-    const wavBlob = await bufferToWav(segmentBuffer);
-    const url = URL.createObjectURL(wavBlob);
-    setLocalAudioUrls((prev) => [...prev, url]);
-    return wavBlob;
+    return bufferToWav(segmentBuffer);
   };
 
   async function bufferToWav(buffer: AudioBuffer): Promise<Blob> {
@@ -188,6 +184,5 @@ export function useLocalAudioRecorder() {
     startLocalRecording,
     stopLocalRecording,
     extractSegment,
-    localAudioUrls,
   };
 }

@@ -34,7 +34,6 @@ export function useWebRTC(sessionId: string) {
   const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const cleanupRef = useRef<boolean | null>(null);
   const hasInitializedRef = useRef(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const inputAudioBufferSpeechStartedOffsetMsRef = useRef<number>(0);
   const remoteResponseIdRef = useRef<string | null>(null);
@@ -53,7 +52,6 @@ export function useWebRTC(sessionId: string) {
     setIsConnected(false);
     setIsDataChannelReady(false);
     setMessages([]);
-    intervalRef.current = null;
   }, [stopStream, setMessages]);
 
   const disconnect = useCallback(async () => {
@@ -152,8 +150,9 @@ export function useWebRTC(sessionId: string) {
             case 'input_audio_buffer.speech_started':
               inputAudioBufferSpeechStartedOffsetMsRef.current = parsed.audio_start_ms;
               addStartOffsetMsToTurn(parsed.item_id, parsed.audio_start_ms);
-              if (remoteAudioRef.current) {
-                addAudioToTurn(parsed.response_id, await stopRemoteRecording());
+              if (remoteResponseIdRef.current) {
+                addAudioToTurn(remoteResponseIdRef.current, await stopRemoteRecording());
+                remoteResponseIdRef.current = null;
               }
               break;
 
@@ -177,8 +176,8 @@ export function useWebRTC(sessionId: string) {
               break;
 
             case 'output_audio_buffer.stopped':
-              addAudioToTurn(parsed.response_id, await stopRemoteRecording());
               remoteResponseIdRef.current = null;
+              addAudioToTurn(parsed.response_id, await stopRemoteRecording());
               break;
 
             default:

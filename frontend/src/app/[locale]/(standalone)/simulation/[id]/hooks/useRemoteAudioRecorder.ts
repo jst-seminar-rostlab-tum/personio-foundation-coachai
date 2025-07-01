@@ -1,9 +1,8 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 
 export function useRemoteAudioRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const [remoteAudioUrls, setRemoteAudioUrls] = useState<string[]>([]);
 
   const startRemoteRecording = useCallback((stream: MediaStream) => {
     if (mediaRecorderRef.current) return;
@@ -22,18 +21,17 @@ export function useRemoteAudioRecorder() {
     return new Promise((resolve) => {
       const recorder = mediaRecorderRef.current;
       if (!recorder) {
+        console.warn('No active remote recording to stop');
         resolve(new Blob());
         return;
       }
 
-      recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        const url = URL.createObjectURL(blob);
-        setRemoteAudioUrls((prev) => [...prev, url]);
-        resolve(blob);
+      const handleStop = () => {
+        resolve(new Blob(chunksRef.current, { type: 'audio/webm' }));
         mediaRecorderRef.current = null;
       };
 
+      recorder.addEventListener('stop', handleStop);
       recorder.stop();
     });
   }, []);
@@ -41,6 +39,5 @@ export function useRemoteAudioRecorder() {
   return {
     startRemoteRecording,
     stopRemoteRecording,
-    remoteAudioUrls,
   };
 }

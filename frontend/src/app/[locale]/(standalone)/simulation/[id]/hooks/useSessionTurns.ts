@@ -77,7 +77,7 @@ export function useSessionTurns() {
 
     try {
       const formData = sessionTurnToFormData(turn);
-      // await sessionService.createSessionTurn(api, formData);
+      await sessionService.createSessionTurn(api, formData);
       removeTurn(turnId);
     } catch (error) {
       showErrorToast(error, 'Failed to post session turn');

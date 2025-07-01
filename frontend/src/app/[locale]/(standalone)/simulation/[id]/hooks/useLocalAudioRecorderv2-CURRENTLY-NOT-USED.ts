@@ -1,9 +1,8 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 export function useLocalAudioRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const [localAudioUrls, setLocalAudioUrls] = useState<string[]>([]);
 
   const startLocalRecording = (stream: MediaStream): void => {
     if (mediaRecorderRef.current) return;
@@ -24,7 +23,7 @@ export function useLocalAudioRecorder() {
     mediaRecorderRef.current = null;
   };
 
-  const extractSegment = async (startOffsetMs: number, endOffsetMs: number): Promise<string> => {
+  const extractSegment = async (startOffsetMs: number, endOffsetMs: number): Promise<Blob> => {
     const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
     const arrayBuffer = await blob.arrayBuffer();
     const audioCtx = new window.AudioContext();
@@ -48,10 +47,7 @@ export function useLocalAudioRecorder() {
       segmentBuffer.copyToChannel(channelData[ch], ch, 0);
     }
 
-    const wavBlob = await bufferToWav(segmentBuffer);
-    const url = URL.createObjectURL(wavBlob);
-    setLocalAudioUrls((prev) => [...prev, url]);
-    return url;
+    return bufferToWav(segmentBuffer);
   };
 
   async function bufferToWav(buffer: AudioBuffer): Promise<Blob> {
@@ -110,6 +106,5 @@ export function useLocalAudioRecorder() {
     startLocalRecording,
     stopLocalRecording,
     extractSegment,
-    localAudioUrls,
   };
 }
