@@ -5,7 +5,8 @@ import { Search, ChevronDown, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { UserProfileService as ClientUserProfileService } from '@/services/client/UserProfileService';
+import { UserProfileService as ClientUserProfileService } from '@/services/UserProfileService';
+import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/toast';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 
@@ -40,7 +41,7 @@ export default function UsersList({
   const fetchUsers = async (pageNum: number, searchStr: string) => {
     setLoading(true);
     try {
-      const data = await ClientUserProfileService.getPaginatedUsers({
+      const data = await ClientUserProfileService.getPaginatedUsers(api, {
         page: pageNum,
         pageSize,
         emailSubstring: searchStr || undefined,

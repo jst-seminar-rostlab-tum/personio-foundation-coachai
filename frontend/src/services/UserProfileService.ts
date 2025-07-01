@@ -57,10 +57,37 @@ const deleteUser = async (api: AxiosInstance, deleteUserId?: string) => {
   }
 };
 
+interface PaginatedUsersParams {
+  page?: number;
+  pageSize?: number;
+  limit?: number;
+  emailSubstring?: string;
+}
+
+const getPaginatedUsers = async (
+  api: AxiosInstance,
+  { page = 1, pageSize = 10, limit, emailSubstring }: PaginatedUsersParams = {}
+) => {
+  try {
+    const { data } = await api.get('/user-profile', {
+      params: {
+        page,
+        page_size: pageSize || limit,
+        email_substring: emailSubstring,
+      },
+    });
+    return data;
+  } catch (error) {
+    console.error('Error getting users:', error);
+    throw error;
+  }
+};
+
 export const UserProfileService = {
   getUserProfile,
   getUserStats,
   updateUserProfile,
   exportUserData,
   deleteUser,
+  getPaginatedUsers,
 };
