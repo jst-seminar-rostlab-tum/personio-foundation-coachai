@@ -9,6 +9,8 @@ export interface ConversationScenario {
   complexity: string;
   status?: string;
   languageCode: string;
+  persona: string;
+  situationalFacts: string;
 }
 
 export interface ConversationCategory {
