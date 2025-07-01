@@ -75,7 +75,10 @@ def generate_live_feedback_item(
 
     return call_structured_llm(
         request_prompt=user_prompt,
-        system_prompt='You are an expert communication coach analyzing training sessions.',
+        system_prompt=(
+            'You are an expert communication coach analyzing a single speaking turn.'
+            'Always respond in the language of the transcript.'
+        ),
         model='gpt-4o-2024-08-06',
         output_model=LiveFeedback,
         mock_response=None,
