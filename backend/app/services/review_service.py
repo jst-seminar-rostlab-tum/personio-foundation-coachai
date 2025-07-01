@@ -164,6 +164,15 @@ class ReviewService:
         else:
             return self._get_paginated_reviews(page, page_size, sort)
 
+    def has_user_reviewed_session(self, session_id: UUID, user_id: UUID) -> bool:
+        """
+        Check if the current user has already submitted a review for this session.
+        """
+        review = self.db.exec(
+            select(Review).where(Review.session_id == session_id, Review.user_id == user_id)
+        ).first()
+        return review is not None
+
     def _check_session_review_permissions(
         self,
         session_id: UUID,
@@ -203,6 +212,13 @@ class ReviewService:
         Create a new review.
         """
         user_id = user_profile.id  # Logged-in user's ID
+
+        # Check if the user has already reviewed this session
+        if review.session_id and self.has_user_reviewed_session(review.session_id, user_id):
+            raise HTTPException(
+                status_code=409,
+                detail='User has already submitted a review for this session.',
+            )
 
         if review.session_id is not None:
             # Review is for a session --> without a session_id, it is a general review
