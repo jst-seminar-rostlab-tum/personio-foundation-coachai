@@ -19,11 +19,15 @@ else:
     ssl_cert_path = None
 
 if settings.database_url:
-    SQLALCHEMY_DATABASE_URL = (
-        f'{settings.database_url}?sslmode=verify-full&sslrootcert={ssl_cert_path}'
-    )
+    if settings.stage == 'prod' and ssl_cert_path:
+        SQLALCHEMY_DATABASE_URL = f'{settings.database_url}?sslrootcert={ssl_cert_path}'
+    else:
+        SQLALCHEMY_DATABASE_URL = settings.database_url
 else:
-    SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
+    SQLALCHEMY_DATABASE_URL = (
+        f'postgresql+psycopg://{settings.postgres_user}:{settings.postgres_password}'
+        f'@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
+    )
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
