@@ -18,7 +18,6 @@
     "recommendations": "Empfehlungen",
     "nextTime": "Für das nächste Mal:"
   },
-  "submitting": "Wird abgegeben...",
   "submitError": "Fehler beim Abgeben. Bitte versuchen Sie es später erneut.",
   "submitSuccess": "Erfolgreich abgegeben. Vielen Dank!",
   "fetchError": "Fehler beim Abrufen der Daten. Bitte versuchen Sie es später erneut."
