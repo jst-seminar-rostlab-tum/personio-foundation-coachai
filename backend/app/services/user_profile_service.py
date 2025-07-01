@@ -75,11 +75,15 @@ class UserService:
 
         statement = statement.order_by(col(UserProfile.updated_at).desc())
 
-        total_users = len(self.db.exec(statement).all())
+        all_users = self.db.exec(statement).all()
+        total_users = len(all_users)
         if total_users == 0:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='No user profiles found.',
+            return PaginatedUserResponse(
+                page=page,
+                limit=page_size,
+                total_pages=1,
+                total_users=0,
+                users=[],
             )
 
         total_pages = ceil(total_users / page_size)
@@ -89,8 +93,7 @@ class UserService:
                 detail='Invalid page number.',
             )
 
-        users = self.db.exec(statement.offset((page - 1) * page_size).limit(page_size)).all()
-
+        users = all_users[(page - 1) * page_size : (page) * page_size]
         user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
 
         return PaginatedUserResponse(
@@ -135,7 +138,7 @@ class UserService:
             # skills_performance=user.skills_performance
             # Mockked data for now
             performance_over_time=[72, 65, 70, 68, 74, 71, 78, 80, 69, 82],
-            skills_performance={'structure': 85, 'empathy': 70, 'solutionFocus': 75, 'clarity': 75},
+            skills_performance={'structure': 85, 'empathy': 70, 'focus': 75, 'clarity': 75},
         )
 
     def _update_goals(self, user_id: UUID, goals: list[Goal]) -> None:

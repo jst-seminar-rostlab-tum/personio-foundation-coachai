@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
-import type { LayoutProps } from '@/interfaces/LayoutProps';
+
+import type { LayoutProps } from '@/interfaces/props/LayoutProps';
 import { headers } from 'next/headers';
 
 export default async function RootLayout({ children, params }: LayoutProps) {
