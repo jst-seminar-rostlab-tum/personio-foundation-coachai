@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
-from sqlmodel import JSON, Column, Field, Relationship
+from sqlmodel import Field, Relationship
 
 from app.models.camel_case import CamelModel
 
@@ -29,7 +29,6 @@ class Session(CamelModel, table=True):
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
-    ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: SessionStatus = Field(default=SessionStatus.started)
     allow_admin_access: bool = Field(
         default=False, description='If True, admin can view this session details'
