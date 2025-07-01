@@ -53,4 +53,4 @@ async def create_session_turn(
         ai_emotion=ai_emotion,
     )
 
-    return service.create_session_turn(turn, audio_file)
+    return await service.create_session_turn(turn, audio_file)

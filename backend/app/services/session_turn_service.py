@@ -1,6 +1,7 @@
 import os
 from uuid import uuid4
 
+import magic
 from fastapi import HTTPException, UploadFile
 from sqlmodel import Session as DBSession
 
@@ -8,6 +9,11 @@ from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.google_cloud_storage_service import GCSManager
+
+
+def is_valid_audio(file_bytes: bytes) -> bool:
+    mime = magic.from_buffer(file_bytes, mime=True)
+    return mime in ['audio/webm', 'audio/mpeg', 'audio/wav']
 
 
 def match_audio_content_type(file: UploadFile) -> tuple[str, str]:
@@ -29,7 +35,7 @@ class SessionTurnService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
 
-    def create_session_turn(
+    async def create_session_turn(
         self,
         turn: SessionTurnCreate,
         audio_file: UploadFile,
@@ -51,6 +57,10 @@ class SessionTurnService:
             ext, content_type = match_audio_content_type(audio_file)
         except HTTPException as e:
             raise e
+
+        audio_bytes = await audio_file.read()
+        if not is_valid_audio(audio_bytes):
+            raise HTTPException(status_code=400, detail='Uploaded file is not a valid audio type')
 
         # Generate a unique audio name using session_id and new uuid
         audio_name = f'{turn.session_id}_{uuid4().hex}{ext}'
