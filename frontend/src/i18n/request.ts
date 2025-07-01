@@ -19,7 +19,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
     Preparation: (await import(`../../messages/${locale}/Preparation.json`)).default,
     Simulation: (await import(`../../messages/${locale}/Simulation.json`)).default,
     Settings: (await import(`../../messages/${locale}/Settings.json`)).default,
-    AppHeader: (await import(`../../messages/${locale}/AppHeader.json`)).default,
     PrivacyPolicy: (await import(`../../messages/${locale}/PrivacyPolicy.json`)).default,
     TermsOfService: (await import(`../../messages/${locale}/TermsOfService.json`)).default,
     PersonalizationOptions: (await import(`../../messages/${locale}/PersonalizationOptions.json`))

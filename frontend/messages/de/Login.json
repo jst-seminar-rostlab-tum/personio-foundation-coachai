@@ -3,22 +3,14 @@
   "metaDescription": "Melden Sie sich an oder registrieren Sie sich, um Ihre Reise mit Coach AI zu beginnen",
   "welcome": "Willkommen bei Leadership Coach",
   "description": "Starten Sie Ihre Reise im Führungstraining",
-  "SignInTab": {
-    "title": "Anmelden",
-    "stayLoggedInCheckboxLabel": "Angemeldet bleiben",
-    "signInWithGoogleButtonLabel": "Mit Google anmelden",
-    "alertErrorTitle401": "Ungültige E-Mail oder Passwort",
-    "alertErrorTitleGeneric": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut."
-  },
+  "signInWithGoogleButtonLabel": "Oder melden Sie sich mit Google an",
   "SignUpTab": {
-    "title": "Registrieren",
     "passwordInputRequirementOneLabel": "Mindestens 8 Zeichen",
     "passwordInputRequirementTwoLabel": "Mindestens ein Großbuchstabe",
     "passwordInputRequirementThreeLabel": "Mindestens ein Sonderzeichen (!@#$%^&*)",
     "gdprAdherenceText": "Wir halten uns strikt an die DSGVO, indem wir nur erforderliche Daten erheben, nichts Unnötiges speichern und Daten so schnell wie möglich löschen. ",
     "readMoreOnGdprLink": "Mehr erfahren",
     "agreeToTermsCheckboxLabel": "Ich stimme den <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu",
-    "signUpButtonLabel": "Registrieren",
     "signUpWithGoogleButtonLabel": "Oder mit Google registrieren"
   },
   "VerificationPopup": {
@@ -195,7 +187,10 @@
   "codeInputLabel": "Bestätigungscode",
   "resendCodeButtonLabel": "Code erneut senden",
   "signIn": "Anmelden",
+  "signUp": "Registrieren",
   "ConfirmationForm": {
+    "metaTitle": "Bestätigen - Coach AI",
+    "metaDescription": "Kontobestätigung - Coach AI",
     "title": "Bestätigen Sie Ihr Konto",
     "description": "Bitte geben Sie den Bestätigungscode ein, der an Ihre E-Mail-Adresse gesendet wurde.",
     "expiredDescription": "Ihr Bestätigungscode ist abgelaufen. Bitte fordern Sie einen neuen Code an.",

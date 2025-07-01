@@ -14,13 +14,10 @@
     "clarity": "Klarheit"
   },
   "stats": {
-    "speakingTime": "Sprechzeit",
-    "questionsAsked": "Gestellte Fragen",
     "sessionLength": "Sitzungsdauer",
     "goalsAchieved": "Erreichte Ziele"
   },
   "listenConversation": "Gespräch anhören",
-  "compareAI": "Mit KI vergleichen",
   "accordian": {
     "feedback": "Detailliertes Feedback",
     "suggestion": "Empfohlene Ressourcen",

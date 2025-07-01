@@ -5,14 +5,6 @@
     "greeting": "Hello, ",
     "cta": "New Training Session"
   },
-  "currentSession": {
-    "title": "Current Session",
-    "subtitle": "Continue your active training session",
-    "sessionCard": {
-      "title": "Giving Constructive Feedback",
-      "subtitle": "Practice giving feedback to a team member about missed deadlines"
-    }
-  },
   "userStats": {
     "trainingTime": "Training Time",
     "currentStreak": "Current Streak"

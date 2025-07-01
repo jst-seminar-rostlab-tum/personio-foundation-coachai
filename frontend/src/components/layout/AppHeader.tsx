@@ -14,7 +14,6 @@ import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const t = useTranslations('AppHeader');
   const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const user = useUser();
@@ -53,7 +52,7 @@ export function AppHeader() {
             className="text-bw-70 text-xl font-semibold"
             onClick={() => setIsMenuOpen(false)}
           >
-            {t('title')}
+            {tCommon('appName')}
           </Link>
           <div className="flex items-center gap-0 md:gap-4">
             <div className="hidden md:flex items-center gap-6">
@@ -97,7 +96,7 @@ export function AppHeader() {
         }`}
       >
         <div className="flex items-center justify-between px-2 py-2 xl:px-16 bg-background min-h-[56px]">
-          <div className="text-bw-70 text-lg font-semibold">{t('title')}</div>
+          <div className="text-bw-70 text-lg font-semibold">{tCommon('appName')}</div>
           <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
             <X className="!w-4 !h-4" />
           </Button>

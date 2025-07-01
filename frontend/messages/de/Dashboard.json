@@ -5,14 +5,6 @@
     "greeting": "Hallo, ",
     "cta": "Neue Trainingssitzung"
   },
-  "currentSession": {
-    "title": "Aktuelle Sitzung",
-    "subtitle": "Setzen Sie Ihre aktive Trainingssitzung fort",
-    "sessionCard": {
-      "title": "Konstruktives Feedback geben",
-      "subtitle": "Üben Sie, einem Teammitglied Rückmeldung zu verpassten Fristen zu geben"
-    }
-  },
   "userStats": {
     "trainingTime": "Trainingszeit",
     "currentStreak": "Aktuelle Serie"

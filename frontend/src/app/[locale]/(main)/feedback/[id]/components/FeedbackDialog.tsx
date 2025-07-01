@@ -105,7 +105,7 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
             onClick={rateFeedback}
             disabled={!rating || isSubmitting}
           >
-            {isSubmitting ? t('submitting') : t('reviewDialog.submitReview')}
+            {isSubmitting ? tCommon('submitting') : t('reviewDialog.submitReview')}
           </Button>
         </DialogClose>
       </DialogContent>

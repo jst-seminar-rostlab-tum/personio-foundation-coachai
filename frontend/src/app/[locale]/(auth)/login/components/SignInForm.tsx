@@ -24,7 +24,6 @@ import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/toast';
 
 export function SignInForm() {
-  const t = useTranslations('Login.SignInTab');
   const tLogin = useTranslations('Login');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -126,7 +125,7 @@ export function SignInForm() {
             <div className="w-full border-t border-gray-300" />
             <Button size="full" variant="secondary" disabled={isLoading}>
               <Image src="/images/icons/google-icon.svg" alt="Google Icon" width={20} height={20} />
-              {t('signInWithGoogleButtonLabel')}
+              {tLogin('signInWithGoogleButtonLabel')}
             </Button>
           </CardFooter>
         </form>

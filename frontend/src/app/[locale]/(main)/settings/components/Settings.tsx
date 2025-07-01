@@ -199,10 +199,10 @@ export default function Settings({ userProfile }: SettingsProps) {
                 {/* Delete Account */}
                 <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
                   <div className="flex flex-col">
-                    <div className="text-bw-70">{t('deleteAccount')}</div>
+                    <div className="text-bw-70">{tCommon('deleteAccount')}</div>
                   </div>
                   <DeleteUserHandler>
-                    <Button variant="destructive">{t('deleteAccount')}</Button>
+                    <Button variant="destructive">{tCommon('deleteAccount')}</Button>
                   </DeleteUserHandler>
                 </div>
               </AccordionContent>

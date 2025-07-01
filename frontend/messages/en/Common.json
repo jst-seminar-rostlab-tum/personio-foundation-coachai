@@ -34,5 +34,7 @@
   "positive": "Positive",
   "negative": "Negative",
   "newConversationScenario": "New Training",
-  "appName": "Leadership Coach"
+  "appName": "Leadership Coach",
+  "deleteAccount": "Delete Account",
+  "submitting": "Submitting..."
 }

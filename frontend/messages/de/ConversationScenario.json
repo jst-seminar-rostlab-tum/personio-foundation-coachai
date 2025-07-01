@@ -67,7 +67,7 @@
     {
       "id": "salary_discussions",
       "name": "Gehaltsgespräche",
-      "iconUri": "/images/category-salary_discussions.svg",
+      "iconUri": "/images/category/salary-discussions.svg",
       "defaultContext": "Gehaltsverhandlungsgespräch.",
       "defaultGoal": "Eine für beide Seiten vorteilhafte Gehaltsvereinbarung treffen.",
       "defaultOtherParty": "Arbeitgeber"

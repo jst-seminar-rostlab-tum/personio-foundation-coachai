@@ -14,13 +14,10 @@
     "clarity": "Clarity"
   },
   "stats": {
-    "speakingTime": "Speaking Time",
-    "questionsAsked": "Questions Asked",
     "sessionLength": "Session Length",
     "goalsAchieved": "Goals Achieved"
   },
   "listenConversation": "Listen to Conversation",
-  "compareAI": "Compare with AI",
   "accordian": {
     "feedback": "Detailed Feedback",
     "suggestion": "Suggested Resources",

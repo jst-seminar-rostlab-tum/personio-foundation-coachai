@@ -235,7 +235,7 @@ export function SignUpForm() {
             </CardContent>
             <CardFooter className="flex-col gap-6">
               <Button size="full" type="submit" disabled={isLoading}>
-                {tLogin('SignUpTab.signUpButtonLabel')}
+                {tLogin('signUp')}
               </Button>
               <div className="w-full border-t border-gray-300" />
               <Button size="full" variant="secondary" disabled={isLoading}>

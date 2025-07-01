@@ -3,22 +3,14 @@
   "metaDescription": "Login or sign-up to start your journey with Coach AI",
   "welcome": "Welcome to Leadership Coach",
   "description": "Start Your Leadership Coaching Journey",
-  "SignInTab": {
-    "title": "Sign-In",
-    "stayLoggedInCheckboxLabel": "Stay Logged In",
-    "signInWithGoogleButtonLabel": "Sign In With Google",
-    "alertErrorTitle401": "Invalid email or password",
-    "alertErrorTitleGeneric": "Something went wrong. Please try again."
-  },
+  "signInWithGoogleButtonLabel": "Or Sign In With Google",
   "SignUpTab": {
-    "title": "Sign-Up",
     "passwordInputRequirementOneLabel": "At least 8 characters",
     "passwordInputRequirementTwoLabel": "At least one uppercase letter",
     "passwordInputRequirementThreeLabel": "At least one special character (!@#$%^&*)",
     "gdprAdherenceText": "We strictly adhere to GDPR by collecting only essential data, storing nothing unnecessary, and deleting data as soon as possible. ",
     "readMoreOnGdprLink": "read more",
     "agreeToTermsCheckboxLabel": "I agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>",
-    "signUpButtonLabel": "Sign Up",
     "signUpWithGoogleButtonLabel": "Or Sign Up With Google"
   },
   "VerificationPopup": {
@@ -196,6 +188,7 @@
   "codeInputLabel": "Confirmation Code",
   "resendCodeButtonLabel": "Resend Code",
   "signIn": "Sign In",
+  "signUp": "Sign Up",
   "confirming": "Confirming...",
   "ConfirmationForm": {
     "metaTitle": "Confirm - Coach AI",
