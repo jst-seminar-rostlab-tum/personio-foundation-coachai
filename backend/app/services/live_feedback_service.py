@@ -1,4 +1,5 @@
 import concurrent.futures
+import json
 from uuid import UUID
 
 from sqlmodel import Session as DBSession
@@ -6,14 +7,30 @@ from sqlmodel import select
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
-from app.models.live_feedback_model import LiveFeedback
+from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
 from app.schemas import SessionTurnCreate
-from app.schemas.live_feedback_schema import LiveFeedbackRead
+from app.schemas.live_feedback_schema import LiveFeedback
 from app.services.voice_analysis_service import analyze_voice_gemini_from_file
 
 
-def format_feedback_lines(feedback_items: list[LiveFeedbackRead]) -> list[str]:
-    return [f'{item.heading}: {item.feedback_text}' for item in feedback_items]
+def fetch_all_for_session(db_session: DBSession, session_id: UUID) -> list[LiveFeedback]:
+    statement = (
+        select(LiveFeedbackDB)
+        .where(LiveFeedbackDB.session_id == session_id)
+        .order_by(LiveFeedbackDB.created_at)
+    )
+    feedback_items = db_session.exec(statement).all()
+    return [
+        LiveFeedback(heading=item.heading, feedback_text=item.feedback_text)
+        for item in feedback_items
+    ]
+
+
+def format_feedback_lines(feedback_items: list[LiveFeedback]) -> list[str]:
+    return [
+        json.dumps({'heading': item.heading, 'feedback_text': item.feedback_text})
+        for item in feedback_items
+    ]
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
@@ -33,21 +50,23 @@ def safe_generate_live_feedback_item(
 
 
 def generate_live_feedback_item(
-    user_audio_path: str = 'No audio available',
+    user_audio_path: str = None,
     transcript: str = 'No transcript available',
     previous_feedback: str = 'No previous feedback available',
     hr_docs_context: str = 'No hr document context available',
 ) -> LiveFeedback:
-    voice_analysis = None
+    voice_analysis = ''
     if user_audio_path:
         voice_analysis = analyze_voice_gemini_from_file(user_audio_path)
+    if not voice_analysis:
+        voice_analysis = 'No voice analysis available.'
 
     user_prompt = f"""
     Analyze the provided HR documents, the transcript, and voice analysis from a
     single turn of an HR professional's training conversation.
-    Based on the these, assess the HR professional’s tone and speech content. Then suggest concise 
-    next steps (1–10 words each) they can apply in their next conversational turn to improve their
-    performance.
+    Based on the these, assess the HR professional’s tone and speech content.
+    Then generate 1 feedback item they can apply in their next conversational turn to 
+    improve their performance.
 
     ### Context
     HR Document Context:
@@ -63,14 +82,30 @@ def generate_live_feedback_item(
     {previous_feedback}
 
     ### Instructions
-    1. Generate new feedback in the format: "<Category>: <Short feedback>".
-    2. Use categories like: Tone, Clarity, Engagement, Next Step, or Content.
-    3. Do NOT repeat or rephrase previous feedback.
-    4. Feedback must be consistent with prior suggestions.
-    5. Maximum of 3 feedback lines. Each line should be concise (1–5 words).
+    1. Format your output as a 'LiveFeedback' object.
+    Each live feedback item represents a Pydantic model with two fields:
+    - `heading`: A short title or summary of the feedback item
+    - `feedback_text`: A description or elaboration of the feedback item
 
-    ### Output
-    New Feedback:
+    Do not include markdown, explanation, or code formatting.
+
+    2. Generate EXACTLY 1 feedback item, which should be concise (1-10 words).
+    2. For the heading, use categories like: Tone, Clarity, Engagement, Next Step, or Content.
+    3. Each new feedback item should have a different heading from the previous 4 feedback items.
+    4. Feedback must be consistent with prior suggestions.
+    5. Avoid rephrasing or repeating previous feedback items when possible.
+    6. Use active voice and no hedging, be specific if possible.
+    e.g."Speak more calmly" instead of "Use a calmer tone" 
+
+    ### Examples
+    Feedback items in order of generating:
+    1. {{"heading": "Tone", "feedback_text": "Speak more calmly." }}
+    2. {{"heading": "Engagement", "feedback_text": "Acknowledge their emotions directly." }}
+    3. {{"heading": "Content", "feedback_text": "State clear facts for bad performance." }}
+    4. {{"heading": "Clarity", "feedback_text": "Replace vague phrases with specific outcomes." }}
+    5. {{"heading": "Next Step", "feedback_text": "Ask them to complete any paperwork necessary."}}
+    6. {{"heading": "Tone", "feedback_text": "Great tone – keep it up!" }}
+
     """
 
     return call_structured_llm(
@@ -81,18 +116,8 @@ def generate_live_feedback_item(
         ),
         model='gpt-4o-2024-08-06',
         output_model=LiveFeedback,
-        mock_response=None,
+        mock_response=LiveFeedback(heading='Tone', feedback_text='Speak more calmly.'),
     )
-
-
-def fetch_all_for_session(db_session: DBSession, session_id: UUID) -> list[LiveFeedbackRead]:
-    statement = (
-        select(LiveFeedback)
-        .where(LiveFeedback.session_id == session_id)
-        .order_by(LiveFeedback.created_at)
-    )
-    feedback_items = db_session.exec(statement).all()
-    return [LiveFeedbackRead(**item.model_dump()) for item in feedback_items]
 
 
 def generate_and_store_live_feedback(
@@ -103,11 +128,13 @@ def generate_and_store_live_feedback(
     formatted_lines = format_feedback_lines(feedback_items)
     previous_feedback = '\n'.join(formatted_lines)
 
-    if (
-        not session_turn_context.audio_uri
-        and not session_turn_context.text
-        and not hr_docs_context
-        and not previous_feedback
+    if not any(
+        [
+            session_turn_context.audio_uri,
+            session_turn_context.text,
+            hr_docs_context,
+            previous_feedback,
+        ]
     ):
         return None
     else:
@@ -121,12 +148,19 @@ def generate_and_store_live_feedback(
 
             try:
                 live_feedback_item = future_live_feedback.result()
-                live_feedback_item.session_id = session_id
             except Exception as e:
                 print('[ERROR] Failed to generate live feedback:', e)
                 return None
 
-        db_session.add(live_feedback_item)
+        live_feedback_item_db = LiveFeedbackDB(
+            session_id=session_id,
+            heading=live_feedback_item.heading,
+            feedback_text=live_feedback_item.feedback_text,
+        )
+        db_session.add(live_feedback_item_db)
         db_session.commit()
-        db_session.refresh(live_feedback_item)
-        return live_feedback_item
+        db_session.refresh(live_feedback_item_db)
+        return live_feedback_item_db
+
+
+generate_live_feedback_item(user_audio_path='example_audio.wav', transcript='Example transcript')
