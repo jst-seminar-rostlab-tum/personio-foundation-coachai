@@ -41,7 +41,6 @@ class SessionService:
             scheduled_at=session.scheduled_at,
             started_at=session.started_at,
             ended_at=session.ended_at,
-            ai_persona=session.ai_persona,
             status=session.status,
             allow_admin_access=session.allow_admin_access,
             created_at=session.created_at,
@@ -306,9 +305,8 @@ class SessionService:
             category=category.name
             if category
             else conversation_scenario.custom_category_label or 'Unknown Category',
-            goal=conversation_scenario.goal,
-            context=conversation_scenario.context,
-            other_party=conversation_scenario.other_party,
+            persona=conversation_scenario.persona,
+            situational_facts=conversation_scenario.situational_facts,
             transcript=transcripts,
             objectives=preparation.objectives,
             key_concepts=key_concepts_str,
