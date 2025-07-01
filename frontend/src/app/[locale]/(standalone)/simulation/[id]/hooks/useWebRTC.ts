@@ -95,7 +95,6 @@ export function useWebRTC(sessionId: string) {
       dc.onopen = () => {
         setIsDataChannelReady(true);
         startLocalRecording(localStream);
-        // startRemoteRecording(rem);
         startTimer();
       };
       dc.onclose = () => {
@@ -164,7 +163,11 @@ export function useWebRTC(sessionId: string) {
               break;
 
             case 'input_audio_buffer.speech_stopped':
-              extractSegment(inputAudioBufferSpeechStartedOffsetMsRef.current, parsed.audio_end_ms);
+              extractSegment(
+                inputAudioBufferSpeechStartedOffsetMsRef.current,
+                parsed.audio_end_ms,
+                elapsedTimeMsRef.current
+              );
               break;
 
             case 'response.content_part.added':

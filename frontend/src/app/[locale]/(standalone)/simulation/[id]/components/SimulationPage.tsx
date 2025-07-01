@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useWebRTC } from '@/hooks/useWebRTC';
+import { useWebRTC } from '@/app/[locale]/(standalone)/simulation/[id]/hooks/useWebRTC';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
