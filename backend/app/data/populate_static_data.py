@@ -20,7 +20,7 @@ with open(os.path.join(base_dir, 'default_contexts.json'), encoding='utf-8') as 
 
 STATIC_CATEGORIES = [
     ConversationCategory(
-        id='11111111-1111-1111-1111-111111111111',
+        id='giving_feedback',
         name='Giving Feedback',
         system_prompt='You are an expert in providing constructive feedback.',
         initial_prompt=initial_prompt_data['giving_feedback'],
@@ -34,7 +34,7 @@ STATIC_CATEGORIES = [
         updated_at=datetime.now(UTC),
     ),
     ConversationCategory(
-        id='22222222-2222-2222-2222-222222222222',
+        id='performance_reviews',
         name='Performance Reviews',
         system_prompt='You are a manager conducting performance reviews.',
         initial_prompt=initial_prompt_data['performance_reviews'],
@@ -48,7 +48,7 @@ STATIC_CATEGORIES = [
         updated_at=datetime.now(UTC),
     ),
     ConversationCategory(
-        id='33333333-3333-3333-3333-333333333333',
+        id='conflict_resolution',
         name='Conflict Resolution',
         system_prompt='You are a mediator resolving conflicts.',
         initial_prompt=initial_prompt_data['conflict_resolution'],
@@ -62,7 +62,7 @@ STATIC_CATEGORIES = [
         updated_at=datetime.now(UTC),
     ),
     ConversationCategory(
-        id='44444444-4444-4444-4444-444444444444',
+        id='salary_discussions',
         name='Salary Discussions',
         system_prompt='You are a negotiator discussing salary expectations.',
         initial_prompt=initial_prompt_data['salary_discussions'],
