@@ -26,15 +26,10 @@ export function useMessageReducer() {
     });
   };
 
-  const getLastMessageStartOffsetMsBySender = (sender: MessageSender): number | undefined => {
-    return [...messagesRef.current].reverse().find((msg) => msg.sender === sender)?.startOffsetMs;
-  };
-
   return {
     messages,
     setMessages,
     addPlaceholderMessage,
     appendDeltaToLastMessage,
-    getLastMessageStartOffsetMsBySender,
   };
 }

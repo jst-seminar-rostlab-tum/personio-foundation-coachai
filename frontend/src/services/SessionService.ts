@@ -58,7 +58,7 @@ const updateSession = async (api: AxiosInstance, sessionId: string, session: Par
   }
 };
 
-const createSessionTurn = async (api: AxiosInstance, sessionTurn: CreateSessionTurnRequest) => {
+const createSessionTurn = async (api: AxiosInstance, sessionTurn: FormData) => {
   try {
     const response = await api.post(`/session-turns`, sessionTurn);
     return response;

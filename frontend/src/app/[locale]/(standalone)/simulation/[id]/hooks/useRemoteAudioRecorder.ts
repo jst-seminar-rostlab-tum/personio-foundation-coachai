@@ -1,11 +1,11 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 
 export function useRemoteAudioRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const [remoteAudioUrls, setRemoteAudioUrls] = useState<string[]>([]);
 
-  const startRemoteRecording = (stream: MediaStream): void => {
+  const startRemoteRecording = useCallback((stream: MediaStream) => {
     if (mediaRecorderRef.current) return;
     chunksRef.current = [];
     const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
@@ -15,19 +15,28 @@ export function useRemoteAudioRecorder() {
       if (e.data.size > 0) chunksRef.current.push(e.data);
     };
 
-    recorder.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-      const url = URL.createObjectURL(blob);
-      setRemoteAudioUrls((prev) => [...prev, url]);
-    };
-
     recorder.start();
-  };
+  }, []);
 
-  const stopRemoteRecording = (): void => {
-    mediaRecorderRef.current?.stop();
-    mediaRecorderRef.current = null;
-  };
+  const stopRemoteRecording = useCallback((): Promise<Blob> => {
+    return new Promise((resolve) => {
+      const recorder = mediaRecorderRef.current;
+      if (!recorder) {
+        resolve(new Blob());
+        return;
+      }
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+        setRemoteAudioUrls((prev) => [...prev, url]);
+        resolve(blob);
+        mediaRecorderRef.current = null;
+      };
+
+      recorder.stop();
+    });
+  }, []);
 
   return {
     startRemoteRecording,

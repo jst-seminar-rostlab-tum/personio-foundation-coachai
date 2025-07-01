@@ -40,9 +40,7 @@ export interface CreateSessionTurnRequest {
   speaker: MessageSender;
   text: string;
   startOffsetMs: number;
-  endOffsetMs: number;
-  audioUri: string;
-  aiEmotion: string;
+  audioFile: Blob;
 }
 
 export interface Message {

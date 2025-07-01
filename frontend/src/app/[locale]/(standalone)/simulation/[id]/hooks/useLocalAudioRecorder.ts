@@ -85,10 +85,10 @@ export function useLocalAudioRecorder() {
     startOffsetMs: number,
     endOffsetMs: number,
     elapsedTimeMs: number
-  ): Promise<string> => {
+  ): Promise<Blob> => {
     const currentRef = getCurrentRecorderRef();
     const backupRef = getBackupRecorderRef();
-    if (!currentRef.current) return '';
+    if (!currentRef.current) return new Blob();
 
     const stoppedRecorder = currentRef.current;
     const chunks = await stopRecorderAndCollectChunks(stoppedRecorder);
@@ -129,7 +129,7 @@ export function useLocalAudioRecorder() {
     const wavBlob = await bufferToWav(segmentBuffer);
     const url = URL.createObjectURL(wavBlob);
     setLocalAudioUrls((prev) => [...prev, url]);
-    return url;
+    return wavBlob;
   };
 
   async function bufferToWav(buffer: AudioBuffer): Promise<Blob> {

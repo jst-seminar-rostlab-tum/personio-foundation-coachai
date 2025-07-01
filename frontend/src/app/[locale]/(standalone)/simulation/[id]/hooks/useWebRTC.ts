@@ -9,23 +9,21 @@ import { useMediaStream } from './useMediaStream';
 import { useElapsedTime } from './useElapsedTime';
 import { useLocalAudioRecorder } from './useLocalAudioRecorder';
 import { useRemoteAudioRecorder } from './useRemoteAudioRecorder';
+import { useSessionTurns } from './useSessionTurns';
 
 export function useWebRTC(sessionId: string) {
   const { localStreamRef, startStream, stopStream } = useMediaStream();
-  const {
-    messages,
-    addPlaceholderMessage,
-    appendDeltaToLastMessage,
-    setMessages,
-    getLastMessageStartOffsetMsBySender,
-  } = useMessageReducer();
+  const { messages, addPlaceholderMessage, appendDeltaToLastMessage, setMessages } =
+    useMessageReducer();
 
   const { elapsedTimeS, elapsedTimeMsRef, startTimer, stopTimer } = useElapsedTime();
 
-  const { startLocalRecording, stopLocalRecording, extractSegment, localAudioUrls } =
-    useLocalAudioRecorder();
+  const { startLocalRecording, stopLocalRecording, extractSegment } = useLocalAudioRecorder();
 
-  const { startRemoteRecording, stopRemoteRecording, remoteAudioUrls } = useRemoteAudioRecorder();
+  const { startRemoteRecording, stopRemoteRecording } = useRemoteAudioRecorder();
+
+  const { addAudioToTurn, addMetadataToTurn, addStartOffsetMsToTurn, audioUrls } =
+    useSessionTurns();
 
   const [isMicActive, setIsMicActive] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -37,7 +35,9 @@ export function useWebRTC(sessionId: string) {
   const cleanupRef = useRef<boolean | null>(null);
   const hasInitializedRef = useRef(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const inputAudioBufferSpeechStartedOffsetMsRef = useRef<number>(0);
+  const remoteResponseIdRef = useRef<string | null>(null);
 
   // const router = useRouter();
   const t = useTranslations('Simulation');
@@ -130,14 +130,10 @@ export function useWebRTC(sessionId: string) {
               break;
 
             case 'conversation.item.input_audio_transcription.completed':
-              await sessionService.createSessionTurn(api, {
+              addMetadataToTurn(parsed.item_id, {
                 sessionId,
                 speaker: MessageSender.USER,
                 text: parsed.transcript,
-                startOffsetMs: getLastMessageStartOffsetMsBySender(MessageSender.USER) ?? 0,
-                endOffsetMs: elapsedTimeMsRef.current,
-                audioUri: '',
-                aiEmotion: '',
               });
               break;
 
@@ -146,38 +142,43 @@ export function useWebRTC(sessionId: string) {
               break;
 
             case 'response.audio_transcript.done':
-              await sessionService.createSessionTurn(api, {
+              addMetadataToTurn(parsed.response_id, {
                 sessionId,
                 speaker: MessageSender.ASSISTANT,
                 text: parsed.transcript,
-                startOffsetMs: getLastMessageStartOffsetMsBySender(MessageSender.ASSISTANT) ?? 0,
-                endOffsetMs: elapsedTimeMsRef.current,
-                audioUri: '',
-                aiEmotion: '',
               });
               break;
 
             case 'input_audio_buffer.speech_started':
               inputAudioBufferSpeechStartedOffsetMsRef.current = parsed.audio_start_ms;
-              stopRemoteRecording();
+              addStartOffsetMsToTurn(parsed.item_id, parsed.audio_start_ms);
+              if (remoteAudioRef.current) {
+                addAudioToTurn(parsed.response_id, await stopRemoteRecording());
+              }
               break;
 
             case 'input_audio_buffer.speech_stopped':
-              extractSegment(
-                inputAudioBufferSpeechStartedOffsetMsRef.current,
-                parsed.audio_end_ms,
-                elapsedTimeMsRef.current
+              addAudioToTurn(
+                parsed.item_id,
+                await extractSegment(
+                  inputAudioBufferSpeechStartedOffsetMsRef.current,
+                  parsed.audio_end_ms,
+                  elapsedTimeMsRef.current
+                )
               );
               break;
 
             case 'response.content_part.added':
               if (parsed.part.type === 'audio') {
                 startRemoteRecording(remoteAudioRef.current?.srcObject as MediaStream);
+                addStartOffsetMsToTurn(parsed.response_id, elapsedTimeMsRef.current);
+                remoteResponseIdRef.current = parsed.response_id;
               }
               break;
 
             case 'output_audio_buffer.stopped':
-              stopRemoteRecording();
+              addAudioToTurn(parsed.response_id, await stopRemoteRecording());
+              remoteResponseIdRef.current = null;
               break;
 
             default:
@@ -211,7 +212,6 @@ export function useWebRTC(sessionId: string) {
     startStream,
     addPlaceholderMessage,
     appendDeltaToLastMessage,
-    getLastMessageStartOffsetMsBySender,
     elapsedTimeMsRef,
     startTimer,
     stopTimer,
@@ -220,6 +220,9 @@ export function useWebRTC(sessionId: string) {
     stopLocalRecording,
     startRemoteRecording,
     stopRemoteRecording,
+    addAudioToTurn,
+    addMetadataToTurn,
+    addStartOffsetMsToTurn,
   ]);
 
   return {
@@ -234,7 +237,6 @@ export function useWebRTC(sessionId: string) {
     localStreamRef,
     messages,
     elapsedTimeS,
-    localAudioUrls,
-    remoteAudioUrls,
+    audioUrls,
   };
 }
