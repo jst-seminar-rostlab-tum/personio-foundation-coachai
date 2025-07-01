@@ -8,8 +8,7 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 
 import type { LayoutProps } from '@/interfaces/props/LayoutProps';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
-import { headers } from 'next/headers';        
-
+import { headers } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] });
 
