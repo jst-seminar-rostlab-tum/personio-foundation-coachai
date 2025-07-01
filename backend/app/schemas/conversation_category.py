@@ -8,9 +8,6 @@ from app.models.language import LanguageCode
 class ConversationCategoryRead(CamelModel):
     id: str  # Changed from UUID to str
     name: str
-    default_context: str
-    default_goal: str
-    default_other_party: str
     is_custom: bool
     language_code: LanguageCode
     created_at: datetime

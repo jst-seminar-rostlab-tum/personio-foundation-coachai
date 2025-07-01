@@ -28,7 +28,7 @@ export default function BackButton() {
       >
         <ArrowLeftIcon className="h-4 w-4" strokeWidth={3} />
         <span className="relative transition-transform duration-200 group-hover:-translate-x-1">
-          {t('backToDashboard')}
+          {t('backToHome')}
         </span>
       </Button>
     </Link>

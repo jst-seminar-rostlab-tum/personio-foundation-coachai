@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from math import ceil
+from typing import Optional
 from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
@@ -40,7 +41,6 @@ class SessionService:
             scheduled_at=session.scheduled_at,
             started_at=session.started_at,
             ended_at=session.ended_at,
-            ai_persona=session.ai_persona,
             status=session.status,
             allow_admin_access=session.allow_admin_access,
             created_at=session.created_at,
@@ -57,9 +57,17 @@ class SessionService:
         return session_response
 
     def fetch_paginated_sessions(
-        self, user_profile: UserProfile, page: int, page_size: int
+        self,
+        user_profile: UserProfile,
+        page: int,
+        page_size: int,
+        scenario_id: Optional[UUID] = None,
     ) -> PaginatedSessionsResponse:
-        scenario_ids = self._get_user_scenario_ids(user_profile.id)
+        if scenario_id:
+            scenario = self._validate_scenario_access(scenario_id, user_profile)
+            scenario_ids = [scenario.id]
+        else:
+            scenario_ids = self._get_user_scenario_ids(user_profile.id)
 
         if not scenario_ids:
             return PaginatedSessionsResponse(
@@ -297,9 +305,8 @@ class SessionService:
             category=category.name
             if category
             else conversation_scenario.custom_category_label or 'Unknown Category',
-            goal=conversation_scenario.goal,
-            context=conversation_scenario.context,
-            other_party=conversation_scenario.other_party,
+            persona=conversation_scenario.persona,
+            situational_facts=conversation_scenario.situational_facts,
             transcript=transcripts,
             objectives=preparation.objectives,
             key_concepts=key_concepts_str,
@@ -475,3 +482,19 @@ class SessionService:
         Replace this with your actual object storage client logic."""
         for uri in audio_uris:  # TODO: delete audios on object storage.  # noqa: B007
             pass
+
+    def _validate_scenario_access(
+        self, scenario_id: UUID, user_profile: UserProfile
+    ) -> ConversationScenario:
+        """
+        Validate access to a specific conversation scenario.
+        Ensures the scenario exists and the user has permission to access it.
+        """
+        scenario = self.db.get(ConversationScenario, scenario_id)
+        if not scenario:
+            raise HTTPException(status_code=404, detail='Scenario not found')
+        if scenario.user_id != user_profile.id and user_profile.account_role != AccountRole.admin:
+            raise HTTPException(
+                status_code=403, detail='You do not have permission to access this scenario'
+            )
+        return scenario
