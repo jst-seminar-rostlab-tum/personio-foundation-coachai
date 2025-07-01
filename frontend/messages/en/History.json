@@ -6,7 +6,6 @@
   "skillsPerformance": "Skills Performance",
   "activity": "Activity",
   "previousSessions": "Previous Sessions",
-  "exportHistory": "Export History",
   "deleteAllSessions": "Delete All Sessions",
   "deleteAllSessionsConfirmation": "Are you sure you want to delete all sessions? This action cannot be undone.",
   "deleteSuccess": "Deleted successfully.",
