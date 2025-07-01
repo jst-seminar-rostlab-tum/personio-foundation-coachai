@@ -1,5 +1,5 @@
 import os
-from pathlib import Path
+from uuid import uuid4
 
 from fastapi import HTTPException, UploadFile
 from sqlmodel import Session as DBSession
@@ -9,9 +9,20 @@ from app.models.session_turn import SessionTurn
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.google_cloud_storage_service import GCSManager
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))  # app/services/
-BASE_DIR = os.path.abspath(os.path.join(CURRENT_DIR, '../../'))  # backend/
-RECORDING_DIR = os.path.join(BASE_DIR, 'tmp', 'recordings')
+
+def match_audio_content_type(file: UploadFile) -> tuple[str, str]:
+    """
+    Validate audio file extension and return (ext, content_type).
+    """
+    ext = os.path.splitext(file.filename)[-1].lower()
+    if ext == '.webm':
+        return ext, 'audio/webm'
+    elif ext == '.mp3':
+        return ext, 'audio/mpeg'
+    elif ext == '.wav':
+        return ext, 'audio/wav'
+    else:
+        raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
 
 
 class SessionTurnService:
@@ -31,33 +42,27 @@ class SessionTurnService:
         if not session:
             raise HTTPException(status_code=404, detail='Session not found')
 
-        audio_name = turn.audio_name
-        if not audio_name:
-            raise HTTPException(status_code=400, detail='Audio name is required')
+        # Validate required fields
         if not turn.text:
             raise HTTPException(status_code=400, detail='Text is required')
 
-        # Check if the audio file is valid
-        ext = os.path.splitext(audio_file.filename)[-1].lower()
-        if ext not in ['.webm', '.mp3', '.wav']:
-            raise HTTPException(
-                status_code=400, detail='Only .webm, .mp3 or .wav files are allowed'
-            )
+        # Check if the uploaded audio file is valid
+        try:
+            ext, content_type = match_audio_content_type(audio_file)
+        except HTTPException as e:
+            raise e
 
-        # Create tmp folder if needed
-        os.makedirs(RECORDING_DIR, exist_ok=True)
-
-        local_path = os.path.join(RECORDING_DIR, audio_name)
-
-        with open(local_path, 'wb') as f:
-            f.write(audio_file.file.read())
+        # Generate a unique audio name using session_id and new uuid
+        audio_name = f'{turn.session_id}_{uuid4().hex}{ext}'
 
         gcs = GCSManager('audio')
 
-        local_path = Path(local_path)
-
         try:
-            gcs.upload_single_document(file_path=local_path)
+            gcs.upload_from_fileobj(
+                file_obj=audio_file.file,
+                blob_name=audio_name,
+                content_type=content_type,
+            )
         except Exception as e:
             raise HTTPException(
                 status_code=500, detail=f'Failed to upload audio file: {str(e)}'
@@ -65,7 +70,7 @@ class SessionTurnService:
 
         # Create a new SessionTurn instance
         turn_data = turn.model_dump()
-        turn_data['audio_uri'] = local_path.name
+        turn_data['audio_uri'] = audio_name
         new_turn = SessionTurn(**turn_data)
 
         self.db.add(new_turn)
@@ -79,7 +84,7 @@ class SessionTurnService:
             start_offset_ms=new_turn.start_offset_ms,
             end_offset_ms=new_turn.end_offset_ms,
             text=new_turn.text,
-            audio_uri=local_path.name,
+            audio_uri=audio_name,
             ai_emotion=new_turn.ai_emotion,
             created_at=new_turn.created_at,
         )

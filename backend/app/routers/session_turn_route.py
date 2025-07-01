@@ -1,5 +1,5 @@
 from typing import Annotated
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 from sqlmodel import Session as DBSession
@@ -43,9 +43,6 @@ async def create_session_turn(
     ai_emotion: str = ai_emotion_form,
     audio_file: UploadFile = audio_file_file,
 ) -> SessionTurnRead:
-    # Generate a unique audio name using session_id and uuid
-    audio_name = f'{session_id}_{uuid4().hex}.mp3'
-
     # manually create SessionTurnCreate
     turn = SessionTurnCreate(
         session_id=session_id,
@@ -54,7 +51,6 @@ async def create_session_turn(
         end_offset_ms=end_offset_ms,
         text=text,
         ai_emotion=ai_emotion,
-        audio_name=audio_name,
     )
 
     return service.create_session_turn(turn, audio_file)

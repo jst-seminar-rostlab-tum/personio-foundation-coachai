@@ -1,6 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
-from typing import Literal
+from typing import BinaryIO, Literal
 
 from google.cloud import storage
 from google.oauth2 import service_account
@@ -53,24 +53,19 @@ class GCSManager:
             blob.upload_from_filename(path)
             print(f'{path.name} → gs://{self.bucket.name}/{blob_name}')
 
-    def upload_single_document(self, file_path: Path) -> str:
+    def upload_from_fileobj(
+        self, file_obj: BinaryIO, blob_name: str, content_type: str = None
+    ) -> str:
         """
-        Upload a single file to GCS.
-        Returns the gs:// URI if uploaded, or None if skipped.
+        Upload a file-like object to GCS.
         """
-        if not file_path.exists() or not file_path.is_file():
-            raise ValueError(f'Invalid file: {file_path}')
+        blob = self.bucket.blob(f'{self.prefix}{blob_name}')
 
-        blob_name = f'{self.prefix}{file_path.name}'
-        blob = self.bucket.blob(blob_name)
+        file_obj.seek(0)  # rewind to beginning
+        blob.upload_from_file(file_obj, content_type=content_type)
 
-        if blob.exists(self.client):
-            print(f'Skipped (already exists): {blob_name}')
-            return f'gs://{self.bucket.name}/{blob_name}'
-
-        blob.upload_from_filename(str(file_path))
-        print(f'{file_path.name} → gs://{self.bucket.name}/{blob_name}')
-        return f'gs://{self.bucket.name}/{blob_name}'
+        print(f'{blob_name} → gs://{self.bucket.name}/{blob.name}')
+        return f'gs://{self.bucket.name}/{blob.name}'
 
     def download_documents(self, directory: Path = None) -> None:
         target_dir = Path(directory) if directory else self.download_dir
