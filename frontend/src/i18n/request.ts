@@ -23,7 +23,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
     TermsOfService: (await import(`../../messages/${locale}/TermsOfService.json`)).default,
     PersonalizationOptions: (await import(`../../messages/${locale}/PersonalizationOptions.json`))
       .default,
-    DeleteAccount: (await import(`../../messages/${locale}/DeleteAccount.json`)).default,
     NotFound: (await import(`../../messages/${locale}/NotFound.json`)).default,
     ErrorPage: (await import(`../../messages/${locale}/ErrorPage.json`)).default,
   };
