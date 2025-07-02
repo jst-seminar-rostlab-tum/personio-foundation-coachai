@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { Inter, Bebas_Neue as BebasNeue } from 'next/font/google';
+import type { Viewport } from 'next';
 
 import type { LayoutProps } from '@/interfaces/props/LayoutProps';
 import { headers } from 'next/headers';
@@ -8,6 +9,12 @@ import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
 const bebasNeue = BebasNeue({ subsets: ['latin'], weight: '400' });
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export default async function RootLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
