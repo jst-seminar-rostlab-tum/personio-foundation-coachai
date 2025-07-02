@@ -1,7 +1,7 @@
 import os
 from uuid import uuid4
 
-import magic
+import puremagic
 from fastapi import HTTPException, UploadFile
 from sqlmodel import Session as DBSession
 
@@ -11,8 +11,16 @@ from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.google_cloud_storage_service import GCSManager
 
 
-def is_valid_audio(file_bytes: bytes) -> bool:
-    mime = magic.from_buffer(file_bytes, mime=True)
+def is_valid_audio(upload_file: UploadFile) -> bool:
+    matches = puremagic.magic_stream(upload_file.file)
+
+    # Reset the file pointer to the beginning after reading
+    upload_file.file.seek(0)
+
+    if not matches:
+        return False
+
+    mime = matches[0].mime_type
     return mime in ['audio/webm', 'audio/mpeg', 'audio/wav']
 
 
@@ -58,8 +66,7 @@ class SessionTurnService:
         except HTTPException as e:
             raise e
 
-        audio_bytes = await audio_file.read()
-        if not is_valid_audio(audio_bytes):
+        if not is_valid_audio(audio_file):
             raise HTTPException(status_code=400, detail='Uploaded file is not a valid audio type')
 
         # Generate a unique audio name using session_id and new uuid
