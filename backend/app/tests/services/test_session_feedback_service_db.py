@@ -237,6 +237,19 @@ class TestSessionFeedbackService(unittest.TestCase):
             ]
         )
 
+        # mock scoring_service
+        class MockScoringResult:
+            class Scoring:
+                def __init__(self) -> None:
+                    self.scores = []
+                    self.overall_score = 0
+
+            def __init__(self) -> None:
+                self.scoring = self.Scoring()
+
+        mock_scoring_service = MagicMock()
+        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+
         example_request = ExamplesRequest(
             transcript='Error case transcript...',
             objectives=['ObjX'],
@@ -248,7 +261,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         )
 
         feedback = generate_and_store_feedback(
-            session_id=session_id, example_request=example_request, db_session=self.session
+            session_id=session_id,
+            example_request=example_request,
+            db_session=self.session,
+            scoring_service=mock_scoring_service,
         )
 
         self.assertEqual(feedback.status, FeedbackStatusEnum.failed)
