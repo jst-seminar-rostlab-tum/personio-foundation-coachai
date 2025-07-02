@@ -13,8 +13,8 @@ import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/
 import { CreateUserRequest } from '@/interfaces/models/Auth';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/AuthService';
-import { showErrorToast } from '@/lib/toast';
-import { handlePasteEvent } from '@/lib/handlePaste';
+import { showErrorToast } from '@/lib/component-utils/toast';
+import { handlePasteEvent } from '@/lib/handlers/handlePaste';
 import { api } from '@/services/ApiClient';
 
 interface VerificationPopupProps {

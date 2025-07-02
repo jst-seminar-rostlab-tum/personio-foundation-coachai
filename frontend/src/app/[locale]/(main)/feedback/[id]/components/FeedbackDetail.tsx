@@ -21,8 +21,8 @@ import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/SessionService';
-import { showErrorToast } from '@/lib/toast';
-import { convertTimeToMinutes, formattedDate } from '@/lib/utils';
+import { showErrorToast } from '@/lib/component-utils/toast';
+import { formattedDate } from '@/lib/common';
 import { api } from '@/services/ApiClient';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
@@ -74,6 +74,10 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
     { key: tCommon('focus'), value: feedbackDetail?.feedback?.scores.focus ?? 0 },
     { key: tCommon('clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
+
+  const convertTimeToMinutes = (seconds: number) => {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  };
 
   const roundCardStats = [
     {

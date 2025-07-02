@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { adminService } from '@/services/AdminService';
-import { showSuccessToast, showErrorToast } from '@/lib/toast';
+import { showSuccessToast, showErrorToast } from '@/lib/component-utils/toast';
 import { api } from '@/services/ApiClient';
 
 interface TokenSetterProps {

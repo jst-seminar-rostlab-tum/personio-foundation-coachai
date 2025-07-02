@@ -11,7 +11,7 @@ import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { SessionFromPagination } from '@/interfaces/models/Session';
-import { formattedDate } from '@/lib/utils';
+import { formattedDate } from '@/lib/common';
 import { api } from '@/services/ApiServer';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {

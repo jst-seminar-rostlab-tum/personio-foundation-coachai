@@ -24,7 +24,7 @@ import {
   PasswordRequirement,
 } from '@/app/[locale]/(auth)/login/components/PasswordInput';
 import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/component-utils/toast';
 import Link from 'next/link';
 
 export function SignUpForm() {

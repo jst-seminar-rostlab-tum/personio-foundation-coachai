@@ -11,7 +11,7 @@ import {
   ConversationCategory,
 } from '@/interfaces/models/ConversationScenario';
 import { conversationScenarioService } from '@/services/ConversationScenarioService';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/component-utils/toast';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { api } from '@/services/ApiClient';
 import { CategoryStep } from './CategoryStep';

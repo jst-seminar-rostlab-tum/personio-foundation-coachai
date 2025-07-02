@@ -5,7 +5,7 @@ import { sessionService } from '@/services/SessionService';
 import { Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/component-utils/toast';
 import { useState } from 'react';
 import { api } from '@/services/ApiClient';
 

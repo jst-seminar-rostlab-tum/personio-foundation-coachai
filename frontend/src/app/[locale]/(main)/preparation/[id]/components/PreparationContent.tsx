@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { ConversationScenarioPreparation } from '@/interfaces/models/ConversationScenario';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/component-utils/toast';
 import { api } from '@/services/ApiClient';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';

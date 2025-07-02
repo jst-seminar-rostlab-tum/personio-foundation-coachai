@@ -13,9 +13,9 @@ import Label from '@/components/ui/Label';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 
 import { UserOption } from '@/interfaces/models/UserInputFields';
-import { PrimaryGoals, UserRoles } from '@/lib/utils';
+import { PrimaryGoals, UserRoles } from '@/lib/common';
 import { UserProfileService } from '@/services/UserProfileService';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/component-utils/toast';
 import { useUser } from '@/contexts/User';
 import { useOnboardingStore } from '@/store/OnboardingStore';
 import { api } from '@/services/ApiClient';

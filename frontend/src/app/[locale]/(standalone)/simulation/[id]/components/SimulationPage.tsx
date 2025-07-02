@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { SessionStatus } from '@/interfaces/models/Session';
 import { sessionService } from '@/services/SessionService';
 import { useTranslations } from 'next-intl';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/component-utils/toast';
 import { api } from '@/services/ApiClient';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
