@@ -49,15 +49,16 @@ def load_and_index_documents(
     Parameters:
         vector_db (SupabaseVectorStore): The vector store where documents will be added.
         doc_folder (str): The folder where the documents are stored.
+        table_name (str): The table name where the documents are stored.
     """
     os.makedirs(doc_folder, exist_ok=True)
     docs = prepare_vector_db_docs(str(doc_folder))
     if not docs:
         print(f'⚠️ No documents found in folder: {doc_folder}')
         return
-
+    print(f'Started adding {len(docs)} document chunks to the vector database...')
     vector_db.add_documents(docs)
-    print(f'Added {len(docs)} documents to vector store: {table_name}')
+    print(f'Added {len(docs)} document chunks to vector database: {table_name}')
 
 
 def build_vector_db_retriever(
