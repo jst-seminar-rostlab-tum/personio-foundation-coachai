@@ -46,6 +46,7 @@ class SessionDetailsRead(SessionRead):
     title: str | None = None
     summary: str | None = None
     goals_total: list[str] | None = None
+    has_reviewed: bool = False
     feedback: Optional['SessionFeedbackMetrics'] = None
     # List of audio file URIs --> located in session_turns
     audio_uris: list[str] = Field(default_factory=list)

@@ -1,20 +1,11 @@
 {
   "metaTitle": "Coach AI",
-  "metaDescription": "Trainieren Sie anspruchsvolle Gesprächssituationen und erhalten Sie direktes Feedback für Ihre persönliche Weiterentwicklung als Führungskraft.",
-  "welcome": "Willkommen bei ",
-  "appName": "CoachAI",
-  "description": "Full-stack-Anwendung mit TypeScript und Python",
-  "header": {
-    "appName": "Leadership Coach",
-    "signIn": "Anmelden",
-    "getStarted": "Jetzt starten"
-  },
+  "metaDescription": "Entwickeln Sie Ihre Führungskompetenzen durch KI-gestütztes Coaching.",
   "hero": {
     "badge": "KI-gestütztes Führungstraining",
-    "title": "Starke Führungs-Persönlichkeit dank KI-Coaching",
+    "title": "Starke Führungspersönlichkeit durch KI-Coaching",
     "description": "Trainieren Sie anspruchsvolle Gesprächssituationen und erhalten Sie direktes Feedback für Ihre persönliche Weiterentwicklung als Führungskraft.",
     "cta": {
-      "primary": "Jetzt starten",
       "secondary": "Mehr erfahren"
     }
   },
@@ -32,13 +23,13 @@
       },
       "3": {
         "title": "Feedback erhalten",
-        "description": "Bekommen Sie eine detaillierte Analyse Ihrer Gesprächsführung mit konkreten Handlungsempfehlungen."
+        "description": "Erhalten Sie eine detaillierte Analyse Ihrer Gesprächsführung mit konkreten Handlungsempfehlungen."
       }
     },
     "cta": "Erstes Training starten"
   },
   "features": {
-    "title": "Ihre Vorteile im Überblick",
+    "title": "Ihre Vorteile",
     "description": "Alles, was Sie für Ihre erfolgreiche Führungskräfteentwicklung benötigen.",
     "items": {
       "simulations": {
@@ -54,7 +45,7 @@
         "description": "Erhalten Sie nach jedem Training eine detaillierte Auswertung mit konkreten Verbesserungsvorschlägen."
       },
       "progress": {
-        "title": "Fortschrittskontrolle",
+        "title": "Fortschrittsverfolgung",
         "description": "Verfolgen Sie Ihre Entwicklung mit aussagekräftigen Kennzahlen und Einblicken."
       },
       "gamification": {
@@ -69,16 +60,9 @@
   },
   "cta": {
     "title": "Bereit für den nächsten Karriereschritt?",
-    "description": "Werden Sie Teil unserer Community erfolgreicher Führungskräfte, die KI für ihre persönliche Entwicklung nutzen.",
-    "button": "Jetzt starten"
+    "description": "Werden Sie Teil unserer Community erfolgreicher Führungskräfte, die KI für ihre persönliche Entwicklung nutzen."
   },
-  "footer": {
-    "appName": "Leadership Coach",
-    "links": {
-      "privacy": "Datenschutz",
-      "terms": "AGB",
-      "cookies": "Cookie-Einstellungen"
-    },
-    "copyright": "© 2025 AI Leadership Coach. Alle Rechte vorbehalten."
-  }
+  "getStarted": "Jetzt starten",
+  "cookies": "Cookie-Einstellungen",
+  "copyright": "© 2025 AI Leadership Coach. Alle Rechte vorbehalten."
 }

@@ -27,6 +27,7 @@ function getNamespaceFromPath(path: string): string {
     simulation: 'Simulation',
     settings: 'Settings',
     terms: 'TermsOfService',
+    confirm: 'Login.ConfirmationForm',
   };
 
   return pathMap[pathSegment] || 'HomePage';

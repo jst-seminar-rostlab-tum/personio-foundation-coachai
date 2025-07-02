@@ -24,7 +24,8 @@ interface ReviewDialogProps {
 }
 
 export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
-  const t = useTranslations('Feedback.reviewDialog');
+  const t = useTranslations('Feedback');
+  const tCommon = useTranslations('Common');
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,9 +55,9 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
         sessionId,
         allowAdminAccess: shareWithAdmin,
       });
-      showSuccessToast(t('submitReviewSuccess'));
+      showSuccessToast(t('submitSuccess'));
     } catch (error) {
-      showErrorToast(error, t('submitReviewError'));
+      showErrorToast(error, t('submitError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -65,12 +66,14 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
   return (
     <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="full">{t('open')}</Button>
+        <Button size="full">{t('reviewDialog.submitReview')}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl">{t('title')}</DialogTitle>
-          <DialogDescription className="text-marigold-90">{t('description')}</DialogDescription>
+          <DialogTitle className="text-2xl">{tCommon('reviews')}</DialogTitle>
+          <DialogDescription className="text-marigold-90">
+            {t('reviewDialog.description')}
+          </DialogDescription>
         </DialogHeader>
 
         <Rating
@@ -94,7 +97,7 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
           onClick={() => !isSubmitting && setShareWithAdmin(!shareWithAdmin)}
         >
           <Checkbox checked={shareWithAdmin} disabled={isSubmitting} />
-          <label className="text-sm text-bw-70">{t('shareWithAdmin')}</label>
+          <label className="text-sm text-bw-70">{t('reviewDialog.shareWithAdmin')}</label>
         </div>
 
         <DialogClose asChild>
@@ -103,7 +106,7 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
             onClick={rateFeedback}
             disabled={!rating || isSubmitting}
           >
-            {isSubmitting ? t('submitting') : t('rate')}
+            {isSubmitting ? tCommon('submitting') : t('reviewDialog.submitReview')}
           </Button>
         </DialogClose>
       </DialogContent>
