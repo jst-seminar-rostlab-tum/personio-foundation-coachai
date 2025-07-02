@@ -39,12 +39,15 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
         if file.endswith('.pdf'):
             file_path = os.path.join(doc_folder, file)
             try:
+                print(f'📄 Processing document {file}...')
                 loader = PyPDFLoader(file_path)
                 doc = loader.load()
                 splits = text_splitter.split_documents(doc)
                 docs.extend(splits)
+                print(f'✅ Successfully processed {file} with {len(splits)} chunks')
             except Exception as e:
                 print(f'Error loading or splitting PDF {file_path}: {e}')
+                print(f'❌ Error processing {file}: {e}')
     return docs
 
 
