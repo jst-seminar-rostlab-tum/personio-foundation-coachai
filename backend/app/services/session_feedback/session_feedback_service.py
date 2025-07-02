@@ -13,12 +13,11 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from app.connections.openai_client import call_structured_llm
 from app.models import FeedbackStatusEnum, SessionFeedback, UserProfile
 from app.models.admin_dashboard_stats import AdminDashboardStats
-from app.models.conversation_scenario import ConversationScenario
 from app.models.language import LanguageCode
 from app.models.session import Session
 from app.models.session_turn import SessionTurn
 from app.schemas.conversation_scenario import (
-    ConversationScenarioRead,
+    ConversationScenario,
     ConversationScenarioWithTranscript,
 )
 from app.schemas.session_feedback import (
@@ -430,7 +429,7 @@ def get_conversation_data(
         ).first()
         if not scenario:
             raise ValueError('Scenario not found')
-        scenario_read = ConversationScenarioRead.model_validate(scenario)
+        scenario_read = ConversationScenario.model_validate(scenario)
         turns = db_session.exec(
             select(SessionTurn).where(SessionTurn.session_id == session_id)
         ).all()

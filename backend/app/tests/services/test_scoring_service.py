@@ -9,7 +9,7 @@ from app.models.conversation_scenario import ConversationScenarioStatus, Difficu
 from app.models.language import LanguageCode
 from app.models.session_turn import SpeakerEnum
 from app.schemas.conversation_scenario import (
-    ConversationScenarioRead,
+    ConversationScenario,
     ConversationScenarioWithTranscript,
 )
 from app.schemas.scoring_schema import ConversationScore, MetricScore, ScoringResult
@@ -24,22 +24,18 @@ class TestScoringService(unittest.TestCase):
         self.rubric_path = self.test_data_dir / 'test_rubric.json'
         with open(self.rubric_path, 'w') as f:
             json.dump({'title': 'Test Rubric'}, f)
-        # 构造标准 ConversationData
-        self.scenario = ConversationScenarioRead(
+        self.scenario = ConversationScenario(
             id=uuid4(),
             user_id=uuid4(),
             category_id='feedback',
             custom_category_label=None,
-            context='Test scenario',
-            goal='Test goal',
-            other_party='Direct Report',
+            persona='',
+            situational_facts='',
             difficulty_level=DifficultyLevel.medium,
-            tone='professional',
-            complexity='normal',
             language_code=LanguageCode.en,
             status=ConversationScenarioStatus.ready,
-            created_at=datetime(2024, 6, 28, 10, 0, 0),
-            updated_at=datetime(2024, 6, 28, 10, 0, 0),
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
         )
         self.transcript = [
             SessionTurnRead(
@@ -100,7 +96,7 @@ class TestScoringService(unittest.TestCase):
         system_prompt = self.scoring_service._build_system_prompt()
         user_prompt = self.scoring_service._build_user_prompt(self.conversation)
         self.assertIn('Test Rubric', system_prompt)
-        self.assertIn('Test scenario', user_prompt)
+        self.assertIn('**Conversation Scenario:**\n', user_prompt)
         self.assertIn('provide a score from 1 to 5 for each metric', user_prompt)
         print(user_prompt)
 

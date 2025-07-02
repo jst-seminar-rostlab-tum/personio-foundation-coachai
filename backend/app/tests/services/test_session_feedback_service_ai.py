@@ -9,7 +9,7 @@ from app.models.conversation_scenario import ConversationScenarioStatus, Difficu
 from app.models.language import LanguageCode
 from app.models.session_turn import SpeakerEnum
 from app.schemas.conversation_scenario import (
-    ConversationScenarioRead,
+    ConversationScenario,
     ConversationScenarioWithTranscript,
 )
 from app.schemas.session_turn import SessionTurnRead
@@ -19,7 +19,7 @@ from app.services.scoring_service import scoring_service
 @unittest.skipUnless(os.environ.get('RUN_AI_TESTS') == 'true', 'AI test not enabled')
 class TestSessionFeedbackAI(unittest.TestCase):
     def test_scoring_real_ai_scoring_timing(self) -> None:
-        scenario = ConversationScenarioRead(
+        scenario = ConversationScenario(
             id=uuid4(),
             user_id=uuid4(),
             category_id='feedback',
@@ -34,6 +34,8 @@ class TestSessionFeedbackAI(unittest.TestCase):
             status=ConversationScenarioStatus.ready,
             created_at=datetime.now(),
             updated_at=datetime.now(),
+            persona='',
+            situational_facts='',
         )
         transcript = [
             SessionTurnRead(

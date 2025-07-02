@@ -2,6 +2,7 @@ from uuid import UUID
 
 from app.models.camel_case import CamelModel
 from app.models.conversation_scenario import (
+    ConversationScenario,
     ConversationScenarioStatus,
     DifficultyLevel,
 )
@@ -26,7 +27,7 @@ class ConversationScenarioCreateResponse(CamelModel):
 
 
 class ConversationScenarioWithTranscript(CamelModel):
-    scenario: ConversationScenarioRead
+    scenario: ConversationScenario
     transcript: list[SessionTurnRead]
 
 

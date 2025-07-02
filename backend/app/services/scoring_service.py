@@ -61,8 +61,6 @@ class ScoringService:
         model: str = 'o4-mini-2025-04-16',
         temperature: float = 0.0,
     ) -> ScoringResult:
-        if conversation is None:
-            raise ValueError('Conversation is required')
         user_prompt = self._build_user_prompt(conversation)
         system_prompt = self._build_system_prompt()
 

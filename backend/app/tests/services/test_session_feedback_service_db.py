@@ -10,8 +10,8 @@ from app.models import FeedbackStatusEnum
 from app.models.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioStatus,
-    DifficultyLevel,
 )
+from app.models.language import LanguageCode
 from app.models.session import Session
 from app.models.session_turn import SessionTurn, SpeakerEnum
 from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
@@ -50,16 +50,12 @@ class TestSessionFeedbackService(unittest.TestCase):
             id=scenario_id,
             user_id=user_id,
             category_id='feedback',
-            context='Feedback context',
-            goal='Improve communication',
-            other_party='Sam',
-            difficulty_level=DifficultyLevel.medium,
-            tone='professional',
-            complexity='normal',
-            language_code='en',
+            language_code=LanguageCode.en,
             status=ConversationScenarioStatus.ready,
             created_at=datetime.now(),
             updated_at=datetime.now(),
+            persona='',
+            situational_facts='Feedback context',
         )
         self.session.add(scenario)
         session_id = uuid4()
@@ -90,7 +86,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         session_id = self.insert_minimal_conversation()
         conversation = get_conversation_data(self.session, session_id)
         self.assertIsInstance(conversation, ConversationScenarioWithTranscript)
-        self.assertEqual(conversation.scenario.context, 'Feedback context')
+        self.assertEqual(conversation.scenario.situational_facts, 'Feedback context')
         self.assertEqual(len(conversation.transcript), 1)
         self.assertEqual(conversation.transcript[0].text, 'Hello, Sam!')
         self.assertEqual(conversation.transcript[0].speaker, SpeakerEnum.user)
@@ -166,7 +162,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         example_request = ExamplesRequest(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
-            persona='**Name**: Someone **Training Focus**: Goal',
+            persona='**Name**: Someone\n**Training Focus**: Goal',
             situational_facts='Context',
             category='Feedback',
             key_concepts='KC1',
@@ -252,7 +248,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         example_request = ExamplesRequest(
             transcript='Error case transcript...',
             objectives=['ObjX'],
-            persona='**Name**: Other **Training Focus**: Goal',
+            persona='**Name**: Other\n**Training Focus**: Goal',
             situational_facts='Context',
             category='Category',
             key_concepts='KeyConcept',
@@ -323,7 +319,6 @@ class TestSessionFeedbackService(unittest.TestCase):
         from app.models.conversation_scenario import (
             ConversationScenario,
             ConversationScenarioStatus,
-            DifficultyLevel,
         )
         from app.models.session import Session
         from app.models.session_turn import SessionTurn, SpeakerEnum
@@ -347,16 +342,12 @@ class TestSessionFeedbackService(unittest.TestCase):
             id=scenario_id,
             user_id=user_id,
             category_id='feedback',
-            context='Feedback context',
-            goal='Improve communication',
-            other_party='Sam',
-            difficulty_level=DifficultyLevel.medium,
-            tone='professional',
-            complexity='normal',
-            language_code='en',
+            language_code=LanguageCode.en,
             status=ConversationScenarioStatus.ready,
             created_at=datetime.now(),
             updated_at=datetime.now(),
+            persona='',
+            situational_facts='',
         )
         self.session.add(scenario)
         session_obj = Session(
@@ -385,9 +376,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         example_request = ExamplesRequest(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
-            goal='Goal',
-            context='Context',
-            other_party='Someone',
+            persona='**Name**: Someone\n**Training Focus**: Goal',
+            situational_facts='Context',
             category='Feedback',
             key_concepts='KC1',
         )

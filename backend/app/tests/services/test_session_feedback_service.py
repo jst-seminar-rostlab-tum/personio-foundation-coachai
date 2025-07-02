@@ -7,8 +7,10 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine
 
 from app.models import FeedbackStatusEnum
+from app.models.conversation_scenario import ConversationScenarioStatus
+from app.models.language import LanguageCode
 from app.schemas.conversation_scenario import (
-    ConversationScenarioRead,
+    ConversationScenario,
     ConversationScenarioWithTranscript,
 )
 from app.schemas.session_feedback import (
@@ -46,19 +48,13 @@ class TestSessionFeedbackService(unittest.TestCase):
     ) -> ConversationScenarioWithTranscript:
         if user_id is None:
             user_id = uuid4()
-        scenario = ConversationScenarioRead(
+        scenario = ConversationScenario(
             id=uuid4(),
             user_id=user_id,
             category_id='feedback',
             custom_category_label=None,
-            context='Feedback context',
-            goal='Improve communication',
-            other_party='Sam',
-            difficulty_level='medium',
-            tone='professional',
-            complexity='normal',
-            language_code='en',
-            status='ready',
+            language_code=LanguageCode.en,
+            status=ConversationScenarioStatus.ready,
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
@@ -374,9 +370,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         example_request = ExamplesRequest(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
-            goal='Goal',
-            context='Context',
-            other_party='Someone',
+            persona='**Name**: Someone\n**Training Focus**: Goal',
+            situational_facts='Context',
             category='Feedback',
             key_concepts='KC1',
         )
