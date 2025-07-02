@@ -37,8 +37,7 @@ jobs:
           fi
 
       - name: Check for modified dev migration files
-        # if: steps.changed-files.outputs.any_changed == 'true'
-        if: false
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           echo "Checking for modifications to existing migration files from dev..."
 
