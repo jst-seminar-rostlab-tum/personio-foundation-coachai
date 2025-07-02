@@ -163,4 +163,15 @@ def generate_and_store_live_feedback(
         return live_feedback_item_db
 
 
-generate_live_feedback_item(user_audio_path='example_audio.wav', transcript='Example transcript')
+if __name__ == '__main__':
+    user_transcript = (
+        'The reason we have to let you go is, because we are not satisfied with your performance'
+    )
+    user_previous_feedback = '{"heading": "Tone", "feedback_text": "Speak calmly"}'
+    live_feedback_item = generate_live_feedback_item(
+        user_audio_path='example_audio.wav',
+        transcript=user_transcript,
+        previous_feedback=user_previous_feedback,
+    )
+    print('heading:', live_feedback_item.heading)
+    print('feedback_text:', live_feedback_item.feedback_text)
