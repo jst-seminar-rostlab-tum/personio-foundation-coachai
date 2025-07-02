@@ -82,18 +82,6 @@ def format_docs_with_metadata(docs: list[Document]) -> tuple[str, list[dict]]:
     return '\n\n'.join([doc.page_content for doc in docs]), [doc.metadata for doc in docs]
 
 
-def get_supabase_client() -> Client:
-    """
-    Initializes and returns a Supabase client using credentials from settings.
-
-    Returns:
-        Client: An authenticated Supabase client instance.
-    """
-    client = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
-    client.rpc('grant_hr_info_permissions')
-    return client
-
-
 def load_vector_db(
     embedding: Embeddings, table_name: str = 'hr_information', query_name: str = 'match_documents'
 ) -> SupabaseVectorStore:
