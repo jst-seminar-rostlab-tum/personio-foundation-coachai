@@ -9,6 +9,7 @@ import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
 export default function AboutHeader() {
   const t = useTranslations('HomePage');
+  const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const isLoginPath = pathname.includes('/login');
 
@@ -17,7 +18,7 @@ export default function AboutHeader() {
       <div className="flex h-16 items-center justify-between mx-auto px-[clamp(1.25rem,4vw,4rem)] max-w-7xl">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-semibold text-black">{t('header.appName')}</span>
+            <span className="text-xl font-semibold text-black">{tCommon('appName')}</span>
           </Link>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
@@ -27,7 +28,7 @@ export default function AboutHeader() {
               <nav className="hidden md:flex items-center gap-6">
                 <Button asChild>
                   <Link href="/login">
-                    <span className="text-sm">{t('header.getStarted')}</span>
+                    <span className="text-sm">{t('getStarted')}</span>
                   </Link>
                 </Button>
               </nav>

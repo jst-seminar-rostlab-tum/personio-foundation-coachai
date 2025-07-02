@@ -14,7 +14,7 @@ import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const t = useTranslations('AppHeader');
+  const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const user = useUser();
 
@@ -52,7 +52,7 @@ export function AppHeader() {
             className="text-bw-70 text-xl font-semibold"
             onClick={() => setIsMenuOpen(false)}
           >
-            {t('title')}
+            {tCommon('appName')}
           </Link>
           <div className="flex items-center gap-6">
             {/* Navigation Elements */}
@@ -63,7 +63,7 @@ export function AppHeader() {
                   href={href}
                   className="relative group text-bw-60 font-medium text-lg transition-colors cursor-pointer"
                 >
-                  {t(key)}
+                  {tCommon(key)}
                   <span
                     className={`block h-0.5 absolute left-1/2 -translate-x-1/2 -bottom-1 transition-transform duration-300 ease-in-out origin-left w-[90%] ${
                       pathname.includes(href)
@@ -91,7 +91,7 @@ export function AppHeader() {
                 await logoutUser(createClient);
               }}
             >
-              <span className="text-xs font-medium">{t('logout')}</span>
+              <span className="text-xs font-medium">{tCommon('logout')}</span>
             </Button>
           </div>
         </div>
@@ -104,7 +104,7 @@ export function AppHeader() {
         }`}
       >
         <div className="flex items-center justify-between px-2 py-2 xl:px-16 bg-background min-h-[56px]">
-          <div className="text-bw-70 text-lg font-semibold">{t('title')}</div>
+          <div className="text-bw-70 text-lg font-semibold">{tCommon('appName')}</div>
           <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
             <X className="!w-4 !h-4" />
           </Button>
@@ -118,7 +118,7 @@ export function AppHeader() {
                 className={`bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 transition-colors relative group`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                {t(key)}
+                {tCommon(key)}
                 <span
                   className={`block h-1 sm:h-1.5 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left w-[95%] ${
                     pathname.includes(href)
@@ -135,7 +135,7 @@ export function AppHeader() {
                 setIsMenuOpen(false);
               }}
             >
-              {t('logout')}
+              {tCommon('logout')}
               <span className="block h-1 sm:h-1.5 bg-bw-60 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left scale-x-0 group-hover:scale-x-100 w-[95%]" />
             </span>
           </nav>

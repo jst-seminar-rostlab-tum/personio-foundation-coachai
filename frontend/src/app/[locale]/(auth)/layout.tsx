@@ -8,6 +8,7 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
 import type { LayoutProps } from '@/interfaces/props/LayoutProps';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { Toaster } from '@/components/ui/Sonner';
+import { headers } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,11 +19,18 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 
 export default async function RootLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
-
+  const nonce = (await headers()).get('x-nonce') || undefined;
   return (
     <html lang={locale}>
-      <head>
+      <body className={inter.className}>
+        <NextIntlClientProvider>
+          <AboutHeader />
+          <main className="container mx-auto px-4">{children}</main>
+          <Toaster richColors />
+          <AboutFooter />
+        </NextIntlClientProvider>
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -45,3 +53,5 @@ export default async function RootLayout({ children, params }: LayoutProps) {
     </html>
   );
 }
+
+export const dynamic = 'force-dynamic';
