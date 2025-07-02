@@ -13,8 +13,8 @@ import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/
 import { CreateUserRequest } from '@/interfaces/models/Auth';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/AuthService';
-import { showErrorToast } from '@/lib/component-utils/toast';
-import { handlePasteEvent } from '@/lib/handlers/handlePaste';
+import { showErrorToast } from '@/lib/utils/toast';
+import { handleInputChange, handleKeyDown, handlePasteEvent } from '@/lib/handlers/handleOtpInput';
 import { api } from '@/services/ApiClient';
 
 interface VerificationPopupProps {
@@ -172,26 +172,14 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                           ref={(el) => {
                             inputRefs.current[idx] = el;
                           }}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, '');
-                            const codeArr = (field.value || '').split('');
-                            codeArr[idx] = val;
-                            const newCode = codeArr.join('').slice(0, codeSize);
-                            field.onChange(newCode);
-                            if (val && idx < codeSize - 1) {
-                              inputRefs.current[idx + 1]?.focus();
-                            }
-                          }}
+                          onChange={(e) =>
+                            handleInputChange(e, field, idx, codeSize, inputRefs.current)
+                          }
                           onPaste={(e) => {
                             handlePasteEvent(e, field, codeSize, inputRefs.current);
                           }}
                           onKeyDown={(e) => {
-                            if (e.key === 'Backspace') {
-                              const codeArr = (field.value || '').split('');
-                              if (!codeArr[idx] && idx > 0) {
-                                inputRefs.current[idx - 1]?.focus();
-                              }
-                            }
+                            handleKeyDown(e, field, idx, inputRefs.current);
                           }}
                           autoFocus={idx === 0}
                         />

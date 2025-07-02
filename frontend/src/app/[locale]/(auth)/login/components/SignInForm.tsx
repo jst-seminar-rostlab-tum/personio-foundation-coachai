@@ -21,7 +21,7 @@ import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordIn
 import { createClient } from '@/lib/supabase/client';
 import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
-import { showErrorToast } from '@/lib/component-utils/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 
 export function SignInForm() {
   const tLogin = useTranslations('Login');

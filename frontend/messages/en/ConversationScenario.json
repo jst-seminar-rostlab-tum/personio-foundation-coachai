@@ -39,40 +39,32 @@
       "title": "Response Complexity *"
     }
   },
-  "categories": [
-    {
-      "id": "giving_feedback",
+  "categories": {
+    "givingFeedback": {
       "name": "Giving Feedback",
-      "iconUri": "/images/category/giving-feedback.svg",
       "defaultContext": "One-on-one meeting with a team member.",
       "defaultGoal": "Provide constructive feedback effectively.",
       "defaultOtherParty": "Team member"
     },
-    {
-      "id": "performance_reviews",
+    "performanceReviews": {
       "name": "Performance Reviews",
-      "iconUri": "/images/category/performance-reviews.svg",
       "defaultContext": "Formal performance review meeting.",
       "defaultGoal": "Evaluate and discuss employee performance.",
       "defaultOtherParty": "Employee"
     },
-    {
-      "id": "conflict_resolution",
+    "conflictResolution": {
       "name": "Conflict Resolution",
-      "iconUri": "/images/category/conflict-resolution.svg",
       "defaultContext": "Conflict resolution meeting between team members.",
       "defaultGoal": "Resolve conflicts and improve team dynamics.",
       "defaultOtherParty": "Team members"
     },
-    {
-      "id": "salary_discussions",
+    "salaryDiscussions": {
       "name": "Salary Discussions",
-      "iconUri": "/images/category/salary-discussions.svg",
       "defaultContext": "Salary negotiation meeting.",
       "defaultGoal": "Reach a mutually beneficial agreement on salary.",
       "defaultOtherParty": "Employer"
     }
-  ],
+  },
   "errorMessage": "An error occurred while creating the scenario. Please try again later.",
   "easy": "Einfach",
   "medium": "Mittel",

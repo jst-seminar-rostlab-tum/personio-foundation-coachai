@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
 import { Review, ReviewsPaginated } from '@/interfaces/models/Review';
 import { reviewService } from '@/services/ReviewService';
-import { showErrorToast } from '@/lib/component-utils/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import {
   Select,
   SelectContent,
@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/Select';
 import { useRouter } from 'next/navigation';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
-import { formattedDate } from '@/lib/common';
+import { formattedDate } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
 
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {

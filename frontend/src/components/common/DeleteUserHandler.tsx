@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { UserProfileService } from '@/services/UserProfileService';
 import { useTranslations } from 'next-intl';
-import { showErrorToast, showSuccessToast } from '@/lib/component-utils/toast';
+import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
 import { redirect } from 'next/navigation';
 import { api } from '@/services/ApiClient';
 import {

@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
-import { showErrorToast, showSuccessToast } from '@/lib/component-utils/toast';
+import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
 import { SessionPaginated, SessionFromPagination } from '@/interfaces/models/Session';
 import Link from 'next/link';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
