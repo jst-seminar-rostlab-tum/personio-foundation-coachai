@@ -14,14 +14,6 @@ router = APIRouter(
     prefix='/session-turns', tags=['Session Turns'], dependencies=[Depends(require_user)]
 )
 
-session_id_form = Form(...)
-speaker_form = Form(...)
-start_offset_ms_form = Form(...)
-end_offset_ms_form = Form(...)
-text_form = Form(...)
-ai_emotion_form = Form(...)
-audio_file_file = File(...)
-
 
 def get_session_turn_service(
     db_session: Annotated[DBSession, Depends(get_db_session)],
@@ -35,13 +27,13 @@ def get_session_turn_service(
 @router.post('', response_model=SessionTurnRead)
 async def create_session_turn(
     service: Annotated[SessionTurnService, Depends(get_session_turn_service)],
-    session_id: UUID = session_id_form,
-    speaker: SpeakerEnum = speaker_form,
-    start_offset_ms: int = start_offset_ms_form,
-    end_offset_ms: int = end_offset_ms_form,
-    text: str = text_form,
-    ai_emotion: str = ai_emotion_form,
-    audio_file: UploadFile = audio_file_file,
+    session_id: UUID = Form(...),  # noqa: B008
+    speaker: SpeakerEnum = Form(...),  # noqa: B008
+    start_offset_ms: int = Form(...),  # noqa: B008
+    end_offset_ms: int = Form(...),  # noqa: B008
+    text: str = Form(...),  # noqa: B008
+    ai_emotion: str = Form(...),  # noqa: B008
+    audio_file: UploadFile = File(...),  # noqa: B008
 ) -> SessionTurnRead:
     # manually create SessionTurnCreate
     turn = SessionTurnCreate(

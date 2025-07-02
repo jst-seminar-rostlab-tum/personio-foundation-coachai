@@ -21,7 +21,17 @@ def is_valid_audio(upload_file: UploadFile) -> bool:
         return False
 
     mime = matches[0].mime_type
-    return mime in ['audio/webm', 'audio/mpeg', 'audio/wav']
+
+    # Check if the MIME type is one of the valid audio types(extend as needed)
+    return mime in [
+        'audio/webm',
+        'video/webm',
+        'audio/mpeg',
+        'video/mpeg',
+        'audio/wav',
+        'audio/x-wav',
+        'audio/wave',
+    ]
 
 
 def match_audio_content_type(file: UploadFile) -> tuple[str, str]:
