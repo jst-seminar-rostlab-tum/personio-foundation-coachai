@@ -42,5 +42,7 @@ def get_db_session() -> Generator[DBSession, Any, None]:
 
 def get_supabase_client() -> Client:
     if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_ROLE_KEY:
-        return create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+        client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+        client.rpc('grant_hr_info_permissions')
+        return client
     raise RuntimeError('Supabase client configuration is missing in environment variables.')
