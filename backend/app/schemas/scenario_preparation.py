@@ -1,10 +1,10 @@
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
 from sqlmodel import JSON, Column, Field
 
 from app.models.camel_case import CamelModel
+from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparationStatus
 
 # Schemas for scenario preparation requests
@@ -14,9 +14,11 @@ from app.models.scenario_preparation import ScenarioPreparationStatus
 # and are extended with other necessary information according to the request type
 class ConversationScenarioBase(CamelModel):
     category: str = Field(..., description='Training category')
-    goal: str = Field(..., description='Training goal')
-    context: str = Field(..., description='Training context')
-    other_party: str = Field(..., description='Persona to speak with')
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = Field(
+        default=LanguageCode.en, description='Language code for the scenario preparation'
+    )
 
 
 # Schema for genarating objectives / goals
@@ -66,9 +68,8 @@ class ScenarioPreparationRead(CamelModel):
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: ScenarioPreparationStatus
-    category_name: Optional[str] = None
-    context: Optional[str] = None
-    goal: Optional[str] = None
-    other_party: Optional[str] = None
+    category_name: str | None = None
+    persona: str
+    situational_facts: str
     created_at: datetime
     updated_at: datetime

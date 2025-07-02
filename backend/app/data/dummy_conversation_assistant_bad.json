@@ -1,0 +1,21 @@
+{
+  "scenario": {
+    "title": "Feedback on Project Communication (Assistant Bad)",
+    "description": "A User (manager) gives feedback to an Assistant (Sam, direct report) about communication during a recent project. User's structure is excellent, Assistant's responses are extremely poor and nonsensical.",
+    "participants": {
+      "user_role": "Manager",
+      "assistant_role": "Sam, Direct Report"
+    }
+  },
+  "transcript": [
+    {"speaker": "User", "turn": 1, "message": "Hi Sam, thank you for making time to meet today. I'd like to discuss your communication during the Phoenix project. I'll start by sharing my observations, then we can talk about solutions together."},
+    {"speaker": "Assistant", "turn": 2, "message": "Banana, blue sky, I like pizza. What is project? Cat runs fast."},
+    {"speaker": "User", "turn": 3, "message": "Recently, you missed a couple of project syncs and didn't respond to some important emails, such as the one about the client's updated requirements. This led to the team working off the wrong spec and losing a day of work. I understand things can get busy, and I appreciate your hard work."},
+    {"speaker": "Assistant", "turn": 4, "message": "Sunshine, elevator, no idea, project, watermelon. Sorry, what?"},
+    {"speaker": "User", "turn": 5, "message": "Thank you for taking responsibility. To help you stay in the loop, would a different reminder system help, or is there something I can do to support you?"},
+    {"speaker": "Assistant", "turn": 6, "message": "Calendar, dog, next week, or pizza, thanks, Sam. Purple clouds."},
+    {"speaker": "User", "turn": 7, "message": "That sounds like a solid plan. Let's check in next week to see how things are going. Thanks, Sam."},
+    {"speaker": "Assistant", "turn": 8, "message": "Laptop, river, emails, sync, what, Sam?"},
+    {"speaker": "User", "turn": 9, "message": "Thank you, Sam. Looking forward to seeing the improvements."}
+  ]
+}

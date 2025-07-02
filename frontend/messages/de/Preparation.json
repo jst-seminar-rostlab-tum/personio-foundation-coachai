@@ -1,29 +1,16 @@
 {
   "metaTitle": "Vorbereitung - Coach AI",
-  "metaDescription": "Bereiten Sie Ihre Trainingssitzung optimal vor",
-  "title": "Prüfen Sie Ihr Trainingssetup",
+  "metaDescription": "Bereiten Sie sich optimal auf Ihre Trainingssitzung vor",
+  "title": "Überprüfen Sie Ihre Trainingsvorbereitung",
   "context": {
     "title": "Konstruktives Feedback geben",
-    "description": "Sie müssen mit Sarah sprechen, einem Teammitglied, das in letzter Zeit mehrere Deadlines verpasst hat. Das wirkt sich auf die Teamstimmung und den Zeitplan aus. Ihr Ziel ist es, das Thema konstruktiv anzusprechen und gleichzeitig eine positive Arbeitsbeziehung aufrechtzuerhalten."
+    "description": "Sie müssen mit Sarah sprechen, einem Teammitglied, das in letzter Zeit mehrere Fristen verpasst hat. Das wirkt sich auf die Teamatmosphäre und den Projektplan aus. Ihr Ziel ist es, das Thema konstruktiv anzusprechen und gleichzeitig eine positive Arbeitsbeziehung aufrechtzuerhalten."
   },
-  "objectives": {
-    "title": "Ziele"
-  },
-  "preparation": {
-    "title": "Vorbereitungs Checkliste"
-  },
-  "resources": {
-    "title": "Ressourcen"
-  },
-  "keyConcepts": {
-    "title": "Wichtige Begriffe"
-  },
-  "navigation": {
-    "back": "Zurück",
-    "start": "Training starten",
-    "starting": "Wird gestartet..."
-  },
-  "loadingText": "Bereite Ziele und Checkliste vor...",
-  "sessionCreationError": "Fehler beim Erstellen der Trainingssitzung. Bitte versuchen Sie es später erneut.",
-  "getPreparationError": "Fehler beim Abrufen der Vorbereitungsdaten. Bitte versuchen Sie es später erneut."
+  "objectives": "Ziele",
+  "preparation": "Vorbereitungscheckliste",
+  "resources": "Ressourcen",
+  "keyConcepts": "Wichtige Begriffe",
+  "loadingText": "Ziele und Checkliste werden vorbereitet...",
+  "sessionCreationError": "Fehler beim Erstellen der Trainingssitzung. Bitte versuchen Sie es später noch einmal.",
+  "getPreparationError": "Fehler beim Abrufen der Vorbereitungsdaten. Bitte versuchen Sie es später noch einmal."
 }

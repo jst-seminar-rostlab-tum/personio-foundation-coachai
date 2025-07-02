@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { MetadataProps } from '@/interfaces/MetadataProps';
-import { PagesProps } from '@/interfaces/PagesProps';
+import { MetadataProps } from '@/interfaces/props/MetadataProps';
+import { PagesProps } from '@/interfaces/props/PagesProps';
 import { getTranslations } from 'next-intl/server';
 import PreparationContent from './components/PreparationContent';
 import { CreateSessionButton } from './components/CreateSessionButton';
@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 
 export default async function PreparationPage(props: PagesProps) {
   const t = await getTranslations('Preparation');
+  const tCommon = await getTranslations('Common');
 
   const { id } = await props.params;
   return (
@@ -28,7 +29,7 @@ export default async function PreparationPage(props: PagesProps) {
         <Link href="/new-conversation-scenario" className="flex-1">
           <Button size="full" variant="outline">
             <ArrowLeftIcon />
-            {t('navigation.back')}
+            {tCommon('back')}
           </Button>
         </Link>
 

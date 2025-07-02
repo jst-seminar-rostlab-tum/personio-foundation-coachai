@@ -27,6 +27,7 @@ function getNamespaceFromPath(path: string): string {
     simulation: 'Simulation',
     settings: 'Settings',
     terms: 'TermsOfService',
+    confirm: 'Login.ConfirmationForm',
   };
 
   return pathMap[pathSegment] || 'HomePage';
@@ -71,12 +72,12 @@ export async function generateMetadata(
     icons: {
       icon: [
         {
-          url: '/icons/personio_foundation_favicon.png',
+          url: '/images/icons/personio-foundation-favicon.png',
           type: 'image/png',
         },
       ],
-      shortcut: '/icons/personio_foundation_favicon.png',
-      apple: '/icons/personio_foundation_favicon.png',
+      shortcut: '/images/icons/personio-foundation-favicon.png',
+      apple: '/images/icons/personio-foundation-favicon.png',
     },
     openGraph: {
       type: 'website',

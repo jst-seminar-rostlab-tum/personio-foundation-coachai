@@ -1,0 +1,52 @@
+{
+  "scenario": {
+    "title": "Feedback on Project Communication (User has Low Focus)",
+    "description": "An Assistant (playing a direct report, Sam) tries to discuss a project issue, but the User (playing a manager) constantly gets distracted and goes off-topic.",
+    "participants": {
+      "user_role": "Manager",
+      "assistant_role": "Sam, Direct Report"
+    }
+  },
+  "transcript": [
+    {
+      "speaker": "Assistant",
+      "turn": 1,
+      "message": "Thanks for making time. You mentioned there was an issue with my communication on the Phoenix project that you wanted to discuss?"
+    },
+    {
+      "speaker": "User",
+      "turn": 2,
+      "message": "Right, the project. You know, that reminds me, did you see the game last night? Incredible finish. I can't believe they pulled it off."
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 3,
+      "message": "I didn't get a chance to watch it. I would like to understand the issue you mentioned so I can address it. Could you tell me more?"
+    },
+    {
+      "speaker": "User",
+      "turn": 4,
+      "message": "Yeah, yeah, the issue. It's important to stay on track. Speaking of tracks, I was thinking of going hiking this weekend. The weather is supposed to be amazing. You into hiking?"
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 5,
+      "message": "I appreciate you asking, but I want to make sure we resolve the feedback topic first. It's important to me that I understand where I can improve. Could we go back to that?"
+    },
+    {
+      "speaker": "User",
+      "turn": 6,
+      "message": "Totally. You're right. So, the feedback is... you need to be more... present. Like my dog when he sees a squirrel. He's a Golden Retriever, absolutely fantastic dog. I should show you pictures sometime."
+    },
+    {
+      "speaker": "Assistant",
+      "turn": 7,
+      "message": "I'm finding it difficult to follow how that relates to my work on the project. Can we try to define one specific action I can take based on your feedback?"
+    },
+    {
+      "speaker": "User",
+      "turn": 8,
+      "message": "Action... Right. Action movies! Saw a great one the other day. Anyway, good chat. We should do this again."
+    }
+  ]
+} 

@@ -16,7 +16,7 @@ from app.schemas.session_feedback import (
     RecommendationsRequest,
     SessionExamplesCollection,
 )
-from app.services.session_feedback_service import (
+from app.services.session_feedback.session_feedback_service import (
     generate_and_store_feedback,
     generate_recommendations,
 )
@@ -35,9 +35,9 @@ class TestSessionFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    @patch('app.services.session_feedback_service.generate_training_examples')
-    @patch('app.services.session_feedback_service.get_achieved_goals')
-    @patch('app.services.session_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
     def test_generate_and_store_feedback(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
@@ -82,9 +82,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         example_request = ExamplesRequest(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
-            goal='Goal',
-            context='Context',
-            other_party='Someone',
+            persona='**Name**: Someone\n**Training Focus**: Goal\n'
+            '**Company Position**: Team Member',
+            situational_facts='Context',
             category='Feedback',
             key_concepts='KC1',
         )
@@ -133,9 +133,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
 
-    @patch('app.services.session_feedback_service.generate_training_examples')
-    @patch('app.services.session_feedback_service.get_achieved_goals')
-    @patch('app.services.session_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
     def test_generate_and_store_feedback_with_errors(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
@@ -154,9 +154,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         example_request = ExamplesRequest(
             transcript='Error case transcript...',
             objectives=['ObjX'],
-            goal='Goal',
-            context='Context',
-            other_party='Other',
+            persona='**Name**: Example User\n**Training Focus**: Goal\n'
+            '**Company Position**: Example Position',
+            situational_facts='Context',
             category='Category',
             key_concepts='KeyConcept',
         )
@@ -183,16 +183,13 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(feedback.overall_score, 0)
         self.assertEqual(feedback.transcript_uri, '')
 
-    @patch('app.services.session_feedback_service.call_structured_llm')
+    @patch('app.services.session_feedback.session_feedback_service.call_structured_llm')
     def test_generate_recommendation_with_hr_docs_context(self, mock_llm: MagicMock) -> None:
         # Analogically for examples and goals
         transcript = "User: Let's explore what might be causing these delays."
         objectives = ['Understand root causes', 'Collaboratively develop a solution']
-        goal = 'Improve team communication'
         key_concepts = '### Active Listening\nAsk open-ended questions.'
-        context = 'Project delay review'
         category = 'Project Management'
-        other_party = 'Colleague'
 
         # Set up llm mock and vector db prompt extension
         mock_llm.return_value = RecommendationsCollection(
@@ -207,11 +204,11 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         req = RecommendationsRequest(
             category=category,
-            context=context,
-            other_party=other_party,
             transcript=transcript,
             objectives=objectives,
-            goal=goal,
+            persona='**Name**: John\n**Training Focus**: Improve team communication\n'
+            '**Company Position**: Colleague',
+            situational_facts='Project delay review',
             key_concepts=key_concepts,
         )
 

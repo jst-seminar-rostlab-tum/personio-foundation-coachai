@@ -1,7 +1,7 @@
 from app.schemas.admin_dashboard_stats import AdminDashboardStatsRead
 from app.schemas.app_config import AppConfigCreate, AppConfigRead
 from app.schemas.conversation_category import ConversationCategoryRead
-from app.schemas.conversation_scenario import ConversationScenarioCreate, ConversationScenarioRead
+from app.schemas.conversation_scenario import ConversationScenarioCreate
 from app.schemas.message_schema import MessageCreateSchema, MessageSchema
 from app.schemas.review import (
     PaginatedReviewsResponse,
@@ -44,6 +44,18 @@ from app.schemas.session_turn import (
     SessionTurnRead,
 )
 from app.schemas.user_confidence_score import ConfidenceScoreRead
+from app.schemas.user_export import (
+    ExportConfidenceScore,
+    ExportConversationScenario,
+    ExportReview,
+    ExportScenarioPreparation,
+    ExportSession,
+    ExportSessionFeedback,
+    ExportSessionTurn,
+    ExportUserGoal,
+    ExportUserProfile,
+    UserDataExport,
+)
 from app.schemas.user_profile import (
     UserProfileExtendedRead,
     UserProfileRead,
@@ -60,7 +72,6 @@ __all__ = [
     'AppConfigRead',
     'ConversationCategoryRead',
     'ConversationScenarioCreate',
-    'ConversationScenarioRead',
     'ReviewCreate',
     'ReviewRead',
     'ReviewResponse',
@@ -97,4 +108,14 @@ __all__ = [
     'UserProfileRead',
     'UserProfileExtendedRead',
     'UserStatisticsRead',
+    'ExportConfidenceScore',
+    'ExportConversationScenario',
+    'ExportReview',
+    'ExportScenarioPreparation',
+    'ExportSession',
+    'ExportSessionFeedback',
+    'ExportSessionTurn',
+    'ExportUserGoal',
+    'ExportUserProfile',
+    'UserDataExport',
 ]

@@ -11,24 +11,20 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import Switch from '@/components/ui/Switch';
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/components/ui/AlertDialog';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
-import { UserProfileService } from '@/services/client/UserProfileService';
-import { UserPreference } from '@/interfaces/UserInputFields';
+import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
+import { UserProfileService } from '@/services/UserProfileService';
+import { UserPreference } from '@/interfaces/models/UserInputFields';
 import { PrimaryGoals, UserRoles } from '@/lib/utils';
-import { UserProfile } from '@/interfaces/UserProfile';
+import { UserProfile } from '@/interfaces/models/UserProfile';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import JSZip from 'jszip';
+import { api } from '@/services/ApiClient';
 import UserPreferences from './UserPreferences';
+
+interface SettingsProps {
+  userProfile: Promise<UserProfile>;
+}
 
 const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   const score = userProfileData.confidenceScores?.find(
@@ -37,9 +33,9 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   return score !== undefined ? [score] : [50];
 };
 
-export default function Settings({ userProfile }: { userProfile: Promise<UserProfile> }) {
+export default function Settings({ userProfile }: SettingsProps) {
   const t = useTranslations('Settings');
-  const tOptions = useTranslations('Settings.leadershipGoals');
+  const tCommon = useTranslations('Common');
   const userProfileData = use(userProfile);
 
   const [storeConversations, setStoreConversations] = useState(
@@ -93,7 +89,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     setConversation,
   };
   const currentRoleSelect: UserPreference = {
-    label: tOptions('currentRole.label'),
+    label: t('currentRole'),
     options: UserRoles(),
     value: currentRole,
     defaultValue: 'team_leader',
@@ -102,11 +98,11 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     },
   };
   const primaryGoalsSelect: UserPreference<string[]> = {
-    label: tOptions('primaryGoals.label'),
+    label: t('primaryGoals.label'),
     options: PrimaryGoals(),
     value: primaryGoals.slice(0, 3),
-    placeholder: tOptions('primaryGoals.placeholder'),
-    maxSelectedDisclaimer: tOptions('primaryGoals.maxOptionsSelected'),
+    placeholder: t('primaryGoals.placeholder'),
+    maxSelectedDisclaimer: t('primaryGoals.maxOptionsSelected'),
     onChange: (value: string[]) => {
       setPrimaryGoals(value);
     },
@@ -118,7 +114,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     setIsSubmitting(true);
 
     try {
-      await UserProfileService.updateUserProfile({
+      await UserProfileService.updateUserProfile(api, {
         fullName: userProfileData.fullName,
         storeConversations,
         professionalRole: currentRole,
@@ -143,90 +139,100 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
       setIsSubmitting(false);
     }
   };
+
+  const handleExport = async () => {
+    try {
+      const data = await UserProfileService.exportUserData(api);
+      const zip = new JSZip();
+      zip.file('user_data_export.json', JSON.stringify(data, null, 2));
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'user_data_export.zip';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      showSuccessToast(t('exportSettingsSuccess'));
+    } catch (error) {
+      showErrorToast(error, t('exportSettingsError'));
+    }
+  };
+
   return (
     <div>
-      <h1 className="text-2xl">{t('title')}</h1>
+      <div className="flex flex-col gap-8 p-8">
+        <h1 className="text-2xl">{tCommon('settings')}</h1>
 
-      <div className="mt-6 space-y-4 flex items-center rounded-t-lg">
-        <Accordion type="multiple" className="w-full" defaultValue={['item-1', 'item-2']}>
-          <AccordionItem value="item-1" className="text-dark">
-            <AccordionTrigger className="font-bw-70 cursor-pointer">
-              {t('privacyControls')}
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="flex items-center justify-between w-full px-2">
-                <div className="flex flex-col">
-                  <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
-                  <div className="text-bw-40">
-                    {storeConversations ? t('ninetyDays') : t('zeroDays')}
+        <div className="space-y-4 flex items-center rounded-t-lg">
+          <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
+            {/* Privacy Controls */}
+            <AccordionItem value="item-1">
+              <AccordionTrigger>{t('privacyControls')}</AccordionTrigger>
+              <AccordionContent>
+                {/* Store Conversations */}
+                <div className="flex items-center justify-between w-full px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
+                    <div className="text-bw-40">
+                      {storeConversations ? t('ninetyDays') : t('zeroDays')}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
                   </div>
                 </div>
-                <div className="flex flex-col items-center">
-                  <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
+                {/* Export data */}
+                <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{t('exportData')}</div>
+                  </div>
+                  <div className="flex items-center">
+                    <Button variant="outline" className="w-full" onClick={handleExport}>
+                      <Download className="w-4 h-4" />
+                      <span className="hidden sm:inline">{tCommon('export')}</span>
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center justify-between w-full mt-4 px-2">
-                <div className="flex flex-col">
-                  <div className="text-bw-70">{t('exportData')}</div>
+                {/* Delete Account */}
+                <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{tCommon('deleteAccount')}</div>
+                  </div>
+                  <DeleteUserHandler>
+                    <Button variant="destructive">{tCommon('deleteAccount')}</Button>
+                  </DeleteUserHandler>
                 </div>
-                <div className="flex items-center">
-                  <Button variant="outline" className="w-full">
-                    <Download className="w-4 h-4" />
-                    <span className="hidden sm:inline">{t('export')}</span>
-                  </Button>
-                </div>
-              </div>
-              <div className="flex items-center justify-between w-full mt-4  px-2">
-                <div className="flex flex-col">
-                  <div className="text-bw-70">{t('deleteAccount')}</div>
-                </div>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive">{t('requestDeletion')}</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{t('deleteAccountConfirmTitle')}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {t('deleteAccountConfirmDesc')}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                      <AlertDialogAction>{t('confirm')}</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2" className="text-dark">
-            <AccordionTrigger className="font-bw-70 cursor-pointer">
-              {t('personalizationSettings')}
-            </AccordionTrigger>
-            <AccordionContent>
-              <UserPreferences
-                className="flex flex-col gap-5 px-2"
-                currentRole={currentRoleSelect}
-                primaryGoals={primaryGoalsSelect}
-              />
-              <hr className="my-9.5 border-gray-200" />
-              <UserConfidenceFields
-                className="flex flex-col gap-5 px-2"
-                {...confidenceFieldsProps}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+              </AccordionContent>
+            </AccordionItem>
+            {/* Personalization Settings */}
+            <AccordionItem value="item-2">
+              <AccordionTrigger>{t('personalizationSettings')}</AccordionTrigger>
+              <AccordionContent>
+                <UserPreferences
+                  className="flex flex-col gap-8 px-2"
+                  currentRole={currentRoleSelect}
+                  primaryGoals={primaryGoalsSelect}
+                />
+                <hr className="border-bw-20 px-2" />
+                <UserConfidenceFields
+                  className="flex flex-col gap-8 px-2"
+                  {...confidenceFieldsProps}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+        <Button
+          size="full"
+          onClick={handleSaveSettings}
+          variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
+          disabled={isSubmitting || !hasFormChanged()}
+        >
+          {isSubmitting ? tCommon('saving') : t('saveSettings')}
+        </Button>
       </div>
-      <Button
-        size="full"
-        onClick={handleSaveSettings}
-        variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
-        disabled={isSubmitting || !hasFormChanged()}
-      >
-        {isSubmitting ? t('saving') : t('saveSettings')}
-      </Button>
     </div>
   );
 }

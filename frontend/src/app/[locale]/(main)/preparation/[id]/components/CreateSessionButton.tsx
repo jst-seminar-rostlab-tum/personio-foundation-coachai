@@ -1,16 +1,21 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { sessionService } from '@/services/client/SessionService';
+import { sessionService } from '@/services/SessionService';
 import { Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { CreateSessionButtonProps } from '@/interfaces/CreateSessionButtonProps';
 import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/toast';
 import { useState } from 'react';
+import { api } from '@/services/ApiClient';
+
+interface CreateSessionButtonProps {
+  scenarioId: string;
+}
 
 export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) => {
   const t = useTranslations('Preparation');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,7 +25,7 @@ export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) =>
     setIsSubmitting(true);
 
     try {
-      const { data } = await sessionService.createSession(scenarioId);
+      const { data } = await sessionService.createSession(api, scenarioId);
       router.push(`/simulation/${data.id}`);
     } catch (error) {
       showErrorToast(error, t('sessionCreationError'));
@@ -36,7 +41,7 @@ export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) =>
       disabled={isSubmitting}
     >
       <Play />
-      {isSubmitting ? t('navigation.starting') : t('navigation.start')}
+      {isSubmitting ? tCommon('starting') : tCommon('start')}
     </Button>
   );
 };

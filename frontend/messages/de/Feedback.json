@@ -1,41 +1,24 @@
 {
   "metaTitle": "Auswertung - Coach AI",
-  "metaDescription": "Detaillierte Auswertung und Analyse Ihrer Trainingssitzung",
-  "title": "Performance Zusammenfassung",
+  "metaDescription": "Detaillierte Analyse Ihrer Trainingssitzung",
+  "title": "Auswertung",
   "reviewDialog": {
-    "open": "Bewertung abgeben",
-    "title": "Bewertung",
-    "description": "Wie war die Trainingssitzung? Helfen Sie uns, indem Sie Ihre Bewertung abgeben.",
-    "rate": "Bewertung abgeben",
-    "submitting": "Wird abgegeben...",
-    "submitReviewError": "Fehler beim Abgeben der Bewertung. Bitte versuchen Sie es später erneut.",
-    "submitReviewSuccess": "Bewertung erfolgreich abgegeben. Vielen Dank für Ihre Bewertung!"
+    "description": "Wie war die Trainingssitzung? Helfen Sie uns mit Ihrer Bewertung.",
+    "shareWithAdmin": "Sitzung mit einem Administrator zur Verbesserung teilen.",
+    "submitReview": "Bewertung abgeben"
   },
-  "progressBars": {
-    "structure": "Struktur",
-    "empathy": "Empathie",
-    "focus": "Fokus",
-    "clarity": "Klarheit"
-  },
-  "stats": {
-    "speakingTime": "Sprechzeit",
-    "questionsAsked": "Gestellte Fragen",
-    "sessionLength": "Sitzungsdauer",
-    "goalsAchieved": "Erreichte Ziele"
-  },
+  "sessionLength": "Sitzungsdauer",
   "listenConversation": "Gespräch anhören",
-  "compareAI": "Mit KI vergleichen",
-  "accordian": {
+  "accordion": {
     "feedback": "Detailliertes Feedback",
-    "suggestion": "Vorgeschlagene Ressourcen",
+    "suggestion": "Empfohlene Ressourcen",
     "sessions": "Empfohlene Sitzungen"
   },
   "detailedFeedback": {
-    "positive": "Was gut lief",
-    "negative": "Verbesserungsbereiche",
     "recommendations": "Empfehlungen",
-    "nextTime": "Nächstes Mal, frag:"
+    "nextTime": "Für das nächste Mal:"
   },
-  "return": "Zurück zum Dashboard",
-  "getSessionDetailError": "Fehler beim Abrufen der Sitzungsdetails. Bitte versuchen Sie es später erneut."
+  "submitError": "Fehler beim Abgeben. Bitte versuchen Sie es später erneut.",
+  "submitSuccess": "Erfolgreich abgegeben. Vielen Dank!",
+  "fetchError": "Fehler beim Abrufen der Daten. Bitte versuchen Sie es später erneut."
 }

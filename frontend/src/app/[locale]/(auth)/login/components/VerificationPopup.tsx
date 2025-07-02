@@ -9,17 +9,30 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { RotateCcw } from 'lucide-react';
-import { VerificationPopupProps } from '@/interfaces/VerificationPopup';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
-import { CreateUserRequest } from '@/interfaces/auth/CreateUserRequest';
+import { CreateUserRequest } from '@/interfaces/models/Auth';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services/client/AuthService';
-import { verificationService } from '@/services/client/VerificationService';
+import { authService } from '@/services/AuthService';
 import { showErrorToast } from '@/lib/toast';
 import { handlePasteEvent } from '@/lib/handlePaste';
+import { api } from '@/services/ApiClient';
+
+interface VerificationPopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+  signUpFormData: {
+    fullName: string;
+    email: string;
+    phone_number: string;
+    password: string;
+    terms: boolean;
+  };
+}
 
 export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
+  const tCommon = useTranslations('Common');
+  const tLogin = useTranslations('Login');
   const [isLoading, setIsLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [error, setError] = useState<string | null>();
@@ -28,7 +41,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
   const router = useRouter();
 
   const verificationSchema = z.object({
-    code: z.string().length(6, t('codeLengthError')),
+    code: z.string().length(6, tLogin('codeLengthError')),
   });
   const codeSize = 6;
 
@@ -55,7 +68,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
   const sendInitialVerificationCode = useCallback(async () => {
     try {
       setIsLoading(true);
-      await verificationService.sendVerificationCode({
+      await authService.sendVerificationCode(api, {
         phone_number: signUpFormData.phone_number,
       });
       setVerificationSent(true);
@@ -85,7 +98,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
 
     try {
       // First verify the code
-      await verificationService.verifyCode({
+      await authService.verifyCode(api, {
         phone_number: signUpFormData.phone_number,
         code: form.getValues('code'),
       });
@@ -98,12 +111,12 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
         password: signUpFormData.password,
         // code: form.getValues('code'),
       };
-      await authService.createUser(data);
+      await authService.createUser(api, data);
       setIsLoading(false);
 
       router.push(`/confirm?email=${encodeURIComponent(signUpFormData.email)}`);
     } catch (err) {
-      setError(err instanceof z.ZodError ? err.errors[0].message : t('genericError'));
+      setError(err instanceof z.ZodError ? err.errors[0].message : tCommon('genericError'));
       setIsLoading(false);
     }
   };
@@ -112,7 +125,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     if (resendCooldown > 0) return;
     try {
       setIsLoading(true);
-      await verificationService.sendVerificationCode({
+      await authService.sendVerificationCode(api, {
         phone_number: signUpFormData.phone_number,
       });
       setResendCooldown(30);
@@ -144,7 +157,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-center">{t('codeInputLabel')}</FormLabel>
+                    <FormLabel className="text-center">{tCommon('codeInputLabel')}</FormLabel>
 
                     <div className="flex justify-center gap-2">
                       {[...Array(codeSize)].map((_, idx) => (
@@ -225,10 +238,10 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                     : ''
                 }
               >
-                {isLoading ? t('verifyingButtonLabel') : t('verifyButtonLabel')}
+                {isLoading ? tLogin('verifying') : tLogin('verify')}
               </Button>
               <Button size="full" variant="secondary" onClick={onClose} disabled={isLoading}>
-                {t('cancelButtonLabel')}
+                {tCommon('cancel')}
               </Button>
             </CardFooter>
           </form>

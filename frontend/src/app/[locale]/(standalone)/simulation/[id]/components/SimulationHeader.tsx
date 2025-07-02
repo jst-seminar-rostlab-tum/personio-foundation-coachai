@@ -2,8 +2,16 @@
 
 import { User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
-import { SimulationHeaderProps } from '@/interfaces/SimulationHeaderProps';
 import { Badge } from '@/components/ui/Badge';
+
+interface SimulationHeaderProps {
+  characterName?: string;
+  characterRole?: string;
+  characterDescription?: string;
+  sessionLabel?: string;
+  avatarSrc?: string;
+  time: number;
+}
 
 function formatTime(seconds: number) {
   const h = Math.floor(seconds / 3600);

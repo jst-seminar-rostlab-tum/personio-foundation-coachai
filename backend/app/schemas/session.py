@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from sqlmodel import JSON, Column, Field
+from sqlmodel import Field
 
 from app.models.camel_case import CamelModel
 from app.models.session import SessionStatus
@@ -15,7 +15,6 @@ class SessionCreate(CamelModel):
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
-    ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: SessionStatus = Field(default=SessionStatus.started)
 
 
@@ -25,7 +24,6 @@ class SessionUpdate(CamelModel):
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
-    ai_persona: Optional[dict] = None
     status: Optional[SessionStatus] = None
 
 
@@ -36,8 +34,8 @@ class SessionRead(CamelModel):
     scheduled_at: datetime | None
     started_at: datetime | None
     ended_at: datetime | None
-    ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: SessionStatus = Field(default=SessionStatus.started)
+    allow_admin_access: bool = Field(default=False)
     created_at: datetime
     updated_at: datetime
 

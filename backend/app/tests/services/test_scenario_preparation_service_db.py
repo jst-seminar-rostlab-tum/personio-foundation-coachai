@@ -9,7 +9,7 @@ from sqlmodel import SQLModel
 
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.schemas.scenario_preparation import KeyConcept, ScenarioPreparationCreate
-from app.services.scenario_preparation_service import (
+from app.services.scenario_preparation.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,
 )
@@ -51,18 +51,20 @@ class TestScenarioPreparationService(unittest.TestCase):
         self.assertIsNotNone(retrieved)
 
         # assert preparation is still pending
+        if retrieved is None:
+            self.fail('Preparation not found in the database after creation')
         self.assertEqual(retrieved.status, ScenarioPreparationStatus.pending)
 
     @patch(
-        'app.services.scenario_preparation_service.generate_objectives',
+        'app.services.scenario_preparation.scenario_preparation_service.generate_objectives',
         return_value=['Step 1', 'Step 2'],
     )
     @patch(
-        'app.services.scenario_preparation_service.generate_checklist',
+        'app.services.scenario_preparation.scenario_preparation_service.generate_checklist',
         return_value=['Item A', 'Item B'],
     )
     @patch(
-        'app.services.scenario_preparation_service.generate_key_concept',
+        'app.services.scenario_preparation.scenario_preparation_service.generate_key_concept',
         return_value=[
             KeyConcept(
                 header='Clear Communication',
@@ -86,9 +88,10 @@ class TestScenarioPreparationService(unittest.TestCase):
 
         new_preparation = ScenarioPreparationCreate(
             category='Feedback',
-            goal='Improve communication',
-            context='Team review',
-            other_party='Product manager',
+            persona='**Name**: Jenny'
+            '**Training Focus**: Improve communication'
+            '**Company Position**: Product manager',
+            situational_facts='Team review',
             num_objectives=2,
             num_checkpoints=2,
         )
@@ -117,7 +120,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         )
 
     @patch(
-        'app.services.scenario_preparation_service.generate_key_concept',
+        'app.services.scenario_preparation.scenario_preparation_service.generate_key_concept',
         return_value=[
             KeyConcept(
                 header='Clear Communication',
@@ -134,11 +137,11 @@ class TestScenarioPreparationService(unittest.TestCase):
         ],
     )
     @patch(
-        'app.services.scenario_preparation_service.generate_checklist',
+        'app.services.scenario_preparation.scenario_preparation_service.generate_checklist',
         return_value=['Item A', 'Item B'],
     )
     @patch(
-        'app.services.scenario_preparation_service.generate_objectives',
+        'app.services.scenario_preparation.scenario_preparation_service.generate_objectives',
         side_effect=RuntimeError('LLM error'),
     )
     def test_generate_scenario_preparation_failed(
@@ -151,9 +154,10 @@ class TestScenarioPreparationService(unittest.TestCase):
 
         new_preparation = ScenarioPreparationCreate(
             category='Feedback',
-            goal='Improve communication',
-            context='Team review',
-            other_party='Product manager',
+            persona='**Name**: Jenny'
+            '**Training Focus**: Improve communication'
+            '**Company Position**: Product manager',
+            situational_facts='Team review',
             num_objectives=2,
             num_checkpoints=2,
         )

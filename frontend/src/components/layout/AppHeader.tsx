@@ -5,15 +5,16 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { authService } from '@/services/client/AuthService';
-import { useUser } from '@/lib/context/user';
-import { AccountRole } from '@/interfaces/UserProfile';
+import { useUser } from '@/contexts/User';
+import { AccountRole } from '@/interfaces/models/UserProfile';
+import { createClient } from '@/lib/supabase/client';
+import { logoutUser } from '@/lib/supabase/logout';
 import { Button } from '../ui/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const t = useTranslations('AppHeader');
+  const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const user = useUser();
 
@@ -51,7 +52,7 @@ export function AppHeader() {
             className="text-bw-70 text-xl font-semibold"
             onClick={() => setIsMenuOpen(false)}
           >
-            {t('title')}
+            {tCommon('appName')}
           </Link>
           <div className="flex items-center gap-0 md:gap-4">
             <div className="hidden md:flex items-center gap-6">
@@ -63,7 +64,7 @@ export function AppHeader() {
                     pathname.includes(href) ? 'text-marigold-50' : ''
                   }`}
                 >
-                  {t(key)}
+                  {tCommon(key)}
                 </Link>
               ))}
             </div>
@@ -80,10 +81,10 @@ export function AppHeader() {
               variant="secondary"
               className="hidden md:flex h-8"
               onClick={async () => {
-                await authService.logoutUser();
+                await logoutUser(createClient);
               }}
             >
-              <span className="text-xs font-medium">{t('logout')}</span>
+              <span className="text-xs font-medium">{tCommon('logout')}</span>
             </Button>
           </div>
         </div>
@@ -95,7 +96,7 @@ export function AppHeader() {
         }`}
       >
         <div className="flex items-center justify-between px-2 py-2 xl:px-16 bg-background min-h-[56px]">
-          <div className="text-bw-70 text-lg font-semibold">{t('title')}</div>
+          <div className="text-bw-70 text-lg font-semibold">{tCommon('appName')}</div>
           <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
             <X className="!w-4 !h-4" />
           </Button>
@@ -111,17 +112,17 @@ export function AppHeader() {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                {t(key)}
+                {tCommon(key)}
               </Link>
             ))}
             <span
               className="bebas-neue font-bold uppercase text-4xl md:text-5xl text-bw-70 hover:text-bw-50"
               onClick={async () => {
-                await authService.logoutUser();
+                await logoutUser(createClient);
                 setIsMenuOpen(false);
               }}
             >
-              {t('logout')}
+              {tCommon('logout')}
             </span>
           </nav>
         </div>

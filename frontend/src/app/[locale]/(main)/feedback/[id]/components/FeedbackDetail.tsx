@@ -17,23 +17,31 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/Accordion';
-import { FeedbackResponse } from '@/interfaces/FeedbackQuoteProps';
+import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 import { useCallback, useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { getSessionFeedback } from '@/services/client/SessionService';
+import { useLocale, useTranslations } from 'next-intl';
+import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/toast';
+import { convertTimeToMinutes, formattedDate } from '@/lib/utils';
+import { api } from '@/services/ApiClient';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
 
-export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
+interface FeedbackDetailProps {
+  sessionId: string;
+}
+
+export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   const t = useTranslations('Feedback');
+  const tCommon = useTranslations('Common');
+  const locale = useLocale();
   const [feedbackDetail, setFeedbackDetail] = useState<FeedbackResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const getFeedbackDetail = useCallback(
     async (id: string) => {
       try {
-        const response = await getSessionFeedback(id);
+        const response = await getSessionFeedback(api, id);
         if (response.status === 202) {
           setTimeout(() => {
             getFeedbackDetail(id);
@@ -50,7 +58,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
         throw new Error('Failed to get session feedback');
       } catch (error) {
         setIsLoading(false);
-        showErrorToast(error, t('getSessionDetailError'));
+        showErrorToast(error, t('fetchError'));
       }
     },
     [setFeedbackDetail, setIsLoading, t]
@@ -60,38 +68,21 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
     getFeedbackDetail(sessionId);
   }, [getFeedbackDetail, sessionId]);
 
-  const convertTimeToMinutes = (seconds: number) => {
-    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-  };
-
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-
-    return `${day}.${month}.${year}, ${hours}:${minutes}`;
-  };
-
   const progressBarData = [
-    { key: t('progressBars.structure'), value: feedbackDetail?.feedback?.scores.structure ?? 0 },
-    { key: t('progressBars.empathy'), value: feedbackDetail?.feedback?.scores.empathy ?? 0 },
-    { key: t('progressBars.focus'), value: feedbackDetail?.feedback?.scores.focus ?? 0 },
-    { key: t('progressBars.clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
+    { key: tCommon('structure'), value: feedbackDetail?.feedback?.scores.structure ?? 0 },
+    { key: tCommon('empathy'), value: feedbackDetail?.feedback?.scores.empathy ?? 0 },
+    { key: tCommon('focus'), value: feedbackDetail?.feedback?.scores.focus ?? 0 },
+    { key: tCommon('clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
 
   const roundCardStats = [
     {
-      key: t('stats.sessionLength'),
+      key: t('sessionLength'),
       value: convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0),
       icon: 'Clock',
     },
     {
-      key: t('stats.goalsAchieved'),
+      key: tCommon('goalsAchieved'),
       value: `${feedbackDetail?.feedback?.goalsAchieved.length ?? 0} / ${
         feedbackDetail?.goalsTotal.length ?? 0
       }`,
@@ -126,7 +117,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
         <div className="text-lg text-marigold-90">{feedbackDetail?.title}</div>
         <div className="text-base text-marigold-95">
-          {formatDateTime(feedbackDetail?.createdAt ?? '')}
+          {formattedDate(feedbackDetail?.createdAt, locale)}
         </div>
       </div>
       <FeedbackDialog sessionId={sessionId} />
@@ -177,13 +168,13 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           </div>
         </div>
       </div>
-      <Accordion type="multiple" className="w-full">
+      <Accordion type="multiple">
         <AccordionItem value="feedback">
-          <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
-          <AccordionContent className="px-5">
+          <AccordionTrigger>{t('accordion.feedback')}</AccordionTrigger>
+          <AccordionContent>
             <div className="flex items-center gap-2 mt-3">
               <CheckCircle size={24} className="text-forest-50" />
-              <span className="text-xl">{t('detailedFeedback.positive')}</span>
+              <span className="text-xl">{tCommon('positive')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
               {examplePositive.map((example, index) => (
@@ -193,7 +184,7 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
 
             <div className="flex items-center gap-2 mt-10">
               <CircleX size={24} className="text-flame-50" />
-              <span className="text-xl">{t('detailedFeedback.negative')}</span>
+              <span className="text-xl">{tCommon('negative')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
               {exampleNegative.map((negative, index) => (
@@ -213,10 +204,10 @@ export default function FeedbackDetail({ sessionId }: { sessionId: string }) {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="suggestion">
-          <AccordionTrigger>{t('accordian.suggestion')}</AccordionTrigger>
+          <AccordionTrigger>{t('accordion.suggestion')}</AccordionTrigger>
         </AccordionItem>
         <AccordionItem value="session">
-          <AccordionTrigger>{t('accordian.sessions')}</AccordionTrigger>
+          <AccordionTrigger>{t('accordion.sessions')}</AccordionTrigger>
         </AccordionItem>
       </Accordion>
     </div>

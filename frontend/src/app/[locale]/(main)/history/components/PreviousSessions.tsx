@@ -4,7 +4,7 @@ import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { clearAllSessions } from '@/services/client/SessionService';
+import { clearAllSessions, sessionService } from '@/services/SessionService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,10 +17,10 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
-import { SessionPaginated, SessionFromPagination } from '@/interfaces/Session';
-import { api } from '@/services/client/Api';
-import { sessionService } from '@/services/server/SessionService';
+import { SessionPaginated, SessionFromPagination } from '@/interfaces/models/Session';
 import Link from 'next/link';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
+import { api } from '@/services/ApiClient';
 
 export default function PreviousSessions({
   limit,
@@ -35,6 +35,7 @@ export default function PreviousSessions({
   const [sessionsStorage, setSessionsStorage] = useState<SessionFromPagination[]>(sessions);
   const [totalSessionsCount, setTotalSessionsCount] = useState(totalSessions);
   const t = useTranslations('History');
+  const tCommon = useTranslations('Common');
   const canLoadMore = visibleCount < totalSessionsCount;
 
   const handleLoadMore = (newPage: number) => {
@@ -63,7 +64,7 @@ export default function PreviousSessions({
   const handleDeleteAll = async () => {
     try {
       setIsDeleting(true);
-      await clearAllSessions();
+      await clearAllSessions(api);
 
       setSessionsStorage([]);
       setTotalSessionsCount(0);
@@ -82,7 +83,7 @@ export default function PreviousSessions({
         <div className="text-xl">{t('previousSessions')}</div>
         <div className="flex justify-between md:gap-6">
           <Button variant="ghost">
-            {t('exportHistory')} <Download />
+            {tCommon('export')} <Download />
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -98,36 +99,40 @@ export default function PreviousSessions({
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteAll}>{t('delete')}</AlertDialogAction>
+                <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteAll}>{tCommon('delete')}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        {sessionsStorage.map((session: SessionFromPagination) => (
-          <Link
-            key={session.sessionId}
-            href={`/feedback/${session.sessionId}`}
-            className="border border-bw-20 rounded-xl px-4 py-3 flex justify-between items-center cursor-pointer transition-all duration-300 hover:shadow-md"
-          >
-            <div>
-              <div className="font-semibold text-bw-70 text-sm mb-1">{session.title}</div>
-              <div className="text-xs text-bw-40 leading-tight">{session.summary}</div>
-            </div>
-            <div className="text-xs text-bw-70 text-center whitespace-nowrap ml-4">
-              {session.score}%
-              <br />
-              {session.status}
-            </div>
-          </Link>
-        ))}
+        {!sessionsStorage || sessionsStorage.length === 0 ? (
+          <EmptyListComponent itemType={tCommon('emptyList.sessions')} />
+        ) : (
+          sessionsStorage.map((session: SessionFromPagination) => (
+            <Link
+              key={session.sessionId}
+              href={`/feedback/${session.sessionId}`}
+              className="border border-bw-20 rounded-xl px-4 py-3 flex justify-between items-center cursor-pointer transition-all duration-300 hover:shadow-md"
+            >
+              <div>
+                <div className="font-semibold text-bw-70 text-sm mb-1">{session.title}</div>
+                <div className="text-xs text-bw-40 leading-tight">{session.summary}</div>
+              </div>
+              <div className="text-xs text-bw-70 text-center whitespace-nowrap ml-4">
+                {session.score}%
+                <br />
+                {session.status}
+              </div>
+            </Link>
+          ))
+        )}
       </div>
       {canLoadMore && (
         <div className="flex justify-center mt-4">
           <Button variant="ghost" onClick={() => handleLoadMore(pageNumber + 1)}>
-            {isLoading ? t('loading') : t('loadMore')} <ChevronDown />
+            {isLoading ? tCommon('loading') : tCommon('loadMore')} <ChevronDown />
           </Button>
         </div>
       )}

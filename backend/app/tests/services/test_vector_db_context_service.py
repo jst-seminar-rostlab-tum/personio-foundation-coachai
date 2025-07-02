@@ -16,9 +16,8 @@ class TestVectorDbContextService(unittest.TestCase):
     def test_build_query_prep_feedback_all_fields(self) -> None:
         session = ConversationScenarioBase(
             category='Performance Review',
-            other_party='Intern',
-            context='Annual evaluation meeting',
-            goal='Provide balanced feedback',
+            persona='Intern',
+            situational_facts='Annual evaluation meeting',
         )
         transcript = 'I appreciate your hard work this year'
         audio_analysis = 'calm and encouraging'
@@ -29,7 +28,6 @@ class TestVectorDbContextService(unittest.TestCase):
             'This is a/an Performance Review. '
             'The HR employee is speaking to Intern. '
             'The context is: Annual evaluation meeting '
-            'The goal is Provide balanced feedback. '
             'The HR employee said: I appreciate your hard work this year. '
             'It was spoken in the manner: calm and encouraging.'
         )
@@ -77,9 +75,8 @@ class TestVectorDbContextService(unittest.TestCase):
         # Set up conversation scenario
         scenario = ConversationScenarioBase(
             category='Coaching',
-            other_party='Junior employee',
-            context='Career development',
-            goal='Set growth plan',
+            persona='Jacob. Training Focus: Set growth plan. Company Position: Intern',
+            situational_facts='Career development',
         )
 
         # Build expected values and results
