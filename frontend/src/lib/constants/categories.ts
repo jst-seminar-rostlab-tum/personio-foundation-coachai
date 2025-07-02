@@ -1,6 +1,7 @@
+import { ConversationCategory } from '@/interfaces/models/ConversationScenario';
 import { useTranslations } from 'next-intl';
 
-export function Categories() {
+export function Categories(): ConversationCategory[] {
   const t = useTranslations('ConversationScenario.categories');
   return [
     {
