@@ -42,8 +42,6 @@ class TestReviewRoute(unittest.TestCase):
             email='test@example.com',
             phone_number='1234567890',
             account_role=AccountRole.user,
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
         )
         self.db.add(self.test_user)
         self.db.commit()
@@ -67,14 +65,11 @@ class TestReviewRoute(unittest.TestCase):
         # Create a test session
         self.test_session = Session(
             id=uuid4(),
-            user_id=self.test_user.id,
             scenario_id=conversation_scenarios[0].id,
             scheduled_at=datetime.now(),
             started_at=datetime.now(),
             ended_at=datetime.now(),
             status=SessionStatus.completed,
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
         )
         self.db.add(self.test_session)
         self.db.commit()
