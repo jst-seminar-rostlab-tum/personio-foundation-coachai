@@ -27,8 +27,8 @@ export default async function LoginPage() {
           <CardContent>
             <Tabs defaultValue="sign-in" className="mt-5">
               <TabsList>
-                <TabsTrigger value="sign-in">{t('SignInTab.title')}</TabsTrigger>
-                <TabsTrigger value="sign-up">{t('SignUpTab.title')}</TabsTrigger>
+                <TabsTrigger value="sign-in">{t('signIn')}</TabsTrigger>
+                <TabsTrigger value="sign-up">{t('signUp')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="sign-in">

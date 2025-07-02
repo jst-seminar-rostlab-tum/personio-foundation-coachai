@@ -56,13 +56,16 @@ async def get_realtime_session(
             status_code=404, detail='No conversation category found for this scenario'
         )
 
-    instructions = ''
-
-    if conversation_scenario:
-        instructions += conversation_scenario.context
-
-    if conversation_category:
-        instructions += '\n\n' + conversation_category.initial_prompt
+    instructions = (
+        f"Your user wants to practice conversations about '{conversation_category.name}'. "
+        f'Your job is to simulate the other party in that conversation.\n'
+        f'Therefore adopt the following persona:\n {conversation_scenario.persona}\n\n'
+        f'Stay in that character, respond naturally, and encourage realistic dialogue.'
+        f'To have a better understanding of the background of the conversation about'
+        f"'{conversation_category.name}' here are some more background informations:"
+        f'{conversation_scenario.situational_facts}\n'
+        f'Additional instructions before starting:\n{conversation_category.initial_prompt}\n'
+    )
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
