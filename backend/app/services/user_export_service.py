@@ -89,12 +89,9 @@ def _build_export_scenarios(
                 category_id=s.category_id,
                 custom_category_label=s.custom_category_label,
                 language_code=str(s.language_code),
-                context=s.context,
-                goal=s.goal,
-                other_party=s.other_party,
+                persona=s.persona,
+                situational_facts=s.situational_facts,
                 difficulty_level=str(s.difficulty_level),
-                tone=s.tone,
-                complexity=s.complexity,
                 status=str(s.status),
                 created_at=s.created_at.isoformat() if s.created_at else None,
                 updated_at=s.updated_at.isoformat() if s.updated_at else None,
@@ -166,7 +163,6 @@ def _build_export_sessions(scenarios: list[ConversationScenario]) -> list[Export
                 scheduled_at=sess.scheduled_at.isoformat() if sess.scheduled_at else None,
                 started_at=sess.started_at.isoformat() if sess.started_at else None,
                 ended_at=sess.ended_at.isoformat() if sess.ended_at else None,
-                ai_persona=sess.ai_persona,
                 status=str(sess.status),
                 created_at=sess.created_at.isoformat() if sess.created_at else None,
                 updated_at=sess.updated_at.isoformat() if sess.updated_at else None,
@@ -185,7 +181,6 @@ def _build_export_sessions(scenarios: list[ConversationScenario]) -> list[Export
         if sessions:
             sess = sessions[0]  # Use first session for debugging
             print('Sample session data types:')
-            print(f'  ai_persona: {type(sess.ai_persona)} = {sess.ai_persona}')
             print(f'  status: {type(sess.status)} = {sess.status}')
         raise
 

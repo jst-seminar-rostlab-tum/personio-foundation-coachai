@@ -82,10 +82,9 @@ def generate_training_examples(
     communication skills in the context of {request.category}. 
     You are expected to follow the training guidelines provided below.
     The AI simulates the other party in the conversation, and you are expected to respond
-    appropriately based on the training objectives, goal, context, and key concepts.
-    In this session, you are practicing how to {request.goal} in the context of {request.context}.
-    The other party, the AI, is simulating a {request.other_party}.
-
+    appropriately based on the training objectives, the persona you're speaking to 
+    and the respective training focus, the situational facts, and the key concepts.
+    
     **Speaker labels in the transcript:**
     - Lines starting with **"User:"** are your own statements.
     - Lines starting with **"Assistant:"** are the AI's responses and are for context only.
@@ -95,8 +94,8 @@ def generate_training_examples(
 
     Training Guidelines:
     - Objectives: {request.objectives}
-    - Goal: {request.goal}
-    - Context: {request.context}
+    - Persona incl. Training focus: {request.persona}
+    - Situational Facts: {request.situational_facts}
     - Key Concepts: {request.key_concepts}
     
     HR Document Context:
@@ -211,8 +210,8 @@ def generate_recommendations(
     Transcript:
     {request.transcript}
 
-    Training Goal:
-    {request.goal}
+    Persona (other party) including Training Focus:
+    {request.persona}
 
     Objectives:
     {request.objectives}
@@ -220,16 +219,16 @@ def generate_recommendations(
     Key Concepts:
     {request.key_concepts}
 
-    Context:
-    {request.context}
+    Situational Facts:
+    {request.situational_facts}
     
     HR Document Context:
     {hr_docs_context}
 
     Situation:
     - The conversation of this training session is about {request.category}
-    - You are practicing how to {request.goal}
-    - The other party, the AI, is simulating a {request.other_party}
+    - The other party, the AI, is simulating the following persona, which 
+    focuses on the specified training areas: {request.persona}
 
     Format your output as a list of 'Recommendation' objects.
     Each recommendation represents a Pydantic model with two fields:
@@ -288,9 +287,8 @@ def generate_and_store_feedback(
     )
     recommendations_request = RecommendationsRequest(
         category=example_request.category,
-        goal=example_request.goal,
-        context=example_request.context,
-        other_party=example_request.other_party,
+        persona=example_request.persona,
+        situational_facts=example_request.situational_facts,
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         key_concepts=example_request.key_concepts,
@@ -306,10 +304,9 @@ def generate_and_store_feedback(
     hr_docs_context = query_vector_db_and_prompt(
         session_context=[
             recommendations_request.category,
-            recommendations_request.goal,
-            recommendations_request.context,
-            recommendations_request.other_party,
-            recommendations_request.transcript,
+            recommendations_request.persona,
+            recommendations_request.situational_facts,
+            recommendations_request.transcript or '',
             recommendations_request.objectives,
             recommendations_request.key_concepts,
         ],
@@ -445,9 +442,12 @@ if __name__ == '__main__':
     # Example usage of the service functions
     example_request = ExamplesRequest(
         category='Termination',
-        goal='Successfully conduct a termination meeting',
-        context='Termination meeting with a team member on poor performance',
-        other_party='Team member',
+        persona=(
+            '**Name**: Julian '
+            '**Training Focus**: Successfully conduct a termination meeting '
+            '**Company Position**: Team member'
+        ),
+        situational_facts='Termination meeting with a team member on poor performance',
         transcript='User:  Hi, I have to talk to you. \n'
         + "Assistant: Yes, what is it? Please don't fire me, I really need this job. "
         + "I know I haven't been performing well lately, but I promise I can improve."
@@ -508,9 +508,8 @@ if __name__ == '__main__':
 
     recommendation_request = RecommendationsRequest(
         category=example_request.category,
-        goal=example_request.goal,
-        context=example_request.context,
-        other_party=example_request.other_party,
+        persona=example_request.persona,
+        situational_facts=example_request.situational_facts,
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         key_concepts=example_request.key_concepts,

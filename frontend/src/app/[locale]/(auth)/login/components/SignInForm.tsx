@@ -24,7 +24,7 @@ import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/toast';
 
 export function SignInForm() {
-  const t = useTranslations('Login.SignInTab');
+  const tLogin = useTranslations('Login');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,8 +37,8 @@ export function SignInForm() {
   }, [error]);
 
   const signInFormSchema = z.object({
-    email: z.string().email(t('emailInputError')),
-    password: z.string().min(1, t('passwordInputError')),
+    email: z.string().email(tLogin('emailInputError')),
+    password: z.string().min(1, tLogin('passwordInputError')),
   });
 
   const signInForm = useForm({
@@ -83,10 +83,10 @@ export function SignInForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('emailInputLabel')}</FormLabel>
+                  <FormLabel>{tLogin('emailInputLabel')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t('emailInputPlaceholder')}
+                      placeholder={tLogin('emailInputPlaceholder')}
                       {...field}
                       className="w-full"
                       type="email"
@@ -103,10 +103,10 @@ export function SignInForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('passwordInputLabel')}</FormLabel>
+                  <FormLabel>{tLogin('passwordInputLabel')}</FormLabel>
                   <FormControl>
                     <PasswordInput
-                      placeholder={t('passwordInputPlaceholder')}
+                      placeholder={tLogin('passwordInputPlaceholder')}
                       {...field}
                       disabled={isLoading}
                       requirements={[]}
@@ -120,12 +120,12 @@ export function SignInForm() {
 
           <CardFooter className="flex-col gap-6">
             <Button type="submit" size="full" disabled={isLoading}>
-              {t('signInButtonLabel')}
+              {tLogin('signIn')}
             </Button>
             <div className="w-full border-t border-gray-300" />
             <Button size="full" variant="secondary" disabled={isLoading}>
               <Image src="/images/icons/google-icon.svg" alt="Google Icon" width={20} height={20} />
-              {t('signInWithGoogleButtonLabel')}
+              {tLogin('signInWithGoogleButtonLabel')}
             </Button>
           </CardFooter>
         </form>

@@ -18,6 +18,7 @@ from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
 from app.schemas.session_feedback import ExamplesRequest, SessionFeedbackMetrics
 from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
+from app.services.review_service import ReviewService
 from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 
 
@@ -35,18 +36,22 @@ class SessionService:
         title = self._get_training_title(scenario)
         goals = scenario.preparation.objectives if scenario.preparation else []
 
+        # Check if the user has reviewed this session
+        review_service = ReviewService(self.db)
+        user_has_reviewed = review_service.has_user_reviewed_session(session_id, user_profile.id)
+
         session_response = SessionDetailsRead(
             id=session.id,
             scenario_id=session.scenario_id,
             scheduled_at=session.scheduled_at,
             started_at=session.started_at,
             ended_at=session.ended_at,
-            ai_persona=session.ai_persona,
             status=session.status,
             allow_admin_access=session.allow_admin_access,
             created_at=session.created_at,
             updated_at=session.updated_at,
             title=title,
+            has_reviewed=user_has_reviewed,
             summary='The person giving feedback was rude but the person '
             'receiving feedback took it well.',
             goals_total=goals,
@@ -306,9 +311,8 @@ class SessionService:
             category=category.name
             if category
             else conversation_scenario.custom_category_label or 'Unknown Category',
-            goal=conversation_scenario.goal,
-            context=conversation_scenario.context,
-            other_party=conversation_scenario.other_party,
+            persona=conversation_scenario.persona,
+            situational_facts=conversation_scenario.situational_facts,
             transcript=transcripts,
             objectives=preparation.objectives,
             key_concepts=key_concepts_str,
