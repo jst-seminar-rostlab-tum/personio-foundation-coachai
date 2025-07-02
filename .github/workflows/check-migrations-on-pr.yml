@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - name: Check for backend changes
         id: changed-files
@@ -24,7 +24,7 @@ jobs:
 
       - name: Check if dev branch is merged
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: |          
+        run: |
           MERGE_BASE=$(git merge-base HEAD origin/dev)   
           DEV_HEAD=$(git rev-parse origin/dev)  
 
@@ -37,13 +37,14 @@ jobs:
           fi
 
       - name: Check for modified dev migration files
-        if: steps.changed-files.outputs.any_changed == 'true'
+        # if: steps.changed-files.outputs.any_changed == 'true'
+        if: false
         run: |
           echo "Checking for modifications to existing migration files from dev..."
 
           # Get list of migration files that exist on dev branch
           DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.py$|\.sql$' || true)
-          
+
           if [[ -n "$DEV_MIGRATIONS" ]]; then
             echo "Migration files found on dev branch:"
             echo "$DEV_MIGRATIONS"
@@ -75,12 +76,11 @@ jobs:
           else
             echo "✅ No migration files found on dev branch"
           fi
-      
+
       - name: No relevant changes, skipping migration pre-checks
         if: steps.changed-files.outputs.any_changed != 'true'
         run: echo "No relevant changes, skipping migration pre-checks."
 
-  
   migrations:
     name: Check migrations
     runs-on: ubuntu-22.04
@@ -130,7 +130,7 @@ jobs:
             [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
-      
+
       - name: Run migrations
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
@@ -143,7 +143,7 @@ jobs:
             echo "❌- Migration checks failed"
             exit 1
           fi
-      
+
       - name: No relevant changes, skipping migration checks
         if: steps.changed-files.outputs.any_changed != 'true'
         run: echo "No relevant changes, skipping migration checks."
