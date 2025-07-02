@@ -23,12 +23,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
   const nonce = (await headers()).get('x-nonce') || undefined;
   return (
     <html lang={locale}>
-      <body className={inter.className}>
-        <NextIntlClientProvider>
-          <AboutHeader />
-          <main className="container mx-auto p-6 md:p-12 mt-16">{children}</main>
-          <AboutFooter />
-        </NextIntlClientProvider>
+      <head>
         <script
           nonce={nonce}
           type="application/ld+json"
