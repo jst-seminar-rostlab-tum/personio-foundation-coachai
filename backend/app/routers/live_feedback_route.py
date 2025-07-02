@@ -17,7 +17,7 @@ router = APIRouter(
 
 
 @router.get('/session/{session_id}', response_model=list[LiveFeedback])
-def get_feedback_for_session(
+def get_live_feedback_for_session(
     session_id: UUID,
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> list[LiveFeedback]:
