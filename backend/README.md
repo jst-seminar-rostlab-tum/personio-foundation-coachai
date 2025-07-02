@@ -182,7 +182,7 @@ If you want to use the vector knowledge base, make sure you have a Gemini API Ke
 Run the following command to populate it:
 
 ```bash
-uv run -m app.data.populate_dummy_data
+uv run -m app.rag.populate_vector_db
 ```
 
 #### Setup Instructions
