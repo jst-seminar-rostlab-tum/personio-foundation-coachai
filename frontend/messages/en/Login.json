@@ -3,152 +3,54 @@
   "metaDescription": "Login or sign-up to start your journey with Coach AI",
   "welcome": "Welcome to Leadership Coach",
   "description": "Start Your Leadership Coaching Journey",
-  "SignInTab": {
-    "title": "Sign-In",
-    "emailInputLabel": "Email",
-    "emailInputPlaceholder": "Enter Your Email",
-    "emailInputError": "Email is invalid",
-    "passwordInputLabel": "Password",
-    "passwordInputPlaceholder": "Enter Your Password",
-    "passwordInputError": "Password is invalid",
-    "stayLoggedInCheckboxLabel": "Stay Logged In",
-    "signInButtonLabel": "Sign In",
-    "signInWithGoogleButtonLabel": "Sign In With Google",
-    "alertErrorTitle401": "Invalid email or password",
-    "alertErrorTitleGeneric": "Something went wrong. Please try again."
-  },
+  "signInWithGoogleButtonLabel": "Or Sign In With Google",
   "SignUpTab": {
-    "title": "Sign-Up",
-    "fullNameInputLabel": "Full Name *",
-    "fullNameInputPlaceholder": "Your Name",
-    "fullNameInputError": "Name is invalid",
-    "emailInputLabel": "Email *",
-    "emailInputPlaceholder": "Your Email",
-    "emailInputError": "Email is invalid",
-    "phoneNumberInputLabel": "Phone Number *",
-    "phoneNumberInputPlaceholder": "Your Phone Number",
-    "phoneNumberInputError": "Phone number is invalid",
-    "passwordInputLabel": "Password *",
-    "passwordInputPlaceholder": "Create a Password",
     "passwordInputRequirementOneLabel": "At least 8 characters",
     "passwordInputRequirementTwoLabel": "At least one uppercase letter",
     "passwordInputRequirementThreeLabel": "At least one special character (!@#$%^&*)",
     "gdprAdherenceText": "We strictly adhere to GDPR by collecting only essential data, storing nothing unnecessary, and deleting data as soon as possible. ",
     "readMoreOnGdprLink": "read more",
     "agreeToTermsCheckboxLabel": "I agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>",
-    "signUpButtonLabel": "Sign Up",
-    "signUpWithGoogleButtonLabel": "Or Sign Up With Google",
-    "genericError": "An error occurred during sign up"
+    "signUpWithGoogleButtonLabel": "Or Sign Up With Google"
   },
   "VerificationPopup": {
     "title": "Verify Your Phone Number",
     "descriptionPartOne": "We've sent a verification code to ",
     "descriptionPartTwo": ". Please enter it below.",
-    "codeInputLabel": "Verification Code",
     "codeInputPlaceholder": "Enter 6-digit code",
-    "codeInputError": "Invalid verification code",
-    "resendButtonLabel": "Resend code",
-    "verifyButtonLabel": "Verify",
-    "verifyingButtonLabel": "Verifying...",
-    "cancelButtonLabel": "Cancel",
-    "codeLengthError": "The code must be 6 characters long",
-    "genericError": "An error occurred during verification"
-  },
-  "PrivacyPolicyDialog": {
-    "title": "Privacy Policy",
-    "dataProcessing": {
-      "title": "Data Processing",
-      "table": {
-        "headers": {
-          "personalData": "Personal Data Processed",
-          "purpose": "Purpose",
-          "storageDuration": "Storage Duration"
-        },
-        "accountInfo": {
-          "title": "Account Information",
-          "description": "E-mail, phone number, preferred language",
-          "purposes": {
-            "signIn": "Sign in and account management",
-            "phoneVerification": "Phone number verification",
-            "setLanguage": "Set language for UI and AI"
-          },
-          "storage": {
-            "collectedAt": "Collected at sign-up",
-            "retained": "Retained until account deletion"
-          }
-        },
-        "aiPersonalization": {
-          "title": "AI Personalization",
-          "description": "Role, leadership experience, goals, confidence levels",
-          "purposes": {
-            "provideTips": "Provide tips before sessions",
-            "personalizeResponses": "Personalize responses during sessions",
-            "provideFeedback": "Provide feedback after sessions"
-          },
-          "storage": {
-            "collectedAt": "Collected at sign-up",
-            "retained": "Retained until account deletion"
-          }
-        },
-        "voiceRecordings": {
-          "title": "Voice Recordings",
-          "description": "Audio recordings during training sessions",
-          "purposes": {
-            "reviewSessions": "Allows users to review past training sessions by listening to the audio recording"
-          },
-          "storage": {
-            "collectedAt": "Collected at recording time",
-            "retainedConsent": "Retained for 90 days if consent is given",
-            "deletedImmediately": "Deleted permanently and immediately otherwise"
-          }
-        },
-        "usageMetrics": {
-          "title": "Usage Metrics",
-          "description": "Days logged in, training sessions, AI tokens used, ...",
-          "purposes": {
-            "trackProgress": "Track user progress",
-            "markAchievements": "Mark achievements",
-            "provideMetrics": "Provide app usage metrics"
-          },
-          "storage": {
-            "collectedAt": "Collected at various points as the user interacts with the app",
-            "retained": "Retained until account deletion"
-          }
-        }
-      }
-    },
-    "security": {
-      "title": "Security & Data Protection",
-      "euServers": {
-        "title": "EU-Based Servers",
-        "description": "All data is stored and processed on servers located in the European Union"
-      },
-      "encryption": {
-        "title": "Encryption",
-        "description": "Data is encrypted both in-transit and at-rest for maximum security"
-      },
-      "externalServices": {
-        "title": "External Service Providers",
-        "vercel": "Vercel - EU servers and global CDN",
-        "supabase": "Supabase - EU servers",
-        "fly": "Fly.io - EU servers",
-        "gcp": "GCP - EU servers"
-      }
-    },
-    "userRights": {
-      "title": "Your Rights",
-      "accountDeletion": {
-        "title": "Account Deletion",
-        "description": "Request permanent deletion of your account and all related data"
-      },
-      "dataExport": {
-        "title": "Data Export",
-        "description": "Request an export of all data we have stored about you"
-      }
-    }
+    "resendButtonLabel": "Resend code"
   },
   "PasswordInput": {
     "showPasswordSpan": "Show Password",
     "hidePasswordSpan": "Hide Password"
+  },
+  "fullNameInputLabel": "Full Name",
+  "fullNameInputPlaceholder": "Enter your full name",
+  "fullNameInputError": "Please enter a valid name",
+  "phoneNumberInputLabel": "Phone Number",
+  "phoneNumberInputPlaceholder": "Enter your phone number",
+  "phoneNumberInputError": "Please enter a valid phone number",
+  "passwordInputLabel": "Password",
+  "passwordInputPlaceholder": "Enter your password",
+  "passwordInputError": "Please enter a valid password",
+  "codeLengthError": "The code must be 6 characters long",
+  "verify": "Verify",
+  "verifying": "Verifying...",
+  "emailInputLabel": "Email Address",
+  "emailInputPlaceholder": "Enter your email address",
+  "emailInputError": "Please enter a valid email address",
+  "codeInputLabel": "Confirmation Code",
+  "resendCodeButtonLabel": "Resend Code",
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "confirming": "Confirming...",
+  "ConfirmationForm": {
+    "metaTitle": "Confirm - Coach AI",
+    "metaDescription": "Confirm Your Account - Coach AI",
+    "title": "Confirm Your Account",
+    "description": "Please enter the confirmation code sent to your email address.",
+    "expiredDescription": "Your confirmation code has expired. Please request a new code to continue.",
+    "expiredOtpError": "The confirmation code has expired. Please request a new code.",
+    "genericError": "An error occurred while confirming your account. Please try again later."
   }
 }
