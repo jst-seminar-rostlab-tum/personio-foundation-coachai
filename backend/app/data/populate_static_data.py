@@ -14,20 +14,13 @@ from app.models.language import LanguageCode
 base_dir = os.path.dirname(__file__)
 with open(os.path.join(base_dir, 'initial_prompts.json'), encoding='utf-8') as f:
     initial_prompt_data = json.load(f)
-with open(os.path.join(base_dir, 'default_contexts.json'), encoding='utf-8') as f:
-    default_context_data = json.load(f)
 
 
 STATIC_CATEGORIES = [
     ConversationCategory(
         id='giving_feedback',
         name='Giving Feedback',
-        system_prompt='You are an expert in providing constructive feedback.',
         initial_prompt=initial_prompt_data['giving_feedback'],
-        ai_setup={'type': 'feedback', 'complexity': 'medium'},
-        default_context=default_context_data['giving_feedback'],
-        default_goal='Provide constructive feedback effectively.',
-        default_other_party='Team member',
         is_custom=False,
         language_code=LanguageCode.en,
         created_at=datetime.now(UTC),
@@ -36,12 +29,7 @@ STATIC_CATEGORIES = [
     ConversationCategory(
         id='performance_reviews',
         name='Performance Reviews',
-        system_prompt='You are a manager conducting performance reviews.',
         initial_prompt=initial_prompt_data['performance_reviews'],
-        ai_setup={'type': 'review', 'complexity': 'high'},
-        default_context=default_context_data['performance_reviews'],
-        default_goal='Evaluate and discuss employee performance.',
-        default_other_party='Employee',
         is_custom=False,
         language_code=LanguageCode.en,
         created_at=datetime.now(UTC),
@@ -50,12 +38,7 @@ STATIC_CATEGORIES = [
     ConversationCategory(
         id='conflict_resolution',
         name='Conflict Resolution',
-        system_prompt='You are a mediator resolving conflicts.',
         initial_prompt=initial_prompt_data['conflict_resolution'],
-        ai_setup={'type': 'mediation', 'complexity': 'high'},
-        default_context=default_context_data['conflict_resolution'],
-        default_goal='Resolve conflicts and improve team dynamics.',
-        default_other_party='Team members',
         is_custom=False,
         language_code=LanguageCode.en,
         created_at=datetime.now(UTC),
@@ -64,12 +47,7 @@ STATIC_CATEGORIES = [
     ConversationCategory(
         id='salary_discussions',
         name='Salary Discussions',
-        system_prompt='You are a negotiator discussing salary expectations.',
         initial_prompt=initial_prompt_data['salary_discussions'],
-        ai_setup={'type': 'negotiation', 'complexity': 'medium'},
-        default_context=default_context_data['salary_discussions'],
-        default_goal='Reach a mutually beneficial agreement on salary.',
-        default_other_party='Employer',
         is_custom=False,
         language_code=LanguageCode.en,
         created_at=datetime.now(UTC),
