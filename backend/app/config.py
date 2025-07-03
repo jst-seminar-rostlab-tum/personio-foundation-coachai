@@ -16,10 +16,19 @@ class Settings(BaseSettings):
     postgres_port: str = '5432'
     database_url: str | None = None
 
-    SUPABASE_URL: str = ''
-    SUPABASE_ANON_KEY: str = ''
-    SUPABASE_SERVICE_ROLE_KEY: str = ''
-    SUPABASE_JWT_SECRET: str = ''
+    SUPABASE_URL: str = 'http://127.0.0.1:54321'
+
+    SUPABASE_ANON_KEY: str = (
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+        'eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.'
+        'CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+    )
+    SUPABASE_SERVICE_ROLE_KEY: str = (
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+        'eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.'
+        'EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+    )
+    SUPABASE_JWT_SECRET: str = 'super-secret-jwt-token-with-at-least-32-characters-long'
 
     GEMINI_API_KEY: str = ''
     OPENAI_API_KEY: str = ''
@@ -38,7 +47,7 @@ class Settings(BaseSettings):
     ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
 
-    DEV_MODE_SKIP_AUTH: bool = False
+    DEV_MODE_SKIP_AUTH: bool = True
     DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.USER.value
 
     DEMO_USER_EMAIL: str = 'mockuser@example.com'

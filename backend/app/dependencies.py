@@ -40,8 +40,8 @@ def verify_jwt(
     """
     logging.info('Verifying JWT')
     if settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH:
+        logging.info('Skipping JWT verification')
         return {'sub': str(settings.DEV_MODE_MOCK_USER_ID)}
-
     if not credentials:
         logging.info('No JWT token')
         raise HTTPException(

@@ -8,10 +8,6 @@ export const setupAuthInterceptor = (api: AxiosInstance, getSupabaseClient: any)
         return config;
       }
 
-      if (process.env.NODE_ENV === 'development') {
-        return config;
-      }
-
       const supabase = await getSupabaseClient();
       const { data, error } = await supabase.auth.getSession();
       if (error || !data.session) {
