@@ -1,4 +1,4 @@
-import { SessionScores } from './SessionFeedback';
+import { SessionScores } from './Common';
 
 export enum SessionStatus {
   STARTED = 'started',

@@ -11,9 +11,10 @@ import {
   ConversationCategory,
 } from '@/interfaces/models/ConversationScenario';
 import { conversationScenarioService } from '@/services/ConversationScenarioService';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { api } from '@/services/ApiClient';
+import { Categories } from '@/lib/constants/categories';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
@@ -26,6 +27,7 @@ export default function ConversationScenarioForm({
   categoriesData,
 }: ConversationScenarioFormProps) {
   const t = useTranslations('ConversationScenario');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const { locale } = useParams();
 
@@ -38,9 +40,7 @@ export default function ConversationScenarioForm({
   } = useConversationScenarioStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [categories, setCategories] = useState<ConversationCategory[]>(
-    t.raw('categories') as ConversationCategory[]
-  );
+  const [categories, setCategories] = useState<ConversationCategory[]>(Categories());
 
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
 
@@ -113,12 +113,12 @@ export default function ConversationScenarioForm({
 
   const getButtonText = () => {
     if (isSubmitting && currentStep === 2) {
-      return t('navigation.creating');
+      return t('creating');
     }
     if (currentStep === 2) {
-      return t('navigation.create');
+      return t('create');
     }
-    return t('navigation.next');
+    return tCommon('next');
   };
 
   return (
@@ -185,7 +185,7 @@ export default function ConversationScenarioForm({
             disabled={currentStep === 0}
           >
             <ArrowLeftIcon />
-            {t('navigation.back')}
+            {tCommon('back')}
           </Button>
         )}
         <Button

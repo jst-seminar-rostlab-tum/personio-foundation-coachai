@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
-import { handlePasteEvent } from '@/lib/handlePaste';
+import { handleInputChange, handleKeyDown, handlePasteEvent } from '@/lib/handlers/handleOtpInput';
 import { createClient } from '@/lib/supabase/client';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import { api } from '@/services/ApiClient';
 import { authService } from '@/services/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,7 +18,8 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 
 export default function ConfirmationForm() {
-  const t = useTranslations('Confirm.ConfirmationForm');
+  const t = useTranslations('Login');
+  const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>();
   const [showResendButton, setShowResendButton] = useState(false);
@@ -43,8 +44,8 @@ export default function ConfirmationForm() {
     resolver: zodResolver(confirmationFormSchema),
     mode: 'onTouched',
     defaultValues: {
-      email: useSearchParams().get('email') ?? '',
-      code: useSearchParams().get('token') ?? '',
+      email: useSearchParams().get('ConfirmationForm.email') ?? '',
+      code: useSearchParams().get('ConfirmationForm.token') ?? '',
     },
   });
 
@@ -71,7 +72,7 @@ export default function ConfirmationForm() {
             setShowResendButton(true);
             break;
           default:
-            setError(t('genericError'));
+            setError(t('ConfirmationForm.genericError'));
         }
       }
 
@@ -81,7 +82,7 @@ export default function ConfirmationForm() {
     try {
       await authService.confirmUser(api);
     } catch {
-      setError(t('genericError'));
+      setError(t('ConfirmationForm.genericError'));
       setIsLoading(false);
       return;
     }
@@ -118,9 +119,11 @@ export default function ConfirmationForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(verifyOTP)}>
             <CardContent className="space-y-4 p-4">
-              <h2 className="text-xl text-center">{t('title')}</h2>
+              <h2 className="text-xl text-center">{t('ConfirmationForm.title')}</h2>
               <p className="text-base text-center text-bw-50">
-                {!showResendButton ? t('description') : t('expiredDescription')}
+                {!showResendButton
+                  ? t('ConfirmationForm.description')
+                  : t('ConfirmationForm.expiredDescription')}
               </p>
 
               {!showResendButton && (
@@ -145,25 +148,13 @@ export default function ConfirmationForm() {
                               inputRefs.current[idx] = el;
                             }}
                             onChange={(e) => {
-                              const val = e.target.value.replace(/\D/g, '');
-                              const codeArr = (field.value || '').split('');
-                              codeArr[idx] = val;
-                              const newCode = codeArr.join('').slice(0, codeSize);
-                              field.onChange(newCode);
-                              if (val && idx < codeSize - 1) {
-                                inputRefs.current[idx + 1]?.focus();
-                              }
+                              handleInputChange(e, field, idx, codeSize, inputRefs.current);
                             }}
                             onPaste={(e) => {
                               handlePasteEvent(e, field, codeSize, inputRefs.current);
                             }}
                             onKeyDown={(e) => {
-                              if (e.key === 'Backspace') {
-                                const codeArr = (field.value || '').split('');
-                                if (!codeArr[idx] && idx > 0) {
-                                  inputRefs.current[idx - 1]?.focus();
-                                }
-                              }
+                              handleKeyDown(e, field, idx, inputRefs.current);
                             }}
                             autoFocus={idx === 0}
                           />
@@ -184,7 +175,7 @@ export default function ConfirmationForm() {
                   type="submit"
                   disabled={isLoading || form.watch('code').length !== codeSize}
                 >
-                  {isLoading ? t('confirmingButtonLabel') : t('confirmButtonLabel')}
+                  {isLoading ? t('confirming') : tCommon('confirm')}
                 </Button>
               )}
 
