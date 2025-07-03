@@ -25,7 +25,6 @@ export enum AccountRole {
 export interface PaginatedUsersParams {
   page?: number;
   pageSize?: number;
-  limit?: number;
   emailSubstring?: string;
 }
 
