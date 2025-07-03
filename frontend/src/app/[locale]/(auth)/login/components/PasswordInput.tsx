@@ -17,6 +17,7 @@ interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   disabled: boolean;
   requirements?: PasswordRequirement[];
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  autocomplete?: string;
 }
 
 export function PasswordInput({
@@ -24,6 +25,7 @@ export function PasswordInput({
   disabled,
   requirements,
   onChange,
+  autocomplete,
   ...props
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -44,6 +46,7 @@ export function PasswordInput({
           disabled={disabled}
           type={showPassword ? 'text' : 'password'}
           className="w-full"
+          autoComplete={autocomplete}
           {...props}
           onChange={handlePasswordChange}
         />
