@@ -1,6 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
-from typing import Literal
+from typing import BinaryIO, Literal
 
 from google.cloud import storage
 from google.oauth2 import service_account
@@ -52,6 +52,20 @@ class GCSManager:
                 continue
             blob.upload_from_filename(path)
             print(f'{path.name} → gs://{self.bucket.name}/{blob_name}')
+
+    def upload_from_fileobj(
+        self, file_obj: BinaryIO, blob_name: str, content_type: str = None
+    ) -> str:
+        """
+        Upload a file-like object to GCS.
+        """
+        blob = self.bucket.blob(f'{self.prefix}{blob_name}')
+
+        file_obj.seek(0)  # rewind to beginning
+        blob.upload_from_file(file_obj, content_type=content_type)
+
+        print(f'{blob_name} → gs://{self.bucket.name}/{blob.name}')
+        return f'gs://{self.bucket.name}/{blob.name}'
 
     def download_documents(self, directory: Path = None) -> None:
         target_dir = Path(directory) if directory else self.download_dir
