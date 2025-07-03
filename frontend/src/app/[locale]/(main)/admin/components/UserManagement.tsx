@@ -8,23 +8,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/Accordion';
+import type { UserPaginationResponse } from '@/interfaces/models/UserProfile';
 import UsersList from './UsersList';
 
-interface User {
-  userId: string;
-  fullName: string;
-  email: string;
-  professionalRole: string;
-  accountRole: string;
-}
 interface UsersProp {
-  users: {
-    users: User[];
-    totalCount: number;
-  };
+  usersPaginationData: UserPaginationResponse;
 }
 
-export default function UserManagement({ users }: UsersProp) {
+export default function UserManagement({ usersPaginationData }: UsersProp) {
   const t = useTranslations('Admin');
 
   return (
@@ -32,15 +23,7 @@ export default function UserManagement({ users }: UsersProp) {
       <AccordionItem value="item-1">
         <AccordionTrigger>{t('userManagement')}</AccordionTrigger>
         <AccordionContent>
-          <UsersList
-            initialUsers={users.users.map((u) => ({
-              ...u,
-              id: u.userId,
-            }))}
-            totalCount={users.totalCount}
-            initialPage={1}
-            pageSize={10}
-          />
+          <UsersList {...usersPaginationData} initialPage={1} pageSize={10} />
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">

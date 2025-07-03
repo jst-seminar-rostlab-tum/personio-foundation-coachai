@@ -27,9 +27,7 @@
     "reviews": "reviews"
   },
   "search": "Search...",
-  "name": "Name",
   "email": "Email",
-  "role": "Role",
   "actions": "Actions",
   "deleteUser": "Delete user"
 }

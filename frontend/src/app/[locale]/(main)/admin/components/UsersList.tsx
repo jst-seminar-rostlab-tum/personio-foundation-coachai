@@ -5,26 +5,14 @@ import { Search, ChevronDown, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { UserProfileService as ClientUserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/toast';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
+import type { UserProfile as User, UserPaginationResponse } from '@/interfaces/models/UserProfile';
 
-interface User {
-  userId: string;
-  fullName: string;
-  email: string;
-  professionalRole: string;
-  accountRole: string;
-}
-
-interface UsersListProps {
-  initialUsers: User[];
-  totalCount: number;
-  initialPage: number;
-  pageSize: number;
-}
-
+type UsersListProps = UserPaginationResponse;
 export default function UsersList({
   initialUsers,
   totalCount,
@@ -56,9 +44,10 @@ export default function UsersList({
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
+    const { value } = e.target;
+    setSearch(value);
     setPage(1);
-    fetchUsers(1, e.target.value);
+    fetchUsers(1, value);
   };
 
   const handleLoadMore = () => {
@@ -85,59 +74,65 @@ export default function UsersList({
             onChange={handleSearch}
             className="w-full pl-10 pr-3 py-2 border border-bw-20 rounded text-sm text-bw-70 placeholder-bw-40 focus:border-bw-20 focus-visible:outline-none focus-visible:ring-0"
           />
+          {loading && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="h-5 w-16 bg-bw-10 rounded animate-pulse" />
+            </div>
+          )}
         </div>
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm table-fixed">
-          <colgroup>
-            <col style={{ width: '40%' }} />
-            <col style={{ width: '30%' }} />
-            <col style={{ width: '20%' }} />
-            <col style={{ width: '10%' }} />
-          </colgroup>
-          <thead>
-            <tr>
-              <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('name')}</th>
-              <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('email')}</th>
-              <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('role')}</th>
-              <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('actions')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.email} className="border-t border-bw-10">
-                <td className="py-2 px-2 truncate">{user.fullName}</td>
-                <td className="py-2 px-2 truncate">{user.email}</td>
-                <td className="py-2 px-2 truncate">{user.accountRole}</td>
-                <td className="py-2 px-2">
-                  <DeleteUserHandler
-                    id={user.userId}
-                    onSuccess={() =>
-                      setUsers((prev) => prev.filter((u) => u.userId !== user.userId))
-                    }
-                  >
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label={t('deleteUser')}
-                      className="group"
-                    >
-                      <Trash2 className="w-4 h-4 text-bw-40 group-hover:text-flame-50" />
-                    </Button>
-                  </DeleteUserHandler>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {hasMore && (
-        <div className="flex justify-center mt-4">
-          <Button onClick={handleLoadMore} disabled={loading} variant="ghost">
-            {loading ? t('loading') : t('loadMore')}
-            <ChevronDown className="ml-2 w-4 h-4" />
-          </Button>
-        </div>
+      {users.length === 0 && !loading ? (
+        <EmptyListComponent itemType={t('users')} />
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm table-fixed">
+              <colgroup>
+                <col style={{ width: '70%' }} />
+                <col style={{ width: '30%' }} />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('email')}</th>
+                  <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('actions')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.email} className="border-t border-bw-10">
+                    <td className="py-2 px-2 truncate">{user.email}</td>
+                    <td className="py-2 px-2">
+                      <DeleteUserHandler
+                        id={user.userId}
+                        onDeleteSuccess={() => {
+                          setPage(1);
+                          fetchUsers(1, search);
+                        }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={t('deleteUser')}
+                          className="group"
+                        >
+                          <Trash2 className="w-4 h-4 text-bw-40 group-hover:text-flame-50" />
+                        </Button>
+                      </DeleteUserHandler>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {hasMore && (
+            <div className="flex justify-center mt-4">
+              <Button onClick={handleLoadMore} disabled={loading} variant="ghost">
+                {loading ? t('loading') : t('loadMore')}
+                <ChevronDown className="ml-2 w-4 h-4" />
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </>
   );

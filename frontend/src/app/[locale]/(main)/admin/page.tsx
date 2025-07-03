@@ -51,7 +51,7 @@ export default async function AdminPage() {
         </div>
         <TokenSetter dailyTokenLimit={stats.dailyTokenLimit} />
         <Reviews {...reviews} />
-        <UserManagement users={users} />
+        <UserManagement usersPaginationData={users} />
       </div>
     </Suspense>
   );
