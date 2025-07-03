@@ -98,13 +98,13 @@ Alembic has been integrated with our backend models (`/backend/app/models`) and 
 git checkout -b feature/your-feature-name
 ```
 
-##### 2. Start and initialize the local database
+##### 2. Start and initialize supabase
 ```bash
 # Reset the local database
-docker compose down db -v
+docker compose down supabase -v
 
 # Start the database
-docker compose up db -d
+docker compose up supabase -d 
 
 # Update db to latest schema
 uv run alembic upgrade head
@@ -190,25 +190,6 @@ You can skip these steps below if you don't want to use phone number verificatio
    TWILIO_AUTH_TOKEN=your_auth_token
    TWILIO_VERIFY_SERVICE_SID=your_verify_service_sid
    ```
-
-
-## Updating PostgreSQL Password (Local Docker)
-
-If the PostgreSQL password has changed and you need to apply the new password locally, follow these steps:
-
-1. Stop and remove the existing containers and volume:
-
-```bash
-docker-compose down -v
-```
-
-The -v flag ensures the associated volume (which stores PostgreSQL data) is deleted. This is necessary to avoid authentication errors due to the old password.
-
-2. Run a local PostgreSQL instace on Docker:
-
-```bash
-docker compose up db -d
-```
 
 ## Development Tools
 
