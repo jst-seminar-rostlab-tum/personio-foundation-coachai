@@ -136,7 +136,9 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                 onClick={() => handleReviewClick(review.sessionId)}
                 key={review.id}
                 className={`border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start ${
-                  review.sessionId ? 'cursor-pointer' : 'cursor-not-allowed'
+                  review.sessionId && review.allowAdminAccess
+                    ? 'cursor-pointer'
+                    : 'cursor-not-allowed'
                 } transition-all duration-300 hover:shadow-md`}
               >
                 <div className="flex items-center mb-2">
