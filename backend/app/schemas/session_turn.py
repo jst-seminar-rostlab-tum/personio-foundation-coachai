@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from app.models.camel_case import CamelModel
@@ -12,7 +13,6 @@ class SessionTurnCreate(CamelModel):
     start_offset_ms: int
     end_offset_ms: int
     text: str
-    ai_emotion: str
 
 
 # Schema for reading SessionTurn data
@@ -24,5 +24,5 @@ class SessionTurnRead(CamelModel):
     end_offset_ms: int
     text: str
     audio_uri: str
-    ai_emotion: str
+    ai_emotion: Optional[str] = None
     created_at: datetime
