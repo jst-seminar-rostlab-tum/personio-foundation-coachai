@@ -5,12 +5,12 @@ import { Download, Trash2, Server, Lock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
-import {
-  DataProcessingCardProps,
-  DataProcessingTableProps,
-  DataProcessingTopic,
-  PrivacyDialogProps,
-} from '@/interfaces/models/PrivacyDialog';
+import { DataProcessingTopic } from '@/interfaces/models/PrivacyDialog';
+
+interface PrivacyDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
 
 export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps) {
   const t = useTranslations('PrivacyPolicy.PrivacyPolicyDialog');
@@ -19,7 +19,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
 
   const externalServices = t.raw('security.externalServices.services') as string[];
 
-  const DataProcessingCard = ({ item }: DataProcessingCardProps) => (
+  const DataProcessingCard = ({ item }: { item: DataProcessingTopic }) => (
     <div className="border rounded-lg p-4" key={item.key}>
       <div className="font-semibold text-base sm:text-base mb-2">{item.title}</div>
       <div className="text-base sm:text-base text-gray-600 mb-3">{item.description}</div>
@@ -46,7 +46,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
     </div>
   );
 
-  const DataProcessingTable = ({ items }: DataProcessingTableProps) => (
+  const DataProcessingTable = ({ items }: { items: DataProcessingTopic[] }) => (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse" role="table">
         <thead>

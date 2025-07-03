@@ -2,7 +2,7 @@
 
 import { UserConfidenceField } from '@/interfaces/models/UserInputFields';
 import Slider from '@/components/ui/Slider';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cnMerge';
 import { useTranslations } from 'next-intl';
 
 interface UserConfidenceFieldProps {
