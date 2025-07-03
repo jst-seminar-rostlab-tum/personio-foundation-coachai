@@ -72,7 +72,7 @@ def populate_demo_users() -> None:
         user_profiles = get_dummy_user_profiles()
 
         user_profile_ids = [profile.id for profile in user_profiles]
-        statement = select(UserProfile).where(UserProfile.id.in_(user_profile_ids))
+        statement = select(UserProfile).where(col(UserProfile.id).in_(user_profile_ids))
         results = db_session.exec(statement).all()
         for profile in results:
             db_session.delete(profile)
