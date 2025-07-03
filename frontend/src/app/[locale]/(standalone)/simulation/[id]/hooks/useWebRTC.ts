@@ -101,12 +101,12 @@ export function useWebRTC(sessionId: string) {
         switch (parsed.type) {
           case 'conversation.item.created':
             if (parsed.item.role === 'user' && parsed.item.status === 'completed') {
-              addPlaceholderMessage(MessageSender.USER, elapsedTimeMsRef.current);
+              addPlaceholderMessage(MessageSender.USER);
             }
             break;
 
           case 'response.created':
-            addPlaceholderMessage(MessageSender.ASSISTANT, elapsedTimeMsRef.current);
+            addPlaceholderMessage(MessageSender.ASSISTANT);
             break;
 
           case 'conversation.item.input_audio_transcription.delta':

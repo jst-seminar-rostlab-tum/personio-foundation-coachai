@@ -8,11 +8,11 @@ export function useMessageReducer() {
 
   messagesRef.current = messages;
 
-  const addPlaceholderMessage = useCallback((sender: MessageSender, startOffsetMs: number) => {
+  const addPlaceholderMessage = useCallback((sender: MessageSender) => {
     const currentId = nextIdRef.current;
     setMessages((prev: Message[]) => {
       const filtered = prev.filter((msg) => !(msg.text === '' && msg.sender === sender));
-      return [...filtered, { id: currentId, text: '', sender, startOffsetMs }];
+      return [...filtered, { id: currentId, text: '', sender }];
     });
     nextIdRef.current += 1;
   }, []);

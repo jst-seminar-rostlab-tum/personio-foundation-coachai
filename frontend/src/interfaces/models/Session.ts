@@ -48,7 +48,6 @@ export interface Message {
   id: number;
   text: string;
   sender: MessageSender;
-  startOffsetMs: number;
 }
 
 export enum MessageSender {
