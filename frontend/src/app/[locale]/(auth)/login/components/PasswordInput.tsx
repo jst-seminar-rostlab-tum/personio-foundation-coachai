@@ -2,7 +2,7 @@
 
 import { useState, InputHTMLAttributes } from 'react';
 import { EyeIcon, EyeOffIcon, CheckIcon, XIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cnMerge';
 import { useTranslations } from 'next-intl';
 import Input from '@/components/ui/Input';
 

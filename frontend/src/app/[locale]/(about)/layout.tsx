@@ -2,7 +2,6 @@ import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import AboutHeader from '@/components/layout/AboutHeader';
 import AboutFooter from '@/components/layout/AboutFooter';
-
 import type { LayoutProps } from '@/interfaces/props/LayoutProps';
 
 export default async function AboutLayout({ children }: LayoutProps) {
