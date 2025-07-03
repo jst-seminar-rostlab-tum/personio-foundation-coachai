@@ -3,7 +3,7 @@ import os
 from datetime import UTC, datetime
 
 from sqlmodel import Session as DBSession
-from sqlmodel import select
+from sqlmodel import col, select
 
 from app.data import create_mock_users, delete_mock_users, get_dummy_user_profiles
 from app.database import engine
