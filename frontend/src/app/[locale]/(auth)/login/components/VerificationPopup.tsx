@@ -157,7 +157,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-center">{tCommon('codeInputLabel')}</FormLabel>
+                    <FormLabel className="text-center">{tLogin('codeInputLabel')}</FormLabel>
 
                     <div className="flex justify-center gap-2">
                       {[...Array(codeSize)].map((_, idx) => (
