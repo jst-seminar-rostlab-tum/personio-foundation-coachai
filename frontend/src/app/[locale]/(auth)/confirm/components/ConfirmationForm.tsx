@@ -44,8 +44,8 @@ export default function ConfirmationForm() {
     resolver: zodResolver(confirmationFormSchema),
     mode: 'onTouched',
     defaultValues: {
-      email: useSearchParams().get('ConfirmationForm.email') ?? '',
-      code: useSearchParams().get('ConfirmationForm.token') ?? '',
+      email: useSearchParams().get('email') ?? '',
+      code: useSearchParams().get('token') ?? '',
     },
   });
 
@@ -68,7 +68,7 @@ export default function ConfirmationForm() {
       if (verifyError.code) {
         switch (verifyError.code) {
           case 'otp_expired':
-            setError(t('expiredOtpError'));
+            setError(t('ConfirmationForm.expiredOtpError'));
             setShowResendButton(true);
             break;
           default:
