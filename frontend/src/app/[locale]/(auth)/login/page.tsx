@@ -1,4 +1,4 @@
-import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { SignInForm } from '@/app/[locale]/(auth)/login/components/SignInForm';

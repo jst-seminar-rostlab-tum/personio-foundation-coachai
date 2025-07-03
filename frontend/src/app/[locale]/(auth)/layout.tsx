@@ -4,7 +4,7 @@ import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import AboutHeader from '@/components/layout/AboutHeader';
 import AboutFooter from '@/components/layout/AboutFooter';
-import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { LayoutProps } from '@/interfaces/props/LayoutProps';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { Toaster } from '@/components/ui/Sonner';

@@ -1,5 +1,5 @@
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
-import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import { Metadata } from 'next';
 import ConfirmationForm from './components/ConfirmationForm';
 
