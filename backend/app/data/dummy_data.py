@@ -1242,10 +1242,10 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[5].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=83.0,
-            transcript_uri='https://example.com/transcripts/session1.txt',
+            overall_score=3.8,
+            transcript_uri='https://example.com/transcripts/session6.txt',
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1316,10 +1316,10 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[6].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=83.0,
-            transcript_uri='https://example.com/transcripts/session1.txt',
+            overall_score=3.8,
+            transcript_uri='https://example.com/transcripts/session7.txt',
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1385,10 +1385,10 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[7].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=83.0,
-            transcript_uri='https://example.com/transcripts/session1.txt',
+            overall_score=3.8,
+            transcript_uri='https://example.com/transcripts/session8.txt',
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
