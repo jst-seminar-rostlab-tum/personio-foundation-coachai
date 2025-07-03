@@ -16,6 +16,7 @@ export default async function middleware(request: NextRequest) {
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? 'unsafe-eval' : ''};
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data:;
+    frame-src 'self' https://vercel.live;
     font-src 'self';
     object-src 'none';
     base-uri 'self';
