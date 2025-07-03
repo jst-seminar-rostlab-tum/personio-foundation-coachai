@@ -151,7 +151,21 @@ Update `backend/app/data/dummy_data` with your model changes. To see if everythi
 docker compose up init-db -d
 ```
 
-##### 7. Commit and Push your Changes
+##### 7. Merge dev into your feature branch
+If new migration scripts have been added to dev, you will encounter multiple alembic heads. Follow these steps:
+```bash
+# Check for multiple alembic heads. This should return two revision_id.
+uv run alembic heads
+```
+- Update the `down_revision` in your migration script with the `revision_id` of the second alembic head coming from dev
+- Make sure that your migration script and incoming script(s) from dev are compatible
+- Repeat 5. and 6.
+```bash
+# Check for multiple alembic heads again. This should now only return the revision_id of your migration script.
+uv run alembic heads
+```
+
+##### 8. Commit and Push your Changes
 A pre-push hook is executed when committing changes to `backend/app/models`, `backend/alembic/versions` and/or `backend/alembic/data`. Within that hook the docker container `test-migrations` is run which executes `./husky/test-migrations.sh` against a separate database with the name `test_migrations`.
 
 ##### Important Rule
