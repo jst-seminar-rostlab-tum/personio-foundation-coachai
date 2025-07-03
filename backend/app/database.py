@@ -19,7 +19,7 @@ else:
     ssl_cert_path = None
 
 
-if not settings.database_url:
+if settings.database_url:
     if settings.stage == 'prod' and ssl_cert_path:
         SQLALCHEMY_DATABASE_URL = f'{settings.database_url}?sslrootcert={ssl_cert_path}'
     else:
