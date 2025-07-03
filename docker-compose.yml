@@ -22,13 +22,6 @@ services:
       dockerfile: Dockerfile
       args:
         stage: dev
-    command: >
-      sh -c "
-        until pg_isready -h host.docker.internal -p 54322 -U postgres; do
-          echo '⏳ waiting for database…'; sleep 2;
-        done;
-        uv run fastapi dev --host 0.0.0.0 --port 8000 --reload
-      "
     volumes:
       - ./backend:/app
       - /app/.venv
@@ -36,6 +29,7 @@ services:
       - "8000:8000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    command: uv run fastapi dev --host 0.0.0.0 --port 8000 --reload
     environment:
       STAGE: dev
       DEV_MODE_SKIP_AUTH: ${DEV_MODE_SKIP_AUTH:-True}
