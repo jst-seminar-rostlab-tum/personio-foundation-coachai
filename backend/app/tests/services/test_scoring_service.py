@@ -5,6 +5,8 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
+from pydantic import ValidationError
+
 from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
 from app.models.language import LanguageCode
 from app.models.session_turn import SpeakerEnum
@@ -112,6 +114,14 @@ class TestScoringService(unittest.TestCase):
         self.assertIn('## Clarity', md)
         self.assertIn('## Common Levels', md)
         self.assertIn('- **Score 0**: Complete failure to demonstrate the skill.', md)
+
+    def test_metric_score_out_of_range(self) -> None:
+        with self.assertRaises(ValidationError):
+            MetricScore(metric='structure', score=0, justification='Too low')
+        with self.assertRaises(ValidationError):
+            MetricScore(metric='structure', score=6, justification='Too high')
+        with self.assertRaises(ValidationError):
+            MetricScore(metric='structure', score=3.5, justification='Not int')
 
 
 if __name__ == '__main__':

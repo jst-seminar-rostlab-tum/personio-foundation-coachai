@@ -478,7 +478,7 @@ class SessionService:
             summary=summary,
             status=sess.status,
             date=sess.ended_at,
-            score=feedback.overall_score if feedback else -1,
+            overall_score=feedback.overall_score if feedback else -1,
             skills=scores,
             allow_admin_access=sess.allow_admin_access,
         )
