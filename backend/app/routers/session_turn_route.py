@@ -32,7 +32,6 @@ async def create_session_turn(
     start_offset_ms: int = Form(...),  # noqa: B008
     end_offset_ms: int = Form(...),  # noqa: B008
     text: str = Form(...),  # noqa: B008
-    ai_emotion: str = Form(...),  # noqa: B008
     audio_file: UploadFile = File(...),  # noqa: B008
 ) -> SessionTurnRead:
     # manually create SessionTurnCreate
@@ -42,7 +41,6 @@ async def create_session_turn(
         start_offset_ms=start_offset_ms,
         end_offset_ms=end_offset_ms,
         text=text,
-        ai_emotion=ai_emotion,
     )
 
     return await service.create_session_turn(turn, audio_file)
