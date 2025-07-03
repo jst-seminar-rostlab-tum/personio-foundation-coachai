@@ -2,7 +2,6 @@ import json
 import os
 from datetime import UTC, datetime
 
-from sqlalchemy.dialects.postgresql import insert
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
@@ -91,12 +90,11 @@ def populate_static_categories() -> None:
     """
     with DBSession(engine) as session:
         for cat in STATIC_CATEGORIES:
-            stmt = (
-                insert(ConversationCategory)
-                .values(**cat.model_dump())
-                .on_conflict_do_nothing(index_elements=['name'])
-            )
-            session.execute(stmt)
+            existing = session.exec(
+                select(ConversationCategory).where(ConversationCategory.name == cat.name)
+            ).first()
+            if not existing:
+                session.add(cat)
         session.commit()
 
 
@@ -104,12 +102,6 @@ def populate_static_personas() -> None:
     """
     Populate the database with static personas.
     """
-    # with DBSession(engine) as session:
-    #     for persona in STATIC_PERSONAS:
-    #         stmt = insert(Persona).values(**persona.model_dump())
-    #           .on_conflict_do_nothing(index_elements=['id'])
-    #         session.execute(stmt)
-    #     session.commit()
     pass
 
 
