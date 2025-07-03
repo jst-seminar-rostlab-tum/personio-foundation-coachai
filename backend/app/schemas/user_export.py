@@ -85,7 +85,7 @@ class ExportSessionFeedback(BaseModel):
     session_id: str
     scores: dict[str, Any]
     tone_analysis: dict[str, Any]
-    overall_score: int
+    overall_score: float
     transcript_uri: str
     speak_time_percent: float
     questions_asked: int
