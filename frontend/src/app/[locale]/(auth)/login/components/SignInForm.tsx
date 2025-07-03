@@ -91,6 +91,7 @@ export function SignInForm() {
                       className="w-full"
                       type="email"
                       disabled={isLoading}
+                      autoComplete="section-login username"
                     />
                   </FormControl>
                   <FormMessage />
@@ -110,6 +111,7 @@ export function SignInForm() {
                       {...field}
                       disabled={isLoading}
                       requirements={[]}
+                      autocomplete="section-login current-password"
                     />
                   </FormControl>
                   <FormMessage />

@@ -3,6 +3,14 @@ import Image from 'next/image';
 import { MessageSquare, Video, BrainCircuit, TrendingUp, Award, Target } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getTranslations } from 'next-intl/server';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
+import { MetadataProps } from '@/interfaces/props/MetadataProps';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '', false);
+}
 
 export default async function AboutPage() {
   const t = await getTranslations('HomePage');

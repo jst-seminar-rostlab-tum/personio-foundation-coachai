@@ -12,10 +12,11 @@ export default async function middleware(request: NextRequest) {
 
   const cspHeader = `
     default-src 'self';
-    connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL} ${process.env.NEXT_PUBLIC_API_URL};
+    connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL} ${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'};
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? 'unsafe-eval' : ''};
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data:;
+    frame-src 'self' https://vercel.live;
     font-src 'self';
     object-src 'none';
     base-uri 'self';
