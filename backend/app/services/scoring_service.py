@@ -3,6 +3,9 @@ import json
 from pathlib import Path
 from typing import Any, Optional
 
+from pydantic import ValidationError
+from tenacity import retry, stop_after_attempt, wait_fixed
+
 from app.connections.openai_client import call_structured_llm
 from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
 from app.schemas.scoring_schema import ScoringResult
@@ -55,6 +58,12 @@ class ScoringService:
         )
         return prompt
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_fixed(0),
+        retry=(lambda retry_state: isinstance(retry_state.outcome.exception(), ValidationError)),
+        reraise=True,
+    )
     def score_conversation(
         self,
         conversation: ConversationScenarioWithTranscript,
@@ -75,10 +84,10 @@ class ScoringService:
         # Recalculate the overall score based on the rubric
         scores = {s.metric.lower(): s.score for s in response.scoring.scores}
         overall = (
-            scores.get('structure', 0)
-            + scores.get('empathy', 0)
-            + scores.get('focus', 0)
-            + scores.get('clarity', 0)
+            scores.get('structure')  # should never be None
+            + scores.get('empathy')
+            + scores.get('focus')
+            + scores.get('clarity')
         ) / 4
         response.scoring.overall_score = overall
 
