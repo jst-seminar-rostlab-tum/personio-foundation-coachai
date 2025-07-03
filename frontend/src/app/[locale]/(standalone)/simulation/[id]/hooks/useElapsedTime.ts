@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 export function useElapsedTime() {
   const [elapsedTimeS, setElapsedTimeS] = useState(0);
   const elapsedTimeMsRef = useRef(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimestampRef = useRef<number | null>(null);
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (intervalRef.current) return;
 
     startTimestampRef.current = performance.now();
@@ -19,18 +19,14 @@ export function useElapsedTime() {
       elapsedTimeMsRef.current = Math.floor(elapsedMs);
       setElapsedTimeS(Math.floor(elapsedMs / 1000));
     }, 100);
-  };
+  }, []);
 
-  const stopTimer = () => {
+  const stopTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
     startTimestampRef.current = null;
-  };
-
-  useEffect(() => {
-    return () => stopTimer();
   }, []);
 
   return {

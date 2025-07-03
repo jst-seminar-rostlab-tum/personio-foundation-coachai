@@ -1,6 +1,6 @@
 import { CreateSessionTurnRequest } from '@/interfaces/models/Session';
 import { sessionService } from '@/services/SessionService';
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/utils/toast';
 
@@ -10,41 +10,18 @@ export function useSessionTurns() {
   const sessionTurnsMap = useRef<Map<string, PartialSessionTurn>>(new Map());
   const [audioUrls, setAudioUrls] = useState<{ url: string; filename: string }[]>([]);
 
-  const addAudioToTurn = (turnId: string, audioFile: Blob) => {
-    const existing = sessionTurnsMap.current.get(turnId) || {};
-    sessionTurnsMap.current.set(turnId, {
-      ...existing,
-      audioFile,
-    });
+  const convertSessionTurnToFormData = useCallback((turn: CreateSessionTurnRequest): FormData => {
+    const formData = new FormData();
+    formData.append('session_id', turn.sessionId);
+    formData.append('speaker', turn.speaker);
+    formData.append('text', turn.text);
+    formData.append('start_offset_ms', String(turn.startOffsetMs));
+    formData.append('end_offset_ms', String(turn.endOffsetMs));
+    formData.append('audio_file', turn.audioFile);
+    return formData;
+  }, []);
 
-    const url = URL.createObjectURL(audioFile);
-    setAudioUrls((prev) => [...prev, { url, filename: turnId }]);
-
-    postSessionTurn(turnId);
-  };
-
-  const addMetadataToTurn = (
-    turnId: string,
-    metadata: Omit<CreateSessionTurnRequest, 'audioFile' | 'startOffsetMs'>
-  ) => {
-    const existing = sessionTurnsMap.current.get(turnId) || {};
-    sessionTurnsMap.current.set(turnId, {
-      ...existing,
-      ...metadata,
-    });
-
-    postSessionTurn(turnId);
-  };
-
-  const addStartOffsetMsToTurn = (turnId: string, startOffsetMs: number) => {
-    const existing = sessionTurnsMap.current.get(turnId) || {};
-    sessionTurnsMap.current.set(turnId, {
-      ...existing,
-      startOffsetMs,
-    });
-  };
-
-  const isTurnComplete = (turnId: string) => {
+  const isTurnComplete = useCallback((turnId: string) => {
     const turn = sessionTurnsMap.current.get(turnId);
     if (!turn) return false;
     return !!(
@@ -52,42 +29,90 @@ export function useSessionTurns() {
       turn.speaker &&
       turn.text &&
       turn.startOffsetMs !== undefined &&
+      turn.endOffsetMs !== undefined &&
       turn.sessionId
     );
-  };
+  }, []);
 
-  const removeTurn = (turnId: string) => {
+  const removeTurn = useCallback((turnId: string) => {
     sessionTurnsMap.current.delete(turnId);
-  };
+  }, []);
 
-  function sessionTurnToFormData(turn: CreateSessionTurnRequest): FormData {
-    const formData = new FormData();
-    formData.append('session_id', turn.sessionId);
-    formData.append('speaker', turn.speaker);
-    formData.append('text', turn.text);
-    formData.append('start_offset_ms', String(turn.startOffsetMs));
-    formData.append('audio_file', turn.audioFile);
-    return formData;
-  }
+  const postSessionTurn = useCallback(
+    async (turnId: string) => {
+      if (!isTurnComplete(turnId)) return;
 
-  const postSessionTurn = async (turnId: string) => {
-    if (!isTurnComplete(turnId)) return;
+      const turn = sessionTurnsMap.current.get(turnId) as CreateSessionTurnRequest;
 
-    const turn = sessionTurnsMap.current.get(turnId) as CreateSessionTurnRequest;
+      try {
+        const formData = convertSessionTurnToFormData(turn);
+        await sessionService.createSessionTurn(api, formData);
+        removeTurn(turnId);
+      } catch (error) {
+        showErrorToast(error, 'Failed to post session turn');
+      }
+    },
+    [isTurnComplete, convertSessionTurnToFormData, removeTurn]
+  );
 
-    try {
-      const formData = sessionTurnToFormData(turn);
-      await sessionService.createSessionTurn(api, formData);
-      removeTurn(turnId);
-    } catch (error) {
-      showErrorToast(error, 'Failed to post session turn');
-    }
-  };
+  const addAudioToTurn = useCallback(
+    (turnId: string, audioFile: Blob) => {
+      const existing = sessionTurnsMap.current.get(turnId) || {};
+      sessionTurnsMap.current.set(turnId, {
+        ...existing,
+        audioFile,
+      });
+
+      const url = URL.createObjectURL(audioFile);
+      setAudioUrls((prev) => [...prev, { url, filename: turnId }]);
+
+      postSessionTurn(turnId);
+    },
+    [postSessionTurn]
+  );
+
+  const addMetadataToTurn = useCallback(
+    (
+      turnId: string,
+      metadata: Omit<CreateSessionTurnRequest, 'audioFile' | 'startOffsetMs' | 'endOffsetMs'>
+    ) => {
+      const existing = sessionTurnsMap.current.get(turnId) || {};
+      sessionTurnsMap.current.set(turnId, {
+        ...existing,
+        ...metadata,
+      });
+
+      postSessionTurn(turnId);
+    },
+    [postSessionTurn]
+  );
+
+  const addStartOffsetMsToTurn = useCallback((turnId: string, startOffsetMs: number) => {
+    const existing = sessionTurnsMap.current.get(turnId) || {};
+    sessionTurnsMap.current.set(turnId, {
+      ...existing,
+      startOffsetMs,
+    });
+  }, []);
+
+  const addEndOffsetMsToTurn = useCallback(
+    (turnId: string, endOffsetMs: number) => {
+      const existing = sessionTurnsMap.current.get(turnId) || {};
+      sessionTurnsMap.current.set(turnId, {
+        ...existing,
+        endOffsetMs,
+      });
+
+      postSessionTurn(turnId);
+    },
+    [postSessionTurn]
+  );
 
   return {
     addAudioToTurn,
     addMetadataToTurn,
     addStartOffsetMsToTurn,
+    addEndOffsetMsToTurn,
     audioUrls,
   };
 }

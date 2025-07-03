@@ -2,38 +2,49 @@
 
 import { useEffect } from 'react';
 import { useWebRTC } from '@/app/[locale]/(standalone)/simulation/[id]/hooks/useWebRTC';
+import { showErrorToast } from '@/lib/utils/toast';
+import { useTranslations } from 'next-intl';
+import { sessionService } from '@/services/SessionService';
+import { api } from '@/services/ApiClient';
+import { SessionStatus } from '@/interfaces/models/Session';
+import { useRouter } from 'next/navigation';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages from './SimulationMessages';
 
 export default function SimulationPageComponent({ sessionId }: { sessionId: string }) {
+  const t = useTranslations('Simulation');
+  const router = useRouter();
   const {
     isMicActive,
-    setIsMicActive,
     isConnected,
-    isDataChannelReady,
     initWebRTC,
-    cleanup,
-    disconnect,
     remoteAudioRef,
-    localStreamRef,
     messages,
     elapsedTimeS,
     audioUrls,
+    toggleMic,
+    cleanup,
   } = useWebRTC(sessionId);
 
   useEffect(() => {
     initWebRTC();
-    return () => cleanup();
-  }, [cleanup, initWebRTC]);
+    return () => {
+      cleanup();
+    };
+  }, [initWebRTC, sessionId, cleanup]);
 
-  const toggleMic = () => {
-    localStreamRef.current?.getAudioTracks().forEach((track: MediaStreamTrack) => {
-      // eslint-disable-next-line no-param-reassign
-      track.enabled = !isMicActive;
-    });
-    setIsMicActive(!isMicActive);
+  const onDisconnect = async () => {
+    try {
+      cleanup();
+      const { data } = await sessionService.updateSession(api, sessionId, {
+        status: SessionStatus.COMPLETED,
+      });
+      router.push(`/feedback/${data.id}`);
+    } catch (err) {
+      showErrorToast(err, t('sessionEndError'));
+    }
   };
 
   return (
@@ -51,8 +62,8 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
       <SimulationFooter
         isMicActive={isMicActive}
         toggleMicrophone={toggleMic}
-        isConnected={isConnected && isDataChannelReady}
-        onDisconnect={disconnect}
+        isConnected={isConnected}
+        onDisconnect={onDisconnect}
       />
       <audio ref={remoteAudioRef} autoPlay playsInline />
       {audioUrls.map(({ url, filename }) => (
