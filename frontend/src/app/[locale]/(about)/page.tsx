@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { MessageSquare, Video, BrainCircuit, TrendingUp, Award, Target } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getTranslations } from 'next-intl/server';
-import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import type { Metadata } from 'next';
 
