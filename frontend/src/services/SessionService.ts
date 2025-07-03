@@ -1,4 +1,4 @@
-import { CreateSessionTurnRequest, Session } from '@/interfaces/models/Session';
+import { Session } from '@/interfaces/models/Session';
 import { AxiosInstance } from 'axios';
 
 const getPaginatedSessions = async (api: AxiosInstance, page: number, pageSize: number) => {

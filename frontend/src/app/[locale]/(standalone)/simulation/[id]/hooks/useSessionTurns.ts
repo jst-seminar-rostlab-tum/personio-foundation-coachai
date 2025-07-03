@@ -2,7 +2,7 @@ import { CreateSessionTurnRequest } from '@/interfaces/models/Session';
 import { sessionService } from '@/services/SessionService';
 import { useRef, useState } from 'react';
 import { api } from '@/services/ApiClient';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 
 type PartialSessionTurn = Partial<CreateSessionTurnRequest>;
 

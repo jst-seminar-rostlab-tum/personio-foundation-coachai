@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { sessionService } from '@/services/SessionService';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import { MessageSender } from '@/interfaces/models/Session';
 import { api } from '@/services/ApiClient';
 import { useMessageReducer } from './useMessageReducer';
