@@ -94,11 +94,6 @@ export async function generateMetadata(
         t('metaDescription') || 'AI-powered coaching platform for leadership development',
       site: '@personio',
     },
-    viewport: {
-      width: 'device-width',
-      initialScale: 1,
-      maximumScale: 1,
-    },
   };
 
   if (isAuthenticated) {
