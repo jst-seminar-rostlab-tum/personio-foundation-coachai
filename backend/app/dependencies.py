@@ -38,10 +38,10 @@ def verify_jwt(
     """
     Checks the validity of the JWT token and retrieves its information.
     """
+    # if settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH:
+    #   logging.info('Skipping JWT verification')
+    #   return JWTPayload(sub=str(settings.DEV_MODE_MOCK_USER_ID))
     logging.info('Verifying JWT')
-    if settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH:
-        logging.info('Skipping JWT verification')
-        return {'sub': str(settings.DEV_MODE_MOCK_USER_ID)}
     if not credentials:
         logging.info('No JWT token')
         raise HTTPException(
