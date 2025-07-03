@@ -38,9 +38,7 @@ export default async function RootLayout({ children, params }: LayoutProps) {
         />
         <NextIntlClientProvider>
           <AboutHeader />
-          <main className="mx-auto py-12 px-[clamp(1.25rem,4vw,4rem)] max-w-7xl mt-16">
-            {children}
-          </main>
+          <main className="mx-auto py-8 px-[clamp(1.25rem,4vw,4rem)] max-w-7xl">{children}</main>
           <AboutFooter />
         </NextIntlClientProvider>
       </body>

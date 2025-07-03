@@ -7,7 +7,8 @@ export default async function AboutFooter() {
 
   return (
     <footer>
-      <div className="py-4 md:pt-8 mx-auto px-[clamp(1.25rem,4vw,4rem)] max-w-7xl border-t border-marigold-90">
+      <div className="py-4 md:pt-8 mx-auto px-[clamp(1.25rem,4vw,4rem)] max-w-7xl">
+        <div className="border-t border-bw-20 py-4" />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-2">

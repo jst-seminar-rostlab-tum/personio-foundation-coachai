@@ -163,7 +163,7 @@ export default function Settings({ userProfile }: SettingsProps) {
 
   return (
     <div>
-      <div className="flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-8">
         <h1 className="text-2xl">{tCommon('settings')}</h1>
 
         <div className="space-y-4 flex items-center rounded-t-lg">
