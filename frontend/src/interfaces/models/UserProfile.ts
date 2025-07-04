@@ -10,7 +10,10 @@ export interface UserProfile {
   confidenceScores?: ConfidenceScore[];
 }
 
-export type UserProfileUpdate = Omit<UserProfile, 'email' | 'phoneNumber' | 'accountRole'>;
+export type UserProfileUpdate = Omit<
+  UserProfile,
+  'userId' | 'email' | 'phoneNumber' | 'accountRole'
+>;
 
 export interface ConfidenceScore {
   confidenceArea: string;

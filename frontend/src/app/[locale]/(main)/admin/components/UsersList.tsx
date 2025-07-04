@@ -12,13 +12,13 @@ import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import type { UserProfile as User, UserPaginationResponse } from '@/interfaces/models/UserProfile';
 import { showErrorToast } from '@/lib/utils/toast';
 
-type UsersListProps = UserPaginationResponse;
-export default function UsersList({ users, totalUsers, page, limit }: UsersListProps) {
+export default function UsersList({ users, totalUsers, page, limit }: UserPaginationResponse) {
   const [userList, setUserList] = useState<User[]>(users);
   const [currentPage, setCurrentPage] = useState(page);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [hasMore, setHasMore] = useState(userList.length < totalUsers);
+  const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
 
   const fetchUsers = async (pageNum: number, searchStr: string) => {
@@ -65,7 +65,7 @@ export default function UsersList({ users, totalUsers, page, limit }: UsersListP
           </span>
           <Input
             type="text"
-            placeholder={tCommon('search')}
+            placeholder={t('search')}
             value={search}
             onChange={handleSearch}
             className="w-full pl-10 pr-3 py-2 border border-bw-20 rounded text-sm text-bw-70 placeholder-bw-40 focus:border-bw-20 focus-visible:outline-none focus-visible:ring-0"
@@ -89,12 +89,8 @@ export default function UsersList({ users, totalUsers, page, limit }: UsersListP
               </colgroup>
               <thead>
                 <tr>
-                  <th className="text-left font-semibold text-bw-70 py-2 px-2">
-                    {tCommon('email')}
-                  </th>
-                  <th className="text-left font-semibold text-bw-70 py-2 px-2">
-                    {tCommon('actions')}
-                  </th>
+                  <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('email')}</th>
+                  <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -112,7 +108,7 @@ export default function UsersList({ users, totalUsers, page, limit }: UsersListP
                         <Button
                           variant="ghost"
                           size="icon"
-                          aria-label={tCommon('deleteUser')}
+                          aria-label={t('deleteUser')}
                           className="group"
                         >
                           <Trash2 className="w-4 h-4 text-bw-40 group-hover:text-flame-50" />
