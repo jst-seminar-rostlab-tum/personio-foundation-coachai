@@ -3,16 +3,31 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
-import { ConversationScenarioPreparation } from '@/interfaces/ConversationScenario';
-import { showErrorToast } from '@/lib/toast';
-import ResourcesSection from '@/components/common/ResourcesSection';
+import { api } from '@/services/ApiClient';
+import { showErrorToast } from '@/lib/utils/toast';
+import { ConversationScenarioPreparation } from '@/interfaces/models/ConversationScenario';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
+import ResourcesList from '../../../../../../components/common/ResourcesList';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
 
+const dummyResources = [
+  {
+    name: 'Giving Feedback (CC BY-NC 4.0)',
+    author: 'Personio Foundation',
+    fileUrl: '/resources/giving-feedback.pdf',
+  },
+  {
+    name: 'Effective Communication',
+    author: 'Jane Doe',
+    fileUrl: '/resources/effective-communication.pdf',
+  },
+];
+
 export default function PreparationContent() {
   const t = useTranslations('Preparation');
+  const tCommon = useTranslations('Common');
   const [preparationData, setPreparationData] = useState<ConversationScenarioPreparation | null>(
     null
   );
@@ -23,7 +38,7 @@ export default function PreparationContent() {
   const getTrainingPreparation = useCallback(
     async (id: string) => {
       try {
-        const response = await conversationScenarioService.getPreparation(id);
+        const response = await conversationScenarioService.getPreparation(api, id);
 
         if (response.status === 202) {
           setTimeout(() => {
@@ -75,14 +90,14 @@ export default function PreparationContent() {
         {/* Objectives */}
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl">{t('objectives.title')}</h2>
+            <h2 className="text-xl">{t('objectives')}</h2>
           </div>
           {preparationData && <ObjectivesList objectives={preparationData.objectives} />}
         </section>
         {/* Preparation Checklist */}
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl">{t('preparation.title')}</h2>
+            <h2 className="text-xl">{t('preparation')}</h2>
           </div>
           {preparationData && <PreparationChecklist checklist={preparationData.prepChecklist} />}
         </section>
@@ -90,12 +105,18 @@ export default function PreparationContent() {
       {/* Key Concepts */}
       <section className="flex flex-col gap-8 w-full border border-bw-20 rounded-lg p-8">
         <div className="flex items-center gap-2">
-          <h2 className="text-xl">{t('keyConcepts.title')}</h2>
+          <h2 className="text-xl">{t('keyConcepts')}</h2>
         </div>
         {preparationData && <PreparationKeyConcepts keyConcepts={preparationData.keyConcepts} />}
       </section>
-      {/* Resources */}
-      <ResourcesSection />
+
+      <section className="flex flex-col gap-4 mt-8 w-full">
+        <div>
+          <h2 className="text-xl">{tCommon('resources.title')}</h2>
+          <p className="text-base text-bw-40">{tCommon('resources.subtitle')}</p>
+        </div>
+        <ResourcesList resources={dummyResources} />
+      </section>
     </>
   );
 }

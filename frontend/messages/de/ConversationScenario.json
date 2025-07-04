@@ -1,7 +1,7 @@
 {
   "metaTitle": "Neues Training - Coach AI",
   "metaDescription": "Starten Sie eine neue Trainingssitzung mit persönlichem Coaching",
-  "title": "Neue Trainingssession",
+  "title": "Neue Trainingssitzung",
   "steps": {
     "category": "Kategorie",
     "situation": "Situation",
@@ -9,97 +9,69 @@
   },
   "category": {
     "title": "Wählen Sie eine Gesprächskategorie *",
-    "options": {
-      "feedback": "Feedback geben",
-      "conflict": "Konfliktlösung",
-      "performance": "Leistungsbeurteilung",
-      "salary": "Gehaltsgespräch",
-      "custom": "Individuell"
-    },
-    "customPlaceholder": "Z. B. Beförderungsdiskussion, Onboarding neuer Teammitglieder ...",
-    "customInput": "Definieren Sie Ihren eigenen Gesprächsgegenstand *"
+    "customPlaceholder": "z.B. Beförderungsgespräch, Einarbeitung neuer Kollegen ...",
+    "customInput": "Definieren Sie Ihr eigenes Gesprächsthema *"
   },
   "situation": {
     "title": "Beschreiben Sie Ihre Situation",
     "otherParty": {
       "title": "Wer ist der Gesprächspartner? *",
-      "placeholder": "Name eingeben"
+      "placeholder": "Namen eingeben"
     },
     "context": {
       "title": "Was ist der Kontext? *",
-      "placeholder": "Bitte beschreiben Sie hier den Kontext des Gesprächs."
+      "placeholder": "Beschreiben Sie hier den Gesprächskontext."
     },
     "goal": {
       "title": "Was ist Ihr Ziel? *",
-      "placeholder": "Welches Ergebnis möchten Sie erreichen?"
+      "placeholder": "Welches Ergebnis möchten Sie erzielen?"
     }
   },
   "customize": {
     "title": "Passen Sie Ihr Training an",
     "difficulty": {
-      "title": "Schwierigkeitsgrad *",
-      "options": {
-        "easy": "Einfach",
-        "medium": "Mittel",
-        "hard": "Schwer"
-      }
+      "title": "Schwierigkeitsgrad *"
     },
     "emotionalTone": {
-      "title": "Emotionaler Ton *",
-      "options": {
-        "positive": "Positiv",
-        "neutral": "Neutral",
-        "negative": "Negativ"
-      }
+      "title": "Emotionaler Ton *"
     },
     "complexity": {
-      "title": "Antwortkomplexität *",
-      "options": {
-        "simple": "Einfach",
-        "medium": "Mittel",
-        "complex": "Komplex"
-      }
+      "title": "Antwortkomplexität *"
     }
   },
-  "categories": [
-    {
-      "id": "giving_feedback",
+  "categories": {
+    "givingFeedback": {
       "name": "Feedback geben",
-      "iconUri": "/icons/category-giving_feedback.svg",
       "defaultContext": "Einzelgespräch mit einem Teammitglied.",
       "defaultGoal": "Konstruktives Feedback effektiv geben.",
       "defaultOtherParty": "Teammitglied"
     },
-    {
-      "id": "performance_reviews",
+    "performanceReviews": {
       "name": "Leistungsbeurteilungen",
-      "iconUri": "/icons/category-performance_reviews.svg",
       "defaultContext": "Formelles Gespräch zur Leistungsbeurteilung.",
-      "defaultGoal": "Leistung von Mitarbeitenden evaluieren und besprechen.",
+      "defaultGoal": "Leistung von Mitarbeitern evaluieren und besprechen.",
       "defaultOtherParty": "Mitarbeiter/in"
     },
-    {
-      "id": "conflict_resolution",
+    "conflictResolution": {
       "name": "Konfliktlösung",
-      "iconUri": "/icons/category-conflict_resolution.svg",
       "defaultContext": "Konfliktlösungsgespräch zwischen Teammitgliedern.",
       "defaultGoal": "Konflikte lösen und Teamdynamik verbessern.",
       "defaultOtherParty": "Teammitglieder"
     },
-    {
-      "id": "salary_discussions",
+    "salaryDiscussions": {
       "name": "Gehaltsgespräche",
-      "iconUri": "/icons/category-salary_discussions.svg",
-      "defaultContext": "Verhandlungsgespräch über das Gehalt.",
-      "defaultGoal": "Eine für beide Seiten vorteilhafte Einigung zum Gehalt erzielen.",
+      "defaultContext": "Gehaltsverhandlungsgespräch.",
+      "defaultGoal": "Eine für beide Seiten vorteilhafte Gehaltsvereinbarung treffen.",
       "defaultOtherParty": "Arbeitgeber"
     }
-  ],
-  "navigation": {
-    "back": "Zurück",
-    "next": "Weiter",
-    "create": "Training erstellen",
-    "creating": "Wird erstellt..."
   },
-  "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später erneut."
+  "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später noch einmal.",
+  "easy": "Einfach",
+  "medium": "Mittel",
+  "hard": "Schwer",
+  "simple": "Einfach",
+  "complex": "Komplex",
+  "neutral": "Neutral",
+  "creating": "Wird erstellt...",
+  "create": "Erstellen"
 }

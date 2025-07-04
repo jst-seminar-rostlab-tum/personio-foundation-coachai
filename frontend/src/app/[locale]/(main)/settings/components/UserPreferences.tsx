@@ -1,5 +1,5 @@
-import { UserPreference } from '@/interfaces/UserInputFields';
-import { cn } from '@/lib/utils';
+import { UserPreference } from '@/interfaces/models/UserInputFields';
+import { cn } from '@/lib/utils/cnMerge';
 import {
   Select,
   SelectContent,

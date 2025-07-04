@@ -6,20 +6,15 @@
     "title": "Giving Constructive Feedback",
     "description": "You need to talk to Sarah, a team member who has missed several deadlines recently, affecting morale and timelines. Your goal is to address it constructively while keeping a positive relationship."
   },
-  "objectives": {
-    "title": "Objectives"
-  },
-  "preparation": {
-    "title": "Preparation Checklist"
-  },
-  "keyConcepts": {
-    "title": "Key Concepts"
-  },
   "navigation": {
     "back": "Go Back",
     "start": "Start Training",
     "starting": "Starting..."
   },
+  "objectives": "Objectives",
+  "preparation": "Preparation Checklist",
+  "resources": "Resources",
+  "keyConcepts": "Key Concepts",
   "loadingText": "Preparing Objectives and Checklist...",
   "sessionCreationError": "Error creating training session. Please try again later.",
   "getPreparationError": "Error fetching preparation data. Please try again later."

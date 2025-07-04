@@ -1,0 +1,116 @@
+{
+  "scenario": {
+    "id": "11111111-1111-1111-1111-111111111120",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "category_id": "feedback",
+    "custom_category_label": null,
+    "language_code": "en",
+    "persona": "",
+    "situational_facts": "",
+    "difficulty_level": "medium",
+    "status": "ready",
+    "created_at": "2024-06-28T10:00:00Z",
+    "updated_at": "2024-06-28T10:00:00Z"
+  },
+  "transcript": [
+    {
+      "id": "a24d4179-5ab9-45ee-87ae-832fea59033d",
+      "session_id": "316a4b27-baa8-40cf-af39-0cb95024c3d5",
+      "speaker": "user",
+      "start_offset_ms": 0,
+      "end_offset_ms": 2000,
+      "text": "Sam, about the project, emails, syncs, requirements, team lost time, you know?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:01Z"
+    },
+    {
+      "id": "8af7898b-9dbd-403e-aa94-afcfa2b2db25",
+      "session_id": "316a4b27-baa8-40cf-af39-0cb95024c3d5",
+      "speaker": "assistant",
+      "start_offset_ms": 2000,
+      "end_offset_ms": 4000,
+      "text": "Hi. Thanks for asking. Overall, I think it's going okay, but I admit I've felt a bit overwhelmed lately and I might have let some things slip.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:03Z"
+    },
+    {
+      "id": "1f7e54cc-1603-4690-bbca-ffbc9383f745",
+      "session_id": "316a4b27-baa8-40cf-af39-0cb95024c3d5",
+      "speaker": "user",
+      "start_offset_ms": 4000,
+      "end_offset_ms": 6000,
+      "text": "Designers, old spec, busy, appreciate, but next time, reminders, support, responsibility.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:05Z"
+    },
+    {
+      "id": "842f22f2-796e-43e2-8f4b-bd639cab0601",
+      "session_id": "316a4b27-baa8-40cf-af39-0cb95024c3d5",
+      "speaker": "assistant",
+      "start_offset_ms": 6000,
+      "end_offset_ms": 8000,
+      "text": "You're right. I sincerely apologize for that. I was trying to manage another urgent deadline and also had a family matter come up, but I should have communicated that to you proactively. It's my responsibility, and I'm sorry for the impact it had on the team.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:07Z"
+    },
+    {
+      "id": "42e4abd3-59a7-4e03-ad8e-aaf363581552",
+      "session_id": "316a4b27-baa8-40cf-af39-0cb95024c3d5",
+      "speaker": "user",
+      "start_offset_ms": 8000,
+      "end_offset_ms": 10000,
+      "text": "Check in, plan, thanks, improvements, Sam.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:09Z"
+    },
+    {
+      "id": "9557fc2c-7b05-4ab4-bb74-61aecf48a618",
+      "session_id": "316a4b27-baa8-40cf-af39-0cb95024c3d5",
+      "speaker": "assistant",
+      "start_offset_ms": 10000,
+      "end_offset_ms": 12000,
+      "text": "I completely understand. Seeing it from that perspective, I realize the downstream effects were more significant than I thought. I'm committed to making sure this doesn't happen again.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:11Z"
+    },
+    {
+      "id": "e553bd7e-e3e8-4312-8229-9217a3cb8ace",
+      "session_id": "316a4b27-baa8-40cf-af39-0cb95024c3d5",
+      "speaker": "user",
+      "start_offset_ms": 12000,
+      "end_offset_ms": 14000,
+      "text": "Responsibilities, calendar, emails, received, solve, ok.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:13Z"
+    },
+    {
+      "id": "88e53872-2431-432b-bb2c-2236eae6aba2",
+      "session_id": "316a4b27-baa8-40cf-af39-0cb95024c3d5",
+      "speaker": "assistant",
+      "start_offset_ms": 14000,
+      "end_offset_ms": 16000,
+      "text": "Thank you for that. It's on me to manage my responsibilities. I will block out the syncs in my calendar as non-negotiable and will make a point to acknowledge all critical emails within a few hours, even if it's just to say 'received'. That should solve the issue.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:15Z"
+    },
+    {
+      "id": "47508207-1c07-4571-b8a8-56f72947f635",
+      "session_id": "316a4b27-baa8-40cf-af39-0cb95024c3d5",
+      "speaker": "user",
+      "start_offset_ms": 16000,
+      "end_offset_ms": 18000,
+      "text": "Bye, Sam.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:17Z"
+    }
+  ]
+}

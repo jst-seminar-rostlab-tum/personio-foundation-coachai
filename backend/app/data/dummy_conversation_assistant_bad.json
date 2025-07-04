@@ -1,0 +1,116 @@
+{
+  "scenario": {
+    "id": "11111111-1111-1111-1111-111111111120",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "category_id": "feedback",
+    "custom_category_label": null,
+    "language_code": "en",
+    "persona": "",
+    "situational_facts": "",
+    "difficulty_level": "medium",
+    "status": "ready",
+    "created_at": "2024-06-28T10:00:00Z",
+    "updated_at": "2024-06-28T10:00:00Z"
+  },
+  "transcript": [
+    {
+      "id": "32519f97-5a8b-4fd7-b6a0-932b6f696b1a",
+      "session_id": "1fb4849b-dffb-459b-b323-d7f4dd8947fa",
+      "speaker": "user",
+      "start_offset_ms": 0,
+      "end_offset_ms": 2000,
+      "text": "Hi Sam, thank you for making time to meet today. I'd like to discuss your communication during the Phoenix project. I'll start by sharing my observations, then we can talk about solutions together.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:01Z"
+    },
+    {
+      "id": "bd7e499b-07f4-42db-ab42-463c0f1b1434",
+      "session_id": "1fb4849b-dffb-459b-b323-d7f4dd8947fa",
+      "speaker": "assistant",
+      "start_offset_ms": 2000,
+      "end_offset_ms": 4000,
+      "text": "Banana, blue sky, I like pizza. What is project? Cat runs fast.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:03Z"
+    },
+    {
+      "id": "dbac2758-0801-4d23-9bfd-6b1c9f105bc4",
+      "session_id": "1fb4849b-dffb-459b-b323-d7f4dd8947fa",
+      "speaker": "user",
+      "start_offset_ms": 4000,
+      "end_offset_ms": 6000,
+      "text": "Recently, you missed a couple of project syncs and didn't respond to some important emails, such as the one about the client's updated requirements. This led to the team working off the wrong spec and losing a day of work. I understand things can get busy, and I appreciate your hard work.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:05Z"
+    },
+    {
+      "id": "fa5405de-021b-4cf4-a8a3-aa8f38aee6bc",
+      "session_id": "1fb4849b-dffb-459b-b323-d7f4dd8947fa",
+      "speaker": "assistant",
+      "start_offset_ms": 6000,
+      "end_offset_ms": 8000,
+      "text": "Sunshine, elevator, no idea, project, watermelon. Sorry, what?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:07Z"
+    },
+    {
+      "id": "3b13f4bb-3bdc-4706-9030-dbd69fb4eb90",
+      "session_id": "1fb4849b-dffb-459b-b323-d7f4dd8947fa",
+      "speaker": "user",
+      "start_offset_ms": 8000,
+      "end_offset_ms": 10000,
+      "text": "Thank you for taking responsibility. To help you stay in the loop, would a different reminder system help, or is there something I can do to support you?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:09Z"
+    },
+    {
+      "id": "df339f0d-8af8-4887-96e6-277d4f5fdb10",
+      "session_id": "1fb4849b-dffb-459b-b323-d7f4dd8947fa",
+      "speaker": "assistant",
+      "start_offset_ms": 10000,
+      "end_offset_ms": 12000,
+      "text": "Calendar, dog, next week, or pizza, thanks, Sam. Purple clouds.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:11Z"
+    },
+    {
+      "id": "9cc0605d-1873-4322-b0a3-327c29121a52",
+      "session_id": "1fb4849b-dffb-459b-b323-d7f4dd8947fa",
+      "speaker": "user",
+      "start_offset_ms": 12000,
+      "end_offset_ms": 14000,
+      "text": "That sounds like a solid plan. Let's check in next week to see how things are going. Thanks, Sam.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:13Z"
+    },
+    {
+      "id": "9bd4477e-01d4-4e82-bccb-1e0ff7589f91",
+      "session_id": "1fb4849b-dffb-459b-b323-d7f4dd8947fa",
+      "speaker": "assistant",
+      "start_offset_ms": 14000,
+      "end_offset_ms": 16000,
+      "text": "Laptop, river, emails, sync, what, Sam?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:15Z"
+    },
+    {
+      "id": "30e83a38-2d90-4556-a413-65e214b61c62",
+      "session_id": "1fb4849b-dffb-459b-b323-d7f4dd8947fa",
+      "speaker": "user",
+      "start_offset_ms": 16000,
+      "end_offset_ms": 18000,
+      "text": "Thank you, Sam. Looking forward to seeing the improvements.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:17Z"
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { clearAllSessions } from '@/services/client/SessionService';
+import { clearAllSessions, sessionService } from '@/services/SessionService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,12 +16,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
-import { showErrorToast, showSuccessToast } from '@/lib/toast';
-import { SessionPaginated, SessionFromPagination } from '@/interfaces/Session';
-import { api } from '@/services/client/Api';
-import { sessionService } from '@/services/server/SessionService';
+import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
+import { SessionPaginated, SessionFromPagination } from '@/interfaces/models/Session';
 import Link from 'next/link';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
+import { api } from '@/services/ApiClient';
 
 export default function PreviousSessions({
   limit,
@@ -65,7 +64,7 @@ export default function PreviousSessions({
   const handleDeleteAll = async () => {
     try {
       setIsDeleting(true);
-      await clearAllSessions();
+      await clearAllSessions(api);
 
       setSessionsStorage([]);
       setTotalSessionsCount(0);
@@ -84,7 +83,7 @@ export default function PreviousSessions({
         <div className="text-xl">{t('previousSessions')}</div>
         <div className="flex justify-between md:gap-6">
           <Button variant="ghost">
-            {t('exportHistory')} <Download />
+            {tCommon('export')} <Download />
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -100,8 +99,8 @@ export default function PreviousSessions({
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteAll}>{t('delete')}</AlertDialogAction>
+                <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteAll}>{tCommon('delete')}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -133,7 +132,7 @@ export default function PreviousSessions({
       {canLoadMore && (
         <div className="flex justify-center mt-4">
           <Button variant="ghost" onClick={() => handleLoadMore(pageNumber + 1)}>
-            {isLoading ? t('loading') : t('loadMore')} <ChevronDown />
+            {isLoading ? tCommon('loading') : tCommon('loadMore')} <ChevronDown />
           </Button>
         </div>
       )}

@@ -24,7 +24,7 @@ class SessionTurn(CamelModel, table=True):
     end_offset_ms: int
     text: str
     audio_uri: str
-    ai_emotion: str
+    ai_emotion: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Relationships

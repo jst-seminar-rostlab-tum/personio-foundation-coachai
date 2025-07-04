@@ -9,7 +9,7 @@ from app.schemas.scenario_preparation import (
     ObjectiveRequest,
     StringListResponse,
 )
-from app.services.scenario_preparation_service import (
+from app.services.scenario_preparation.scenario_preparation_service import (
     generate_checklist,
     generate_key_concept,
     generate_objectives,
@@ -17,16 +17,17 @@ from app.services.scenario_preparation_service import (
 
 
 class TestScenarioPreparationService(unittest.TestCase):
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_objectives_returns_correct_list(self, mock_llm: MagicMock) -> None:
         items = ['1. Prepare outline', '2. Rehearse responses', '3. Stay calm']
         mock_llm.return_value = StringListResponse(items=items)
 
         req = ObjectiveRequest(
             category='Performance Feedback',
-            goal='Give constructive criticism',
-            context='Quarterly review',
-            other_party='Junior engineer',
+            persona='**Name**: Andrew '
+            '**Training Focus**: Giving constructive criticism '
+            '**Company Positon**: Junior engineer',
+            situational_facts='Quarterly review',
             num_objectives=3,
         )
 
@@ -36,16 +37,17 @@ class TestScenarioPreparationService(unittest.TestCase):
         for i in range(len(result)):
             self.assertEqual(result[i], items[i])
 
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_checklist_returns_correct_list(self, mock_llm: MagicMock) -> None:
         items = ['1. Review past performance', '2. Prepare documents', '3. Set up private room']
         mock_llm.return_value = StringListResponse(items=items)
 
         req = ChecklistRequest(
             category='Performance Review',
-            goal='Address underperformance',
-            context='1:1 review',
-            other_party='Backend engineer',
+            persona='**Name**: Sarah '
+            '**Training Focus**: Addressing underperformance '
+            '**Company Position**: Backend engineer',
+            situational_facts='1:1 review',
             num_checkpoints=3,
         )
 
@@ -54,7 +56,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         for i in range(len(result)):
             self.assertEqual(result[i], items[i])
 
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_key_concept_parses_json(self, mock_llm: MagicMock) -> None:
         mock_key_concept_response = [
             KeyConcept(
@@ -75,16 +77,17 @@ class TestScenarioPreparationService(unittest.TestCase):
 
         req = KeyConceptRequest(
             category='Feedback',
-            goal='Deliver effective criticism',
-            context='Post-project debrief',
-            other_party='Project manager',
+            persona='**Name**: Jenny'
+            '**Training Focus**: Deliver effective criticism'
+            '**Company Position**: Project manager',
+            situational_facts='Post-project debrief',
         )
 
         result = generate_key_concept(req)
         self.assertTrue(all(isinstance(x, KeyConcept) for x in result))
         self.assertEqual(result, mock_key_concept_response)
 
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_objectives_with_hr_docs_context(self, mock_llm: MagicMock) -> None:
         # Analogically for checklist and concepts
 
@@ -93,9 +96,10 @@ class TestScenarioPreparationService(unittest.TestCase):
 
         req = ObjectiveRequest(
             category='Feedback',
-            goal='Improve team dynamics',
-            context='Team meeting',
-            other_party='Team lead',
+            persona='**Name**: Glenda'
+            '**Training Focus**: Improve team dynamics '
+            '**Company Position**: Team lead',
+            situational_facts='Team meeting',
             num_objectives=2,
         )
 

@@ -1,16 +1,51 @@
-from fastapi import HTTPException
+from uuid import uuid4
+
+import puremagic
+from fastapi import HTTPException, UploadFile
 from sqlmodel import Session as DBSession
 
 from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
+from app.services.google_cloud_storage_service import GCSManager
+
+
+def is_valid_audio_mime_type(mime_type: str) -> bool:
+    return mime_type in [
+        'audio/webm',
+        'video/webm',
+        'audio/mpeg',
+        'video/mpeg',
+        'audio/wav',
+        'audio/x-wav',
+        'audio/wave',
+    ]
+
+
+def get_audio_content_type(upload_file: UploadFile) -> str:
+    matches = puremagic.magic_stream(upload_file.file)
+    upload_file.file.seek(0)
+
+    if not matches:
+        raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
+
+    mime = matches[0].mime_type
+
+    if not is_valid_audio_mime_type(mime):
+        raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
+
+    return mime
 
 
 class SessionTurnService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
 
-    def create_session_turn(self, turn: SessionTurnCreate) -> SessionTurnRead:
+    async def create_session_turn(
+        self,
+        turn: SessionTurnCreate,
+        audio_file: UploadFile,
+    ) -> SessionTurnRead:
         """
         Create a new session turn.
         """
@@ -19,8 +54,43 @@ class SessionTurnService:
         if not session:
             raise HTTPException(status_code=404, detail='Session not found')
 
-        new_turn = SessionTurn(**turn.model_dump())
+        # Validate required fields
+        if not turn.text:
+            raise HTTPException(status_code=400, detail='Text is required')
+
+        # Generate a unique audio name using session_id and new uuid
+        audio_name = f'{turn.session_id}_{uuid4().hex}'
+
+        gcs = GCSManager('audio')
+
+        try:
+            gcs.upload_from_fileobj(
+                file_obj=audio_file.file,
+                blob_name=audio_name,
+                content_type=get_audio_content_type(audio_file),
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=500, detail=f'Failed to upload audio file: {str(e)}'
+            ) from e
+
+        # Create a new SessionTurn instance
+        turn_data = turn.model_dump()
+        turn_data['audio_uri'] = audio_name
+        new_turn = SessionTurn(**turn_data)
+
         self.db.add(new_turn)
         self.db.commit()
         self.db.refresh(new_turn)
-        return SessionTurnRead(**new_turn.model_dump())
+
+        return SessionTurnRead(
+            id=new_turn.id,
+            session_id=new_turn.session_id,
+            speaker=new_turn.speaker,
+            start_offset_ms=new_turn.start_offset_ms,
+            end_offset_ms=new_turn.end_offset_ms,
+            text=new_turn.text,
+            audio_uri=audio_name,
+            ai_emotion=new_turn.ai_emotion,
+            created_at=new_turn.created_at,
+        )

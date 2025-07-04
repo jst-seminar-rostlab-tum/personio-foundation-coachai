@@ -1,4 +1,6 @@
-import { cn } from '@/lib/utils';
+'use client';
+
+import { cn } from '@/lib/utils/cnMerge';
 import { ButtonHTMLAttributes } from 'react';
 
 interface CategoryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

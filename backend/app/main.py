@@ -16,8 +16,8 @@ from app.routers import (
     review_route,
     session_route,
     session_turn_route,
+    signed_url_route,
     user_profile_route,
-    user_profile_stats_route,
 )
 
 logging.basicConfig(
@@ -42,11 +42,11 @@ app.include_router(conversation_scenario_route.router)
 app.include_router(session_route.router)
 app.include_router(session_turn_route.router)
 app.include_router(user_profile_route.router)
-app.include_router(user_profile_stats_route.router)
 app.include_router(app_config_route.router)
 app.include_router(admin_dashboard_stats_route.router)
 app.include_router(review_route.router)
 app.include_router(realtime_session_route.router)
+app.include_router(signed_url_route.router)
 
 
 # Create database tables on startup

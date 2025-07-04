@@ -8,7 +8,7 @@ from app.models.session import SessionStatus
 class SkillScores(CamelModel):
     structure: int
     empathy: int
-    solution_focus: int
+    focus: int
     clarity: int
 
 
@@ -17,9 +17,10 @@ class SessionItem(CamelModel):
     title: str
     summary: str
     date: datetime | None
-    score: int
+    overall_score: float
     skills: SkillScores
     status: SessionStatus
+    allow_admin_access: bool = False
 
 
 class PaginatedSessionsResponse(CamelModel):

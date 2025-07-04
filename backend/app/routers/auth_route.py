@@ -5,10 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from gotrue import AdminUserAttributes, SignUpWithPasswordCredentials
 from pydantic import BaseModel
 from sqlmodel import Session as DBSession
-from supabase import create_client
 
 from app.config import Settings
-from app.database import get_db_session
+from app.database import get_db_session, get_supabase_client
 from app.dependencies import JWTPayload, verify_jwt
 from app.models.user_profile import UserProfile
 from app.services.twilio_service import check_verification_code, send_verification_code
@@ -78,7 +77,7 @@ def create_user(req: CreateUserRequest) -> None:
         ) from e
 
     try:
-        supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+        supabase = get_supabase_client()
 
         attributes: AdminUserAttributes = {
             'email': req.email,

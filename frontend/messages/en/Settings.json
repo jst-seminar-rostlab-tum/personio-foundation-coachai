@@ -1,54 +1,21 @@
 {
   "metaTitle": "Settings - Coach AI",
   "metaDescription": "Customize your training preferences and goals",
-  "title": "Settings",
-  "backToDashboard": "Back to Dashboard",
   "privacyControls": "Privacy Controls",
   "storeAudioTranscripts": "Store Conversation Audio and Transcripts",
-  "export": "Export",
   "exportData": "Export personal data",
-  "deleteAccount": "Delete account",
-  "requestDeletion": "Request Deletion",
   "personalizationSettings": "Personalization Settings",
   "saveSettings": "Save Settings",
-  "saving": "Saving...",
   "ninetyDays": "Your audio and transcripts will be retained and viewable in the training history for 90 days.",
   "zeroDays": "Your audio and transcripts will not be saved.",
-  "deleteAccountConfirmTitle": "Are you sure?",
-  "deleteAccountConfirmDesc": "This action cannot be undone.",
-  "cancel": "Cancel",
-  "confirm": "Confirm",
-  "preferences": {
-    "language": {
-      "label": "Preferred Language",
-      "en": "English",
-      "es": "Spanish",
-      "fr": "French"
-    },
-    "learningStyle": {
-      "label": "Preferred Learning Style",
-      "visual": "Visual",
-      "handson": "Hands-on practice",
-      "auditory": "Auditory",
-      "kinesthetic": "Kinesthetic"
-    },
-    "session": {
-      "label": "Preferred Session",
-      "short": "Less than 30 minutes",
-      "medium": "30–60 minutes",
-      "long": "Over 1 hour"
-    }
+  "currentRole": "Current Role",
+  "primaryGoals": {
+    "label": "Primary Goals",
+    "placeholder": "Please select up to 3 goals",
+    "maxOptionsSelected": "Max. options selected"
   },
-  "leadershipGoals": {
-    "currentRole": {
-      "label": "Current Role"
-    },
-    "primaryGoals": {
-      "label": "Primary Goals",
-      "placeholder": "Please select up to 3 goals",
-      "maxOptionsSelected": "Max. options selected"
-    }
-  },
+  "exportSettingsSuccess": "Your data has been exported successfully.",
+  "exportSettingsError": "There was an error exporting your data. Please try again later.",
   "saveSettingsSuccess": "Your settings have been saved successfully.",
   "saveSettingsError": "There was an error saving your settings. Please try again later."
 }

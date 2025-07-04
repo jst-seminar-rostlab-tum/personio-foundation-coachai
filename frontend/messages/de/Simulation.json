@@ -1,5 +1,6 @@
 {
   "metaTitle": "Simulation - Coach AI",
-  "metaDescription": "Üben Sie Ihre Fähigkeiten in einer interaktiven Trainingssimulation",
-  "sessionEndError": "Fehler beim Beenden der Sitzung."
+  "metaDescription": "Trainieren Sie Ihre Fähigkeiten in einer interaktiven Simulation",
+  "sessionEndError": "Fehler beim Beenden der Sitzung.",
+  "sessionTurnError": "Fehler bei Erstellung eines Session Turns."
 }

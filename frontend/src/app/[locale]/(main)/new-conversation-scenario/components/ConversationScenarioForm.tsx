@@ -6,17 +6,28 @@ import Stepper from '@/components/common/Stepper';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { ConversationCategory } from '@/interfaces/ConversationCategory';
-import { ConversationScenario } from '@/interfaces/ConversationScenario';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
-import { showErrorToast } from '@/lib/toast';
+import {
+  ConversationScenario,
+  ConversationCategory,
+} from '@/interfaces/models/ConversationScenario';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
+import { showErrorToast } from '@/lib/utils/toast';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
+import { api } from '@/services/ApiClient';
+import { Categories } from '@/lib/constants/categories';
 import { CategoryStep } from './CategoryStep';
 import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
 
-export default function ConversationScenarioForm() {
+interface ConversationScenarioFormProps {
+  categoriesData: ConversationCategory[];
+}
+
+export default function ConversationScenarioForm({
+  categoriesData,
+}: ConversationScenarioFormProps) {
   const t = useTranslations('ConversationScenario');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const { locale } = useParams();
 
@@ -29,24 +40,18 @@ export default function ConversationScenarioForm() {
   } = useConversationScenarioStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [categories, setCategories] = useState<ConversationCategory[]>(
-    t.raw('categories') as ConversationCategory[]
-  );
+  const [categories, setCategories] = useState<ConversationCategory[]>(Categories());
 
   const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
 
   useEffect(() => {
-    async function fetchCategories() {
-      const response = await conversationScenarioService.getConversationCategories();
-      setCategories((prev) =>
-        prev.map((cat) => {
-          const match = response.data.find((f: ConversationCategory) => f.id === cat.id);
-          return match ? { ...cat, defaultContext: match.defaultContext } : cat;
-        })
-      );
-    }
-    fetchCategories();
-  }, []);
+    setCategories((prev) =>
+      prev.map((cat) => {
+        const match = categoriesData.find((f: ConversationCategory) => f.id === cat.id);
+        return match ? { ...cat, defaultContext: match.defaultContext } : cat;
+      })
+    );
+  }, [categoriesData]);
 
   const handleStepClick = (step: number) => {
     if (step <= currentStep + 1) {
@@ -95,7 +100,7 @@ export default function ConversationScenarioForm() {
     };
 
     try {
-      const { data } = await conversationScenarioService.createConversationScenario(scenario);
+      const { data } = await conversationScenarioService.createConversationScenario(api, scenario);
       router.push(`/preparation/${data.scenarioId}`);
       setTimeout(reset, 2000);
     } catch (error) {
@@ -106,12 +111,12 @@ export default function ConversationScenarioForm() {
 
   const getButtonText = () => {
     if (isSubmitting && currentStep === 2) {
-      return t('navigation.creating');
+      return t('creating');
     }
     if (currentStep === 2) {
-      return t('navigation.create');
+      return t('create');
     }
-    return t('navigation.next');
+    return tCommon('next');
   };
 
   return (
@@ -178,7 +183,7 @@ export default function ConversationScenarioForm() {
             disabled={currentStep === 0}
           >
             <ArrowLeftIcon />
-            {t('navigation.back')}
+            {tCommon('back')}
           </Button>
         )}
         <Button
