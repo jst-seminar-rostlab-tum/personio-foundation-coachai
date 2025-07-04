@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import routing from '@/i18n/routing';
 import { useLocale } from 'next-intl';
+import Image from 'next/image';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/Select';
 
 export function LanguageSwitcher() {
@@ -24,7 +25,15 @@ export function LanguageSwitcher() {
       <SelectContent>
         {routing.locales.map((cur) => (
           <SelectItem key={cur} value={cur}>
-            <span className="text-xl">{cur === 'en' ? '🇬🇧' : '🇩🇪'}</span>
+            <Image
+              src={
+                cur === 'en' ? '/images/common/english-flag.svg' : '/images/common/german-flag.svg'
+              }
+              alt={cur === 'en' ? 'English' : 'German'}
+              width={24}
+              height={24}
+              style={{ display: 'inline', verticalAlign: 'middle' }}
+            />
           </SelectItem>
         ))}
       </SelectContent>
