@@ -8,7 +8,7 @@ export default async function AboutLayout({ children }: LayoutProps) {
   return (
     <NextIntlClientProvider>
       <AboutHeader />
-      <main className="container mx-auto p-6 md:p-12 mt-16">{children}</main>
+      <main className="mx-auto py-8 px-[clamp(1.25rem,4vw,4rem)] max-w-7xl">{children}</main>
       <AboutFooter />
     </NextIntlClientProvider>
   );

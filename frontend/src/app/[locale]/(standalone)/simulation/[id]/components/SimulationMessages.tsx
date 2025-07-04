@@ -81,7 +81,7 @@ export default function SimulationMessages({ messages }: SimulationMessagesProps
   }, [messages]);
 
   return (
-    <div className="flex flex-col gap-4 py-2 h-full">
+    <div className="w-full max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] flex flex-col gap-4 py-2 h-full">
       {messages.map((msg) => (
         <MessageItem key={msg.id} message={msg} />
       ))}
