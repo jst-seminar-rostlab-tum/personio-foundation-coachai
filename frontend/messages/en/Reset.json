@@ -1,0 +1,11 @@
+{
+  "metaTitle": "Reset Password - Coach AI",
+  "metaDescription": "Reset your password securely",
+  "title": "Reset Your Password",
+  "description": "Please enter your email address to receive a password reset link.",
+  "emailInputLabel": "Email Address",
+  "emailInputPlaceholder": "Enter your email address",
+  "emailInputError": "Please enter a valid email address",
+  "sendResetEmailButtonLabel": "Send Reset Email",
+  "successMessage": "If an account with that email exists, a password reset link has been sent."
+}

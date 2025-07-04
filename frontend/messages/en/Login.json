@@ -52,5 +52,6 @@
     "expiredDescription": "Your confirmation code has expired. Please request a new code to continue.",
     "expiredOtpError": "The confirmation code has expired. Please request a new code.",
     "genericError": "An error occurred while confirming your account. Please try again later."
-  }
+  },
+  "forgotPassword": "Forgot Password?"
 }

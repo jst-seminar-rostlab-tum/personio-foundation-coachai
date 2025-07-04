@@ -1,0 +1,11 @@
+{
+  "metaTitle": "Passwort zurücksetzen - Coach AI",
+  "metaDescription": "Setzen Sie Ihr Passwort sicher zurück",
+  "title": "Passwort zurücksetzen",
+  "description": "Bitte geben Sie Ihre E-Mail-Adresse ein, um einen Link zum Zurücksetzen des Passworts zu erhalten.",
+  "emailInputLabel": "E-Mail-Adresse",
+  "emailInputPlaceholder": "Geben Sie Ihre E-Mail-Adresse ein",
+  "emailInputError": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+  "sendResetEmailButtonLabel": "Passwort zurücksetzen",
+  "successMessage": "Wenn ein Konto mit dieser E-Mail-Adresse existiert, wurde ein Link zum Zurücksetzen des Passworts gesendet."
+}

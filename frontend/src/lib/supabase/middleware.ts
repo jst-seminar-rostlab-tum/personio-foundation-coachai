@@ -16,7 +16,7 @@ const stripLocaleFromPath = (path: string): string => {
   return path;
 };
 
-const publicRoutes = ['/', '/terms', '/privacy'];
+const publicRoutes = ['/', '/terms', '/privacy', '/reset', '/update-password'];
 const authRoutes = ['/login', '/confirm'];
 
 export async function authMiddleware(

@@ -8,7 +8,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import {
   Form,
   FormControl,
@@ -124,10 +123,14 @@ export function SignInForm() {
             <Button type="submit" size="full" disabled={isLoading}>
               {tLogin('signIn')}
             </Button>
-            <div className="w-full border-t border-gray-300" />
-            <Button size="full" variant="secondary" disabled={isLoading}>
-              <Image src="/images/icons/google-icon.svg" alt="Google Icon" width={20} height={20} />
-              {tLogin('signInWithGoogleButtonLabel')}
+            <Button
+              type="button"
+              variant="link"
+              className="text-sm text-bw-50 mt-2 p-0 h-auto"
+              disabled={isLoading}
+              onClick={() => router.push('/reset')}
+            >
+              {tLogin('forgotPassword')}
             </Button>
           </CardFooter>
         </form>

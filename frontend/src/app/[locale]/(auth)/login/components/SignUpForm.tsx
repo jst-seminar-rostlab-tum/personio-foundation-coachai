@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Checkbox from '@/components/ui/Checkbox';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import {
   Form,
   FormControl,
@@ -240,16 +239,6 @@ export function SignUpForm() {
             <CardFooter className="flex-col gap-6">
               <Button size="full" type="submit" disabled={isLoading}>
                 {tLogin('signUp')}
-              </Button>
-              <div className="w-full border-t border-gray-300" />
-              <Button size="full" variant="secondary" disabled={isLoading}>
-                <Image
-                  src="/images/icons/google-icon.svg"
-                  alt="Google Icon"
-                  width={20}
-                  height={20}
-                />
-                {tLogin('SignUpTab.signUpWithGoogleButtonLabel')}
               </Button>
             </CardFooter>
           </form>
