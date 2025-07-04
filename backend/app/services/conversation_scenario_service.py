@@ -32,10 +32,16 @@ class ConversationScenarioService:
         conversation_scenario: ConversationScenarioCreate,
         user_profile: UserProfile,
         background_tasks: BackgroundTasks,
+        custom_scenario: bool = False,
     ) -> ConversationScenarioCreateResponse:
         """
         Create a new conversation scenario and start the preparation process in the background.
+
         """
+        # Check need for creating a new conversation scenario
+        if not custom_scenario:
+            pass
+
         # Validate category
         category = self._validate_category(conversation_scenario.category_id)
 
