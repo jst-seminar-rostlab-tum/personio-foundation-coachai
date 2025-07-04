@@ -11,7 +11,6 @@ interface SimulationMessagesProps {
   messages: Message[];
 }
 
-// Component to render each text chunk with a fade-in
 const Chunk: React.FC<{ text: string }> = ({ text }) => {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -34,14 +33,12 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
     const prev = prevTextRef.current;
     const curr = message.text;
 
-    // If new text is appended, isolate the delta chunk
     if (curr.startsWith(prev)) {
       const delta = curr.slice(prev.length);
       if (delta) {
         setChunks((prevChunks) => [...prevChunks, delta]);
       }
     } else {
-      // If the text was replaced or reset, start fresh
       setChunks([curr]);
     }
 
