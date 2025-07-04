@@ -22,15 +22,10 @@ export enum AccountRole {
   admin = 'admin',
 }
 
-export interface PaginatedUsersParams {
-  page?: number;
-  pageSize?: number;
-  emailSubstring?: string;
-}
-
 export interface UserPaginationResponse {
-  initialUsers: UserProfile[];
-  totalCount: number;
-  initialPage: number;
-  pageSize: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  totalUsers: number;
+  users: UserProfile[];
 }

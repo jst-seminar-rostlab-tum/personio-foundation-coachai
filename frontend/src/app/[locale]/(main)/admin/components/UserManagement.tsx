@@ -23,7 +23,7 @@ export default function UserManagement({ usersPaginationData }: UsersProp) {
       <AccordionItem value="item-1">
         <AccordionTrigger>{t('userManagement')}</AccordionTrigger>
         <AccordionContent>
-          <UsersList {...usersPaginationData} initialPage={1} pageSize={10} />
+          <UsersList {...usersPaginationData} />
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">

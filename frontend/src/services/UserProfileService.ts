@@ -1,6 +1,5 @@
 import { UserProfile, UserProfileUpdate } from '@/interfaces/models/UserProfile';
 import { AxiosInstance } from 'axios';
-import type { PaginatedUsersParams } from '@/interfaces/models/UserProfile';
 
 const getUserProfile = async (api: AxiosInstance): Promise<UserProfile> => {
   try {
@@ -58,15 +57,18 @@ const deleteUser = async (api: AxiosInstance, deleteUserId?: string) => {
   }
 };
 
+// Updated to match new API and interface: (api, page, limit, emailSubstring)
 const getPaginatedUsers = async (
   api: AxiosInstance,
-  { page = 1, pageSize = 10, emailSubstring }: PaginatedUsersParams = {}
+  page: number,
+  limit: number,
+  emailSubstring?: string
 ) => {
   try {
     const { data } = await api.get('/user-profile', {
       params: {
         page,
-        page_size: pageSize,
+        limit,
         email_substring: emailSubstring,
       },
     });

@@ -13,29 +13,25 @@ import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import type { UserProfile as User, UserPaginationResponse } from '@/interfaces/models/UserProfile';
 
 type UsersListProps = UserPaginationResponse;
-export default function UsersList({
-  initialUsers,
-  totalCount,
-  initialPage,
-  pageSize,
-}: UsersListProps) {
-  const [users, setUsers] = useState<User[]>(initialUsers);
-  const [page, setPage] = useState(initialPage);
+export default function UsersList({ users, totalUsers, page, limit }: UsersListProps) {
+  const [userList, setUserList] = useState<User[]>(users);
+  const [currentPage, setCurrentPage] = useState(page);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
-  const [hasMore, setHasMore] = useState(users.length < totalCount);
+  const [hasMore, setHasMore] = useState(userList.length < totalUsers);
   const t = useTranslations('Common');
 
   const fetchUsers = async (pageNum: number, searchStr: string) => {
     setLoading(true);
     try {
-      const data = await ClientUserProfileService.getPaginatedUsers(api, {
-        page: pageNum,
-        pageSize,
-        emailSubstring: searchStr || undefined,
-      });
-      setUsers(data.users);
-      setHasMore(data.users.length < data.totalCount);
+      const data = await ClientUserProfileService.getPaginatedUsers(
+        api,
+        pageNum,
+        limit,
+        searchStr || undefined
+      );
+      setUserList(data.users);
+      setHasMore(data.users.length < data.totalUsers);
     } catch (e) {
       showErrorToast(e, 'Error loading users');
     } finally {
@@ -46,19 +42,19 @@ export default function UsersList({
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearch(value);
-    setPage(1);
+    setCurrentPage(1);
     fetchUsers(1, value);
   };
 
   const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
     fetchUsers(nextPage, search);
   };
 
   useEffect(() => {
-    setHasMore(users.length < totalCount);
-  }, [users, totalCount]);
+    setHasMore(userList.length < totalUsers);
+  }, [userList, totalUsers]);
 
   return (
     <>
@@ -81,7 +77,7 @@ export default function UsersList({
           )}
         </div>
       </div>
-      {users.length === 0 && !loading ? (
+      {userList.length === 0 && !loading ? (
         <EmptyListComponent itemType={t('users')} />
       ) : (
         <>
@@ -98,14 +94,14 @@ export default function UsersList({
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {userList.map((user) => (
                   <tr key={user.email} className="border-t border-bw-10">
                     <td className="py-2 px-2 truncate">{user.email}</td>
                     <td className="py-2 px-2">
                       <DeleteUserHandler
                         id={user.userId}
                         onDeleteSuccess={() => {
-                          setPage(1);
+                          setCurrentPage(1);
                           fetchUsers(1, search);
                         }}
                       >
