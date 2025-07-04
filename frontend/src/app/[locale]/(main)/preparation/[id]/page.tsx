@@ -1,4 +1,4 @@
-import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';

@@ -13,7 +13,7 @@ import {
 import { Rating, RatingButton } from '@/components/ui/Rating';
 import { Textarea } from '@/components/ui/Textarea';
 import Checkbox from '@/components/ui/Checkbox';
-import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
 import { reviewService } from '@/services/ReviewService';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';

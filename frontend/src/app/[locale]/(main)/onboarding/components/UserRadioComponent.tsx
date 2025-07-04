@@ -2,7 +2,7 @@ import React from 'react';
 import Label from '@/components/ui/Label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { UserRadioQuestion } from '@/interfaces/models/UserInputFields';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cnMerge';
 
 export const UserRadioComponent: React.FC<UserRadioQuestion> = ({
   question,

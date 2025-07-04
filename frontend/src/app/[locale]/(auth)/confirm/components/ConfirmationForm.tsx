@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardFooter } from '@/components/ui/Card';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
-import { handlePasteEvent } from '@/lib/handlePaste';
+import { handleInputChange, handleKeyDown, handlePasteEvent } from '@/lib/handlers/handleOtpInput';
 import { createClient } from '@/lib/supabase/client';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import { api } from '@/services/ApiClient';
 import { authService } from '@/services/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,8 +44,8 @@ export default function ConfirmationForm() {
     resolver: zodResolver(confirmationFormSchema),
     mode: 'onTouched',
     defaultValues: {
-      email: useSearchParams().get('ConfirmationForm.email') ?? '',
-      code: useSearchParams().get('ConfirmationForm.token') ?? '',
+      email: useSearchParams().get('email') ?? '',
+      code: useSearchParams().get('token') ?? '',
     },
   });
 
@@ -68,7 +68,7 @@ export default function ConfirmationForm() {
       if (verifyError.code) {
         switch (verifyError.code) {
           case 'otp_expired':
-            setError(t('expiredOtpError'));
+            setError(t('ConfirmationForm.expiredOtpError'));
             setShowResendButton(true);
             break;
           default:
@@ -148,25 +148,13 @@ export default function ConfirmationForm() {
                               inputRefs.current[idx] = el;
                             }}
                             onChange={(e) => {
-                              const val = e.target.value.replace(/\D/g, '');
-                              const codeArr = (field.value || '').split('');
-                              codeArr[idx] = val;
-                              const newCode = codeArr.join('').slice(0, codeSize);
-                              field.onChange(newCode);
-                              if (val && idx < codeSize - 1) {
-                                inputRefs.current[idx + 1]?.focus();
-                              }
+                              handleInputChange(e, field, idx, codeSize, inputRefs.current);
                             }}
                             onPaste={(e) => {
                               handlePasteEvent(e, field, codeSize, inputRefs.current);
                             }}
                             onKeyDown={(e) => {
-                              if (e.key === 'Backspace') {
-                                const codeArr = (field.value || '').split('');
-                                if (!codeArr[idx] && idx > 0) {
-                                  inputRefs.current[idx - 1]?.focus();
-                                }
-                              }
+                              handleKeyDown(e, field, idx, inputRefs.current);
                             }}
                             autoFocus={idx === 0}
                           />
