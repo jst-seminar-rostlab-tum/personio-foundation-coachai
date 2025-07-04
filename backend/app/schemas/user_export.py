@@ -18,7 +18,7 @@ class ExportUserProfile(BaseModel):
     total_sessions: int
     training_time: float
     current_streak_days: int
-    average_score: int
+    score_sum: int
     goals_achieved: int
 
 
@@ -85,7 +85,7 @@ class ExportSessionFeedback(BaseModel):
     session_id: str
     scores: dict[str, Any]
     tone_analysis: dict[str, Any]
-    overall_score: int
+    overall_score: float
     transcript_uri: str
     speak_time_percent: float
     questions_asked: int

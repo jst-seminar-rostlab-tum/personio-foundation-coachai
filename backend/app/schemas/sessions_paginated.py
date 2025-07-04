@@ -17,7 +17,7 @@ class SessionItem(CamelModel):
     title: str
     summary: str
     date: datetime | None
-    score: int
+    overall_score: float
     skills: SkillScores
     status: SessionStatus
     allow_admin_access: bool = False
