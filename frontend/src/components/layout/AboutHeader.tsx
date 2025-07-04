@@ -15,7 +15,7 @@ export default function AboutHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white mb-1 shadow">
-      <div className="container flex h-16 items-center justify-between mx-auto px-4">
+      <div className="flex h-16 items-center justify-between mx-auto px-[clamp(1.25rem,4vw,4rem)] max-w-7xl">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-xl font-semibold text-black">{tCommon('appName')}</span>
