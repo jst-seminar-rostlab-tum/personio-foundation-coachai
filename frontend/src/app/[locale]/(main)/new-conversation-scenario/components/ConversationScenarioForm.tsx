@@ -60,7 +60,7 @@ export default function ConversationScenarioForm({
       case 0:
         return !!formState.category;
       case 1:
-        return !!formState.difficulty && !!formState.complexity && !!formState.persona;
+        return !!formState.difficulty && !!formState.persona;
       default:
         return false;
     }
@@ -84,7 +84,6 @@ export default function ConversationScenarioForm({
       otherParty: formState.otherParty,
       difficultyLevel: formState.difficulty,
       tone: '',
-      complexity: formState.complexity,
       languageCode: locale as string,
     };
 
@@ -132,10 +131,8 @@ export default function ConversationScenarioForm({
       {currentStep === 1 && (
         <CustomizeStep
           difficulty={formState.difficulty}
-          complexity={formState.complexity}
           selectedPersona={formState.persona}
           onDifficultyChange={(val) => updateForm({ difficulty: val })}
-          onComplexityChange={(val) => updateForm({ complexity: val })}
           onPersonaSelect={(persona: Persona) => updateForm({ persona: persona.id })}
         />
       )}

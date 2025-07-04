@@ -8,10 +8,8 @@ import { PersonaInfo } from './PersonaInfo';
 
 export function CustomizeStep({
   difficulty,
-  complexity,
   selectedPersona,
   onDifficultyChange,
-  onComplexityChange,
   onPersonaSelect,
 }: CustomizeStepProps) {
   const t = useTranslations('ConversationScenario');
@@ -89,31 +87,6 @@ export function CustomizeStep({
           <Image src="/images/difficulty/hard.svg" alt={t('hard')} width={56} height={56} />
           <span className="text-sm">{t('hard')}</span>
           <RadioGroupItem value="hard" id="d3" />
-        </label>
-      </RadioGroup>
-
-      <div className="text-lg text-font-dark text-center mb-2">
-        {t('customize.complexity.title')}
-      </div>
-      <RadioGroup
-        value={complexity}
-        onValueChange={onComplexityChange}
-        className="mb-8 flex flex-row justify-between gap-4"
-      >
-        <label htmlFor="c1" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/complexity/simple.svg" alt={t('simple')} width={56} height={56} />
-          <span className="text-sm">{t('simple')}</span>
-          <RadioGroupItem value="simple" id="c1" />
-        </label>
-        <label htmlFor="c2" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/complexity/medium.svg" alt={t('medium')} width={56} height={56} />
-          <span className="text-sm">{t('medium')}</span>
-          <RadioGroupItem value="medium" id="c2" />
-        </label>
-        <label htmlFor="c3" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/complexity/complex.svg" alt={t('complex')} width={56} height={56} />
-          <span className="text-sm">{t('complex')}</span>
-          <RadioGroupItem value="complex" id="c3" />
         </label>
       </RadioGroup>
     </div>

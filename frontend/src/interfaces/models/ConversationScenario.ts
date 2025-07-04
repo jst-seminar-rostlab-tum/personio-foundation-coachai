@@ -19,6 +19,7 @@ export interface ConversationCategory {
   defaultGoal?: string;
   defaultOtherParty?: string;
   isCustom?: boolean;
+  description?: string;
 }
 
 export interface ConversationScenarioResponse {

@@ -11,6 +11,7 @@ export function Categories(): ConversationCategory[] {
       defaultContext: t('givingFeedback.defaultContext'),
       defaultGoal: t('givingFeedback.defaultGoal'),
       defaultOtherParty: t('givingFeedback.defaultOtherParty'),
+      description: t('givingFeedback.description'),
     },
     {
       id: 'performance_reviews',
@@ -19,6 +20,7 @@ export function Categories(): ConversationCategory[] {
       defaultContext: t('performanceReviews.defaultContext'),
       defaultGoal: t('performanceReviews.defaultGoal'),
       defaultOtherParty: t('performanceReviews.defaultOtherParty'),
+      description: t('performanceReviews.description'),
     },
     {
       id: 'conflict_resolution',
@@ -27,6 +29,7 @@ export function Categories(): ConversationCategory[] {
       defaultContext: t('conflictResolution.defaultContext'),
       defaultGoal: t('conflictResolution.defaultGoal'),
       defaultOtherParty: t('conflictResolution.defaultOtherParty'),
+      description: t('conflictResolution.description'),
     },
     {
       id: 'salary_discussions',
@@ -35,6 +38,7 @@ export function Categories(): ConversationCategory[] {
       defaultContext: t('salaryDiscussions.defaultContext'),
       defaultGoal: t('salaryDiscussions.defaultGoal'),
       defaultOtherParty: t('salaryDiscussions.defaultOtherParty'),
+      description: t('salaryDiscussions.description'),
     },
   ];
 }

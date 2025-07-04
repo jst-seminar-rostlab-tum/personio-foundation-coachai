@@ -19,11 +19,11 @@ function CategoryButton({ className, selected, children, ...props }: CategoryBut
 
   if (Array.isArray(children)) {
     // Expect: [image, title, description]
-    [image, title, description = 'This is a short description of the scenario.'] = children;
+    [image, title, description] = children;
   } else if (children && typeof children === 'object') {
     image = children;
     title = null;
-    description = 'This is a short description of the scenario.';
+    description = null;
   }
 
   return (
@@ -42,9 +42,13 @@ function CategoryButton({ className, selected, children, ...props }: CategoryBut
         <div className="flex justify-center w-full mb-2">{image}</div>
         <div className="flex flex-col w-full text-left gap-2 mt-1">
           <span className="text-xl text-bw-70 font-semibold">{title}</span>
-          <span className={cn('text-base leading-relaxed', selected ? 'text-bw-70' : 'text-bw-40')}>
-            {description}
-          </span>
+          {description && (
+            <span
+              className={cn('text-base leading-relaxed', selected ? 'text-bw-70' : 'text-bw-40')}
+            >
+              {description}
+            </span>
+          )}
         </div>
       </div>
     </button>
