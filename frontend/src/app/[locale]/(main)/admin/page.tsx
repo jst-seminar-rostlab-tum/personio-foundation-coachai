@@ -29,7 +29,7 @@ export default async function AdminPage() {
   const PAGE_SIZE = 4;
   const statsData = adminService.getAdminStats(api);
   const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
-  const usersData = UserProfileService.getPaginatedUsers(api, { page: 1, pageSize: 10 });
+  const usersData = UserProfileService.getPaginatedUsers(api, 1, PAGE_SIZE);
   const [stats, reviews, users] = await Promise.all([statsData, reviewsData, usersData]);
   const t = await getTranslations('Admin');
   const tCommon = await getTranslations('Common');
