@@ -23,9 +23,6 @@ class Settings(BaseSettings):
 
     GEMINI_API_KEY: str = ''
     OPENAI_API_KEY: str = ''
-    VERTEXAI_PROJECT: str = 'personio-foundation'
-    VERTEXAI_LOCATION: str = 'europe-west9'
-    VERTEXAI_CRED_PATH: str = ''  # TODO: Add credentials, probably change type
 
     CORS_ORIGIN: str = 'http://localhost:3000'
 
@@ -40,6 +37,8 @@ class Settings(BaseSettings):
 
     ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
+    DEFAULT_CHEAP_MODEL = 'gemini-2.0-flash-lite-001'
+    DEFAULT_MODEL = 'gemini-2.5-pro'
 
     DEV_MODE_SKIP_AUTH: bool = False
     DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.USER.value
@@ -57,6 +56,14 @@ class Settings(BaseSettings):
     GCP_CLIENT_ID: str = ''
     GCP_BUCKET: str = 'coachai'
     GCP_PROJECT_ID: str = 'personio-foundation'
+
+    # Vertex AI credentials
+    VERTEXAI_PRIVATE_KEY_ID: str = ''
+    VERTEXAI_PRIVATE_KEY: str = ''
+    VERTEXAI_CLIENT_EMAIL: str = ''
+    VERTEXAI_CLIENT_ID: str = ''
+    VERTEXAI_PROJECT: str = 'personio-foundation'
+    VERTEXAI_LOCATION: str = 'europe-west9'
 
     @property
     def mock_user_data(self) -> MockUser:
