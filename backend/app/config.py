@@ -58,6 +58,12 @@ class Settings(BaseSettings):
     GCP_PROJECT_ID: str = 'personio-foundation'
 
     # Vertex AI credentials
+    VERTEXAI_PRIVATE_KEY_ID: str = ''
+    VERTEXAI_PRIVATE_KEY: str = ''
+    VERTEXAI_CLIENT_EMAIL: str = ''
+    VERTEXAI_CLIENT_ID: str = ''
+    VERTEXAI_PROJECT: str = 'personio-foundation'
+    VERTEXAI_LOCATION: str = 'europe-west9'
 
     @property
     def mock_user_data(self) -> MockUser:
