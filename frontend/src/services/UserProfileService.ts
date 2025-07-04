@@ -57,7 +57,6 @@ const deleteUser = async (api: AxiosInstance, deleteUserId?: string) => {
   }
 };
 
-// Updated to match new API and interface: (api, page, limit, emailSubstring)
 const getPaginatedUsers = async (
   api: AxiosInstance,
   page: number,

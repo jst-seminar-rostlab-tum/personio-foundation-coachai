@@ -8,9 +8,9 @@ import Input from '@/components/ui/Input';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { UserProfileService as ClientUserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiClient';
-import { showErrorToast } from '@/lib/toast';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import type { UserProfile as User, UserPaginationResponse } from '@/interfaces/models/UserProfile';
+import { showErrorToast } from '@/lib/utils/toast';
 
 type UsersListProps = UserPaginationResponse;
 export default function UsersList({ users, totalUsers, page, limit }: UsersListProps) {
@@ -19,7 +19,7 @@ export default function UsersList({ users, totalUsers, page, limit }: UsersListP
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [hasMore, setHasMore] = useState(userList.length < totalUsers);
-  const t = useTranslations('Common');
+  const tCommon = useTranslations('Common');
 
   const fetchUsers = async (pageNum: number, searchStr: string) => {
     setLoading(true);
@@ -65,7 +65,7 @@ export default function UsersList({ users, totalUsers, page, limit }: UsersListP
           </span>
           <Input
             type="text"
-            placeholder={t('search')}
+            placeholder={tCommon('search')}
             value={search}
             onChange={handleSearch}
             className="w-full pl-10 pr-3 py-2 border border-bw-20 rounded text-sm text-bw-70 placeholder-bw-40 focus:border-bw-20 focus-visible:outline-none focus-visible:ring-0"
@@ -78,7 +78,7 @@ export default function UsersList({ users, totalUsers, page, limit }: UsersListP
         </div>
       </div>
       {userList.length === 0 && !loading ? (
-        <EmptyListComponent itemType={t('users')} />
+        <EmptyListComponent itemType={tCommon('users')} />
       ) : (
         <>
           <div className="overflow-x-auto">
@@ -89,8 +89,12 @@ export default function UsersList({ users, totalUsers, page, limit }: UsersListP
               </colgroup>
               <thead>
                 <tr>
-                  <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('email')}</th>
-                  <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('actions')}</th>
+                  <th className="text-left font-semibold text-bw-70 py-2 px-2">
+                    {tCommon('email')}
+                  </th>
+                  <th className="text-left font-semibold text-bw-70 py-2 px-2">
+                    {tCommon('actions')}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -108,7 +112,7 @@ export default function UsersList({ users, totalUsers, page, limit }: UsersListP
                         <Button
                           variant="ghost"
                           size="icon"
-                          aria-label={t('deleteUser')}
+                          aria-label={tCommon('deleteUser')}
                           className="group"
                         >
                           <Trash2 className="w-4 h-4 text-bw-40 group-hover:text-flame-50" />
@@ -123,7 +127,7 @@ export default function UsersList({ users, totalUsers, page, limit }: UsersListP
           {hasMore && (
             <div className="flex justify-center mt-4">
               <Button onClick={handleLoadMore} disabled={loading} variant="ghost">
-                {loading ? t('loading') : t('loadMore')}
+                {loading ? tCommon('loading') : tCommon('loadMore')}
                 <ChevronDown className="ml-2 w-4 h-4" />
               </Button>
             </div>
