@@ -3,6 +3,14 @@ import Image from 'next/image';
 import { MessageSquare, Video, BrainCircuit, TrendingUp, Award, Target } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getTranslations } from 'next-intl/server';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
+import { MetadataProps } from '@/interfaces/props/MetadataProps';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '', false);
+}
 
 export default async function AboutPage() {
   const t = await getTranslations('HomePage');
@@ -74,7 +82,7 @@ export default async function AboutPage() {
                 <div className="flex flex-col lg:flex-row gap-4 w-full">
                   <Button asChild variant="default" className="w-full md:w-auto text-center">
                     <Link href="/login" className="w-full md:w-auto">
-                      {t('hero.cta.primary')}
+                      {t('getStarted')}
                     </Link>
                   </Button>
                   <Button asChild variant="secondary" className="w-full md:w-auto text-center">
@@ -169,7 +177,7 @@ export default async function AboutPage() {
               <div className="w-full">
                 <Link href="/login" className="inline-flex items-center justify-center w-full">
                   <Button variant="default" className="w-full md:w-auto">
-                    {t('cta.button')}
+                    {t('getStarted')}
                   </Button>
                 </Link>
               </div>

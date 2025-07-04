@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { adminService } from '@/services/AdminService';
-import { showSuccessToast, showErrorToast } from '@/lib/toast';
+import { showSuccessToast, showErrorToast } from '@/lib/utils/toast';
 import { api } from '@/services/ApiClient';
 
 interface TokenSetterProps {
@@ -14,6 +14,7 @@ interface TokenSetterProps {
 
 export default function TokenSetter({ dailyTokenLimit }: TokenSetterProps) {
   const t = useTranslations('Admin');
+  const tCommon = useTranslations('Common');
   const [tokenLimit, setTokenLimit] = useState<number>(dailyTokenLimit);
   const [savedTokenLimit, setSavedTokenLimit] = useState<number>(dailyTokenLimit);
   const [saving, setSaving] = useState(false);
@@ -55,7 +56,7 @@ export default function TokenSetter({ dailyTokenLimit }: TokenSetterProps) {
           disabled={saving || !hasTokenLimitChanged}
           variant={saving || !hasTokenLimitChanged ? 'disabled' : 'default'}
         >
-          {saving ? t('saving') : t('save')}
+          {saving ? tCommon('saving') : tCommon('save')}
         </Button>
       </div>
     </div>
