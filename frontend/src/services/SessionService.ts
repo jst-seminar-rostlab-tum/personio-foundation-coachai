@@ -58,26 +58,9 @@ const updateSession = async (api: AxiosInstance, sessionId: string, session: Par
   }
 };
 
-const createSessionTurn = async (
-  api: AxiosInstance,
-  sessionId: string,
-  speaker: string,
-  text: string,
-  audioUri: string = '',
-  aiEmotion: string = '',
-  startOffsetMs: number = 0,
-  endOffsetMs: number = 0
-) => {
+const createSessionTurn = async (api: AxiosInstance, sessionTurn: FormData) => {
   try {
-    const response = await api.post(`/session-turns`, {
-      sessionId,
-      speaker,
-      text,
-      audioUri,
-      aiEmotion,
-      startOffsetMs,
-      endOffsetMs,
-    });
+    const response = await api.post(`/session-turns`, sessionTurn);
     return response;
   } catch (error) {
     console.error(error);
