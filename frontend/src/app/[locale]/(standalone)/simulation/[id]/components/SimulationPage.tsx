@@ -23,7 +23,6 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
     remoteAudioRef,
     messages,
     elapsedTimeS,
-    audioUrls,
     toggleMic,
     cleanup,
   } = useWebRTC(sessionId);
@@ -66,16 +65,6 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
         onDisconnect={onDisconnect}
       />
       <audio ref={remoteAudioRef} autoPlay playsInline />
-      {audioUrls.map(({ url, filename }) => (
-        <a
-          key={url}
-          href={url}
-          download={`${filename}.wav`}
-          className="block mt-2 text-blue-600 underline"
-        >
-          {filename}
-        </a>
-      ))}
     </div>
   );
 }

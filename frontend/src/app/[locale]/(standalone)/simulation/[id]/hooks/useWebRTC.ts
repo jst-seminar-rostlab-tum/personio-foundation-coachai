@@ -21,13 +21,8 @@ export function useWebRTC(sessionId: string) {
 
   const { startRemoteRecording, stopRemoteRecording } = useRemoteAudioRecorder();
 
-  const {
-    addAudioToTurn,
-    addMetadataToTurn,
-    addStartOffsetMsToTurn,
-    addEndOffsetMsToTurn,
-    audioUrls,
-  } = useSessionTurns();
+  const { addAudioToTurn, addMetadataToTurn, addStartOffsetMsToTurn, addEndOffsetMsToTurn } =
+    useSessionTurns();
 
   const [isConnected, setIsConnected] = useState(false);
 
@@ -213,7 +208,6 @@ export function useWebRTC(sessionId: string) {
     remoteAudioRef,
     messages,
     elapsedTimeS,
-    audioUrls,
     cleanup,
   };
 }

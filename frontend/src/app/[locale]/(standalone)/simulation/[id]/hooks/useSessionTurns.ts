@@ -1,14 +1,15 @@
 import { CreateSessionTurnRequest } from '@/interfaces/models/Session';
 import { sessionService } from '@/services/SessionService';
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/utils/toast';
+import { useTranslations } from 'next-intl';
 
 type PartialSessionTurn = Partial<CreateSessionTurnRequest>;
 
 export function useSessionTurns() {
+  const t = useTranslations('Simulation');
   const sessionTurnsMap = useRef<Map<string, PartialSessionTurn>>(new Map());
-  const [audioUrls, setAudioUrls] = useState<{ url: string; filename: string }[]>([]);
 
   const convertSessionTurnToFormData = useCallback((turn: CreateSessionTurnRequest): FormData => {
     const formData = new FormData();
@@ -49,10 +50,10 @@ export function useSessionTurns() {
         await sessionService.createSessionTurn(api, formData);
         removeTurn(turnId);
       } catch (error) {
-        showErrorToast(error, 'Failed to post session turn');
+        showErrorToast(error, t('sessionTurnError'));
       }
     },
-    [isTurnComplete, convertSessionTurnToFormData, removeTurn]
+    [isTurnComplete, convertSessionTurnToFormData, removeTurn, t]
   );
 
   const addAudioToTurn = useCallback(
@@ -62,9 +63,6 @@ export function useSessionTurns() {
         ...existing,
         audioFile,
       });
-
-      const url = URL.createObjectURL(audioFile);
-      setAudioUrls((prev) => [...prev, { url, filename: turnId }]);
 
       postSessionTurn(turnId);
     },
@@ -113,6 +111,5 @@ export function useSessionTurns() {
     addMetadataToTurn,
     addStartOffsetMsToTurn,
     addEndOffsetMsToTurn,
-    audioUrls,
   };
 }

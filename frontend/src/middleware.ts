@@ -17,6 +17,7 @@ export default async function middleware(request: NextRequest) {
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data:;
     frame-src 'self' https://vercel.live;
+    media-src 'self' https://storage.googleapis.com;
     font-src 'self';
     object-src 'none';
     base-uri 'self';
