@@ -1,15 +1,13 @@
 'use client';
 
 import { ChevronDown, Star } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
-import { Review, ReviewsPaginated } from '@/interfaces/Review';
-import { api } from '@/services/client/Api';
-import { reviewService } from '@/services/server/ReviewService';
-import { showErrorToast } from '@/lib/toast';
+import { Review, ReviewsPaginated } from '@/interfaces/models/Review';
+import { reviewService } from '@/services/ReviewService';
+import { showErrorToast } from '@/lib/utils/toast';
 import {
   Select,
   SelectContent,
@@ -19,12 +17,15 @@ import {
 } from '@/components/ui/Select';
 import { useRouter } from 'next/navigation';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
+import { formattedDate } from '@/lib/utils/formatDateAndTime';
+import { api } from '@/services/ApiClient';
 
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
   const limit = pagination?.pageSize;
   const router = useRouter();
-  const t = useTranslations('Admin');
+  const locale = useLocale();
   const tCommon = useTranslations('Common');
+  const tAdmin = useTranslations('Admin');
   const [visibleCount, setVisibleCount] = useState(limit);
   const [pageNumber, setPageNumber] = useState(pagination?.currentPage);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +79,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
   return (
     <div>
       <div className="w-full max-w-md mb-8 text-left">
-        <div className="text-lg font-semibold text-bw-70 mb-4">{t('userReviews')}</div>
+        <div className="text-lg font-semibold text-bw-70 mb-4">{tCommon('reviews')}</div>
         <div className="flex flex-col sm:flex-row items-start gap-4">
           <div className="flex flex-col items-start justify-center min-w-0">
             <Star className="w-14 h-14 fill-marigold-30 mb-2" strokeWidth={0} />
@@ -116,26 +117,28 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
       ) : (
         <div className="w-full mb-8 text-left">
           <div className="flex items-center justify-between mb-4">
-            <div className="text-lg font-semibold text-bw-70">{t('userReviews')}</div>
+            <div className="text-lg font-semibold text-bw-70">{tCommon('reviews')}</div>
             <Select value={sortBy} onValueChange={handleSortChange}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={t('sortBy')} />
+                <SelectValue placeholder={tAdmin('sortBy')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">{t('sortNewest')}</SelectItem>
-                <SelectItem value="oldest">{t('sortOldest')}</SelectItem>
-                <SelectItem value="highest">{t('sortHighest')}</SelectItem>
-                <SelectItem value="lowest">{t('sortLowest')}</SelectItem>
+                <SelectItem value="newest">{tAdmin('sortNewest')}</SelectItem>
+                <SelectItem value="oldest">{tAdmin('sortOldest')}</SelectItem>
+                <SelectItem value="highest">{tAdmin('sortHighest')}</SelectItem>
+                <SelectItem value="lowest">{tAdmin('sortLowest')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {reviewsStorage?.slice(0, visibleCount).map((review) => (
               <div
-                onClick={() => handleReviewClick(review.sessionId)}
+                onClick={() => review.allowAdminAccess && handleReviewClick(review.sessionId)}
                 key={review.id}
                 className={`border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start ${
-                  review.sessionId ? 'cursor-pointer' : 'cursor-not-allowed'
+                  review.sessionId && review.allowAdminAccess
+                    ? 'cursor-pointer'
+                    : 'cursor-not-allowed'
                 } transition-all duration-300 hover:shadow-md`}
               >
                 <div className="flex items-center mb-2">
@@ -151,9 +154,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                   ))}
                 </div>
                 <div className="text-sm text-bw-70 mb-2">{review.comment}</div>
-                <div className="text-sm text-bw-40">
-                  {new Date(review.date).toLocaleDateString()}
-                </div>
+                <div className="text-sm text-bw-40">{formattedDate(review.date, locale)}</div>
               </div>
             ))}
           </div>

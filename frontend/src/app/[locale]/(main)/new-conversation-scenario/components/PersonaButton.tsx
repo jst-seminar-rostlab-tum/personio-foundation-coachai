@@ -1,5 +1,4 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
 
 interface PersonaButtonProps {
   children: React.ReactNode;
@@ -15,7 +14,7 @@ export function PersonaButton({ children, selected, onClick, className }: Person
   return (
     <button
       type="button"
-      className={cn(personaButtonStyles, { 'outline-none bg-marigold-30': selected }, className)}
+      className={`${personaButtonStyles}${selected ? ' outline-none bg-marigold-30' : ''}${className ? ` ${className}` : ''}`}
       onClick={onClick}
     >
       {children}

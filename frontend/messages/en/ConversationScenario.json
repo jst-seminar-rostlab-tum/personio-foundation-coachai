@@ -1,6 +1,6 @@
 {
   "metaTitle": "New Training - Coach AI",
-  "metaDescription": "Start a new training session with personalized coaching",
+  "metaDescription": "Start a new training session with personal coaching",
   "title": "New Training Session",
   "steps": {
     "category": "Category",
@@ -9,26 +9,33 @@
   },
   "category": {
     "title": "Choose a Scenario",
-    "customPlaceholder": "E.g., Promotion discussion, Onboarding new team member...",
+    "options": {
+      "feedback": "Giving Feedback",
+      "conflict": "Conflict Resolution",
+      "performance": "Performance Reviews",
+      "salary": "Salary Discussions",
+      "custom": "Custom"
+    },
+    "customPlaceholder": "e.g. Promotion discussion, onboarding new team members ...",
     "customInput": "Define your own conversation topic"
   },
   "situation": {
-    "title": "Describe your Situation",
+    "title": "Describe Your Situation",
     "otherParty": {
       "title": "Who is the other party?",
       "placeholder": "Enter name"
     },
     "context": {
       "title": "What is the context?",
-      "placeholder": "Please specify the context of the conversation here."
+      "placeholder": "Please describe the context of the conversation."
     },
     "goal": {
       "title": "What is your goal?",
-      "placeholder": "What outcome do you hope to achieve?"
+      "placeholder": "What outcome do you want to achieve?"
     }
   },
   "customize": {
-    "title": "Customize other Party",
+    "title": "Customize Other Party",
     "persona": {
       "title": "Choose a Persona",
       "about": "About",
@@ -41,14 +48,14 @@
             "Encouraging and supportive",
             "Sees opportunities in challenges",
             "Builds positive relationships",
-            "Motivates others naturally"
+            "Naturally motivates others"
           ],
           "trainingFocus": [
-            "Maintain their positive energy",
+            "Maintain your positive energy",
             "Channel enthusiasm constructively",
             "Balance optimism with realism",
-            "Use their energy to inspire others",
-            "Leverage their natural motivation"
+            "Use your energy to inspire others",
+            "Leverage your natural motivation"
           ]
         },
         "angry": {
@@ -56,31 +63,31 @@
             "Frustrated and defensive",
             "May interrupt or raise voice",
             "Focuses on problems and blame",
-            "Resistant to suggestions",
-            "Emotionally charged responses"
+            "Resists suggestions",
+            "Emotionally charged reactions"
           ],
           "trainingFocus": [
             "Stay calm and composed",
             "Acknowledge their feelings",
-            "Avoid escalating conflicts",
+            "Don't escalate conflict",
             "Focus on solutions, not blame",
-            "Give them space to vent safely"
+            "Give them space to vent"
           ]
         },
         "shy": {
           "traits": [
             "Quiet and reserved",
             "Hesitant to share opinions",
-            "Prefers listening over speaking",
+            "Prefers listening to speaking",
             "May avoid eye contact",
-            "Needs time to process thoughts"
+            "Needs time to reflect"
           ],
           "trainingFocus": [
             "Create a safe, non-judgmental space",
             "Ask open-ended questions",
-            "Give them time to respond",
-            "Validate their contributions",
-            "Build confidence gradually"
+            "Give them time to answer",
+            "Value their contributions",
+            "Build trust gradually"
           ]
         },
         "casual": {
@@ -142,9 +149,8 @@
       }
     }
   },
-  "categories": [
-    {
-      "id": "giving_feedback",
+  "categories": {
+    "givingFeedback": {
       "name": "Giving Feedback",
       "iconUri": "/icons/category-giving_feedback.svg",
       "description": "Give constructive feedback to help others improve.",
@@ -152,8 +158,7 @@
       "defaultGoal": "Provide constructive feedback effectively.",
       "defaultOtherParty": "Team member"
     },
-    {
-      "id": "performance_reviews",
+    "performanceReviews": {
       "name": "Performance Reviews",
       "iconUri": "/icons/category-performance_reviews.svg",
       "description": "Motivate and guide with effective reviews.",
@@ -161,8 +166,7 @@
       "defaultGoal": "Evaluate and discuss employee performance.",
       "defaultOtherParty": "Employee"
     },
-    {
-      "id": "conflict_resolution",
+    "conflictResolution": {
       "name": "Conflict Resolution",
       "iconUri": "/icons/category-conflict_resolution.svg",
       "description": "Resolve conflicts and build a positive team.",
@@ -170,8 +174,7 @@
       "defaultGoal": "Resolve conflicts and improve team dynamics.",
       "defaultOtherParty": "Team members"
     },
-    {
-      "id": "salary_discussions",
+    "salaryDiscussions": {
       "name": "Salary Discussions",
       "iconUri": "/icons/category-salary_discussions.svg",
       "description": "Prepare for open salary conversations.",
@@ -179,12 +182,16 @@
       "defaultGoal": "Reach a mutually beneficial agreement on salary.",
       "defaultOtherParty": "Employer"
     }
-  ],
-  "navigation": {
-    "back": "Go Back",
-    "next": "Next Step",
-    "create": "Create Training",
-    "creating": "Creating..."
   },
-  "errorMessage": "An error occurred while creating the scenario. Please try again later."
+  "errorMessage": "An error occurred while creating the scenario. Please try again later.",
+  "easy": "Easy",
+  "medium": "Medium",
+  "hard": "Hard",
+  "simple": "Simple",
+  "complex": "Complex",
+  "neutral": "Neutral",
+  "creating": "Creating...",
+  "create": "Create",
+  "personaSelection": "Select Persona",
+  "difficultyTitle": "Difficulty"
 }

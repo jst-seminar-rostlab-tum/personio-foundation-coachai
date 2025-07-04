@@ -3,9 +3,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
-import { ConversationScenarioPreparation } from '@/interfaces/ConversationScenario';
-import { showErrorToast } from '@/lib/toast';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
+import { ConversationScenarioPreparation } from '@/interfaces/models/ConversationScenario';
+import { showErrorToast } from '@/lib/utils/toast';
+import { api } from '@/services/ApiClient';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
@@ -22,7 +23,7 @@ export default function PreparationContent() {
   const getTrainingPreparation = useCallback(
     async (id: string) => {
       try {
-        const response = await conversationScenarioService.getPreparation(id);
+        const response = await conversationScenarioService.getPreparation(api, id);
 
         if (response.status === 202) {
           setTimeout(() => {
@@ -73,25 +74,25 @@ export default function PreparationContent() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl">{t('objectives.title')}</h2>
+            <h2 className="text-xl">{t('objectives')}</h2>
           </div>
           {preparationData && <ObjectivesList objectives={preparationData.objectives} />}
         </section>
 
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl">{t('preparation.title')}</h2>
+            <h2 className="text-xl">{t('preparation')}</h2>
           </div>
           {preparationData && <PreparationChecklist checklist={preparationData.prepChecklist} />}
         </section>
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl">{t('keyConcepts.title')}</h2>
+            <h2 className="text-xl">{t('keyConcepts')}</h2>
           </div>
           {preparationData && <PreparationKeyConcepts keyConcepts={preparationData.keyConcepts} />}
         </section>
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
-          <h2 className="text-xl">{t('resources.title')}</h2>
+          <h2 className="text-xl">{t('resources')}</h2>
         </section>
       </div>
     </>

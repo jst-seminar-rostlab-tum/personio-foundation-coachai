@@ -1,15 +1,31 @@
-import { useState } from 'react';
+'use client';
+
+import { useState, InputHTMLAttributes } from 'react';
 import { EyeIcon, EyeOffIcon, CheckIcon, XIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cnMerge';
 import { useTranslations } from 'next-intl';
-import { PasswordInputProps } from '@/interfaces/PasswordInput';
 import Input from '@/components/ui/Input';
+
+export interface PasswordRequirement {
+  id: string;
+  label: string;
+  test: (password: string) => boolean;
+}
+
+interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+  placeholder: string;
+  disabled: boolean;
+  requirements?: PasswordRequirement[];
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  autocomplete?: string;
+}
 
 export function PasswordInput({
   placeholder,
   disabled,
   requirements,
   onChange,
+  autocomplete,
   ...props
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,6 +46,7 @@ export function PasswordInput({
           disabled={disabled}
           type={showPassword ? 'text' : 'password'}
           className="w-full"
+          autoComplete={autocomplete}
           {...props}
           onChange={handlePasswordChange}
         />

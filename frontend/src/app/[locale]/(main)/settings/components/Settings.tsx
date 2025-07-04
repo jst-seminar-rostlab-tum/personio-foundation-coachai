@@ -13,13 +13,19 @@ import {
 import Switch from '@/components/ui/Switch';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
-import { UserProfileService } from '@/services/client/UserProfileService';
-import { UserPreference } from '@/interfaces/UserInputFields';
-import { PrimaryGoals, UserRoles } from '@/lib/utils';
-import { UserProfile } from '@/interfaces/UserProfile';
-import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import { UserProfileService } from '@/services/UserProfileService';
+import { UserPreference } from '@/interfaces/models/UserInputFields';
+import { UserRoles } from '@/lib/constants/userRoles';
+import { PrimaryGoals } from '@/lib/constants/primaryGoals';
+import { UserProfile } from '@/interfaces/models/UserProfile';
+import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
 import JSZip from 'jszip';
+import { api } from '@/services/ApiClient';
 import UserPreferences from './UserPreferences';
+
+interface SettingsProps {
+  userProfile: Promise<UserProfile>;
+}
 
 const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   const score = userProfileData.confidenceScores?.find(
@@ -28,9 +34,9 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   return score !== undefined ? [score] : [50];
 };
 
-export default function Settings({ userProfile }: { userProfile: Promise<UserProfile> }) {
+export default function Settings({ userProfile }: SettingsProps) {
   const t = useTranslations('Settings');
-  const tOptions = useTranslations('Settings.leadershipGoals');
+  const tCommon = useTranslations('Common');
   const userProfileData = use(userProfile);
 
   const [storeConversations, setStoreConversations] = useState(
@@ -84,7 +90,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     setConversation,
   };
   const currentRoleSelect: UserPreference = {
-    label: tOptions('currentRole.label'),
+    label: t('currentRole'),
     options: UserRoles(),
     value: currentRole,
     defaultValue: 'team_leader',
@@ -93,11 +99,11 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     },
   };
   const primaryGoalsSelect: UserPreference<string[]> = {
-    label: tOptions('primaryGoals.label'),
+    label: t('primaryGoals.label'),
     options: PrimaryGoals(),
     value: primaryGoals.slice(0, 3),
-    placeholder: tOptions('primaryGoals.placeholder'),
-    maxSelectedDisclaimer: tOptions('primaryGoals.maxOptionsSelected'),
+    placeholder: t('primaryGoals.placeholder'),
+    maxSelectedDisclaimer: t('primaryGoals.maxOptionsSelected'),
     onChange: (value: string[]) => {
       setPrimaryGoals(value);
     },
@@ -109,7 +115,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
     setIsSubmitting(true);
 
     try {
-      await UserProfileService.updateUserProfile({
+      await UserProfileService.updateUserProfile(api, {
         fullName: userProfileData.fullName,
         storeConversations,
         professionalRole: currentRole,
@@ -137,7 +143,7 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
 
   const handleExport = async () => {
     try {
-      const data = await UserProfileService.exportUserData();
+      const data = await UserProfileService.exportUserData(api);
       const zip = new JSZip();
       zip.file('user_data_export.json', JSON.stringify(data, null, 2));
       const blob = await zip.generateAsync({ type: 'blob' });
@@ -149,83 +155,85 @@ export default function Settings({ userProfile }: { userProfile: Promise<UserPro
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-      showSuccessToast(t('exportSuccess'));
+      showSuccessToast(t('exportSettingsSuccess'));
     } catch (error) {
-      showErrorToast(error, t('exportError'));
+      showErrorToast(error, t('exportSettingsError'));
     }
   };
 
   return (
     <div>
-      <h1 className="text-2xl">{t('title')}</h1>
+      <div className="flex flex-col gap-8">
+        <h1 className="text-2xl">{tCommon('settings')}</h1>
 
-      <div className="space-y-4 flex items-center rounded-t-lg">
-        <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
-          {/* Privacy Controls */}
-          <AccordionItem value="item-1">
-            <AccordionTrigger>{t('privacyControls')}</AccordionTrigger>
-            <AccordionContent>
-              {/* Store Conversations */}
-              <div className="flex items-center justify-between w-full px-2 gap-8">
-                <div className="flex flex-col">
-                  <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
-                  <div className="text-bw-40">
-                    {storeConversations ? t('ninetyDays') : t('zeroDays')}
+        <div className="space-y-4 flex items-center rounded-t-lg">
+          <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
+            {/* Privacy Controls */}
+            <AccordionItem value="item-1">
+              <AccordionTrigger>{t('privacyControls')}</AccordionTrigger>
+              <AccordionContent>
+                {/* Store Conversations */}
+                <div className="flex items-center justify-between w-full px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
+                    <div className="text-bw-40">
+                      {storeConversations ? t('ninetyDays') : t('zeroDays')}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
                   </div>
                 </div>
-                <div className="flex flex-col items-center">
-                  <Switch checked={storeConversations} onCheckedChange={setStoreConversations} />
+                {/* Export data */}
+                <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{t('exportData')}</div>
+                  </div>
+                  <div className="flex items-center">
+                    <Button variant="outline" className="w-full" onClick={handleExport}>
+                      <Download className="w-4 h-4" />
+                      <span className="hidden sm:inline">{tCommon('export')}</span>
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              {/* Export data */}
-              <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
-                <div className="flex flex-col">
-                  <div className="text-bw-70">{t('exportData')}</div>
+                {/* Delete Account */}
+                <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{tCommon('deleteAccount')}</div>
+                  </div>
+                  <DeleteUserHandler>
+                    <Button variant="destructive">{tCommon('deleteAccount')}</Button>
+                  </DeleteUserHandler>
                 </div>
-                <div className="flex items-center">
-                  <Button variant="outline" className="w-full" onClick={handleExport}>
-                    <Download className="w-4 h-4" />
-                    <span className="hidden sm:inline">{t('export')}</span>
-                  </Button>
-                </div>
-              </div>
-              {/* Delete Account */}
-              <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
-                <div className="flex flex-col">
-                  <div className="text-bw-70">{t('deleteAccount')}</div>
-                </div>
-                <DeleteUserHandler>
-                  <Button variant="destructive">{t('deleteAccount')}</Button>
-                </DeleteUserHandler>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          {/* Personalization Settings */}
-          <AccordionItem value="item-2">
-            <AccordionTrigger>{t('personalizationSettings')}</AccordionTrigger>
-            <AccordionContent>
-              <UserPreferences
-                className="flex flex-col gap-8 px-2"
-                currentRole={currentRoleSelect}
-                primaryGoals={primaryGoalsSelect}
-              />
-              <hr className="border-bw-20 px-2" />
-              <UserConfidenceFields
-                className="flex flex-col gap-8 px-2"
-                {...confidenceFieldsProps}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+              </AccordionContent>
+            </AccordionItem>
+            {/* Personalization Settings */}
+            <AccordionItem value="item-2">
+              <AccordionTrigger>{t('personalizationSettings')}</AccordionTrigger>
+              <AccordionContent>
+                <UserPreferences
+                  className="flex flex-col gap-8 px-2"
+                  currentRole={currentRoleSelect}
+                  primaryGoals={primaryGoalsSelect}
+                />
+                <hr className="border-bw-20 px-2" />
+                <UserConfidenceFields
+                  className="flex flex-col gap-8 px-2"
+                  {...confidenceFieldsProps}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+        <Button
+          size="full"
+          onClick={handleSaveSettings}
+          variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
+          disabled={isSubmitting || !hasFormChanged()}
+        >
+          {isSubmitting ? tCommon('saving') : t('saveSettings')}
+        </Button>
       </div>
-      <Button
-        size="full"
-        onClick={handleSaveSettings}
-        variant={isSubmitting || !hasFormChanged() ? 'disabled' : 'default'}
-        disabled={isSubmitting || !hasFormChanged()}
-      >
-        {isSubmitting ? t('saving') : t('saveSettings')}
-      </Button>
     </div>
   );
 }

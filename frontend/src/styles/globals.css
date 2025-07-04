@@ -5,7 +5,7 @@
   --foreground: #171717;
   --background-light: #f0f0f0;
   --flame-50: #ff3700;
-  --forest-50: #33CC7B;
+  --forest-50: #33cc7b;
   --bw-10: #f4f4f5;
   --bw-20: #e4e4e7;
   --bw-30: #d4d4d8;
@@ -104,4 +104,9 @@ body {
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  body[data-scroll-locked] {
+    overflow: visible !important;
+    margin-right: 0 !important;
+  }
 }

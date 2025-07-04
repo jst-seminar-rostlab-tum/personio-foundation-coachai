@@ -1,16 +1,20 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { SimulationPageComponentProps } from '@/interfaces/SimulationPageComponentProps';
 import { useRouter } from 'next/navigation';
-import { SessionStatus } from '@/interfaces/Session';
-import { sessionService } from '@/services/client/SessionService';
+import { SessionStatus } from '@/interfaces/models/Session';
+import { sessionService } from '@/services/SessionService';
 import { useTranslations } from 'next-intl';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
+import { api } from '@/services/ApiClient';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages, { Message } from './SimulationMessages';
+
+interface SimulationPageComponentProps {
+  sessionId: string;
+}
 
 function useOpenAIRealtimeWebRTC(sessionId: string) {
   const [isMicActive, setIsMicActive] = useState(false);
@@ -50,7 +54,7 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
     cleanupRef.current = false;
 
     try {
-      const { data } = await sessionService.updateSession(sessionId, {
+      const { data } = await sessionService.updateSession(api, sessionId, {
         status: SessionStatus.COMPLETED,
       });
       router.push(`/feedback/${data.id}`);
@@ -153,6 +157,7 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
 
           if (parsed.type === 'conversation.item.input_audio_transcription.completed') {
             await sessionService.createSessionTurn(
+              api,
               sessionId,
               'user',
               parsed.transcript,
@@ -180,6 +185,7 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
 
           if (parsed.type === 'response.audio_transcript.done') {
             await sessionService.createSessionTurn(
+              api,
               sessionId,
               'assistant',
               parsed.transcript,
@@ -209,6 +215,7 @@ function useOpenAIRealtimeWebRTC(sessionId: string) {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       const sdpResponseText: string = await sessionService.getSdpResponseTextFromRealtimeApi(
+        api,
         sessionId,
         offer.sdp
       );

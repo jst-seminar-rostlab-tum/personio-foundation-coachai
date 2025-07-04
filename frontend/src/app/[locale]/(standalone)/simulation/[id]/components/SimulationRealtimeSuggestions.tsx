@@ -29,30 +29,34 @@ export default function SimulationRealtimeSuggestions() {
   return (
     <>
       <div
-        className={`flex items-center justify-start gap-2 px-4 md:px-6 py-4 bg-white border-y border-bw-10 hover:cursor-pointer group relative z-20`}
+        className={`flex items-center justify-start gap-2 py-4 bg-white border-y border-bw-10 hover:cursor-pointer group relative z-20`}
         onClick={() => setShowSuggestions((prev) => !prev)}
       >
-        <ChevronUp
-          className={`w-5 h-5 transition-transform duration-600 ${showSuggestions ? 'rotate-180' : ''}`}
-        />
-        <span className="font-medium text-font-dark text-sm group-hover:underline">
-          Real-time Suggestions
-        </span>
+        <div className="w-full max-w-7xl mx-auto flex items-center gap-2 px-[clamp(1.25rem,4vw,4rem)]">
+          <ChevronUp
+            className={`w-5 h-5 transition-transform duration-600 ${showSuggestions ? 'rotate-180' : ''}`}
+          />
+          <span className="font-medium text-font-dark text-sm group-hover:underline">
+            Real-time Suggestions
+          </span>
+        </div>
       </div>
       <div
         className={`w-full overflow-hidden transition-all duration-600 ease-in-out ${
-          showSuggestions ? 'max-h-[45%]' : 'max-h-0'
+          showSuggestions ? 'h-[45vh] max-h-[45vh]' : 'h-0 max-h-0'
         }`}
       >
-        <div className="w-full flex flex-col overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] p-6 border-b border-background-light">
-          <ul className="flex flex-col gap-4 w-full">
-            {suggestions.map((suggestion, idx) => (
-              <li key={idx} className="bg-background-light rounded-lg border border-bw-20 p-4">
-                <div className="font-semibold text-font-dark mb-1">{suggestion.title}</div>
-                <div className="text-sm text-font-dark leading-snug">{suggestion.message}</div>
-              </li>
-            ))}
-          </ul>
+        <div className="w-full">
+          <div className="w-full max-w-7xl mx-auto flex flex-col overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] p-6 h-full px-[clamp(1.25rem,4vw,4rem)]">
+            <ul className="flex flex-col gap-4 w-full">
+              {suggestions.map((suggestion, idx) => (
+                <li key={idx} className="bg-background-light rounded-lg border border-bw-20 p-4">
+                  <div className="font-semibold text-font-dark mb-1">{suggestion.title}</div>
+                  <div className="text-sm text-font-dark leading-snug">{suggestion.message}</div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </>

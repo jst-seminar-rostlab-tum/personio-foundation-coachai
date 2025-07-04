@@ -5,20 +5,28 @@ import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { ConversationScenarioFormProps } from '@/interfaces/ConversationScenarioFormProps';
-import { ConversationCategory } from '@/interfaces/ConversationCategory';
-import { ConversationScenario } from '@/interfaces/ConversationScenario';
 import { Persona } from '@/interfaces/Persona';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
-import { showErrorToast } from '@/lib/toast';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
+import { showErrorToast } from '@/lib/utils/toast';
+import {
+  ConversationScenario,
+  ConversationCategory,
+} from '@/interfaces/models/ConversationScenario';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
+import { api } from '@/services/ApiClient';
+import { Categories } from '@/lib/constants/categories';
 import { CategoryStep } from './CategoryStep';
 import { CustomizeStep } from './CustomizeStep';
+
+interface ConversationScenarioFormProps {
+  categoriesData: ConversationCategory[];
+}
 
 export default function ConversationScenarioForm({
   categoriesData,
 }: ConversationScenarioFormProps) {
   const t = useTranslations('ConversationScenario');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const { locale } = useParams();
 
@@ -31,9 +39,7 @@ export default function ConversationScenarioForm({
   } = useConversationScenarioStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [categories, setCategories] = useState<ConversationCategory[]>(
-    t.raw('categories') as ConversationCategory[]
-  );
+  const [categories, setCategories] = useState<ConversationCategory[]>(Categories());
 
   // Reset form state when component mounts
   useEffect(() => {
@@ -83,7 +89,7 @@ export default function ConversationScenarioForm({
     };
 
     try {
-      const { data } = await conversationScenarioService.createConversationScenario(scenario);
+      const { data } = await conversationScenarioService.createConversationScenario(api, scenario);
       router.push(`/preparation/${data.scenarioId}`);
       setTimeout(reset, 2000);
     } catch (error) {
@@ -94,12 +100,12 @@ export default function ConversationScenarioForm({
 
   const getButtonText = () => {
     if (isSubmitting && currentStep === 1) {
-      return t('navigation.creating');
+      return t('creating');
     }
     if (currentStep === 1) {
-      return t('navigation.create');
+      return t('create');
     }
-    return t('navigation.next');
+    return tCommon('next');
   };
 
   return (
@@ -143,7 +149,7 @@ export default function ConversationScenarioForm({
             disabled={currentStep === 0}
           >
             <ArrowLeftIcon />
-            {t('navigation.back')}
+            {tCommon('back')}
           </Button>
         )}
         <Button
