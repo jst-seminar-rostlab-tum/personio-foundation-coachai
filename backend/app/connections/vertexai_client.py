@@ -17,7 +17,7 @@ VERTEXAI_LOCATION = settings.VERTEXAI_LOCATION
 
 creds_info = {
     'type': 'service_account',
-    'project_id': settings.VERTEXAI_PROJECT_ID,
+    'project_id': settings.VERTEXAI_PROJECT,
     'private_key_id': settings.VERTEXAI_PRIVATE_KEY_ID,
     'private_key': settings.VERTEXAI_PRIVATE_KEY.replace('\\n', '\n'),
     'client_email': settings.VERTEXAI_CLIENT_EMAIL,
@@ -28,7 +28,9 @@ creds_info = {
     'client_x509_cert_url': f'https://www.googleapis.com/robot/v1/metadata/x509/{settings.GCP_CLIENT_EMAIL}',
     'universe_domain': 'googleapis.com',
 }
-credentials = service_account.Credentials.from_service_account_info(creds_info)
+credentials = service_account.Credentials.from_service_account_info(
+    creds_info, scopes=['https://www.googleapis.com/auth/cloud-platform']
+)
 
 if not credentials:
     print(
@@ -40,7 +42,7 @@ if not credentials:
 else:
     ENABLE_AI = settings.ENABLE_AI
     vertexai_client = genai.Client(
-        vertexai=True, project=VERTEXAI_PROJECT, location=VERTEXAI_LOCATION
+        credentials=credentials, vertexai=True, project=VERTEXAI_PROJECT, location=VERTEXAI_LOCATION
     )
 
 
@@ -86,6 +88,9 @@ def call_llm_with_audio(
         response = vertexai_client.models.generate_content(
             model=selected_model, contents=[prompt, part]
         )
+
+        if not response.text:
+            return ''
         return response.text
     except Exception as e:
         print(f"Error uploading audio file '{audio_uri}': {e}")
@@ -111,14 +116,16 @@ def call_structured_llm_vertexai(
         model=selected_model,
         contents=request_prompt,
         config=GenerateContentConfig(
-            systemInstruction=system_prompt,
+            system_instruction=system_prompt,
             temperature=temperature,
-            maxTokens=max_tokens,
-            responseSchema=output_model,
-            # responseJsonSchema=output_model.model_json_schema()
-            # responseMimeType=
+            max_output_tokens=max_tokens,
+            response_schema=output_model,
+            response_mime_type='application/json',
         ),
     )
+
+    if not response.text:
+        raise ValueError('VertexAI LLM did not return a valid response')
 
     json_response = response.text
     return output_model.model_validate_json(json_response)
