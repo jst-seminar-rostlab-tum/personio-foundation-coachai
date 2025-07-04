@@ -23,6 +23,9 @@ class Settings(BaseSettings):
 
     GEMINI_API_KEY: str = ''
     OPENAI_API_KEY: str = ''
+    VERTEXAI_PROJECT: str = 'personio-foundation'
+    VERTEXAI_LOCATION: str = 'europe-west9'
+    VERTEXAI_CRED_PATH: str = ''  # TODO: Add credentials, probably change type
 
     CORS_ORIGIN: str = 'http://localhost:3000'
 
