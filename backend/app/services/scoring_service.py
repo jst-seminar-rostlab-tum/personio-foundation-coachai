@@ -3,9 +3,6 @@ import json
 from pathlib import Path
 from typing import Any, Optional
 
-from pydantic import ValidationError
-from tenacity import retry, stop_after_attempt, wait_fixed
-
 from app.connections.openai_client import call_structured_llm
 from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
 from app.schemas.scoring_schema import ScoringResult
@@ -58,12 +55,6 @@ class ScoringService:
         )
         return prompt
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_fixed(0),
-        retry=(lambda retry_state: isinstance(retry_state.outcome.exception(), ValidationError)),
-        reraise=True,
-    )
     def score_conversation(
         self,
         conversation: ConversationScenarioWithTranscript,
