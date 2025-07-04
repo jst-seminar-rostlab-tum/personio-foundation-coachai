@@ -23,7 +23,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 Use this option if you want to run the backend quickly without setting up a local Python environment. This is the easiest way to get started — especially useful for frontend developers who just need the API running.
 
 ```bash
-docker compose up db backend --build
+docker compose up supabae backend --build
 ```
 
 ### Option B: Console (better for developing)
@@ -64,7 +64,7 @@ OPENAI_API_KEY = <..key..>
 3. Run a local PostgreSQL instace on Docker:
 
 ```bash
-docker compose up db -d
+docker compose up supabase -d
 ```
 
 4. Populate local PostgreSQL with dummy data. From the backend folder, run the following:
