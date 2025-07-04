@@ -97,8 +97,6 @@ export default function ConversationScenarioForm({
       tone: formState.emotionalTone,
       complexity: formState.complexity,
       languageCode: locale as string,
-      persona: '',
-      situationalFacts: '',
     };
 
     try {
