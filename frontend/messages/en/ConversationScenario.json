@@ -56,7 +56,9 @@
             "Balance optimism with realism",
             "Use your energy to inspire others",
             "Leverage your natural motivation"
-          ]
+          ],
+          "name": "Positive Pam",
+          "imageUri": "/images/personas/persona-positive.png"
         },
         "angry": {
           "traits": [
@@ -72,7 +74,9 @@
             "Don't escalate conflict",
             "Focus on solutions, not blame",
             "Give them space to vent"
-          ]
+          ],
+          "name": "Angry Alex",
+          "imageUri": "/images/personas/persona-angry.png"
         },
         "shy": {
           "traits": [
@@ -88,7 +92,9 @@
             "Give them time to answer",
             "Value their contributions",
             "Build trust gradually"
-          ]
+          ],
+          "name": "Shy Sarah",
+          "imageUri": "/images/personas/persona-shy.png"
         },
         "casual": {
           "traits": [
@@ -104,7 +110,9 @@
             "Keep discussions friendly but professional",
             "Use relatable examples",
             "Maintain boundaries while being approachable"
-          ]
+          ],
+          "name": "Casual Candice",
+          "imageUri": "/images/personas/persona-casual.png"
         },
         "sad": {
           "traits": [
@@ -120,7 +128,9 @@
             "Help them see positive aspects",
             "Be patient with their pace",
             "Encourage small steps forward"
-          ]
+          ],
+          "name": "Sad Steve",
+          "imageUri": "/images/personas/persona-sad.png"
         }
       }
     },

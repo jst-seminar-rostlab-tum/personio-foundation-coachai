@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { CustomizeStepProps } from '@/interfaces/CustomizeStepProps';
-import { Persona } from '@/interfaces/Persona';
 import { PersonaButton } from './PersonaButton';
 import { PersonaInfo } from './PersonaInfo';
 
@@ -13,33 +12,12 @@ export function CustomizeStep({
 }: CustomizeStepProps) {
   const t = useTranslations('ConversationScenario');
 
-  const personas: Persona[] = [
-    {
-      id: 'positive',
-      name: 'Positive Pam',
-      imageUri: '/images/personas/persona-positive.png',
-    },
-    {
-      id: 'angry',
-      name: 'Angry Alex',
-      imageUri: '/images/personas/persona-angry.png',
-    },
-    {
-      id: 'shy',
-      name: 'Shy Sarah',
-      imageUri: '/images/personas/persona-shy.png',
-    },
-    {
-      id: 'casual',
-      name: 'Casual Candice',
-      imageUri: '/images/personas/persona-casual.png',
-    },
-    {
-      id: 'sad',
-      name: 'Sad Steve',
-      imageUri: '/images/personas/persona-sad.png',
-    },
-  ];
+  const personaKeys = ['positive', 'angry', 'shy', 'casual', 'sad'];
+  const personas = personaKeys.map((key) => ({
+    id: key,
+    name: t(`customize.persona.personas.${key}.name`),
+    imageUri: t.raw(`customize.persona.personas.${key}.imageUri`),
+  }));
 
   return (
     <div>
