@@ -1,15 +1,14 @@
 'use client';
 
-import { cn } from '@/lib/utils/cnMerge';
-import { ButtonHTMLAttributes } from 'react';
+import React from 'react';
 
-interface CategoryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface CategoryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   selected?: boolean;
   children?: React.ReactNode;
 }
 
 const buttonStyles =
-  'rounded-2xl flex flex-col items-center justify-center text-lg outline outline-2 outline-bw-20 cursor-pointer hover:bg-marigold-30/80 active:outline-none active:bg-marigold-30 disabled:pointer-events-none p-12';
+  'rounded-2xl flex flex-col items-center justify-center text-lg outline outline-2 outline-bw-20 cursor-pointer hover:bg-marigold-30/80 active:outline-none active:bg-marigold-30 disabled:pointer-events-none p-12 group';
 
 function CategoryButton({ className, selected, children, ...props }: CategoryButtonProps) {
   // Support for children as an array: [image, title, description]
@@ -29,13 +28,11 @@ function CategoryButton({ className, selected, children, ...props }: CategoryBut
   return (
     <button
       data-slot="button"
-      className={cn(
+      className={[
         buttonStyles,
-        {
-          'outline-none bg-marigold-30': selected,
-        },
-        className
-      )}
+        selected ? 'outline-none bg-marigold-30' : '',
+        className || '',
+      ].join(' ')}
       {...props}
     >
       <div className="flex flex-col items-center w-full h-full">
@@ -44,7 +41,9 @@ function CategoryButton({ className, selected, children, ...props }: CategoryBut
           <span className="text-xl text-bw-70 font-semibold">{title}</span>
           {description && (
             <span
-              className={cn('text-base leading-relaxed', selected ? 'text-bw-70' : 'text-bw-40')}
+              className={`text-base leading-relaxed text-bw-40 group-hover:text-bw-70 ${
+                selected ? 'text-bw-70' : ''
+              }`}
             >
               {description}
             </span>

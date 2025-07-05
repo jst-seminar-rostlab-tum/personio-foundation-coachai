@@ -5,8 +5,6 @@ export interface ConversationScenario {
   goal: string;
   otherParty: string;
   difficultyLevel: string;
-  tone: string;
-  complexity: string;
   status?: string;
   languageCode: string;
 }

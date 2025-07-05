@@ -7,6 +7,27 @@ interface PersonaInfoProps {
   personas: Persona[];
 }
 
+interface PersonaInfoBlockProps {
+  title: string;
+  items: string[];
+}
+
+function PersonaInfoBlock({ title, items }: PersonaInfoBlockProps) {
+  return (
+    <div className="rounded-lg p-4 w-full sm:flex-1 flex flex-col items-center justify-center">
+      <div className="text-lg font-medium text-font-dark mb-3 text-center">{title}</div>
+      <ul className="space-y-2">
+        {items.map((item, index) => (
+          <li key={index} className="text-base text-font-dark flex items-start">
+            <span className="text-marigold-50 mr-2">•</span>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
   const t = useTranslations('ConversationScenario.customize.persona');
 
@@ -47,36 +68,14 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
       <div className="text-xl text-font-dark text-left mb-4">
         {t('about')}: {personaName}
       </div>
-      <div className="flex flex-col md:flex-row gap-6 items-center">
-        <div className="rounded-lg p-4 w-full md:flex-1">
-          <div className="text-lg font-medium text-font-dark mb-3">{t('behavioralTraits')}</div>
-          <ul className="space-y-2">
-            {selectedPersonaData.traits.map((trait, index) => (
-              <li key={index} className="text-sm text-font-dark flex items-start">
-                <span className="text-marigold-50 mr-2">•</span>
-                {trait}
-              </li>
-            ))}
-          </ul>
-        </div>
-
+      <div className="flex flex-col sm:flex-row gap-6 items-center justify-center">
+        <PersonaInfoBlock title={t('behavioralTraits')} items={selectedPersonaData.traits} />
         {/* Arrow connecting the two boxes */}
         <div className="flex justify-center items-center">
-          <ArrowDownIcon className="w-8 h-8 text-bw-70 md:hidden" />
-          <ArrowRightIcon className="w-8 h-8 text-bw-70 hidden md:block" />
+          <ArrowDownIcon className="w-8 h-8 text-bw-70 sm:hidden" />
+          <ArrowRightIcon className="w-8 h-8 text-bw-70 hidden sm:block" />
         </div>
-
-        <div className="rounded-lg p-4 w-full md:flex-1">
-          <div className="text-lg font-medium text-font-dark mb-3">{t('trainingFocus')}</div>
-          <ul className="space-y-2">
-            {selectedPersonaData.trainingFocus.map((focus, index) => (
-              <li key={index} className="text-sm text-font-dark flex items-start">
-                <span className="text-marigold-50 mr-2">•</span>
-                {focus}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <PersonaInfoBlock title={t('trainingFocus')} items={selectedPersonaData.trainingFocus} />
       </div>
     </div>
   );

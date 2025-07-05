@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { useTranslations } from 'next-intl';
 import { CustomizeStepProps } from '@/interfaces/CustomizeStepProps';
 import { Persona } from '@/interfaces/Persona';
@@ -56,7 +55,7 @@ export function CustomizeStep({
             selected={selectedPersona === persona.id}
             className="w-full"
           >
-            <div className="relative w-28 h-28 rounded-full overflow-hidden bg-white mb-3 flex-shrink-0">
+            <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-white mb-3 flex-shrink-0">
               <Image src={persona.imageUri} alt={persona.name} fill className="object-cover" />
             </div>
             <span className="text-sm text-center">{persona.name}</span>
@@ -68,27 +67,25 @@ export function CustomizeStep({
       <PersonaInfo selectedPersona={selectedPersona} personas={personas} />
 
       <div className="text-xl text-font-dark text-left mb-2">{t('difficultyTitle')}</div>
-      <RadioGroup
-        value={difficulty}
-        onValueChange={onDifficultyChange}
-        className="mb-16 flex flex-row justify-between gap-4"
-      >
-        <label htmlFor="d1" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/difficulty/easy.svg" alt={t('easy')} width={56} height={56} />
-          <span className="text-sm">{t('easy')}</span>
-          <RadioGroupItem value="easy" id="d1" />
-        </label>
-        <label htmlFor="d2" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/difficulty/medium.svg" alt={t('medium')} width={56} height={56} />
-          <span className="text-sm">{t('medium')}</span>
-          <RadioGroupItem value="medium" id="d2" />
-        </label>
-        <label htmlFor="d3" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/difficulty/hard.svg" alt={t('hard')} width={56} height={56} />
-          <span className="text-sm">{t('hard')}</span>
-          <RadioGroupItem value="hard" id="d3" />
-        </label>
-      </RadioGroup>
+      <div className="mb-16 grid grid-cols-3 gap-4 w-full mx-auto">
+        {[
+          { value: 'easy', icon: '/images/difficulty/easy.svg', label: t('easy') },
+          { value: 'medium', icon: '/images/difficulty/medium.svg', label: t('medium') },
+          { value: 'hard', icon: '/images/difficulty/hard.svg', label: t('hard') },
+        ].map((diff) => (
+          <PersonaButton
+            key={diff.value}
+            onClick={() => onDifficultyChange(diff.value)}
+            selected={difficulty === diff.value}
+            className="w-full"
+          >
+            <div className="relative w-10 h-10 sm:w-16 sm:h-16 rounded-full overflow-hidden bg-white mb-3 flex-shrink-0 mx-auto">
+              <Image src={diff.icon} alt={diff.label} fill className="object-contain" />
+            </div>
+            <span className="text-sm text-center">{diff.label}</span>
+          </PersonaButton>
+        ))}
+      </div>
     </div>
   );
 }
