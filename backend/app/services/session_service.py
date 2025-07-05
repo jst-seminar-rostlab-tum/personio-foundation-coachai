@@ -16,7 +16,7 @@ from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
 from app.models.session_turn import SessionTurn
 from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
-from app.schemas.session_feedback import ExamplesRequest, SessionFeedbackMetrics
+from app.schemas.session_feedback import FeedbackRequest, SessionFeedbackMetrics
 from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
 from app.services.review_service import ReviewService
 from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
@@ -325,7 +325,7 @@ class SessionService:
 
         key_concepts_str = '\n'.join(f'{item["header"]}: {item["value"]}' for item in key_concepts)
 
-        request = ExamplesRequest(
+        request = FeedbackRequest(
             category=category.name
             if category
             else conversation_scenario.custom_category_label or 'Unknown Category',
@@ -339,7 +339,7 @@ class SessionService:
         background_tasks.add_task(
             generate_and_store_feedback,
             session_id=session.id,
-            example_request=request,
+            feedback_request=request,
             db_session=self.db,
         )
 
