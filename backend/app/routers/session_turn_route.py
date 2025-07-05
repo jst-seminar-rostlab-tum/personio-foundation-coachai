@@ -44,3 +44,15 @@ async def create_session_turn(
     )
 
     return await service.create_session_turn(turn, audio_file)
+
+
+@router.get('/{session_id}/stitch', response_model=tuple[str | None, list[float]])
+async def stitch_session_turns(
+    service: Annotated[SessionTurnService, Depends(get_session_turn_service)],
+    session_id: UUID,
+) -> tuple[str | None, list[float]]:
+    """
+    Stitch all audio files of a session into a single audio file.
+    """
+    a, b = await service.stitch_mp3s_from_gcs(session_id, f'{session_id}')
+    return (a, b)

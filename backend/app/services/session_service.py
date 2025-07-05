@@ -229,6 +229,24 @@ class SessionService:
             and feedback is None
         )
 
+    def _stitch_mp3s(
+        self,
+        session: Session,
+        background_tasks: BackgroundTasks,
+    ) -> None:
+        """
+        Stitch all audio files of a session into a single audio file.
+        This function is called when the session is being completed.
+        """
+        from app.services.session_turn_service import SessionTurnService
+
+        session_turn_service = SessionTurnService(self.db)
+        background_tasks.add_task(
+            session_turn_service.stitch_mp3s_from_gcs,
+            session_id=session.id,
+            output_blob_name=f'stitched_{session.id}.mp3',
+        )
+
     def _handle_completion(
         self,
         session: Session,
