@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
@@ -38,12 +39,25 @@ class ConversationScenarioService:
         Create a new conversation scenario and start the preparation process in the background.
 
         """
-        # Check need for creating a new conversation scenario
-        if not custom_scenario:
-            pass
-
         # Validate category
         category = self._validate_category(conversation_scenario.category_id)
+
+        # Check need for creating a new conversation scenario
+        # if custom_scenario is True, we assume the scenario is custom and needs to be created.
+        if not custom_scenario:
+            # Check if there is an existing scenario with the same category and prompt
+            existing_scenarios = self._get_scenarios_by_category(
+                user_profile.id, conversation_scenario.category_id
+            )
+            if len(existing_scenarios) > 0:
+                equal_scenario_id = self._get_equal_scenario(
+                    existing_scenarios, conversation_scenario
+                )
+                if equal_scenario_id:
+                    return ConversationScenarioCreateResponse(
+                        message='Conversation scenario with the same prompt already exists.',
+                        scenario_id=equal_scenario_id,
+                    )
 
         # Create conversation scenario
         new_conversation_scenario = ConversationScenario(
@@ -251,6 +265,32 @@ class ConversationScenarioService:
             if not category:
                 raise HTTPException(status_code=404, detail='Category not found')
             return category
+        return None
+
+    def _get_scenarios_by_category(
+        self, user_id: UUID, category_id: str | None
+    ) -> Sequence[ConversationScenario]:
+        """
+        Retrieve all conversation scenarios for a given user and category.
+        """
+        statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
+        if category_id:
+            statement = statement.where(ConversationScenario.category_id == category_id)
+        return self.db.exec(statement).all()
+
+    def _get_equal_scenario(
+        self, scenarios: Sequence[ConversationScenario], new_scenario: ConversationScenarioCreate
+    ) -> UUID | None:
+        """
+        Check if there are any existing scenarios with the same prompt as the new scenario.
+        """
+        for scenario in scenarios:
+            if scenario.persona.replace(' ', '') == new_scenario.persona.replace(
+                ' ', ''
+            ) and scenario.situational_facts.replace(
+                ' ', ''
+            ) == new_scenario.situational_facts.replace(' ', ''):
+                return scenario.id
         return None
 
     def _start_preparation_task(
