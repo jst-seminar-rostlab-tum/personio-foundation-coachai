@@ -13,11 +13,13 @@ export function CustomizeStep({
   const t = useTranslations('ConversationScenario');
 
   const personaKeys = ['positive', 'angry', 'shy', 'casual', 'sad'];
-  const personas = personaKeys.map((key) => ({
-    id: key,
-    name: t(`customize.persona.personas.${key}.name`),
-    imageUri: t.raw(`customize.persona.personas.${key}.imageUri`),
-  }));
+  const personas = personaKeys
+    .map((key) => ({
+      id: key,
+      name: t(`customize.persona.personas.${key}.name`),
+      imageUri: t.raw(`customize.persona.personas.${key}.imageUri`),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div>

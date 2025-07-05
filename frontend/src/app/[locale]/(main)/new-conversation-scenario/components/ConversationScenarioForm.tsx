@@ -60,7 +60,7 @@ export default function ConversationScenarioForm({
   // Find the selected category object and key
   const selectedCategoryObj = categories.find((cat) => cat.id === formState.category);
   const selectedCategoryKey = Object.entries(t.raw('categories')).find(
-    ([, val]) => val.name === selectedCategoryObj?.name
+    ([, val]) => (val as { name: string }).name === selectedCategoryObj?.name
   )?.[0];
 
   // Use translation-based long default context
