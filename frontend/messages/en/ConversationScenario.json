@@ -165,6 +165,7 @@
       "iconUri": "/icons/category-giving_feedback.svg",
       "description": "Give constructive feedback to help others improve.",
       "defaultContext": "One-on-one meeting with a team member.",
+      "defaultContextLong": "You are preparing for a one-on-one meeting with a team member who recently completed a major project. Your goal is to provide constructive feedback on their performance, highlighting both strengths and areas for improvement. The conversation should be supportive, specific, and actionable, helping the team member grow and feel motivated to improve. Consider the team member's perspective and be ready to address any questions or concerns they may have about your feedback.",
       "defaultGoal": "Provide constructive feedback effectively.",
       "defaultOtherParty": "Team member"
     },
@@ -173,6 +174,7 @@
       "iconUri": "/icons/category-performance_reviews.svg",
       "description": "Motivate and guide with effective reviews.",
       "defaultContext": "Formal performance review meeting.",
+      "defaultContextLong": "You are conducting a formal performance review with an employee at the end of the quarter. The purpose of this meeting is to discuss the employee's achievements, areas for development, and set goals for the next period. The conversation should be balanced, focusing on both accomplishments and opportunities for growth. Be prepared to provide examples, listen to the employee's self-assessment, and collaboratively develop an action plan for future success.",
       "defaultGoal": "Evaluate and discuss employee performance.",
       "defaultOtherParty": "Employee"
     },
@@ -181,6 +183,7 @@
       "iconUri": "/icons/category-conflict_resolution.svg",
       "description": "Resolve conflicts and build a positive team.",
       "defaultContext": "Conflict resolution meeting between team members.",
+      "defaultContextLong": "You are facilitating a conflict resolution session between two team members who have been experiencing ongoing disagreements. Your objective is to create a safe space for both parties to express their perspectives, identify the root causes of the conflict, and work together to find mutually acceptable solutions. The conversation should be respectful, empathetic, and focused on rebuilding trust and collaboration within the team.",
       "defaultGoal": "Resolve conflicts and improve team dynamics.",
       "defaultOtherParty": "Team members"
     },
@@ -189,6 +192,7 @@
       "iconUri": "/icons/category-salary_discussions.svg",
       "description": "Prepare for open salary conversations.",
       "defaultContext": "Salary negotiation meeting.",
+      "defaultContextLong": "You are entering a salary negotiation meeting with your employer to discuss your compensation package. The goal is to present your case for a salary increase, supported by your recent achievements, market research, and the value you bring to the organization. The conversation should be professional, assertive, and open to compromise, aiming to reach a mutually beneficial agreement while maintaining a positive working relationship.",
       "defaultGoal": "Reach a mutually beneficial agreement on salary.",
       "defaultOtherParty": "Employer"
     }
@@ -203,5 +207,8 @@
   "creating": "Creating...",
   "create": "Create",
   "personaSelection": "Select Persona",
-  "difficultyTitle": "Difficulty"
+  "difficultyTitle": "Difficulty",
+  "contextDefault": "Default Context",
+  "contextCustom": "Custom Context",
+  "selectContext": "Select Context"
 }

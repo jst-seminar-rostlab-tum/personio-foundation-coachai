@@ -15,6 +15,8 @@ import {
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { api } from '@/services/ApiClient';
 import { Categories } from '@/lib/constants/categories';
+import { Textarea } from '@/components/ui/Textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { CategoryStep } from './CategoryStep';
 import { CustomizeStep } from './CustomizeStep';
 
@@ -40,6 +42,11 @@ export default function ConversationScenarioForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [categories, setCategories] = useState<ConversationCategory[]>(Categories());
+  const { contextMode, setContextMode, customContext, setCustomContext } =
+    useConversationScenarioStore();
+
+  const contextCardBase =
+    'w-full box-border rounded-md flex flex-row items-center text-lg outline outline-2 outline-bw-20 cursor-pointer hover:bg-marigold-30/80 active:outline-none active:bg-marigold-30 disabled:pointer-events-none p-4 text-left gap-3';
 
   useEffect(() => {
     setCategories((prev) =>
@@ -49,6 +56,34 @@ export default function ConversationScenarioForm({
       })
     );
   }, [categoriesData]);
+
+  // Find the selected category object and key
+  const selectedCategoryObj = categories.find((cat) => cat.id === formState.category);
+  const selectedCategoryKey = Object.entries(t.raw('categories')).find(
+    ([, val]) => val.name === selectedCategoryObj?.name
+  )?.[0];
+
+  // Use translation-based long default context
+  const defaultContextLong = selectedCategoryKey
+    ? t(`categories.${selectedCategoryKey}.defaultContextLong`)
+    : '';
+
+  // When scenario changes, if contextMode is 'default', update context in form state
+  useEffect(() => {
+    if (contextMode === 'default' && defaultContextLong) {
+      // Do not overwrite customContext
+      updateForm({ context: defaultContextLong });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formState.category, contextMode, defaultContextLong]);
+
+  // When switching to custom, restore the last customContext
+  useEffect(() => {
+    if (contextMode === 'custom') {
+      updateForm({ context: customContext });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contextMode, customContext]);
 
   const isStepValid = (step: number): boolean => {
     switch (step) {
@@ -74,7 +109,7 @@ export default function ConversationScenarioForm({
     const scenario: ConversationScenario = {
       categoryId: formState.category,
       customCategoryLabel: formState.customCategory,
-      context: formState.context,
+      context: contextMode === 'custom' ? customContext : defaultContextLong,
       goal: formState.goal,
       otherParty: formState.otherParty,
       difficultyLevel: formState.difficulty,
@@ -106,20 +141,65 @@ export default function ConversationScenarioForm({
       <h1 className="text-2xl text-font-dark text-left w-full mb-8">{t('title')}</h1>
 
       {currentStep === 0 && (
-        <CategoryStep
-          selectedCategory={formState.category}
-          onCategorySelect={(category) =>
-            updateForm({
-              category: category.id,
-              name: category.name,
-              context: category.defaultContext || '',
-              goal: category.defaultGoal || '',
-              otherParty: category.defaultOtherParty || '',
-              isCustom: category.isCustom || false,
-            })
-          }
-          categories={categories}
-        />
+        <>
+          <CategoryStep
+            selectedCategory={formState.category}
+            onCategorySelect={(category) =>
+              updateForm({
+                category: category.id,
+                name: category.name,
+                context: contextMode === 'default' ? defaultContextLong : customContext,
+                goal: category.defaultGoal || '',
+                otherParty: category.defaultOtherParty || '',
+                isCustom: category.isCustom || false,
+              })
+            }
+            categories={categories}
+          />
+
+          {/* Context Selection Section */}
+          <div className="mt-16">
+            <div className="mb-4 font-medium text-xl">{t('selectContext')}</div>
+            <RadioGroup
+              value={contextMode}
+              onValueChange={(val) => setContextMode(val as 'default' | 'custom')}
+              className="flex gap-4 mb-4"
+            >
+              {[
+                { value: 'default', label: 'Default Context' },
+                { value: 'custom', label: 'Custom Context' },
+              ].map((option) => (
+                <label
+                  key={option.value}
+                  className={`${
+                    contextCardBase + (contextMode === option.value ? ' bg-marigold-30' : '')
+                  } select-none`}
+                  style={{ outline: contextMode === option.value ? 'none' : undefined }}
+                >
+                  <RadioGroupItem
+                    value={option.value}
+                    className="mr-3 bg-white border border-bw-40 data-[state=checked]:border-bw-70 size-4"
+                  >
+                    <span className="block w-2 h-2 rounded-full bg-bw-70" />
+                  </RadioGroupItem>
+                  <span className="text-base font-medium">{option.label}</span>
+                </label>
+              ))}
+            </RadioGroup>
+            <Textarea
+              className="w-full min-h-32"
+              value={contextMode === 'default' ? defaultContextLong : customContext}
+              onChange={(e) => {
+                if (contextMode === 'custom') {
+                  setCustomContext(e.target.value);
+                  updateForm({ context: e.target.value });
+                }
+              }}
+              disabled={contextMode === 'default'}
+              placeholder="Enter the context for your scenario..."
+            />
+          </div>
+        </>
       )}
 
       {currentStep === 1 && (

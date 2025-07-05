@@ -153,6 +153,7 @@
       "iconUri": "/icons/category-giving_feedback.svg",
       "description": "Fördern Sie Entwicklung durch klares, konstruktives Feedback in jeder Situation.",
       "defaultContext": "Einzelgespräch mit einem Teammitglied.",
+      "defaultContextLong": "Sie bereiten sich auf ein Einzelgespräch mit einem Teammitglied vor, das kürzlich ein wichtiges Projekt abgeschlossen hat. Ihr Ziel ist es, konstruktives Feedback zu geben, sowohl Stärken als auch Verbesserungsbereiche klar und unterstützend anzusprechen. Das Gespräch soll motivierend, konkret und umsetzbar sein, damit sich das Teammitglied weiterentwickeln kann. Versetzen Sie sich in die Lage des Teammitglieds und seien Sie bereit, auf Rückfragen oder Bedenken einzugehen.",
       "defaultGoal": "Konstruktives Feedback effektiv geben.",
       "defaultOtherParty": "Teammitglied"
     },
@@ -161,6 +162,7 @@
       "iconUri": "/icons/category-performance_reviews.svg",
       "description": "Motivieren und begleiten Sie Mitarbeitende mit wertschätzenden Beurteilungen.",
       "defaultContext": "Formelles Gespräch zur Leistungsbeurteilung.",
+      "defaultContextLong": "Sie führen ein formelles Beurteilungsgespräch mit einer Mitarbeiterin oder einem Mitarbeiter zum Quartalsende. Ziel ist es, Erfolge, Entwicklungsfelder und neue Ziele gemeinsam zu besprechen. Das Gespräch sollte ausgewogen sein und sowohl Leistungen als auch Entwicklungsmöglichkeiten thematisieren. Bereiten Sie Beispiele vor, hören Sie die Selbsteinschätzung an und entwickeln Sie gemeinsam einen Aktionsplan für die Zukunft.",
       "defaultGoal": "Leistung von Mitarbeitern evaluieren und besprechen.",
       "defaultOtherParty": "Mitarbeiter/in"
     },
@@ -169,6 +171,7 @@
       "iconUri": "/icons/category-conflict_resolution.svg",
       "description": "Lernen Sie, Konflikte zu lösen und ein positives Teamklima zu schaffen.",
       "defaultContext": "Konfliktlösungsgespräch zwischen Teammitgliedern.",
+      "defaultContextLong": "Sie moderieren eine Konfliktlösungssitzung zwischen zwei Teammitgliedern, die anhaltende Meinungsverschiedenheiten haben. Ihr Ziel ist es, einen sicheren Rahmen zu schaffen, in dem beide Seiten ihre Sichtweisen schildern, Ursachen des Konflikts identifizieren und gemeinsam Lösungen erarbeiten können. Das Gespräch sollte respektvoll, empathisch und auf den Wiederaufbau von Vertrauen und Zusammenarbeit ausgerichtet sein.",
       "defaultGoal": "Konflikte lösen und Teamdynamik verbessern.",
       "defaultOtherParty": "Teammitglieder"
     },
@@ -177,6 +180,7 @@
       "iconUri": "/icons/category-salary_discussions.svg",
       "description": "Bereiten Sie sich auf offene, selbstbewusste und erfolgreiche Gehaltsgespräche vor.",
       "defaultContext": "Gehaltsverhandlungsgespräch.",
+      "defaultContextLong": "Sie gehen in ein Gehaltsverhandlungsgespräch mit Ihrem Arbeitgeber, um über Ihr Vergütungspaket zu sprechen. Ziel ist es, Ihre Argumente für eine Gehaltserhöhung anhand Ihrer Leistungen, Marktvergleiche und Ihres Beitrags zum Unternehmen überzeugend darzulegen. Das Gespräch sollte professionell, selbstbewusst und kompromissbereit geführt werden, um eine für beide Seiten vorteilhafte Einigung zu erzielen und die Zusammenarbeit positiv zu gestalten.",
       "defaultGoal": "Eine für beide Seiten vorteilhafte Gehaltsvereinbarung treffen.",
       "defaultOtherParty": "Arbeitgeber"
     }
@@ -191,5 +195,8 @@
   "creating": "Wird erstellt...",
   "create": "Erstellen",
   "personaSelection": "Persona-Auswahl",
-  "difficultyTitle": "Schwierigkeitsgrad"
+  "difficultyTitle": "Schwierigkeitsgrad",
+  "contextDefault": "Standardkontext",
+  "contextCustom": "Individueller Kontext",
+  "selectContext": "Kontext auswählen"
 }
