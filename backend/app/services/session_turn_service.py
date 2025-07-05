@@ -122,10 +122,8 @@ class SessionTurnService:
             id=new_turn.id,
             session_id=new_turn.session_id,
             speaker=new_turn.speaker,
-            start_offset_ms=new_turn.start_offset_ms,
-            end_offset_ms=new_turn.end_offset_ms,
+            full_audio_start_offset_ms=new_turn.full_audio_start_offset_ms,
             text=new_turn.text,
-            audio_uri=audio_name,
             ai_emotion=new_turn.ai_emotion,
             created_at=new_turn.created_at,
         )
@@ -151,11 +149,11 @@ class SessionTurnService:
             )
             return float(result.stdout.strip())
 
-    async def stitch_mp3s_from_gcs(
+    def stitch_mp3s_from_gcs(
         self,
         session_id: UUID,
         output_blob_name: str,
-    ) -> tuple[str | None, list[float]]:
+    ) -> str | None:
         """
         Downloads a list of audio files from GCS, stitches them in order, and uploads
         the result to GCS.
@@ -173,11 +171,10 @@ class SessionTurnService:
         print(session_turns)
 
         if not session_turns:
-            return None, []
+            return None
 
         # 1. Download to memory and calculate durations
         mp3_buffers = []
-        turn_timestamps = []
         current_offset = 0.0
 
         for session_turn in session_turns:
@@ -186,13 +183,10 @@ class SessionTurnService:
             blob.download_to_file(buf)
             buf.seek(0)
             mp3_buffers.append(buf)
-            turn_timestamps.append(current_offset)
             duration = self.get_mp3_duration_bytesio(buf)
             session_turn.full_audio_start_offset_ms = int(current_offset * 1000)
             self.db.add(session_turn)
             current_offset += duration
-
-        self.db.commit()
 
         # 2. Write to temp files for ffmpeg concat
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -244,4 +238,27 @@ class SessionTurnService:
             )
             output_buffer.close()
 
-        return output_blob_name, turn_timestamps
+        return output_blob_name
+
+    def get_session_turns(self, session_id: UUID) -> list[SessionTurnRead]:
+        """
+        Returns all session turns for a session audio with selected fields.
+        """
+        session_turns = self.db.exec(
+            select(SessionTurn)
+            .where(SessionTurn.session_id == session_id)
+            .order_by(col(SessionTurn.full_audio_start_offset_ms))
+        ).all()
+
+        return [
+            SessionTurnRead(
+                id=turn.id,
+                session_id=turn.session_id,
+                speaker=turn.speaker,
+                full_audio_start_offset_ms=turn.full_audio_start_offset_ms,
+                text=turn.text,
+                created_at=turn.created_at,
+                ai_emotion=turn.ai_emotion,
+            )
+            for turn in session_turns
+        ]

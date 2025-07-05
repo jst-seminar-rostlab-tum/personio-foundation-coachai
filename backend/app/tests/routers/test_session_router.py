@@ -107,7 +107,6 @@ class TestSessionRoute(unittest.TestCase):
         self.assertEqual(data['createdAt'], self.test_session.created_at.isoformat())
         self.assertEqual(data['updatedAt'], self.test_session.updated_at.isoformat())
         self.assertEqual(data['allowAdminAccess'], False)
-        self.assertEqual(data['audioUris'], [])
         self.assertEqual(data['hasReviewed'], False)
 
         # Add Review
@@ -133,5 +132,4 @@ class TestSessionRoute(unittest.TestCase):
         self.assertEqual(data['createdAt'], self.test_session.created_at.isoformat())
         self.assertEqual(data['updatedAt'], self.test_session.updated_at.isoformat())
         self.assertEqual(data['allowAdminAccess'], False)
-        self.assertEqual(data['audioUris'], [])
         self.assertEqual(data['hasReviewed'], True)
