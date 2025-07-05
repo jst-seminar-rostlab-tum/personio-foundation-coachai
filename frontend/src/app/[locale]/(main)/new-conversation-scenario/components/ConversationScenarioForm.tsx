@@ -41,11 +41,6 @@ export default function ConversationScenarioForm({
 
   const [categories, setCategories] = useState<ConversationCategory[]>(Categories());
 
-  // Reset form state when component mounts
-  useEffect(() => {
-    reset();
-  }, [reset]);
-
   useEffect(() => {
     setCategories((prev) =>
       prev.map((cat) => {
