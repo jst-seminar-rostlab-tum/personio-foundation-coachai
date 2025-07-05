@@ -35,6 +35,15 @@ COPY ./alembic /app/alembic
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync
 
+# Install Docker CLI -> used in migration script
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    docker.io \
+    postgresql-client \
+    curl && \
+    rm -rf /var/lib/apt/lists/*
+
+
 # Defaults to production stage
 ARG stage=prod
 # Set the environment variable for the stage.

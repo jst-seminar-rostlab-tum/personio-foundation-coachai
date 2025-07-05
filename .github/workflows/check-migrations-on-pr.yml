@@ -110,30 +110,32 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         run: docker network create app-network
 
-      - name: Start database
+      - name: Start Supabase
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans db
+        run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans supabase
 
-      - name: Wait for database startup
+      - name: Wait for Supabase to become healthy
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          echo "Waiting for database to be healthy..."
+          echo "Waiting for Supabase to be healthy..."
           for i in {1..60}; do
-            state=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml ps --format '{{.Health}}' db)
-            if [[ "$state" == "healthy" ]]; then
-              echo "✅ Database ready after $((i*2)) seconds"
+            health=$(curl -sf http://127.0.0.1:54321/rest-admin/v1/ready || echo "unhealthy")
+            if [[ "$health" != "unhealthy" ]]; then
+              echo "✅ Supabase is ready"
               break
-            elif [[ "$state" == "starting" ]]; then
-              echo "Database starting... ($((i*2))s elapsed)"
             fi
-            [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
+            echo "⏳ Supabase not ready yet... ($((i*2))s)"
             sleep 2
+            if [[ $i -eq 60 ]]; then
+              echo "❌ Supabase not healthy after 2 minutes"
+              exit 1
+            fi
           done
 
-      - name: Run migrations
+      - name: Run test-migrations container
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations | tail -n1)
+          CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations)
           docker logs -f "$CID"
           EXIT=$(docker wait "$CID")
           if [[ "$EXIT" -eq 0 ]]; then

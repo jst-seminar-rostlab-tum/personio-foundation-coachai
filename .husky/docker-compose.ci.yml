@@ -1,25 +1,39 @@
+# No top-level `version:` key – it’s obsolete in Compose v2+
+
 services:
+  # ─────────────────────────────────────────────────────────────
+  # Container that runs the migration checks
+  # ─────────────────────────────────────────────────────────────
   test-migrations:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args: { stage: dev }
-    depends_on:
-      - db
+      args:
+        stage: dev
     volumes:
-      - ./backend:/app
-      - /app/.venv
+      - ./backend:/app                     # project code
+      - /app/.venv                         # keep venv out of host fs
       - ./.husky/test-migrations.sh:/test-migrations.sh
+      - ./supabase:/app/supabase           # SQL seeds / functions (optional)
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      # These point at the host’s published ports, not at a container alias
+      PGHOST: host.docker.internal
+      PGPORT: 54322
+      PGUSER: postgres
       PGPASSWORD: postgres
-      POSTGRES_DB: test_migrations
-      POSTGRES_PORT: 5432
+      POSTGRES_DB: postgres
+      # still available if you run the script on your laptop
+      POSTGRES_HOST: host.docker.internal
+      POSTGRES_PORT: 54322
     entrypoint: ["/bin/bash", "/test-migrations.sh"]
+    extra_hosts:
+      # On Linux this resolves host.docker.internal → host-gateway IP
+      - "host.docker.internal:host-gateway"
     networks:
-      - app-network
+      - app-network                       # optional – your project network
+    depends_on:
+      - supabase                          # guarantees Supabase is started
 
 networks:
   app-network:
