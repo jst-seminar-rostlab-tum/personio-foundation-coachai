@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export default function HistoryPage() {
   return (
     <div>
@@ -74,9 +72,6 @@ export default function HistoryPage() {
               >
                 <div className="h-6 w-40 bg-gray-200 rounded mb-2 animate-pulse" />
                 <div className="flex items-center gap-2 ">
-                  <Link href="/feedback/1">
-                    <button className="h-8 bg-gray-200 ml-4 rounded-md px-2"> View</button>
-                  </Link>
                   <div className="h-8 w-8 bg-gray-200 rounded-full ml-4" />
                 </div>
               </div>
@@ -90,9 +85,6 @@ export default function HistoryPage() {
               >
                 <div className="h-6 w-40 bg-gray-200 rounded mb-2 animate-pulse" />
                 <div className="flex items-center gap-2 ">
-                  <Link href="/feedback/1">
-                    <button className="h-8 bg-gray-200 ml-4 rounded-md px-2"> View</button>
-                  </Link>
                   <div className="h-8 w-8 bg-gray-200 rounded-full ml-4" />
                 </div>
               </div>
@@ -102,12 +94,6 @@ export default function HistoryPage() {
         <div className="text-center mt-4">
           <button className="text-gray-500 hover:text-gray-700">Load more sessions</button>
         </div>
-      </div>
-
-      <div className="w-full flex justify-center pb-8">
-        <Link href="/dashboard" className="text-gray-400 hover:text-gray-500 text-sm underline">
-          Return to dashboard
-        </Link>
       </div>
     </div>
   );

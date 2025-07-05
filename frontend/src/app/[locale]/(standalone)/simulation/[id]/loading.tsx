@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export default function SimulationPage() {
   return (
     <div className="flex flex-col h-[92vh] justify-between">
@@ -24,11 +22,6 @@ export default function SimulationPage() {
         {[1, 2, 3].map((_, i) => (
           <button key={i} className="w-14 h-14 bg-gray-200 rounded-full animate-pulse" />
         ))}
-        <Link href="/feedback/1">
-          <button className="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 pb-1 text-3xl hover:bg-gray-300 transition-colors">
-            ×
-          </button>
-        </Link>
       </div>
     </div>
   );
