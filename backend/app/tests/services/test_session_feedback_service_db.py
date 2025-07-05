@@ -12,11 +12,11 @@ from app.models.conversation_scenario import (
     ConversationScenarioStatus,
 )
 from app.models.language import LanguageCode
-from app.models.session import Session
+from app.models.session import Session, SessionStatus
 from app.models.session_turn import SessionTurn, SpeakerEnum
 from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
 from app.schemas.session_feedback import (
-    ExamplesRequest,
+    FeedbackRequest,
     GoalsAchievedCollection,
     NegativeExample,
     PositiveExample,
@@ -62,7 +62,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         session_obj = Session(
             id=session_id,
             scenario_id=scenario_id,
-            status='started',
+            status=SessionStatus.started,
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
@@ -91,9 +91,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(conversation.transcript[0].text, 'Hello, Sam!')
         self.assertEqual(conversation.transcript[0].speaker, SpeakerEnum.user)
 
-    @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
-    @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
-    @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback.session_feedback_llm.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_llm.generate_recommendations')
     def test_generate_and_store_feedback(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
@@ -159,7 +159,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
-        example_request = ExamplesRequest(
+        example_request = FeedbackRequest(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
             persona='**Name**: Someone\n**Training Focus**: Goal',
@@ -170,7 +170,7 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         feedback = generate_and_store_feedback(
             session_id=session_id,
-            example_request=example_request,
+            feedback_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
         )
@@ -213,9 +213,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
 
-    @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
-    @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
-    @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback.session_feedback_llm.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_llm.generate_recommendations')
     def test_generate_and_store_feedback_with_errors(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
@@ -245,7 +245,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
-        example_request = ExamplesRequest(
+        example_request = FeedbackRequest(
             transcript='Error case transcript...',
             objectives=['ObjX'],
             persona='**Name**: Other\n**Training Focus**: Goal',
@@ -256,7 +256,7 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         feedback = generate_and_store_feedback(
             session_id=session_id,
-            example_request=example_request,
+            feedback_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
         )
@@ -277,9 +277,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(feedback.overall_score, 0)
         self.assertEqual(feedback.transcript_uri, '')
 
-    @patch('app.services.session_feedback.session_feedback_service.generate_training_examples')
-    @patch('app.services.session_feedback.session_feedback_service.get_achieved_goals')
-    @patch('app.services.session_feedback.session_feedback_service.generate_recommendations')
+    @patch('app.services.session_feedback.session_feedback_llm.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_llm.generate_recommendations')
     def test_scoring_and_stats_update(
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
@@ -333,7 +333,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 full_name='Test',
                 email='a@b.com',
                 phone_number='123',
-                preferred_language_code='en',
+                preferred_language_code=LanguageCode.en,
             )
         )
         self.session.add(AdminDashboardStats())
@@ -353,7 +353,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         session_obj = Session(
             id=session_id,
             scenario_id=scenario_id,
-            status='started',
+            status=SessionStatus.started,
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
@@ -373,7 +373,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.session.add(turn)
         self.session.commit()
 
-        example_request = ExamplesRequest(
+        example_request = FeedbackRequest(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
             persona='**Name**: Someone\n**Training Focus**: Goal',
@@ -383,7 +383,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         )
         feedback = generate_and_store_feedback(
             session_id=session_id,
-            example_request=example_request,
+            feedback_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
         )
