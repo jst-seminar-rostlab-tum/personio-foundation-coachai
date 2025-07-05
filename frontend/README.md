@@ -2,6 +2,9 @@
 
 ## Setup
 
+Copy the .env.example into your .env.
+The .env.example is designed for local usage.
+
 ### Local Development
 
 1. Install dependencies:
