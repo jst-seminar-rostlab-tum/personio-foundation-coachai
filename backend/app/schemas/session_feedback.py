@@ -4,7 +4,7 @@ from app.models.camel_case import CamelModel
 from app.models.language import LanguageCode
 
 
-class ExamplesRequest(CamelModel):
+class FeedbackRequest(CamelModel):
     transcript: str | None  # Full transcript of the session
     objectives: list[str] = Field(
         ..., description='List of training objectives the user is expected to achieve'
@@ -56,14 +56,6 @@ class GoalsAchievedCollection(CamelModel):
     goals_achieved: list[str] = Field(
         ..., description='List of training objectives achieved in the session'
     )
-
-
-class RecommendationsRequest(ExamplesRequest):
-    """Request to generate improvement recommendations based on session feedback.
-    Same fields as ExamplesRequest, but used for generating recommendations instead of examples.
-    """
-
-    pass
 
 
 class Recommendation(CamelModel):
