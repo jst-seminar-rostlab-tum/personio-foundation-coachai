@@ -18,6 +18,7 @@ from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
 from app.schemas.session_feedback import ExamplesRequest, SessionFeedbackMetrics
 from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
+from app.services.review_service import ReviewService
 from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 
 
@@ -35,6 +36,10 @@ class SessionService:
         title = self._get_training_title(scenario)
         goals = scenario.preparation.objectives if scenario.preparation else []
 
+        # Check if the user has reviewed this session
+        review_service = ReviewService(self.db)
+        user_has_reviewed = review_service.has_user_reviewed_session(session_id, user_profile.id)
+
         session_response = SessionDetailsRead(
             id=session.id,
             scenario_id=session.scenario_id,
@@ -46,6 +51,7 @@ class SessionService:
             created_at=session.created_at,
             updated_at=session.updated_at,
             title=title,
+            has_reviewed=user_has_reviewed,
             summary='The person giving feedback was rude but the person '
             'receiving feedback took it well.',
             goals_total=goals,
@@ -472,7 +478,7 @@ class SessionService:
             summary=summary,
             status=sess.status,
             date=sess.ended_at,
-            score=feedback.overall_score if feedback else -1,
+            overall_score=feedback.overall_score if feedback else -1,
             skills=scores,
             allow_admin_access=sess.allow_admin_access,
         )

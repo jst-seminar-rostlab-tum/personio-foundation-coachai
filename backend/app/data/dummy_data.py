@@ -57,7 +57,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             total_sessions=32,
             training_time=4.5,
             current_streak_days=5,
-            average_score=82,
+            score_sum=32 * 82,
             goals_achieved=4,  # Summation of all goals achieved
         ),
         UserProfile(
@@ -75,7 +75,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             total_sessions=5,
             training_time=4.2,
             current_streak_days=2,
-            average_score=87,
+            score_sum=5 * 87,
             goals_achieved=2,  # Summation of all goals achieved
         ),
     ]
@@ -226,7 +226,7 @@ def get_dummy_conversation_scenarios(
                 **Behavioral Traits**:
                 - Overly agreeable 
                 — avoids conflict or disagreement
-                - Deflects criticism with enthusiasm (“I’ll fix it!”)
+                - Deflects criticism with enthusiasm ("I'll fix it!")
                 - Often hides stress or burnout behind optimism
                 - Pushes for promotions or more responsibility before ready
                 - Uses toxic positivity to dismiss serious concerns
@@ -242,7 +242,7 @@ def get_dummy_conversation_scenarios(
             situational_facts="""
                 **Positive Performance**
                 - Pam developed two successful community outreach pilots.
-                - Partners often compliment Pam’s creativity and energy.
+                - Partners often compliment Pam's creativity and energy.
 
                 **Areas for Improvement**
                 - Pam sometimes misses internal deadlines for reports and data submissions.
@@ -297,7 +297,7 @@ def get_dummy_conversation_scenarios(
                 **Prior Attempts**
                 - Two team meetings were held to clarify roles; tension persists.
                 - Candice agreed to share updates more frequently; Jordan promised to check before 
-                redoing Candice’s work.
+                redoing Candice's work.
 
                 **Current Impact**
                 - Other teammates feel awkward and avoid putting Candice and Jordan on the same 
@@ -325,8 +325,8 @@ def get_dummy_conversation_scenarios(
                   thing
                 **Behavioral Traits:**
                 - Speaks in a soft, hesitant voice with frequent pauses
-                - Uses filler words (“um…”, “I guess…”, “maybe…”) and trails off mid-sentenceAgrees 
-                verbally (“yeah… sure… okay”) even when uncertain or uncomfortable
+                - Uses filler words ("um…", "I guess…", "maybe…") and trails off mid-sentenceAgrees 
+                verbally ("yeah… sure… okay") even when uncertain or uncomfortable
                 - Avoids asserting opinions or asking questions
                 - Long silences when asked direct or emotional questions
                 - May apologize unnecessarily or downplay her own contributions
@@ -352,11 +352,11 @@ def get_dummy_conversation_scenarios(
                 workload growth.
 
                 **Organizational Context**
-                - The NGO faces tight budgets due to a new funder’s spending cap.
+                - The NGO faces tight budgets due to a new funder's spending cap.
                 - Managers can approve up to 3% merit raise without director sign-off.
 
                 **Silver Lining**
-                - Peers respect Sandra’s community engagement; manager has praised initiative on 
+                - Peers respect Sandra's community engagement; manager has praised initiative on 
                 outreach campaigns.
             """,
             difficulty_level=DifficultyLevel.easy,
@@ -455,7 +455,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=5000,
             end_offset_ms=10000,
-            text='Hi! I’d like to check your schedule today. Are you available at 2 PM?',
+            text="Hi! I'd like to check your schedule today. Are you available at 2 PM?",
             audio_uri='https://example.com/audio/ai_schedule_check.mp3',
             ai_emotion='friendly',
             created_at=datetime.now(UTC),
@@ -500,7 +500,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.user,
             start_offset_ms=9000,
             end_offset_ms=13000,
-            text='I’m not able to log in since yesterday.',
+            text="I'm not able to log in since yesterday.",
             audio_uri='https://example.com/audio/user_login_issue.mp3',
             ai_emotion='worried',
             created_at=datetime.now(UTC),
@@ -534,7 +534,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=3000,
             end_offset_ms=7000,
-            text='Absolutely. I’ll make sure to include the latest figures.',
+            text="Absolutely. I'll make sure to include the latest figures.",
             audio_uri='https://example.com/audio/employee_confirm_report.mp3',
             ai_emotion='motivated',
             created_at=datetime.now(UTC),
@@ -556,7 +556,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=10000,
             end_offset_ms=13500,
-            text='Will do. I’ll send you a draft in a couple of hours.',
+            text="Will do. I'll send you a draft in a couple of hours.",
             audio_uri='https://example.com/audio/employee_confirm_draft.mp3',
             ai_emotion='reliable',
             created_at=datetime.now(UTC),
@@ -568,7 +568,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.user,
             start_offset_ms=0,
             end_offset_ms=2800,
-            text='How’s the client presentation coming along?',
+            text="How's the client presentation coming along?",
             audio_uri='https://example.com/audio/manager_check_presentation.mp3',
             ai_emotion='inquisitive',
             created_at=datetime.now(UTC),
@@ -579,7 +579,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=2800,
             end_offset_ms=6500,
-            text='I’ve finished most of the slides. Just adding the final data now.',
+            text="I've finished most of the slides. Just adding the final data now.",
             audio_uri='https://example.com/audio/employee_update_presentation.mp3',
             ai_emotion='focused',
             created_at=datetime.now(UTC),
@@ -601,7 +601,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=9500,
             end_offset_ms=12800,
-            text='Understood. I’ll send it for your review by 3 PM.',
+            text="Understood. I'll send it for your review by 3 PM.",
             audio_uri='https://example.com/audio/employee_confirm_review.mp3',
             ai_emotion='proactive',
             created_at=datetime.now(UTC),
@@ -646,7 +646,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=9000,
             end_offset_ms=12500,
-            text='Of course. I’ll update the team and share the status report tomorrow.',
+            text="Of course. I'll update the team and share the status report tomorrow.",
             audio_uri='https://example.com/audio/employee_confirm_handover.mp3',
             ai_emotion='assuring',
             created_at=datetime.now(UTC),
@@ -669,7 +669,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
-            text='Apologies for the delay. I’ll finalize it by this afternoon.',
+            text="Apologies for the delay. I'll finalize it by this afternoon.",
             audio_uri='https://example.com/audio/employee_apology_budget.mp3',
             ai_emotion='apologetic',
             created_at=datetime.now(UTC),
@@ -680,7 +680,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.user,
             start_offset_ms=7000,
             end_offset_ms=10500,
-            text='Alright, please prioritize it. We’re presenting it tomorrow.',
+            text="Alright, please prioritize it. We're presenting it tomorrow.",
             audio_uri='https://example.com/audio/manager_instruction_prioritize.mp3',
             ai_emotion='urgent',
             created_at=datetime.now(UTC),
@@ -691,7 +691,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
-            text='Understood. I’ll share it with you before the end of the day.',
+            text="Understood. I'll share it with you before the end of the day.",
             audio_uri='https://example.com/audio/employee_confirm_budget.mp3',
             ai_emotion='committed',
             created_at=datetime.now(UTC),
@@ -714,7 +714,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
-            text='Apologies for the delay. I’ll finalize it by this afternoon.',
+            text="Apologies for the delay. I'll finalize it by this afternoon.",
             audio_uri='https://example.com/audio/employee_apology_budget.mp3',
             ai_emotion='apologetic',
             created_at=datetime.now(UTC),
@@ -725,7 +725,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.user,
             start_offset_ms=7000,
             end_offset_ms=10500,
-            text='Alright, please prioritize it. We’re presenting it tomorrow.',
+            text="Alright, please prioritize it. We're presenting it tomorrow.",
             audio_uri='https://example.com/audio/manager_instruction_prioritize.mp3',
             ai_emotion='urgent',
             created_at=datetime.now(UTC),
@@ -736,7 +736,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
-            text='Understood. I’ll share it with you before the end of the day.',
+            text="Understood. I'll share it with you before the end of the day.",
             audio_uri='https://example.com/audio/employee_confirm_budget.mp3',
             ai_emotion='committed',
             created_at=datetime.now(UTC),
@@ -759,7 +759,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
-            text='Apologies for the delay. I’ll finalize it by this afternoon.',
+            text="Apologies for the delay. I'll finalize it by this afternoon.",
             audio_uri='https://example.com/audio/employee_apology_budget.mp3',
             ai_emotion='apologetic',
             created_at=datetime.now(UTC),
@@ -770,7 +770,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.user,
             start_offset_ms=7000,
             end_offset_ms=10500,
-            text='Alright, please prioritize it. We’re presenting it tomorrow.',
+            text="Alright, please prioritize it. We're presenting it tomorrow.",
             audio_uri='https://example.com/audio/manager_instruction_prioritize.mp3',
             ai_emotion='urgent',
             created_at=datetime.now(UTC),
@@ -781,7 +781,7 @@ def get_dummy_session_turns(
             speaker=SpeakerEnum.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
-            text='Understood. I’ll share it with you before the end of the day.',
+            text="Understood. I'll share it with you before the end of the day.",
             audio_uri='https://example.com/audio/employee_confirm_budget.mp3',
             ai_emotion='committed',
             created_at=datetime.now(UTC),
@@ -881,9 +881,9 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[0].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            scores={'structure': 4, 'empathy': 5, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=83,
+            overall_score=4.3,
             transcript_uri='https://example.com/transcripts/session1.txt',
             speak_time_percent=60.5,
             questions_asked=5,
@@ -901,8 +901,8 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
+                        "I've noticed that several deadlines were missed last week, and "
+                        "it's causing team to fall behind on the overall project timeline."
                     ),
                 }
             ],
@@ -910,7 +910,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -954,9 +954,9 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[1].id,  # Link to the second session
-            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
+            scores={'structure': 3, 'empathy': 4, 'focus': 5, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=81,
+            overall_score=4.0,
             transcript_uri='https://example.com/transcripts/session2.txt',
             speak_time_percent=55.0,
             questions_asked=7,
@@ -973,7 +973,7 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        "I've noticed that several deadlines were missed last week, and it's "
                         'causing our team to fall behind on the overall project timeline.'
                     ),
                 }
@@ -982,7 +982,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1025,11 +1025,11 @@ def get_dummy_session_feedback(
         ),
         SessionFeedback(
             id=uuid4(),
-            session_id=sessions[2].id,  # Link to the second session
-            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
+            session_id=sessions[2].id,  # Link to the third session
+            scores={'structure': 5, 'empathy': 4, 'focus': 3, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=81,
-            transcript_uri='https://example.com/transcripts/session2.txt',
+            overall_score=4.0,
+            transcript_uri='https://example.com/transcripts/session3.txt',
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -1045,7 +1045,7 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        "I've noticed that several deadlines were missed last week, and it's "
                         'causing our team to fall behind on the overall project timeline.'
                     ),
                 }
@@ -1054,7 +1054,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1097,11 +1097,11 @@ def get_dummy_session_feedback(
         ),
         SessionFeedback(
             id=uuid4(),
-            session_id=sessions[3].id,  # Link to the second session
-            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
+            session_id=sessions[3].id,  # Link to the fourth session
+            scores={'structure': 4, 'empathy': 3, 'focus': 5, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=81,
-            transcript_uri='https://example.com/transcripts/session2.txt',
+            overall_score=4.0,
+            transcript_uri='https://example.com/transcripts/session4.txt',
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -1119,7 +1119,7 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        "I've noticed that several deadlines were missed last week, and it's "
                         'causing our team to fall behind on the overall project timeline.'
                     ),
                 }
@@ -1128,7 +1128,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1171,11 +1171,11 @@ def get_dummy_session_feedback(
         ),
         SessionFeedback(
             id=uuid4(),
-            session_id=sessions[4].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            session_id=sessions[4].id,  # Link to the fifth session
+            scores={'structure': 5, 'empathy': 5, 'focus': 4, 'clarity': 5},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=83,
-            transcript_uri='https://example.com/transcripts/session1.txt',
+            overall_score=4.8,
+            transcript_uri='https://example.com/transcripts/session5.txt',
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1191,8 +1191,8 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
+                        "I've noticed that several deadlines were missed last week, and "
+                        "it's causing team to fall behind on the overall project timeline."
                     ),
                 }
             ],
@@ -1200,7 +1200,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1244,15 +1244,18 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[5].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=83,
-            transcript_uri='https://example.com/transcripts/session1.txt',
+            overall_score=3.8,
+            transcript_uri='https://example.com/transcripts/session6.txt',
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
             goals_achieved=[
                 'Bring clarity to the situation',
+                'Encourage open dialogue',
+                'Maintain professionalism',
+                'Provide specific feedback',
             ],
             example_positive=[
                 {
@@ -1262,8 +1265,8 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
+                        "I've noticed that several deadlines were missed last week, and "
+                        "it's causing team to fall behind on the overall project timeline."
                     ),
                 }
             ],
@@ -1271,7 +1274,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1315,19 +1318,14 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[6].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=83,
-            transcript_uri='https://example.com/transcripts/session1.txt',
+            overall_score=3.8,
+            transcript_uri='https://example.com/transcripts/session7.txt',
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
-            goals_achieved=[
-                'Bring clarity to the situation',
-                'Encourage open dialogue',
-                'Maintain professionalism',
-                'Provide specific feedback',
-            ],
+            goals_achieved=['Bring clarity to the situation'],
             example_positive=[
                 {
                     'heading': 'Clear framing of the issue',
@@ -1336,8 +1334,8 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
+                        "I've noticed that several deadlines were missed last week, and "
+                        "it's causing team to fall behind on the overall project timeline."
                     ),
                 }
             ],
@@ -1345,7 +1343,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1389,10 +1387,10 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[7].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=83,
-            transcript_uri='https://example.com/transcripts/session1.txt',
+            overall_score=3.8,
+            transcript_uri='https://example.com/transcripts/session8.txt',
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1405,8 +1403,8 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
+                        "I've noticed that several deadlines were missed last week, and "
+                        "it's causing team to fall behind on the overall project timeline."
                     ),
                 }
             ],
@@ -1414,7 +1412,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1592,7 +1590,7 @@ def get_dummy_admin_stats() -> list[AdminDashboardStats]:
         AdminDashboardStats(
             id=uuid4(),
             total_trainings=34533,
-            average_score=86,
+            score_sum=34533 * 3.5,
         )
     ]
 

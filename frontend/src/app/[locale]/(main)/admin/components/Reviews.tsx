@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
 import { Review, ReviewsPaginated } from '@/interfaces/models/Review';
 import { reviewService } from '@/services/ReviewService';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import {
   Select,
   SelectContent,
@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/Select';
 import { useRouter } from 'next/navigation';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
-import { formattedDate } from '@/lib/utils';
+import { formattedDate } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
 
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
@@ -133,10 +133,12 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {reviewsStorage?.slice(0, visibleCount).map((review) => (
               <div
-                onClick={() => handleReviewClick(review.sessionId)}
+                onClick={() => review.allowAdminAccess && handleReviewClick(review.sessionId)}
                 key={review.id}
                 className={`border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start ${
-                  review.sessionId ? 'cursor-pointer' : 'cursor-not-allowed'
+                  review.sessionId && review.allowAdminAccess
+                    ? 'cursor-pointer'
+                    : 'cursor-not-allowed'
                 } transition-all duration-300 hover:shadow-md`}
               >
                 <div className="flex items-center mb-2">

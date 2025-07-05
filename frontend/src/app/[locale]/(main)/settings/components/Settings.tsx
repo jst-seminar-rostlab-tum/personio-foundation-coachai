@@ -15,9 +15,10 @@ import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import { UserProfileService } from '@/services/UserProfileService';
 import { UserPreference } from '@/interfaces/models/UserInputFields';
-import { PrimaryGoals, UserRoles } from '@/lib/utils';
+import { UserRoles } from '@/lib/constants/userRoles';
+import { PrimaryGoals } from '@/lib/constants/primaryGoals';
 import { UserProfile } from '@/interfaces/models/UserProfile';
-import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
 import JSZip from 'jszip';
 import { api } from '@/services/ApiClient';
 import UserPreferences from './UserPreferences';
@@ -162,7 +163,7 @@ export default function Settings({ userProfile }: SettingsProps) {
 
   return (
     <div>
-      <div className="flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-8">
         <h1 className="text-2xl">{tCommon('settings')}</h1>
 
         <div className="space-y-4 flex items-center rounded-t-lg">

@@ -38,7 +38,7 @@ def _build_export_user_profile(user_profile: UserProfile) -> ExportUserProfile:
             total_sessions=user_profile.total_sessions,
             training_time=user_profile.training_time,
             current_streak_days=user_profile.current_streak_days,
-            average_score=user_profile.average_score,
+            score_sum=user_profile.score_sum,
             goals_achieved=user_profile.goals_achieved,
         )
     except Exception as e:
@@ -46,7 +46,7 @@ def _build_export_user_profile(user_profile: UserProfile) -> ExportUserProfile:
         print(f'Error building export user profile: {e}')
         print('User profile data types:')
         print(f'  training_time: {type(user_profile.training_time)} = {user_profile.training_time}')
-        print(f'  average_score: {type(user_profile.average_score)} = {user_profile.average_score}')
+        print(f'  score_sum: {type(user_profile.score_sum)} = {user_profile.score_sum}')
         print(
             f'  total_sessions: {type(user_profile.total_sessions)} = {user_profile.total_sessions}'
         )

@@ -24,7 +24,7 @@ import {
   PasswordRequirement,
 } from '@/app/[locale]/(auth)/login/components/PasswordInput';
 import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import Link from 'next/link';
 
 export function SignUpForm() {
@@ -110,6 +110,7 @@ export function SignUpForm() {
                         {...field}
                         className="w-full"
                         disabled={isLoading}
+                        autoComplete="section-signup name"
                       />
                     </FormControl>
                     <FormMessage />
@@ -130,6 +131,7 @@ export function SignUpForm() {
                         className="w-full"
                         type="email"
                         disabled={isLoading}
+                        autoComplete="section-signup email"
                       />
                     </FormControl>
                     <FormMessage />
@@ -150,6 +152,7 @@ export function SignUpForm() {
                         className="w-full"
                         type="tel"
                         disabled={isLoading}
+                        autoComplete="section-signup tel"
                       />
                     </FormControl>
                     <FormMessage />
@@ -169,6 +172,7 @@ export function SignUpForm() {
                         disabled={isLoading}
                         requirements={passwordRequirements}
                         {...field}
+                        autocomplete="section-signup new-password"
                       />
                     </FormControl>
                   </FormItem>

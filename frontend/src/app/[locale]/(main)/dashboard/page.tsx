@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowRightIcon, Plus } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 
-import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { Button } from '@/components/ui/Button';
@@ -11,7 +11,7 @@ import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { SessionFromPagination } from '@/interfaces/models/Session';
-import { formattedDate } from '@/lib/utils';
+import { formattedDate } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiServer';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
