@@ -2,12 +2,16 @@ from uuid import uuid4
 
 import puremagic
 from fastapi import HTTPException, UploadFile
+from sqlalchemy import UUID
 from sqlmodel import Session as DBSession
 
+from app.config import Settings
 from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.google_cloud_storage_service import GCSManager
+
+settings = Settings()
 
 
 def is_valid_audio_mime_type(mime_type: str) -> bool:
@@ -37,6 +41,33 @@ def get_audio_content_type(upload_file: UploadFile) -> str:
     return mime
 
 
+def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
+    audio_name = f'{session_id}_{uuid4().hex}'
+    gcs = GCSManager('audio')
+
+    try:
+        gcs.upload_from_fileobj(
+            file_obj=audio_file.file,
+            blob_name=audio_name,
+            content_type=get_audio_content_type(audio_file),
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Failed to upload audio file: {str(e)}') from e
+
+    return audio_name
+
+
+def is_authorized_for_gcs() -> bool:
+    return all(
+        [
+            settings.GCP_PRIVATE_KEY_ID,
+            settings.GCP_PRIVATE_KEY,
+            settings.GCP_CLIENT_EMAIL,
+            settings.GCP_CLIENT_ID,
+        ]
+    )
+
+
 class SessionTurnService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
@@ -58,25 +89,16 @@ class SessionTurnService:
         if not turn.text:
             raise HTTPException(status_code=400, detail='Text is required')
 
-        # Generate a unique audio name using session_id and new uuid
-        audio_name = f'{turn.session_id}_{uuid4().hex}'
+        audio_uri = ''
 
-        gcs = GCSManager('audio')
-
-        try:
-            gcs.upload_from_fileobj(
-                file_obj=audio_file.file,
-                blob_name=audio_name,
-                content_type=get_audio_content_type(audio_file),
-            )
-        except Exception as e:
-            raise HTTPException(
-                status_code=500, detail=f'Failed to upload audio file: {str(e)}'
-            ) from e
+        if settings.ENABLE_AI and not is_authorized_for_gcs():
+            raise HTTPException(status_code=500, detail='Audio storage is not enabled')
+        elif settings.ENABLE_AI and is_authorized_for_gcs():
+            audio_uri = store_audio_file(turn.session_id, audio_file)
 
         # Create a new SessionTurn instance
         turn_data = turn.model_dump()
-        turn_data['audio_uri'] = audio_name
+        turn_data['audio_uri'] = audio_uri
         new_turn = SessionTurn(**turn_data)
 
         self.db.add(new_turn)
@@ -90,7 +112,7 @@ class SessionTurnService:
             start_offset_ms=new_turn.start_offset_ms,
             end_offset_ms=new_turn.end_offset_ms,
             text=new_turn.text,
-            audio_uri=audio_name,
+            audio_uri=audio_uri,
             ai_emotion=new_turn.ai_emotion,
             created_at=new_turn.created_at,
         )
