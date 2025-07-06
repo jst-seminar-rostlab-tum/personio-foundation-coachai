@@ -1,4 +1,3 @@
-import os
 from uuid import uuid4
 
 import puremagic
@@ -11,19 +10,8 @@ from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.google_cloud_storage_service import GCSManager
 
 
-def is_valid_audio(upload_file: UploadFile) -> bool:
-    matches = puremagic.magic_stream(upload_file.file)
-
-    # Reset the file pointer to the beginning after reading
-    upload_file.file.seek(0)
-
-    if not matches:
-        return False
-
-    mime = matches[0].mime_type
-
-    # Check if the MIME type is one of the valid audio types(extend as needed)
-    return mime in [
+def is_valid_audio_mime_type(mime_type: str) -> bool:
+    return mime_type in [
         'audio/webm',
         'video/webm',
         'audio/mpeg',
@@ -34,19 +22,19 @@ def is_valid_audio(upload_file: UploadFile) -> bool:
     ]
 
 
-def match_audio_content_type(file: UploadFile) -> tuple[str, str]:
-    """
-    Validate audio file extension and return (ext, content_type).
-    """
-    ext = os.path.splitext(file.filename)[-1].lower()
-    if ext == '.webm':
-        return ext, 'audio/webm'
-    elif ext == '.mp3':
-        return ext, 'audio/mpeg'
-    elif ext == '.wav':
-        return ext, 'audio/wav'
-    else:
+def get_audio_content_type(upload_file: UploadFile) -> str:
+    matches = puremagic.magic_stream(upload_file.file)
+    upload_file.file.seek(0)
+
+    if not matches:
         raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
+
+    mime = matches[0].mime_type
+
+    if not is_valid_audio_mime_type(mime):
+        raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
+
+    return mime
 
 
 class SessionTurnService:
@@ -70,17 +58,8 @@ class SessionTurnService:
         if not turn.text:
             raise HTTPException(status_code=400, detail='Text is required')
 
-        # Check if the uploaded audio file is valid
-        try:
-            ext, content_type = match_audio_content_type(audio_file)
-        except HTTPException as e:
-            raise e
-
-        if not is_valid_audio(audio_file):
-            raise HTTPException(status_code=400, detail='Uploaded file is not a valid audio type')
-
         # Generate a unique audio name using session_id and new uuid
-        audio_name = f'{turn.session_id}_{uuid4().hex}{ext}'
+        audio_name = f'{turn.session_id}_{uuid4().hex}'
 
         gcs = GCSManager('audio')
 
@@ -88,7 +67,7 @@ class SessionTurnService:
             gcs.upload_from_fileobj(
                 file_obj=audio_file.file,
                 blob_name=audio_name,
-                content_type=content_type,
+                content_type=get_audio_content_type(audio_file),
             )
         except Exception as e:
             raise HTTPException(

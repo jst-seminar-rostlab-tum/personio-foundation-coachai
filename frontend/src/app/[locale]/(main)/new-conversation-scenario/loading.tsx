@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export default function ConversationScenarioPageLoading() {
   return (
     <div>
@@ -32,26 +30,22 @@ export default function ConversationScenarioPageLoading() {
       </div>
       {/* Two full-width buttons on the same line */}
       <div className="flex gap-4 w-full md:max-w-lg xl:max-w-xl mx-auto">
-        <Link href="/dashboard" className="flex-1">
-          <button className="h-10 w-full bg-gray-100 rounded text-gray-500 font-semibold">
-            Back
-          </button>
-        </Link>
-        <Link href="/simulation/1" className="flex-1">
-          <button className="h-10 w-full bg-gray-300 text-gray-500 rounded font-semibold">
-            Create Training{' '}
-            <svg
-              className="w-4 h-4 mb-0.5 inline-block ml-1"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </Link>
+        <button className="h-10 w-full bg-gray-100 rounded text-gray-500 font-semibold">
+          Back
+        </button>
+        <button className="h-10 w-full bg-gray-300 text-gray-500 rounded font-semibold">
+          Create Training{' '}
+          <svg
+            className="w-4 h-4 mb-0.5 inline-block ml-1"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
     </div>
   );
