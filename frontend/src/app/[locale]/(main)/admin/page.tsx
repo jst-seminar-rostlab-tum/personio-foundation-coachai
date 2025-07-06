@@ -36,7 +36,7 @@ export default async function AdminPage() {
     { value: stats.totalUsers, label: t('statActiveUsers') },
     { value: stats.totalTrainings, label: tCommon('totalSessions') },
     { value: stats.totalReviews, label: tCommon('reviews') },
-    { value: `${stats.averageScore}%`, label: tCommon('avgScore') },
+    { value: `${stats.averageScore ?? 0}%`, label: tCommon('avgScore') },
   ];
 
   return (
