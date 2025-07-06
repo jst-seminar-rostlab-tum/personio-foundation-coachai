@@ -189,7 +189,7 @@ export default function ConversationScenarioForm({
             </RadioGroup>
             <div className="mt-12 mb-4 font-medium text-xl">{t('selectContext')}</div>
             <Textarea
-              className="w-full min-h-32"
+              className="w-full min-h-32 text-base"
               value={contextMode === 'default' ? defaultContextLong : customContext}
               onChange={(e) => {
                 if (contextMode === 'custom') {

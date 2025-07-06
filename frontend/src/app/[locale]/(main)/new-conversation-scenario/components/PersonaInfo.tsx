@@ -1,81 +1,102 @@
 import { useTranslations } from 'next-intl';
 import { Persona } from '@/interfaces/Persona';
-import { ArrowRightIcon, ArrowDownIcon } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 
 interface PersonaInfoProps {
   selectedPersona: string;
   personas: Persona[];
 }
 
-interface PersonaInfoBlockProps {
-  title: string;
-  items: string[];
-}
-
-function PersonaInfoBlock({ title, items }: PersonaInfoBlockProps) {
-  return (
-    <div className="rounded-lg p-4 w-full sm:flex-1 flex flex-col items-center justify-center">
-      <div className="text-lg font-medium text-font-dark mb-3 text-center">{title}</div>
-      <ul className="space-y-2">
-        {items.map((item, index) => (
-          <li key={index} className="text-base text-font-dark flex items-start">
-            <span className="text-marigold-50 mr-2">•</span>
-            {item}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
   const t = useTranslations('ConversationScenario.customize.persona');
+  const { contextMode } = useConversationScenarioStore();
 
   const getPersonaData = (personaId: string) => {
-    // Validate that personaId is not empty
-    if (!personaId || personaId.trim() === '') {
-      return null;
-    }
-
+    if (!personaId || personaId.trim() === '') return { traits: [], trainingFocus: [] };
     try {
       const traits = t.raw(`personas.${personaId}.traits`) as string[];
       const trainingFocus = t.raw(`personas.${personaId}.trainingFocus`) as string[];
-
-      if (traits && trainingFocus && traits.length > 0 && trainingFocus.length > 0) {
-        return { traits, trainingFocus };
-      }
-      return null;
+      return { traits, trainingFocus };
     } catch {
-      return null;
+      return { traits: [], trainingFocus: [] };
     }
   };
 
-  // Don't render if no persona is selected
-  if (!selectedPersona || selectedPersona.trim() === '') {
-    return null;
-  }
-
   const selectedPersonaData = getPersonaData(selectedPersona);
+  const personaName = personas.find((p) => p.id === selectedPersona)?.name || selectedPersona;
+  const [traitsText, setTraitsText] = useState(selectedPersonaData.traits.join('\n'));
+  const [focusText, setFocusText] = useState(selectedPersonaData.trainingFocus.join('\n'));
+  const [personalityText, setPersonalityText] = useState(personaName);
+  const traitsRef = useRef<HTMLTextAreaElement>(null);
+  const focusRef = useRef<HTMLTextAreaElement>(null);
 
-  if (!selectedPersonaData) {
+  // Shared style for locked/disabled state (matches context Textarea)
+  const lockedClasses =
+    'border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content min-h-16 w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus:outline-none focus:ring-2 focus:ring-bw-40 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
+
+  useEffect(() => {
+    if (traitsRef.current && focusRef.current) {
+      traitsRef.current.style.height = 'auto';
+      focusRef.current.style.height = 'auto';
+      const traitsHeight = traitsRef.current.scrollHeight;
+      const focusHeight = focusRef.current.scrollHeight;
+      const maxHeight = Math.max(traitsHeight, focusHeight);
+      traitsRef.current.style.height = `${maxHeight}px`;
+      focusRef.current.style.height = `${maxHeight}px`;
+    }
+  }, [traitsText, focusText]);
+
+  if (!selectedPersona || selectedPersona.trim() === '' || !selectedPersonaData.traits.length) {
     return null;
   }
-
-  const personaName = personas.find((p) => p.id === selectedPersona)?.name || selectedPersona;
 
   return (
-    <div className="mb-12 border border-gray-200 rounded-lg p-6">
-      <div className="text-xl text-font-dark text-left mb-4">
+    <div className="mb-12 border border-bw-20 rounded-2xl p-6">
+      <div className="text-xl text-font-dark text-left mb-8">
         {t('about')}: {personaName}
       </div>
-      <div className="flex flex-col sm:flex-row gap-6 items-center justify-center">
-        <PersonaInfoBlock title={t('behavioralTraits')} items={selectedPersonaData.traits} />
-        {/* Arrow connecting the two boxes */}
-        <div className="flex justify-center items-center">
-          <ArrowDownIcon className="w-8 h-8 text-bw-70 sm:hidden" />
-          <ArrowRightIcon className="w-8 h-8 text-bw-70 hidden sm:block" />
+      <div className="mb-6">
+        <label className="mb-2 font-medium text-lg block">Personality</label>
+        <input
+          type="text"
+          className={lockedClasses}
+          value={contextMode === 'default' ? personaName : personalityText}
+          onChange={(event) => {
+            if (contextMode === 'custom') setPersonalityText(event.target.value);
+          }}
+          disabled={contextMode === 'default'}
+        />
+      </div>
+      <div className="flex flex-col sm:flex-row gap-6 items-start justify-center">
+        <div className="w-full sm:flex-1 min-w-0">
+          <label className="mb-2 font-medium text-lg block">{t('behavioralTraits')}</label>
+          <textarea
+            ref={traitsRef}
+            className={lockedClasses}
+            value={contextMode === 'default' ? selectedPersonaData.traits.join('\n') : traitsText}
+            onChange={(event) => {
+              if (contextMode === 'custom') setTraitsText(event.target.value);
+            }}
+            rows={5}
+            disabled={contextMode === 'default'}
+          />
         </div>
-        <PersonaInfoBlock title={t('trainingFocus')} items={selectedPersonaData.trainingFocus} />
+        <div className="w-full sm:flex-1 min-w-0">
+          <label className="mb-2 font-medium text-lg block">{t('trainingFocus')}</label>
+          <textarea
+            ref={focusRef}
+            className={lockedClasses}
+            value={
+              contextMode === 'default' ? selectedPersonaData.trainingFocus.join('\n') : focusText
+            }
+            onChange={(event) => {
+              if (contextMode === 'custom') setFocusText(event.target.value);
+            }}
+            rows={5}
+            disabled={contextMode === 'default'}
+          />
+        </div>
       </div>
     </div>
   );
