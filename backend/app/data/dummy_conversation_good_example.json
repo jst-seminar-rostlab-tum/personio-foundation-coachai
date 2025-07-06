@@ -1,21 +1,116 @@
 {
   "scenario": {
-    "title": "Feedback on Project Communication (Structure 5 Example)",
-    "description": "A User (manager) is giving feedback to an Assistant (Sam, direct report) about their communication during a recent project. This example demonstrates flawless structure: clear opening, logical flow, smooth transitions, and a strong closing.",
-    "participants": {
-      "user_role": "Manager",
-      "assistant_role": "Sam, Direct Report"
-    }
+    "id": "11111111-1111-1111-1111-111111111120",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "category_id": "feedback",
+    "custom_category_label": null,
+    "language_code": "en",
+    "persona": "",
+    "situational_facts": "",
+    "difficulty_level": "medium",
+    "status": "ready",
+    "created_at": "2024-06-28T10:00:00Z",
+    "updated_at": "2024-06-28T10:00:00Z"
   },
   "transcript": [
-    {"speaker": "User", "turn": 1, "message": "Hi Sam, thank you for making time to meet today. I want to discuss your communication during the Phoenix project. First, I’ll share my observations, then we can talk about solutions together."},
-    {"speaker": "Assistant", "turn": 2, "message": "Hi. Thanks for asking. Overall, I think it's going okay, but I admit I've felt a bit overwhelmed lately and I might have let some things slip."},
-    {"speaker": "User", "turn": 3, "message": "To start, I noticed you missed a couple of project syncs and didn’t respond to some important emails, such as the one about the client’s updated requirements. This led to the team working off the wrong spec and losing a day of work. I understand things can get busy, and I appreciate your hard work."},
-    {"speaker": "Assistant", "turn": 4, "message": "You're right. I sincerely apologize for that. I was trying to manage another urgent deadline and also had a family matter come up, but I should have communicated that to you proactively. It's my responsibility, and I'm sorry for the impact it had on the team."},
-    {"speaker": "User", "turn": 5, "message": "Thank you for taking responsibility. To help you stay in the loop, would a different reminder system help, or is there something I can do to support you?"},
-    {"speaker": "Assistant", "turn": 6, "message": "I completely understand. Seeing it from that perspective, I realize the downstream effects were more significant than I thought. I'm committed to making sure this doesn't happen again."},
-    {"speaker": "User", "turn": 7, "message": "That sounds like a solid plan. Let’s check in next week to see how things are going. If you need any further support, please let me know."},
-    {"speaker": "Assistant", "turn": 8, "message": "Thank you for that. It's on me to manage my responsibilities. I will block out the syncs in my calendar as non-negotiable and will make a point to acknowledge all critical emails within a few hours, even if it's just to say 'received'. That should solve the issue."},
-    {"speaker": "User", "turn": 9, "message": "To summarize, I appreciate your work and commitment. Let’s follow up next week and discuss any further support you might need. Thank you, Sam."}
+    {
+      "id": "8d0fa3d7-6ca7-4b46-81b2-f2138d22e28d",
+      "session_id": "5776f11e-6cef-4490-a5cd-451e0b3a42b7",
+      "speaker": "user",
+      "start_offset_ms": 0,
+      "end_offset_ms": 2000,
+      "text": "Hi Sam, thank you for making time to meet today. I want to discuss your communication during the Phoenix project. First, I'll share my observations, then we can talk about solutions together.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:01Z"
+    },
+    {
+      "id": "c3ab4c57-bf7c-4caa-9fcd-3d24de067714",
+      "session_id": "5776f11e-6cef-4490-a5cd-451e0b3a42b7",
+      "speaker": "assistant",
+      "start_offset_ms": 2000,
+      "end_offset_ms": 4000,
+      "text": "Hi. Thanks for asking. Overall, I think it's going okay, but I admit I've felt a bit overwhelmed lately and I might have let some things slip.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:03Z"
+    },
+    {
+      "id": "dd302fd4-6880-4ef7-92ab-2575c2ad6ce4",
+      "session_id": "5776f11e-6cef-4490-a5cd-451e0b3a42b7",
+      "speaker": "user",
+      "start_offset_ms": 4000,
+      "end_offset_ms": 6000,
+      "text": "To start, I noticed you missed a couple of project syncs and didn't respond to some important emails, such as the one about the client's updated requirements. This led to the team working off the wrong spec and losing a day of work. I understand things can get busy, and I appreciate your hard work.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:05Z"
+    },
+    {
+      "id": "17370853-42b3-4aeb-be91-445a2b81c227",
+      "session_id": "5776f11e-6cef-4490-a5cd-451e0b3a42b7",
+      "speaker": "assistant",
+      "start_offset_ms": 6000,
+      "end_offset_ms": 8000,
+      "text": "You're right. I sincerely apologize for that. I was trying to manage another urgent deadline and also had a family matter come up, but I should have communicated that to you proactively. It's my responsibility, and I'm sorry for the impact it had on the team.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:07Z"
+    },
+    {
+      "id": "e7d2a596-be19-402c-afb4-f2db6629324e",
+      "session_id": "5776f11e-6cef-4490-a5cd-451e0b3a42b7",
+      "speaker": "user",
+      "start_offset_ms": 8000,
+      "end_offset_ms": 10000,
+      "text": "Thank you for taking responsibility. To help you stay in the loop, would a different reminder system help, or is there something I can do to support you?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:09Z"
+    },
+    {
+      "id": "b64b4244-2e09-45e3-aa0e-160c6a2c5813",
+      "session_id": "5776f11e-6cef-4490-a5cd-451e0b3a42b7",
+      "speaker": "assistant",
+      "start_offset_ms": 10000,
+      "end_offset_ms": 12000,
+      "text": "I completely understand. Seeing it from that perspective, I realize the downstream effects were more significant than I thought. I'm committed to making sure this doesn't happen again.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:11Z"
+    },
+    {
+      "id": "64507b1d-f815-4112-9d64-aa05828e8fb9",
+      "session_id": "5776f11e-6cef-4490-a5cd-451e0b3a42b7",
+      "speaker": "user",
+      "start_offset_ms": 12000,
+      "end_offset_ms": 14000,
+      "text": "That sounds like a solid plan. Let's check in next week to see how things are going. If you need any further support, please let me know.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:13Z"
+    },
+    {
+      "id": "4f86edd2-85a1-4dc2-abed-cc827e0fadb8",
+      "session_id": "5776f11e-6cef-4490-a5cd-451e0b3a42b7",
+      "speaker": "assistant",
+      "start_offset_ms": 14000,
+      "end_offset_ms": 16000,
+      "text": "Thank you for that. It's on me to manage my responsibilities. I will block out the syncs in my calendar as non-negotiable and will make a point to acknowledge all critical emails within a few hours, even if it's just to say 'received'. That should solve the issue.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:15Z"
+    },
+    {
+      "id": "b193196d-5282-4340-aec3-ca03d158fd0c",
+      "session_id": "5776f11e-6cef-4490-a5cd-451e0b3a42b7",
+      "speaker": "user",
+      "start_offset_ms": 16000,
+      "end_offset_ms": 18000,
+      "text": "To summarize, I appreciate your work and commitment. Let's follow up next week and discuss any further support you might need. Thank you, Sam.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:17Z"
+    }
   ]
 }
