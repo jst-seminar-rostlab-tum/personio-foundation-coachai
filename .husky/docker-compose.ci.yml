@@ -11,7 +11,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 60
-    networks: [app-network]
+    networks: [test-network]
 
   test-migrations:
     build:
@@ -33,9 +33,9 @@ services:
       PGPASSWORD: postgres
       POSTGRES_DB: postgres
     entrypoint: ["/bin/bash", "/test-migrations.sh"]
-    networks: [app-network]
+    networks: [test-network]
 
 networks:
-  app-network:
+  test-network:
     external: true
     name: test-network
