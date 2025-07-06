@@ -50,6 +50,6 @@ class AdminDashboardService:
             total_users=total_users,
             total_trainings=stats.total_trainings,
             total_reviews=total_reviews,
-            average_score=stats.average_score,
+            score_sum=stats.score_sum,
             daily_token_limit=daily_token_limit,
         )

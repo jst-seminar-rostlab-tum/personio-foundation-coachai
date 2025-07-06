@@ -1,15 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-
-export interface Message {
-  id?: number;
-  text: string;
-  sender: 'user' | 'assistant';
-  start_offset_ms?: number;
-  end_offset_ms?: number;
-  created_at?: string;
-}
+import { Message } from '@/interfaces/models/Session';
 
 interface MessageItemProps {
   message: Message;
@@ -19,7 +11,6 @@ interface SimulationMessagesProps {
   messages: Message[];
 }
 
-// Component to render each text chunk with a fade-in
 const Chunk: React.FC<{ text: string }> = ({ text }) => {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -42,14 +33,12 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
     const prev = prevTextRef.current;
     const curr = message.text;
 
-    // If new text is appended, isolate the delta chunk
     if (curr.startsWith(prev)) {
       const delta = curr.slice(prev.length);
       if (delta) {
         setChunks((prevChunks) => [...prevChunks, delta]);
       }
     } else {
-      // If the text was replaced or reset, start fresh
       setChunks([curr]);
     }
 
@@ -81,7 +70,7 @@ export default function SimulationMessages({ messages }: SimulationMessagesProps
   }, [messages]);
 
   return (
-    <div className="flex flex-col gap-4 py-2 h-full">
+    <div className="w-full max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] flex flex-col gap-4 py-2 h-full">
       {messages.map((msg) => (
         <MessageItem key={msg.id} message={msg} />
       ))}

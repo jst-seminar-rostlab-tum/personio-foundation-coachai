@@ -1,11 +1,11 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, conint
 
 
 class MetricScore(BaseModel):
     metric: str = Field(
         ..., description="The name of the metric being scored, e.g., 'Structure', 'Empathy'."
     )
-    score: int = Field(..., ge=0, le=5, description='The score for the metric, from 0 to 5.')
+    score: conint(ge=1, le=5) = Field(..., description='The score for the metric, from 1 to 5.')
     justification: str = Field(
         ..., description='The justification from the LLM for why this score was given.'
     )

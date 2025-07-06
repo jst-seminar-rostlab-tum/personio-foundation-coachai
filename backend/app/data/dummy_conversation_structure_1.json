@@ -1,21 +1,116 @@
 {
   "scenario": {
-    "title": "Feedback on Project Communication (Structure 1)",
-    "description": "A User (manager) gives feedback to an Assistant (Sam, direct report) about communication during a recent project. Structure is very poor: no structure at all, utterances are random, fragmented, or unrelated. No clear beginning, middle, or end. Listener cannot understand the main topic or purpose.",
-    "participants": {
-      "user_role": "Manager",
-      "assistant_role": "Sam, Direct Report"
-    }
+    "id": "11111111-1111-1111-1111-111111111120",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "category_id": "feedback",
+    "custom_category_label": null,
+    "language_code": "en",
+    "persona": "",
+    "situational_facts": "",
+    "difficulty_level": "medium",
+    "status": "ready",
+    "created_at": "2024-06-28T10:00:00Z",
+    "updated_at": "2024-06-28T10:00:00Z"
   },
   "transcript": [
-    {"speaker": "User", "turn": 1, "message": "Project, pizza, emails, blue, sync, Sam, what, lost, cat."},
-    {"speaker": "Assistant", "turn": 2, "message": "Hi. Thanks for asking. Overall, I think it's going okay, but I admit I've felt a bit overwhelmed lately and I might have let some things slip."},
-    {"speaker": "User", "turn": 3, "message": "Vacation, spec, team, busy, appreciate, calendar, pressure, banana."},
-    {"speaker": "Assistant", "turn": 4, "message": "You're right. I sincerely apologize for that. I was trying to manage another urgent deadline and also had a family matter come up, but I should have communicated that to you proactively. It's my responsibility, and I'm sorry for the impact it had on the team."},
-    {"speaker": "User", "turn": 5, "message": "Next, maybe, reminders, support, whatever, Sam, project, ok."},
-    {"speaker": "Assistant", "turn": 6, "message": "I completely understand. Seeing it from that perspective, I realize the downstream effects were more significant than I thought. I'm committed to making sure this doesn't happen again."},
-    {"speaker": "User", "turn": 7, "message": "Emails, sync, dog, plan, thanks, Sam, sunshine, solve."},
-    {"speaker": "Assistant", "turn": 8, "message": "Thank you for that. It's on me to manage my responsibilities. I will block out the syncs in my calendar as non-negotiable and will make a point to acknowledge all critical emails within a few hours, even if it's just to say 'received'. That should solve the issue."},
-    {"speaker": "User", "turn": 9, "message": "Sunshine, project, maybe, ok, bye, cat."}
+    {
+      "id": "4292b83c-dc3e-4b73-892f-79800663334a",
+      "session_id": "852c232e-959c-41a4-87ee-78241f0a5dd1",
+      "speaker": "user",
+      "start_offset_ms": 0,
+      "end_offset_ms": 2000,
+      "text": "Project, pizza, emails, blue, sync, Sam, what, lost, cat.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:01Z"
+    },
+    {
+      "id": "9d63f2fe-d6b5-401a-962d-10801e1f1881",
+      "session_id": "852c232e-959c-41a4-87ee-78241f0a5dd1",
+      "speaker": "assistant",
+      "start_offset_ms": 2000,
+      "end_offset_ms": 4000,
+      "text": "Hi. Thanks for asking. Overall, I think it's going okay, but I admit I've felt a bit overwhelmed lately and I might have let some things slip.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:03Z"
+    },
+    {
+      "id": "95b987bf-6eda-4fbe-8e1e-d0dc21b4eb43",
+      "session_id": "852c232e-959c-41a4-87ee-78241f0a5dd1",
+      "speaker": "user",
+      "start_offset_ms": 4000,
+      "end_offset_ms": 6000,
+      "text": "Vacation, spec, team, busy, appreciate, calendar, pressure, banana.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:05Z"
+    },
+    {
+      "id": "f59c2ba8-407c-4bb2-9f1b-32cc2f5e86cc",
+      "session_id": "852c232e-959c-41a4-87ee-78241f0a5dd1",
+      "speaker": "assistant",
+      "start_offset_ms": 6000,
+      "end_offset_ms": 8000,
+      "text": "You're right. I sincerely apologize for that. I was trying to manage another urgent deadline and also had a family matter come up, but I should have communicated that to you proactively. It's my responsibility, and I'm sorry for the impact it had on the team.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:07Z"
+    },
+    {
+      "id": "4273abfa-ac99-454f-92ce-b57110a183ba",
+      "session_id": "852c232e-959c-41a4-87ee-78241f0a5dd1",
+      "speaker": "user",
+      "start_offset_ms": 8000,
+      "end_offset_ms": 10000,
+      "text": "Next, maybe, reminders, support, whatever, Sam, project, ok.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:09Z"
+    },
+    {
+      "id": "6de45b3b-1dfa-445c-9ee5-73c8e32fc4dd",
+      "session_id": "852c232e-959c-41a4-87ee-78241f0a5dd1",
+      "speaker": "assistant",
+      "start_offset_ms": 10000,
+      "end_offset_ms": 12000,
+      "text": "I completely understand. Seeing it from that perspective, I realize the downstream effects were more significant than I thought. I'm committed to making sure this doesn't happen again.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:11Z"
+    },
+    {
+      "id": "5848ebb5-55b6-443d-8f0f-857f3de3a22c",
+      "session_id": "852c232e-959c-41a4-87ee-78241f0a5dd1",
+      "speaker": "user",
+      "start_offset_ms": 12000,
+      "end_offset_ms": 14000,
+      "text": "Emails, sync, dog, plan, thanks, Sam, sunshine, solve.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:13Z"
+    },
+    {
+      "id": "21054739-3174-40f7-b1ec-8bc2e147ac52",
+      "session_id": "852c232e-959c-41a4-87ee-78241f0a5dd1",
+      "speaker": "assistant",
+      "start_offset_ms": 14000,
+      "end_offset_ms": 16000,
+      "text": "Thank you for that. It's on me to manage my responsibilities. I will block out the syncs in my calendar as non-negotiable and will make a point to acknowledge all critical emails within a few hours, even if it's just to say 'received'. That should solve the issue.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:15Z"
+    },
+    {
+      "id": "2ff77072-024a-45c1-b2dd-fadd5d2d3eb5",
+      "session_id": "852c232e-959c-41a4-87ee-78241f0a5dd1",
+      "speaker": "user",
+      "start_offset_ms": 16000,
+      "end_offset_ms": 18000,
+      "text": "Sunshine, project, maybe, ok, bye, cat.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:17Z"
+    }
   ]
 }
