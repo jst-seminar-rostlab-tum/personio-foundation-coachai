@@ -29,7 +29,8 @@ export default async function AdminPage() {
   const PAGE_SIZE = 4;
   const statsData = adminService.getAdminStats(api);
   const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
-  const [stats, reviews] = await Promise.all([statsData, reviewsData]);
+  const usersData = UserProfileService.getPaginatedUsers(api, 1, PAGE_SIZE);
+  const [stats, reviews, users] = await Promise.all([statsData, reviewsData, usersData]);
   const t = await getTranslations('Admin');
   const tCommon = await getTranslations('Common');
   const statsArray = [
@@ -51,7 +52,7 @@ export default async function AdminPage() {
         </div>
         <TokenSetter dailyTokenLimit={stats.dailyTokenLimit} />
         <Reviews {...reviews} />
-        <UserManagement />
+        <UserManagement usersPaginationData={users} />
       </div>
     </Suspense>
   );
