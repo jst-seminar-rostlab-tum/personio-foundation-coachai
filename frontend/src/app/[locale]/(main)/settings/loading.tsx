@@ -1,15 +1,8 @@
-import Link from 'next/link';
-
 export default function SettingsLoadingPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
         <div className="text-xl font-bold text-gray-700">Settings</div>
-        <Link href="/dashboard">
-          <button className="px-3 py-2 bg-gray-200 rounded text-gray-700 text-sm">
-            Back to Dashboard
-          </button>
-        </Link>
       </div>
 
       {/* Accordion Sections */}

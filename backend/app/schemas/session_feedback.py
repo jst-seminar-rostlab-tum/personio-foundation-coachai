@@ -4,7 +4,7 @@ from app.models.camel_case import CamelModel
 from app.models.language import LanguageCode
 
 
-class ExamplesRequest(CamelModel):
+class FeedbackRequest(CamelModel):
     transcript: str | None  # Full transcript of the session
     objectives: list[str] = Field(
         ..., description='List of training objectives the user is expected to achieve'
@@ -58,14 +58,6 @@ class GoalsAchievedCollection(CamelModel):
     )
 
 
-class RecommendationsRequest(ExamplesRequest):
-    """Request to generate improvement recommendations based on session feedback.
-    Same fields as ExamplesRequest, but used for generating recommendations instead of examples.
-    """
-
-    pass
-
-
 class Recommendation(CamelModel):
     heading: str = Field(..., description='Title or summary of the recommendation')
     recommendation: str = Field(..., description='Description or elaboration of the recommendation')
@@ -81,7 +73,7 @@ class RecommendationsCollection(CamelModel):
 class SessionFeedbackMetrics(CamelModel):
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    overall_score: int
+    overall_score: float
     transcript_uri: str
     speak_time_percent: float
     questions_asked: int
