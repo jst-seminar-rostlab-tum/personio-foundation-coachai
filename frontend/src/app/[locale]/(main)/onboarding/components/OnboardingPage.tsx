@@ -13,9 +13,10 @@ import Label from '@/components/ui/Label';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 
 import { UserOption } from '@/interfaces/models/UserInputFields';
-import { PrimaryGoals, UserRoles } from '@/lib/utils';
+import { UserRoles } from '@/lib/constants/userRoles';
+import { PrimaryGoals } from '@/lib/constants/primaryGoals';
 import { UserProfileService } from '@/services/UserProfileService';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import { useUser } from '@/contexts/User';
 import { useOnboardingStore } from '@/store/OnboardingStore';
 import { api } from '@/services/ApiClient';
@@ -23,6 +24,7 @@ import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
   const t = useTranslations('Onboarding');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const userProfile = useUser();
 
@@ -161,12 +163,12 @@ export default function OnboardingPageComponent() {
               disabled={step === 0}
             >
               <ArrowLeftIcon />
-              {t('navigation.back')}
+              {tCommon('back')}
             </Button>
           )}
           {step === onboardingSteps.length - 1 ? (
             <Button className="w-full" onClick={updateUserProfile}>
-              {t('navigation.finish')}
+              {tCommon('finish')}
               <ArrowRightIcon />
             </Button>
           ) : (
@@ -175,13 +177,13 @@ export default function OnboardingPageComponent() {
               onClick={() => setStep(step + 1)}
               variant={isValidStep(step) ? 'default' : 'disabled'}
             >
-              {t('navigation.next')}
+              {tCommon('next')}
               <ArrowRightIcon />
             </Button>
           )}
         </div>
         <Link href="/dashboard" className="text-base text-bw-40 hover:underline hover:text-bw-60">
-          {t('navigation.skip')}
+          {tCommon('skip')}
         </Link>
       </div>
     </div>

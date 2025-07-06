@@ -1,154 +1,56 @@
 {
   "metaTitle": "Login und Registrierung - Coach AI",
-  "metaDescription": "Melde dich an oder registriere dich um deine Reise mit Coach AI zu beginnen",
+  "metaDescription": "Melden Sie sich an oder registrieren Sie sich, um Ihre Reise mit Coach AI zu beginnen",
   "welcome": "Willkommen bei Leadership Coach",
-  "description": "Beginne deine Reise im Leadership Coaching",
-  "SignInTab": {
-    "title": "Anmelden",
-    "emailInputLabel": "E-Mail",
-    "emailInputPlaceholder": "Gib deine E-Mail ein",
-    "emailInputError": "Email ist ungültig",
-    "passwordInputLabel": "Passwort",
-    "passwordInputPlaceholder": "Gib dein Passwort ein",
-    "passwordInputError": "Password ist ungültig",
-    "stayLoggedInCheckboxLabel": "Angemeldet bleiben",
-    "signInButtonLabel": "Anmelden",
-    "signInWithGoogleButtonLabel": "Mit Google anmelden",
-    "alertErrorTitle401": "Ungültige E-Mail oder Passwort",
-    "alertErrorTitleGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
-  },
+  "description": "Starten Sie Ihre Reise im Führungstraining",
+  "signInWithGoogleButtonLabel": "Oder melden Sie sich mit Google an",
   "SignUpTab": {
-    "title": "Registrieren",
-    "fullNameInputLabel": "Vollständiger Name *",
-    "fullNameInputPlaceholder": "Dein Name",
-    "fullNameInputError": "Name ist ungültig",
-    "emailInputLabel": "E-Mail *",
-    "emailInputPlaceholder": "Deine E-Mail",
-    "emailInputError": "Email ist ungültig",
-    "phoneNumberInputLabel": "Telefonnummer *",
-    "phoneNumberInputPlaceholder": "Deine Telefonnummer",
-    "phoneNumberInputError": "Telefonnummer ist ungültig",
-    "passwordInputLabel": "Passwort *",
-    "passwordInputPlaceholder": "Erstelle ein Passwort",
     "passwordInputRequirementOneLabel": "Mindestens 8 Zeichen",
     "passwordInputRequirementTwoLabel": "Mindestens ein Großbuchstabe",
     "passwordInputRequirementThreeLabel": "Mindestens ein Sonderzeichen (!@#$%^&*)",
     "gdprAdherenceText": "Wir halten uns strikt an die DSGVO, indem wir nur erforderliche Daten erheben, nichts Unnötiges speichern und Daten so schnell wie möglich löschen. ",
     "readMoreOnGdprLink": "Mehr erfahren",
     "agreeToTermsCheckboxLabel": "Ich stimme den <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu",
-    "signUpButtonLabel": "Registrieren",
-    "signUpWithGoogleButtonLabel": "Oder mit Google registrieren",
-    "genericError": "Ein Fehler ist während der Registrierung aufgetreten"
+    "signUpWithGoogleButtonLabel": "Oder mit Google registrieren"
   },
   "VerificationPopup": {
-    "title": "Bestätige deine Telefonnummer",
+    "title": "Bestätigen Sie Ihre Telefonnummer",
     "descriptionPartOne": "Wir haben einen Bestätigungscode an ",
-    "descriptionPartTwo": " gesendet. Bitte gib ihn unten ein.",
-    "codeInputLabel": "Bestätigungscode",
+    "descriptionPartTwo": " gesendet. Bitte geben Sie ihn unten ein.",
     "codeInputPlaceholder": "6-stelligen Code eingeben",
-    "codeInputError": "Ungültiger Bestätigungscode",
-    "resendButtonLabel": "Code erneut senden",
-    "verifyButtonLabel": "Bestätigen",
-    "verifyingButtonLabel": "Wird überprüft...",
-    "cancelButtonLabel": "Abbrechen",
-    "codeLengthError": "Der Code muss 6 Zeichen lang sein",
-    "genericError": "Bei der Überprüfung ist ein Fehler aufgetreten"
-  },
-  "PrivacyPolicyDialog": {
-    "title": "Datenschutzerklärung",
-    "dataProcessing": {
-      "title": "Datenverarbeitung",
-      "table": {
-        "headers": {
-          "personalData": "Verarbeitete personenbezogene Daten",
-          "purpose": "Zweck",
-          "storageDuration": "Speicherdauer"
-        },
-        "accountInfo": {
-          "title": "Kontoinformationen",
-          "description": "E-Mail, Telefonnummer, bevorzugte Sprache",
-          "purposes": {
-            "signIn": "Anmeldung und Kontoverwaltung",
-            "phoneVerification": "Telefonnummernverifizierung",
-            "setLanguage": "Sprache für Benutzeroberfläche und KI festlegen"
-          },
-          "storage": {
-            "collectedAt": "Erhoben bei der Anmeldung",
-            "retained": "Gespeichert bis zur Kontolöschung"
-          }
-        },
-        "aiPersonalization": {
-          "title": "KI-Personalisierung",
-          "description": "Rolle, Führungserfahrung, Ziele, Selbstvertrauen",
-          "purposes": {
-            "provideTips": "Tipps vor Sitzungen bereitstellen",
-            "personalizeResponses": "Antworten während Sitzungen personalisieren",
-            "provideFeedback": "Feedback nach Sitzungen geben"
-          },
-          "storage": {
-            "collectedAt": "Erhoben bei der Anmeldung",
-            "retained": "Gespeichert bis zur Kontolöschung"
-          }
-        },
-        "voiceRecordings": {
-          "title": "Sprachaufzeichnungen",
-          "description": "Audioaufnahmen während Trainingssitzungen",
-          "purposes": {
-            "reviewSessions": "Ermöglicht das Anhören vergangener Trainingssitzungen"
-          },
-          "storage": {
-            "collectedAt": "Erhoben zum Zeitpunkt der Aufnahme",
-            "retainedConsent": "Für 90 Tage gespeichert, wenn Zustimmung erteilt wurde",
-            "deletedImmediately": "Sofort und dauerhaft gelöscht, wenn keine Zustimmung"
-          }
-        },
-        "usageMetrics": {
-          "title": "Nutzungsmetriken",
-          "description": "Tage mit Login, Trainingssitzungen, verwendete KI-Tokens, ...",
-          "purposes": {
-            "trackProgress": "Benutzerfortschritt verfolgen",
-            "markAchievements": "Erfolge kennzeichnen",
-            "provideMetrics": "Nutzungsstatistiken bereitstellen"
-          },
-          "storage": {
-            "collectedAt": "Erhoben während der Nutzung der App",
-            "retained": "Gespeichert bis zur Kontolöschung"
-          }
-        }
-      }
-    },
-    "security": {
-      "title": "Sicherheit & Datenschutz",
-      "euServers": {
-        "title": "EU-basierte Server",
-        "description": "Alle Daten werden auf Servern innerhalb der Europäischen Union gespeichert und verarbeitet"
-      },
-      "encryption": {
-        "title": "Verschlüsselung",
-        "description": "Daten werden sowohl während der Übertragung als auch im Ruhezustand verschlüsselt"
-      },
-      "externalServices": {
-        "title": "Externe Dienstleister",
-        "vercel": "Vercel – EU-Server und globales CDN",
-        "supabase": "Supabase – EU-Server",
-        "fly": "Fly.io – EU-Server",
-        "gcp": "GCP – EU-Server"
-      }
-    },
-    "userRights": {
-      "title": "Ihre Rechte",
-      "accountDeletion": {
-        "title": "Kontolöschung",
-        "description": "Fordern Sie die dauerhafte Löschung Ihres Kontos und aller zugehörigen Daten an"
-      },
-      "dataExport": {
-        "title": "Datenexport",
-        "description": "Fordern Sie einen Export aller über Sie gespeicherten Daten an"
-      }
-    }
+    "resendButtonLabel": "Code erneut senden"
   },
   "PasswordInput": {
-    "showPasswordSpan": "Zeige Passwort",
-    "hidePasswordSpan": "Verstecke Passwort"
-  }
+    "showPasswordSpan": "Passwort anzeigen",
+    "hidePasswordSpan": "Passwort verbergen"
+  },
+  "fullNameInputLabel": "Vollständiger Name",
+  "fullNameInputPlaceholder": "Geben Sie Ihren vollständigen Namen ein",
+  "fullNameInputError": "Bitte geben Sie einen gültigen Namen ein",
+  "phoneNumberInputLabel": "Telefonnummer",
+  "phoneNumberInputPlaceholder": "Geben Sie Ihre Telefonnummer ein",
+  "phoneNumberInputError": "Bitte geben Sie eine gültige Telefonnummer ein",
+  "passwordInputLabel": "Passwort",
+  "passwordInputPlaceholder": "Geben Sie Ihr Passwort ein",
+  "passwordInputError": "Bitte geben Sie ein gültiges Passwort ein",
+  "codeLengthError": "Der Code muss 6 Zeichen lang sein",
+  "verify": "Bestätigen",
+  "verifying": "Wird überprüft...",
+  "emailInputLabel": "E-Mail-Adresse",
+  "emailInputPlaceholder": "Bitte geben Sie Ihre E-Mail-Adresse ein",
+  "emailInputError": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+  "codeInputLabel": "Bestätigungscode",
+  "resendCodeButtonLabel": "Code erneut senden",
+  "signIn": "Anmelden",
+  "signUp": "Registrieren",
+  "ConfirmationForm": {
+    "metaTitle": "Bestätigen - Coach AI",
+    "metaDescription": "Kontobestätigung - Coach AI",
+    "title": "Bestätigen Sie Ihr Konto",
+    "description": "Bitte geben Sie den Bestätigungscode ein, der an Ihre E-Mail-Adresse gesendet wurde.",
+    "expiredDescription": "Ihr Bestätigungscode ist abgelaufen. Bitte fordern Sie einen neuen Code an.",
+    "expiredOtpError": "Der Bestätigungscode ist abgelaufen. Bitte fordern Sie einen neuen Code an.",
+    "genericError": "Bei der Konto-Bestätigung ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal."
+  },
+  "confirming": "Wird bestätigt..."
 }

@@ -1,51 +1,23 @@
 {
   "metaTitle": "Einstellungen - Coach AI",
   "metaDescription": "Passen Sie Ihre Trainingsseinstellungen an",
-  "title": "Einstellungen",
-  "backToDashboard": "Zurück zum Dashboard",
   "privacyControls": "Datenschutzeinstellungen",
-  "storeAudioTranscripts": "Gesprächsaudio und Transkripte speichern",
-  "export": "Exportieren",
+  "storeAudioTranscripts": "Gesprächsaufnahmen und Transkripte speichern",
   "exportData": "Persönliche Daten exportieren",
-  "deleteAccount": "Konto löschen",
   "personalizationSettings": "Personalisierungseinstellungen",
   "saveSettings": "Einstellungen speichern",
-  "saving": "Wird gespeichert...",
-  "ninetyDays": "Ihre Audiodateien und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf einsehbar.",
-  "zeroDays": "Ihre Audiodateien und Transkripte werden nicht gespeichert.",
-  "preferences": {
-    "language": {
-      "label": "Bevorzugte Sprache",
-      "en": "Englisch",
-      "es": "Spanisch",
-      "fr": "Französisch"
-    },
-    "learningStyle": {
-      "label": "Bevorzugter Lernstil",
-      "visual": "Visuell",
-      "handson": "Praktische Übungen",
-      "auditory": "Auditiv",
-      "kinesthetic": "Kinästhetisch"
-    },
-    "session": {
-      "label": "Bevorzugte Sitzungsdauer",
-      "short": "Weniger als 30 Minuten",
-      "medium": "30–60 Minuten",
-      "long": "Über 1 Stunde"
-    }
+  "ninetyDays": "Ihre Aufnahmen und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf verfügbar.",
+  "zeroDays": "Ihre Aufnahmen und Transkripte werden nicht gespeichert.",
+  "currentRole": "Aktuelle Rolle",
+  "primaryGoals": {
+    "label": "Wichtigste Ziele",
+    "placeholder": "Bitte wählen Sie bis zu 3 Ziele aus",
+    "maxOptionsSelected": "Max. Optionen ausgewählt"
   },
-  "leadershipGoals": {
-    "currentRole": {
-      "label": "Aktuelle Rolle"
-    },
-    "primaryGoals": {
-      "label": "Hauptziele",
-      "placeholder": "Bitte wählen Sie bis zu 3 Ziele aus",
-      "maxOptionsSelected": "Max. Optionen ausgewählt"
-    }
-  },
+  "exportSettingsSuccess": "Ihre Daten wurden erfolgreich exportiert.",
+  "exportSettingsError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.",
   "saveSettingsSuccess": "Ihre Einstellungen wurden erfolgreich gespeichert.",
-  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
   "exportSuccess": "Ihre Daten wurden erfolgreich exportiert.",
-  "exportError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+  "exportError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal."
 }

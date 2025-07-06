@@ -1,52 +1,105 @@
 {
   "scenario": {
-    "title": "Feedback on Project Communication (User has Low Clarity and Structure)",
-    "description": "An Assistant (playing a direct report, Sam) asks for specific feedback, but the User (playing a manager) responds with vague corporate jargon and lacks a clear, structured message.",
-    "participants": {
-      "user_role": "Manager",
-      "assistant_role": "Sam, Direct Report"
-    }
+    "id": "11111111-1111-1111-1111-111111111120",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "category_id": "feedback",
+    "custom_category_label": null,
+    "language_code": "en",
+    "persona": "",
+    "situational_facts": "",
+    "difficulty_level": "medium",
+    "status": "ready",
+    "created_at": "2024-06-28T10:00:00Z",
+    "updated_at": "2024-06-28T10:00:00Z"
   },
   "transcript": [
     {
-      "speaker": "Assistant",
-      "turn": 1,
-      "message": "Hi, thanks for meeting. You mentioned you had some feedback for me about the Phoenix project?"
+      "id": "891fe3dc-a63a-4247-8804-9f25ac89f7c2",
+      "session_id": "a61fd1ec-ce10-440a-ab6c-07ad0cc37fa6",
+      "speaker": "assistant",
+      "start_offset_ms": 0,
+      "end_offset_ms": 2000,
+      "text": "Hi, thanks for meeting. You mentioned you had some feedback for me about the Phoenix project?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:01Z"
     },
     {
-      "speaker": "User",
-      "turn": 2,
-      "message": "Hey. Yeah, so, about that... we need to leverage our synergies better. The deliverables aren't aligning with our core competencies right now."
+      "id": "13329a50-ade2-4162-9633-ef85f1311134",
+      "session_id": "a61fd1ec-ce10-440a-ab6c-07ad0cc37fa6",
+      "speaker": "user",
+      "start_offset_ms": 2000,
+      "end_offset_ms": 4000,
+      "text": "Hey. Yeah, so, about that... we need to leverage our synergies better. The deliverables aren't aligning with our core competencies right now.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:03Z"
     },
     {
-      "speaker": "Assistant",
-      "turn": 3,
-      "message": "Okay, I appreciate that perspective. Could you give me a specific example of a deliverable that I worked on where you see a misalignment? That would help me understand better."
+      "id": "1f2b8fde-0f70-4041-8e7e-64f61a208f3d",
+      "session_id": "a61fd1ec-ce10-440a-ab6c-07ad0cc37fa6",
+      "speaker": "assistant",
+      "start_offset_ms": 4000,
+      "end_offset_ms": 6000,
+      "text": "Okay, I appreciate that perspective. Could you give me a specific example of a deliverable that I worked on where you see a misalignment? That would help me understand better.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:05Z"
     },
     {
-      "speaker": "User",
-      "turn": 4,
-      "message": "It's about the bigger picture. The holistic view. We need to operationalize our key learnings and pivot our strategy to be more results-oriented. It's a paradigm shift."
+      "id": "3a83003a-ff3e-4aaa-abdf-5e2b991b83fd",
+      "session_id": "a61fd1ec-ce10-440a-ab6c-07ad0cc37fa6",
+      "speaker": "user",
+      "start_offset_ms": 6000,
+      "end_offset_ms": 8000,
+      "text": "It's about the bigger picture. The holistic view. We need to operationalize our key learnings and pivot our strategy to be more results-oriented. It's a paradigm shift.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:07Z"
     },
     {
-      "speaker": "Assistant",
-      "turn": 5,
-      "message": "I see. I'm trying to translate that into concrete actions for myself. For instance, regarding the Q3 report I submitted, was there a specific part that you felt missed the mark or needed to be more results-oriented?"
+      "id": "3736e14d-a8fc-46b3-961f-f966f9d445de",
+      "session_id": "a61fd1ec-ce10-440a-ab6c-07ad0cc37fa6",
+      "speaker": "assistant",
+      "start_offset_ms": 8000,
+      "end_offset_ms": 10000,
+      "text": "I see. I'm trying to translate that into concrete actions for myself. For instance, regarding the Q3 report I submitted, was there a specific part that you felt missed the mark or needed to be more results-oriented?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:09Z"
     },
     {
-      "speaker": "User",
-      "turn": 6,
-      "message": "It's not about one report, it's about the whole... process. We need to streamline the value-add and minimize the friction points. Just be more proactive."
+      "id": "80eeb1dc-d2b9-4460-93ac-9ecd978a54fe",
+      "session_id": "a61fd1ec-ce10-440a-ab6c-07ad0cc37fa6",
+      "speaker": "user",
+      "start_offset_ms": 10000,
+      "end_offset_ms": 12000,
+      "text": "It's not about one report, it's about the whole... process. We need to streamline the value-add and minimize the friction points. Just be more proactive.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:11Z"
     },
     {
-      "speaker": "Assistant",
-      "turn": 7,
-      "message": "Okay, 'be more proactive' is something I can work with. Would it be helpful, for example, if I sent a daily summary of my progress to increase transparency?"
+      "id": "63e8cb77-6916-4877-93e7-e6ddf15ce1b4",
+      "session_id": "a61fd1ec-ce10-440a-ab6c-07ad0cc37fa6",
+      "speaker": "assistant",
+      "start_offset_ms": 12000,
+      "end_offset_ms": 14000,
+      "text": "Okay, 'be more proactive' is something I can work with. Would it be helpful, for example, if I sent a daily summary of my progress to increase transparency?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:13Z"
     },
     {
-      "speaker": "User",
-      "turn": 8,
-      "message": "Let's blue-sky that offline. Just keep pushing the envelope. We'll circle back."
+      "id": "f9e81c1e-4d75-47a5-b5d8-cc73452a6a9b",
+      "session_id": "a61fd1ec-ce10-440a-ab6c-07ad0cc37fa6",
+      "speaker": "user",
+      "start_offset_ms": 14000,
+      "end_offset_ms": 16000,
+      "text": "Let's blue-sky that offline. Just keep pushing the envelope. We'll circle back.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:15Z"
     }
   ]
-} 
+}

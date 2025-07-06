@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cnMerge';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { LucideProps, StarIcon } from 'lucide-react';
 import { Children, cloneElement, useCallback, useEffect, useRef, useState } from 'react';

@@ -5,7 +5,7 @@ import { sessionService } from '@/services/SessionService';
 import { Play } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import { useState } from 'react';
 import { api } from '@/services/ApiClient';
 
@@ -15,6 +15,7 @@ interface CreateSessionButtonProps {
 
 export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) => {
   const t = useTranslations('Preparation');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,7 +41,7 @@ export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) =>
       disabled={isSubmitting}
     >
       <Play />
-      {isSubmitting ? t('navigation.starting') : t('navigation.start')}
+      {isSubmitting ? tCommon('starting') : tCommon('start')}
     </Button>
   );
 };

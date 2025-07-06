@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { UserProfileService } from '@/services/UserProfileService';
 import { useTranslations } from 'next-intl';
-import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
 import { redirect } from 'next/navigation';
 import { api } from '@/services/ApiClient';
 import {
@@ -25,18 +25,18 @@ interface DeleteUserHandlerProps {
 
 export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
   const [loading, setLoading] = useState(false);
-  const t = useTranslations('Common');
+  const tCommon = useTranslations('Common');
 
   async function handleDeleteUser(deleteUserId?: string) {
     setLoading(true);
     try {
       await UserProfileService.deleteUser(api, deleteUserId);
-      showSuccessToast(t('deleteAccountSuccess'));
+      showSuccessToast(tCommon('deleteAccountSuccess'));
       if (!deleteUserId) {
         redirect('/');
       }
     } catch (error) {
-      showErrorToast(error, t('deleteAccountError'));
+      showErrorToast(error, tCommon('deleteAccountError'));
     } finally {
       setLoading(false);
     }
@@ -47,13 +47,13 @@ export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t('deleteAccountConfirmTitle')}</AlertDialogTitle>
-          <AlertDialogDescription>{t('deleteAccountConfirmDesc')}</AlertDialogDescription>
+          <AlertDialogTitle>{tCommon('areYouSure')}</AlertDialogTitle>
+          <AlertDialogDescription>{tCommon('deleteAccountConfirmDesc')}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+          <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
           <AlertDialogAction onClick={() => handleDeleteUser(id)} disabled={loading}>
-            {loading ? t('deleting') : t('confirm')}
+            {loading ? tCommon('deleting') : tCommon('confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

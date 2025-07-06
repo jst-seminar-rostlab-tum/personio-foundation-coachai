@@ -1,15 +1,10 @@
+import { SessionScores } from './Common';
+
 export interface FeedbackResponse {
   title: string;
   createdAt: string;
   feedback?: SessionFeedback;
   goalsTotal: string[];
-}
-
-export interface SessionScores {
-  clarity: number;
-  empathy: number;
-  structure: number;
-  focus: number;
 }
 
 export interface SessionFeedback {

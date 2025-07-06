@@ -1,9 +1,4 @@
-type SkillsPerformance = {
-  structure: number;
-  empathy: number;
-  focus: number;
-  clarity: number;
-};
+import { SessionScores } from './Common';
 
 export type UserStats = {
   totalSessions: number;
@@ -12,7 +7,7 @@ export type UserStats = {
   averageScore: number;
   goalsAchieved: number;
   performanceOverTime: number[];
-  skillsPerformance: SkillsPerformance;
+  skillsPerformance: SessionScores;
 };
 
 export type UserStatsResponse = {
