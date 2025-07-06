@@ -1,7 +1,7 @@
 from app.models.camel_case import CamelModel
 
 
-class CreateUserRequest(CamelModel):
+class UserCreate(CamelModel):
     full_name: str
     phone: str
     email: str
@@ -9,10 +9,10 @@ class CreateUserRequest(CamelModel):
     # code: str
 
 
-class SendVerificationRequest(CamelModel):
+class VerificationCodeCreate(CamelModel):
     phone_number: str
 
 
-class VerifyCodeRequest(CamelModel):
+class VerificationCodeConfirm(CamelModel):
     phone_number: str
     code: str

@@ -1,4 +1,4 @@
-export interface CreateUserRequest {
+export interface UserCreate {
   fullName: string;
   email: string;
   phone: string;
@@ -6,11 +6,11 @@ export interface CreateUserRequest {
   // code: string;
 }
 
-export interface SendVerificationCodeRequest {
+export interface VerificationCodeCreate {
   phoneNumber: string;
 }
 
-export interface VerifyCodeRequest {
+export interface VerificationCodeConfirm {
   phoneNumber: string;
   code: string;
 }

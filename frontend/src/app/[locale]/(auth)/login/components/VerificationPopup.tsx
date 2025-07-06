@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
-import { CreateUserRequest } from '@/interfaces/models/Auth';
+import { UserCreate } from '@/interfaces/models/Auth';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/AuthService';
 import { showErrorToast } from '@/lib/utils/toast';
@@ -104,7 +104,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
       });
 
       // If verification successful, create the user
-      const data: CreateUserRequest = {
+      const data: UserCreate = {
         fullName: signUpFormData.fullName,
         email: signUpFormData.email,
         phone: signUpFormData.phone_number,
