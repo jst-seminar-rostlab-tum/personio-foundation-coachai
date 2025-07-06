@@ -20,7 +20,7 @@ export function CategoryStep({
   return (
     <div className="space-y-8">
       <div className="text-xl text-font-dark text-center">{t('title')}</div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full mx-auto">
         {categories.map((category) => (
           <CategoryButton
             key={category.id}
@@ -28,7 +28,7 @@ export function CategoryStep({
             selected={selectedCategory === category.id}
             className="w-full"
           >
-            <div className="relative w-1/4 min-w-20 max-w-24 aspect-square mb-4">
+            <div className="relative w-20 h-20 mb-4">
               <Image src={category.iconUri} alt={category.name} fill className="object-contain" />
             </div>
             {category.name}

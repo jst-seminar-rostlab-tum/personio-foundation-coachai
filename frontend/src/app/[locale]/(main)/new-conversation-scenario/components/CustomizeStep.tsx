@@ -13,20 +13,15 @@ export function CustomizeStep({
   const t = useTranslations('ConversationScenario');
 
   const personaKeys = ['positive', 'angry', 'shy', 'casual', 'sad'];
-  const personas = personaKeys
-    .map((key) => ({
-      id: key,
-      name: t(`customize.persona.personas.${key}.name`),
-      imageUri: t.raw(`customize.persona.personas.${key}.imageUri`),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const personas = personaKeys.map((key) => ({
+    id: key,
+    name: t(`customize.persona.personas.${key}.name`),
+    imageUri: t.raw(`customize.persona.personas.${key}.imageUri`),
+  }));
 
   return (
     <div>
-      <div className="text-xl text-font-dark text-center w-full mb-8">{t('title')}</div>
-
-      {/* Persona Selection */}
-      <div className="text-xl text-font-dark text-left mb-2">{t('personaSelection')}</div>
+      <div className="mb-4 font-medium text-xl">{t('personaSelection')}</div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 w-full mx-auto mb-16">
         {personas.map((persona) => (
           <PersonaButton
@@ -46,7 +41,7 @@ export function CustomizeStep({
       {/* Persona Information */}
       <PersonaInfo selectedPersona={selectedPersona} personas={personas} />
 
-      <div className="text-xl text-font-dark text-left mb-2">{t('difficultyTitle')}</div>
+      <div className="mb-4 font-medium text-xl">{t('difficultyTitle')}</div>
       <div className="mb-16 grid grid-cols-3 gap-4 w-full mx-auto">
         {[
           { value: 'easy', icon: '/images/difficulty/easy.svg', label: t('easy') },

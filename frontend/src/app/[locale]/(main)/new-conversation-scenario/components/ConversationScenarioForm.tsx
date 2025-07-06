@@ -141,25 +141,26 @@ export default function ConversationScenarioForm({
       <h1 className="text-2xl text-font-dark text-left w-full mb-8">{t('title')}</h1>
 
       {currentStep === 0 && (
-        <>
-          <CategoryStep
-            selectedCategory={formState.category}
-            onCategorySelect={(category) =>
-              updateForm({
-                category: category.id,
-                name: category.name,
-                context: contextMode === 'default' ? defaultContextLong : customContext,
-                goal: category.defaultGoal || '',
-                otherParty: category.defaultOtherParty || '',
-                isCustom: category.isCustom || false,
-              })
-            }
-            categories={categories}
-          />
+        <CategoryStep
+          selectedCategory={formState.category}
+          onCategorySelect={(category) =>
+            updateForm({
+              category: category.id,
+              name: category.name,
+              context: contextMode === 'default' ? defaultContextLong : customContext,
+              goal: category.defaultGoal || '',
+              otherParty: category.defaultOtherParty || '',
+              isCustom: category.isCustom || false,
+            })
+          }
+          categories={categories}
+        />
+      )}
 
+      {currentStep === 1 && (
+        <>
           {/* Context Selection Section */}
-          <div className="mt-16">
-            <div className="mb-4 font-medium text-xl">{t('selectContext')}</div>
+          <div className="mb-10">
             <RadioGroup
               value={contextMode}
               onValueChange={(val) => setContextMode(val as 'default' | 'custom')}
@@ -186,6 +187,7 @@ export default function ConversationScenarioForm({
                 </label>
               ))}
             </RadioGroup>
+            <div className="mt-12 mb-4 font-medium text-xl">{t('selectContext')}</div>
             <Textarea
               className="w-full min-h-32"
               value={contextMode === 'default' ? defaultContextLong : customContext}
@@ -199,16 +201,13 @@ export default function ConversationScenarioForm({
               placeholder="Enter the context for your scenario..."
             />
           </div>
+          <CustomizeStep
+            difficulty={formState.difficulty}
+            selectedPersona={formState.persona}
+            onDifficultyChange={(val) => updateForm({ difficulty: val })}
+            onPersonaSelect={(persona: Persona) => updateForm({ persona: persona.id })}
+          />
         </>
-      )}
-
-      {currentStep === 1 && (
-        <CustomizeStep
-          difficulty={formState.difficulty}
-          selectedPersona={formState.persona}
-          onDifficultyChange={(val) => updateForm({ difficulty: val })}
-          onPersonaSelect={(persona: Persona) => updateForm({ persona: persona.id })}
-        />
       )}
 
       <div className="flex gap-4 w-full justify-center mt-8 mx-auto">
