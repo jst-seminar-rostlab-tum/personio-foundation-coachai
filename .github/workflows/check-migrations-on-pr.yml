@@ -110,38 +110,30 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         run: docker network create app-network
 
-      - name: Start Supabase
+      - name: Start database
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans supabase
-      - name: Check if port 54321 is open
-        run: |
-          echo "Checking if Supabase port is open..."
-          ss -ltnp | grep 54321 || echo "Port 54321 not found"
+        run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans db
 
-      - name: Wait for Supabase to become healthy
+      - name: Wait for database startup
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          echo "Waiting for Supabase to be healthy..."
+          echo "Waiting for database to be healthy..."
           for i in {1..60}; do
-            health=$(curl -sf http://127.0.0.1:54321/rest-admin/v1/ready || echo "unhealthy")
-            if [[ "$health" != "unhealthy" ]]; then
-              echo "✅ Supabase is ready"
+            state=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml ps --format '{{.Health}}' db)
+            if [[ "$state" == "healthy" ]]; then
+              echo "✅ Database ready after $((i*2)) seconds"
               break
+            elif [[ "$state" == "starting" ]]; then
+              echo "Database starting... ($((i*2))s elapsed)"
             fi
-            echo "⏳ Supabase not ready yet... ($((i*2))s)"
+            [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
             sleep 2
-            if [[ $i -eq 60 ]]; then
-              echo "❌ Supabase not healthy after 2 minutes"
-              docker ps -a
-              docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml logs supabase
-              exit 1
-            fi
           done
 
-      - name: Run test-migrations container
+      - name: Run migrations
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations)
+          CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations | tail -n1)
           docker logs -f "$CID"
           EXIT=$(docker wait "$CID")
           if [[ "$EXIT" -eq 0 ]]; then

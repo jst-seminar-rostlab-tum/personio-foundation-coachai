@@ -1,39 +1,41 @@
-# No top-level `version:` key – it’s obsolete in Compose v2+
-
 services:
-  # ─────────────────────────────────────────────────────────────
-  # Container that runs the migration checks
-  # ─────────────────────────────────────────────────────────────
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB:       postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+    networks: [app-network]
+
   test-migrations:
+    # … unchanged …
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args:
-        stage: dev
+      args: { stage: dev }
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
-      - ./backend:/app                     # project code
-      - /app/.venv                         # keep venv out of host fs
+      - ./backend:/app
+      - /app/.venv
       - ./.husky/test-migrations.sh:/test-migrations.sh
-      - ./supabase:/app/supabase           # SQL seeds / functions (optional)
-      - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      # These point at the host’s published ports, not at a container alias
-      PGHOST: host.docker.internal
-      PGPORT: 54322
+      # ─── all tools (psql, alembic, SQLModel, etc.) resolve to the same DSN ───
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+      PGHOST: db
+      PGPORT: "5432"
       PGUSER: postgres
       PGPASSWORD: postgres
       POSTGRES_DB: postgres
-      # still available if you run the script on your laptop
-      POSTGRES_HOST: host.docker.internal
-      POSTGRES_PORT: 54322
     entrypoint: ["/bin/bash", "/test-migrations.sh"]
-    extra_hosts:
-      # On Linux this resolves host.docker.internal → host-gateway IP
-      - "host.docker.internal:host-gateway"
-    networks:
-      - app-network                       # optional – your project network
-    depends_on:
-      - supabase                          # guarantees Supabase is started
+    networks: [app-network]
 
 networks:
   app-network:
