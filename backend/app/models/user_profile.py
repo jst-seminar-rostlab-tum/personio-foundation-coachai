@@ -75,7 +75,7 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     current_streak_days: int = Field(default=0)
     score_sum: float = Field(default=0)
     goals_achieved: int = Field(default=0)
-    # TODO: Add performance_over_time and skills_performance.
+    # TODO: Add performance_over_time and skills_performance
 
 
 # Automatically update `updated_at` before an update
