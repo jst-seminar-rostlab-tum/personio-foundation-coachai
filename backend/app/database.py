@@ -27,9 +27,7 @@ if settings.database_url:
 else:
     SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-)
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 
 def create_db_and_tables() -> None:
