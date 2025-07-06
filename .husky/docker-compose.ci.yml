@@ -14,7 +14,6 @@ services:
     networks: [app-network]
 
   test-migrations:
-    # … unchanged …
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -27,7 +26,6 @@ services:
       - /app/.venv
       - ./.husky/test-migrations.sh:/test-migrations.sh
     environment:
-      # ─── all tools (psql, alembic, SQLModel, etc.) resolve to the same DSN ───
       DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
       PGHOST: db
       PGPORT: "5432"
