@@ -30,9 +30,9 @@ export function LanguageSwitcher() {
                 cur === 'en' ? '/images/common/english-flag.svg' : '/images/common/german-flag.svg'
               }
               alt={cur === 'en' ? 'English' : 'German'}
-              width={24}
-              height={24}
-              style={{ display: 'inline', verticalAlign: 'middle' }}
+              width={20}
+              height={20}
+              priority
             />
           </SelectItem>
         ))}
