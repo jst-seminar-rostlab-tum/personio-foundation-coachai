@@ -2,7 +2,7 @@
 
 import { UserConfidenceField } from '@/interfaces/models/UserInputFields';
 import Slider from '@/components/ui/Slider';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cnMerge';
 import { useTranslations } from 'next-intl';
 
 interface UserConfidenceFieldProps {
@@ -27,27 +27,27 @@ export default function UserConfidenceFields({
   const t = useTranslations('PersonalizationOptions');
   const confidenceFields: UserConfidenceField[] = [
     {
-      title: t('confidence_areas.giving_difficult_feedback'),
-      minLabel: t('confidence_areas.labels.min'),
-      maxLabel: t('confidence_areas.labels.max'),
+      title: t('confidenceAreas.givingDifficultFeedback'),
+      minLabel: t('confidenceAreas.labels.min'),
+      maxLabel: t('confidenceAreas.labels.max'),
       minValue: 0,
       maxValue: 100,
       value: difficulty,
       onChange: setDifficulty,
     },
     {
-      title: t('confidence_areas.managing_team_conflicts'),
-      minLabel: t('confidence_areas.labels.min'),
-      maxLabel: t('confidence_areas.labels.max'),
+      title: t('confidenceAreas.managingTeamConflicts'),
+      minLabel: t('confidenceAreas.labels.min'),
+      maxLabel: t('confidenceAreas.labels.max'),
       minValue: 0,
       maxValue: 100,
       value: conflict,
       onChange: setConflict,
     },
     {
-      title: t('confidence_areas.leading_challenging_conversations'),
-      minLabel: t('confidence_areas.labels.min'),
-      maxLabel: t('confidence_areas.labels.max'),
+      title: t('confidenceAreas.leadingChallengingConversations'),
+      minLabel: t('confidenceAreas.labels.min'),
+      maxLabel: t('confidenceAreas.labels.max'),
       minValue: 0,
       maxValue: 100,
       value: conversation,

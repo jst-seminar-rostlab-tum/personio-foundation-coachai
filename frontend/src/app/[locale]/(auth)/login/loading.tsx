@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export default function LoginPage() {
   return (
     <div className="  flex flex-col lg:flex-row">
@@ -32,21 +30,19 @@ export default function LoginPage() {
         {/* Demo Banner */}
         <div className="w-full h-8 bg-gray-100 rounded mb-4 animate-pulse" />
         {/* Continue Button */}
-        <Link href="/onboarding" className="w-2/3 mb-6">
-          <button className="w-full h-10 bg-gray-200 rounded font-semibold text-gray-700 hover:bg-gray-300 transition-colors flex items-center justify-center gap-2">
-            Continue to Demo
-            <svg
-              className="w-4 h-4 ml-1"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </Link>
+        <button className="w-full h-10 bg-gray-200 rounded font-semibold text-gray-700 hover:bg-gray-300 transition-colors flex items-center justify-center gap-2">
+          Continue to Demo
+          <svg
+            className="w-4 h-4 ml-1"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
         {/* Tabs */}
         <div className="flex w-full mb-4">
           <div className="w-1/2 h-8 bg-gray-200 rounded-l animate-pulse" />

@@ -1,4 +1,4 @@
-import { SessionScores } from './SessionFeedback';
+import { SessionScores } from './Common';
 
 export enum SessionStatus {
   STARTED = 'started',
@@ -33,4 +33,24 @@ export interface SessionFromPagination {
   title: string;
   summary: string;
   skills: SessionScores;
+}
+
+export interface CreateSessionTurnRequest {
+  sessionId: string;
+  speaker: MessageSender;
+  text: string;
+  startOffsetMs: number;
+  endOffsetMs: number;
+  audioFile: Blob;
+}
+
+export interface Message {
+  id: number;
+  text: string;
+  sender: MessageSender;
+}
+
+export enum MessageSender {
+  USER = 'user',
+  ASSISTANT = 'assistant',
 }
