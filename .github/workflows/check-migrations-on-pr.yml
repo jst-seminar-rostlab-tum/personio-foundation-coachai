@@ -106,10 +106,6 @@ jobs:
         run: uv sync
         working-directory: ./backend
 
-      - name: Create network
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: docker network create test-network
-
       - name: Start database
         if: steps.changed-files.outputs.any_changed == 'true'
         run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans db
