@@ -12,6 +12,7 @@ from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.google_cloud_storage_service import GCSManager
 
 settings = Settings()
+gcs = GCSManager('audio')
 
 
 def is_valid_audio_mime_type(mime_type: str) -> bool:
@@ -43,7 +44,6 @@ def get_audio_content_type(upload_file: UploadFile) -> str:
 
 def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
     audio_name = f'{session_id}_{uuid4().hex}'
-    gcs = GCSManager('audio')
 
     try:
         gcs.upload_from_fileobj(
@@ -52,7 +52,7 @@ def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
             content_type=get_audio_content_type(audio_file),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f'Failed to upload audio file: {str(e)}') from e
+        raise HTTPException(status_code=500, detail='Failed to upload audio file') from e
 
     return audio_name
 
