@@ -14,7 +14,7 @@ export default async function AboutFooter() {
               <span className="text-xl font-semibold text-black">{tCommon('appName')}</span>
             </div>
           </div>
-          <div className="md:col-span-3 flex justify-between md:justify-end gap-4 md:gap-8 text-sm">
+          <div className="md:col-span-3 flex flex-wrap justify-between md:justify-end gap-4 md:gap-8 text-sm">
             <Link href="/privacy" className="text-stone-500 hover:text-stone-900">
               {tCommon('privacyPolicy')}
             </Link>
