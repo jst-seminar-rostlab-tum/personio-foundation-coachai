@@ -20,7 +20,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 ENV PYTHONPATH=/app
 
-# Copy the appli    cation into the container.
+# Copy the application into the container.
 COPY ./pyproject.toml ./uv.lock ./alembic.ini  /app/
 
 COPY ./app /app/app
