@@ -3,35 +3,22 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from gotrue import AdminUserAttributes, SignUpWithPasswordCredentials
-from pydantic import BaseModel
 from sqlmodel import Session as DBSession
 
 from app.config import Settings
 from app.database import get_db_session, get_supabase_client
 from app.dependencies import JWTPayload, verify_jwt
 from app.models.user_profile import UserProfile
+from app.schemas.auth import (
+    CreateUserRequest,
+    SendVerificationRequest,
+    VerifyCodeRequest,
+)
 from app.services.twilio_service import check_verification_code, send_verification_code
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
 
 settings = Settings()
-
-
-class CreateUserRequest(BaseModel):
-    full_name: str
-    phone: str
-    email: str
-    password: str
-    # code: str
-
-
-class SendVerificationRequest(BaseModel):
-    phone_number: str
-
-
-class VerifyCodeRequest(BaseModel):
-    phone_number: str
-    code: str
 
 
 @router.post('/send-verification', response_model=None)

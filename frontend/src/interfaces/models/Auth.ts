@@ -1,5 +1,5 @@
 export interface CreateUserRequest {
-  full_name: string;
+  fullName: string;
   email: string;
   phone: string;
   password: string;
@@ -7,10 +7,10 @@ export interface CreateUserRequest {
 }
 
 export interface SendVerificationCodeRequest {
-  phone_number: string;
+  phoneNumber: string;
 }
 
 export interface VerifyCodeRequest {
-  phone_number: string;
+  phoneNumber: string;
   code: string;
 }

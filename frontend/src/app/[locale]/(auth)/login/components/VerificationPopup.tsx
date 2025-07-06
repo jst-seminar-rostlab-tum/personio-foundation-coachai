@@ -69,7 +69,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     try {
       setIsLoading(true);
       await authService.sendVerificationCode(api, {
-        phone_number: signUpFormData.phone_number,
+        phoneNumber: signUpFormData.phone_number,
       });
       setVerificationSent(true);
       setResendCooldown(30);
@@ -99,13 +99,13 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     try {
       // First verify the code
       await authService.verifyCode(api, {
-        phone_number: signUpFormData.phone_number,
+        phoneNumber: signUpFormData.phone_number,
         code: form.getValues('code'),
       });
 
       // If verification successful, create the user
       const data: CreateUserRequest = {
-        full_name: signUpFormData.fullName,
+        fullName: signUpFormData.fullName,
         email: signUpFormData.email,
         phone: signUpFormData.phone_number,
         password: signUpFormData.password,
@@ -126,7 +126,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     try {
       setIsLoading(true);
       await authService.sendVerificationCode(api, {
-        phone_number: signUpFormData.phone_number,
+        phoneNumber: signUpFormData.phone_number,
       });
       setResendCooldown(30);
     } catch (err) {
