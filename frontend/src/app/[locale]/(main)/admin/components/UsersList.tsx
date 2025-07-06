@@ -12,12 +12,18 @@ import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import type { UserProfile as User, UserPaginationResponse } from '@/interfaces/models/UserProfile';
 import { showErrorToast } from '@/lib/utils/toast';
 
-export default function UsersList({ users, totalUsers, page, limit }: UserPaginationResponse) {
+export default function UsersList({
+  users,
+  totalUsers: initialTotalUsers,
+  page,
+  limit,
+}: UserPaginationResponse) {
   const [userList, setUserList] = useState<User[]>(users);
   const [currentPage, setCurrentPage] = useState(page);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
-  const [hasMore, setHasMore] = useState(userList.length < totalUsers);
+  const [totalUsers, setTotalUsers] = useState(initialTotalUsers);
+  const [hasMore, setHasMore] = useState(users.length < initialTotalUsers);
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
 
@@ -31,7 +37,9 @@ export default function UsersList({ users, totalUsers, page, limit }: UserPagina
         searchStr || undefined
       );
       setUserList(data.users);
-      setHasMore(data.users.length < data.totalUsers);
+      setTotalUsers(data.totalUsers);
+      // Only show hasMore if there are more users to load for this search/page
+      setHasMore((pageNum - 1) * limit + data.users.length < data.totalUsers);
     } catch (e) {
       showErrorToast(e, 'Error loading users');
     } finally {
@@ -53,8 +61,8 @@ export default function UsersList({ users, totalUsers, page, limit }: UserPagina
   };
 
   useEffect(() => {
-    setHasMore(userList.length < totalUsers);
-  }, [userList, totalUsers]);
+    setHasMore((currentPage - 1) * limit + userList.length < totalUsers);
+  }, [userList, totalUsers, currentPage, limit]);
 
   return (
     <>
@@ -78,7 +86,7 @@ export default function UsersList({ users, totalUsers, page, limit }: UserPagina
         </div>
       </div>
       {userList.length === 0 && !loading ? (
-        <EmptyListComponent itemType={tCommon('users')} />
+        <EmptyListComponent itemType={t('users')} />
       ) : (
         <>
           <div className="overflow-x-auto">
