@@ -6,13 +6,12 @@ from sqlalchemy import UUID
 from sqlmodel import Session as DBSession
 
 from app.config import Settings
+from app.connections.gcs_client import get_gcs_audio_manager
 from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
-from app.services.google_cloud_storage_service import GCSManager
 
 settings = Settings()
-gcs = GCSManager('audio')
 
 
 def is_valid_audio_mime_type(mime_type: str) -> bool:
@@ -44,6 +43,10 @@ def get_audio_content_type(upload_file: UploadFile) -> str:
 
 def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
     audio_name = f'{session_id}_{uuid4().hex}'
+    gcs = get_gcs_audio_manager()
+
+    if gcs is None:
+        raise HTTPException(status_code=500, detail='Failed to connect to audio storage')
 
     try:
         gcs.upload_from_fileobj(
@@ -55,17 +58,6 @@ def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
         raise HTTPException(status_code=500, detail='Failed to upload audio file') from e
 
     return audio_name
-
-
-def is_authorized_for_gcs() -> bool:
-    return all(
-        [
-            settings.GCP_PRIVATE_KEY_ID,
-            settings.GCP_PRIVATE_KEY,
-            settings.GCP_CLIENT_EMAIL,
-            settings.GCP_CLIENT_ID,
-        ]
-    )
 
 
 class SessionTurnService:
@@ -90,10 +82,7 @@ class SessionTurnService:
             raise HTTPException(status_code=400, detail='Text is required')
 
         audio_uri = ''
-
-        if settings.ENABLE_AI and not is_authorized_for_gcs():
-            raise HTTPException(status_code=500, detail='Audio storage is not enabled')
-        elif settings.ENABLE_AI and is_authorized_for_gcs():
+        if settings.ENABLE_AI:
             audio_uri = store_audio_file(turn.session_id, audio_file)
 
         # Create a new SessionTurn instance
