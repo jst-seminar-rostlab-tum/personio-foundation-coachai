@@ -31,6 +31,9 @@ class JWTPayload(TypedDict, total=False):
     session_id: str
     is_anonymous: bool
 
+    # Custom claims
+    account_role: AccountRole
+
 
 def verify_jwt(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
