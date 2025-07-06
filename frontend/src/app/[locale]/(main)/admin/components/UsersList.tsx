@@ -38,7 +38,6 @@ export default function UsersList({
       );
       setUserList(data.users);
       setTotalUsers(data.totalUsers);
-      // Only show hasMore if there are more users to load for this search/page
       setHasMore((pageNum - 1) * limit + data.users.length < data.totalUsers);
     } catch (e) {
       showErrorToast(e, 'Error loading users');
