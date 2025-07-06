@@ -73,10 +73,13 @@ export default async function AboutPage() {
                 <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-marigold-30/80 text-primary text-sm font-medium shadow-sm">
                   {t('hero.badge')}
                 </div>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black leading-tight">
+                <h1
+                  className="text-4xl md:text-5xl font-bold tracking-tight text-black leading-tight hyphens-auto"
+                  lang="de"
+                >
                   {t('hero.title')}
                 </h1>
-                <p className="text-md md:text-xl text-black/60 font-medium">
+                <p className="text-md md:text-xl text-black/60 font-medium hyphens-auto" lang="de">
                   {t('hero.description')}
                 </p>
                 <div className="flex flex-col lg:flex-row gap-4 w-full">
