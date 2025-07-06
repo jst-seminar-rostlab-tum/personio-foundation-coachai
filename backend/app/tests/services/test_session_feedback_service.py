@@ -166,7 +166,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             feedback_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
-            session_turn_service=mock_scoring_service,
+            session_turn_service=mock_session_turn_service,
         )
 
         self.assertEqual(feedback.session_id, session_id)

@@ -25,8 +25,9 @@ from app.services.session_turn_service import SessionTurnService
 
 
 class SessionService:
-    def __init__(self, db: DBSession) -> None:
+    def __init__(self, db: DBSession, gcs_manager: GCSManager | None = None) -> None:
         self.db = db
+        self.gcs_manager = gcs_manager or GCSManager('audio')
 
     def fetch_session_details(
         self, session_id: UUID, user_profile: UserProfile
@@ -417,7 +418,7 @@ class SessionService:
         if feedback.status == FeedbackStatusEnum.failed:
             raise HTTPException(status_code=500, detail='Session feedback failed.')
 
-        full_audio_url = GCSManager('audio').generate_signed_url(
+        full_audio_url = self.gcs_manager.generate_signed_url(
             filename=feedback.full_audio_filename,
         )
 

@@ -1,6 +1,7 @@
 import unittest
 from collections.abc import Generator
 from datetime import datetime
+from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
@@ -17,7 +18,17 @@ from app.data.dummy_data import (
 from app.dependencies import get_db_session, require_user
 from app.main import app
 from app.models import Review, Session, SessionStatus, UserProfile
+from app.models.session_turn import SpeakerEnum
 from app.models.user_profile import AccountRole
+from app.schemas.session_turn import SessionTurnRead
+
+
+class FakeGCS:
+    def __init__(self) -> None:
+        pass
+
+    def generate_signed_url(self, filename: str) -> str:
+        return f'https://example.com/{filename}'
 
 
 class TestSessionRoute(unittest.TestCase):
@@ -31,6 +42,13 @@ class TestSessionRoute(unittest.TestCase):
         cls.SessionLocal = sessionmaker(bind=cls.engine, class_=DBSession)
 
     def setUp(self) -> None:
+        # patch GCSManager so it always returns your FakeGCS…
+        self.gcs_patcher = patch(
+            'app.services.session_service.GCSManager',  # <- the import path your code uses
+            return_value=FakeGCS(),
+        )
+        self.mock_gcs_cls = self.gcs_patcher.start()
+
         self.db = self.SessionLocal()
 
         def override_get_db() -> Generator[Session, None, None]:
@@ -79,7 +97,26 @@ class TestSessionRoute(unittest.TestCase):
         self.db.add(self.test_session)
         self.db.commit()
 
+        fake_turn_svc = MagicMock()
+        fake_turn_svc.get_session_turns.return_value = [
+            SessionTurnRead(
+                id=uuid4(),
+                session_id=self.test_session.id,
+                speaker=SpeakerEnum.user,
+                full_audio_start_offset_ms=0,
+                text='hello',
+                ai_emotion='neutral',
+                created_at=datetime.now(),
+            )
+        ]
+        self.turn_patcher = patch(
+            'app.services.session_service.SessionTurnService', return_value=fake_turn_svc
+        )
+        self.turn_patcher.start()
+
     def tearDown(self) -> None:
+        self.turn_patcher.stop()
+        self.gcs_patcher.stop()
         self.db.rollback()
         self.db.close()
 
