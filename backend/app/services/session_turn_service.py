@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 import puremagic
-from fastapi import HTTPException, UploadFile, BackgroundTasks
+from fastapi import BackgroundTasks, HTTPException, UploadFile
 from sqlalchemy import UUID
 from sqlmodel import Session as DBSession
 
@@ -65,7 +65,6 @@ class SessionTurnService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
 
-
     async def create_session_turn(
         self,
         turn: SessionTurnCreate,
@@ -97,16 +96,7 @@ class SessionTurnService:
         self.db.commit()
         self.db.refresh(new_turn)
 
-        if turn.speaker == SpeakerEnum.user:
-            # Generate live feedback item in the background
-            background_tasks.add_task(
-                generate_and_store_live_feedback,
-                db_session=self.db,
-                session_id=turn.session_id,
-                session_turn_context=turn,
-            )
-
-        return SessionTurnRead(
+        session_turn_read = SessionTurnRead(
             id=new_turn.id,
             session_id=new_turn.session_id,
             speaker=new_turn.speaker,
@@ -117,3 +107,14 @@ class SessionTurnService:
             ai_emotion=new_turn.ai_emotion,
             created_at=new_turn.created_at,
         )
+
+        if turn.speaker == SpeakerEnum.user:
+            # Generate live feedback item in the background
+            background_tasks.add_task(
+                generate_and_store_live_feedback,
+                db_session=self.db,
+                session_id=turn.session_id,
+                session_turn_context=session_turn_read,
+            )
+
+        return session_turn_read

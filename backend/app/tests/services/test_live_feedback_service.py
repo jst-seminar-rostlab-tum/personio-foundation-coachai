@@ -1,13 +1,14 @@
 import json
 import unittest
+from datetime import datetime
 from unittest.mock import MagicMock, patch
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
 from app.models.session_turn import SpeakerEnum
-from app.schemas import SessionTurnCreate
+from app.schemas import SessionTurnRead
 from app.schemas.live_feedback_schema import LiveFeedback
 from app.services.live_feedback_service import (
     fetch_all_for_session,
@@ -73,7 +74,8 @@ class TestLiveFeedbackService(unittest.TestCase):
     ) -> None:
         session_id = uuid4()
 
-        session_turn_context = SessionTurnCreate(
+        session_turn_context = SessionTurnRead(
+            id=UUID('{12345678-1234-5678-1234-567812345678}'),
             session_id=session_id,
             speaker=SpeakerEnum.user,
             start_offset_ms=0,
@@ -81,6 +83,7 @@ class TestLiveFeedbackService(unittest.TestCase):
             text="Let's discuss the next step.",
             audio_uri='example_audio.wav',
             ai_emotion='neutral',
+            created_at=datetime.now(),
         )
 
         mock_feedback = LiveFeedback(
@@ -117,7 +120,8 @@ class TestLiveFeedbackService(unittest.TestCase):
     def test_generate_and_store_live_feedback_empty_turn_context(self) -> None:
         session_id = uuid4()
 
-        session_turn_context = SessionTurnCreate(
+        session_turn_context = SessionTurnRead(
+            id=UUID('{12345678-1234-5678-1234-567812345678}'),
             session_id=session_id,
             speaker=SpeakerEnum.user,
             start_offset_ms=0,
@@ -125,6 +129,7 @@ class TestLiveFeedbackService(unittest.TestCase):
             text='',
             audio_uri='',
             ai_emotion='neutral',
+            created_at=datetime.now(),
         )
 
         result = generate_and_store_live_feedback(self.session, session_id, session_turn_context)
