@@ -9,7 +9,7 @@ export default async function AuthLayout({ children }: LayoutProps) {
   return (
     <NextIntlClientProvider>
       <AboutHeader />
-      <main className="container mx-auto px-4">{children}</main>
+      <main className="mx-auto px-[clamp(1.25rem,4vw,4rem)] max-w-7xl">{children}</main>
       <Toaster richColors />
       <AboutFooter />
     </NextIntlClientProvider>

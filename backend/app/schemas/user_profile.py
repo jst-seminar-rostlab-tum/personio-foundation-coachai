@@ -79,7 +79,7 @@ class UserStatisticsRead(CamelModel):
     total_sessions: int
     training_time: float  # in hours
     current_streak_days: int
-    average_score: int
+    score_sum: float
     goals_achieved: int  # summation of all goals achieved
     performance_over_time: list[int]
     skills_performance: dict[str, int]

@@ -2,6 +2,7 @@ export interface ReviewCreate {
   rating: number;
   comment: string;
   sessionId: string;
+  allowAdminAccess: boolean;
 }
 export interface Review {
   id: string;
@@ -11,6 +12,7 @@ export interface Review {
   rating: number;
   comment: string;
   date: string;
+  allowAdminAccess: boolean;
 }
 
 export interface RatingStatistics {

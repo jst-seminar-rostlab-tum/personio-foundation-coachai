@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { use, useState } from 'react';
 import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -38,7 +39,7 @@ export default function Settings({ userProfile }: SettingsProps) {
   const t = useTranslations('Settings');
   const tCommon = useTranslations('Common');
   const userProfileData = use(userProfile);
-
+  const router = useRouter();
   const [storeConversations, setStoreConversations] = useState(
     userProfileData.storeConversations ?? false
   );
@@ -163,7 +164,7 @@ export default function Settings({ userProfile }: SettingsProps) {
 
   return (
     <div>
-      <div className="flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-8">
         <h1 className="text-2xl">{tCommon('settings')}</h1>
 
         <div className="space-y-4 flex items-center rounded-t-lg">
@@ -201,7 +202,11 @@ export default function Settings({ userProfile }: SettingsProps) {
                   <div className="flex flex-col">
                     <div className="text-bw-70">{tCommon('deleteAccount')}</div>
                   </div>
-                  <DeleteUserHandler>
+                  <DeleteUserHandler
+                    onDeleteSuccess={() => {
+                      router.push('/');
+                    }}
+                  >
                     <Button variant="destructive">{tCommon('deleteAccount')}</Button>
                   </DeleteUserHandler>
                 </div>

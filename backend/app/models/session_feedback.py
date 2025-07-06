@@ -25,7 +25,7 @@ class SessionFeedback(CamelModel, table=True):  # `table=True` makes it a databa
     session_id: UUID = Field(foreign_key='session.id', ondelete='CASCADE')
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
-    overall_score: int
+    overall_score: float
     transcript_uri: str
     speak_time_percent: float
     questions_asked: int

@@ -22,25 +22,26 @@ services:
       dockerfile: Dockerfile
       args:
         stage: dev
-    ports:
-      - "8000:8000"
     volumes:
       - ./backend:/app
       - /app/.venv
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: uv run fastapi dev --host 0.0.0.0 --port 8000 --reload
     environment:
+      STAGE: dev
       DEV_MODE_SKIP_AUTH: ${DEV_MODE_SKIP_AUTH:-True}
       DEV_MODE_MOCK_USER_ID: ${DEV_MODE_MOCK_USER_ID:-763c76f3-e5a4-479c-8b53-e3418d5e2ef5}
-      STAGE: dev
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: app_db
-      POSTGRES_PORT: 5432
+      DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:54322/postgres
+      POSTGRES_HOST: host.docker.internal
+      POSTGRES_PORT: 54322
     depends_on:
-      - db
+      supabase:
+        condition: service_healthy
     networks:
       - app-network
-    command: uv run fastapi dev --host 0.0.0.0 --port 8000 --reload
 
   init-db:
     build:
@@ -48,39 +49,43 @@ services:
       dockerfile: Dockerfile
       args:
         stage: dev
-    depends_on:
-      - db
+    entrypoint: [ "uv", "run", "-m", "app.data.populate_dummy_data" ]
     volumes:
       - ./backend:/app
       - /app/.venv
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       STAGE: dev
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: app_db
-      POSTGRES_PORT: 5432
-    entrypoint: ["uv", "run", "-m", "app.data.populate_dummy_data"]
+      DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:54322/postgres
+    depends_on:
+      supabase:
+        condition: service_healthy
     networks:
       - app-network
 
-  db:
-    image: pgvector/pgvector:pg17
-    ports:
-      - "5432:5432"
+  supabase:
+    image: node:20
+    working_dir: /app/supabase
+    network_mode: host # Has to run on host
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /app/supabase/node_modules
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: app_db
+      SUPABASE_API_HOST: 0.0.0.0
+    command: >
+      sh -c "
+        npm install &&
+        npx supabase start --debug &&
+        tail -f /dev/null
+      "
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "curl -sf http://127.0.0.1:54321/rest-admin/v1/ready || exit 1" ]
       interval: 3s
-      timeout: 2s
-      retries: 5
-    networks:
-      - app-network
+      timeout: 3s
+      retries: 10
+
 
 networks:
   app-network:

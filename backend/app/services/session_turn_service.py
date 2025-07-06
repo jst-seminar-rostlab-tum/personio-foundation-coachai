@@ -1,29 +1,21 @@
-import os
 from uuid import uuid4
 
 import puremagic
 from fastapi import HTTPException, UploadFile
+from sqlalchemy import UUID
 from sqlmodel import Session as DBSession
 
+from app.config import Settings
+from app.connections.gcs_client import get_gcs_audio_manager
 from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
-from app.services.google_cloud_storage_service import GCSManager
+
+settings = Settings()
 
 
-def is_valid_audio(upload_file: UploadFile) -> bool:
-    matches = puremagic.magic_stream(upload_file.file)
-
-    # Reset the file pointer to the beginning after reading
-    upload_file.file.seek(0)
-
-    if not matches:
-        return False
-
-    mime = matches[0].mime_type
-
-    # Check if the MIME type is one of the valid audio types(extend as needed)
-    return mime in [
+def is_valid_audio_mime_type(mime_type: str) -> bool:
+    return mime_type in [
         'audio/webm',
         'video/webm',
         'audio/mpeg',
@@ -34,19 +26,38 @@ def is_valid_audio(upload_file: UploadFile) -> bool:
     ]
 
 
-def match_audio_content_type(file: UploadFile) -> tuple[str, str]:
-    """
-    Validate audio file extension and return (ext, content_type).
-    """
-    ext = os.path.splitext(file.filename)[-1].lower()
-    if ext == '.webm':
-        return ext, 'audio/webm'
-    elif ext == '.mp3':
-        return ext, 'audio/mpeg'
-    elif ext == '.wav':
-        return ext, 'audio/wav'
-    else:
+def get_audio_content_type(upload_file: UploadFile) -> str:
+    matches = puremagic.magic_stream(upload_file.file)
+    upload_file.file.seek(0)
+
+    if not matches:
         raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
+
+    mime = matches[0].mime_type
+
+    if not is_valid_audio_mime_type(mime):
+        raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
+
+    return mime
+
+
+def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
+    audio_name = f'{session_id}_{uuid4().hex}'
+    gcs = get_gcs_audio_manager()
+
+    if gcs is None:
+        raise HTTPException(status_code=500, detail='Failed to connect to audio storage')
+
+    try:
+        gcs.upload_from_fileobj(
+            file_obj=audio_file.file,
+            blob_name=audio_name,
+            content_type=get_audio_content_type(audio_file),
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail='Failed to upload audio file') from e
+
+    return audio_name
 
 
 class SessionTurnService:
@@ -70,34 +81,13 @@ class SessionTurnService:
         if not turn.text:
             raise HTTPException(status_code=400, detail='Text is required')
 
-        # Check if the uploaded audio file is valid
-        try:
-            ext, content_type = match_audio_content_type(audio_file)
-        except HTTPException as e:
-            raise e
-
-        if not is_valid_audio(audio_file):
-            raise HTTPException(status_code=400, detail='Uploaded file is not a valid audio type')
-
-        # Generate a unique audio name using session_id and new uuid
-        audio_name = f'{turn.session_id}_{uuid4().hex}{ext}'
-
-        gcs = GCSManager('audio')
-
-        try:
-            gcs.upload_from_fileobj(
-                file_obj=audio_file.file,
-                blob_name=audio_name,
-                content_type=content_type,
-            )
-        except Exception as e:
-            raise HTTPException(
-                status_code=500, detail=f'Failed to upload audio file: {str(e)}'
-            ) from e
+        audio_uri = ''
+        if settings.ENABLE_AI:
+            audio_uri = store_audio_file(turn.session_id, audio_file)
 
         # Create a new SessionTurn instance
         turn_data = turn.model_dump()
-        turn_data['audio_uri'] = audio_name
+        turn_data['audio_uri'] = audio_uri
         new_turn = SessionTurn(**turn_data)
 
         self.db.add(new_turn)
@@ -111,7 +101,7 @@ class SessionTurnService:
             start_offset_ms=new_turn.start_offset_ms,
             end_offset_ms=new_turn.end_offset_ms,
             text=new_turn.text,
-            audio_uri=audio_name,
+            audio_uri=audio_uri,
             ai_emotion=new_turn.ai_emotion,
             created_at=new_turn.created_at,
         )

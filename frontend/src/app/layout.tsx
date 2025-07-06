@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
-  const nonce = (await headers()).get('x-nonce') || undefined;
+  const nonce = (await headers()).get('x-nonce') || '';
 
   const jsonLd = {
     '@context': 'https://schema.org',

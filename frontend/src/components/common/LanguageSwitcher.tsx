@@ -1,19 +1,18 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
 import routing from '@/i18n/routing';
 import { useLocale } from 'next-intl';
+import Image from 'next/image';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/Select';
 
 export function LanguageSwitcher() {
-  const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
 
   const onLocaleChange = (value: string) => {
-    const pathnameWithoutLocale = pathname.replace(`/${locale}`, '');
-    const newPath = `/${value}${pathnameWithoutLocale}`;
-    router.push(newPath);
+    const newPath = `/${value}${pathname}`;
+    window.location.href = newPath;
   };
 
   return (
@@ -24,7 +23,15 @@ export function LanguageSwitcher() {
       <SelectContent>
         {routing.locales.map((cur) => (
           <SelectItem key={cur} value={cur}>
-            <span className="text-xl">{cur === 'en' ? '🇬🇧' : '🇩🇪'}</span>
+            <Image
+              src={
+                cur === 'en' ? '/images/common/english-flag.svg' : '/images/common/german-flag.svg'
+              }
+              alt={cur === 'en' ? 'English' : 'German'}
+              width={20}
+              height={20}
+              priority
+            />
           </SelectItem>
         ))}
       </SelectContent>
