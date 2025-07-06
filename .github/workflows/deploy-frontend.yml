@@ -40,7 +40,7 @@ jobs:
     needs: test
     runs-on: ubuntu-22.04
     env:
-      DEV_MODE_SKIP_AUTH: ${{ vars.DEV_MODE_SKIP_AUTH }}
+      NEXT_PUBLIC_DEV_MODE_SKIP_AUTH: ${{ vars.NEXT_PUBLIC_DEV_MODE_SKIP_AUTH }}
       NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}

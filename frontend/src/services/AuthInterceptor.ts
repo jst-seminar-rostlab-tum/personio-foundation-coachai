@@ -7,9 +7,7 @@ export const setupAuthInterceptor = (api: AxiosInstance, getSupabaseClient: any)
       if (config.url?.includes('/auth') && !config.url?.includes('/auth/confirm')) {
         return config;
       }
-      console.warn('________________');
-      console.warn(process.env.NODE_ENV);
-      console.warn(process.env.NEXT_PUBLIC_DEV_MODE_SKIP_AUTH);
+
       if (
         process.env.NODE_ENV === 'development' &&
         process.env.NEXT_PUBLIC_DEV_MODE_SKIP_AUTH === 'true'
