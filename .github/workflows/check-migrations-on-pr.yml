@@ -108,7 +108,7 @@ jobs:
 
       - name: Create network
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: docker network create app-network
+        run: docker network create test-network
 
       - name: Start database
         if: steps.changed-files.outputs.any_changed == 'true'
