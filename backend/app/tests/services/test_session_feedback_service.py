@@ -63,12 +63,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         transcript = [
             SessionTurnRead(
                 id=uuid4(),
-                session_id=uuid4(),
                 speaker=SpeakerEnum.user,
-                start_offset_ms=0,
-                end_offset_ms=1000,
+                full_audio_start_offset_ms=0,
                 text='Hello, Sam!',
-                audio_uri='',
                 ai_emotion='neutral',
                 created_at=datetime.now(),
             )
@@ -148,6 +145,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
+        mock_session_turn_service = MagicMock()
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
+
         example_request = FeedbackRequest(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
@@ -165,6 +165,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             feedback_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
+            session_turn_service=mock_session_turn_service,
         )
 
         self.assertEqual(feedback.session_id, session_id)
@@ -253,11 +254,15 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
+        mock_session_turn_service = MagicMock()
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
+
         feedback = generate_and_store_feedback(
             session_id=session_id,
             feedback_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
+            session_turn_service=mock_session_turn_service,
         )
 
         self.assertEqual(feedback.status, FeedbackStatusEnum.failed)
@@ -365,6 +370,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
+        mock_session_turn_service = MagicMock()
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
+
         user_id = uuid4()
         session_id = uuid4()
         mock_get_conversation_data.return_value = self._mock_conversation_data(user_id=user_id)
@@ -382,6 +390,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             feedback_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
+            session_turn_service=mock_session_turn_service,
         )
         self.assertEqual(feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4})
         self.assertEqual(feedback.overall_score, 4.0)
