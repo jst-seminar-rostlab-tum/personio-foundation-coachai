@@ -44,19 +44,19 @@ def list_conversation_scenarios(
 
 
 @router.get(
-    '/{scenario_id}',
+    '/{id}',
     response_model=ConversationScenarioSummary,
     dependencies=[Depends(require_user)],
 )
 def get_conversation_scenario_metadata(
-    scenario_id: UUID,
+    id: UUID,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
 ) -> ConversationScenarioSummary:
     """
     Retrieve detailed metadata for a single conversation scenario.
     """
-    return service.get_scenario_summary(scenario_id, user_profile)
+    return service.get_scenario_summary(id, user_profile)
 
 
 @router.post('', response_model=ConversationScenarioConfirm, dependencies=[Depends(require_user)])
@@ -74,13 +74,13 @@ def create_conversation_scenario_with_preparation(
     )
 
 
-@router.get('/{scenario_id}/preparation', response_model=ScenarioPreparationRead)
+@router.get('/{id}/preparation', response_model=ScenarioPreparationRead)
 def get_scenario_preparation_by_scenario_id(
-    scenario_id: UUID,
+    id: UUID,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
 ) -> ScenarioPreparationRead:
     """
     Retrieve the scenario preparation data for a given conversation scenario ID.
     """
-    return service.get_scenario_preparation_by_scenario_id(scenario_id, user_profile)
+    return service.get_scenario_preparation_by_scenario_id(id, user_profile)
