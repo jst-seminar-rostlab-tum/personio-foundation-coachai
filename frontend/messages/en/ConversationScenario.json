@@ -8,7 +8,7 @@
     "customize": "Customize"
   },
   "category": {
-    "title": "Choose a Scenario",
+    "title": "2. Situation",
     "options": {
       "feedback": "Giving Feedback",
       "conflict": "Conflict Resolution",
@@ -164,7 +164,9 @@
     },
     "context": {
       "default": "Default Context",
-      "custom": "Custom Context"
+      "custom": "Custom Context",
+      "defaultSubtitle": "Use the recommended context for this scenario.",
+      "customSubtitle": "Write your own context for this training."
     }
   },
   "categories": {
@@ -218,5 +220,7 @@
   "difficultyTitle": "Difficulty",
   "contextDefault": "Default Context",
   "contextCustom": "Custom Context",
-  "selectContext": "Context"
+  "selectContext": "Context",
+  "chooseOtherParty": "3. Other Party",
+  "customizationTitle": "1. Customization"
 }

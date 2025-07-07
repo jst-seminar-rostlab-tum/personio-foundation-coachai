@@ -7,8 +7,9 @@
     "situation": "Situation",
     "customize": "Anpassen"
   },
+  "customizationTitle": "1. Anpassung",
   "category": {
-    "title": "Wählen Sie eine Gesprächskategorie *",
+    "title": "2. Situation",
     "customPlaceholder": "z.B. Beförderungsgespräch, Einarbeitung neuer Kollegen ...",
     "customInput": "Definieren Sie Ihr eigenes Gesprächsthema *"
   },
@@ -29,6 +30,7 @@
   },
   "customize": {
     "title": "Andere Partei anpassen",
+    "customizationTitle": "1. Anpassung",
     "persona": {
       "title": "Wählen Sie eine Persona",
       "about": {
@@ -157,7 +159,9 @@
     },
     "context": {
       "default": "Standardkontext",
-      "custom": "Individueller Kontext"
+      "custom": "Individueller Kontext",
+      "defaultSubtitle": "Empfohlener Kontext für dieses Szenario.",
+      "customSubtitle": "Eigenen Kontext für dieses Training eingeben."
     }
   },
   "categories": {
@@ -213,5 +217,6 @@
   "contextCustom": "Individueller Kontext",
   "selectContext": "Kontext",
   "defaultContextLabel": "Standardkontext",
-  "customContextLabel": "Individueller Kontext"
+  "customContextLabel": "Individueller Kontext",
+  "chooseOtherParty": "3. Gesprächspartner"
 }

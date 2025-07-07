@@ -15,12 +15,43 @@ import {
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { api } from '@/services/ApiClient';
 import { Categories } from '@/lib/constants/categories';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
+import Stepper from '@/components/common/Stepper';
 import { CategoryStep } from './CategoryStep';
 import { CustomizeStep } from './CustomizeStep';
 
 interface ConversationScenarioFormProps {
   categoriesData: ConversationCategory[];
+}
+
+interface ContextCardButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  selected: boolean;
+  label: string;
+  subtitle: string;
+  onClick: () => void;
+}
+
+function ContextCardButton({
+  selected,
+  label,
+  subtitle,
+  onClick,
+  ...props
+}: ContextCardButtonProps) {
+  return (
+    <button
+      type="button"
+      className={`w-full md:w-1/2 box-border rounded-2xl flex flex-col items-start justify-center text-lg outline outline-2 outline-bw-20 cursor-pointer hover:bg-marigold-30/80 active:outline-none active:bg-marigold-30 disabled:pointer-events-none p-8 group ${selected ? 'outline-none bg-marigold-30' : ''}`}
+      onClick={onClick}
+      {...props}
+    >
+      <span className="text-xl text-bw-70 font-semibold mb-2 text-left">{label}</span>
+      <span
+        className={`text-base leading-relaxed text-bw-40 group-hover:text-bw-70 ${selected ? 'text-bw-70' : ''} text-left`}
+      >
+        {subtitle}
+      </span>
+    </button>
+  );
 }
 
 export default function ConversationScenarioForm({
@@ -44,9 +75,6 @@ export default function ConversationScenarioForm({
   const [categories, setCategories] = useState<ConversationCategory[]>(Categories());
   const { contextMode, setContextMode, customContext, setCustomContext } =
     useConversationScenarioStore();
-
-  const contextCardBase =
-    'w-full box-border rounded-md flex flex-row items-center text-lg outline outline-2 outline-bw-20 cursor-pointer hover:bg-marigold-30/80 active:outline-none active:bg-marigold-30 disabled:pointer-events-none p-4 text-left gap-3';
 
   useEffect(() => {
     setCategories((prev) =>
@@ -91,13 +119,23 @@ export default function ConversationScenarioForm({
         return !!formState.category;
       case 1:
         return !!formState.difficulty && !!formState.persona;
+      case 2:
+        return (
+          !!formState.category &&
+          !!formState.difficulty &&
+          !!formState.persona &&
+          !!formState.goal &&
+          !!formState.otherParty &&
+          ((contextMode === 'custom' && !!customContext) ||
+            (contextMode === 'default' && !!defaultContextLong))
+        );
       default:
         return false;
     }
   };
 
   const submitForm = async () => {
-    if (currentStep !== 1) {
+    if (currentStep !== 2) {
       setStep(currentStep + 1);
       return;
     }
@@ -126,16 +164,6 @@ export default function ConversationScenarioForm({
     }
   };
 
-  const getButtonText = () => {
-    if (isSubmitting && currentStep === 1) {
-      return t('creating');
-    }
-    if (currentStep === 1) {
-      return t('create');
-    }
-    return tCommon('next');
-  };
-
   // Determine value and class for context textarea
   let contextValue = '';
   if (contextMode === 'custom') {
@@ -147,37 +175,47 @@ export default function ConversationScenarioForm({
 
   return (
     <div className="pb-8">
-      <h1 className="text-2xl text-font-dark text-left w-full mb-8">{t('title')}</h1>
+      <h1 className="text-2xl text-font-dark text-center w-full mb-8">{t('title')}</h1>
+      <Stepper
+        steps={[t('contextDefault'), t('category.title'), t('chooseOtherParty')]}
+        currentStep={currentStep}
+        showAllStepNumbers={true}
+        showStepLabels={false}
+        className="mb-8 w-3/4 mx-auto"
+      />
 
-      {/* Context Selection Section - now always visible */}
-      <div className="mb-10 w-full flex">
-        <RadioGroup
-          value={contextMode}
-          onValueChange={(val) => setContextMode(val as 'default' | 'custom')}
-          className="flex gap-4 w-full"
-        >
-          {[
-            { value: 'default', label: tContext('default') },
-            { value: 'custom', label: tContext('custom') },
-          ].map((option) => (
-            <label
-              key={option.value}
-              className={`w-1/2 ${contextCardBase + (contextMode === option.value ? ' bg-marigold-30' : '')} select-none`}
-              style={{ outline: contextMode === option.value ? 'none' : undefined }}
-            >
-              <RadioGroupItem
-                value={option.value}
-                className="mr-3 bg-white border border-bw-40 data-[state=checked]:border-bw-70 size-4"
-              >
-                <span className="block w-2 h-2 rounded-full bg-bw-70" />
-              </RadioGroupItem>
-              <span className="text-base font-medium">{option.label}</span>
-            </label>
-          ))}
-        </RadioGroup>
-      </div>
-
+      {/* Step 0: Context Selection */}
       {currentStep === 0 && (
+        <>
+          <h2 className="text-xl font-semibold text-center w-full mb-8">
+            {t('customizationTitle')}
+          </h2>
+          <div className="mb-10 w-full flex flex-col sm:flex-row gap-4">
+            {[
+              {
+                value: 'default',
+                label: tContext('default'),
+                subtitle: tContext('defaultSubtitle'),
+              },
+              {
+                value: 'custom',
+                label: tContext('custom'),
+                subtitle: tContext('customSubtitle'),
+              },
+            ].map((option) => (
+              <ContextCardButton
+                key={option.value}
+                selected={contextMode === option.value}
+                label={option.label}
+                subtitle={option.subtitle}
+                onClick={() => setContextMode(option.value as 'default' | 'custom')}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {currentStep === 1 && (
         <>
           <CategoryStep
             selectedCategory={formState.category}
@@ -193,8 +231,6 @@ export default function ConversationScenarioForm({
             }
             categories={categories}
           />
-
-          {/* Context Box or Editable Textarea on step 0 */}
           <div className="mt-8 mb-8">
             <div className="mb-4 font-medium text-xl">{t('selectContext')}</div>
             <textarea
@@ -217,9 +253,9 @@ export default function ConversationScenarioForm({
         </>
       )}
 
-      {currentStep === 1 && (
+      {currentStep === 2 && (
         <>
-          {/* No context textarea on step 1, only CustomizeStep */}
+          <h2 className="text-xl font-semibold text-center w-full mb-8">{t('chooseOtherParty')}</h2>
           <CustomizeStep
             difficulty={formState.difficulty}
             selectedPersona={formState.persona}
@@ -231,26 +267,54 @@ export default function ConversationScenarioForm({
 
       <div className="fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] py-6 flex gap-4 justify-center">
-          {currentStep !== 0 && (
+          {/* Step 0: Context - only Next */}
+          {currentStep === 0 && (
             <Button
               size="full"
-              variant="outline"
-              onClick={() => setStep(currentStep - 1)}
-              disabled={currentStep === 0}
+              onClick={() => setStep(currentStep + 1)}
+              variant={!isStepValid(currentStep) ? 'disabled' : 'default'}
+              disabled={!isStepValid(currentStep)}
             >
-              <ArrowLeftIcon />
-              {tCommon('back')}
+              {tCommon('next')}
+              <ArrowRightIcon />
             </Button>
           )}
-          <Button
-            size="full"
-            onClick={submitForm}
-            variant={isSubmitting || !isStepValid(currentStep) ? 'disabled' : 'default'}
-            disabled={isSubmitting || !isStepValid(currentStep)}
-          >
-            {getButtonText()}
-            <ArrowRightIcon />
-          </Button>
+          {/* Step 1: Situation - Back and Next */}
+          {currentStep === 1 && (
+            <>
+              <Button size="full" variant="outline" onClick={() => setStep(currentStep - 1)}>
+                <ArrowLeftIcon />
+                {tCommon('back')}
+              </Button>
+              <Button
+                size="full"
+                onClick={() => setStep(currentStep + 1)}
+                variant={!isStepValid(currentStep) ? 'disabled' : 'default'}
+                disabled={!isStepValid(currentStep)}
+              >
+                {tCommon('next')}
+                <ArrowRightIcon />
+              </Button>
+            </>
+          )}
+          {/* Step 2: Other Party - Back and Create Training */}
+          {currentStep === 2 && (
+            <>
+              <Button size="full" variant="outline" onClick={() => setStep(currentStep - 1)}>
+                <ArrowLeftIcon />
+                {tCommon('back')}
+              </Button>
+              <Button
+                size="full"
+                onClick={submitForm}
+                variant={isSubmitting || !isStepValid(currentStep) ? 'disabled' : 'default'}
+                disabled={isSubmitting || !isStepValid(currentStep)}
+              >
+                {t('create')}
+                <ArrowRightIcon />
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
