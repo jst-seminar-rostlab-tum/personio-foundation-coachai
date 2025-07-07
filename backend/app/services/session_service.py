@@ -7,6 +7,7 @@ from fastapi import BackgroundTasks, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import col, func, select
 
+from app.connections.gcs_client import get_gcs_audio_manager
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
@@ -20,11 +21,13 @@ from app.schemas.session_feedback import FeedbackRequest, SessionFeedbackMetrics
 from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
 from app.services.review_service import ReviewService
 from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
+from app.services.session_turn_service import SessionTurnService
 
 
 class SessionService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
+        self.gcs_audio_manager = get_gcs_audio_manager()
 
     def fetch_session_details(
         self, session_id: UUID, user_profile: UserProfile
@@ -57,7 +60,6 @@ class SessionService:
             goals_total=goals,
         )
 
-        session_response.audio_uris = self._get_session_audio_uris(session_id)
         session_response.feedback = self._get_session_feedback(session_id)
 
         return session_response
@@ -390,12 +392,6 @@ class SessionService:
             return scenario.custom_category_label
         return 'No Title available'
 
-    def _get_session_audio_uris(self, session_id: UUID) -> list[str]:
-        session_turns = self.db.exec(
-            select(SessionTurn).where(SessionTurn.session_id == session_id)
-        ).all()
-        return [turn.audio_uri for turn in session_turns] if session_turns else []
-
     def _get_session_feedback(self, session_id: UUID) -> SessionFeedbackMetrics | None:
         feedback = self.db.exec(
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
@@ -404,6 +400,19 @@ class SessionService:
             raise HTTPException(status_code=202, detail='Session feedback in progress.')
         if feedback.status == FeedbackStatusEnum.failed:
             raise HTTPException(status_code=500, detail='Session feedback failed.')
+
+        audio_file_exists = self.gcs_audio_manager.document_exists(
+            filename=feedback.full_audio_filename
+        )
+        if audio_file_exists:
+            full_audio_url = self.gcs_audio_manager.generate_signed_url(
+                filename=feedback.full_audio_filename,
+            )
+        else:
+            full_audio_url = None
+
+        session_turn_service = SessionTurnService(self.db)
+        session_turn_transcripts = session_turn_service.get_session_turns(session_id=session_id)
 
         return SessionFeedbackMetrics(
             scores=feedback.scores,
@@ -417,6 +426,8 @@ class SessionService:
             example_positive=feedback.example_positive,  # type: ignore
             example_negative=feedback.example_negative,  # type: ignore
             recommendations=feedback.recommendations,  # type: ignore
+            full_audio_url=full_audio_url,
+            session_turn_transcripts=session_turn_transcripts,
         )
 
     def _get_user_scenario_ids(self, user_id: UUID) -> list[UUID]:
