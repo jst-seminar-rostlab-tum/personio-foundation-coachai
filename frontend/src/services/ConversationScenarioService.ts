@@ -16,7 +16,7 @@ const getConversationCategories = async (api: AxiosInstance) => {
 
 const createConversationScenario = async (api: AxiosInstance, scenario: ConversationScenario) => {
   try {
-    const response = await api.post<ConversationScenarioResponse>('/conversation-scenario', {
+    const response = await api.post<ConversationScenarioResponse>('/conversation-scenarios', {
       ...scenario,
     });
     return response;
@@ -28,7 +28,7 @@ const createConversationScenario = async (api: AxiosInstance, scenario: Conversa
 
 const getPreparation = async (api: AxiosInstance, id: string) => {
   try {
-    const response = await api.get(`/conversation-scenario/${id}/preparation`);
+    const response = await api.get(`/conversation-scenarios/${id}/preparation`);
     return response;
   } catch (error) {
     console.error(error);

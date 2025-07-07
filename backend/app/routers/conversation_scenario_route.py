@@ -15,7 +15,7 @@ from app.schemas.conversation_scenario import (
 from app.schemas.scenario_preparation import ScenarioPreparationRead
 from app.services.conversation_scenario_service import ConversationScenarioService
 
-router = APIRouter(prefix='/conversation-scenario', tags=['Conversation Scenarios'])
+router = APIRouter(prefix='/conversation-scenarios', tags=['Conversation Scenarios'])
 
 
 def get_conversation_scenario_service(
@@ -28,7 +28,7 @@ def get_conversation_scenario_service(
 
 
 @router.get(
-    '',  # /conversation-scenario
+    '',  # /conversation-scenarios
     response_model=list[ConversationScenarioSummary],
     dependencies=[Depends(require_user)],
 )
