@@ -25,10 +25,8 @@ jobs:
       - name: Check if dev branch is merged
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          MERGE_BASE=$(git merge-base HEAD origin/dev)   
-          DEV_HEAD=$(git rev-parse origin/dev)  
-
-          if [[ "$MERGE_BASE" == "$DEV_HEAD" ]]; then
+          git fetch origin dev
+          if git merge-base --is-ancestor origin/dev HEAD; then
             echo "✅ Dev branch is merged"
           else
             echo "❌ Dev branch is not fully merged into this branch"
