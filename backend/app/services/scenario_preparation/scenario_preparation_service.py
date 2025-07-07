@@ -10,7 +10,7 @@ from uuid import UUID
 from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.connections.openai_client import call_structured_llm
+from app.connections.vertexai_client import call_structured_llm
 from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.schemas.scenario_prep_config import ScenarioPrepConfig
@@ -90,7 +90,6 @@ def generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') ->
     result = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=StringListResponse,
         mock_response=mock_response,
     )
@@ -129,7 +128,6 @@ def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> 
     result = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=StringListResponse,
         mock_response=mock_response,
     )
@@ -197,7 +195,6 @@ def generate_key_concept(request: KeyConceptRequest, hr_docs_context: str = '') 
     result = call_structured_llm(
         request_prompt=prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=KeyConceptResponse,
         mock_response=mock_response,
     )
