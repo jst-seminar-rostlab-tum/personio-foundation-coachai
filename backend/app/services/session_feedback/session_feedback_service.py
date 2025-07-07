@@ -65,7 +65,7 @@ def get_hr_docs_context(
     recommendations_request: FeedbackRequest,
 ) -> str:
     """Generate HR docs context using the vector DB."""
-    return query_vector_db_and_prompt(
+    hr_docs_context, doc_names = query_vector_db_and_prompt(
         session_context=[
             recommendations_request.category,
             recommendations_request.persona,
@@ -76,6 +76,8 @@ def get_hr_docs_context(
         ],
         generated_object='output',
     )
+    # hr_docs_context is used for LLM prompt; doc_names is available for future use
+    return hr_docs_context
 
 
 class FeedbackGenerationResult(CamelModel):
