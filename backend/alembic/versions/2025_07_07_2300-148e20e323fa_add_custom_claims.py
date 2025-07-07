@@ -1,8 +1,8 @@
 """add custom claims
 
-Revision ID: fd649120d5a9
-Revises: a93e502a5d3a
-Create Date: 2025-07-06 12:05:48.178329
+Revision ID: 148e20e323fa
+Revises: b2117ff73279
+Create Date: 2025-07-07 23:00:56.839769
 
 """
 
@@ -12,8 +12,8 @@ from typing import Union
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = 'fd649120d5a9'
-down_revision: Union[str, None] = 'a93e502a5d3a'
+revision: str = '148e20e323fa'
+down_revision: Union[str, None] = 'b2117ff73279'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
