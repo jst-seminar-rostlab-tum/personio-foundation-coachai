@@ -38,7 +38,7 @@ class VerifyCodeRequest(BaseModel):
 def send_verification(req: SendVerificationRequest) -> None:
     try:
         status = send_verification_code(req.phone_number)
-        if status != 'pending':
+        if status == 'pending':
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Failed to send verification code',
@@ -77,7 +77,7 @@ def create_user(req: CreateUserRequest) -> None:
         ) from e
 
     try:
-        supabase = get_supabase_client
+        supabase = get_supabase_client()
 
         attributes: AdminUserAttributes = {
             'email': req.email,

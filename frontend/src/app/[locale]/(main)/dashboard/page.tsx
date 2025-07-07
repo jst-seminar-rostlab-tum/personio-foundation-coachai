@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowRightIcon, Plus } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 
-import { generateMetadata as generateDynamicMetadata } from '@/lib/metadata';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { Button } from '@/components/ui/Button';
@@ -11,7 +11,7 @@ import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { SessionFromPagination } from '@/interfaces/models/Session';
-import { formattedDate } from '@/lib/utils';
+import { formattedDate } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiServer';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -45,7 +45,7 @@ export default async function DashboardPage() {
       </section>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard value={userStatsData.totalSessions} label={t('userStats.totalSessions')} />
+        <StatCard value={userStatsData.totalSessions} label={tCommon('totalSessions')} />
         <StatCard
           value={`${userStatsData.trainingTime.toFixed(1)}h`}
           label={t('userStats.trainingTime')}
@@ -54,7 +54,7 @@ export default async function DashboardPage() {
           value={`${userStatsData.currentStreakDays}d`}
           label={t('userStats.currentStreak')}
         />
-        <StatCard value={`${userStatsData.averageScore}%`} label={t('userStats.avgScore')} />
+        <StatCard value={`${userStatsData.averageScore}%`} label={tCommon('avgScore')} />
       </div>
 
       <section className="flex flex-col gap-4">
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
             ))}
             <Link href="/history">
               <Button size="full">
-                {t('recentSessions.cta')}
+                {t('recentSessions.showEntireHistory')}
                 <ArrowRightIcon />
               </Button>
             </Link>

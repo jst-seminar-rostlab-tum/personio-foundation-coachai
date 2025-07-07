@@ -3,6 +3,14 @@ import Image from 'next/image';
 import { MessageSquare, Video, BrainCircuit, TrendingUp, Award, Target } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getTranslations } from 'next-intl/server';
+import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
+import { MetadataProps } from '@/interfaces/props/MetadataProps';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDynamicMetadata(locale, '', false);
+}
 
 export default async function AboutPage() {
   const t = await getTranslations('HomePage');
@@ -58,43 +66,41 @@ export default async function AboutPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex-1">
-        <section className="pb-16 lg:pt-8 md:pb-24 bg-gradient-to-br from-white to-primary/5">
-          <div className="container">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-marigold-30/80 text-primary text-sm font-medium shadow-sm">
-                  {t('hero.badge')}
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black leading-tight">
-                  {t('hero.title')}
-                </h1>
-                <p className="text-md md:text-xl text-black/60 font-medium">
-                  {t('hero.description')}
-                </p>
-                <div className="flex flex-col lg:flex-row gap-4 w-full">
-                  <Button asChild variant="default" className="w-full md:w-auto text-center">
-                    <Link href="/login" className="w-full md:w-auto">
-                      {t('hero.cta.primary')}
-                    </Link>
-                  </Button>
-                  <Button asChild variant="secondary" className="w-full md:w-auto text-center">
-                    <Link href="#how-it-works" className="w-full md:w-auto">
-                      {t('hero.cta.secondary')}
-                    </Link>
-                  </Button>
-                </div>
+        <section className="pb-16 lg:pt-20 md:pb-24 bg-gradient-to-br from-white to-primary/5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-marigold-30/80 text-primary text-sm font-medium shadow-sm">
+                {t('hero.badge')}
               </div>
-              <div className="rounded-xl overflow-hidden shadow-lg">
-                <div className="w-full aspect-[16/9] md:h-96 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                  <Image
-                    src="/images/hero.png"
-                    alt="Hero Image"
-                    width={1280}
-                    height={896}
-                    className="w-full h-full object-cover"
-                    priority
-                  />
-                </div>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black leading-tight">
+                {t('hero.title')}
+              </h1>
+              <p className="text-md md:text-xl text-black/60 font-medium">
+                {t('hero.description')}
+              </p>
+              <div className="flex flex-col lg:flex-row gap-4 w-full">
+                <Button asChild variant="default" className="w-full md:w-auto text-center">
+                  <Link href="/login" className="w-full md:w-auto">
+                    {t('getStarted')}
+                  </Link>
+                </Button>
+                <Button asChild variant="secondary" className="w-full md:w-auto text-center">
+                  <Link href="#how-it-works" className="w-full md:w-auto">
+                    {t('hero.cta.secondary')}
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div className="rounded-xl overflow-hidden shadow-lg">
+              <div className="w-full aspect-[16/9] md:h-96 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <Image
+                  src="/images/hero.png"
+                  alt="Hero Image"
+                  width={1280}
+                  height={896}
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </div>
             </div>
           </div>
@@ -169,7 +175,7 @@ export default async function AboutPage() {
               <div className="w-full">
                 <Link href="/login" className="inline-flex items-center justify-center w-full">
                   <Button variant="default" className="w-full md:w-auto">
-                    {t('cta.button')}
+                    {t('getStarted')}
                   </Button>
                 </Link>
               </div>

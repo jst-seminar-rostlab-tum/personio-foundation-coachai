@@ -8,7 +8,10 @@ export const setupAuthInterceptor = (api: AxiosInstance, getSupabaseClient: any)
         return config;
       }
 
-      if (process.env.NODE_ENV === 'development') {
+      if (
+        process.env.NODE_ENV === 'development' &&
+        process.env.NEXT_PUBLIC_DEV_MODE_SKIP_AUTH === 'true'
+      ) {
         return config;
       }
 

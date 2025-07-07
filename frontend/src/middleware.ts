@@ -6,19 +6,38 @@ import routing from '@/i18n/routing';
 const i18nMiddleware = createMiddleware(routing);
 
 export default async function middleware(request: NextRequest) {
-  const response = i18nMiddleware(request);
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
 
-  // Skip authentication if in development mode and the environment variable is set
-  if (process.env.NODE_ENV === 'development') {
+  const isDev = process.env.NODE_ENV !== 'production';
+
+  const cspHeader = `
+    default-src 'self';
+    connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL} ${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'} https://api.openai.com;
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? 'unsafe-eval' : ''};
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' blob: data:;
+    frame-src 'self' https://vercel.live;
+    media-src 'self' https://storage.googleapis.com;
+    font-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+`;
+
+  const contentSecurityPolicyHeaderValue = cspHeader.replace(/\s{2,}/g, ' ').trim();
+  const response = i18nMiddleware(request);
+  response.headers.set('x-nonce', nonce);
+  response.headers.set('Content-Security-Policy', contentSecurityPolicyHeaderValue);
+  if (
+    process.env.NODE_ENV === 'development' &&
+    process.env.NEXT_PUBLIC_DEV_MODE_SKIP_AUTH === 'true'
+  ) {
     return response;
   }
-
   return authMiddleware(request, response);
 }
 
 export const config = {
-  // Match all pathnames except for
-  // - … if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
-  // - … the ones containing a dot (e.g. `favicon.ico`)
-  matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
+  matcher: '/((?!api|_next|_vercel|.*\\.[^/]+$).*)',
 };

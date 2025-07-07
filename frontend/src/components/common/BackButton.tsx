@@ -2,7 +2,7 @@
 
 import { ArrowLeftIcon } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cnMerge';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -28,7 +28,7 @@ export default function BackButton() {
       >
         <ArrowLeftIcon className="h-4 w-4" strokeWidth={3} />
         <span className="relative transition-transform duration-200 group-hover:-translate-x-1">
-          {t('backToDashboard')}
+          {t('backToHome')}
         </span>
       </Button>
     </Link>

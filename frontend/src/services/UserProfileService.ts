@@ -38,8 +38,8 @@ const updateUserProfile = async (
 
 const exportUserData = async (api: AxiosInstance) => {
   try {
-    const { data } = await api.get('/user-profile/export');
-    return data;
+    const response = await api.get('/user-profile/export', { responseType: 'blob' });
+    return response.data;
   } catch (error) {
     console.error('Error exporting user data:', error);
     throw error;
@@ -57,10 +57,32 @@ const deleteUser = async (api: AxiosInstance, deleteUserId?: string) => {
   }
 };
 
+const getPaginatedUsers = async (
+  api: AxiosInstance,
+  page: number,
+  limit: number,
+  emailSubstring?: string
+) => {
+  try {
+    const { data } = await api.get('/user-profile', {
+      params: {
+        page,
+        limit,
+        email_substring: emailSubstring,
+      },
+    });
+    return data;
+  } catch (error) {
+    console.error('Error getting users:', error);
+    throw error;
+  }
+};
+
 export const UserProfileService = {
   getUserProfile,
   getUserStats,
   updateUserProfile,
   exportUserData,
   deleteUser,
+  getPaginatedUsers,
 };

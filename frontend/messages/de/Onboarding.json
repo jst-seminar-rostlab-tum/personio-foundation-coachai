@@ -1,19 +1,13 @@
 {
   "metaTitle": "Einführung - Coach AI",
-  "metaDescription": "Starten Sie Ihre Führungskräfteentwicklung mit Coach AI",
-  "title": "Personalisiertes Führungstraining",
+  "metaDescription": "Beginnen Sie Ihre Führungskräfteentwicklung mit Coach AI",
+  "title": "Personalisierung Ihres Trainings",
   "subtitle": "Passen Sie Ihr Training an Ihre Bedürfnisse an",
   "steps": {
-    "step1": "Was ist Ihre Rolle? *",
-    "step2": "Was sind Ihre Hauptziele? *",
-    "step2Subtitle": "Wählen Sie bis zu 3 Bereiche",
+    "step1": "Welche Rolle haben Sie? *",
+    "step2": "Was sind Ihre wichtigsten Ziele? *",
+    "step2Subtitle": "Wählen Sie bis zu 3 Bereiche aus",
     "step3": "Bewerten Sie Ihr Vertrauen in diese Bereiche"
   },
-  "navigation": {
-    "back": "Zurück",
-    "next": "Nächster Schritt",
-    "finish": "Setup abschließen",
-    "skip": "Überspringen"
-  },
-  "updateProfileError": "Beim Aktualisieren Ihres Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+  "updateProfileError": "Beim Aktualisieren Ihres Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal."
 }

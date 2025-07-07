@@ -1,7 +1,7 @@
 from app.schemas.admin_dashboard_stats import AdminDashboardStatsRead
 from app.schemas.app_config import AppConfigCreate, AppConfigRead
 from app.schemas.conversation_category import ConversationCategoryRead
-from app.schemas.conversation_scenario import ConversationScenarioCreate, ConversationScenarioRead
+from app.schemas.conversation_scenario import ConversationScenarioCreate
 from app.schemas.message_schema import MessageCreateSchema, MessageSchema
 from app.schemas.review import (
     PaginatedReviewsResponse,
@@ -28,14 +28,13 @@ from app.schemas.session import (
     SessionUpdate,
 )
 from app.schemas.session_feedback import (
-    ExamplesRequest,
+    FeedbackRequest,
     GoalsAchievedCollection,
     GoalsAchievementRequest,
     NegativeExample,
     PositiveExample,
     Recommendation,
     RecommendationsCollection,
-    RecommendationsRequest,
     SessionExamplesCollection,
     SessionFeedbackMetrics,
 )
@@ -72,7 +71,6 @@ __all__ = [
     'AppConfigRead',
     'ConversationCategoryRead',
     'ConversationScenarioCreate',
-    'ConversationScenarioRead',
     'ReviewCreate',
     'ReviewRead',
     'ReviewResponse',
@@ -87,14 +85,13 @@ __all__ = [
     'ScenarioPreparationCreate',
     'ScenarioPreparationRead',
     'StringListResponse',
-    'ExamplesRequest',
+    'FeedbackRequest',
     'GoalsAchievedCollection',
     'GoalsAchievementRequest',
     'NegativeExample',
     'PositiveExample',
     'Recommendation',
     'RecommendationsCollection',
-    'RecommendationsRequest',
     'SessionExamplesCollection',
     'SessionFeedbackMetrics',
     'SessionTurnCreate',
