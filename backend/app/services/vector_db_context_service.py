@@ -25,8 +25,8 @@ def build_query_prep_feedback(
     """
     parts = []
 
-    if session_context.category:
-        parts.append(f'This is a/an {session_context.category}.')
+    if session_context.category_name:
+        parts.append(f'This is a/an {session_context.category_name}.')
 
     if session_context.persona:
         parts.append(f'The HR employee is speaking to {session_context.persona}.')

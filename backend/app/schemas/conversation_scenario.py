@@ -32,7 +32,7 @@ class ConversationScenarioRead(CamelModel):
 
 
 class ConversationScenarioAIPromptRead(CamelModel):
-    category: str
+    category_name: str
     persona: str
     situational_facts: str
     language_code: LanguageCode = LanguageCode.en

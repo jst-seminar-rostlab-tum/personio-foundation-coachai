@@ -15,7 +15,7 @@ from app.services.vector_db_context_service import (
 class TestVectorDbContextService(unittest.TestCase):
     def test_build_query_prep_feedback_all_fields(self) -> None:
         session = ConversationScenarioAIPromptRead(
-            category='Performance Review',
+            category_name='Performance Review',
             persona='Intern',
             situational_facts='Annual evaluation meeting',
         )
@@ -74,7 +74,7 @@ class TestVectorDbContextService(unittest.TestCase):
 
         # Set up conversation scenario
         scenario = ConversationScenarioAIPromptRead(
-            category='Coaching',
+            category_name='Coaching',
             persona='Jacob. Training Focus: Set growth plan. Company Position: Intern',
             situational_facts='Career development',
         )
