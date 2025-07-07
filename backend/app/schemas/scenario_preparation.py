@@ -11,7 +11,7 @@ from app.models.scenario_preparation import ScenarioPreparationStatus
 
 
 # Schema for genarating objectives / goals
-class ObjectiveRequest(CamelModel):
+class ObjectivesCreate(CamelModel):
     category: str = Field(..., description='Training category')
     persona: str
     situational_facts: str
@@ -42,7 +42,7 @@ class ChecklistRequest(CamelModel):
     num_checkpoints: int = Field(..., gt=0, description='Number of checklist items to return')
 
 
-# Response schema for a list of strings
+# Response schema for a list of strings --> needed to return generated text in a given format
 class StringListResponse(CamelModel):
     items: list[str] = Field(..., description='List of generated text items')
 

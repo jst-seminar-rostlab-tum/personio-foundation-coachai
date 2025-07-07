@@ -19,7 +19,7 @@ from app.schemas.scenario_preparation import (
     KeyConcept,
     KeyConceptRequest,
     KeyConceptResponse,
-    ObjectiveRequest,
+    ObjectivesCreate,
     ScenarioPreparationCreate,
     StringListResponse,
 )
@@ -39,7 +39,7 @@ config = load_scenario_prep_config()
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') -> list[str]:
+def safe_generate_objectives(request: ObjectivesCreate, hr_docs_context: str = '') -> list[str]:
     return generate_objectives(request, hr_docs_context)
 
 
@@ -55,7 +55,7 @@ def safe_generate_key_concepts(
     return generate_key_concept(request, hr_docs_context)
 
 
-def generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') -> list[str]:
+def generate_objectives(request: ObjectivesCreate, hr_docs_context: str = '') -> list[str]:
     """
     Generate a list of training objectives using structured output from the LLM.
     """
@@ -243,7 +243,7 @@ def generate_scenario_preparation(
             raise ValueError(f'Scenario preparation {preparation_id} is not in pending status.')
 
         # 2. build request objects
-        objectives_request = ObjectiveRequest(
+        objectives_request = ObjectivesCreate(
             category=new_preparation.category,
             persona=new_preparation.persona,
             situational_facts=new_preparation.situational_facts,
@@ -324,7 +324,7 @@ def generate_scenario_preparation(
 
 if __name__ == '__main__':
     # Example usage
-    objective_request = ObjectiveRequest(
+    objective_request = ObjectivesCreate(
         category='Performance Feedback',
         persona='**Name**: Andrew '
         '**Training Focus**: Giving constructive criticism '

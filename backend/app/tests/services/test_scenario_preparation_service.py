@@ -6,7 +6,7 @@ from app.schemas.scenario_preparation import (
     KeyConcept,
     KeyConceptRequest,
     KeyConceptResponse,
-    ObjectiveRequest,
+    ObjectivesCreate,
     StringListResponse,
 )
 from app.services.scenario_preparation.scenario_preparation_service import (
@@ -22,7 +22,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         items = ['1. Prepare outline', '2. Rehearse responses', '3. Stay calm']
         mock_llm.return_value = StringListResponse(items=items)
 
-        req = ObjectiveRequest(
+        req = ObjectivesCreate(
             category='Performance Feedback',
             persona='**Name**: Andrew '
             '**Training Focus**: Giving constructive criticism '
@@ -94,7 +94,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         # Set up llm mock and vector db prompt extension
         mock_llm.return_value = StringListResponse(items=['Objective 1', 'Objective 2'])
 
-        req = ObjectiveRequest(
+        req = ObjectivesCreate(
             category='Feedback',
             persona='**Name**: Glenda'
             '**Training Focus**: Improve team dynamics '
