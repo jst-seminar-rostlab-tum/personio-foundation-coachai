@@ -10,8 +10,6 @@ from app.models.scenario_preparation import ScenarioPreparationStatus
 # Schemas for scenario preparation requests
 
 
-# The ConversationScenarioBase fields are used in various scenario preparation requests
-# and are extended with other necessary information according to the request type
 class ConversationScenarioBase(CamelModel):
     category: str = Field(..., description='Training category')
     persona: str
@@ -22,20 +20,34 @@ class ConversationScenarioBase(CamelModel):
 
 
 # Schema for genarating objectives / goals
-# --> extends ConversationScenarioBase
-class ObjectiveRequest(ConversationScenarioBase):
+class ObjectiveRequest(CamelModel):
+    category: str = Field(..., description='Training category')
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = Field(
+        default=LanguageCode.en, description='Language code for the scenario preparation'
+    )
     num_objectives: int = Field(..., gt=0, description='Number of objectives to generate')
 
 
 # Schema for generating key concepts
-# --> same fields as ConversationScenarioBase
-class KeyConceptRequest(ConversationScenarioBase):
-    pass
+class KeyConceptRequest(CamelModel):
+    category: str = Field(..., description='Training category')
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = Field(
+        default=LanguageCode.en, description='Language code for the scenario preparation'
+    )
 
 
 # Schema for generating a checklist
-# --> extends ConversationScenarioBase
-class ChecklistRequest(ConversationScenarioBase):
+class ChecklistRequest(CamelModel):
+    category: str = Field(..., description='Training category')
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = Field(
+        default=LanguageCode.en, description='Language code for the scenario preparation'
+    )
     num_checkpoints: int = Field(..., gt=0, description='Number of checklist items to return')
 
 
@@ -54,8 +66,14 @@ class KeyConceptResponse(CamelModel):
     items: list[KeyConcept]
 
 
-# Schema for creating a new ScenarioPreparation --> extends ConversationScenarioBase
-class ScenarioPreparationCreate(ConversationScenarioBase):
+# Schema for creating a new ScenarioPreparation
+class ScenarioPreparationCreate(CamelModel):
+    category: str = Field(..., description='Training category')
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = Field(
+        default=LanguageCode.en, description='Language code for the scenario preparation'
+    )
     num_objectives: int = Field(3, gt=0, description='Number of objectives to generate')
     num_checkpoints: int = Field(5, gt=0, description='Number of checklist items to generate')
 
