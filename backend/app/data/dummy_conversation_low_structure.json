@@ -1,0 +1,72 @@
+{
+  "scenario": {
+    "id": "11111111-1111-1111-1111-111111111120",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "category_id": "feedback",
+    "custom_category_label": null,
+    "language_code": "en",
+    "persona": "",
+    "situational_facts": "",
+    "difficulty_level": "medium",
+    "status": "ready",
+    "created_at": "2024-06-28T10:00:00Z",
+    "updated_at": "2024-06-28T10:00:00Z"
+  },
+  "transcript": [
+    {
+      "id": "97079340-e7d3-4147-853b-7ea8bdd841cd",
+      "session_id": "1a60276c-e799-47d0-b42d-67f3c6bd1ff7",
+      "speaker": "user",
+      "start_offset_ms": 0,
+      "end_offset_ms": 2000,
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:01Z",
+      "text": "The weather is nice today. Anyway, the report, um, I forgot my lunch."
+    },
+    {
+      "id": "1602d1a8-b4ef-465a-b234-fcacd61544aa",
+      "session_id": "1a60276c-e799-47d0-b42d-67f3c6bd1ff7",
+      "speaker": "user",
+      "start_offset_ms": 2000,
+      "end_offset_ms": 4000,
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:03Z",
+      "text": "You know, sometimes meetings are long. The client summary, I guess, was missing, or maybe not."
+    },
+    {
+      "id": "7a668132-ee0f-46a0-90e7-20699e8abc51",
+      "session_id": "1a60276c-e799-47d0-b42d-67f3c6bd1ff7",
+      "speaker": "user",
+      "start_offset_ms": 4000,
+      "end_offset_ms": 6000,
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:05Z",
+      "text": "By the way, I like pizza. The slides were, um, blue? Next time, let's try something else."
+    },
+    {
+      "id": "fcc3c104-e223-4312-812a-0ffba9c2fd30",
+      "session_id": "1a60276c-e799-47d0-b42d-67f3c6bd1ff7",
+      "speaker": "user",
+      "start_offset_ms": 6000,
+      "end_offset_ms": 8000,
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:07Z",
+      "text": "We should also discuss the new project timeline, but my cat was sick yesterday. Please fix the report, or not."
+    },
+    {
+      "id": "1eead214-61d5-474f-bf53-7dc9f7b3ba97",
+      "session_id": "1a60276c-e799-47d0-b42d-67f3c6bd1ff7",
+      "speaker": "user",
+      "start_offset_ms": 8000,
+      "end_offset_ms": 10000,
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:09Z",
+      "text": "Let me know if you have any questions. Or don't. I need coffee."
+    }
+  ]
+}

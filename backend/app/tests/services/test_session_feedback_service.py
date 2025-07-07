@@ -146,7 +146,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         example_request = FeedbackRequest(
             transcript='Sample transcript...',
@@ -245,13 +245,13 @@ class TestSessionFeedbackService(unittest.TestCase):
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = []
-                    self.overall_score = 0
+                    self.overall_score = 1.0
 
             def __init__(self) -> None:
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         feedback = generate_and_store_feedback(
             session_id=session_id,
@@ -273,7 +273,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
 
-        self.assertEqual(feedback.overall_score, 0)
+        self.assertEqual(feedback.overall_score, 1)
         self.assertEqual(feedback.transcript_uri, '')
 
     @patch('app.services.session_feedback.session_feedback_llm.call_structured_llm')
@@ -363,7 +363,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         user_id = uuid4()
         session_id = uuid4()
@@ -383,7 +383,9 @@ class TestSessionFeedbackService(unittest.TestCase):
             db_session=self.session,
             scoring_service=mock_scoring_service,
         )
-        self.assertEqual(feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4})
+        self.assertDictEqual(
+            feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4}
+        )
         self.assertEqual(feedback.overall_score, 4.0)
 
 

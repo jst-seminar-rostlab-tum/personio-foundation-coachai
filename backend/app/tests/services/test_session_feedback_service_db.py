@@ -157,7 +157,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         example_request = FeedbackRequest(
             transcript='Sample transcript...',
@@ -243,7 +243,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         example_request = FeedbackRequest(
             transcript='Error case transcript...',
@@ -311,7 +311,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         from datetime import datetime
 
@@ -388,7 +388,9 @@ class TestSessionFeedbackService(unittest.TestCase):
             scoring_service=mock_scoring_service,
         )
         # Check feedback score structure
-        self.assertEqual(feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4})
+        self.assertDictEqual(
+            feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4}
+        )
         self.assertEqual(feedback.overall_score, 4.0)
         # Check user_profile statistics
         user = self.session.get(UserProfile, user_id)

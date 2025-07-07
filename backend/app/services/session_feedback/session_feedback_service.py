@@ -113,7 +113,7 @@ def generate_feedback_components(
         future_recommendations = executor.submit(
             safe_generate_recommendations, feedback_request, hr_docs_context
         )
-        future_scoring = executor.submit(scoring_service.score_conversation, conversation)
+        future_scoring = executor.submit(scoring_service.safe_score_conversation, conversation)
 
         try:
             examples: SessionExamplesCollection = future_examples.result()
