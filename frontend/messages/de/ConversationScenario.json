@@ -211,7 +211,7 @@
   "difficultyTitle": "Schwierigkeitsgrad",
   "contextDefault": "Standardkontext",
   "contextCustom": "Individueller Kontext",
-  "selectContext": "Situative Fakten (nicht verhandelbar)",
+  "selectContext": "Kontext",
   "defaultContextLabel": "Standardkontext",
   "customContextLabel": "Individueller Kontext"
 }

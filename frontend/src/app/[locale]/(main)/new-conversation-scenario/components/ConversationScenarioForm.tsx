@@ -15,7 +15,6 @@ import {
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { api } from '@/services/ApiClient';
 import { Categories } from '@/lib/constants/categories';
-import { Textarea } from '@/components/ui/Textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { CategoryStep } from './CategoryStep';
 import { CustomizeStep } from './CustomizeStep';
@@ -137,71 +136,90 @@ export default function ConversationScenarioForm({
     return tCommon('next');
   };
 
+  // Determine value and class for context textarea
+  let contextValue = '';
+  if (contextMode === 'custom') {
+    contextValue = customContext;
+  } else if (selectedCategoryKey) {
+    contextValue = t(`categories.${selectedCategoryKey}.defaultContextLong`);
+  }
+  const contextClass = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content h-[320px] w-full rounded-md bg-white px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${contextMode === 'custom' ? '' : 'text-bw-40'} resize-none overflow-auto`;
+
   return (
-    <div>
+    <div className="pb-8">
       <h1 className="text-2xl text-font-dark text-left w-full mb-8">{t('title')}</h1>
 
+      {/* Context Selection Section - now always visible */}
+      <div className="mb-10 w-full flex">
+        <RadioGroup
+          value={contextMode}
+          onValueChange={(val) => setContextMode(val as 'default' | 'custom')}
+          className="flex gap-4 w-full"
+        >
+          {[
+            { value: 'default', label: tContext('default') },
+            { value: 'custom', label: tContext('custom') },
+          ].map((option) => (
+            <label
+              key={option.value}
+              className={`w-1/2 ${contextCardBase + (contextMode === option.value ? ' bg-marigold-30' : '')} select-none`}
+              style={{ outline: contextMode === option.value ? 'none' : undefined }}
+            >
+              <RadioGroupItem
+                value={option.value}
+                className="mr-3 bg-white border border-bw-40 data-[state=checked]:border-bw-70 size-4"
+              >
+                <span className="block w-2 h-2 rounded-full bg-bw-70" />
+              </RadioGroupItem>
+              <span className="text-base font-medium">{option.label}</span>
+            </label>
+          ))}
+        </RadioGroup>
+      </div>
+
       {currentStep === 0 && (
-        <CategoryStep
-          selectedCategory={formState.category}
-          onCategorySelect={(category) =>
-            updateForm({
-              category: category.id,
-              name: category.name,
-              context: contextMode === 'default' ? defaultContextLong : customContext,
-              goal: category.defaultGoal || '',
-              otherParty: category.defaultOtherParty || '',
-              isCustom: category.isCustom || false,
-            })
-          }
-          categories={categories}
-        />
+        <>
+          <CategoryStep
+            selectedCategory={formState.category}
+            onCategorySelect={(category) =>
+              updateForm({
+                category: category.id,
+                name: category.name,
+                context: contextMode === 'default' ? defaultContextLong : customContext,
+                goal: category.defaultGoal || '',
+                otherParty: category.defaultOtherParty || '',
+                isCustom: category.isCustom || false,
+              })
+            }
+            categories={categories}
+          />
+
+          {/* Context Box or Editable Textarea on step 0 */}
+          <div className="mt-8 mb-8">
+            <div className="mb-4 font-medium text-xl">{t('selectContext')}</div>
+            <textarea
+              className={contextClass}
+              value={contextValue}
+              onChange={
+                contextMode === 'custom'
+                  ? (e) => {
+                      setCustomContext(e.target.value);
+                      updateForm({ context: e.target.value });
+                    }
+                  : undefined
+              }
+              placeholder={t('situation.context.placeholder')}
+              rows={16}
+              readOnly={contextMode !== 'custom'}
+              disabled={contextMode !== 'custom'}
+            />
+          </div>
+        </>
       )}
 
       {currentStep === 1 && (
         <>
-          {/* Context Selection Section */}
-          <div className="mb-10">
-            <RadioGroup
-              value={contextMode}
-              onValueChange={(val) => setContextMode(val as 'default' | 'custom')}
-              className="flex gap-4 mb-4"
-            >
-              {[
-                { value: 'default', label: tContext('default') },
-                { value: 'custom', label: tContext('custom') },
-              ].map((option) => (
-                <label
-                  key={option.value}
-                  className={`${
-                    contextCardBase + (contextMode === option.value ? ' bg-marigold-30' : '')
-                  } select-none`}
-                  style={{ outline: contextMode === option.value ? 'none' : undefined }}
-                >
-                  <RadioGroupItem
-                    value={option.value}
-                    className="mr-3 bg-white border border-bw-40 data-[state=checked]:border-bw-70 size-4"
-                  >
-                    <span className="block w-2 h-2 rounded-full bg-bw-70" />
-                  </RadioGroupItem>
-                  <span className="text-base font-medium">{option.label}</span>
-                </label>
-              ))}
-            </RadioGroup>
-            <div className="mt-12 mb-4 font-medium text-xl">{t('selectContext')}</div>
-            <Textarea
-              className="w-full min-h-32 text-base"
-              value={contextMode === 'default' ? defaultContextLong : customContext}
-              onChange={(e) => {
-                if (contextMode === 'custom') {
-                  setCustomContext(e.target.value);
-                  updateForm({ context: e.target.value });
-                }
-              }}
-              disabled={contextMode === 'default'}
-              placeholder="Enter the context for your scenario..."
-            />
-          </div>
+          {/* No context textarea on step 1, only CustomizeStep */}
           <CustomizeStep
             difficulty={formState.difficulty}
             selectedPersona={formState.persona}
@@ -211,27 +229,29 @@ export default function ConversationScenarioForm({
         </>
       )}
 
-      <div className="flex gap-4 w-full justify-center mt-8 mx-auto">
-        {currentStep !== 0 && (
+      <div className="fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] py-6 flex gap-4 justify-center">
+          {currentStep !== 0 && (
+            <Button
+              size="full"
+              variant="outline"
+              onClick={() => setStep(currentStep - 1)}
+              disabled={currentStep === 0}
+            >
+              <ArrowLeftIcon />
+              {tCommon('back')}
+            </Button>
+          )}
           <Button
             size="full"
-            variant="outline"
-            onClick={() => setStep(currentStep - 1)}
-            disabled={currentStep === 0}
+            onClick={submitForm}
+            variant={isSubmitting || !isStepValid(currentStep) ? 'disabled' : 'default'}
+            disabled={isSubmitting || !isStepValid(currentStep)}
           >
-            <ArrowLeftIcon />
-            {tCommon('back')}
+            {getButtonText()}
+            <ArrowRightIcon />
           </Button>
-        )}
-        <Button
-          size="full"
-          onClick={submitForm}
-          variant={isSubmitting || !isStepValid(currentStep) ? 'disabled' : 'default'}
-          disabled={isSubmitting || !isStepValid(currentStep)}
-        >
-          {getButtonText()}
-          <ArrowRightIcon />
-        </Button>
+        </div>
       </div>
     </div>
   );

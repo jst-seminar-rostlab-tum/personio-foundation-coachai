@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Persona } from '@/interfaces/Persona';
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 
 interface PersonaInfoProps {
@@ -32,24 +32,10 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
   const [traitsText, setTraitsText] = useState(selectedPersonaData.traits.join('\n'));
   const [focusText, setFocusText] = useState(selectedPersonaData.trainingFocus.join('\n'));
   const [personalityText, setPersonalityText] = useState(personaName);
-  const traitsRef = useRef<HTMLTextAreaElement>(null);
-  const focusRef = useRef<HTMLTextAreaElement>(null);
 
   // Shared style for locked/disabled state (matches context Textarea)
   const lockedClasses =
-    'border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content min-h-16 w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus:outline-none focus:ring-2 focus:ring-bw-40 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
-
-  useEffect(() => {
-    if (traitsRef.current && focusRef.current) {
-      traitsRef.current.style.height = 'auto';
-      focusRef.current.style.height = 'auto';
-      const traitsHeight = traitsRef.current.scrollHeight;
-      const focusHeight = focusRef.current.scrollHeight;
-      const maxHeight = Math.max(traitsHeight, focusHeight);
-      traitsRef.current.style.height = `${maxHeight}px`;
-      focusRef.current.style.height = `${maxHeight}px`;
-    }
-  }, [traitsText, focusText]);
+    'border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content min-h-[120px] w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus:outline-none focus:ring-2 focus:ring-bw-40 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
 
   // Helper to render bullet points for locked fields
   function renderBullets(textOrArray: string[] | string | undefined) {
@@ -88,16 +74,15 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
             if (contextMode === 'custom') setPersonalityText(event.target.value);
           }}
           disabled={contextMode === 'default'}
-          rows={1}
-          style={{ resize: 'none', minHeight: 'auto', height: 'auto', overflow: 'hidden' }}
+          rows={5}
+          style={{ resize: 'none' }}
         />
       </div>
       <div className="flex flex-col sm:flex-row gap-6 items-start justify-center">
         <div className="w-full sm:flex-1 min-w-0">
           <label className="mb-2 font-medium text-lg block">{t('behavioralTraits')}</label>
           <textarea
-            ref={traitsRef}
-            className={lockedClasses}
+            className={`${lockedClasses} resize-none`}
             value={
               contextMode === 'default' ? renderBullets(selectedPersonaData.traits) : traitsText
             }
@@ -111,8 +96,7 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
         <div className="w-full sm:flex-1 min-w-0">
           <label className="mb-2 font-medium text-lg block">{t('trainingFocus')}</label>
           <textarea
-            ref={focusRef}
-            className={lockedClasses}
+            className={`${lockedClasses} resize-none`}
             value={
               contextMode === 'default'
                 ? renderBullets(selectedPersonaData.trainingFocus)
