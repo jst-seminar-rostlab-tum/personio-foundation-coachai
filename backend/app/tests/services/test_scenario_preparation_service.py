@@ -2,12 +2,12 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from app.schemas.scenario_preparation import (
-    ChecklistRequest,
+    ChecklistCreate,
     KeyConcept,
-    KeyConceptRequest,
-    KeyConceptResponse,
+    KeyConceptsCreate,
+    KeyConceptsRead,
     ObjectivesCreate,
-    StringListResponse,
+    StringListRead,
 )
 from app.services.scenario_preparation.scenario_preparation_service import (
     generate_checklist,
@@ -20,7 +20,7 @@ class TestScenarioPreparationService(unittest.TestCase):
     @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_objectives_returns_correct_list(self, mock_llm: MagicMock) -> None:
         items = ['1. Prepare outline', '2. Rehearse responses', '3. Stay calm']
-        mock_llm.return_value = StringListResponse(items=items)
+        mock_llm.return_value = StringListRead(items=items)
 
         req = ObjectivesCreate(
             category='Performance Feedback',
@@ -40,9 +40,9 @@ class TestScenarioPreparationService(unittest.TestCase):
     @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_checklist_returns_correct_list(self, mock_llm: MagicMock) -> None:
         items = ['1. Review past performance', '2. Prepare documents', '3. Set up private room']
-        mock_llm.return_value = StringListResponse(items=items)
+        mock_llm.return_value = StringListRead(items=items)
 
-        req = ChecklistRequest(
+        req = ChecklistCreate(
             category='Performance Review',
             persona='**Name**: Sarah '
             '**Training Focus**: Addressing underperformance '
@@ -73,9 +73,9 @@ class TestScenarioPreparationService(unittest.TestCase):
             ),
         ]
 
-        mock_llm.return_value = KeyConceptResponse(items=mock_key_concept_response)
+        mock_llm.return_value = KeyConceptsRead(items=mock_key_concept_response)
 
-        req = KeyConceptRequest(
+        req = KeyConceptsCreate(
             category='Feedback',
             persona='**Name**: Jenny'
             '**Training Focus**: Deliver effective criticism'
@@ -92,7 +92,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         # Analogically for checklist and concepts
 
         # Set up llm mock and vector db prompt extension
-        mock_llm.return_value = StringListResponse(items=['Objective 1', 'Objective 2'])
+        mock_llm.return_value = StringListRead(items=['Objective 1', 'Objective 2'])
 
         req = ObjectivesCreate(
             category='Feedback',

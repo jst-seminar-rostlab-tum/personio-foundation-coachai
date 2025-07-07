@@ -2,7 +2,7 @@ from pydantic import RootModel
 
 from app.models.camel_case import CamelModel
 from app.models.language import LanguageCode
-from app.schemas.scenario_preparation import KeyConceptResponse, StringListResponse
+from app.schemas.scenario_preparation import KeyConceptsRead, StringListRead
 
 
 class ScenarioPrepSystemPromptSet(CamelModel):
@@ -12,9 +12,9 @@ class ScenarioPrepSystemPromptSet(CamelModel):
 
 
 class ScenarioPrepMockSet(CamelModel):
-    objectives: StringListResponse
-    checklist: StringListResponse
-    key_concepts: KeyConceptResponse
+    objectives: StringListRead
+    checklist: StringListRead
+    key_concepts: KeyConceptsRead
 
 
 class ScenarioPrepLanguageSettings(CamelModel):

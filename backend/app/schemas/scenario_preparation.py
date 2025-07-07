@@ -22,7 +22,7 @@ class ObjectivesCreate(CamelModel):
 
 
 # Schema for generating key concepts
-class KeyConceptRequest(CamelModel):
+class KeyConceptsCreate(CamelModel):
     category: str
     persona: str
     situational_facts: str
@@ -32,7 +32,7 @@ class KeyConceptRequest(CamelModel):
 
 
 # Schema for generating a checklist
-class ChecklistRequest(CamelModel):
+class ChecklistCreate(CamelModel):
     category: str
     persona: str
     situational_facts: str
@@ -43,7 +43,7 @@ class ChecklistRequest(CamelModel):
 
 
 # Response schema for a list of strings --> needed to return generated text in a given format
-class StringListResponse(CamelModel):
+class StringListRead(CamelModel):
     items: list[str]
 
 
@@ -53,7 +53,7 @@ class KeyConcept(CamelModel):
     value: str
 
 
-class KeyConceptResponse(CamelModel):
+class KeyConceptsRead(CamelModel):
     items: list[KeyConcept]
 
 

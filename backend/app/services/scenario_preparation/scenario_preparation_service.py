@@ -15,13 +15,13 @@ from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.schemas.scenario_prep_config import ScenarioPrepConfig
 from app.schemas.scenario_preparation import (
-    ChecklistRequest,
+    ChecklistCreate,
     KeyConcept,
-    KeyConceptRequest,
-    KeyConceptResponse,
+    KeyConceptsCreate,
+    KeyConceptsRead,
     ObjectivesCreate,
     ScenarioPreparationCreate,
-    StringListResponse,
+    StringListRead,
 )
 from app.services.vector_db_context_service import query_vector_db_and_prompt
 
@@ -44,13 +44,13 @@ def safe_generate_objectives(request: ObjectivesCreate, hr_docs_context: str = '
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-def safe_generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> list[str]:
+def safe_generate_checklist(request: ChecklistCreate, hr_docs_context: str = '') -> list[str]:
     return generate_checklist(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_key_concepts(
-    request: KeyConceptRequest, hr_docs_context: str = ''
+    request: KeyConceptsCreate, hr_docs_context: str = ''
 ) -> list[KeyConcept]:
     return generate_key_concept(request, hr_docs_context)
 
@@ -91,13 +91,13 @@ def generate_objectives(request: ObjectivesCreate, hr_docs_context: str = '') ->
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
-        output_model=StringListResponse,
+        output_model=StringListRead,
         mock_response=mock_response,
     )
     return result.items
 
 
-def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> list[str]:
+def generate_checklist(request: ChecklistCreate, hr_docs_context: str = '') -> list[str]:
     """
     Generate a preparation checklist using structured output from the LLM.
     """
@@ -130,21 +130,21 @@ def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> 
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
-        output_model=StringListResponse,
+        output_model=StringListRead,
         mock_response=mock_response,
     )
     return result.items
 
 
 def build_key_concept_prompt(
-    request: KeyConceptRequest, example: str, hr_docs_context: str = ''
+    request: KeyConceptsCreate, example: str, hr_docs_context: str = ''
 ) -> str:
     return f"""
 Based on the HR professionals conversation scenario below, 
 generate 3-4 key concepts for the conversation.
 
 Your output must strictly follow this JSON format representing 
-a Pydantic model `KeyConceptResponse`:
+a Pydantic model `KeyConceptsRead`:
 
 {{
   "items": [
@@ -183,7 +183,7 @@ Conversation scenario:
 """
 
 
-def generate_key_concept(request: KeyConceptRequest, hr_docs_context: str = '') -> list[KeyConcept]:
+def generate_key_concept(request: KeyConceptsCreate, hr_docs_context: str = '') -> list[KeyConcept]:
     lang = request.language_code
     settings = config.root[lang]
 
@@ -198,7 +198,7 @@ def generate_key_concept(request: KeyConceptRequest, hr_docs_context: str = '') 
         request_prompt=prompt,
         system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
-        output_model=KeyConceptResponse,
+        output_model=KeyConceptsRead,
         mock_response=mock_response,
     )
     return result.items
@@ -250,14 +250,14 @@ def generate_scenario_preparation(
             num_objectives=new_preparation.num_objectives,
             language_code=new_preparation.language_code,
         )
-        checklist_request = ChecklistRequest(
+        checklist_request = ChecklistCreate(
             category=new_preparation.category,
             persona=new_preparation.persona,
             situational_facts=new_preparation.situational_facts,
             num_checkpoints=new_preparation.num_checkpoints,
             language_code=new_preparation.language_code,
         )
-        key_concept_request = KeyConceptRequest(
+        key_concept_request = KeyConceptsCreate(
             category=new_preparation.category,
             persona=new_preparation.persona,
             situational_facts=new_preparation.situational_facts,
@@ -336,7 +336,7 @@ if __name__ == '__main__':
     objectives = generate_objectives(objective_request)
     print('Generated Objectives:', objectives)
 
-    checklist_request = ChecklistRequest(
+    checklist_request = ChecklistCreate(
         category='Performance Review',
         persona='**Name**: Sarah '
         '**Training Focus**: Addressing underperformance '
@@ -348,7 +348,7 @@ if __name__ == '__main__':
     checklist = generate_checklist(checklist_request)
     print('Generated Checklist:', checklist)
 
-    key_concept_request = KeyConceptRequest(
+    key_concept_request = KeyConceptsCreate(
         category='Performance Feedback',
         persona='**Name**: Jenny'
         '**Training Focus**: Giving constructive criticism '
