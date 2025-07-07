@@ -63,9 +63,9 @@ def prepare_feedback_requests(
 
 def get_hr_docs_context(
     recommendations_request: FeedbackRequest,
-) -> str:
+) -> tuple[str, list[str]]:
     """Generate HR docs context using the vector DB."""
-    hr_docs_context, doc_names = query_vector_db_and_prompt(
+    return query_vector_db_and_prompt(
         session_context=[
             recommendations_request.category,
             recommendations_request.persona,
@@ -76,8 +76,6 @@ def get_hr_docs_context(
         ],
         generated_object='output',
     )
-    # hr_docs_context is used for LLM prompt; doc_names is available for future use
-    return hr_docs_context
 
 
 class FeedbackGenerationResult(CamelModel):
@@ -91,12 +89,14 @@ class FeedbackGenerationResult(CamelModel):
     overall_score: float = 0.0
     has_error: bool = False
     full_audio_filename: str = ''
+    document_names: list[str] = Field(default_factory=list)
 
 
 def generate_feedback_components(
     feedback_request: FeedbackRequest,
     goals_request: GoalsAchievementRequest,
     hr_docs_context: str,
+    document_names: list[str],
     conversation: ConversationScenarioWithTranscript,
     scoring_service: ScoringService,
     session_turn_service: SessionTurnService,
@@ -172,6 +172,7 @@ def generate_feedback_components(
         scores_json=scores_json,
         overall_score=overall_score,
         full_audio_filename=output_blob_name or '',
+        document_names=document_names,
         has_error=has_error,
     )
 
@@ -227,6 +228,7 @@ def save_session_feedback(
         overall_score=feedback_generation_result.overall_score,
         transcript_uri='',
         full_audio_filename=feedback_generation_result.full_audio_filename,
+        document_names=feedback_generation_result.document_names,
         speak_time_percent=0,
         questions_asked=0,
         session_length_s=0,
@@ -287,7 +289,7 @@ def generate_and_store_feedback(
         session_turn_service = SessionTurnService(db_session)
 
     goals_request, recommendations_request = prepare_feedback_requests(feedback_request)
-    hr_docs_context = get_hr_docs_context(recommendations_request)
+    hr_docs_context, document_names = get_hr_docs_context(recommendations_request)
 
     conversation = get_conversation_data(db_session, session_id)
 
@@ -298,6 +300,7 @@ def generate_and_store_feedback(
             feedback_request=feedback_request,
             goals_request=goals_request,
             hr_docs_context=hr_docs_context,
+            document_names=document_names,
             conversation=conversation,
             scoring_service=scoring_service,
             session_turn_service=session_turn_service,
