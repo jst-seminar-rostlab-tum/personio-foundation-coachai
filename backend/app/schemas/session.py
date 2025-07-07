@@ -24,7 +24,7 @@ class SessionUpdate(CamelModel):
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
-    status: Optional[SessionStatus] = None
+    status: SessionStatus | None = None
 
 
 # Schema for reading Session data
