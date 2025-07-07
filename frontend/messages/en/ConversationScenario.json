@@ -38,101 +38,105 @@
     "title": "Customize Other Party",
     "persona": {
       "title": "Choose a Persona",
-      "about": "About",
+      "about": {
+        "personality": "Personality"
+      },
       "behavioralTraits": "Behavioral Traits",
       "trainingFocus": "Training Focus",
       "personas": {
         "positive": {
+          "name": "Positive Pam",
+          "personality": "Upbeat, eager to please, growth-oriented, avoids negativity",
           "traits": [
-            "Optimistic and enthusiastic",
-            "Encouraging and supportive",
-            "Sees opportunities in challenges",
-            "Builds positive relationships",
-            "Naturally motivates others"
+            "Overly agreeable — avoids conflict or disagreement",
+            "Deflects criticism with enthusiasm (“I'll fix it!”)",
+            "Often hides stress or burnout behind optimism",
+            "Pushes for promotions or more responsibility before ready",
+            "Uses toxic positivity to dismiss serious concerns"
           ],
           "trainingFocus": [
-            "Maintain your positive energy",
-            "Channel enthusiasm constructively",
-            "Balance optimism with realism",
-            "Use your energy to inspire others",
-            "Leverage your natural motivation"
+            "Delivering constructive feedback without sugarcoating",
+            "Encouraging honest reflection and accountability",
+            "Identifying signs of masked stress or burnout",
+            "Setting realistic growth expectations",
+            "Navigating emotionally complex conversations with high performers"
           ],
-          "name": "Positive Pam",
           "imageUri": "/images/personas/persona-positive.png"
         },
         "angry": {
+          "name": "Angry Alex",
+          "personality": "Confrontational, defensive, emotionally volatile",
           "traits": [
-            "Frustrated and defensive",
-            "May interrupt or raise voice",
-            "Focuses on problems and blame",
-            "Resists suggestions",
-            "Emotionally charged reactions"
+            "Assumes bad intent",
+            "Easily offended, especially with criticism",
+            "Challenges authority or decisions",
+            "Might raise voice"
           ],
           "trainingFocus": [
-            "Stay calm and composed",
-            "Acknowledge their feelings",
-            "Don't escalate conflict",
-            "Focus on solutions, not blame",
-            "Give them space to vent"
+            "De-escalation techniques",
+            "Delivering negative feedback calmly",
+            "Maintaining control in heated situations",
+            "Validating emotions without losing authority"
           ],
-          "name": "Angry Alex",
           "imageUri": "/images/personas/persona-angry.png"
         },
         "shy": {
+          "name": "Shy Sandra",
+          "personality": "Quiet, reserved, conflict-avoidant, anxious about saying the wrong thing",
           "traits": [
-            "Quiet and reserved",
-            "Hesitant to share opinions",
-            "Prefers listening to speaking",
-            "May avoid eye contact",
-            "Needs time to reflect"
+            "Speaks in a soft, hesitant voice with frequent pauses",
+            "Uses filler words ('um...', 'I guess...', 'maybe...') and trails off mid-sentence",
+            "Agrees verbally ('yeah... sure... okay') even when uncertain or uncomfortable",
+            "Avoids asserting opinions or asking questions",
+            "Long silences when asked direct or emotional questions",
+            "May apologize unnecessarily or downplay her own contributions"
           ],
           "trainingFocus": [
-            "Create a safe, non-judgmental space",
-            "Ask open-ended questions",
-            "Give them time to answer",
-            "Value their contributions",
-            "Build trust gradually"
+            "Encouraging open and honest communication through tone and phrasing",
+            "Actively checking for true understanding and comfort (not just verbal agreement)",
+            "Using silence constructively without rushing to fill it",
+            "Creating psychological safety so Sandra feels safe to speak up",
+            "Practicing empathetic, patient listening",
+            "Learning to gently draw out insights from passive participants"
           ],
-          "name": "Shy Sarah",
           "imageUri": "/images/personas/persona-shy.png"
         },
         "casual": {
+          "name": "Casual Candice",
+          "personality": "Laid-back, informal, friendly but sometimes unfocused",
           "traits": [
-            "Relaxed and informal",
-            "May use casual language",
-            "Prefers friendly atmosphere",
-            "Values personal connection",
-            "Less focused on formalities"
+            "Uses humor or casual language",
+            "May not take feedback seriously",
+            "Tends to deflect or joke under pressure",
+            "Values flexibility over structure"
           ],
           "trainingFocus": [
-            "Match their casual tone appropriately",
-            "Build rapport through conversation",
-            "Keep discussions friendly but professional",
-            "Use relatable examples",
-            "Maintain boundaries while being approachable"
+            "Redirecting conversations professionally",
+            "Setting boundaries and expectations",
+            "Addressing underperformance without being overly formal",
+            "Keeping focus during relaxed interactions"
           ],
-          "name": "Casual Candice",
           "imageUri": "/images/personas/persona-casual.png"
         },
         "sad": {
+          "name": "Low-Energy Leo",
+          "personality": "Withdrawn, low energy, emotionally distant",
           "traits": [
-            "Withdrawn and quiet",
-            "May appear disengaged",
-            "Focuses on negative aspects",
-            "Low energy and motivation",
-            "Needs emotional support"
+            "Flat tone, minimal expressions",
+            "Expresses hopelessness or dissatisfaction",
+            "May mention burnout or feeling undervalued",
+            "Appears disengaged or demotivated"
           ],
           "trainingFocus": [
-            "Show empathy and understanding",
-            "Offer emotional support",
-            "Help them see positive aspects",
-            "Be patient with their pace",
-            "Encourage small steps forward"
+            "Recognizing signs of mental health struggles",
+            "Offering support without overstepping",
+            "Holding space for emotion while staying professional",
+            "Discussing performance or well-being with care"
           ],
-          "name": "Sad Steve",
           "imageUri": "/images/personas/persona-sad.png"
         }
-      }
+      },
+      "aboutLabel": "About"
     },
     "difficulty": {
       "title": "Difficulty Level",
@@ -157,6 +161,10 @@
         "medium": "Medium",
         "complex": "Complex"
       }
+    },
+    "context": {
+      "default": "Default Context",
+      "custom": "Custom Context"
     }
   },
   "categories": {
@@ -165,7 +173,7 @@
       "iconUri": "/icons/category-giving_feedback.svg",
       "description": "Give constructive feedback to help others improve.",
       "defaultContext": "One-on-one meeting with a team member.",
-      "defaultContextLong": "You are preparing for a one-on-one meeting with a team member who recently completed a major project. Your goal is to provide constructive feedback on their performance, highlighting both strengths and areas for improvement. The conversation should be supportive, specific, and actionable, helping the team member grow and feel motivated to improve. Consider the team member's perspective and be ready to address any questions or concerns they may have about your feedback.",
+      "defaultContextLong": "Missed Deadlines\n- Quarterly partner-impact report arrived 5 days late despite reminders.\n- Field-visit summary incomplete; colleague had to rewrite it under pressure.\nAttendance\n- In the last 2 months, the other party skipped 4 of 8 team check-ins without notice.\n- When present, often keeps camera off and engages minimally.\nPeer Feedback\n- Two colleagues needed multiple nudges for inputs.\n- One now avoids assigning shared tasks to the other party due to reliability concerns.\nPrior Support\n- Six weeks ago, the manager set clear expectations and a prioritization plan.\n- Calendar tips and admin help were offered; little improvement seen.\n\nSilver Lining\nThe other party shows real creativity in outreach planning and still has growth potential.",
       "defaultGoal": "Provide constructive feedback effectively.",
       "defaultOtherParty": "Team member"
     },
@@ -174,7 +182,7 @@
       "iconUri": "/icons/category-performance_reviews.svg",
       "description": "Motivate and guide with effective reviews.",
       "defaultContext": "Formal performance review meeting.",
-      "defaultContextLong": "You are conducting a formal performance review with an employee at the end of the quarter. The purpose of this meeting is to discuss the employee's achievements, areas for development, and set goals for the next period. The conversation should be balanced, focusing on both accomplishments and opportunities for growth. Be prepared to provide examples, listen to the employee's self-assessment, and collaboratively develop an action plan for future success.",
+      "defaultContextLong": "Positive Performance\n- The other party developed two successful community outreach pilots.\n- Partners often compliment the other party's creativity and energy.\n\nAreas for Improvement\n- The other party sometimes misses internal deadlines for reports and data submissions.\n- Team members report the other party can be hard to reach on short notice.\n\nReview Outcome\n- Overall rating is 'Meets Expectations' — strong external impact but inconsistency in internal follow-through prevented 'Exceeds Expectations'.\n- A standard 3% merit raise will be applied, same as most peers.\n\nOrganizational Context\n- The NGO emphasizes reliability to secure renewed donor funding.\n- This review cycle is slightly stricter due to new funder accountability requirements.\n\nSilver Lining\nThe manager believes the other party can reach 'Exceeds Expectations' next year with more consistent internal coordination.",
       "defaultGoal": "Evaluate and discuss employee performance.",
       "defaultOtherParty": "Employee"
     },
@@ -183,7 +191,7 @@
       "iconUri": "/icons/category-conflict_resolution.svg",
       "description": "Resolve conflicts and build a positive team.",
       "defaultContext": "Conflict resolution meeting between team members.",
-      "defaultContextLong": "You are facilitating a conflict resolution session between two team members who have been experiencing ongoing disagreements. Your objective is to create a safe space for both parties to express their perspectives, identify the root causes of the conflict, and work together to find mutually acceptable solutions. The conversation should be respectful, empathetic, and focused on rebuilding trust and collaboration within the team.",
+      "defaultContextLong": "Conflict Background\n- The other party and Jordan collaborated on a partner event that went off-track due to miscommunication.\n- The other party feels Jordan oversteps boundaries and takes credit for ideas.\n- Jordan has privately complained that the other party misses deadlines and ignores messages.\n\nPrior Attempts\n- Two team meetings were held to clarify roles; tension persists.\n- The other party agreed to share updates more frequently; Jordan promised to check before redoing the other party's work.\n\nCurrent Impact\n- Other teammates feel awkward and avoid putting the other party and Jordan on the same tasks.\n- The manager is under pressure to ensure team cohesion before a major donor site visit.\n\nSilver Lining\nBoth the other party and Jordan care deeply about partner success and have complementary skills when working well together.",
       "defaultGoal": "Resolve conflicts and improve team dynamics.",
       "defaultOtherParty": "Team members"
     },
@@ -192,7 +200,7 @@
       "iconUri": "/icons/category-salary_discussions.svg",
       "description": "Prepare for open salary conversations.",
       "defaultContext": "Salary negotiation meeting.",
-      "defaultContextLong": "You are entering a salary negotiation meeting with your employer to discuss your compensation package. The goal is to present your case for a salary increase, supported by your recent achievements, market research, and the value you bring to the organization. The conversation should be professional, assertive, and open to compromise, aiming to reach a mutually beneficial agreement while maintaining a positive working relationship.",
+      "defaultContextLong": "Current Salary\n- The other party earns slightly below the midpoint for Program Officers in this NGO.\n- Last annual raise was 4%.\n\nPerformance Context\n- Solid on creative outreach and community partnerships.\n- Mixed record on deadlines and internal coordination.\n\nRecent Request\n- Last week, the other party emailed HR asking for a 10% raise, citing cost of living and workload growth.\n\nOrganizational Context\n- The NGO faces tight budgets due to a new funder's spending cap.\n- Managers can approve up to 3% merit raise without director sign-off.\n\nSilver Lining\nPeers respect the other party's community engagement; manager has praised initiative on outreach campaigns.",
       "defaultGoal": "Reach a mutually beneficial agreement on salary.",
       "defaultOtherParty": "Employer"
     }
@@ -210,5 +218,5 @@
   "difficultyTitle": "Difficulty",
   "contextDefault": "Default Context",
   "contextCustom": "Custom Context",
-  "selectContext": "Select Context"
+  "selectContext": "Situational Facts (Non-Debatable)"
 }

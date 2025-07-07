@@ -10,20 +10,24 @@ interface PersonaInfoProps {
 
 export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
   const t = useTranslations('ConversationScenario.customize.persona');
+  const tAbout = useTranslations('ConversationScenario.customize.persona.about');
   const { contextMode } = useConversationScenarioStore();
 
   const getPersonaData = (personaId: string) => {
-    if (!personaId || personaId.trim() === '') return { traits: [], trainingFocus: [] };
+    if (!personaId || personaId.trim() === '')
+      return { traits: [], trainingFocus: [], personality: '' };
     try {
       const traits = t.raw(`personas.${personaId}.traits`) as string[];
       const trainingFocus = t.raw(`personas.${personaId}.trainingFocus`) as string[];
-      return { traits, trainingFocus };
+      const personality = t.raw(`personas.${personaId}.personality`) as string;
+      return { traits, trainingFocus, personality };
     } catch {
-      return { traits: [], trainingFocus: [] };
+      return { traits: [], trainingFocus: [], personality: '' };
     }
   };
 
-  const selectedPersonaData = getPersonaData(selectedPersona);
+  const selectedPersonaData: { traits: string[]; trainingFocus: string[]; personality?: string } =
+    getPersonaData(selectedPersona);
   const personaName = personas.find((p) => p.id === selectedPersona)?.name || selectedPersona;
   const [traitsText, setTraitsText] = useState(selectedPersonaData.traits.join('\n'));
   const [focusText, setFocusText] = useState(selectedPersonaData.trainingFocus.join('\n'));
@@ -47,6 +51,21 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
     }
   }, [traitsText, focusText]);
 
+  // Helper to render bullet points for locked fields
+  function renderBullets(textOrArray: string[] | string | undefined) {
+    if (Array.isArray(textOrArray)) {
+      return textOrArray.map((item) => `• ${item}`).join('\n');
+    }
+    if (typeof textOrArray === 'string') {
+      // Split comma-separated string for personality
+      return textOrArray
+        .split(',')
+        .map((s) => `• ${s.trim()}`)
+        .join('\n');
+    }
+    return '';
+  }
+
   if (!selectedPersona || selectedPersona.trim() === '' || !selectedPersonaData.traits.length) {
     return null;
   }
@@ -54,18 +73,23 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
   return (
     <div className="mb-12 border border-bw-20 rounded-2xl p-6">
       <div className="text-xl text-font-dark text-left mb-8">
-        {t('about')}: {personaName}
+        {t('aboutLabel')}: {personaName}
       </div>
       <div className="mb-6">
-        <label className="mb-2 font-medium text-lg block">Personality</label>
-        <input
-          type="text"
+        <label className="mb-2 font-medium text-lg block">{tAbout('personality')}</label>
+        <textarea
           className={lockedClasses}
-          value={contextMode === 'default' ? personaName : personalityText}
+          value={
+            contextMode === 'default'
+              ? renderBullets(selectedPersonaData?.personality || personaName)
+              : personalityText
+          }
           onChange={(event) => {
             if (contextMode === 'custom') setPersonalityText(event.target.value);
           }}
           disabled={contextMode === 'default'}
+          rows={1}
+          style={{ resize: 'none', minHeight: 'auto', height: 'auto', overflow: 'hidden' }}
         />
       </div>
       <div className="flex flex-col sm:flex-row gap-6 items-start justify-center">
@@ -74,7 +98,9 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
           <textarea
             ref={traitsRef}
             className={lockedClasses}
-            value={contextMode === 'default' ? selectedPersonaData.traits.join('\n') : traitsText}
+            value={
+              contextMode === 'default' ? renderBullets(selectedPersonaData.traits) : traitsText
+            }
             onChange={(event) => {
               if (contextMode === 'custom') setTraitsText(event.target.value);
             }}
@@ -88,7 +114,9 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
             ref={focusRef}
             className={lockedClasses}
             value={
-              contextMode === 'default' ? selectedPersonaData.trainingFocus.join('\n') : focusText
+              contextMode === 'default'
+                ? renderBullets(selectedPersonaData.trainingFocus)
+                : focusText
             }
             onChange={(event) => {
               if (contextMode === 'custom') setFocusText(event.target.value);

@@ -31,96 +31,105 @@
     "title": "Andere Partei anpassen",
     "persona": {
       "title": "Wählen Sie eine Persona",
-      "about": "Über",
+      "about": {
+        "personality": "Persönlichkeit"
+      },
       "behavioralTraits": "Verhaltensmerkmale",
       "trainingFocus": "Trainingsfokus",
       "personas": {
         "positive": {
+          "name": "Positive Paula",
+          "personality": "Optimistisch, bemüht es allen recht zu machen, wachstumsorientiert, vermeidet Negativität",
           "traits": [
-            "Optimistisch und enthusiastisch",
-            "Ermutigend und unterstützend",
-            "Sieht Chancen in Herausforderungen",
-            "Baut positive Beziehungen auf",
-            "Motiviert andere natürlich"
+            "Übermäßig zustimmend – vermeidet Konflikte oder Meinungsverschiedenheiten",
+            "Weicht Kritik mit Enthusiasmus aus („Kein Problem, ich mach das sofort!“)",
+            "Versteckt Stress oder Überlastung hinter guter Laune",
+            "Drängt auf Beförderungen oder mehr Verantwortung, bevor sie wirklich bereit ist",
+            "Nutzt übertriebene Positivität, um ernste Themen abzutun"
           ],
           "trainingFocus": [
-            "Ihre positive Energie aufrechterhalten",
-            "Enthusiasmus konstruktiv kanalisieren",
-            "Optimismus mit Realismus ausbalancieren",
-            "Ihre Energie nutzen, um andere zu inspirieren",
-            "Ihre natürliche Motivation nutzen"
+            "Konstruktives Feedback geben, ohne es zu beschönigen",
+            "Ehrliche Selbstreflexion und Verantwortungsübernahme fördern",
+            "Anzeichen von verstecktem Stress oder Burnout erkennen",
+            "Realistische Wachstumsperspektiven aufzeigen",
+            "Schwierige Gespräche mit leistungsstarken, ehrgeizigen Mitarbeitenden führen"
           ],
-          "name": "Positive Pam"
+          "imageUri": "/images/personas/persona-positive.png"
         },
         "angry": {
+          "name": "Lauter Lukas",
+          "personality": "Konfrontativ, defensiv, emotional instabil",
           "traits": [
-            "Frustriert und defensiv",
-            "Kann unterbrechen oder die Stimme erheben",
-            "Fokussiert sich auf Probleme und Schuld",
-            "Widersteht Vorschlägen",
-            "Emotional aufgeladene Reaktionen"
+            "Unterstellt anderen häufig schlechte Absichten",
+            "Fühlt sich schnell angegriffen, besonders bei Kritik",
+            "Stellt Autoritäten oder Entscheidungen offen infrage",
+            "Neigt dazu, laut zu werden oder impulsiv zu reagieren"
           ],
           "trainingFocus": [
-            "Ruhig und gelassen bleiben",
-            "Ihre Gefühle anerkennen",
-            "Konflikte nicht eskalieren lassen",
-            "Auf Lösungen, nicht auf Schuld fokussieren",
-            "Ihnen Raum zum Auslassen geben"
+            "Deeskalationstechniken effektiv einsetzen",
+            "Negative Rückmeldungen ruhig und klar kommunizieren",
+            "In hitzigen Situationen souverän bleiben",
+            "Emotionen anerkennen, ohne die eigene Autorität zu verlieren"
           ],
-          "name": "Angry Alex"
+          "imageUri": "/images/personas/persona-angry.png"
         },
         "shy": {
+          "name": "Schüchterne Sandra",
+          "personality": "Ruhig, zurückhaltend, konfliktscheu, ängstlich davor, etwas Falsches zu sagen",
           "traits": [
-            "Leise und zurückhaltend",
-            "Zögert, Meinungen zu teilen",
-            "Zieht Zuhören dem Sprechen vor",
-            "Kann Augenkontakt vermeiden",
-            "Braucht Zeit zum Nachdenken"
+            "Spricht leise, zögerlich und macht häufig Pausen",
+            "Verwendet viele Füllwörter („ähm...“, „ich glaube...“, „vielleicht...“) und bricht Sätze oft ab",
+            "Stimmt verbal zu („ja... okay... passt schon“), auch wenn sie sich unwohl oder unsicher fühlt",
+            "Vermeidet es, Meinungen zu äußern oder Fragen zu stellen",
+            "Längere Gesprächspausen bei direkten oder emotionalen Fragen",
+            "Entschuldigt sich oft oder spielt ihre eigenen Beiträge herunter"
           ],
           "trainingFocus": [
-            "Einen sicheren, wertungsfreien Raum schaffen",
-            "Offene Fragen stellen",
-            "Ihnen Zeit zum Antworten geben",
-            "Ihre Beiträge wertschätzen",
-            "Vertrauen schrittweise aufbauen"
+            "Offene und ehrliche Kommunikation durch Tonfall und Gesprächsführung fördern",
+            "Aktives Nachfragen, ob echtes Verständnis und Wohlbefinden vorhanden sind (nicht nur Zustimmung)",
+            "Pausen gezielt einsetzen, ohne sie unangenehm zu überbrücken",
+            "Psychologische Sicherheit schaffen, damit Sandra sich traut zu sprechen",
+            "Einfühlsames und geduldiges Zuhören trainieren",
+            "Strategien lernen, um stille oder zurückhaltende Mitarbeitende behutsam einzubinden"
           ],
-          "name": "Shy Sarah"
+          "imageUri": "/images/personas/persona-shy.png"
         },
         "casual": {
+          "name": "Coole Carla",
+          "personality": "Entspannt, locker, freundlich – aber manchmal unkonzentriert",
           "traits": [
-            "Entspannt und informell",
-            "Kann lockere Sprache verwenden",
-            "Bevorzugt freundliche Atmosphäre",
-            "Schätzt persönliche Verbindung",
-            "Weniger fokussiert auf Formalitäten"
+            "Verwendet Humor oder informelle Sprache",
+            "Nimmt Feedback möglicherweise nicht ernst",
+            "Weicht Druck durch Witze oder Ablenkung aus",
+            "Schätzt Flexibilität mehr als klare Strukturen"
           ],
           "trainingFocus": [
-            "Ihren lockeren Ton angemessen anpassen",
-            "Rapport durch Gespräch aufbauen",
-            "Diskussionen freundlich aber professionell halten",
-            "Verständliche Beispiele verwenden",
-            "Grenzen wahren, aber zugänglich bleiben"
+            "Gespräche professionell lenken",
+            "Grenzen und Erwartungen klar definieren",
+            "Leistungsschwächen ansprechen, ohne übermäßig formell zu sein",
+            "Den Fokus in lockeren Gesprächssituationen behalten"
           ],
-          "name": "Casual Candice"
+          "imageUri": "/images/personas/persona-casual.png"
         },
         "sad": {
+          "name": "Müder Marius",
+          "personality": "Zurückgezogen, energielos, emotional distanziert",
           "traits": [
-            "Zurückgezogen und still",
-            "Kann desinteressiert wirken",
-            "Fokussiert sich auf negative Aspekte",
-            "Niedrige Energie und Motivation",
-            "Braucht emotionale Unterstützung"
+            "Spricht mit flacher Stimme und wenig Ausdruck",
+            "Äußert Unzufriedenheit oder Hoffnungslosigkeit",
+            "Erwähnt möglicherweise Erschöpfung, Überlastung oder das Gefühl, nicht wertgeschätzt zu werden",
+            "Wirkt unbeteiligt, demotiviert oder innerlich gekündigt"
           ],
           "trainingFocus": [
-            "Empathie und Verständnis zeigen",
-            "Emotionale Unterstützung anbieten",
-            "Ihnen helfen, positive Aspekte zu sehen",
-            "Geduldig mit ihrem Tempo sein",
-            "Kleine Schritte nach vorne ermutigen"
+            "Anzeichen für mentale oder emotionale Belastungen erkennen",
+            "Unterstützung anbieten, ohne Grenzen zu überschreiten",
+            "Raum für Emotionen schaffen und dabei professionell bleiben",
+            "Gespräche über Leistung oder Wohlbefinden einfühlsam führen"
           ],
-          "name": "Sad Steve"
+          "imageUri": "/images/personas/persona-sad.png"
         }
-      }
+      },
+      "aboutLabel": "Über"
     },
     "difficulty": {
       "title": "Schwierigkeitsgrad",
@@ -145,42 +154,46 @@
         "medium": "Mittel",
         "complex": "Komplex"
       }
+    },
+    "context": {
+      "default": "Standardkontext",
+      "custom": "Individueller Kontext"
     }
   },
   "categories": {
     "givingFeedback": {
       "name": "Feedback geben",
       "iconUri": "/icons/category-giving_feedback.svg",
-      "description": "Fördern Sie Entwicklung durch klares, konstruktives Feedback in jeder Situation.",
+      "description": "Konstruktives Feedback geben, um anderen zu helfen, sich zu verbessern.",
       "defaultContext": "Einzelgespräch mit einem Teammitglied.",
-      "defaultContextLong": "Sie bereiten sich auf ein Einzelgespräch mit einem Teammitglied vor, das kürzlich ein wichtiges Projekt abgeschlossen hat. Ihr Ziel ist es, konstruktives Feedback zu geben, sowohl Stärken als auch Verbesserungsbereiche klar und unterstützend anzusprechen. Das Gespräch soll motivierend, konkret und umsetzbar sein, damit sich das Teammitglied weiterentwickeln kann. Versetzen Sie sich in die Lage des Teammitglieds und seien Sie bereit, auf Rückfragen oder Bedenken einzugehen.",
+      "defaultContextLong": "Verpasste Deadlines\n- Quartalsbericht über Partnerauswirkungen kam trotz Erinnerungen 5 Tage zu spät.\n- Zusammenfassung des Vor-Ort-Besuchs unvollständig; Kollege musste sie unter Druck neu schreiben.\nAnwesenheit\n- In den letzten 2 Monaten hat die andere Partei 4 von 8 Team-Check-ins ohne Ankündigung versäumt.\n- Bei Anwesenheit oft Kamera aus und minimales Engagement.\nPeer-Feedback\n- Zwei Kollegen benötigten mehrere Erinnerungen für Inputs.\n- Einer vermeidet jetzt, der anderen Partei gemeinsame Aufgaben zuzuweisen aufgrund von Zuverlässigkeitsbedenken.\nVorherige Unterstützung\n- Vor sechs Wochen setzte der Manager klare Erwartungen und einen Priorisierungsplan.\n- Kalender-Tipps und Admin-Hilfe wurden angeboten; wenig Verbesserung sichtbar.\n\nSilberstreif am Horizont\nDie andere Partei zeigt echte Kreativität in der Outreach-Planung und hat noch Wachstumspotenzial.",
       "defaultGoal": "Konstruktives Feedback effektiv geben.",
       "defaultOtherParty": "Teammitglied"
     },
     "performanceReviews": {
-      "name": "Leistungsbeurteilungen",
+      "name": "Leistungsbewertungen",
       "iconUri": "/icons/category-performance_reviews.svg",
-      "description": "Motivieren und begleiten Sie Mitarbeitende mit wertschätzenden Beurteilungen.",
-      "defaultContext": "Formelles Gespräch zur Leistungsbeurteilung.",
-      "defaultContextLong": "Sie führen ein formelles Beurteilungsgespräch mit einer Mitarbeiterin oder einem Mitarbeiter zum Quartalsende. Ziel ist es, Erfolge, Entwicklungsfelder und neue Ziele gemeinsam zu besprechen. Das Gespräch sollte ausgewogen sein und sowohl Leistungen als auch Entwicklungsmöglichkeiten thematisieren. Bereiten Sie Beispiele vor, hören Sie die Selbsteinschätzung an und entwickeln Sie gemeinsam einen Aktionsplan für die Zukunft.",
+      "description": "Motivieren und mit effektiven Bewertungen führen.",
+      "defaultContext": "Formales Leistungsbewertungsgespräch.",
+      "defaultContextLong": "Positive Leistung\n- Die andere Partei hat zwei erfolgreiche Community-Outreach-Pilotprojekte entwickelt.\n- Partner loben oft die Kreativität und Energie der anderen Partei.\n\nVerbesserungsbereiche\n- Die andere Partei verpasst manchmal interne Deadlines für Berichte und Dateneingaben.\n- Teammitglieder berichten, dass die andere Partei kurzfristig schwer erreichbar ist.\n\nBewertungsergebnis\n- Gesamtbewertung ist 'Erfüllt Erwartungen' — starke externe Wirkung, aber Inkonsistenz bei interner Nacharbeit verhinderte 'Übertrifft Erwartungen'.\n- Eine standardmäßige 3% Leistungszulage wird angewendet, gleich wie bei den meisten Kollegen.\n\nOrganisationskontext\n- Die NGO betont Zuverlässigkeit, um erneute Geldgeber-Finanzierung zu sichern.\n- Dieser Bewertungszyklus ist aufgrund neuer Geldgeber-Verantwortlichkeitsanforderungen etwas strenger.\n\nSilberstreif am Horizont\nDer Manager glaubt, dass die andere Partei nächstes Jahr 'Übertrifft Erwartungen' erreichen kann mit konsistenterer interner Koordination.",
       "defaultGoal": "Leistung von Mitarbeitern evaluieren und besprechen.",
       "defaultOtherParty": "Mitarbeiter/in"
     },
     "conflictResolution": {
       "name": "Konfliktlösung",
       "iconUri": "/icons/category-conflict_resolution.svg",
-      "description": "Lernen Sie, Konflikte zu lösen und ein positives Teamklima zu schaffen.",
+      "description": "Konflikte lösen und ein positives Team aufbauen.",
       "defaultContext": "Konfliktlösungsgespräch zwischen Teammitgliedern.",
-      "defaultContextLong": "Sie moderieren eine Konfliktlösungssitzung zwischen zwei Teammitgliedern, die anhaltende Meinungsverschiedenheiten haben. Ihr Ziel ist es, einen sicheren Rahmen zu schaffen, in dem beide Seiten ihre Sichtweisen schildern, Ursachen des Konflikts identifizieren und gemeinsam Lösungen erarbeiten können. Das Gespräch sollte respektvoll, empathisch und auf den Wiederaufbau von Vertrauen und Zusammenarbeit ausgerichtet sein.",
+      "defaultContextLong": "Konflikthintergrund\n- Die andere Partei und Jordan haben bei einem Partner-Event zusammengearbeitet, das aufgrund von Missverständnissen aus dem Ruder lief.\n- Die andere Partei fühlt, dass Jordan Grenzen überschreitet und sich Ideen aneignet.\n- Jordan hat sich privat beschwert, dass die andere Partei Deadlines verpasst und Nachrichten ignoriert.\n\nVorherige Versuche\n- Zwei Team-Meetings wurden abgehalten, um Rollen zu klären; Spannungen bestehen weiterhin.\n- Die andere Partei stimmte zu, Updates häufiger zu teilen; Jordan versprach, vor dem Überarbeiten der Arbeit der anderen Partei nachzufragen.\n\nAktuelle Auswirkungen\n- Andere Teammitglieder fühlen sich unwohl und vermeiden es, die andere Partei und Jordan auf dieselben Aufgaben zu setzen.\n- Der Manager steht unter Druck, Team-Zusammenhalt vor einem wichtigen Geldgeber-Besuch sicherzustellen.\n\nSilberstreif am Horizont\nBeide, die andere Partei und Jordan, kümmern sich tief um Partner-Erfolg und haben komplementäre Fähigkeiten, wenn sie gut zusammenarbeiten.",
       "defaultGoal": "Konflikte lösen und Teamdynamik verbessern.",
       "defaultOtherParty": "Teammitglieder"
     },
     "salaryDiscussions": {
       "name": "Gehaltsgespräche",
       "iconUri": "/icons/category-salary_discussions.svg",
-      "description": "Bereiten Sie sich auf offene, selbstbewusste und erfolgreiche Gehaltsgespräche vor.",
+      "description": "Sich auf offene Gehaltsgespräche vorbereiten.",
       "defaultContext": "Gehaltsverhandlungsgespräch.",
-      "defaultContextLong": "Sie gehen in ein Gehaltsverhandlungsgespräch mit Ihrem Arbeitgeber, um über Ihr Vergütungspaket zu sprechen. Ziel ist es, Ihre Argumente für eine Gehaltserhöhung anhand Ihrer Leistungen, Marktvergleiche und Ihres Beitrags zum Unternehmen überzeugend darzulegen. Das Gespräch sollte professionell, selbstbewusst und kompromissbereit geführt werden, um eine für beide Seiten vorteilhafte Einigung zu erzielen und die Zusammenarbeit positiv zu gestalten.",
+      "defaultContextLong": "Aktuelles Gehalt\n- Die andere Partei verdient leicht unter dem Mittelwert für Programmbeauftragte in dieser NGO.\n- Letzte jährliche Gehaltserhöhung war 4%.\n\nLeistungskontext\n- Solide bei kreativem Outreach und Community-Partnerschaften.\n- Gemischte Bilanz bei Deadlines und interner Koordination.\n\nJüngste Anfrage\n- Letzte Woche hat die andere Partei HR eine E-Mail geschickt und um 10% Gehaltserhöhung gebeten, mit Verweis auf Lebenshaltungskosten und Arbeitsbelastungswachstum.\n\nOrganisationskontext\n- Die NGO steht vor knappen Budgets aufgrund der Ausgabenobergrenze eines neuen Geldgebers.\n- Manager können bis zu 3% Leistungszulage ohne Direktor-Unterschrift genehmigen.\n\nSilberstreif am Horizont\nKollegen respektieren das Community-Engagement der anderen Partei; Manager hat Initiative bei Outreach-Kampagnen gelobt.",
       "defaultGoal": "Eine für beide Seiten vorteilhafte Gehaltsvereinbarung treffen.",
       "defaultOtherParty": "Arbeitgeber"
     }
@@ -198,5 +211,7 @@
   "difficultyTitle": "Schwierigkeitsgrad",
   "contextDefault": "Standardkontext",
   "contextCustom": "Individueller Kontext",
-  "selectContext": "Kontext auswählen"
+  "selectContext": "Situative Fakten (nicht verhandelbar)",
+  "defaultContextLabel": "Standardkontext",
+  "customContextLabel": "Individueller Kontext"
 }

@@ -29,6 +29,7 @@ export default function ConversationScenarioForm({
 }: ConversationScenarioFormProps) {
   const t = useTranslations('ConversationScenario');
   const tCommon = useTranslations('Common');
+  const tContext = useTranslations('ConversationScenario.customize.context');
   const router = useRouter();
   const { locale } = useParams();
 
@@ -167,8 +168,8 @@ export default function ConversationScenarioForm({
               className="flex gap-4 mb-4"
             >
               {[
-                { value: 'default', label: 'Default Context' },
-                { value: 'custom', label: 'Custom Context' },
+                { value: 'default', label: tContext('default') },
+                { value: 'custom', label: tContext('custom') },
               ].map((option) => (
                 <label
                   key={option.value}
