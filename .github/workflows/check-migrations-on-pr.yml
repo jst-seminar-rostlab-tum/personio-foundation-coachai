@@ -24,9 +24,14 @@ jobs:
 
       - name: Check if dev branch is merged
         if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          PR_BRANCH: ${{ github.head_ref }}
         run: |
           git fetch origin dev
-          if git merge-base --is-ancestor origin/dev HEAD; then
+          git fetch origin $PR_BRANCH
+          echo "Checking if origin/dev is merged into $PR_BRANCH"
+
+          if git merge-base --is-ancestor origin/dev origin/$PR_BRANCH; then
             echo "✅ Dev branch is merged"
           else
             echo "❌ Dev branch is not fully merged into this branch"
