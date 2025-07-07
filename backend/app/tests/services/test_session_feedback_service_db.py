@@ -17,12 +17,12 @@ from app.models.session_turn import SessionTurn, SpeakerEnum
 from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
 from app.schemas.session_feedback import (
     FeedbackCreate,
-    GoalsAchievedCollection,
+    GoalsAchievedRead,
     NegativeExample,
     PositiveExample,
     Recommendation,
-    RecommendationsCollection,
-    SessionExamplesCollection,
+    RecommendationsRead,
+    SessionExamplesRead,
 )
 from app.services.session_feedback.session_feedback_service import (
     generate_and_store_feedback,
@@ -98,7 +98,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
         session_id = self.insert_minimal_conversation()
-        mock_examples.return_value = SessionExamplesCollection(
+        mock_examples.return_value = SessionExamplesRead(
             positive_examples=[
                 PositiveExample(
                     heading='Clear Objective Addressed',
@@ -115,8 +115,8 @@ class TestSessionFeedbackService(unittest.TestCase):
                 )
             ],
         )
-        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=['G1', 'G2'])
-        mock_recommendations.return_value = RecommendationsCollection(
+        mock_goals.return_value = GoalsAchievedRead(goals_achieved=['G1', 'G2'])
+        mock_recommendations.return_value = RecommendationsRead(
             recommendations=[
                 Recommendation(
                     heading='Practice the STAR method',
@@ -222,8 +222,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         session_id = self.insert_minimal_conversation()
         mock_examples.side_effect = Exception('Failed to generate examples')
 
-        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=['G1'])
-        mock_recommendations.return_value = RecommendationsCollection(
+        mock_goals.return_value = GoalsAchievedRead(goals_achieved=['G1'])
+        mock_recommendations.return_value = RecommendationsRead(
             recommendations=[
                 Recommendation(
                     heading='Some heading',
@@ -284,11 +284,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
     ) -> None:
         # Mock AI scoring
-        mock_examples.return_value = SessionExamplesCollection(
-            positive_examples=[], negative_examples=[]
-        )
-        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=[])
-        mock_recommendations.return_value = RecommendationsCollection(recommendations=[])
+        mock_examples.return_value = SessionExamplesRead(positive_examples=[], negative_examples=[])
+        mock_goals.return_value = GoalsAchievedRead(goals_achieved=[])
+        mock_recommendations.return_value = RecommendationsRead(recommendations=[])
 
         # Mock scoring_service
         class MockScore:

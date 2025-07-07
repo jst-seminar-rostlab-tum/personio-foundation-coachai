@@ -8,10 +8,10 @@ from app.connections.openai_client import call_structured_llm
 from app.models.language import LanguageCode
 from app.schemas.session_feedback import (
     FeedbackCreate,
-    GoalsAchievedCollection,
-    GoalsAchievementRequest,
-    RecommendationsCollection,
-    SessionExamplesCollection,
+    GoalsAchievedCreate,
+    GoalsAchievedRead,
+    RecommendationsRead,
+    SessionExamplesRead,
 )
 from app.schemas.session_feedback_config import SessionFeedbackConfigRead
 from app.services.session_feedback.session_feedback_prompt_templates import (
@@ -36,27 +36,27 @@ config = load_session_feedback_config()
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_training_examples(
     request: FeedbackCreate, hr_docs_context: str = ''
-) -> SessionExamplesCollection:
+) -> SessionExamplesRead:
     return generate_training_examples(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_get_achieved_goals(
-    request: GoalsAchievementRequest, hr_docs_context: str = ''
-) -> GoalsAchievedCollection:
+    request: GoalsAchievedCreate, hr_docs_context: str = ''
+) -> GoalsAchievedRead:
     return get_achieved_goals(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_recommendations(
     request: FeedbackCreate, hr_docs_context: str = ''
-) -> RecommendationsCollection:
+) -> RecommendationsRead:
     return generate_recommendations(request, hr_docs_context)
 
 
 def generate_training_examples(
     request: FeedbackCreate, hr_docs_context: str = ''
-) -> SessionExamplesCollection:
+) -> SessionExamplesRead:
     lang = request.language_code
     settings = config.root[lang]
 
@@ -77,7 +77,7 @@ def generate_training_examples(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
-        output_model=SessionExamplesCollection,
+        output_model=SessionExamplesRead,
         mock_response=mock_response,
     )
 
@@ -85,8 +85,8 @@ def generate_training_examples(
 
 
 def get_achieved_goals(
-    request: GoalsAchievementRequest, hr_docs_context: str = ''
-) -> GoalsAchievedCollection:
+    request: GoalsAchievedCreate, hr_docs_context: str = ''
+) -> GoalsAchievedRead:
     lang = request.language_code
     settings = config.root[lang]
 
@@ -103,7 +103,7 @@ def get_achieved_goals(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
-        output_model=GoalsAchievedCollection,
+        output_model=GoalsAchievedRead,
         mock_response=mock_response,
     )
 
@@ -112,7 +112,7 @@ def get_achieved_goals(
 
 def generate_recommendations(
     request: FeedbackCreate, hr_docs_context: str = ''
-) -> RecommendationsCollection:
+) -> RecommendationsRead:
     lang = request.language_code
     settings = config.root[lang]
 
@@ -133,7 +133,7 @@ def generate_recommendations(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         model='gpt-4o-2024-08-06',
-        output_model=RecommendationsCollection,
+        output_model=RecommendationsRead,
         mock_response=mock_response,
     )
 
@@ -197,7 +197,7 @@ if __name__ == '__main__':
 
     print('Training examples generated successfully.')
 
-    goals_achievement_request = GoalsAchievementRequest(
+    goals_achievement_request = GoalsAchievedCreate(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         language_code=example_request.language_code,

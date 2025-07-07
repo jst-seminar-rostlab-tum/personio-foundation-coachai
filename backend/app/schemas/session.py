@@ -6,7 +6,7 @@ from sqlmodel import Field
 
 from app.models.camel_case import CamelModel
 from app.models.session import SessionStatus
-from app.schemas.session_feedback import SessionFeedbackMetrics
+from app.schemas.session_feedback import SessionFeedbackRead
 
 
 # Schema for creating a new Session
@@ -47,7 +47,7 @@ class SessionDetailsRead(SessionRead):
     summary: str | None = None
     goals_total: list[str] | None = None
     has_reviewed: bool = False
-    feedback: Optional['SessionFeedbackMetrics'] = None
+    feedback: Optional['SessionFeedbackRead'] = None
     # List of audio file URIs --> located in session_turns
     audio_uris: list[str] = Field(default_factory=list)
 

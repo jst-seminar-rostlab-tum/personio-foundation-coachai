@@ -16,7 +16,7 @@ from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
 from app.models.session_turn import SessionTurn
 from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
-from app.schemas.session_feedback import FeedbackCreate, SessionFeedbackMetrics
+from app.schemas.session_feedback import FeedbackCreate, SessionFeedbackRead
 from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
 from app.services.review_service import ReviewService
 from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
@@ -396,7 +396,7 @@ class SessionService:
         ).all()
         return [turn.audio_uri for turn in session_turns] if session_turns else []
 
-    def _get_session_feedback(self, session_id: UUID) -> SessionFeedbackMetrics | None:
+    def _get_session_feedback(self, session_id: UUID) -> SessionFeedbackRead | None:
         feedback = self.db.exec(
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
         ).first()
@@ -405,7 +405,7 @@ class SessionService:
         if feedback.status == FeedbackStatusEnum.failed:
             raise HTTPException(status_code=500, detail='Session feedback failed.')
 
-        return SessionFeedbackMetrics(
+        return SessionFeedbackRead(
             scores=feedback.scores,
             tone_analysis=feedback.tone_analysis,
             overall_score=feedback.overall_score,

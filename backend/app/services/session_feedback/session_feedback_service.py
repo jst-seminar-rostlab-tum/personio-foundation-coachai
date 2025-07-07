@@ -21,13 +21,13 @@ from app.schemas.conversation_scenario import (
 )
 from app.schemas.session_feedback import (
     FeedbackCreate,
-    GoalsAchievedCollection,
-    GoalsAchievementRequest,
+    GoalsAchievedCreate,
+    GoalsAchievedRead,
     NegativeExample,
     PositiveExample,
     Recommendation,
-    RecommendationsCollection,
-    SessionExamplesCollection,
+    RecommendationsRead,
+    SessionExamplesRead,
 )
 from app.schemas.session_turn import SessionTurnRead
 from app.services.scoring_service import ScoringService, get_scoring_service
@@ -41,9 +41,9 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 def prepare_feedback_requests(
     example_request: FeedbackCreate,
-) -> tuple[GoalsAchievementRequest, FeedbackCreate]:
+) -> tuple[GoalsAchievedCreate, FeedbackCreate]:
     """Prepare all feedback-related request objects."""
-    goals_request = GoalsAchievementRequest(
+    goals_request = GoalsAchievedCreate(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         language_code=example_request.language_code,
@@ -80,9 +80,7 @@ def get_hr_docs_context(
 class FeedbackGenerationResult(CamelModel):
     examples_positive: list[PositiveExample] = Field(default_factory=list)
     examples_negative: list[NegativeExample] = Field(default_factory=list)
-    goals: GoalsAchievedCollection = Field(
-        default_factory=lambda: GoalsAchievedCollection(goals_achieved=[])
-    )
+    goals: GoalsAchievedRead = Field(default_factory=lambda: GoalsAchievedRead(goals_achieved=[]))
     recommendations: list[Recommendation] = Field(default_factory=list)
     scores_json: dict[str, float] = Field(default_factory=dict)
     overall_score: float = 0.0
@@ -91,7 +89,7 @@ class FeedbackGenerationResult(CamelModel):
 
 def generate_feedback_components(
     feedback_request: FeedbackCreate,
-    goals_request: GoalsAchievementRequest,
+    goals_request: GoalsAchievedCreate,
     hr_docs_context: str,
     conversation: ConversationScenarioWithTranscript,
     scoring_service: ScoringService,
@@ -99,7 +97,7 @@ def generate_feedback_components(
     """Run all feedback-related generation in parallel."""
     examples_positive: list[PositiveExample] = []
     examples_negative: list[NegativeExample] = []
-    goals: GoalsAchievedCollection = GoalsAchievedCollection(goals_achieved=[])
+    goals: GoalsAchievedRead = GoalsAchievedRead(goals_achieved=[])
     recommendations: list[Recommendation] = []
     scores_json: dict[str, float] = {}
     overall_score: float = 0.0
@@ -116,7 +114,7 @@ def generate_feedback_components(
         future_scoring = executor.submit(scoring_service.score_conversation, conversation)
 
         try:
-            examples: SessionExamplesCollection = future_examples.result()
+            examples: SessionExamplesRead = future_examples.result()
             examples_positive = examples.positive_examples
             examples_negative = examples.negative_examples
         except Exception as e:
@@ -130,7 +128,7 @@ def generate_feedback_components(
             logging.warning('Failed to generate goals: %s', e)
 
         try:
-            recs: RecommendationsCollection = future_recommendations.result()
+            recs: RecommendationsRead = future_recommendations.result()
             recommendations = recs.recommendations
         except Exception as e:
             has_error = True
@@ -160,7 +158,7 @@ def generate_feedback_components(
 def update_statistics(
     db_session: 'DBSession',
     conversation: Optional[ConversationScenarioWithTranscript],
-    goals: GoalsAchievedCollection,
+    goals: GoalsAchievedRead,
     overall_score: float,
     has_error: bool,
 ) -> FeedbackStatusEnum:

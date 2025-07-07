@@ -33,12 +33,12 @@ class NegativeExample(CamelModel):
     improved_quote: str = Field(..., description='Suggested improved version of the quote')
 
 
-class SessionExamplesCollection(CamelModel):
+class SessionExamplesRead(CamelModel):
     positive_examples: list[PositiveExample] = Field(..., description='List of positive examples')
     negative_examples: list[NegativeExample] = Field(..., description='List of negative examples')
 
 
-class GoalsAchievementRequest(CamelModel):
+class GoalsAchievedCreate(CamelModel):
     """Request to evaluate the training objectives that were achieved in the transcript."""
 
     transcript: str | None
@@ -50,7 +50,7 @@ class GoalsAchievementRequest(CamelModel):
     )
 
 
-class GoalsAchievedCollection(CamelModel):
+class GoalsAchievedRead(CamelModel):
     """Response indicating the training goals that were achieved."""
 
     goals_achieved: list[str] = Field(
@@ -63,14 +63,14 @@ class Recommendation(CamelModel):
     recommendation: str = Field(..., description='Description or elaboration of the recommendation')
 
 
-class RecommendationsCollection(CamelModel):
+class RecommendationsRead(CamelModel):
     recommendations: list[Recommendation] = Field(
         ..., description='List of improvement recommendations'
     )
 
 
 # Schema for reading a session's feedback metrics
-class SessionFeedbackMetrics(CamelModel):
+class SessionFeedbackRead(CamelModel):
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: float
