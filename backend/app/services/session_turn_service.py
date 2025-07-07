@@ -1,5 +1,6 @@
 import io
 import os
+import re
 import subprocess
 import tempfile
 from uuid import UUID, uuid4
@@ -102,33 +103,98 @@ class SessionTurnService:
             created_at=new_turn.created_at,
         )
 
-    def get_mp3_duration_bytesio(self, mp3_buffer: io.BytesIO) -> float:
-        with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as tmp:
-            tmp.write(mp3_buffer.getvalue())
+    def get_audio_duration_seconds(self, buffer: io.BytesIO) -> float:
+        """
+        Write buffer to a temp file and return its audio duration in seconds.
+        Four fallbacks, in order:
+        1) ffprobe container duration
+        2) ffprobe audio‐stream duration
+        3) parse “Duration: hh:mm:ss.xx” from ffmpeg -i stderr
+        4) decode with ffmpeg -f null and grab the last time= log
+        """
+        # 1) dump to temp file
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            tmp.write(buffer.getvalue())
             tmp.flush()
-            tmp_path = tmp.name
+            path = tmp.name
 
-        cmd = [
-            'ffprobe',
-            '-v',
-            'error',
-            '-show_entries',
-            'format=duration',
-            '-of',
-            'default=noprint_wrappers=1:nokey=1',
-            tmp_path,
-        ]
-        res = subprocess.run(cmd, capture_output=True, text=True)
-        output = res.stdout.strip()
-
+        # --- 1) container duration ---
+        res = subprocess.run(
+            [
+                'ffprobe',
+                '-v',
+                'error',
+                '-show_entries',
+                'format=duration',
+                '-of',
+                'default=noprint_wrappers=1:nokey=1',
+                path,
+            ],
+            capture_output=True,
+            text=True,
+        )
+        dur = res.stdout.strip()
         try:
-            duration = float(output)
+            return float(dur)
         except ValueError:
-            print(f"Could not parse duration from ffprobe output: '{output}'")
-            duration = 0.0
+            pass
 
-        os.remove(tmp_path)
-        return duration
+        # --- 2) audio‐stream duration ---
+        res2 = subprocess.run(
+            [
+                'ffprobe',
+                '-v',
+                'error',
+                '-select_streams',
+                'a:0',
+                '-show_entries',
+                'stream=duration',
+                '-of',
+                'default=noprint_wrappers=1:nokey=1',
+                path,
+            ],
+            capture_output=True,
+            text=True,
+        )
+        dur2 = res2.stdout.strip()
+        try:
+            return float(dur2)
+        except ValueError:
+            pass
+
+        # --- 3) parse “Duration: hh:mm:ss.xx” from `ffmpeg -i` banner ---
+        res3 = subprocess.run(['ffmpeg', '-i', path], capture_output=True, text=True)
+        info = res3.stderr + res3.stdout
+        m = re.search(r'Duration:\s*(\d+):(\d+):(\d+\.\d+)', info)
+        if m:
+            hh, mm, ss = m.groups()
+            return int(hh) * 3600 + int(mm) * 60 + float(ss)
+
+        # --- 4) brute‐force decode & scrape final “time=…” log ---
+        res4 = subprocess.run(
+            [
+                'ffmpeg',
+                '-i',
+                path,
+                '-vn',
+                '-sn',
+                '-dn',  # skip video, subtitles, data
+                '-f',
+                'null',
+                '-',
+            ],  # output to “nowhere”
+            capture_output=True,
+            text=True,
+        )
+        # find all occurrences like “time=00:01:23.45”
+        times = re.findall(r'time=(\d+:\d+:\d+\.\d+)', res4.stderr)
+        if times:
+            last = times[-1]
+            hh, mm, ss = last.split(':')
+            return int(hh) * 3600 + int(mm) * 60 + float(ss)
+
+        # if we still failed:
+        raise RuntimeError(f'Could not determine duration (ffprobe fmt={dur!r}, stream={dur2!r})')
 
     def stitch_mp3s_from_gcs(self, session_id: UUID, output_blob_name: str) -> str | None:
         # Order by configured start_offset_ms to respect timeline
@@ -149,7 +215,7 @@ class SessionTurnService:
                 f'{self.gcs_manager.prefix}{turn.audio_uri}'
             ).download_to_file(buf)
             buf.seek(0)
-            dur = self.get_mp3_duration_bytesio(buf)
+            dur = self.get_audio_duration_seconds(buf)
 
             if STITCH_MODE == MODE_TIMELINE:
                 offset = turn.start_offset_ms or 0
