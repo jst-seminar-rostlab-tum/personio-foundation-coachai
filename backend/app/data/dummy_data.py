@@ -1477,6 +1477,11 @@ def get_dummy_scenario_preparations(
                 'Foster mutual understanding',
                 'End on a positive note',
             ],
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1499,6 +1504,7 @@ def get_dummy_scenario_preparations(
                 'Set expectations for communication',
                 'Identify potential risks',
             ],
+            document_names=['Communication at Work', 'Giving Feedback'],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1521,6 +1527,10 @@ def get_dummy_scenario_preparations(
                 'Align on team roles',
                 'Set expectations for communication',
             ],
+            document_names=[
+                'Psychology of Human Relations',
+                'Teamwork: An Open Access Practical Guide',
+            ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1536,6 +1546,7 @@ def get_dummy_scenario_preparations(
         ScenarioPreparation(
             id=uuid4(),
             scenario_id=conversation_scenarios[3].id,
+            document_names=['Communication at Work', 'A Guide to Effective Negotiations'],
             objectives=[
                 'Bring clarity to the situation',
                 'Encourage open dialogue',
