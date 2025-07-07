@@ -71,7 +71,7 @@ class Settings(BaseSettings):
     VERTEXAI_PRIVATE_KEY: str = ''
     VERTEXAI_CLIENT_EMAIL: str = ''
     VERTEXAI_CLIENT_ID: str = ''
-    VERTEXAI_PROJECT: str = 'personio-foundation'
+    VERTEXAI_PROJECT_ID: str = 'personio-foundation'
     VERTEXAI_LOCATION: str = 'europe-west9'
 
     @property
