@@ -30,6 +30,10 @@ class FakeGCS:
     def generate_signed_url(self, filename: str) -> str:
         return f'https://example.com/{filename}'
 
+    def document_exists(self, filename: str) -> bool:
+        # Simulate that the document exists for testing purposes
+        return True
+
 
 class TestSessionRoute(unittest.TestCase):
     @classmethod
