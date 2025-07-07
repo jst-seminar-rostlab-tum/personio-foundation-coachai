@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MessageSquare, Video, BrainCircuit, TrendingUp, Award, Target } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import type { Metadata } from 'next';
@@ -14,7 +14,6 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 
 export default async function AboutPage() {
   const t = await getTranslations('HomePage');
-  const locale = await getLocale();
   const howItWorks = [
     {
       number: 1,
@@ -73,16 +72,10 @@ export default async function AboutPage() {
               <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-marigold-30/80 text-primary text-sm font-medium shadow-sm">
                 {t('hero.badge')}
               </div>
-              <h1
-                className="text-4xl md:text-5xl font-bold tracking-tight text-black leading-tight hyphens-auto"
-                lang={locale === 'de' ? 'de' : 'en'}
-              >
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black leading-tight">
                 {t('hero.title')}
               </h1>
-              <p
-                className="text-md md:text-xl text-black/60 font-medium hyphens-auto"
-                lang={locale === 'de' ? 'de' : 'en'}
-              >
+              <p className="text-md md:text-xl text-black/60 font-medium">
                 {t('hero.description')}
               </p>
               <div className="flex flex-col lg:flex-row gap-4 w-full">
