@@ -31,6 +31,13 @@ class ConversationScenarioRead(CamelModel):
     transcript: list[SessionTurnRead]
 
 
+class ConversationScenarioAIPromptRead(CamelModel):
+    category: str
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = LanguageCode.en
+
+
 class ConversationScenarioSummary(CamelModel):
     scenario_id: UUID
     language_code: LanguageCode

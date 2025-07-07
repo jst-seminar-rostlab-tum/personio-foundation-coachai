@@ -7,16 +7,7 @@ from app.models.camel_case import CamelModel
 from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparationStatus
 
-# Schemas for scenario preparation requests
-
-
-class ConversationScenarioBase(CamelModel):
-    category: str = Field(..., description='Training category')
-    persona: str
-    situational_facts: str
-    language_code: LanguageCode = Field(
-        default=LanguageCode.en, description='Language code for the scenario preparation'
-    )
+# Schemas for scenario preparation
 
 
 # Schema for genarating objectives / goals

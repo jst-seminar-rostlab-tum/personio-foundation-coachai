@@ -1,11 +1,11 @@
 from app.rag.rag import build_vector_db_retriever
 from app.rag.vector_db import format_docs_with_metadata
-from app.schemas.scenario_preparation import ConversationScenarioBase
+from app.schemas.conversation_scenario import ConversationScenarioAIPromptRead
 from app.services.voice_analysis_service import analyze_voice_gemini_from_file
 
 
 def build_query_prep_feedback(
-    session_context: ConversationScenarioBase,
+    session_context: ConversationScenarioAIPromptRead,
     user_audio_analysis: str | None = None,
     user_transcript: str | None = None,
 ) -> str:
@@ -14,7 +14,7 @@ def build_query_prep_feedback(
     for preparation and feedback
 
     Args:
-        session_context (ConversationScenarioBase): The scenario for the current session,
+        session_context (ConversationScenarioAIPromptRead): The scenario for the current session,
             including category, persona, and situational background facts
         user_audio_analysis (str, optional): Description of the tone, emotion, or delivery
             of the user
@@ -75,7 +75,7 @@ def build_query_general(
 
 
 def query_vector_db(
-    session_context: ConversationScenarioBase | list[str] | None = None,
+    session_context: ConversationScenarioAIPromptRead | list[str] | None = None,
     user_audio_path: str | None = None,
     user_transcript: str | None = None,
 ) -> tuple[str, list[dict]]:
@@ -84,8 +84,8 @@ def query_vector_db(
     user audio and text
 
     Args:
-        session_context (ConversationScenarioBase or list of str, optional):
-            Either a structured conversation scenario object or a list of context strings
+        session_context (ConversationScenarioAIPromptRead or list of str, optional):
+            Either a structured conversation scenario prompt object or a list of context strings
         user_audio_path (str, optional): File path to the user's audio recording for analysis
         user_transcript (str, optional): Transcript of what the user said
 
@@ -103,7 +103,7 @@ def query_vector_db(
         if all(x is None for x in [session_context, user_audio_path, user_transcript]):
             return '', []
 
-        if isinstance(session_context, ConversationScenarioBase):
+        if isinstance(session_context, ConversationScenarioAIPromptRead):
             query = build_query_prep_feedback(session_context, voice_analysis, user_transcript)
         else:
             query = build_query_general(session_context, voice_analysis, user_transcript)
@@ -119,7 +119,7 @@ def query_vector_db(
 
 def query_vector_db_and_prompt(
     generated_object: str,
-    session_context: ConversationScenarioBase | list[str] | None = None,
+    session_context: ConversationScenarioAIPromptRead | list[str] | None = None,
     user_audio_path: str | None = None,
     user_transcript: str | None = None,
 ) -> str:
@@ -130,7 +130,7 @@ def query_vector_db_and_prompt(
 
     Args:
         generated_object (str): The object, whose prompt we're extending (is being generated)
-        session_context (ConversationScenarioBase or list of str, optional):
+        session_context (ConversationScenarioAIPromptRead or list of str, optional):
             Either a structured conversation scenario object or a list of context strings
         user_audio_path (str, optional): File path to the user's audio recording for analysis
         user_transcript (str, optional): Transcript of what the user said
