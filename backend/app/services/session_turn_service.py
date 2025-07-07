@@ -63,7 +63,7 @@ def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
             content_type=get_audio_content_type(audio_file),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f'Failed to upload audio file: {e}') from e
+        raise HTTPException(status_code=500, detail='Failed to upload audio file') from e
 
     return audio_name
 
@@ -103,21 +103,32 @@ class SessionTurnService:
         )
 
     def get_mp3_duration_bytesio(self, mp3_buffer: io.BytesIO) -> float:
-        with tempfile.NamedTemporaryFile(suffix='.mp3') as tmp:
+        with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as tmp:
             tmp.write(mp3_buffer.getvalue())
             tmp.flush()
-            cmd = [
-                'ffprobe',
-                '-v',
-                'error',
-                '-show_entries',
-                'format=duration',
-                '-of',
-                'default=noprint_wrappers=1:nokey=1',
-                tmp.name,
-            ]
-            res = subprocess.run(cmd, capture_output=True, text=True)
-            return float(res.stdout.strip())
+            tmp_path = tmp.name
+
+        cmd = [
+            'ffprobe',
+            '-v',
+            'error',
+            '-show_entries',
+            'format=duration',
+            '-of',
+            'default=noprint_wrappers=1:nokey=1',
+            tmp_path,
+        ]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        output = res.stdout.strip()
+
+        try:
+            duration = float(output)
+        except ValueError:
+            print(f"Could not parse duration from ffprobe output: '{output}'")
+            duration = 0.0
+
+        os.remove(tmp_path)
+        return duration
 
     def stitch_mp3s_from_gcs(self, session_id: UUID, output_blob_name: str) -> str | None:
         # Order by configured start_offset_ms to respect timeline
