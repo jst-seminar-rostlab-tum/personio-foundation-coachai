@@ -1,7 +1,11 @@
+import io
+import json
+import zipfile
 from typing import Annotated, Union
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
 from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
@@ -116,13 +120,19 @@ def delete_user_profile(
     )
 
 
-@router.get('/export', response_model=dict)
+@router.get('/export')
 def export_user_data(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> dict:
+) -> StreamingResponse:
     """
-    Export all user-related data (history) for the currently authenticated user.
+    Export all user-related data (history) for the currently authenticated user as a zip file.
     """
     export_data = build_user_data_export(user_profile, db_session)
-    return export_data.dict()
+    json_bytes = json.dumps(export_data.dict(), indent=2).encode('utf-8')
+    mem_zip = io.BytesIO()
+    with zipfile.ZipFile(mem_zip, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr('user_data_export.json', json_bytes)
+    mem_zip.seek(0)
+    headers = {'Content-Disposition': 'attachment; filename="user_data_export.zip"'}
+    return StreamingResponse(mem_zip, media_type='application/zip', headers=headers)
