@@ -8,8 +8,8 @@ from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
+    ConversationScenarioConfirm,
     ConversationScenarioCreate,
-    ConversationScenarioCreateResponse,
     ConversationScenarioSummary,
 )
 from app.schemas.scenario_preparation import ScenarioPreparationRead
@@ -59,15 +59,13 @@ def get_conversation_scenario_metadata(
     return service.get_scenario_summary(scenario_id, user_profile)
 
 
-@router.post(
-    '', response_model=ConversationScenarioCreateResponse, dependencies=[Depends(require_user)]
-)
+@router.post('', response_model=ConversationScenarioConfirm, dependencies=[Depends(require_user)])
 def create_conversation_scenario_with_preparation(
     conversation_scenario: ConversationScenarioCreate,
     background_tasks: BackgroundTasks,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
-) -> ConversationScenarioCreateResponse:
+) -> ConversationScenarioConfirm:
     """
     Create a new conversation scenario and start the preparation process in the background.
     """

@@ -21,7 +21,7 @@ class ConversationScenarioCreate(CamelModel):
     status: ConversationScenarioStatus = ConversationScenarioStatus.draft
 
 
-class ConversationScenarioCreateResponse(CamelModel):
+class ConversationScenarioConfirm(CamelModel):
     message: str
     scenario_id: UUID
 
