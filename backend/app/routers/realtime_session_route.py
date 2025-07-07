@@ -22,7 +22,7 @@ else:
     MODEL = 'gpt-4o-realtime-preview-2025-06-03'
 
 
-@router.get('/realtime-session/{session_id}')
+@router.get('/realtime-sessions/{id}')
 async def get_realtime_session(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
