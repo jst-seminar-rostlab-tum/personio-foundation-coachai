@@ -13,7 +13,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from app.connections.openai_client import call_structured_llm
 from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.schemas.scenario_prep_config import ScenarioPrepConfig
+from app.schemas.scenario_prep_config import ScenarioPrepConfigRead
 from app.schemas.scenario_preparation import (
     ChecklistCreate,
     KeyConcept,
@@ -27,11 +27,11 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 
 @lru_cache
-def load_scenario_prep_config() -> ScenarioPrepConfig:
+def load_scenario_prep_config() -> ScenarioPrepConfigRead:
     config_path = os.path.join(os.path.dirname(__file__), 'scenario_prep_config.json')
     with open(config_path, encoding='utf-8') as f:
         data = json.load(f)  # Python dict
-    return ScenarioPrepConfig.model_validate(data)
+    return ScenarioPrepConfigRead.model_validate(data)
 
 
 CONFIG_PATH = os.path.join('app', 'config', 'scenario_prep_config.json')

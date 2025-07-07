@@ -22,5 +22,5 @@ class ScenarioPrepLanguageSettings(CamelModel):
     mocks: ScenarioPrepMockSet
 
 
-class ScenarioPrepConfig(RootModel[dict[LanguageCode, ScenarioPrepLanguageSettings]]):
+class ScenarioPrepConfigRead(RootModel[dict[LanguageCode, ScenarioPrepLanguageSettings]]):
     pass
