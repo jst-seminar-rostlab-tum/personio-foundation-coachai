@@ -138,7 +138,7 @@ def query_vector_db_and_prompt(
     Returns:
         tuple[str, list[str]]:
         A tuple where the first element is a prompt extension incorporating all documents relevant
-        to the query, and the second element is a list of document titles from the metadata.
+        to the query, and the second element is a list of unique document titles from the metadata.
     """
     vector_db_docs, metadata = query_vector_db(
         session_context=session_context,
