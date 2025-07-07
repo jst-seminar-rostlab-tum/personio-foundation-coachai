@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { UserProfileService } from '@/services/UserProfileService';
 import { useTranslations } from 'next-intl';
 import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
-import { redirect } from 'next/navigation';
 import { api } from '@/services/ApiClient';
 import {
   AlertDialog,
@@ -21,9 +20,10 @@ import {
 interface DeleteUserHandlerProps {
   id?: string;
   children: React.ReactNode;
+  onDeleteSuccess: () => void;
 }
 
-export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
+export function DeleteUserHandler({ children, id, onDeleteSuccess }: DeleteUserHandlerProps) {
   const [loading, setLoading] = useState(false);
   const tCommon = useTranslations('Common');
 
@@ -32,9 +32,7 @@ export function DeleteUserHandler({ children, id }: DeleteUserHandlerProps) {
     try {
       await UserProfileService.deleteUser(api, deleteUserId);
       showSuccessToast(tCommon('deleteAccountSuccess'));
-      if (!deleteUserId) {
-        redirect('/');
-      }
+      onDeleteSuccess();
     } catch (error) {
       showErrorToast(error, tCommon('deleteAccountError'));
     } finally {
