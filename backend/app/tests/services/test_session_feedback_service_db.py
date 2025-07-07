@@ -14,7 +14,7 @@ from app.models.conversation_scenario import (
 from app.models.language import LanguageCode
 from app.models.session import Session, SessionStatus
 from app.models.session_turn import SessionTurn, SpeakerEnum
-from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
+from app.schemas.conversation_scenario import ConversationScenarioRead
 from app.schemas.session_feedback import (
     FeedbackRequest,
     GoalsAchievedCollection,
@@ -85,7 +85,7 @@ class TestSessionFeedbackService(unittest.TestCase):
     def test_get_conversation_data(self) -> None:
         session_id = self.insert_minimal_conversation()
         conversation = get_conversation_data(self.session, session_id)
-        self.assertIsInstance(conversation, ConversationScenarioWithTranscript)
+        self.assertIsInstance(conversation, ConversationScenarioRead)
         self.assertEqual(conversation.scenario.situational_facts, 'Feedback context')
         self.assertEqual(len(conversation.transcript), 1)
         self.assertEqual(conversation.transcript[0].text, 'Hello, Sam!')

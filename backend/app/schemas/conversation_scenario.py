@@ -26,7 +26,7 @@ class ConversationScenarioConfirm(CamelModel):
     scenario_id: UUID
 
 
-class ConversationScenarioWithTranscript(CamelModel):
+class ConversationScenarioRead(CamelModel):
     scenario: ConversationScenario
     transcript: list[SessionTurnRead]
 

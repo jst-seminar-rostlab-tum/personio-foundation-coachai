@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from app.connections.openai_client import call_structured_llm
-from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
+from app.schemas.conversation_scenario import ConversationScenarioRead
 from app.schemas.scoring_schema import ScoringResult
 
 
@@ -32,7 +32,7 @@ class ScoringService:
         )
         return system_prompt
 
-    def _build_user_prompt(self, conversation: ConversationScenarioWithTranscript) -> str:
+    def _build_user_prompt(self, conversation: ConversationScenarioRead) -> str:
         scenario = conversation.scenario
         transcript = conversation.transcript
         prompt = (
@@ -57,7 +57,7 @@ class ScoringService:
 
     def score_conversation(
         self,
-        conversation: ConversationScenarioWithTranscript,
+        conversation: ConversationScenarioRead,
         model: str = 'o4-mini-2025-04-16',
         temperature: float = 0.0,
     ) -> ScoringResult:
