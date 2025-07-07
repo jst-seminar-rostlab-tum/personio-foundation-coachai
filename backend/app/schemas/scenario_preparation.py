@@ -12,7 +12,7 @@ from app.models.scenario_preparation import ScenarioPreparationStatus
 
 # Schema for genarating objectives / goals
 class ObjectivesCreate(CamelModel):
-    category: str = Field(..., description='Training category')
+    category: str
     persona: str
     situational_facts: str
     language_code: LanguageCode = Field(
@@ -23,7 +23,7 @@ class ObjectivesCreate(CamelModel):
 
 # Schema for generating key concepts
 class KeyConceptRequest(CamelModel):
-    category: str = Field(..., description='Training category')
+    category: str
     persona: str
     situational_facts: str
     language_code: LanguageCode = Field(
@@ -33,7 +33,7 @@ class KeyConceptRequest(CamelModel):
 
 # Schema for generating a checklist
 class ChecklistRequest(CamelModel):
-    category: str = Field(..., description='Training category')
+    category: str
     persona: str
     situational_facts: str
     language_code: LanguageCode = Field(
@@ -44,7 +44,7 @@ class ChecklistRequest(CamelModel):
 
 # Response schema for a list of strings --> needed to return generated text in a given format
 class StringListResponse(CamelModel):
-    items: list[str] = Field(..., description='List of generated text items')
+    items: list[str]
 
 
 # Response schema for key concepts
@@ -59,7 +59,7 @@ class KeyConceptResponse(CamelModel):
 
 # Schema for creating a new ScenarioPreparation
 class ScenarioPreparationCreate(CamelModel):
-    category: str = Field(..., description='Training category')
+    category: str
     persona: str
     situational_facts: str
     language_code: LanguageCode = Field(
