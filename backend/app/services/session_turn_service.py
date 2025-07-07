@@ -1,8 +1,7 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import puremagic
 from fastapi import HTTPException, UploadFile
-from sqlalchemy import UUID
 from sqlmodel import Session as DBSession
 
 from app.config import Settings

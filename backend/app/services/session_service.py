@@ -1,6 +1,5 @@
 from datetime import UTC, datetime
 from math import ceil
-from typing import Optional
 from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
@@ -67,7 +66,7 @@ class SessionService:
         user_profile: UserProfile,
         page: int,
         page_size: int,
-        scenario_id: Optional[UUID] = None,
+        scenario_id: UUID | None = None,
     ) -> PaginatedSessionRead:
         if scenario_id:
             scenario = self._validate_scenario_access(scenario_id, user_profile)

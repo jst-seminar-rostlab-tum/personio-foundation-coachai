@@ -1,7 +1,6 @@
 import concurrent.futures
 import logging
 from datetime import UTC, datetime
-from typing import Optional
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
@@ -157,7 +156,7 @@ def generate_feedback_components(
 
 def update_statistics(
     db_session: 'DBSession',
-    conversation: Optional[ConversationScenarioWithTranscript],
+    conversation: ConversationScenarioWithTranscript | None,
     goals: GoalsAchievedRead,
     overall_score: float,
     has_error: bool,
@@ -248,7 +247,7 @@ def generate_and_store_feedback(
     session_id: UUID,
     feedback_request: FeedbackCreate,
     db_session: DBSession,
-    scoring_service: Optional[ScoringService] = None,
+    scoring_service: ScoringService | None = None,
 ) -> SessionFeedback:
     if scoring_service is None:
         scoring_service = get_scoring_service()
