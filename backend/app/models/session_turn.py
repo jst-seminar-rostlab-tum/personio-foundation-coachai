@@ -22,6 +22,7 @@ class SessionTurn(CamelModel, table=True):
     speaker: SpeakerEnum
     start_offset_ms: int
     end_offset_ms: int
+    full_audio_start_offset_ms: int = Field(default=0)
     text: str
     audio_uri: str
     ai_emotion: str | None = Field(default=None)

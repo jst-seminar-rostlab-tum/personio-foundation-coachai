@@ -35,6 +35,7 @@ from app.services.session_feedback.session_feedback_llm import (
     safe_generate_training_examples,
     safe_get_achieved_goals,
 )
+from app.services.session_turn_service import SessionTurnService
 from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 
@@ -84,6 +85,7 @@ class FeedbackGenerationResult(CamelModel):
     scores_json: dict[str, float] = Field(default_factory=dict)
     overall_score: float = 0.0
     has_error: bool = False
+    full_audio_filename: str = ''
 
 
 def generate_feedback_components(
@@ -92,6 +94,8 @@ def generate_feedback_components(
     hr_docs_context: str,
     conversation: ConversationScenarioWithTranscript,
     scoring_service: ScoringService,
+    session_turn_service: SessionTurnService,
+    session_id: UUID,
 ) -> FeedbackGenerationResult:
     """Run all feedback-related generation in parallel."""
     examples_positive: list[PositiveExample] = []
@@ -101,6 +105,7 @@ def generate_feedback_components(
     scores_json: dict[str, float] = {}
     overall_score: float = 0.0
     has_error: bool = False
+    output_blob_name: str | None = ''
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_examples = executor.submit(
@@ -111,6 +116,11 @@ def generate_feedback_components(
             safe_generate_recommendations, feedback_request, hr_docs_context
         )
         future_scoring = executor.submit(scoring_service.score_conversation, conversation)
+        future_audio_stitch = executor.submit(
+            session_turn_service.stitch_mp3s_from_gcs,
+            session_id,
+            f'{session_id}.mp3',
+        )
 
         try:
             examples: SessionExamplesRead = future_examples.result()
@@ -143,6 +153,12 @@ def generate_feedback_components(
             scores_json = {}
             overall_score = 0.0
 
+        try:
+            output_blob_name = future_audio_stitch.result()
+        except Exception as e:
+            has_error = True
+            logging.warning('Failed to call Audio Stitching: %s', e)
+
     return FeedbackGenerationResult(
         examples_positive=examples_positive,
         examples_negative=examples_negative,
@@ -150,6 +166,7 @@ def generate_feedback_components(
         recommendations=recommendations,
         scores_json=scores_json,
         overall_score=overall_score,
+        full_audio_filename=output_blob_name or '',
         has_error=has_error,
     )
 
@@ -204,6 +221,7 @@ def save_session_feedback(
         tone_analysis={},
         overall_score=feedback_generation_result.overall_score,
         transcript_uri='',
+        full_audio_filename=feedback_generation_result.full_audio_filename,
         speak_time_percent=0,
         questions_asked=0,
         session_length_s=0,
@@ -248,9 +266,20 @@ def generate_and_store_feedback(
     feedback_request: FeedbackCreate,
     db_session: DBSession,
     scoring_service: ScoringService | None = None,
+    session_turn_service: SessionTurnService | None = None,
 ) -> SessionFeedback:
+    """
+    Generates feedback for a given session, stores it in the database, and returns the resulting
+    SessionFeedback object. This function prepares the necessary requests and context for
+    feedback generation, retrieves conversation data, and uses the provided or default scoring
+    service to generate feedback components. It then updates session statistics,
+    saves the generated feedback to the database, and returns the saved feedback.
+    """
     if scoring_service is None:
         scoring_service = get_scoring_service()
+
+    if session_turn_service is None:
+        session_turn_service = SessionTurnService(db_session)
 
     goals_request, recommendations_request = prepare_feedback_requests(feedback_request)
     hr_docs_context = get_hr_docs_context(recommendations_request)
@@ -266,6 +295,8 @@ def generate_and_store_feedback(
             hr_docs_context=hr_docs_context,
             conversation=conversation,
             scoring_service=scoring_service,
+            session_turn_service=session_turn_service,
+            session_id=session_id,
         )
 
     status: FeedbackStatusEnum = update_statistics(

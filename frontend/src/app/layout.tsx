@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { Inter, Bebas_Neue as BebasNeue } from 'next/font/google';
 import type { Viewport } from 'next';
 
-import type { LayoutProps } from '@/interfaces/props/LayoutProps';
+import { getLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import Script from 'next/script';
 
@@ -16,8 +16,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export default async function RootLayout({ children, params }: LayoutProps) {
-  const { locale } = await params;
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
   const nonce = (await headers()).get('x-nonce') || '';
 
   const jsonLd = {

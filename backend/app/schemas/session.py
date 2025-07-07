@@ -48,8 +48,6 @@ class SessionDetailsRead(SessionRead):
     goals_total: list[str] | None = None
     has_reviewed: bool = False
     feedback: Optional['SessionFeedbackRead'] = None
-    # List of audio file URIs --> located in session_turns
-    audio_uris: list[str] = Field(default_factory=list)
 
 
 SessionDetailsRead.model_rebuild()

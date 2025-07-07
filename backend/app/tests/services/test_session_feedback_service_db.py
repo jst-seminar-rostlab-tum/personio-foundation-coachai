@@ -95,7 +95,10 @@ class TestSessionFeedbackService(unittest.TestCase):
     @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')
     @patch('app.services.session_feedback.session_feedback_llm.generate_recommendations')
     def test_generate_and_store_feedback(
-        self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
+        self,
+        mock_recommendations: MagicMock,
+        mock_goals: MagicMock,
+        mock_examples: MagicMock,
     ) -> None:
         session_id = self.insert_minimal_conversation()
         mock_examples.return_value = SessionExamplesRead(
@@ -159,6 +162,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
+        mock_session_turn_service = MagicMock()
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
+
         example_request = FeedbackCreate(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
@@ -173,6 +179,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             feedback_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
+            session_turn_service=mock_session_turn_service,
         )
 
         self.assertEqual(feedback.session_id, session_id)
@@ -217,7 +224,10 @@ class TestSessionFeedbackService(unittest.TestCase):
     @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')
     @patch('app.services.session_feedback.session_feedback_llm.generate_recommendations')
     def test_generate_and_store_feedback_with_errors(
-        self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
+        self,
+        mock_recommendations: MagicMock,
+        mock_goals: MagicMock,
+        mock_examples: MagicMock,
     ) -> None:
         session_id = self.insert_minimal_conversation()
         mock_examples.side_effect = Exception('Failed to generate examples')
@@ -245,6 +255,9 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
+        mock_session_turn_service = MagicMock()
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
+
         example_request = FeedbackCreate(
             transcript='Error case transcript...',
             objectives=['ObjX'],
@@ -259,6 +272,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             feedback_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
+            session_turn_service=mock_session_turn_service,
         )
 
         self.assertEqual(feedback.status, FeedbackStatusEnum.failed)
@@ -281,7 +295,10 @@ class TestSessionFeedbackService(unittest.TestCase):
     @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')
     @patch('app.services.session_feedback.session_feedback_llm.generate_recommendations')
     def test_scoring_and_stats_update(
-        self, mock_recommendations: MagicMock, mock_goals: MagicMock, mock_examples: MagicMock
+        self,
+        mock_recommendations: MagicMock,
+        mock_goals: MagicMock,
+        mock_examples: MagicMock,
     ) -> None:
         # Mock AI scoring
         mock_examples.return_value = SessionExamplesRead(positive_examples=[], negative_examples=[])
@@ -310,6 +327,9 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
+
+        mock_session_turn_service = MagicMock()
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
 
         from datetime import datetime
 
@@ -384,6 +404,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             feedback_request=example_request,
             db_session=self.session,
             scoring_service=mock_scoring_service,
+            session_turn_service=mock_session_turn_service,
         )
         # Check feedback score structure
         self.assertEqual(feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4})
