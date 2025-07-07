@@ -26,5 +26,5 @@ class SessionFeedbackLanguageSettings(CamelModel):
     mocks: SessionFeedbackMockSet
 
 
-class SessionFeedbackConfig(RootModel[dict[LanguageCode, SessionFeedbackLanguageSettings]]):
+class SessionFeedbackConfigRead(RootModel[dict[LanguageCode, SessionFeedbackLanguageSettings]]):
     pass

@@ -13,7 +13,7 @@ from app.schemas.session_feedback import (
     RecommendationsCollection,
     SessionExamplesCollection,
 )
-from app.schemas.session_feedback_config import SessionFeedbackConfig
+from app.schemas.session_feedback_config import SessionFeedbackConfigRead
 from app.services.session_feedback.session_feedback_prompt_templates import (
     build_goals_achieved_prompt,
     build_recommendations_prompt,
@@ -22,11 +22,11 @@ from app.services.session_feedback.session_feedback_prompt_templates import (
 
 
 @lru_cache
-def load_session_feedback_config() -> SessionFeedbackConfig:
+def load_session_feedback_config() -> SessionFeedbackConfigRead:
     config_path = os.path.join(os.path.dirname(__file__), 'session_feedback_config.json')
     with open(config_path, encoding='utf-8') as f:
         data = json.load(f)  # Python dict
-    return SessionFeedbackConfig.model_validate(data)
+    return SessionFeedbackConfigRead.model_validate(data)
 
 
 CONFIG_PATH = os.path.join('app', 'config', 'session_feedback_config.json')
