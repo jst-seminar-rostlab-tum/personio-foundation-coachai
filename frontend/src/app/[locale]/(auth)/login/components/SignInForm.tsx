@@ -24,6 +24,7 @@ import { showErrorToast } from '@/lib/utils/toast';
 
 export function SignInForm() {
   const tLogin = useTranslations('Login');
+  const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +37,7 @@ export function SignInForm() {
   }, [error]);
 
   const signInFormSchema = z.object({
-    email: z.string().email(tLogin('emailInputError')),
+    email: z.string().email(tCommon('emailInputError')),
     password: z.string().min(1, tLogin('passwordInputError')),
   });
 
@@ -82,10 +83,10 @@ export function SignInForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tLogin('emailInputLabel')}</FormLabel>
+                  <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={tLogin('emailInputPlaceholder')}
+                      placeholder={tCommon('emailInputPlaceholder')}
                       {...field}
                       className="w-full"
                       type="email"
@@ -126,7 +127,7 @@ export function SignInForm() {
             <Button
               type="button"
               variant="link"
-              className="text-sm text-bw-50 mt-2 p-0 h-auto"
+              className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
               disabled={isLoading}
               onClick={() => router.push('/reset')}
             >

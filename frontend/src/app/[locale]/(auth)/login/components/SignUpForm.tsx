@@ -28,6 +28,7 @@ import Link from 'next/link';
 
 export function SignUpForm() {
   const tLogin = useTranslations('Login');
+  const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
@@ -41,7 +42,7 @@ export function SignUpForm() {
 
   const signUpFormSchema = z.object({
     fullName: z.string().min(1, tLogin('fullNameInputError')),
-    email: z.string().email(tLogin('emailInputError')),
+    email: z.string().email(tCommon('emailInputError')),
     phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
     password: z
       .string()
@@ -122,10 +123,10 @@ export function SignUpForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{tLogin('emailInputLabel')}</FormLabel>
+                    <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={tLogin('emailInputPlaceholder')}
+                        placeholder={tCommon('emailInputPlaceholder')}
                         {...field}
                         className="w-full"
                         type="email"

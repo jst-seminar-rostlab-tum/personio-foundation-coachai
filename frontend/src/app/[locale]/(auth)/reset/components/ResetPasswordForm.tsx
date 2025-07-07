@@ -40,7 +40,7 @@ export default function ResetPasswordForm() {
   }, [error]);
 
   const passwordResetFormSchema = z.object({
-    email: z.string().email(t('emailInputError')),
+    email: z.string().email(tCommon('emailInputError')),
   });
 
   const form = useForm({
@@ -92,10 +92,10 @@ export default function ResetPasswordForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('emailInputLabel')}</FormLabel>
+                    <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('emailInputPlaceholder')}
+                        placeholder={tCommon('emailInputPlaceholder')}
                         {...field}
                         className="w-full"
                         type="email"
