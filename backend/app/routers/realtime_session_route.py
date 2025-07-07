@@ -14,7 +14,7 @@ from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session
 from app.models.user_profile import UserProfile
 
-router = APIRouter(prefix='', tags=['realtime-session'])
+router = APIRouter(prefix='/realtime-sessions', tags=['realtime-session'])
 
 if settings.FORCE_CHEAP_MODEL:
     MODEL = 'gpt-4o-mini-realtime-preview-2024-12-17'
@@ -22,7 +22,7 @@ else:
     MODEL = 'gpt-4o-realtime-preview-2025-06-03'
 
 
-@router.get('/realtime-sessions/{id}')
+@router.get('/{id}')
 async def get_realtime_session(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
