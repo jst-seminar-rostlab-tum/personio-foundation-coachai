@@ -7,7 +7,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from app.connections.openai_client import call_structured_llm
 from app.models.language import LanguageCode
 from app.schemas.session_feedback import (
-    FeedbackRequest,
+    FeedbackCreate,
     GoalsAchievedCollection,
     GoalsAchievementRequest,
     RecommendationsCollection,
@@ -35,7 +35,7 @@ config = load_session_feedback_config()
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_training_examples(
-    request: FeedbackRequest, hr_docs_context: str = ''
+    request: FeedbackCreate, hr_docs_context: str = ''
 ) -> SessionExamplesCollection:
     return generate_training_examples(request, hr_docs_context)
 
@@ -49,13 +49,13 @@ def safe_get_achieved_goals(
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_recommendations(
-    request: FeedbackRequest, hr_docs_context: str = ''
+    request: FeedbackCreate, hr_docs_context: str = ''
 ) -> RecommendationsCollection:
     return generate_recommendations(request, hr_docs_context)
 
 
 def generate_training_examples(
-    request: FeedbackRequest, hr_docs_context: str = ''
+    request: FeedbackCreate, hr_docs_context: str = ''
 ) -> SessionExamplesCollection:
     lang = request.language_code
     settings = config.root[lang]
@@ -111,7 +111,7 @@ def get_achieved_goals(
 
 
 def generate_recommendations(
-    request: FeedbackRequest, hr_docs_context: str = ''
+    request: FeedbackCreate, hr_docs_context: str = ''
 ) -> RecommendationsCollection:
     lang = request.language_code
     settings = config.root[lang]
@@ -142,7 +142,7 @@ def generate_recommendations(
 
 if __name__ == '__main__':
     # Example usage of the service functions
-    example_request = FeedbackRequest(
+    example_request = FeedbackCreate(
         category='Termination',
         persona=(
             '**Name**: Julian '
@@ -208,7 +208,7 @@ if __name__ == '__main__':
         + f'{len(goals_achieved.goals_achieved)} / {len(example_request.objectives)}'
     )
 
-    recommendation_request = FeedbackRequest(
+    recommendation_request = FeedbackCreate(
         category=example_request.category,
         persona=example_request.persona,
         situational_facts=example_request.situational_facts,

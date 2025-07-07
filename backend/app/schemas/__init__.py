@@ -27,7 +27,7 @@ from app.schemas.session import (
     SessionUpdate,
 )
 from app.schemas.session_feedback import (
-    FeedbackRequest,
+    FeedbackCreate,
     GoalsAchievedCollection,
     GoalsAchievementRequest,
     NegativeExample,
@@ -82,7 +82,7 @@ __all__ = [
     'ScenarioPreparationCreate',
     'ScenarioPreparationRead',
     'StringListResponse',
-    'FeedbackRequest',
+    'FeedbackCreate',
     'GoalsAchievedCollection',
     'GoalsAchievementRequest',
     'NegativeExample',

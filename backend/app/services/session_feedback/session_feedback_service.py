@@ -20,7 +20,7 @@ from app.schemas.conversation_scenario import (
     ConversationScenarioWithTranscript,
 )
 from app.schemas.session_feedback import (
-    FeedbackRequest,
+    FeedbackCreate,
     GoalsAchievedCollection,
     GoalsAchievementRequest,
     NegativeExample,
@@ -40,15 +40,15 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 
 def prepare_feedback_requests(
-    example_request: FeedbackRequest,
-) -> tuple[GoalsAchievementRequest, FeedbackRequest]:
+    example_request: FeedbackCreate,
+) -> tuple[GoalsAchievementRequest, FeedbackCreate]:
     """Prepare all feedback-related request objects."""
     goals_request = GoalsAchievementRequest(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         language_code=example_request.language_code,
     )
-    recommendations_request = FeedbackRequest(
+    recommendations_request = FeedbackCreate(
         category=example_request.category,
         persona=example_request.persona,
         situational_facts=example_request.situational_facts,
@@ -61,7 +61,7 @@ def prepare_feedback_requests(
 
 
 def get_hr_docs_context(
-    recommendations_request: FeedbackRequest,
+    recommendations_request: FeedbackCreate,
 ) -> str:
     """Generate HR docs context using the vector DB."""
     return query_vector_db_and_prompt(
@@ -90,7 +90,7 @@ class FeedbackGenerationResult(CamelModel):
 
 
 def generate_feedback_components(
-    feedback_request: FeedbackRequest,
+    feedback_request: FeedbackCreate,
     goals_request: GoalsAchievementRequest,
     hr_docs_context: str,
     conversation: ConversationScenarioWithTranscript,
@@ -248,7 +248,7 @@ def get_conversation_data(
 
 def generate_and_store_feedback(
     session_id: UUID,
-    feedback_request: FeedbackRequest,
+    feedback_request: FeedbackCreate,
     db_session: DBSession,
     scoring_service: Optional[ScoringService] = None,
 ) -> SessionFeedback:

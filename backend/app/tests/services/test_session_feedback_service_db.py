@@ -16,7 +16,7 @@ from app.models.session import Session, SessionStatus
 from app.models.session_turn import SessionTurn, SpeakerEnum
 from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
 from app.schemas.session_feedback import (
-    FeedbackRequest,
+    FeedbackCreate,
     GoalsAchievedCollection,
     NegativeExample,
     PositiveExample,
@@ -159,7 +159,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
             persona='**Name**: Someone\n**Training Focus**: Goal',
@@ -245,7 +245,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Error case transcript...',
             objectives=['ObjX'],
             persona='**Name**: Other\n**Training Focus**: Goal',
@@ -373,7 +373,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.session.add(turn)
         self.session.commit()
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
             persona='**Name**: Someone\n**Training Focus**: Goal',

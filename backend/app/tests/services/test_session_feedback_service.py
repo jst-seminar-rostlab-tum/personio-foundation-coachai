@@ -15,7 +15,7 @@ from app.schemas.conversation_scenario import (
     ConversationScenarioWithTranscript,
 )
 from app.schemas.session_feedback import (
-    FeedbackRequest,
+    FeedbackCreate,
     GoalsAchievedCollection,
     NegativeExample,
     PositiveExample,
@@ -148,7 +148,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service = MagicMock()
         mock_scoring_service.score_conversation.return_value = MockScoringResult()
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
             persona='**Name**: Someone\n**Training Focus**: Goal\n'
@@ -229,7 +229,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             ]
         )
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Error case transcript...',
             objectives=['ObjX'],
             persona='**Name**: Example User\n**Training Focus**: Goal\n'
@@ -295,7 +295,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             ]
         )
 
-        req = FeedbackRequest(
+        req = FeedbackCreate(
             category=category,
             transcript=transcript,
             objectives=objectives,
@@ -369,7 +369,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         session_id = uuid4()
         mock_get_conversation_data.return_value = self._mock_conversation_data(user_id=user_id)
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
             persona='**Name**: Someone\n**Training Focus**: Goal',
