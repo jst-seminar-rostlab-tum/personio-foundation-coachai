@@ -15,7 +15,6 @@ from app.connections.gcs_client import get_gcs_audio_manager
 from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
-from app.services.google_cloud_storage_service import GCSManager
 
 settings = Settings()
 
@@ -70,9 +69,9 @@ def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
 
 
 class SessionTurnService:
-    def __init__(self, db: DBSession, gcs_manager: GCSManager | None = None) -> None:
+    def __init__(self, db: DBSession) -> None:
         self.db = db
-        self.gcs_manager = gcs_manager or get_gcs_audio_manager()
+        self.gcs_manager = get_gcs_audio_manager()
 
     async def create_session_turn(
         self, turn: SessionTurnCreate, audio_file: UploadFile
@@ -198,6 +197,13 @@ class SessionTurnService:
 
     def stitch_mp3s_from_gcs(self, session_id: UUID, output_blob_name: str) -> str | None:
         # Order by configured start_offset_ms to respect timeline
+
+        if not settings.ENABLE_AI:
+            return None
+
+        if self.gcs_manager is None:
+            raise HTTPException(status_code=500, detail='Failed to connect to audio storage')
+
         session_turns = self.db.exec(
             select(SessionTurn)
             .where(SessionTurn.session_id == session_id)
