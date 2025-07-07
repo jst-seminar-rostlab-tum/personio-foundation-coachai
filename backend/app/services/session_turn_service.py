@@ -2,10 +2,8 @@ import io
 import os
 import subprocess
 import tempfile
-from tempfile import NamedTemporaryFile
 from uuid import UUID, uuid4
 
-import ffmpeg
 import puremagic
 from fastapi import HTTPException, UploadFile
 from sqlmodel import Session as DBSession
@@ -26,26 +24,6 @@ MODE_TIMELINE = 'timeline'
 
 # Set desired stitching mode for all stitching operations
 STITCH_MODE = MODE_TIMELINE  # or MODE_TIMELINE
-
-
-def convert_audio_to_mp3(upload_file: UploadFile) -> tuple[str, bytes]:
-    """
-    Converts an uploaded audio file to MP3 format and returns the filename and bytes.
-    """
-    input_ext = upload_file.filename.split('.')[-1].lower()
-    with NamedTemporaryFile(delete=True, suffix=f'.{input_ext}') as temp_in:
-        temp_in.write(upload_file.file.read())
-        temp_in.flush()
-
-        with NamedTemporaryFile(delete=True, suffix='.mp3') as temp_out:
-            (
-                ffmpeg.input(temp_in.name)
-                .output(temp_out.name, format='mp3', audio_bitrate='64k')
-                .overwrite_output()
-                .run(quiet=True)
-            )
-            temp_out.seek(0)
-            return temp_out.name, temp_out.read()
 
 
 def is_valid_audio_mime_type(mime_type: str) -> bool:
@@ -85,14 +63,15 @@ def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
             content_type=get_audio_content_type(audio_file),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail='Failed to upload audio file') from e
+        raise HTTPException(status_code=500, detail=f'Failed to upload audio file: {e}') from e
 
     return audio_name
 
 
 class SessionTurnService:
-    def __init__(self, db: DBSession) -> None:
+    def __init__(self, db: DBSession, gcs_manager: GCSManager | None = None) -> None:
         self.db = db
+        self.gcs_manager = gcs_manager or get_gcs_audio_manager()
 
     async def create_session_turn(
         self, turn: SessionTurnCreate, audio_file: UploadFile
@@ -116,7 +95,6 @@ class SessionTurnService:
 
         return SessionTurnRead(
             id=new_turn.id,
-            session_id=new_turn.session_id,
             speaker=new_turn.speaker,
             full_audio_start_offset_ms=new_turn.full_audio_start_offset_ms,
             text=new_turn.text,
@@ -142,7 +120,6 @@ class SessionTurnService:
             return float(res.stdout.strip())
 
     def stitch_mp3s_from_gcs(self, session_id: UUID, output_blob_name: str) -> str | None:
-        gcs = GCSManager('audio')
         # Order by configured start_offset_ms to respect timeline
         session_turns = self.db.exec(
             select(SessionTurn)
@@ -157,7 +134,9 @@ class SessionTurnService:
         cumulative = 0.0
         for turn in session_turns:
             buf = io.BytesIO()
-            gcs.bucket.blob(f'{gcs.prefix}{turn.audio_uri}').download_to_file(buf)
+            self.gcs_manager.bucket.blob(
+                f'{self.gcs_manager.prefix}{turn.audio_uri}'
+            ).download_to_file(buf)
             buf.seek(0)
             dur = self.get_mp3_duration_bytesio(buf)
 
@@ -239,7 +218,9 @@ class SessionTurnService:
 
             out_buf = io.BytesIO(out)
             out_buf.seek(0)
-            gcs.upload_from_fileobj(out_buf, output_blob_name, content_type='audio/mpeg')
+            self.gcs_manager.upload_from_fileobj(
+                out_buf, output_blob_name, content_type='audio/mpeg'
+            )
             out_buf.close()
 
         return output_blob_name
@@ -253,7 +234,6 @@ class SessionTurnService:
         return [
             SessionTurnRead(
                 id=t.id,
-                session_id=t.session_id,
                 speaker=t.speaker,
                 full_audio_start_offset_ms=t.full_audio_start_offset_ms,
                 text=t.text,

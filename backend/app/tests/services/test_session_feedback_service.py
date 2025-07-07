@@ -63,7 +63,6 @@ class TestSessionFeedbackService(unittest.TestCase):
         transcript = [
             SessionTurnRead(
                 id=uuid4(),
-                session_id=uuid4(),
                 speaker=SpeakerEnum.user,
                 full_audio_start_offset_ms=0,
                 text='Hello, Sam!',

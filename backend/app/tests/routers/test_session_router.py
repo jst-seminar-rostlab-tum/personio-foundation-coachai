@@ -42,9 +42,8 @@ class TestSessionRoute(unittest.TestCase):
         cls.SessionLocal = sessionmaker(bind=cls.engine, class_=DBSession)
 
     def setUp(self) -> None:
-        # patch GCSManager so it always returns your FakeGCS…
         self.gcs_patcher = patch(
-            'app.services.session_service.GCSManager',  # <- the import path your code uses
+            'app.connections.gcs_client.GCSManager',
             return_value=FakeGCS(),
         )
         self.mock_gcs_cls = self.gcs_patcher.start()
@@ -101,7 +100,6 @@ class TestSessionRoute(unittest.TestCase):
         fake_turn_svc.get_session_turns.return_value = [
             SessionTurnRead(
                 id=uuid4(),
-                session_id=self.test_session.id,
                 speaker=SpeakerEnum.user,
                 full_audio_start_offset_ms=0,
                 text='hello',

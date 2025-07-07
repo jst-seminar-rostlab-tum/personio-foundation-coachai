@@ -122,7 +122,7 @@ def generate_feedback_components(
         future_audio_stitch = executor.submit(
             session_turn_service.stitch_mp3s_from_gcs,
             session_id,
-            f'{conversation.scenario.id}_{uuid4()}.mp3',
+            f'{session_id}.mp3',
         )
 
         try:

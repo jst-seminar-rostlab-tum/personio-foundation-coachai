@@ -35,7 +35,6 @@ class TestSessionFeedbackAI(unittest.TestCase):
         transcript = [
             SessionTurnRead(
                 id=uuid4(),
-                session_id=uuid4(),
                 speaker=SpeakerEnum.user,
                 full_audio_start_offset_ms=0,
                 text="Hi Sam, let's talk about the project communication.",
@@ -44,7 +43,6 @@ class TestSessionFeedbackAI(unittest.TestCase):
             ),
             SessionTurnRead(
                 id=uuid4(),
-                session_id=uuid4(),
                 speaker=SpeakerEnum.assistant,
                 full_audio_start_offset_ms=2000,
                 text='Sure, I think there were some misunderstandings about the deadlines.',
@@ -53,7 +51,6 @@ class TestSessionFeedbackAI(unittest.TestCase):
             ),
             SessionTurnRead(
                 id=uuid4(),
-                session_id=uuid4(),
                 speaker=SpeakerEnum.user,
                 full_audio_start_offset_ms=4000,
                 text="Yes, let's clarify expectations and improve our communication going forward.",

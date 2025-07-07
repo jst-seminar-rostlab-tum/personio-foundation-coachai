@@ -7,6 +7,7 @@ from fastapi import BackgroundTasks, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import col, func, select
 
+from app.connections.gcs_client import get_gcs_audio_manager
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
@@ -27,7 +28,7 @@ from app.services.session_turn_service import SessionTurnService
 class SessionService:
     def __init__(self, db: DBSession, gcs_manager: GCSManager | None = None) -> None:
         self.db = db
-        self.gcs_manager = gcs_manager or GCSManager('audio')
+        self.gcs_manager = gcs_manager or get_gcs_audio_manager()
 
     def fetch_session_details(
         self, session_id: UUID, user_profile: UserProfile
@@ -231,23 +232,6 @@ class SessionService:
             and feedback is None
         )
 
-    def _stitch_mp3s(
-        self,
-        session: Session,
-        background_tasks: BackgroundTasks,
-    ) -> None:
-        """
-        Stitch all audio files of a session into a single audio file.
-        This function is called when the session is being completed.
-        """
-
-        session_turn_service = SessionTurnService(self.db)
-        background_tasks.add_task(
-            session_turn_service.stitch_mp3s_from_gcs,
-            session_id=session.id,
-            output_blob_name=f'stitched_{session.id}.mp3',
-        )
-
     def _handle_completion(
         self,
         session: Session,
@@ -418,9 +402,13 @@ class SessionService:
         if feedback.status == FeedbackStatusEnum.failed:
             raise HTTPException(status_code=500, detail='Session feedback failed.')
 
-        full_audio_url = self.gcs_manager.generate_signed_url(
-            filename=feedback.full_audio_filename,
-        )
+        audio_file_exists = self.gcs_manager.document_exists(filename=feedback.full_audio_filename)
+        if audio_file_exists:
+            full_audio_url = self.gcs_manager.generate_signed_url(
+                filename=feedback.full_audio_filename,
+            )
+        else:
+            full_audio_url = None
 
         session_turn_service = SessionTurnService(self.db)
         session_turn_transcripts = session_turn_service.get_session_turns(session_id=session_id)
