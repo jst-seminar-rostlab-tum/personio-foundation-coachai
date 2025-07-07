@@ -77,21 +77,6 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
     return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
   };
 
-  const roundCardStats = [
-    {
-      key: t('sessionLength'),
-      value: convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0),
-      icon: 'Clock',
-    },
-    {
-      key: tCommon('goalsAchieved'),
-      value: `${feedbackDetail?.feedback?.goalsAchieved.length ?? 0} / ${
-        feedbackDetail?.goalsTotal.length ?? 0
-      }`,
-      icon: 'Check',
-    },
-  ];
-
   const examplePositive = feedbackDetail?.feedback?.examplePositive || [];
 
   const exampleNegative = feedbackDetail?.feedback?.exampleNegative || [];
