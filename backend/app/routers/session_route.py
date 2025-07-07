@@ -8,7 +8,7 @@ from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.user_profile import UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
-from app.schemas.sessions_paginated import PaginatedSessionsResponse
+from app.schemas.sessions_paginated import PaginatedSessionRead
 from app.services.session_service import SessionService
 
 router = APIRouter(prefix='/session', tags=['Sessions'])
@@ -35,14 +35,14 @@ def get_session_by_id(
     return service.fetch_session_details(session_id, user_profile)
 
 
-@router.get('', response_model=PaginatedSessionsResponse)
+@router.get('', response_model=PaginatedSessionRead)
 def get_sessions(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[SessionService, Depends(get_session_service)],
     scenario_id: UUID | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
-) -> PaginatedSessionsResponse:
+) -> PaginatedSessionRead:
     """
     Return paginated list of completed sessions for a user.
     """

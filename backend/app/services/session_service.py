@@ -17,7 +17,7 @@ from app.models.session_turn import SessionTurn
 from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
 from app.schemas.session_feedback import FeedbackCreate, SessionFeedbackRead
-from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
+from app.schemas.sessions_paginated import PaginatedSessionRead, SessionItem, SkillScores
 from app.services.review_service import ReviewService
 from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 
@@ -68,7 +68,7 @@ class SessionService:
         page: int,
         page_size: int,
         scenario_id: Optional[UUID] = None,
-    ) -> PaginatedSessionsResponse:
+    ) -> PaginatedSessionRead:
         if scenario_id:
             scenario = self._validate_scenario_access(scenario_id, user_profile)
             scenario_ids = [scenario.id]
@@ -76,20 +76,20 @@ class SessionService:
             scenario_ids = self._get_user_scenario_ids(user_profile.id)
 
         if not scenario_ids:
-            return PaginatedSessionsResponse(
+            return PaginatedSessionRead(
                 page=page, limit=page_size, total_pages=0, total_sessions=0, sessions=[]
             )
 
         total_sessions = self._count_sessions(scenario_ids)
         if total_sessions == 0:
-            return PaginatedSessionsResponse(
+            return PaginatedSessionRead(
                 page=page, limit=page_size, total_pages=0, total_sessions=0, sessions=[]
             )
 
         sessions = self._get_sessions_paginated(scenario_ids, page, page_size)
         session_list = [self._build_session_item(sess) for sess in sessions]
 
-        return PaginatedSessionsResponse(
+        return PaginatedSessionRead(
             page=page,
             limit=page_size,
             total_pages=ceil(total_sessions / page_size),
