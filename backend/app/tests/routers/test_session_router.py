@@ -46,11 +46,10 @@ class TestSessionRoute(unittest.TestCase):
         cls.SessionLocal = sessionmaker(bind=cls.engine, class_=DBSession)
 
     def setUp(self) -> None:
-        self.gcs_patcher = patch(
-            'app.connections.gcs_client.GCSManager',
-            return_value=FakeGCS(),
+        self.gcs_audio_global_patcher = patch(
+            'app.connections.gcs_client._gcs_audio_manager', new=FakeGCS()
         )
-        self.mock_gcs_cls = self.gcs_patcher.start()
+        self.gcs_audio_global_patcher.start()
 
         self.db = self.SessionLocal()
 
@@ -118,7 +117,7 @@ class TestSessionRoute(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.turn_patcher.stop()
-        self.gcs_patcher.stop()
+        self.gcs_audio_global_patcher.stop()
         self.db.rollback()
         self.db.close()
 

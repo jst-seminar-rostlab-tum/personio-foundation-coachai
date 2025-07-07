@@ -19,16 +19,15 @@ from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
 from app.schemas.session_feedback import FeedbackRequest, SessionFeedbackMetrics
 from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
-from app.services.google_cloud_storage_service import GCSManager
 from app.services.review_service import ReviewService
 from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 from app.services.session_turn_service import SessionTurnService
 
 
 class SessionService:
-    def __init__(self, db: DBSession, gcs_manager: GCSManager | None = None) -> None:
+    def __init__(self, db: DBSession) -> None:
         self.db = db
-        self.gcs_manager = gcs_manager or get_gcs_audio_manager()
+        self.gcs_audio_manager = get_gcs_audio_manager()
 
     def fetch_session_details(
         self, session_id: UUID, user_profile: UserProfile
@@ -402,9 +401,11 @@ class SessionService:
         if feedback.status == FeedbackStatusEnum.failed:
             raise HTTPException(status_code=500, detail='Session feedback failed.')
 
-        audio_file_exists = self.gcs_manager.document_exists(filename=feedback.full_audio_filename)
+        audio_file_exists = self.gcs_audio_manager.document_exists(
+            filename=feedback.full_audio_filename
+        )
         if audio_file_exists:
-            full_audio_url = self.gcs_manager.generate_signed_url(
+            full_audio_url = self.gcs_audio_manager.generate_signed_url(
                 filename=feedback.full_audio_filename,
             )
         else:
