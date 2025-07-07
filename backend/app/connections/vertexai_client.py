@@ -3,7 +3,7 @@ from typing import Any, TypeVar
 from google import genai
 from google.genai.types import GenerateContentConfig, Part
 from google.oauth2 import service_account
-from openai import BaseModel
+from pydantic import BaseModel
 
 from app.config import Settings
 
@@ -12,12 +12,12 @@ settings = Settings()
 DEFAULT_CHEAP_MODEL = settings.DEFAULT_CHEAP_MODEL
 DEFAULT_MODEL = settings.DEFAULT_MODEL
 FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
-VERTEXAI_PROJECT = settings.VERTEXAI_PROJECT
+VERTEXAI_PROJECT_ID = settings.VERTEXAI_PROJECT_ID
 VERTEXAI_LOCATION = settings.VERTEXAI_LOCATION
 
 creds_info = {
     'type': 'service_account',
-    'project_id': settings.VERTEXAI_PROJECT,
+    'project_id': settings.VERTEXAI_PROJECT_ID,
     'private_key_id': settings.VERTEXAI_PRIVATE_KEY_ID,
     'private_key': settings.VERTEXAI_PRIVATE_KEY.replace('\\n', '\n'),
     'client_email': settings.VERTEXAI_CLIENT_EMAIL,
@@ -42,7 +42,10 @@ if not credentials:
 else:
     ENABLE_AI = settings.ENABLE_AI
     vertexai_client = genai.Client(
-        credentials=credentials, vertexai=True, project=VERTEXAI_PROJECT, location=VERTEXAI_LOCATION
+        credentials=credentials,
+        vertexai=True,
+        project=VERTEXAI_PROJECT_ID,
+        location=VERTEXAI_LOCATION,
     )
 
 
@@ -74,8 +77,9 @@ T = TypeVar('T', bound=BaseModel)
 
 
 def call_llm_with_audio(
-    prompt: str,
+    request_prompt: str,
     audio_uri: str,
+    system_prompt: str | None = None,
     model: str = DEFAULT_MODEL,
 ) -> str:
     if not ENABLE_AI or vertexai_client is None:
@@ -86,7 +90,9 @@ def call_llm_with_audio(
             DEFAULT_CHEAP_MODEL if FORCE_CHEAP_MODEL else (model or DEFAULT_CHEAP_MODEL)
         )
         response = vertexai_client.models.generate_content(
-            model=selected_model, contents=[prompt, part]
+            model=selected_model,
+            contents=[request_prompt, part],
+            config=GenerateContentConfig(system_instruction=system_prompt),
         )
 
         if not response.text:
@@ -97,7 +103,7 @@ def call_llm_with_audio(
         return ''
 
 
-def call_structured_llm_vertexai(
+def call_structured_llm(
     request_prompt: str,
     output_model: type[T],
     system_prompt: str | None = None,
