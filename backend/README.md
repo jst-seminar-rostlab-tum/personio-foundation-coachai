@@ -95,10 +95,13 @@ npm install # Required to initialize Husky which manages the pre-commit hooks
 
 - Create .env file from .env.example
 
-- Fill in variable values. Reach out to TA or Ron for keys.
+- Fill in variable values. Reach out to TA or Ron for keys and credentials.
 
 ```bash
-OPENAI_API_KEY = <..key..>
+VERTEXAI_PRIVATE_KEY_ID=<...>
+VERTEXAI_PRIVATE_KEY=<...>
+VERTEXAI_CLIENT_EMAIL=<...>
+VERTEXAI_CLIENT_ID=<...>
 ```
 
 3. Run a local PostgreSQL instace on Docker:
@@ -225,11 +228,6 @@ A pre-push hook is executed when committing changes to `backend/app/models`, `ba
 - **Never edit migration scripts once they're merged to `dev`**
 - If changes are needed, create a follow-up migration instead
 
-### Twilio Setup
-
-Twilio is used for phone number verification by sending verification codes via SMS.
-You can skip these steps below if you don't want to use phone number verification, the default is to auto-approve any verification code.
-
 ### Knowledge Database (Vector DB)
 
 If you want to use the vector knowledge base, make sure you have a Gemini API Key and a Supabase URL in your `.env` file.
@@ -238,6 +236,12 @@ Run the following command to populate it:
 ```bash
 uv run -m app.rag.populate_vector_db
 ```
+
+### Twilio Setup
+
+Twilio is used for phone number verification by sending verification codes via SMS.
+You can skip these steps below if you don't want to use phone number verification, the default is to auto-approve any verification code.
+
 
 #### Setup Instructions
 
