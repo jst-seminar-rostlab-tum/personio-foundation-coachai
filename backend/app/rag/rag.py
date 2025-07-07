@@ -22,7 +22,6 @@ DOC_FOLDER = BASE_DIR / 'documents'
 settings = Settings()
 
 
-EMBEDDING_TYPE = 'gemini'
 TABLE_NAME = 'hr_information'
 SEARCH_TYPE = 'mmr'
 K_SEARCH = 5
@@ -72,7 +71,7 @@ def build_vector_db_retriever(
     Returns:
         VectorStoreRetriever: A retriever instance for querying the vector database.
     """
-    embedding = get_embedding_model(EMBEDDING_TYPE)
+    embedding = get_embedding_model()
     vector_db = load_vector_db(embedding, TABLE_NAME)
     if populate_db:
         load_and_index_documents(vector_db)
