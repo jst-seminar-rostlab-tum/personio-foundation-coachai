@@ -38,8 +38,8 @@ const updateUserProfile = async (
 
 const exportUserData = async (api: AxiosInstance) => {
   try {
-    const { data } = await api.get('/user-profile/export');
-    return data;
+    const response = await api.get('/user-profile/export', { responseType: 'blob' });
+    return response.data;
   } catch (error) {
     console.error('Error exporting user data:', error);
     throw error;
