@@ -3,6 +3,8 @@
 import { User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
+import { useTranslations } from 'next-intl';
+import { ConnectionStatus } from '@/interfaces/models/Simulation';
 
 interface SimulationHeaderProps {
   characterName?: string;
@@ -11,6 +13,7 @@ interface SimulationHeaderProps {
   sessionLabel?: string;
   avatarSrc?: string;
   time: number;
+  connectionStatus?: ConnectionStatus;
 }
 
 function formatTime(seconds: number) {
@@ -25,6 +28,19 @@ function formatTime(seconds: number) {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+function getConnectionStatusColor(status: ConnectionStatus) {
+  switch (status) {
+    case 'connected':
+      return 'bg-green-500';
+    case 'connecting':
+      return 'bg-blue-500';
+    case 'disconnected':
+      return 'bg-red-500';
+    default:
+      return 'bg-gray-500';
+  }
+}
+
 export default function SimulationHeader({
   characterName = 'Alex',
   characterRole = 'Team Member',
@@ -32,7 +48,10 @@ export default function SimulationHeader({
   sessionLabel = 'Performance Reviews',
   avatarSrc,
   time = 0,
+  connectionStatus,
 }: SimulationHeaderProps) {
+  const t = useTranslations('Simulation');
+
   return (
     <div className="relative border-b border-bw-10 w-full">
       <div className="flex flex-col gap-6 p-6 max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)]">
@@ -40,9 +59,23 @@ export default function SimulationHeader({
           <Badge variant="default" className="bg-marigold-30/40 text-marigold-90">
             {sessionLabel}
           </Badge>
-          <Badge variant="outline" className="w-16 text-center justify-center">
-            {formatTime(time)}
-          </Badge>
+          <div className="flex items-center gap-3">
+            {connectionStatus && (
+              <Badge variant="outline" className="flex items-center gap-1.5">
+                <div
+                  className={`w-2 h-2 rounded-full ${getConnectionStatusColor(connectionStatus)}`}
+                ></div>
+                <span>
+                  {connectionStatus === 'connecting' && t('connecting')}
+                  {connectionStatus === 'connected' && t('connected')}
+                  {connectionStatus === 'disconnected' && t('disconnected')}
+                </span>
+              </Badge>
+            )}
+            <Badge variant="outline" className="w-16 text-center justify-center">
+              {formatTime(time)}
+            </Badge>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <Avatar>

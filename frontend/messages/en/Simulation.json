@@ -3,5 +3,8 @@
   "metaDescription": "Practice your skills in an interactive training simulation",
   "sessionEndError": "Error ending the session.",
   "sessionTurnError": "Error creating session turn.",
-  "sessionConnectToAIError": "Failed to connect to the ai assistant."
+  "sessionConnectToAIError": "Failed to connect to the ai assistant.",
+  "connecting": "Connecting…",
+  "connected": "Connected",
+  "disconnected": "Disconnected"
 }
