@@ -118,7 +118,7 @@ def generate_feedback_components(
         future_recommendations = executor.submit(
             safe_generate_recommendations, feedback_request, hr_docs_context
         )
-        future_scoring = executor.submit(scoring_service.score_conversation, conversation)
+        future_scoring = executor.submit(scoring_service.safe_score_conversation, conversation)
         future_audio_stitch = executor.submit(
             session_turn_service.stitch_mp3s_from_gcs,
             session_id,
