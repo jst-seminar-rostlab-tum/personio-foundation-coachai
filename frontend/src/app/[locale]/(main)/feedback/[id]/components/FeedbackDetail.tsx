@@ -21,8 +21,8 @@ import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/SessionService';
-import { showErrorToast } from '@/lib/toast';
-import { convertTimeToMinutes, formattedDate } from '@/lib/utils';
+import { showErrorToast } from '@/lib/utils/toast';
+import { formattedDate } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
@@ -34,6 +34,7 @@ interface FeedbackDetailProps {
 
 export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   const t = useTranslations('Feedback');
+  const tCommon = useTranslations('Common');
   const locale = useLocale();
   const [feedbackDetail, setFeedbackDetail] = useState<FeedbackResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,7 +58,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         throw new Error('Failed to get session feedback');
       } catch (error) {
         setIsLoading(false);
-        showErrorToast(error, t('getSessionDetailError'));
+        showErrorToast(error, t('fetchError'));
       }
     },
     [setFeedbackDetail, setIsLoading, t]
@@ -68,20 +69,24 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   }, [getFeedbackDetail, sessionId]);
 
   const progressBarData = [
-    { key: t('progressBars.structure'), value: feedbackDetail?.feedback?.scores.structure ?? 0 },
-    { key: t('progressBars.empathy'), value: feedbackDetail?.feedback?.scores.empathy ?? 0 },
-    { key: t('progressBars.focus'), value: feedbackDetail?.feedback?.scores.focus ?? 0 },
-    { key: t('progressBars.clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
+    { key: tCommon('structure'), value: feedbackDetail?.feedback?.scores.structure ?? 0 },
+    { key: tCommon('empathy'), value: feedbackDetail?.feedback?.scores.empathy ?? 0 },
+    { key: tCommon('focus'), value: feedbackDetail?.feedback?.scores.focus ?? 0 },
+    { key: tCommon('clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
+
+  const convertTimeToMinutes = (seconds: number) => {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  };
 
   const roundCardStats = [
     {
-      key: t('stats.sessionLength'),
+      key: t('sessionLength'),
       value: convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0),
       icon: 'Clock',
     },
     {
-      key: t('stats.goalsAchieved'),
+      key: tCommon('goalsAchieved'),
       value: `${feedbackDetail?.feedback?.goalsAchieved.length ?? 0} / ${
         feedbackDetail?.goalsTotal.length ?? 0
       }`,
@@ -169,11 +174,11 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
       </div>
       <Accordion type="multiple">
         <AccordionItem value="feedback">
-          <AccordionTrigger>{t('accordian.feedback')}</AccordionTrigger>
+          <AccordionTrigger>{t('accordion.feedback')}</AccordionTrigger>
           <AccordionContent>
             <div className="flex items-center gap-2 mt-3">
               <CheckCircle size={24} className="text-forest-50" />
-              <span className="text-xl">{t('detailedFeedback.positive')}</span>
+              <span className="text-xl">{tCommon('positive')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
               {examplePositive.map((example, index) => (
@@ -183,7 +188,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
 
             <div className="flex items-center gap-2 mt-10">
               <CircleX size={24} className="text-flame-50" />
-              <span className="text-xl">{t('detailedFeedback.negative')}</span>
+              <span className="text-xl">{tCommon('negative')}</span>
             </div>
             <div className="flex flex-col gap-4 mt-5 pl-4">
               {exampleNegative.map((negative, index) => (
@@ -203,10 +208,10 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="suggestion">
-          <AccordionTrigger>{t('accordian.suggestion')}</AccordionTrigger>
+          <AccordionTrigger>{t('accordion.suggestion')}</AccordionTrigger>
         </AccordionItem>
         <AccordionItem value="session">
-          <AccordionTrigger>{t('accordian.sessions')}</AccordionTrigger>
+          <AccordionTrigger>{t('accordion.sessions')}</AccordionTrigger>
         </AccordionItem>
       </Accordion>
     </div>

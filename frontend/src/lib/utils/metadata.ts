@@ -27,6 +27,7 @@ function getNamespaceFromPath(path: string): string {
     simulation: 'Simulation',
     settings: 'Settings',
     terms: 'TermsOfService',
+    confirm: 'Login.ConfirmationForm',
   };
 
   return pathMap[pathSegment] || 'HomePage';
@@ -92,11 +93,6 @@ export async function generateMetadata(
       description:
         t('metaDescription') || 'AI-powered coaching platform for leadership development',
       site: '@personio',
-    },
-    viewport: {
-      width: 'device-width',
-      initialScale: 1,
-      maximumScale: 1,
     },
   };
 

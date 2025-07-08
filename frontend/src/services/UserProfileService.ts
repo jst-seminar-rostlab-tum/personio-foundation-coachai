@@ -77,6 +77,27 @@ const checkUnique = async (api: AxiosInstance, email: string, phone: string) => 
   }
 };
 
+const getPaginatedUsers = async (
+  api: AxiosInstance,
+  page: number,
+  limit: number,
+  emailSubstring?: string
+) => {
+  try {
+    const { data } = await api.get('/user-profile', {
+      params: {
+        page,
+        limit,
+        email_substring: emailSubstring,
+      },
+    });
+    return data;
+  } catch (error) {
+    console.error('Error getting users:', error);
+    throw error;
+  }
+};
+
 export const UserProfileService = {
   getUserProfile,
   getUserStats,
@@ -85,4 +106,5 @@ export const UserProfileService = {
   deleteUser,
   deleteUnconfirmedUser,
   checkUnique,
+  getPaginatedUsers,
 };

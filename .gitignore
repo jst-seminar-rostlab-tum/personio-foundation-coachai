@@ -6,3 +6,4 @@
 !.env.example
 *.crt
 *.pem
+/supabase/node_modules/
