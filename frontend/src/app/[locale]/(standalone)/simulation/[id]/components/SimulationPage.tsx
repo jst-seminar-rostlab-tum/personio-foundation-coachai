@@ -59,7 +59,9 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         <SimulationMessages messages={messages} />
-        {hangupInProgress && (
+        {(connectionStatus === 'connecting' ||
+          connectionStatus === 'disconnected' ||
+          hangupInProgress) && (
           <div className="absolute inset-0 backdrop-blur-sm bg-background z-10"></div>
         )}
       </div>
@@ -71,12 +73,21 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
         toggleMicrophone={toggleMic}
         isConnected={connectionStatus === 'connected'}
         onDisconnect={onDisconnect}
-        isDisabled={connectionStatus !== 'connected' || hangupInProgress}
+        isDisabled={hangupInProgress}
       />
 
-      {hangupInProgress && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-          <Loader2 className="h-10 w-10 animate-spin text-marigold-50" />
+      {(connectionStatus === 'connecting' ||
+        connectionStatus === 'disconnected' ||
+        hangupInProgress) && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center z-50 pointer-events-none">
+          <Loader2 className="h-10 w-10 animate-spin text-marigold-50 mb-4" />
+          <div className="text-center text-bw-70 font-medium">
+            {hangupInProgress && <p>{t('hangingUp')}</p>}
+            {connectionStatus === 'connecting' && <p>{t('connectingMessage')}</p>}
+            {connectionStatus === 'disconnected' && !hangupInProgress && (
+              <p>{t('disconnectedMessage')}</p>
+            )}
+          </div>
         </div>
       )}
 

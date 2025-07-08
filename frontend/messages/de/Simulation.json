@@ -6,5 +6,8 @@
   "sessionConnectToAIError": "Fehler beim Verbindungsaufbau zum AI Assistenten.",
   "connecting": "Verbindung wird hergestellt…",
   "connected": "Verbunden",
-  "disconnected": "Verbindung getrennt"
+  "disconnected": "Verbindung getrennt",
+  "hangingUp": "Anruf wird beendet…",
+  "connectingMessage": "Verbindung wird hergestellt…",
+  "disconnectedMessage": "Verbindung getrennt... Verbindung wird wiederhergestellt..."
 }

@@ -6,5 +6,8 @@
   "sessionConnectToAIError": "Failed to connect to the ai assistant.",
   "connecting": "Connecting…",
   "connected": "Connected",
-  "disconnected": "Disconnected"
+  "disconnected": "Disconnected",
+  "hangingUp": "Hanging up…",
+  "connectingMessage": "Setting up connection…",
+  "disconnectedMessage": "Connection lost... Retrying connection..."
 }
