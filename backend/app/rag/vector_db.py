@@ -43,6 +43,7 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
         if file.endswith('.pdf'):
             file_path = os.path.join(doc_folder, file)
             try:
+                print(f'📄 Processing document {file}...')
                 loader = PyPDFLoader(file_path)
                 loaded_docs = loader.load()
 
@@ -62,6 +63,7 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
 
                 splits = text_splitter.split_documents(loaded_docs)
                 docs.extend(splits)
+                print(f'✅ Successfully processed {file} with {len(splits)} chunks')
             except Exception as e:
                 print(f'❌ Error processing {file_path}: {e}')
 
@@ -101,7 +103,7 @@ def format_docs_with_metadata(docs: list[Document]) -> tuple[str, list[dict]]:
 
 
 def load_vector_db(
-    embedding: Embeddings, table_name: str, query_name: str = 'match_documents'
+    embedding: Embeddings, table_name: str = 'hr_information', query_name: str = 'match_documents'
 ) -> SupabaseVectorStore:
     """
     Initializes a SupabaseVectorStore with the given embedding model and configuration.

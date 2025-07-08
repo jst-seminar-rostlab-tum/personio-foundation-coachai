@@ -27,6 +27,8 @@ class SessionFeedback(CamelModel, table=True):  # `table=True` makes it a databa
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: float
     transcript_uri: str
+    full_audio_filename: str
+    document_names: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     speak_time_percent: float
     questions_asked: int
     session_length_s: int
