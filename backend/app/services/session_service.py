@@ -400,9 +400,12 @@ class SessionService:
         if feedback.status == FeedbackStatusEnum.failed:
             raise HTTPException(status_code=500, detail='Session feedback failed.')
 
-        audio_file_exists = self.gcs_audio_manager.document_exists(
-            filename=feedback.full_audio_filename
-        )
+        audio_file_exists = False
+
+        if self.gcs_audio_manager is not None:
+            audio_file_exists = self.gcs_audio_manager.document_exists(
+                filename=feedback.full_audio_filename
+            )
         if audio_file_exists:
             full_audio_url = self.gcs_audio_manager.generate_signed_url(
                 filename=feedback.full_audio_filename,
@@ -426,6 +429,7 @@ class SessionService:
             example_negative=feedback.example_negative,  # type: ignore
             recommendations=feedback.recommendations,  # type: ignore
             full_audio_url=full_audio_url,
+            document_names=feedback.document_names,
             session_turn_transcripts=session_turn_transcripts,
         )
 
