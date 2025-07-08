@@ -16,10 +16,10 @@ VERTEXAI_PROJECT_ID = settings.VERTEXAI_PROJECT_ID
 VERTEXAI_LOCATION = settings.VERTEXAI_LOCATION
 
 required = [
-    settings.VERTEXAI_PRIVATE_KEY_ID,
-    settings.VERTEXAI_PRIVATE_KEY,
-    settings.VERTEXAI_CLIENT_EMAIL,
-    settings.VERTEXAI_CLIENT_ID,
+    settings.GCP_PRIVATE_KEY_ID,
+    settings.GCP_PRIVATE_KEY,
+    settings.GCP_CLIENT_EMAIL,
+    settings.GCP_CLIENT_ID,
 ]
 
 try:
@@ -28,11 +28,11 @@ try:
     else:
         creds_info = {
             'type': 'service_account',
-            'project_id': settings.VERTEXAI_PROJECT_ID,
-            'private_key_id': settings.VERTEXAI_PRIVATE_KEY_ID,
-            'private_key': settings.VERTEXAI_PRIVATE_KEY.replace('\\n', '\n'),
-            'client_email': settings.VERTEXAI_CLIENT_EMAIL,
-            'client_id': settings.VERTEXAI_CLIENT_ID,
+            'project_id': settings.GCP_PROJECT_ID,
+            'private_key_id': settings.GCP_PRIVATE_KEY_ID,
+            'private_key': settings.GCP_PRIVATE_KEY.replace('\\n', '\n'),
+            'client_email': settings.GCP_CLIENT_EMAIL,
+            'client_id': settings.GCP_CLIENT_ID,
             'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
             'token_uri': 'https://oauth2.googleapis.com/token',
             'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs',
@@ -43,9 +43,9 @@ try:
         credentials = service_account.Credentials.from_service_account_info(
             creds_info, scopes=['https://www.googleapis.com/auth/cloud-platform']
         )
-except Exception:
+except Exception as e:
     credentials = None
-    print('Failed to get service account credentials for Vertex AI')
+    print(f'Failed to get service account credentials for Vertex AI: {e}')
 
 if not credentials:
     print(

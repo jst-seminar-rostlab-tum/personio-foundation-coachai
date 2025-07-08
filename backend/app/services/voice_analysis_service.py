@@ -1,5 +1,3 @@
-import os
-
 from app.connections.vertexai_client import call_llm_with_audio
 
 prompt = (
@@ -21,7 +19,6 @@ def analyze_voice(audio_uri: str) -> str:
     Returns:
         str: A concise textual analysis (max 2 sentences) describing the speaker's voice.
     """
-    if not os.path.exists(audio_uri):
-        print(f'Audio file not found at: {audio_uri}')
+    if not audio_uri:
         return ''
     return call_llm_with_audio(audio_uri=audio_uri, request_prompt=prompt)
