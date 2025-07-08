@@ -12,7 +12,7 @@ from app.database import get_db_session
 from app.dependencies import require_admin, require_user
 from app.models.user_profile import UserProfile
 from app.schemas.user_profile import (
-    PaginatedUserResponse,
+    PaginatedUserRead,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
@@ -31,7 +31,7 @@ def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserS
 
 @router.get(
     '',
-    response_model=PaginatedUserResponse,
+    response_model=PaginatedUserRead,
     dependencies=[Depends(require_admin)],
 )
 def get_user_profiles(
@@ -44,7 +44,7 @@ def get_user_profiles(
         min_length=1,
         max_length=100,
     ),
-) -> PaginatedUserResponse:
+) -> PaginatedUserRead:
     """
     Retrieve all user profiles.
     """

@@ -14,7 +14,7 @@ from app.models.user_goal import Goal, UserGoal
 from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
-    PaginatedUserResponse,
+    PaginatedUserRead,
     UserEmailRead,
     UserProfileExtendedRead,
     UserProfileRead,
@@ -68,7 +68,7 @@ class UserService:
 
     def get_user_profiles(
         self, page: int = 1, page_size: int = 10, email_substring: str | None = None
-    ) -> PaginatedUserResponse:
+    ) -> PaginatedUserRead:
         statement = select(UserProfile)
         if email_substring:
             statement = statement.where(col(UserProfile.email).like(f'%{email_substring}%'))
@@ -78,7 +78,7 @@ class UserService:
         all_users = self.db.exec(statement).all()
         total_users = len(all_users)
         if total_users == 0:
-            return PaginatedUserResponse(
+            return PaginatedUserRead(
                 page=page,
                 limit=page_size,
                 total_pages=1,
@@ -96,7 +96,7 @@ class UserService:
         users = all_users[(page - 1) * page_size : (page) * page_size]
         user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
 
-        return PaginatedUserResponse(
+        return PaginatedUserRead(
             page=page,
             limit=page_size,
             total_pages=total_pages,

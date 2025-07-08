@@ -66,7 +66,7 @@ class UserEmailRead(CamelModel):
     email: str
 
 
-class PaginatedUserResponse(CamelModel):
+class PaginatedUserRead(CamelModel):
     page: int
     limit: int
     total_pages: int
