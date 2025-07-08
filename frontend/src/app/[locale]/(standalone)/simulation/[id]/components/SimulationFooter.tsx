@@ -13,7 +13,6 @@ interface SimulationFooterProps {
 export default function SimulationFooter({
   isMicActive,
   toggleMicrophone,
-  isConnected,
   onDisconnect,
 }: SimulationFooterProps) {
   return (
@@ -21,13 +20,7 @@ export default function SimulationFooter({
       <Button size="iconLarge" variant="outline" onClick={toggleMicrophone}>
         {isMicActive ? <Mic className="!w-6 !h-6" /> : <MicOff className="!w-6 !h-6" />}
       </Button>
-      <Button
-        size="iconLarge"
-        variant="destructive"
-        onClick={onDisconnect}
-        disabled={!isConnected}
-        aria-label="Disconnect"
-      >
+      <Button size="iconLarge" variant="destructive" onClick={onDisconnect} aria-label="Disconnect">
         <Phone className="!w-6 !h-6" />
       </Button>
     </div>

@@ -883,6 +883,11 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=4.3,
             transcript_uri='https://example.com/transcripts/session1.txt',
+            full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -956,6 +961,12 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=4.0,
             transcript_uri='https://example.com/transcripts/session2.txt',
+            full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -1028,6 +1039,12 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=4.0,
             transcript_uri='https://example.com/transcripts/session3.txt',
+            full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -1100,6 +1117,10 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=4.0,
             transcript_uri='https://example.com/transcripts/session4.txt',
+            full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+            ],
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -1174,6 +1195,12 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=4.8,
             transcript_uri='https://example.com/transcripts/session5.txt',
+            full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1246,6 +1273,11 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=3.8,
             transcript_uri='https://example.com/transcripts/session6.txt',
+            full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1320,6 +1352,12 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=3.8,
             transcript_uri='https://example.com/transcripts/session7.txt',
+            full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1389,6 +1427,10 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=3.8,
             transcript_uri='https://example.com/transcripts/session8.txt',
+            full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1469,6 +1511,11 @@ def get_dummy_scenario_preparations(
                 'Foster mutual understanding',
                 'End on a positive note',
             ],
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1491,6 +1538,7 @@ def get_dummy_scenario_preparations(
                 'Set expectations for communication',
                 'Identify potential risks',
             ],
+            document_names=['Communication at Work', 'Giving Feedback'],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1513,6 +1561,10 @@ def get_dummy_scenario_preparations(
                 'Align on team roles',
                 'Set expectations for communication',
             ],
+            document_names=[
+                'Psychology of Human Relations',
+                'Teamwork: An Open Access Practical Guide',
+            ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1528,6 +1580,7 @@ def get_dummy_scenario_preparations(
         ScenarioPreparation(
             id=uuid4(),
             scenario_id=conversation_scenarios[3].id,
+            document_names=['Communication at Work', 'A Guide to Effective Negotiations'],
             objectives=[
                 'Bring clarity to the situation',
                 'Encourage open dialogue',

@@ -38,7 +38,7 @@ export default function ConfirmationForm() {
   }, [error]);
 
   const confirmationFormSchema = z.object({
-    email: z.string().email(t('emailInputError')),
+    email: z.string().email(tCommon('emailInputError')),
     code: z.string(),
   });
   const codeSize = 6;
