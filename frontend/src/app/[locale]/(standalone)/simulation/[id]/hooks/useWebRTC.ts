@@ -59,15 +59,28 @@ export function useWebRTC(sessionId: string) {
     hasInitializedRef.current = true;
 
     cleanupRef.current = false;
-    setConnectionStatus('connecting');
 
     const pc = new RTCPeerConnection();
     peerConnectionRef.current = pc;
 
     pc.onconnectionstatechange = () => {
-      if (['disconnected', 'failed', 'closed'].includes(pc.connectionState)) {
-        setConnectionStatus('disconnected');
-        cleanup();
+      switch (pc.connectionState) {
+        case 'disconnected':
+          setConnectionStatus('disconnected');
+          break;
+        case 'failed':
+        case 'closed':
+          setConnectionStatus('disconnected');
+          cleanup();
+          break;
+        case 'connecting':
+          setConnectionStatus('connecting');
+          break;
+        case 'connected':
+          setConnectionStatus('connected');
+          break;
+        default:
+          break;
       }
     };
 

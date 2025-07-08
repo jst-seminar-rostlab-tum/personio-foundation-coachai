@@ -40,10 +40,10 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
   const onDisconnect = async () => {
     try {
       setHangupInProgress(true);
-      cleanup();
       const { data } = await sessionService.updateSession(api, sessionId, {
         status: SessionStatus.COMPLETED,
       });
+      cleanup();
       router.push(`/feedback/${data.id}`);
     } catch (err) {
       setHangupInProgress(false);
