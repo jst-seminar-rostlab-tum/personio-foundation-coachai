@@ -25,6 +25,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       .default,
     NotFound: (await import(`../../messages/${locale}/NotFound.json`)).default,
     ErrorPage: (await import(`../../messages/${locale}/ErrorPage.json`)).default,
+    Reset: (await import(`../../messages/${locale}/Reset.json`)).default,
+    UpdatePassword: (await import(`../../messages/${locale}/UpdatePassword.json`)).default,
   };
 
   return {

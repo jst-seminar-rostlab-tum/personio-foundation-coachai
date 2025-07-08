@@ -2,5 +2,6 @@
   "metaTitle": "Simulation - Coach AI",
   "metaDescription": "Practice your skills in an interactive training simulation",
   "sessionEndError": "Error ending the session.",
-  "sessionTurnError": "Error creating session turn."
+  "sessionTurnError": "Error creating session turn.",
+  "sessionConnectToAIError": "Failed to connect to the ai assistant."
 }
