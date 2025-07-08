@@ -14,7 +14,7 @@ from app.schemas.review import (
 )
 from app.services.review_service import ReviewService
 
-router = APIRouter(prefix='/review', tags=['User Review'])
+router = APIRouter(prefix='/reviews', tags=['User Review'])
 
 
 def get_review_service(db: Annotated[DBSession, Depends(get_db_session)]) -> ReviewService:
