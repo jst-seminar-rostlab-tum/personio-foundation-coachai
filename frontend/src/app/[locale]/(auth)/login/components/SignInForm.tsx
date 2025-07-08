@@ -8,7 +8,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import {
   Form,
   FormControl,
@@ -25,6 +24,7 @@ import { showErrorToast } from '@/lib/utils/toast';
 
 export function SignInForm() {
   const tLogin = useTranslations('Login');
+  const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,7 +37,7 @@ export function SignInForm() {
   }, [error]);
 
   const signInFormSchema = z.object({
-    email: z.string().email(tLogin('emailInputError')),
+    email: z.string().email(tCommon('emailInputError')),
     password: z.string().min(1, tLogin('passwordInputError')),
   });
 
@@ -83,10 +83,10 @@ export function SignInForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tLogin('emailInputLabel')}</FormLabel>
+                  <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={tLogin('emailInputPlaceholder')}
+                      placeholder={tCommon('emailInputPlaceholder')}
                       {...field}
                       className="w-full"
                       type="email"
@@ -124,10 +124,14 @@ export function SignInForm() {
             <Button type="submit" size="full" disabled={isLoading}>
               {tLogin('signIn')}
             </Button>
-            <div className="w-full border-t border-gray-300" />
-            <Button size="full" variant="secondary" disabled={isLoading}>
-              <Image src="/images/icons/google-icon.svg" alt="Google Icon" width={20} height={20} />
-              {tLogin('signInWithGoogleButtonLabel')}
+            <Button
+              type="button"
+              variant="link"
+              className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
+              disabled={isLoading}
+              onClick={() => router.push('/reset')}
+            >
+              {tLogin('forgotPassword')}
             </Button>
           </CardFooter>
         </form>

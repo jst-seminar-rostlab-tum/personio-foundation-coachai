@@ -13,6 +13,7 @@
   "tokenFailed": "Fehler beim Speichern des Token-Limits",
   "tokenNumberFailed": "Bitte geben Sie eine gültige Zahl zwischen 1 und 1.000.000 ein",
   "search": "Suchen...",
+  "email": "E-Mail",
   "actions": "Aktionen",
   "users": "Benutzer",
   "sortBy": "Sortieren nach",

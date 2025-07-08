@@ -1,4 +1,6 @@
+import json
 import os
+from pathlib import Path
 
 from langchain.embeddings.base import Embeddings
 from langchain.schema import Document
@@ -35,16 +37,37 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
     if not os.path.isdir(doc_folder):
         print(f"Warning: Document folder '{doc_folder}' does not exist.")
         return []
+
+    license_map = load_license_mapping()
     for file in os.listdir(doc_folder):
         if file.endswith('.pdf'):
             file_path = os.path.join(doc_folder, file)
             try:
+                print(f'📄 Processing document {file}...')
                 loader = PyPDFLoader(file_path)
-                doc = loader.load()
-                splits = text_splitter.split_documents(doc)
+                loaded_docs = loader.load()
+
+                doc_name = os.path.basename(file)
+                license_name = license_map.get(doc_name, 'Unknown')
+
+                if license_name == 'Unknown':
+                    print(f"⚠️ No license found for '{doc_name}', defaulting to 'Unknown'.")
+                else:
+                    print(f"📄 '{doc_name}' assigned license: {license_name}")
+
+                for doc in loaded_docs:
+                    # Replacing null bytes as they lead to errors
+                    doc.page_content = doc.page_content.replace('\u0000', '')
+                    doc.metadata['licenseName'] = license_name
+                    doc.metadata.pop('source', None)
+
+                splits = text_splitter.split_documents(loaded_docs)
                 docs.extend(splits)
+                print(f'✅ Successfully processed {file} with {len(splits)} chunks')
             except Exception as e:
-                print(f'Error loading or splitting PDF {file_path}: {e}')
+                print(f'❌ Error processing {file_path}: {e}')
+
+    print(f'✅ Prepared {len(docs)} document chunks for vector DB.')
     return docs
 
 
@@ -80,7 +103,7 @@ def format_docs_with_metadata(docs: list[Document]) -> tuple[str, list[dict]]:
 
 
 def load_vector_db(
-    embedding: Embeddings, table_name: str, query_name: str = 'match_documents'
+    embedding: Embeddings, table_name: str = 'hr_information', query_name: str = 'match_documents'
 ) -> SupabaseVectorStore:
     """
     Initializes a SupabaseVectorStore with the given embedding model and configuration.
@@ -100,3 +123,13 @@ def load_vector_db(
         table_name=table_name,
         query_name=query_name,
     )
+
+
+def load_license_mapping(
+    file_path: Path = Path(__file__).parent / 'document-licenses.json',
+) -> dict:
+    """
+    Loads a mapping from document filename to license name from a JSON file.
+    """
+    with open(file_path) as f:
+        return json.load(f)

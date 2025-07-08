@@ -61,7 +61,7 @@ class Settings(BaseSettings):
     GCP_PRIVATE_KEY: str = ''
     GCP_CLIENT_EMAIL: str = ''
     GCP_CLIENT_ID: str = ''
-    GCP_BUCKET: str = 'coachai'
+    GCP_BUCKET: str = 'coachai-dev'
     GCP_PROJECT_ID: str = 'personio-foundation'
 
     @property

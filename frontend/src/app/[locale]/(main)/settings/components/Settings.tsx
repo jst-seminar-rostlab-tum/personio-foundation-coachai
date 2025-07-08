@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { use, useState } from 'react';
 import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -19,7 +20,6 @@ import { UserRoles } from '@/lib/constants/userRoles';
 import { PrimaryGoals } from '@/lib/constants/primaryGoals';
 import { UserProfile } from '@/interfaces/models/UserProfile';
 import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
-import JSZip from 'jszip';
 import { api } from '@/services/ApiClient';
 import UserPreferences from './UserPreferences';
 
@@ -38,7 +38,7 @@ export default function Settings({ userProfile }: SettingsProps) {
   const t = useTranslations('Settings');
   const tCommon = useTranslations('Common');
   const userProfileData = use(userProfile);
-
+  const router = useRouter();
   const [storeConversations, setStoreConversations] = useState(
     userProfileData.storeConversations ?? false
   );
@@ -143,11 +143,9 @@ export default function Settings({ userProfile }: SettingsProps) {
 
   const handleExport = async () => {
     try {
-      const data = await UserProfileService.exportUserData(api);
-      const zip = new JSZip();
-      zip.file('user_data_export.json', JSON.stringify(data, null, 2));
-      const blob = await zip.generateAsync({ type: 'blob' });
-      const url = window.URL.createObjectURL(blob);
+      const blob = await UserProfileService.exportUserData(api);
+      const zipBlob = blob instanceof Blob ? blob : new Blob([blob], { type: 'application/zip' });
+      const url = window.URL.createObjectURL(zipBlob);
       const a = document.createElement('a');
       a.href = url;
       a.download = 'user_data_export.zip';
@@ -201,7 +199,11 @@ export default function Settings({ userProfile }: SettingsProps) {
                   <div className="flex flex-col">
                     <div className="text-bw-70">{tCommon('deleteAccount')}</div>
                   </div>
-                  <DeleteUserHandler>
+                  <DeleteUserHandler
+                    onDeleteSuccess={() => {
+                      router.push('/');
+                    }}
+                  >
                     <Button variant="destructive">{tCommon('deleteAccount')}</Button>
                   </DeleteUserHandler>
                 </div>
