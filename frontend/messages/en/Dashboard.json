@@ -13,5 +13,8 @@
     "title": "Recent Training Sessions",
     "subtitle": "Your last completed training sessions",
     "showEntireHistory": "Show Entire History"
+  },
+  "suggestion": {
+    "startButton": "Start now"
   }
 }

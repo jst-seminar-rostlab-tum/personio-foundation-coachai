@@ -13,6 +13,7 @@ import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { SessionFromPagination } from '@/interfaces/models/Session';
 import { formattedDate } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiServer';
+import ConversationScenarioSuggestion from './components/ConversationScenarioSuggestion';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -33,8 +34,19 @@ export default async function DashboardPage() {
   ]);
   const { sessions } = sessionsData.data;
   const locale = await getLocale();
+
+  const showConversationScenarioSuggestion = true;
+
   return (
     <div className="flex flex-col gap-12">
+      <div></div>
+      {showConversationScenarioSuggestion && (
+        <ConversationScenarioSuggestion
+          suggestion="I see that you had a performance feedback talk recently, where you could have
+        given more concrete action points. I would suggest you to train giving concrete
+        action points."
+        ></ConversationScenarioSuggestion>
+      )}
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         <p className="text-2xl text-center md:text-left">
           {t('header.greeting')}
