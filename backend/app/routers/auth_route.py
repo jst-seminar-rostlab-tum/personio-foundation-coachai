@@ -43,8 +43,8 @@ class CheckUniqueRequest(BaseModel):
 @router.post('/send-verification', response_model=None)
 def send_verification(req: SendVerificationRequest) -> None:
     try:
-        status = send_verification_code(req.phone_number)
-        if status == 'pending':
+        verification_status = send_verification_code(req.phone_number)
+        if verification_status == 'pending':
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Failed to send verification code',
@@ -59,8 +59,8 @@ def send_verification(req: SendVerificationRequest) -> None:
 @router.post('/verify-code', response_model=None)
 def verify_code(req: VerifyCodeRequest) -> None:
     try:
-        status = check_verification_code(req.phone_number, req.code)
-        if status != 'approved':
+        verification_status = check_verification_code(req.phone_number, req.code)
+        if verification_status != 'approved':
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Invalid verification code',
