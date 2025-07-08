@@ -107,6 +107,11 @@ def get_achieved_goals(
     mock_response = settings.mocks.goals_achieved
     system_prompt = settings.system_prompts.goals_achieved
 
+    if not request.transcript or not any(
+        line.strip().startswith('User:') for line in request.transcript.splitlines()
+    ):
+        return GoalsAchievedCollection(goals_achieved=[])
+
     user_prompt = build_goals_achieved_prompt(
         transcript=request.transcript,
         objectives=request.objectives,
