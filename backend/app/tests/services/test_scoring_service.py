@@ -14,7 +14,7 @@ from app.schemas.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioWithTranscript,
 )
-from app.schemas.scoring_schema import ConversationScore, MetricScore, ScoringResult
+from app.schemas.scoring_schema import ConversationScore, MetricScore, ScoringRead
 from app.schemas.session_turn import SessionTurnRead
 from app.services.scoring_service import ScoringService
 
@@ -68,7 +68,7 @@ class TestScoringService(unittest.TestCase):
     def test_score_conversation_calls_llm_and_returns_valid_structure(
         self, mock_call_structured_llm: MagicMock
     ) -> None:
-        mock_result = ScoringResult(
+        mock_result = ScoringRead(
             conversation_summary='The User initiated the conversation clearly'
             + 'and maintained a professional tone.',
             scoring=ConversationScore(
@@ -86,7 +86,7 @@ class TestScoringService(unittest.TestCase):
         mock_call_structured_llm.assert_called_once()
         _, kwargs = mock_call_structured_llm.call_args
         self.assertIn('request_prompt', kwargs)
-        self.assertEqual(kwargs['output_model'], ScoringResult)
+        self.assertEqual(kwargs['output_model'], ScoringRead)
         self.assertEqual(result, mock_result)
         self.assertEqual(result.scoring.overall_score, 4.25)
         self.assertEqual(len(result.scoring.scores), 4)

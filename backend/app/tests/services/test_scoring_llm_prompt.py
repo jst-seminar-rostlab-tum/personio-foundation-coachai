@@ -8,12 +8,12 @@ from app.schemas.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioWithTranscript,
 )
-from app.schemas.scoring_schema import ScoringResult
+from app.schemas.scoring_schema import ScoringRead
 from app.schemas.session_turn import SessionTurnRead
 from app.services.scoring_service import ScoringService
 
 
-def format_scores(result: ScoringResult) -> str:
+def format_scores(result: ScoringRead) -> str:
     """Helper function to format all metric scores for printing."""
     scores = {s.metric: s.score for s in result.scoring.scores}
     return (
@@ -52,7 +52,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.score_conversation(conversation)
 
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
         self.assertGreaterEqual(result.scoring.overall_score, 3.5)
         print(f'Good Example -> {format_scores(result)}')
 
@@ -65,7 +65,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.score_conversation(conversation)
 
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
 
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         empathy_score = scores_dict.get('empathy')
@@ -83,7 +83,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.score_conversation(conversation)
 
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
 
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         clarity_score = scores_dict.get('clarity')
@@ -104,7 +104,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.score_conversation(conversation)
 
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
 
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         focus_score = scores_dict.get('focus')
@@ -118,7 +118,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         conversation = load_conversation_data(structure_1_path)
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.score_conversation(conversation)
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         self.assertEqual(scores_dict.get('structure'), 1)
         print(f'Structure 1  -> {format_scores(result)}')
@@ -128,7 +128,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         conversation = load_conversation_data(structure_2_path)
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.score_conversation(conversation)
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         self.assertEqual(scores_dict.get('structure'), 2)
         print(f'Structure 2  -> {format_scores(result)}')
@@ -138,7 +138,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         conversation = load_conversation_data(structure_3_path)
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.score_conversation(conversation)
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         self.assertEqual(scores_dict.get('structure'), 3)
         print(f'Structure 3  -> {format_scores(result)}')
@@ -148,7 +148,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         conversation = load_conversation_data(structure_4_path)
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.score_conversation(conversation)
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         self.assertEqual(scores_dict.get('structure'), 4)
         print(f'Structure 4  -> {format_scores(result)}')
@@ -158,7 +158,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         conversation = load_conversation_data(structure_5_path)
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.score_conversation(conversation)
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         self.assertEqual(scores_dict.get('structure'), 5)
         print(f'Structure 5  -> {format_scores(result)}')
@@ -176,8 +176,8 @@ class TestScoringServiceIntegration(unittest.TestCase):
             result_good = self.scoring_service.score_conversation(conversation_good)
             result_bad = self.scoring_service.score_conversation(conversation_bad)
 
-        self.assertIsInstance(result_good, ScoringResult)
-        self.assertIsInstance(result_bad, ScoringResult)
+        self.assertIsInstance(result_good, ScoringRead)
+        self.assertIsInstance(result_bad, ScoringRead)
 
         scores_good = {s.metric.lower(): s.score for s in result_good.scoring.scores}
         scores_bad = {s.metric.lower(): s.score for s in result_bad.scoring.scores}
