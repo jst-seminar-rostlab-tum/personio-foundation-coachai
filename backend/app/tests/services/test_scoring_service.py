@@ -42,12 +42,9 @@ class TestScoringService(unittest.TestCase):
         self.transcript = [
             SessionTurnRead(
                 id=uuid4(),
-                session_id=uuid4(),
                 speaker=SpeakerEnum.user,
-                start_offset_ms=0,
-                end_offset_ms=1000,
+                full_audio_start_offset_ms=0,
                 text='Hello',
-                audio_uri='',
                 ai_emotion='neutral',
                 created_at=datetime(2024, 6, 28, 10, 0, 1),
             )
