@@ -261,7 +261,8 @@ def generate_scenario_preparation(
             language_code=new_preparation.language_code,
         )
 
-        hr_docs_context = query_vector_db_and_prompt(
+        # Deconstruct the tuple returned by query_vector_db_and_prompt
+        hr_docs_context, doc_names = query_vector_db_and_prompt(
             session_context=[
                 new_preparation.category,
                 new_preparation.persona,
@@ -269,6 +270,7 @@ def generate_scenario_preparation(
             ],
             generated_object='output',
         )
+        # hr_docs_context is used for LLM prompt; doc_names is available for future use
 
         has_error = False
 
