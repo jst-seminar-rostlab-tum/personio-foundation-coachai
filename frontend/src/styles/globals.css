@@ -105,6 +105,10 @@ body {
 html {
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
+  &[lang='de'] {
+    hyphens: auto;
+    hyphenate-limit-chars: auto 5;
+  }
   body[data-scroll-locked] {
     overflow: visible !important;
     margin-right: 0 !important;

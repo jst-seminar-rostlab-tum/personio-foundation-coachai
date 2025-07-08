@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export default function OnboardingPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
@@ -34,12 +32,6 @@ export default function OnboardingPage() {
           <div className="flex-1 h-9 bg-gray-100 rounded animate-pulse" />
           <div className="flex-1 h-9 bg-gray-200 rounded animate-pulse" />
         </div>
-      </div>
-      {/* Skip for now button */}
-      <div className="flex justify-center pb-2">
-        <Link href="/dashboard" className="text-sm text-gray-500 hover:underline">
-          Skip for now
-        </Link>
       </div>
     </div>
   );

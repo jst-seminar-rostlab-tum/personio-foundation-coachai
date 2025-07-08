@@ -18,6 +18,8 @@ const createConversationScenario = async (api: AxiosInstance, scenario: Conversa
   try {
     const response = await api.post<ConversationScenarioResponse>('/conversation-scenario', {
       ...scenario,
+      persona: '', // Temporary fix until new version of create conversation scenario is ready
+      situationalFacts: '', // Temporary fix until new version of create conversation scenario is ready
     });
     return response;
   } catch (error) {

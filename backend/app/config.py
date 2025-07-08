@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     FORCE_CHEAP_MODEL: bool = True
 
     DEV_MODE_SKIP_AUTH: bool = True
-    DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.USER.value
+    DEV_MODE_MOCK_ADMIN_ID: UUID = MockUserIdsEnum.ADMIN.value
 
     DEMO_USER_EMAIL: str = 'mockuser@example.com'
     DEMO_USER_PASSWORD: str = 'mockuserpassword'
@@ -61,7 +61,7 @@ class Settings(BaseSettings):
     GCP_PRIVATE_KEY: str = ''
     GCP_CLIENT_EMAIL: str = ''
     GCP_CLIENT_ID: str = ''
-    GCP_BUCKET: str = 'coachai'
+    GCP_BUCKET: str = 'coachai-dev'
     GCP_PROJECT_ID: str = 'personio-foundation'
 
     @property

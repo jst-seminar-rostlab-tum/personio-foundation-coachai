@@ -2,9 +2,10 @@ from sqlmodel import JSON, Column, Field
 
 from app.models.camel_case import CamelModel
 from app.models.language import LanguageCode
+from app.schemas.session_turn import SessionTurnRead
 
 
-class ExamplesRequest(CamelModel):
+class FeedbackRequest(CamelModel):
     transcript: str | None  # Full transcript of the session
     objectives: list[str] = Field(
         ..., description='List of training objectives the user is expected to achieve'
@@ -58,14 +59,6 @@ class GoalsAchievedCollection(CamelModel):
     )
 
 
-class RecommendationsRequest(ExamplesRequest):
-    """Request to generate improvement recommendations based on session feedback.
-    Same fields as ExamplesRequest, but used for generating recommendations instead of examples.
-    """
-
-    pass
-
-
 class Recommendation(CamelModel):
     heading: str = Field(..., description='Title or summary of the recommendation')
     recommendation: str = Field(..., description='Description or elaboration of the recommendation')
@@ -83,6 +76,10 @@ class SessionFeedbackMetrics(CamelModel):
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: float
     transcript_uri: str
+    full_audio_url: str | None = (
+        Field(default=None, description='Signed URL to the stitched audio file of the session'),
+    )
+    document_names: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     speak_time_percent: float
     questions_asked: int
     session_length_s: int
@@ -90,3 +87,6 @@ class SessionFeedbackMetrics(CamelModel):
     example_positive: list[PositiveExample] = Field(default_factory=list)
     example_negative: list[NegativeExample] = Field(default_factory=list)
     recommendations: list[Recommendation] = Field(default_factory=list)
+    session_turn_transcripts: list[SessionTurnRead] = Field(
+        default_factory=list, description='List of transcripts for each session turn'
+    )
