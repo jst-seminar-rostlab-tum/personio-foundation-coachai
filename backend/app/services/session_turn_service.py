@@ -17,6 +17,7 @@ from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn, SpeakerEnum
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.live_feedback_service import generate_and_store_live_feedback
+from app.services.vector_db_context_service import get_hr_docs_context
 
 settings = Settings()
 
@@ -105,12 +106,20 @@ class SessionTurnService:
         )
 
         if turn.speaker == SpeakerEnum.user:
+            category = session.scenario.category.name if session.scenario.category else ''
+            hr_docs_context = get_hr_docs_context(
+                persona=session.scenario.persona,
+                situational_facts=session.scenario.situational_facts,
+                category=category,
+            )
+
             # Generate live feedback item in the background
             background_tasks.add_task(
                 generate_and_store_live_feedback,
                 db_session=self.db,
                 session_id=turn.session_id,
                 session_turn_context=session_turn_read,
+                hr_docs_context=hr_docs_context,
             )
 
         return session_turn_read

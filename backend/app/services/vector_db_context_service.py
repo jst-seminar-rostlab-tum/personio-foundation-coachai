@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from app.rag.rag import build_vector_db_retriever
 from app.rag.vector_db import format_docs_with_metadata
 from app.schemas.scenario_preparation import ConversationScenarioBase
@@ -153,3 +155,11 @@ def query_vector_db_and_prompt(
         hr_docs_context = ''
 
     return hr_docs_context
+
+
+@lru_cache(maxsize=256)
+def get_hr_docs_context(persona: str, situational_facts: str, category: str = '') -> str:
+    return query_vector_db_and_prompt(
+        session_context=[category, persona, situational_facts],
+        generated_object='output',
+    )

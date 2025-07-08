@@ -121,9 +121,11 @@ def generate_live_feedback_item(
 
 
 def generate_and_store_live_feedback(
-    db_session: DBSession, session_id: UUID, session_turn_context: SessionTurnRead
+    db_session: DBSession,
+    session_id: UUID,
+    session_turn_context: SessionTurnRead,
+    hr_docs_context: str = '',
 ) -> LiveFeedback | None:
-    hr_docs_context = ''
     feedback_items = fetch_all_for_session(db_session, session_id)
     formatted_lines = format_feedback_lines(feedback_items)
     previous_feedback = '\n'.join(formatted_lines)
