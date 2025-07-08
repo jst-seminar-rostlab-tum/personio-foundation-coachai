@@ -2,6 +2,8 @@ import { useCallback, useRef, useState } from 'react';
 import { sessionService } from '@/services/SessionService';
 import { MessageSender } from '@/interfaces/models/Session';
 import { api } from '@/services/ApiClient';
+import { showErrorToast } from '@/lib/utils/toast';
+import { useTranslations } from 'next-intl';
 import { useMessageReducer } from './useMessageReducer';
 import { useMediaStream } from './useMediaStream';
 import { useElapsedTime } from './useElapsedTime';
@@ -10,6 +12,8 @@ import { useRemoteAudioRecorder } from './useRemoteAudioRecorder';
 import { useSessionTurns } from './useSessionTurns';
 
 export function useWebRTC(sessionId: string) {
+  const t = useTranslations('Simulation');
+
   const { localStreamRef, startStream, stopStream, isMicActive, toggleMic } = useMediaStream();
 
   const { messages, addPlaceholderMessage, appendDeltaToLastMessage } = useMessageReducer();
@@ -175,12 +179,16 @@ export function useWebRTC(sessionId: string) {
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
-    const sdpText = await sessionService.getSdpResponseTextFromRealtimeApi(
-      api,
-      sessionId,
-      offer.sdp
-    );
-    await pc.setRemoteDescription({ type: 'answer', sdp: sdpText });
+    try {
+      const sdpText = await sessionService.getSdpResponseTextFromRealtimeApi(
+        api,
+        sessionId,
+        offer.sdp
+      );
+      await pc.setRemoteDescription({ type: 'answer', sdp: sdpText });
+    } catch (err) {
+      showErrorToast(err, t('sessionConnectToAIError'));
+    }
   }, [
     sessionId,
     startStream,
@@ -198,6 +206,7 @@ export function useWebRTC(sessionId: string) {
     localStreamRef,
     addEndOffsetMsToTurn,
     cleanup,
+    t,
   ]);
 
   return {
