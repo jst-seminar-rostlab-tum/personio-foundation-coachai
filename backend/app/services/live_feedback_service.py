@@ -90,11 +90,11 @@ def generate_live_feedback_item(
     Do not include markdown, explanation, or code formatting.
 
     2. Generate EXACTLY 1 feedback item, which should be concise (1-10 words).
-    2. For the heading, use categories like: Tone, Clarity, Engagement, Next Step, or Content.
-    3. Each new feedback item should have a different heading from the previous 4 feedback items.
-    4. Feedback must be consistent with prior suggestions.
-    5. Avoid rephrasing or repeating previous feedback items when possible.
-    6. Use active voice and no hedging, be specific if possible.
+    3. For the heading, use categories like: Tone, Clarity, Engagement, Next Step, or Content.
+    4. Each new feedback item should have a different heading from the previous 4 feedback items.
+    5. Feedback must be consistent with prior suggestions.
+    6. Avoid rephrasing or repeating previous feedback items when possible.
+    7. Use active voice and no hedging, be specific if possible.
     e.g."Speak more calmly" instead of "Use a calmer tone" 
 
     ### Examples
