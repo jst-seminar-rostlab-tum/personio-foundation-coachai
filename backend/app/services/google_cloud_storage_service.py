@@ -106,3 +106,11 @@ class GCSManager:
             expiration=timedelta(minutes=expiration_minutes),
             method='GET',
         )
+
+    def document_exists(self, filename: str) -> bool:
+        """
+        Check if a document exists in the GCS bucket under the current prefix.
+        """
+        blob_name = f'{self.prefix}{filename}'
+        blob = self.bucket.blob(blob_name)
+        return blob.exists(self.client)
