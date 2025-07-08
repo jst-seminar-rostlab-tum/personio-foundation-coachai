@@ -96,15 +96,6 @@ class SessionTurnService:
         self.db.commit()
         self.db.refresh(new_turn)
 
-        session_turn_read = SessionTurnRead(
-            id=new_turn.id,
-            speaker=new_turn.speaker,
-            full_audio_start_offset_ms=new_turn.full_audio_start_offset_ms,
-            text=new_turn.text,
-            ai_emotion=new_turn.ai_emotion,
-            created_at=new_turn.created_at,
-        )
-
         if turn.speaker == SpeakerEnum.user:
             category = session.scenario.category.name if session.scenario.category else ''
             hr_docs_context = get_hr_docs_context(
@@ -118,11 +109,18 @@ class SessionTurnService:
                 generate_and_store_live_feedback,
                 db_session=self.db,
                 session_id=turn.session_id,
-                session_turn_context=session_turn_read,
+                session_turn_context=new_turn,
                 hr_docs_context=hr_docs_context,
             )
 
-        return session_turn_read
+        return SessionTurnRead(
+            id=new_turn.id,
+            speaker=new_turn.speaker,
+            full_audio_start_offset_ms=new_turn.full_audio_start_offset_ms,
+            text=new_turn.text,
+            ai_emotion=new_turn.ai_emotion,
+            created_at=new_turn.created_at,
+        )
 
     def get_audio_duration_seconds(self, buffer: io.BytesIO) -> float:
         """

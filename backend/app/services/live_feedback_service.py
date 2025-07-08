@@ -7,8 +7,8 @@ from sqlmodel import select
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
+from app.models import SessionTurn
 from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
-from app.schemas import SessionTurnRead
 from app.schemas.live_feedback_schema import LiveFeedback
 from app.services.voice_analysis_service import analyze_voice_gemini_from_file
 
@@ -35,7 +35,7 @@ def format_feedback_lines(feedback_items: list[LiveFeedback]) -> list[str]:
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_live_feedback_item(
-    session_turn_context: SessionTurnRead,
+    session_turn_context: SessionTurn,
     previous_feedback: str = '',
     hr_docs_context: str = '',
 ) -> LiveFeedback:
@@ -123,7 +123,7 @@ def generate_live_feedback_item(
 def generate_and_store_live_feedback(
     db_session: DBSession,
     session_id: UUID,
-    session_turn_context: SessionTurnRead,
+    session_turn_context: SessionTurn,
     hr_docs_context: str = '',
 ) -> LiveFeedback | None:
     feedback_items = fetch_all_for_session(db_session, session_id)

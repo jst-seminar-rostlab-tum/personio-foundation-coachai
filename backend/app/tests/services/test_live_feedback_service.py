@@ -7,8 +7,7 @@ from uuid import UUID, uuid4
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
-from app.models.session_turn import SpeakerEnum
-from app.schemas import SessionTurnRead
+from app.models.session_turn import SessionTurn, SpeakerEnum
 from app.schemas.live_feedback_schema import LiveFeedback
 from app.services.live_feedback_service import (
     fetch_all_for_session,
@@ -29,6 +28,33 @@ class TestLiveFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
         self.session.close()
+
+    def get_session_turn(self, session_id: UUID, make_empty: bool = False) -> SessionTurn:
+        if make_empty:
+            return SessionTurn(
+                id=uuid4(),
+                session_id=session_id,
+                speaker=SpeakerEnum.user,
+                start_offset_ms=0,
+                end_offset_ms=0,
+                full_audio_start_offset_ms=0,
+                text='',
+                audio_uri='',
+                ai_emotion='neutral',
+                created_at=datetime.now(),
+            )
+        return SessionTurn(
+            id=uuid4(),
+            session_id=session_id,
+            speaker=SpeakerEnum.user,
+            start_offset_ms=0,
+            end_offset_ms=0,
+            full_audio_start_offset_ms=0,
+            text="Let's discuss the next step.",
+            audio_uri='example_audio.wav',
+            ai_emotion='neutral',
+            created_at=datetime.now(),
+        )
 
     def test_fetch_all_for_session_returns_items_in_order(self) -> None:
         session_id = uuid4()
@@ -74,17 +100,7 @@ class TestLiveFeedbackService(unittest.TestCase):
     ) -> None:
         session_id = uuid4()
 
-        session_turn_context = SessionTurnRead(
-            id=UUID('{12345678-1234-5678-1234-567812345678}'),
-            session_id=session_id,
-            speaker=SpeakerEnum.user,
-            start_offset_ms=0,
-            end_offset_ms=1000,
-            text="Let's discuss the next step.",
-            audio_uri='example_audio.wav',
-            ai_emotion='neutral',
-            created_at=datetime.now(),
-        )
+        session_turn_context = self.get_session_turn(session_id)
 
         mock_feedback = LiveFeedback(
             heading='Tone',
@@ -120,17 +136,7 @@ class TestLiveFeedbackService(unittest.TestCase):
     def test_generate_and_store_live_feedback_empty_turn_context(self) -> None:
         session_id = uuid4()
 
-        session_turn_context = SessionTurnRead(
-            id=UUID('{12345678-1234-5678-1234-567812345678}'),
-            session_id=session_id,
-            speaker=SpeakerEnum.user,
-            start_offset_ms=0,
-            end_offset_ms=1000,
-            text='',
-            audio_uri='',
-            ai_emotion='neutral',
-            created_at=datetime.now(),
-        )
+        session_turn_context = self.get_session_turn(session_id, make_empty=True)
 
         result = generate_and_store_live_feedback(self.session, session_id, session_turn_context)
 
