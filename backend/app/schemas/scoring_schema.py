@@ -20,11 +20,6 @@ class ConversationScore(CamelModel):
     )
 
 
-class ScoringRequest(CamelModel):
-    scenario: dict
-    transcript: list[dict]
-
-
 class ScoringResult(CamelModel):
     conversation_summary: str = Field(..., description='A brief summary of the conversation.')
     scoring: ConversationScore = Field(..., description='The detailed scoring of the conversation.')
