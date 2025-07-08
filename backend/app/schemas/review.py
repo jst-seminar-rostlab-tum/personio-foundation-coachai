@@ -38,7 +38,7 @@ class ReviewStatistics(CamelModel):
     num_one_star: int
 
 
-class PaginatedReviewsResponse(CamelModel):
+class PaginatedReviewRead(CamelModel):
     reviews: list[ReviewRead]
     pagination: dict
     rating_statistics: ReviewStatistics

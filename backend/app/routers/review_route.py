@@ -7,7 +7,7 @@ from app.database import get_db_session
 from app.dependencies import require_admin, require_user
 from app.models.user_profile import UserProfile
 from app.schemas.review import (
-    PaginatedReviewsResponse,
+    PaginatedReviewRead,
     ReviewCreate,
     ReviewRead,
     ReviewResponse,
@@ -23,7 +23,7 @@ def get_review_service(db: Annotated[DBSession, Depends(get_db_session)]) -> Rev
 
 @router.get(
     '',
-    response_model=list[ReviewRead] | PaginatedReviewsResponse,
+    response_model=list[ReviewRead] | PaginatedReviewRead,
     dependencies=[Depends(require_admin)],
 )
 def get_reviews(
@@ -32,7 +32,7 @@ def get_reviews(
     page: int | None = Query(None),
     page_size: int = Query(10),
     sort: str = Query('newest'),
-) -> list[ReviewRead] | PaginatedReviewsResponse:
+) -> list[ReviewRead] | PaginatedReviewRead:
     """
     Retrieve user reviews with optional pagination, statistics and sorting.
     """

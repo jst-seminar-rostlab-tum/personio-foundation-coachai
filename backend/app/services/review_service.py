@@ -12,7 +12,7 @@ from app.models.review import Review
 from app.models.session import Session
 from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.review import (
-    PaginatedReviewsResponse,
+    PaginatedReviewRead,
     ReviewCreate,
     ReviewRead,
     ReviewResponse,
@@ -101,13 +101,13 @@ class ReviewService:
         page: int | None = Query(None),
         page_size: int = Query(10),
         sort: str = Query('newest'),
-    ) -> PaginatedReviewsResponse:
+    ) -> PaginatedReviewRead:
         """Retrieve paginated reviews with optional sorting."""
 
         # Pagination
         total_count = self.db.exec(select(func.count()).select_from(Review)).one()
         if total_count == 0:
-            return PaginatedReviewsResponse(
+            return PaginatedReviewRead(
                 reviews=[],
                 pagination={
                     'currentPage': page if page else 1,
@@ -135,7 +135,7 @@ class ReviewService:
 
         review_statistics = self._get_review_statistics()
 
-        return PaginatedReviewsResponse(
+        return PaginatedReviewRead(
             reviews=review_list,
             pagination={
                 'currentPage': page if page else 1,
@@ -152,7 +152,7 @@ class ReviewService:
         page: int | None = Query(None),
         page_size: int = Query(10),
         sort: str = Query('newest'),
-    ) -> list[ReviewRead] | PaginatedReviewsResponse:
+    ) -> list[ReviewRead] | PaginatedReviewRead:
         """
         Retrieve user reviews with optional pagination, statistics and sorting.
         """
