@@ -96,17 +96,17 @@ export function SignUpForm() {
         values.phone_number
       );
       if (emailExists) {
-        setError(t('emailAlreadyExistsError'));
+        setError(tLogin('emailAlreadyExistsError'));
         setIsLoading(false);
         return;
       }
       if (phoneExists) {
-        setError(t('phoneAlreadyExistsError'));
+        setError(tLogin('phoneAlreadyExistsError'));
         setIsLoading(false);
         return;
       }
     } catch {
-      setError(t('genericError'));
+      setError(tCommon('genericError'));
       setIsLoading(false);
       return;
     }

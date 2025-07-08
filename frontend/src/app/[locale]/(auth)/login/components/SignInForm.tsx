@@ -21,12 +21,15 @@ import { createClient } from '@/lib/supabase/client';
 import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/utils/toast';
+import ConfirmationForm from '@/app/[locale]/(auth)/confirm/components/ConfirmationForm';
 
 export function SignInForm() {
   const tLogin = useTranslations('Login');
   const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -62,7 +65,26 @@ export function SignInForm() {
       password: formData.password,
     };
     const response = await supabase.auth.signInWithPassword(credentials);
+
     if (response.error) {
+      // Check for unconfirmed email error
+      if (
+        response.error.message.toLowerCase().includes('confirm') ||
+        response.error.message.toLowerCase().includes('verify')
+      ) {
+        setPendingEmail(formData.email);
+        setShowConfirmation(true);
+
+        // Resend confirmation email
+        await supabase.auth.resend({
+          email: formData.email,
+          type: 'signup',
+        });
+
+        setIsLoading(false);
+        return;
+      }
+
       setError(response.error.message);
       setIsLoading(false);
       return;
@@ -136,6 +158,9 @@ export function SignInForm() {
           </CardFooter>
         </form>
       </Form>
+      {showConfirmation && pendingEmail && (
+        <ConfirmationForm initialEmail={pendingEmail} onClose={() => setShowConfirmation(false)} />
+      )}
     </Card>
   );
 }

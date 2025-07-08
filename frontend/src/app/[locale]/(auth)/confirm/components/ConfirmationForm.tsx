@@ -16,9 +16,14 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
-import { UserProfileService } from '@/services/UserProfileService';
 
-export default function ConfirmationForm() {
+export default function ConfirmationForm({
+  initialEmail,
+  onClose,
+}: {
+  initialEmail?: string;
+  onClose?: () => void;
+}) {
   const t = useTranslations('Login');
   const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
@@ -26,9 +31,9 @@ export default function ConfirmationForm() {
   const [showResendButton, setShowResendButton] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const hasDeletedRef = useRef(false);
   const isConfirmedRef = useRef(false);
 
   useEffect(() => {
@@ -47,8 +52,8 @@ export default function ConfirmationForm() {
     resolver: zodResolver(confirmationFormSchema),
     mode: 'onTouched',
     defaultValues: {
-      email: useSearchParams().get('email') ?? '',
-      code: useSearchParams().get('token') ?? '',
+      email: initialEmail ?? searchParams.get('email') ?? '',
+      code: searchParams.get('token') ?? '',
     },
   });
 
@@ -85,6 +90,7 @@ export default function ConfirmationForm() {
     try {
       await authService.confirmUser(api);
       isConfirmedRef.current = true;
+      if (onClose) onClose(); // Close the modal on success
     } catch {
       setError(t('ConfirmationForm.genericError'));
       setIsLoading(false);
@@ -116,37 +122,9 @@ export default function ConfirmationForm() {
     setShowResendButton(false);
   };
 
-  useEffect(() => {
-    const handleDelete = async () => {
-      const email = form.getValues('email');
-      if (!email || hasDeletedRef.current || isConfirmedRef.current) return;
-      hasDeletedRef.current = true;
-      try {
-        await UserProfileService.deleteUnconfirmedUser(api, email);
-      } catch {
-        // Optionally handle/log error
-      }
-    };
-
-    const handleUrlChange = () => {
-      handleDelete();
-    };
-
-    window.addEventListener('popstate', handleUrlChange);
-    window.addEventListener('hashchange', handleUrlChange);
-    window.addEventListener('beforeunload', handleDelete);
-
-    return () => {
-      window.removeEventListener('popstate', handleUrlChange);
-      window.removeEventListener('hashchange', handleUrlChange);
-      window.removeEventListener('beforeunload', handleDelete);
-      handleDelete(); // Always attempt on unmount
-    };
-  }, [form]);
-
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
       <Card className="relative w-[90%] max-w-sm border-0 bg-white animate-in fade-in zoom-in duration-200">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(verifyOTP)}>
@@ -221,6 +199,9 @@ export default function ConfirmationForm() {
                   {t('resendCodeButtonLabel')}
                 </Button>
               )}
+              <Button size="full" variant="secondary" onClick={onClose} disabled={isLoading}>
+                {tCommon('cancel')}
+              </Button>
             </CardFooter>
           </form>
         </Form>
