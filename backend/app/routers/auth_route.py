@@ -25,7 +25,7 @@ settings = Settings()
 def send_verification(req: VerificationCodeCreate) -> None:
     try:
         status = send_verification_code(req.phone_number)
-        if status != 'pending':
+        if status == 'pending':
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Failed to send verification code',
