@@ -23,12 +23,16 @@ export default async function DashboardPage() {
   const t = await getTranslations('Dashboard');
   const tCommon = await getTranslations('Common');
   const PAGE_SIZE = 3;
-  const userProfile = await UserProfileService.getUserProfile(api);
-  const userStatsData = await UserProfileService.getUserStats(api);
-  const sessionsData = await sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
-  const sessions = sessionsData?.data?.sessions;
+  const userProfilePromise = UserProfileService.getUserProfile(api);
+  const userStatsPromise = UserProfileService.getUserStats(api);
+  const sessionsPromise = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
+  const [userProfile, userStats, sessionsData] = await Promise.all([
+    userProfilePromise,
+    userStatsPromise,
+    sessionsPromise,
+  ]);
+  const { sessions } = sessionsData.data;
   const locale = await getLocale();
-
   return (
     <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
@@ -45,16 +49,13 @@ export default async function DashboardPage() {
       </section>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard value={userStatsData.totalSessions} label={tCommon('totalSessions')} />
+        <StatCard value={userStats.totalSessions} label={tCommon('totalSessions')} />
         <StatCard
-          value={`${userStatsData.trainingTime.toFixed(1)}h`}
+          value={`${userStats.trainingTime.toFixed(1)}h`}
           label={t('userStats.trainingTime')}
         />
-        <StatCard
-          value={`${userStatsData.currentStreakDays}d`}
-          label={t('userStats.currentStreak')}
-        />
-        <StatCard value={`${userStatsData.averageScore}%`} label={tCommon('avgScore')} />
+        <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
+        <StatCard value={`${userStats.averageScore ?? 0}%`} label={tCommon('avgScore')} />
       </div>
 
       <section className="flex flex-col gap-4">
