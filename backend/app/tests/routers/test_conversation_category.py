@@ -2,7 +2,7 @@ import unittest
 from collections.abc import Generator
 from datetime import datetime
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool.impl import StaticPool
@@ -14,11 +14,12 @@ from app.dependencies import get_db_session, require_user
 from app.models.conversation_category import ConversationCategory
 from app.routers.conversation_category_route import router as conversation_category_router
 from app.schemas.conversation_category import ConversationCategoryRead
+from app.services.conversation_category_service import ConversationCategoryService
 
 
 class TestConversationCategoryRoute(unittest.TestCase):
     """
-    Test suite for the Conversation Category API route.
+    Test suite for the Conversation Category API route and service logic.
     """
 
     @classmethod
@@ -82,12 +83,12 @@ class TestConversationCategoryRoute(unittest.TestCase):
         self.db.rollback()
         self.db.close()
 
+    # Endpoint Tests
     def test_get_conversation_categories(self) -> None:
         """
         Test retrieving all conversation categories.
         This ensures that the API returns the correct data for all categories in the database.
         """
-        # Send a GET request to the conversation categories endpoint
         response = self.client.get('/conversation-categories')
 
         # Assert the response status code is 200 (OK)
@@ -130,6 +131,61 @@ class TestConversationCategoryRoute(unittest.TestCase):
         # Assert the response data is an empty list
         data = response.json()
         self.assertEqual(data, [])
+
+    def test_get_conversation_categories_invalid_user(self) -> None:
+        """
+        Test retrieving conversation categories with an invalid user.
+        This ensures that the API returns a 403 Forbidden error.
+        """
+
+        # Override the require_user dependency to simulate no user
+        def mock_require_user() -> HTTPException:
+            raise HTTPException(status_code=403, detail='Not authenticated')
+
+        self.app.dependency_overrides[require_user] = mock_require_user
+
+        # Send a GET request to the conversation categories endpoint
+        response = self.client.get('/conversation-categories')
+
+        # Assert the response status code is 403 (Forbidden)
+        self.assertEqual(response.status_code, 403)
+
+    # Service Logic Tests
+    def test_fetch_all_conversation_categories(self) -> None:
+        """
+        Test the service logic for fetching all conversation categories.
+        This ensures that the service returns the correct data from the database.
+        """
+        service = ConversationCategoryService(self.db)
+        categories = service.fetch_all_conversation_categories()
+
+        # Assert the number of categories matches the dummy data
+        self.assertEqual(len(categories), len(self.dummy_categories))
+
+        # Validate each category in the service response against the dummy data
+        for i, category in enumerate(self.dummy_categories):
+            self.assertEqual(categories[i].id, category.id)
+            self.assertEqual(categories[i].name, category.name)
+            self.assertEqual(categories[i].is_custom, category.is_custom)
+            self.assertEqual(categories[i].language_code, category.language_code)
+
+    def test_fetch_all_conversation_categories_empty(self) -> None:
+        """
+        Test the service logic for fetching all conversation categories when none exist.
+        This ensures that the service returns an empty list when no categories are present.
+        """
+        # Clear all categories from the database
+        stmt = select(ConversationCategory)
+        results = self.db.exec(stmt).all()
+        for category in results:
+            self.db.delete(category)
+        self.db.commit()
+
+        service = ConversationCategoryService(self.db)
+        categories = service.fetch_all_conversation_categories()
+
+        # Assert the service returns an empty list
+        self.assertEqual(categories, [])
 
 
 if __name__ == '__main__':
