@@ -13,9 +13,9 @@ from app.models.session import Session
 from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.review import (
     PaginatedReviewRead,
+    ReviewConfirm,
     ReviewCreate,
     ReviewRead,
-    ReviewResponse,
     ReviewStatistics,
 )
 
@@ -207,7 +207,7 @@ class ReviewService:
         self,
         review: ReviewCreate,
         user_profile: UserProfile,
-    ) -> ReviewResponse:
+    ) -> ReviewConfirm:
         """
         Create a new review.
         """
@@ -246,7 +246,7 @@ class ReviewService:
                 self.db.commit()
                 self.db.refresh(session)
 
-        return ReviewResponse(
+        return ReviewConfirm(
             message='Review submitted successfully',
             review_id=new_review.id,
         )

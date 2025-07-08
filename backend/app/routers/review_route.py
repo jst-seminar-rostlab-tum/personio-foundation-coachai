@@ -8,9 +8,9 @@ from app.dependencies import require_admin, require_user
 from app.models.user_profile import UserProfile
 from app.schemas.review import (
     PaginatedReviewRead,
+    ReviewConfirm,
     ReviewCreate,
     ReviewRead,
-    ReviewResponse,
 )
 from app.services.review_service import ReviewService
 
@@ -39,12 +39,12 @@ def get_reviews(
     return service.get_reviews(limit, page, page_size, sort)
 
 
-@router.post('', response_model=ReviewResponse)
+@router.post('', response_model=ReviewConfirm)
 def create_review(
     review: ReviewCreate,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ReviewService, Depends(get_review_service)],
-) -> ReviewResponse:
+) -> ReviewConfirm:
     """
     Create a new review.
     """
