@@ -18,11 +18,8 @@ class SessionTurnCreate(CamelModel):
 # Schema for reading SessionTurn data
 class SessionTurnRead(CamelModel):
     id: UUID
-    session_id: UUID
     speaker: SpeakerEnum
-    start_offset_ms: int
-    end_offset_ms: int
+    full_audio_start_offset_ms: int
     text: str
-    audio_uri: str
     ai_emotion: Optional[str] = None
     created_at: datetime
