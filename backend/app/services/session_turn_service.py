@@ -53,9 +53,6 @@ def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
     audio_name = f'{session_id}_{uuid4().hex}'
     gcs = get_gcs_audio_manager()
 
-    if gcs is None:
-        raise HTTPException(status_code=500, detail='Failed to connect to audio storage')
-
     try:
         gcs.upload_from_fileobj(
             file_obj=audio_file.file,
@@ -83,7 +80,7 @@ class SessionTurnService:
             raise HTTPException(status_code=400, detail='Text is required')
 
         audio_uri = ''
-        if settings.ENABLE_AI:
+        if self.gcs_manager is not None:
             audio_uri = store_audio_file(turn.session_id, audio_file)
 
         turn_data = turn.model_dump()
