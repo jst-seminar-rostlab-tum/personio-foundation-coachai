@@ -3,10 +3,9 @@ import os
 import re
 import subprocess
 import tempfile
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import puremagic
-
 from fastapi import BackgroundTasks, HTTPException, UploadFile
 from sqlalchemy import UUID
 from sqlmodel import Session as DBSession
