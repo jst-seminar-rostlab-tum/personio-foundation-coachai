@@ -22,7 +22,7 @@ from app.schemas.user_profile import (
 from app.services.user_export_service import build_user_data_export
 from app.services.user_profile_service import UserService
 
-router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
+router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
 
 
 def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserService:
