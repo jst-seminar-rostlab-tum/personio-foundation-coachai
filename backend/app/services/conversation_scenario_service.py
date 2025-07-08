@@ -175,6 +175,75 @@ class ConversationScenarioService:
             for row in rows
         ]
 
+    def delete_conversation_scenario(self, scenario_id: UUID, user_profile: UserProfile) -> dict:
+        """
+        Deletes a single conversation scenario by ID, ensuring cascade deletion of sessions.
+        """
+        user_id = user_profile.id
+        scenario = self.db.get(ConversationScenario, scenario_id)
+        if not scenario:
+            return {
+                'message': f'No scenario found for scenario ID {scenario_id}',
+                'audios': [],
+            }
+
+        if scenario.user_id != user_id:
+            raise HTTPException(status_code=403, detail='Not authorized to delete this scenario.')
+
+        total_deleted_sessions = 0
+        audio_uris = []
+        for session in scenario.sessions:
+            for turn in session.session_turns:
+                if turn.audio_uri:
+                    audio_uris.append(turn.audio_uri)
+                    total_deleted_sessions += 1
+
+        # TODO: Delete audio File self._delete_audio_files(audio_uris)
+        self._delete_audio_files(audio_uris=audio_uris)  # Dummy function to delete audios
+        self.db.delete(scenario)
+        self.db.commit()
+        return {
+            'message': f'Deleted {total_deleted_sessions} sessions for user ID {user_id}',
+            'audios': audio_uris,
+        }
+
+    def clear_all_conversation_scenarios(self, user_profile: UserProfile) -> dict:
+        """
+        Deletes all conversation scenarios for the authenticated user, ensuring cascade deletion of
+        sessions.
+        """
+        user_id = user_profile.id
+        statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
+        scenarios = self.db.exec(statement).all()
+        if not scenarios:
+            return {
+                'message': f'No scenario found for user ID {user_id}',
+                'audios': [],
+            }
+
+        total_deleted_scenarios = 0
+        audio_uris = []
+        for scenario in scenarios:
+            for session in scenario.sessions:
+                for turn in session.session_turns:
+                    if turn.audio_uri:
+                        audio_uris.append(turn.audio_uri)
+
+        # Let the database handle cascade deletes by just deleting the scenarios
+        for scenario in scenarios:
+            self.db.delete(scenario)
+            total_deleted_scenarios += 1
+        self.db.commit()
+
+        # TODO: Delete audio File self._delete_audio_files(audio_uris)
+        self._delete_audio_files(audio_uris=audio_uris)  # Dummy function to delete audios
+
+        self.db.commit()
+        return {
+            'message': f'Deleted {total_deleted_scenarios} scenario for user ID {user_id}',
+            'audios': audio_uris,
+        }
+
     def get_scenario_summary(
         self, scenario_id: UUID, user_profile: UserProfile
     ) -> ConversationScenarioSummary:
@@ -268,3 +337,9 @@ class ConversationScenarioService:
         background_tasks.add_task(
             generate_scenario_preparation, prep_id, new_preparation, get_db_session
         )
+
+    def _delete_audio_files(self, audio_uris: list[str]) -> None:
+        """Mock function to delete audio files from object storage.
+        Replace this with your actual object storage client logic."""
+        for uri in audio_uris:  # TODO: delete audios on object storage.  # noqa: B007
+            pass

@@ -144,7 +144,7 @@ class TestVectorDbContextService(unittest.TestCase):
             [{'source': 'doc1'}, {'source': 'doc2'}],
         )
 
-        result = query_vector_db_and_prompt(
+        result, doc_names = query_vector_db_and_prompt(
             generated_object=generated_object,
             session_context=session_context,
             user_transcript=transcript,
@@ -165,7 +165,7 @@ class TestVectorDbContextService(unittest.TestCase):
         generated_object = 'objectives'
         mock_query_vector_db.return_value = (None, None)
 
-        result = query_vector_db_and_prompt(
+        result, doc_names = query_vector_db_and_prompt(
             generated_object=generated_object, session_context=None, user_transcript=None
         )
 
@@ -181,7 +181,7 @@ class TestVectorDbContextService(unittest.TestCase):
         generated_object = 'objectives'
         mock_query_vector_db.return_value = ('', [])
 
-        result = query_vector_db_and_prompt(
+        result, doc_names = query_vector_db_and_prompt(
             generated_object=generated_object, session_context=None, user_transcript=None
         )
 

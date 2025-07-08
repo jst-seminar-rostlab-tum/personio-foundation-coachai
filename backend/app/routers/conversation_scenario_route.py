@@ -84,3 +84,26 @@ def get_scenario_preparation_by_scenario_id(
     Retrieve the scenario preparation data for a given conversation scenario ID.
     """
     return service.get_scenario_preparation_by_scenario_id(id, user_profile)
+
+
+@router.delete('/clear-all', response_model=dict)
+def clear_all_conversation_scenarios(
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
+) -> dict:
+    """
+    Deletes all conversation scenarios for the authenticated user.
+    """
+    return service.clear_all_conversation_scenarios(user_profile)
+
+
+@router.delete('/{id}', response_model=dict)
+def delete_conversation_scenario(
+    id: UUID,
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
+) -> dict:
+    """
+    Deletes a single conversation scenario by ID.
+    """
+    return service.delete_conversation_scenario(id, user_profile)

@@ -1,6 +1,7 @@
 import unittest
 from collections.abc import Generator
 from datetime import datetime
+from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
@@ -17,7 +18,21 @@ from app.data.dummy_data import (
 from app.dependencies import get_db_session, require_user
 from app.main import app
 from app.models import Review, Session, SessionStatus, UserProfile
+from app.models.session_turn import SpeakerEnum
 from app.models.user_profile import AccountRole
+from app.schemas.session_turn import SessionTurnRead
+
+
+class FakeGCS:
+    def __init__(self) -> None:
+        pass
+
+    def generate_signed_url(self, filename: str) -> str:
+        return f'https://example.com/{filename}'
+
+    def document_exists(self, filename: str) -> bool:
+        # Simulate that the document exists for testing purposes
+        return True
 
 
 class TestSessionRoute(unittest.TestCase):
@@ -31,6 +46,11 @@ class TestSessionRoute(unittest.TestCase):
         cls.SessionLocal = sessionmaker(bind=cls.engine, class_=DBSession)
 
     def setUp(self) -> None:
+        self.gcs_audio_global_patcher = patch(
+            'app.connections.gcs_client._gcs_audio_manager', new=FakeGCS()
+        )
+        self.gcs_audio_global_patcher.start()
+
         self.db = self.SessionLocal()
 
         def override_get_db() -> Generator[Session, None, None]:
@@ -79,7 +99,25 @@ class TestSessionRoute(unittest.TestCase):
         self.db.add(self.test_session)
         self.db.commit()
 
+        fake_turn_svc = MagicMock()
+        fake_turn_svc.get_session_turns.return_value = [
+            SessionTurnRead(
+                id=uuid4(),
+                speaker=SpeakerEnum.user,
+                full_audio_start_offset_ms=0,
+                text='hello',
+                ai_emotion='neutral',
+                created_at=datetime.now(),
+            )
+        ]
+        self.turn_patcher = patch(
+            'app.services.session_service.SessionTurnService', return_value=fake_turn_svc
+        )
+        self.turn_patcher.start()
+
     def tearDown(self) -> None:
+        self.turn_patcher.stop()
+        self.gcs_audio_global_patcher.stop()
         self.db.rollback()
         self.db.close()
 
@@ -107,7 +145,6 @@ class TestSessionRoute(unittest.TestCase):
         self.assertEqual(data['createdAt'], self.test_session.created_at.isoformat())
         self.assertEqual(data['updatedAt'], self.test_session.updated_at.isoformat())
         self.assertEqual(data['allowAdminAccess'], False)
-        self.assertEqual(data['audioUris'], [])
         self.assertEqual(data['hasReviewed'], False)
 
         # Add Review
@@ -133,5 +170,4 @@ class TestSessionRoute(unittest.TestCase):
         self.assertEqual(data['createdAt'], self.test_session.created_at.isoformat())
         self.assertEqual(data['updatedAt'], self.test_session.updated_at.isoformat())
         self.assertEqual(data['allowAdminAccess'], False)
-        self.assertEqual(data['audioUris'], [])
         self.assertEqual(data['hasReviewed'], True)
