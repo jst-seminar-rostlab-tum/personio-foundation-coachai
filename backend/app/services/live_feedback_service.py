@@ -164,6 +164,7 @@ def generate_and_store_live_feedback(
 
 
 if __name__ == '__main__':
+    # Example usage
     user_transcript = (
         'The reason we have to let you go is, because we are not satisfied with your performance'
     )

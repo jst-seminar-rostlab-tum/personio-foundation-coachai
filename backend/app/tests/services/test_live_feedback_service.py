@@ -135,7 +135,3 @@ class TestLiveFeedbackService(unittest.TestCase):
         result = generate_and_store_live_feedback(self.session, session_id, session_turn_context)
 
         self.assertIsNone(result)
-
-
-if __name__ == '__main__':
-    unittest.main()
