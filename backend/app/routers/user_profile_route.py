@@ -17,7 +17,7 @@ from app.schemas.user_profile import (
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
-    UserStatisticsRead,
+    UserStatistics,
 )
 from app.services.user_export_service import build_user_data_export
 from app.services.user_profile_service import UserService
@@ -72,11 +72,11 @@ def get_user_profile(
     return service.get_user_profile_by_id(user_id=user_profile.id, detailed=detailed)
 
 
-@router.get('/stats', response_model=UserStatisticsRead)
+@router.get('/stats', response_model=UserStatistics)
 def get_user_stats(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[UserService, Depends(get_user_service)],
-) -> UserStatisticsRead:
+) -> UserStatistics:
     return service.get_user_statistics(user_id=user_profile.id)
 
 

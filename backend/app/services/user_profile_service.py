@@ -20,7 +20,7 @@ from app.schemas.user_profile import (
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
-    UserStatisticsRead,
+    UserStatistics,
 )
 
 
@@ -119,7 +119,7 @@ class UserService:
         else:
             return self._get_user_profile_response(user)
 
-    def get_user_statistics(self, user_id: UUID) -> UserStatisticsRead:
+    def get_user_statistics(self, user_id: UUID) -> UserStatistics:
         user = self.db.get(UserProfile, user_id)
         if not user:
             raise HTTPException(
@@ -127,7 +127,7 @@ class UserService:
                 detail='User profile not found.',
             )
 
-        return UserStatisticsRead(
+        return UserStatistics(
             total_sessions=user.total_sessions,
             training_time=user.training_time,
             current_streak_days=user.current_streak_days,

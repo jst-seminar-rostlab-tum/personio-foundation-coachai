@@ -75,7 +75,7 @@ class PaginatedUserRead(CamelModel):
 
 
 # Schema for reading User Statistics
-class UserStatisticsRead(CamelModel):
+class UserStatistics(CamelModel):
     total_sessions: int
     training_time: float  # in hours
     current_streak_days: int
