@@ -1,9 +1,9 @@
 import { UserProfile, UserProfileUpdate } from '@/interfaces/models/UserProfile';
 import { AxiosInstance } from 'axios';
 
-const getUserProfile = async (api: AxiosInstance): Promise<UserProfile> => {
+const getUserProfile = async (api: AxiosInstance) => {
   try {
-    const { data } = await api.get<UserProfile>(`/user-profile/profile`, {
+    const { data } = await api.get(`/user-profile/profile`, {
       params: { detailed: true },
     });
     return data;
@@ -38,8 +38,8 @@ const updateUserProfile = async (
 
 const exportUserData = async (api: AxiosInstance) => {
   try {
-    const { data } = await api.get('/user-profile/export');
-    return data;
+    const response = await api.get('/user-profile/export', { responseType: 'blob' });
+    return response.data;
   } catch (error) {
     console.error('Error exporting user data:', error);
     throw error;

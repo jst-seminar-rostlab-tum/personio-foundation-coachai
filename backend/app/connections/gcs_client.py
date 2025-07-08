@@ -1,11 +1,9 @@
-from typing import Optional
-
 from app.config import Settings
 from app.services.google_cloud_storage_service import GCSManager
 
 settings = Settings()
 
-_gcs_audio_manager: Optional[GCSManager] = None
+_gcs_audio_manager: GCSManager = None
 _gcs_docs_manager: GCSManager = None
 
 
@@ -20,7 +18,7 @@ def _is_authorized_for_gcs() -> bool:
     )
 
 
-def get_gcs_audio_manager() -> Optional[GCSManager]:
+def get_gcs_audio_manager() -> GCSManager:
     global _gcs_audio_manager
     if _gcs_audio_manager:
         return _gcs_audio_manager
