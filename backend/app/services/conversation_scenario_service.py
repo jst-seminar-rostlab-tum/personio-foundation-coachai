@@ -7,7 +7,8 @@ from sqlmodel import func, select
 
 from app.database import get_db_session
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import ConversationScenario
+from app.models.conversation_scenario import ConversationScenario, DifficultyLevel
+from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
 from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
@@ -45,9 +46,12 @@ class ConversationScenarioService:
         # Check need for creating a new conversation scenario
         # if custom_scenario is True, we assume the scenario is custom and needs to be created.
         if not custom_scenario:
-            # Check if there is an existing scenario with the same category and prompt
-            existing_scenarios = self._get_scenarios_by_category(
-                user_profile.id, conversation_scenario.category_id
+            # Check if there is an existing scenario with the same category, language and difficulty
+            existing_scenarios = self._get_scenarios_by_category_language_difficulty(
+                user_profile.id,
+                conversation_scenario.category_id,
+                conversation_scenario.language_code,
+                conversation_scenario.difficulty_level,
             )
             if len(existing_scenarios) > 0:
                 equal_scenario_id = self._get_equal_scenario(
@@ -336,15 +340,23 @@ class ConversationScenarioService:
             return category
         return None
 
-    def _get_scenarios_by_category(
-        self, user_id: UUID, category_id: str | None
+    def _get_scenarios_by_category_language_difficulty(
+        self,
+        user_id: UUID,
+        category_id: str | None,
+        language_code: LanguageCode,
+        difficulty_level: DifficultyLevel,
     ) -> Sequence[ConversationScenario]:
         """
         Retrieve all conversation scenarios for a given user and category.
         """
         statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
         if category_id:
-            statement = statement.where(ConversationScenario.category_id == category_id)
+            statement = statement.where(
+                ConversationScenario.category_id == category_id,
+                ConversationScenario.language_code == language_code,
+                ConversationScenario.difficulty_level == difficulty_level,
+            )
         return self.db.exec(statement).all()
 
     def _get_equal_scenario(
