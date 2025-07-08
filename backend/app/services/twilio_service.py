@@ -25,7 +25,7 @@ def send_verification_code(phone_number: str) -> str:
         return verification.status
     except Exception as e:
         print(f'Error sending verification code: {e}')
-        return 'pending'  # Return pending as fallback
+        return 'pending'  # Return failed as fallback
 
 
 def check_verification_code(phone_number: str, code: str) -> bool:

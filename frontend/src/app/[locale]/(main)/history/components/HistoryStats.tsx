@@ -29,7 +29,7 @@ export default async function HistoryStats({ stats }: UserStatsResponse) {
           <div className="text-xl mb-4">{t('activity')}</div>
           <div className="flex flex-row gap-2 md:gap-6 min-w-0 overflow-x-auto">
             <StatCard value={stats.totalSessions} label={tCommon('totalSessions')} />
-            <StatCard value={`${stats.averageScore}%`} label={tCommon('avgScore')} />
+            <StatCard value={`${stats.averageScore ?? 0}%`} label={tCommon('avgScore')} />
             <StatCard value={stats.goalsAchieved} label={tCommon('goalsAchieved')} />
           </div>
         </div>
