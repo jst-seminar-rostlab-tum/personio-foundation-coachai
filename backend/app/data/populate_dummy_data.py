@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, text
 
@@ -108,8 +110,11 @@ def populate_data() -> None:
         empty_vector_data = HrInformation(content='', meta_data={}, embedding=[0.0] * 768)
         db_session.add(empty_vector_data)
         db_session.commit()
+        path_match_documents = Path(__file__).resolve().parent.parent / 'rag' / 'match_function.sql'
+        sql_query_match_documents = path_match_documents.read_text(encoding='utf-8')
+        db_session.execute(text(sql_query_match_documents))
+        db_session.commit()
         print('Vector store created successfully!')
-
         # print('Creating mock users...')
         # create_mock_users()
 

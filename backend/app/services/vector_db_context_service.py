@@ -3,7 +3,7 @@ from functools import lru_cache
 from app.rag.rag import build_vector_db_retriever
 from app.rag.vector_db import format_docs_with_metadata
 from app.schemas.scenario_preparation import ConversationScenarioBase
-from app.services.voice_analysis_service import analyze_voice_gemini_from_file
+from app.services.voice_analysis_service import analyze_voice
 
 
 def build_query_prep_feedback(
@@ -100,7 +100,7 @@ def query_vector_db(
     try:
         voice_analysis = None
         if user_audio_path:
-            voice_analysis = analyze_voice_gemini_from_file(user_audio_path)
+            voice_analysis = analyze_voice(user_audio_path)
 
         if all(x is None for x in [session_context, user_audio_path, user_transcript]):
             return '', []
