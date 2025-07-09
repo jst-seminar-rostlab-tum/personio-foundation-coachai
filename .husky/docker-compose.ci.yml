@@ -1,22 +1,11 @@
 services:
   supabase:
-    image: node:20
-    working_dir: /app/supabase
+    image: supabase/supabase-dev:latest
     ports:
       - "54321:54321" # API
       - "54322:54322" # DB
-    volumes:
-      - .:/app
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /app/supabase/node_modules
     environment:
       SUPABASE_API_HOST: 0.0.0.0
-    command: >
-      sh -c "
-        npm install &&
-        npx supabase start --debug &&
-        tail -f /dev/null
-      "
     healthcheck:
       test: [ "CMD-SHELL", "curl -sf http://localhost:54321/rest-admin/v1/ready || exit 1" ]
       interval: 3s
