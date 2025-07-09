@@ -2,24 +2,18 @@ name: Check database migrations
 
 on:
   pull_request:
-    branches: ["**"]          # run on every PR
 
 jobs:
-  # ------------------------------------------------------------
-  # 1) PRE-CHECKS – run fast and fail fast
-  # ------------------------------------------------------------
   pre-checks:
+    name: Pre-migration checks
     runs-on: ubuntu-22.04
-    outputs:
-      backend_changed: ${{ steps.filter.outputs.any_changed }}
-
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0      # needed for merge-base checks
+          fetch-depth: 0
 
-      - name: Detect backend-related changes
-        id: filter
+      - name: Check for backend changes
+        id: changed-files
         uses: tj-actions/changed-files@v46
         with:
           files: |
@@ -28,105 +22,143 @@ jobs:
             backend/alembic/data/**
             backend/app/data/**
 
-      - name: Ensure latest dev is merged
-        if: steps.filter.outputs.any_changed == 'true'
+      # ─────────────────────────────────────────────────────────────
+      # 1️⃣ Ensure the PR branch contains the latest dev
+      # ─────────────────────────────────────────────────────────────
+      - name: Check if dev branch is merged
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          PR_BRANCH: ${{ github.head_ref }}
         run: |
           git fetch origin dev
-          if ! git merge-base --is-ancestor origin/dev HEAD; then
-            echo "::error::Please merge the latest 'dev' branch into this PR."
+          git fetch origin $PR_BRANCH
+          echo "Checking if origin/dev is merged into $PR_BRANCH"
+
+          if git merge-base --is-ancestor origin/dev origin/$PR_BRANCH; then
+            echo "✅ Dev branch is merged"
+          else
+            echo "❌ Dev branch is not fully merged into this branch"
+            echo "Please merge dev branch before proceeding"
             exit 1
           fi
-          echo "✅ dev branch is merged."
 
-      - name: Guard against edits to existing migrations
-        if: steps.filter.outputs.any_changed == 'true'
+      # ─────────────────────────────────────────────────────────────
+      # 2️⃣ Block if existing dev-branch migration scripts were edited
+      # ─────────────────────────────────────────────────────────────
+      - name: Check for modified dev migration files
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          set -eo pipefail
-          mapfile -t dev_migrations < <(
-            git ls-tree -r --name-only origin/dev \
-              -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.(py|sql)$'
-          )
-          for f in "${dev_migrations[@]}"; do
-            git diff --quiet origin/dev -- "$f" && continue
-            echo "::error file=$f::Existing migration modified or deleted. Create a new revision instead."
-            exit 1
-          done
-          echo "✅ No existing migrations touched."
+          echo "Checking for modifications to existing migration files from dev..."
 
-      - name: Skip – no backend changes
-        if: steps.filter.outputs.any_changed != 'true'
-        run: echo "No backend-relevant files changed – skipping migration checks."
+          # List every migration file currently on dev
+          DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.py$|\.sql$' || true)
 
-  # ------------------------------------------------------------
-  # 2) MIGRATION TEST – only runs if backend_changed == true
-  # ------------------------------------------------------------
+          if [[ -n "$DEV_MIGRATIONS" ]]; then
+            echo "Migration files found on dev branch:"
+            echo "$DEV_MIGRATIONS"
+
+            MODIFIED_FILES=""
+            for file in $DEV_MIGRATIONS; do
+              # If the file exists in the PR branch…
+              if git ls-tree -r --name-only HEAD -- "$file" | grep -q .; then
+                # …check if contents differ
+                if ! git diff --quiet origin/dev HEAD -- "$file"; then
+                  MODIFIED_FILES="$MODIFIED_FILES\n$file (modified)"
+                fi
+              else
+                # File was deleted in the PR
+                MODIFIED_FILES="$MODIFIED_FILES\n$file (deleted)"
+              fi
+            done
+
+            if [[ -n "$MODIFIED_FILES" ]]; then
+              echo "❌ Existing migration files from dev have been altered:"
+              echo -e "$MODIFIED_FILES"
+              echo ""
+              echo "Migration files from dev branch should never be modified or deleted."
+              echo "Revert changes and create new migration files instead."
+              exit 1
+            else
+              echo "✅ No existing migration files from dev have been modified"
+            fi
+          else
+            echo "✅ No migration files found on dev branch"
+          fi
+
+      - name: No relevant changes, skipping migration pre-checks
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "No relevant changes, skipping migration pre-checks."
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Main job: spin up Supabase Postgres, run Alembic migrations & tests
+  # ─────────────────────────────────────────────────────────────────────
   migrations:
-    needs: pre-checks
-    if: needs.pre-checks.outputs.backend_changed == 'true'
+    name: Check migrations
     runs-on: ubuntu-22.04
-
+    needs: pre-checks
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install uv (Python package manager)
+      - name: Check for backend changes
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            backend/app/models/**
+            backend/alembic/versions/**
+            backend/alembic/data/**
+            backend/app/data/**
+
+      - name: Install uv
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: pipx install uv
 
-      - name: Sync project dependencies
+      - name: Install dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: uv sync
         working-directory: ./backend
 
-      # --- spin up the minimal Supabase stack -----------------
-      - name: Show image that will be used
-        run: |
-          set -eu
-          docker compose \
-            -f docker-compose.yml \
-            -f .husky/docker-compose.ci.yml \
-            -f .husky/docker-compose.override.ci.yml \
-            config | grep 'image:' | sed 's/^/▶ /'
-
-      - name: Start db and stream its logs
-        run: |
-          set -eu
-          # pull fresh layers, start detached, wait for health
-          docker compose \
-            -f docker-compose.yml \
-            -f .husky/docker-compose.ci.yml \
-            -f .husky/docker-compose.override.ci.yml \
-            up -d --pull always --quiet-pull --wait --wait-timeout 180 db
-
-          # follow the first 300 log lines from Postgres in background
-          docker compose \
-            -f docker-compose.yml \
-            -f .husky/docker-compose.ci.yml \
-            -f .husky/docker-compose.override.ci.yml \
-            logs --no-color --follow --tail=300 db &
-
-      # --- run the migration smoke test -----------------------
-      - name: Run migration smoke-test
+      # Start only the Supabase-Postgres service (db)
+      - name: Start database (Supabase Postgres)
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
-            -f .husky/docker-compose.override.ci.yml \
-            run --build --no-deps test-migrations
+            up -d --remove-orphans db
 
-      # --- helpful logs if something fails --------------------
-      - name: Dump container logs on failure
-        if: failure()
+      - name: Wait for database startup
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          docker compose \
+          echo "Waiting for database to be healthy..."
+          for i in {1..60}; do
+            state=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml ps --format '{{.Health}}' db)
+            if [[ "$state" == "healthy" ]]; then
+              echo "✅ Database ready after $((i*2)) seconds"
+              break
+            elif [[ "$state" == "starting" ]]; then
+              echo "Database starting... ($((i*2))s elapsed)"
+            fi
+            [[ $i -eq 60 ]] && { echo "❌ Database not healthy after 2 minutes"; exit 1; }
+            sleep 2
+          done
+
+      - name: Run migrations
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          CID=$(docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
-            -f .husky/docker-compose.override.ci.yml \
-            logs --no-color
+            run --build --no-deps -d test-migrations | tail -n1)
+          docker logs -f "$CID"
+          EXIT=$(docker wait "$CID")
+          if [[ "$EXIT" -eq 0 ]]; then
+            echo "✅ Migration checks passed"
+          else
+            echo "❌ Migration checks failed"
+            exit 1
+          fi
 
-      # --- always clean up ------------------------------------
-      - name: Tear down stack
-        if: always()
-        run: |
-          docker compose \
-            -f docker-compose.yml \
-            -f .husky/docker-compose.ci.yml \
-            -f .husky/docker-compose.override.ci.yml \
-            down -v
+      - name: No relevant changes, skipping migration checks
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: echo "No relevant changes, skipping migration checks."

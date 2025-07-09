@@ -1,43 +1,43 @@
-version: "3.8"
-
 services:
-  # Supabase-flavoured Postgres (includes pg_graphql, pg_net, pgvector, etc.)
+  # ─────────────────────────────────────────────────────────────
+  # Supabase-flavoured Postgres (comes with pgvector + 50+ ext’s)
+  # ─────────────────────────────────────────────────────────────
   db:
-    image: supabase/postgres:15.8.1.094      # pin! avoid :latest surprises
+    image: supabase/postgres:16.1.1.57   # pin a specific tag for reproducible CI
+    restart: unless-stopped
+    command:
+      - postgres
+      - -c
+      - wal_level=logical               # matches Supabase defaults
     environment:
+      POSTGRES_USER:     postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    ports:
-      - "54322:5432"                         # exposed only for debugging
+      POSTGRES_DB:       postgres
+      POSTGRES_PORT:     5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 5s
-      timeout: 5s
-      retries: 10
+      timeout: 3s
+      retries: 60
+    networks: [test-network]
 
-  # Container that executes your Alembic (or similar) migration test script
+  # your migration-runner container is unchanged
   test-migrations:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args:
-        stage: dev                           # matches multi-stage Dockerfile
+      args: { stage: dev }
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+      - ./.husky/test-migrations.sh:/test-migrations.sh
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
-      PGHOST: db
-      PGPORT: "5432"
-      PGUSER: postgres
-      PGPASSWORD: postgres
-      POSTGRES_DB: postgres
-    volumes:
-      - ./backend:/app                       # mount source for flake8/pytest, etc.
-      - /app/.venv                           # keep virtual-env cache
-      - ./.husky/test-migrations.sh:/test-migrations.sh:ro
     entrypoint: ["/bin/bash", "/test-migrations.sh"]
+    networks: [test-network]
 
 networks:
-  default:
-    driver: bridge
+  test-network:
