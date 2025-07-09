@@ -26,7 +26,9 @@ def upgrade() -> None:  # noqa: D401
       and wires up all necessary grants and policies to keep the hook secure.
     """
 
-    # Ensure the `supabase_admin` role exists (safe for CI)
+    # ---------------------------------------------------------
+    # Core roles / extensions (idempotent)
+    # ---------------------------------------------------------
     op.execute(
         """
         DO $$
@@ -41,63 +43,63 @@ def upgrade() -> None:  # noqa: D401
         """
     )
 
-    # Install required PostgreSQL extensions
     op.execute('CREATE EXTENSION IF NOT EXISTS pg_graphql;')
     op.execute('CREATE EXTENSION IF NOT EXISTS vector;')
 
-    # ---------------------------------------------------------------------
-    # Custom JWT claim hook: injects `account_role` into the access token.
-    # ---------------------------------------------------------------------
+    # ---------------------------------------------------------
+    # Custom JWT claim hook + security plumbing
+    # ---------------------------------------------------------
     op.execute(
         """
-        -- Create the auth hook function (idempotent via CREATE OR REPLACE)
-        create or replace function public.custom_access_token_hook(event jsonb)
-        returns jsonb
-        language plpgsql
-        stable
-        as $$
-        declare
-            claims jsonb;
-            user_role public.accountrole;
-        begin
-            -- Fetch the account role from the userprofile table
-            select account_role
-            into   user_role
-            from   public.userprofile
-            where  id = (event->>'user_id')::uuid;
+        -- ------------------------------------------------------------------
+        -- Function: public.custom_access_token_hook(event jsonb)
+        -- Purpose : Adds `account_role` claim to JWT access tokens issued by
+        --            Supabase Auth.
+        -- ------------------------------------------------------------------
+        CREATE OR REPLACE FUNCTION public.custom_access_token_hook(event jsonb)
+        RETURNS jsonb
+        LANGUAGE plpgsql
+        STABLE AS $$
+        DECLARE
+            claims     jsonb;
+            user_role  public.accountrole;
+        BEGIN
+            -- Lookup user's role (nullable)
+            SELECT account_role
+              INTO user_role
+              FROM public.userprofile
+             WHERE id = (event->>'user_id')::uuid;
 
-            -- Copy existing claims
+            -- Copy existing set of claims
             claims := event->'claims';
 
-            if user_role is not null then
-                -- Inject the claim
+            IF user_role IS NOT NULL THEN
                 claims := jsonb_set(claims, '{account_role}', to_jsonb(user_role));
-            else
-                -- Explicitly set to null so callers can trust the key exists
+            ELSE
                 claims := jsonb_set(claims, '{account_role}', 'null');
-            end if;
+            END IF;
 
-            -- Write back the updated claims object
+            -- Write back mutated claims
             event := jsonb_set(event, '{claims}', claims);
-
-            return event;
-        end;
+            RETURN event;
+        END;
         $$;
 
-        -- Minimal privileges required for the Supabase auth service
-        grant usage on schema public to supabase_auth_admin;
-        grant execute on function public.custom_access_token_hook to supabase_auth_admin;
-        revoke execute on function public.custom_access_token_hook from authenticated, anon, public;
+        -- Allow only the Supabase Auth service to use this hook
+        GRANT USAGE   ON SCHEMA  public TO supabase_auth_admin;
+        GRANT EXECUTE ON FUNCTION public.custom_access_token_hook TO supabase_auth_admin;
+        REVOKE EXECUTE ON FUNCTION public.custom_access_token_hook FROM authenticated, anon, public;
 
-        -- Grant read‑only access on the userprofile table to the auth service
-        grant all on table public.userprofile to supabase_auth_admin;
-        revoke all on table public.userprofile from authenticated, anon, public;
+        -- Table‑level privileges for the Auth service
+        GRANT ALL ON TABLE public.userprofile TO supabase_auth_admin;
+        REVOKE ALL ON TABLE public.userprofile FROM authenticated, anon, public;
 
-        -- Policy allowing the auth service to read roles (permissive)
-        create policy if not exists "Allow auth admin to read user roles" on public.userprofile
-            as permissive for select
-            to supabase_auth_admin
-            using (true);
+        -- Ensure policy exists (drop‑then‑create for Postgres <16)
+        DROP POLICY IF EXISTS "Allow auth admin to read user roles" ON public.userprofile;
+        CREATE POLICY "Allow auth admin to read user roles" ON public.userprofile
+            AS PERMISSIVE FOR SELECT
+            TO supabase_auth_admin
+            USING (true);
         """  # noqa: E501
     )
 
@@ -113,13 +115,13 @@ def downgrade() -> None:  # noqa: D401
 
     op.execute(
         """
-        -- Roll back the privileges and objects introduced by this revision
-        revoke all on table public.userprofile from supabase_auth_admin;
-        revoke execute on function public.custom_access_token_hook from supabase_auth_admin;
-        revoke all on table public.userprofile from authenticated, anon, public;
-        revoke all on function public.custom_access_token_hook from authenticated, anon, public;
-        drop policy if exists "Allow auth admin to read user roles" on public.userprofile;
-        drop function if exists public.custom_access_token_hook(event jsonb);
+        -- Roll back *only* objects introduced by this revision
+        REVOKE ALL ON TABLE public.userprofile FROM supabase_auth_admin;
+        REVOKE EXECUTE ON FUNCTION public.custom_access_token_hook FROM supabase_auth_admin;
+        REVOKE ALL ON TABLE public.userprofile FROM authenticated, anon, public;
+        REVOKE ALL ON FUNCTION public.custom_access_token_hook FROM authenticated, anon, public;
+        DROP POLICY IF EXISTS "Allow auth admin to read user roles" ON public.userprofile;
+        DROP FUNCTION IF EXISTS public.custom_access_token_hook(event jsonb);
         -- NOTE: pg_graphql and vector extensions intentionally left in place.
         """
     )
