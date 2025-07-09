@@ -77,6 +77,9 @@ class TestReviewRoute(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.db.rollback()
+        for table in reversed(SQLModel.metadata.sorted_tables):
+            self.db.execute(table.delete())
+        self.db.commit()
         self.db.close()
 
     def _create_multiple_dummy_reviews(
