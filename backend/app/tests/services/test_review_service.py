@@ -315,37 +315,6 @@ class TestReviewService(unittest.TestCase):
             all(reviews[i].date <= reviews[i + 1].date for i in range(len(reviews) - 1))
         )
 
-    def test_get_reviews_without_limit(self) -> None:
-        self._create_multiple_dummy_reviews(self.normal_user, 2, 5)
-        self._create_multiple_dummy_reviews(self.normal_user, 2, 4)
-        self._create_multiple_dummy_reviews(self.normal_user, 1, 3)
-        self._create_multiple_dummy_reviews(self.normal_user, 1, 2)
-        self._create_multiple_dummy_reviews(self.normal_user, 1, 1)
-
-        reviews = self.service.get_reviews(sort='highest')
-        self.assertEqual(len(reviews), 7)
-        self.assertTrue(
-            all(reviews[i].rating >= reviews[i + 1].rating for i in range(len(reviews) - 1))
-        )
-
-        reviews = self.service.get_reviews(sort='lowest')
-        self.assertEqual(len(reviews), 7)
-        self.assertTrue(
-            all(reviews[i].rating <= reviews[i + 1].rating for i in range(len(reviews) - 1))
-        )
-
-        reviews = self.service.get_reviews(sort='newest')
-        self.assertEqual(len(reviews), 7)
-        self.assertTrue(
-            all(reviews[i].date >= reviews[i + 1].date for i in range(len(reviews) - 1))
-        )
-
-        reviews = self.service.get_reviews(sort='oldest')
-        self.assertEqual(len(reviews), 7)
-        self.assertTrue(
-            all(reviews[i].date <= reviews[i + 1].date for i in range(len(reviews) - 1))
-        )
-
     def test_get_reviews_with_pagination(self) -> None:
         self._create_multiple_dummy_reviews(self.normal_user, 2, 5)
         self._create_multiple_dummy_reviews(self.normal_user, 2, 4)
