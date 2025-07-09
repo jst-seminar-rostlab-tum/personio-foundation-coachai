@@ -1,8 +1,8 @@
-"""Added last_loggin_at field to user_profile
+"""Added last_logged_in field to User Profile
 
-Revision ID: a0f89cb0a15d
-Revises: a93e502a5d3a
-Create Date: 2025-07-05 16:57:34.355970
+Revision ID: a1e923719659
+Revises: 03f53ff9f076
+Create Date: 2025-07-09 16:52:57.436406
 
 """
 
@@ -10,12 +10,13 @@ from collections.abc import Sequence
 from typing import Union
 
 import sqlalchemy as sa
+import sqlmodel
 
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = 'a0f89cb0a15d'
-down_revision: Union[str, None] = 'a93e502a5d3a'
+revision: str = 'a1e923719659'
+down_revision: Union[str, None] = '03f53ff9f076'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
