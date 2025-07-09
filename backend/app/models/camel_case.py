@@ -10,3 +10,6 @@ class CamelModel(SQLModel):
     class Config:  # type: ignore
         alias_generator = to_camel
         validate_by_name = True
+
+
+# Test
