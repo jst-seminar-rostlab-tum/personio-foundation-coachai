@@ -72,7 +72,6 @@ export function useWebRTC(sessionId: string) {
         setConnectionStatus(state);
       }
       if (state === ConnectionStatus.Failed || state === ConnectionStatus.Closed) {
-        setConnectionStatus(state);
         cleanup();
       }
     };
