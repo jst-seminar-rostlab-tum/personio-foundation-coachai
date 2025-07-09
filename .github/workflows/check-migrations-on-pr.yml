@@ -3,16 +3,19 @@ name: Check Migrations on PR
 on:
   pull_request:
 
+# ─────────────────────────────────────────────
+# 1️⃣  Static checks that don't need a database
+# ─────────────────────────────────────────────
 jobs:
   pre-checks:
     name: Pre-migration checks
     runs-on: ubuntu-22.04
+
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
 
-      - name: Check for backend changes
+      - name: Detect backend-related changes
         id: changed-files
         uses: tj-actions/changed-files@v46
         with:
@@ -22,6 +25,7 @@ jobs:
             backend/alembic/data/**
             backend/app/data/**
 
+      # 🚦  Fail early if dev isn’t fully merged
       - name: Check if dev branch is merged
         if: steps.changed-files.outputs.any_changed == 'true'
         env:
@@ -36,6 +40,7 @@ jobs:
             exit 1
           fi
 
+      # 🛡  Guard against editing existing migration files
       - name: Check for modified dev migration files
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
@@ -59,21 +64,37 @@ jobs:
           fi
           echo "✅ Migration files check passed"
 
-      - name: No relevant changes, skipping migration pre-checks
+      - name: No relevant changes – skipping
         if: steps.changed-files.outputs.any_changed != 'true'
-        run: echo "No relevant changes, skipping migration pre-checks."
+        run: echo "No backend-level changes; skipping migration pre-checks."
 
-  # ─────────────────────────────────────────────────────────────
-  # Main job: spin up Supabase Postgres 17 and run Alembic tests
-  # ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────
+# 2️⃣  Migration test job with a service DB
+# ─────────────────────────────────────────────
   migrations:
     name: Check migrations
     runs-on: ubuntu-22.04
     needs: pre-checks
+
+    # 🚀  Postgres service starts in parallel with the runner VM
+    services:
+      db:
+        image: supabase/postgres:17.4
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check for backend changes
+      - name: Detect backend-related changes
         id: changed-files
         uses: tj-actions/changed-files@v46
         with:
@@ -83,67 +104,42 @@ jobs:
             backend/alembic/data/**
             backend/app/data/**
 
-      - name: Install uv
+      - name: Install uv (fast pip replacement)
         if: steps.changed-files.outputs.any_changed == 'true'
         run: pipx install uv
 
-      - name: Install dependencies
+      - name: Sync Python deps
         if: steps.changed-files.outputs.any_changed == 'true'
         run: uv sync
         working-directory: ./backend
 
-      - name: Start database (Supabase Postgres 17.4)
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          docker compose \
-            -f docker-compose.yml \
-            -f .husky/docker-compose.ci.yml \
-            up -d --remove-orphans --force-recreate --renew-anon-volumes db
-
-      - name: Wait for database startup
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          echo "Waiting for database to be healthy..."
-          for i in {1..60}; do
-            state=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml ps --format '{{.Health}}' db)
-            [[ "$state" == "healthy" ]] && { echo "✅ Database ready after $((i*2)) seconds"; break; }
-            [[ "$state" == "starting" ]] && echo "Database starting... ($((i*2))s elapsed)"
-            [[ $i -eq 60 ]] && { echo "❌ Database not healthy after 2 minutes"; exit 1; }
-            sleep 2
-          done
-
-
+      # 🔐  Create supabase_admin role only when needed
       - name: Ensure supabase_admin role (CI only)
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          # Create the role only if it doesn't exist.
-          docker compose \
-            -f docker-compose.yml \
-            -f .husky/docker-compose.ci.yml \
-            exec -T db psql -U postgres -d postgres -v ON_ERROR_STOP=1 -c "
+          sudo apt-get update -y
+          sudo apt-get install -y postgresql-client
+          psql -h localhost -U postgres -d postgres -v ON_ERROR_STOP=1 -c "
           DO \$\$
           BEGIN
-            IF NOT EXISTS (
-              SELECT 1 FROM pg_roles WHERE rolname = 'supabase_admin'
-            ) THEN
+            IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'supabase_admin') THEN
               CREATE ROLE supabase_admin SUPERUSER;
             END IF;
-          END
+          END;
           \$\$;"
 
-
-
+      # 🏗️  Run Alembic migrations against the freshly spun-up DB
       - name: Run migrations
         if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+        working-directory: ./backend
         run: |
-          CID=$(docker compose \
-            -f docker-compose.yml \
-            -f .husky/docker-compose.ci.yml \
-            run --build --no-deps -d test-migrations | tail -n1)
-          docker logs -f "$CID"
-          EXIT=$(docker wait "$CID")
-          [[ "$EXIT" -eq 0 ]] && echo "✅ Migration checks passed" || { echo "❌ Migration checks failed"; exit 1; }
+          # Alembic should already be in your project’s dependencies; install if not:
+          uv pip install alembic
+          alembic upgrade head
+          echo "✅ Migration checks passed"
 
-      - name: No relevant changes, skipping migration checks
+      - name: No relevant changes – skipping
         if: steps.changed-files.outputs.any_changed != 'true'
-        run: echo "No relevant changes, skipping migration checks."
+        run: echo "No backend-level changes; skipping migration checks."
