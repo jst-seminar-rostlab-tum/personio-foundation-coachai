@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { sessionService } from '@/services/SessionService';
 import { MessageSender } from '@/interfaces/models/Session';
+import { ConnectionStatus } from '@/interfaces/models/Simulation';
 import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/utils/toast';
 import { useTranslations } from 'next-intl';
@@ -28,7 +29,9 @@ export function useWebRTC(sessionId: string) {
   const { addAudioToTurn, addMetadataToTurn, addStartOffsetMsToTurn, addEndOffsetMsToTurn } =
     useSessionTurns();
 
-  const [isConnected, setIsConnected] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
+    ConnectionStatus.Connecting
+  );
 
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
@@ -48,7 +51,7 @@ export function useWebRTC(sessionId: string) {
     stopLocalRecording();
     stopRemoteRecording();
     if (remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
-    setIsConnected(false);
+    setConnectionStatus(ConnectionStatus.Disconnected);
     hasInitializedRef.current = false;
     stopTimer();
   }, [stopStream, stopLocalRecording, stopRemoteRecording, stopTimer]);
@@ -63,7 +66,14 @@ export function useWebRTC(sessionId: string) {
     peerConnectionRef.current = pc;
 
     pc.onconnectionstatechange = () => {
-      if (['disconnected', 'failed', 'closed'].includes(pc.connectionState)) cleanup();
+      const state = pc.connectionState as ConnectionStatus;
+
+      if (state !== ConnectionStatus.New) {
+        setConnectionStatus(state);
+      }
+      if (state === ConnectionStatus.Failed || state === ConnectionStatus.Closed) {
+        cleanup();
+      }
     };
 
     await startStream();
@@ -82,14 +92,16 @@ export function useWebRTC(sessionId: string) {
     dataChannelRef.current = dc;
 
     dc.onopen = () => {
-      setIsConnected(true);
+      setConnectionStatus(ConnectionStatus.Connected);
       startLocalRecording();
       startTimer();
     };
     dc.onclose = () => {
+      setConnectionStatus(ConnectionStatus.Closed);
       cleanup();
     };
     dc.onerror = () => {
+      setConnectionStatus(ConnectionStatus.Failed);
       cleanup();
     };
 
@@ -212,7 +224,7 @@ export function useWebRTC(sessionId: string) {
   return {
     isMicActive,
     toggleMic,
-    isConnected,
+    connectionStatus,
     initWebRTC,
     remoteAudioRef,
     messages,
