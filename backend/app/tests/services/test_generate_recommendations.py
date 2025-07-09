@@ -2,7 +2,7 @@ import os
 import unittest
 
 from app.models.language import LanguageCode
-from app.schemas.session_feedback import FeedbackRequest
+from app.schemas.session_feedback import FeedbackRequest, RecommendationsCollection
 from app.services.session_feedback.session_feedback_llm import generate_recommendations
 
 
@@ -18,6 +18,12 @@ class TestGenerateRecommendations(unittest.TestCase):
         )
         self.language_code = LanguageCode.en
 
+    def print_recommendations_stats(self, tag: str, result: RecommendationsCollection) -> None:
+        print(
+            f'[{tag}] num={len(result.recommendations)} '
+            f'recommendations={[rec.heading for rec in result.recommendations]}'
+        )
+
     def test_no_recommendations_for_empty_or_assistant_only(self) -> None:
         for transcript in ['', 'Assistant: Please follow the instructions.']:
             req = FeedbackRequest(
@@ -30,6 +36,9 @@ class TestGenerateRecommendations(unittest.TestCase):
                 language_code=self.language_code,
             )
             result = generate_recommendations(req)
+            self.print_recommendations_stats(
+                'no_recommendations_for_empty_or_assistant_only', result
+            )
             self.assertTrue(
                 len(result.recommendations) == 0
                 or all(
@@ -53,6 +62,7 @@ class TestGenerateRecommendations(unittest.TestCase):
             language_code=self.language_code,
         )
         result = generate_recommendations(req)
+        self.print_recommendations_stats('recommendations_unique_and_not_contradictory', result)
         texts = [rec.recommendation for rec in result.recommendations]
         self.assertEqual(len(texts), len(set(texts)), 'Recommendations are not unique')
 
@@ -71,6 +81,9 @@ class TestGenerateRecommendations(unittest.TestCase):
             language_code=self.language_code,
         )
         result = generate_recommendations(req)
+        self.print_recommendations_stats(
+            'recommendations_reflect_objectives_and_key_concepts', result
+        )
         found = any(
             'empathy' in (rec.heading + rec.recommendation).lower()
             or 'clarity' in (rec.heading + rec.recommendation).lower()
@@ -90,6 +103,7 @@ class TestGenerateRecommendations(unittest.TestCase):
             language_code=self.language_code,
         )
         result = generate_recommendations(req)
+        self.print_recommendations_stats('maximum_number_of_recommendations', result)
         self.assertLessEqual(len(result.recommendations), 5, 'Too many recommendations returned')
 
 
