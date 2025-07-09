@@ -48,5 +48,8 @@
   "deleteAccountError": "Beim Löschen des Kontos ist ein Fehler aufgetreten.",
   "areYouSure": "Sind Sie sicher?",
   "deleteAccountConfirmDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
-  "deleting": "Wird gelöscht..."
+  "deleting": "Wird gelöscht...",
+  "emailInputLabel": "E-Mail-Adresse",
+  "emailInputPlaceholder": "Bitte geben Sie Ihre E-Mail-Adresse ein",
+  "emailInputError": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
 }
