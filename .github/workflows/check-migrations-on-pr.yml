@@ -129,6 +129,26 @@ jobs:
             sleep 2
           done
 
+
+      - name: Ensure supabase_admin role
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          # Create the role only if it doesn't exist.
+          docker compose \
+            -f docker-compose.yml \
+            -f .husky/docker-compose.ci.yml \
+            exec -T db psql -U postgres -d postgres -v ON_ERROR_STOP=1 -c "
+          DO \$\$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_roles WHERE rolname = 'supabase_admin'
+            ) THEN
+              CREATE ROLE supabase_admin SUPERUSER;
+            END IF;
+          END
+          \$\$;"
+
+
       - name: Run migrations
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
