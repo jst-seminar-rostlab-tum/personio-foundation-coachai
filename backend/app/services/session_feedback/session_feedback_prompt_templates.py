@@ -114,10 +114,9 @@ def build_goals_achieved_prompt(
     - For each goal, determine if the user's speech aligns with 
         and fulfills the intention behind it.
     - Only count goals that are clearly demonstrated in the user's statements.
-    - Do not mark objectives as achieved if they are not clearly demonstrated in 
-    the user's statements.
-    - Only evaluate the User's utterances when determining which objectives have been achieved.
-    Ignore all Assistant utterances.
+    - Only mark a goal as achieved if there is clear and explicit evidence in the User's utterances.
+    - Do not infer or assume achievement based on general conversation or politeness.
+    - If the User does not directly address a goal, do not mark it as achieved.
 
     - Format your output as a list of strings, where each string is a goal that was achieved.
     - Do not include any additional commentary or formatting.

@@ -126,12 +126,17 @@ def get_achieved_goals(
         mock_response=mock_response,
     )
 
+    response.goals_achieved = [goal for goal in response.goals_achieved if goal.strip()]
     return response
 
 
 def generate_recommendations(
     request: FeedbackRequest, hr_docs_context: str = ''
 ) -> RecommendationsCollection:
+    if not request.transcript or not any(
+        line.strip().startswith('User:') for line in request.transcript.splitlines()
+    ):
+        return RecommendationsCollection(recommendations=[])
     lang = request.language_code
     settings = config.root[lang]
 
