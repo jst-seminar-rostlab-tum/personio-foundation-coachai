@@ -28,9 +28,10 @@ class ScoringService:
             "- For every metric, you MUST ONLY consider the User's utterances. Completely ignore all Assistant utterances, even if they are helpful, on-topic, or try to bring the conversation back to focus.\n"
             "- For each metric, in your justification, explicitly compare the User's behavior to every rubric level (1-5), and state why it does or does not meet each level. Only after this comparison, select the best matching score.\n"
             '- You MUST provide a score and justification for ALL FOUR metrics: structure, empathy, focus, and clarity. Do not omit any metric, even if the performance is very poor.\n'
+            "- If the User's utterances are completely irrelevant, incomprehensible, or show no attempt to engage with the metric, you MUST assign a score of 1 for that metric.\n"
+            '- If the overall performance is good enough and only contains minor lapses or imperfections, a score of 5 is appropriate.\n'
             'Here is the evaluation rubric:\n'
             "- You may use the common levels (e.g., 0) as a reference for scoring if the user's utterances are completely irrelevant, incomprehensible, or show no attempt to engage with the metric.\n"
-            '- If the overall performance is good enough and only contains minor lapses or imperfections, a score of 5 is appropriate.\n'
             f'{json.dumps(self.rubric, indent=2)}'
             '\n\n'
             "You MUST act as if the Assistant's utterances do not exist at all. Only the User's utterances are relevant for scoring. If you mention or consider the Assistant in your justification, that is a mistake.\n"
