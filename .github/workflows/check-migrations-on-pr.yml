@@ -1,12 +1,9 @@
-name: Check database migrations
+name: Check Migrations on PR
 
 on:
   pull_request:
 
 jobs:
-  # ─────────────────────────────────────────────────────────────
-  # Pre-migration static checks
-  # ─────────────────────────────────────────────────────────────
   pre-checks:
     name: Pre-migration checks
     runs-on: ubuntu-22.04
@@ -114,7 +111,7 @@ jobs:
             [[ $i -eq 60 ]] && { echo "❌ Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
-      
+
 
       - name: Ensure supabase_admin role (CI only)
         if: steps.changed-files.outputs.any_changed == 'true'
@@ -134,7 +131,7 @@ jobs:
           END
           \$\$;"
 
-      
+
 
       - name: Run migrations
         if: steps.changed-files.outputs.any_changed == 'true'
