@@ -35,6 +35,8 @@ function getConnectionStatusColor(status: ConnectionStatus) {
     case ConnectionStatus.Connecting:
       return 'bg-marigold-50';
     case ConnectionStatus.Disconnected:
+    case ConnectionStatus.Closed:
+    case ConnectionStatus.Failed:
       return 'bg-flame-50';
     default:
       return 'bg-bw-30';
@@ -68,7 +70,11 @@ export default function SimulationHeader({
                 <span>
                   {connectionStatus === ConnectionStatus.Connecting && t('connecting')}
                   {connectionStatus === ConnectionStatus.Connected && t('connected')}
-                  {connectionStatus === ConnectionStatus.Disconnected && t('disconnected')}
+                  {[
+                    ConnectionStatus.Disconnected,
+                    ConnectionStatus.Closed,
+                    ConnectionStatus.Failed,
+                  ].includes(connectionStatus) && t('disconnected')}
                 </span>
               </Badge>
             )}

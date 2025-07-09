@@ -67,12 +67,15 @@ export function useWebRTC(sessionId: string) {
 
     pc.onconnectionstatechange = () => {
       const state = pc.connectionState;
-
-      if (['disconnected', 'failed', 'closed'].includes(state)) {
-        setConnectionStatus(ConnectionStatus.Disconnected);
+      if (
+        state === ConnectionStatus.Connected ||
+        state === ConnectionStatus.Connecting ||
+        state === ConnectionStatus.Disconnected
+      ) {
+        setConnectionStatus(state as ConnectionStatus);
+      } else if (state === ConnectionStatus.Failed || state === ConnectionStatus.Closed) {
+        setConnectionStatus(state as ConnectionStatus);
         cleanup();
-      } else if (state === ConnectionStatus.Connecting || state === ConnectionStatus.Connected) {
-        setConnectionStatus(ConnectionStatus[state as keyof typeof ConnectionStatus]);
       }
     };
 
@@ -97,11 +100,11 @@ export function useWebRTC(sessionId: string) {
       startTimer();
     };
     dc.onclose = () => {
-      setConnectionStatus(ConnectionStatus.Disconnected);
+      setConnectionStatus(ConnectionStatus.Closed);
       cleanup();
     };
     dc.onerror = () => {
-      setConnectionStatus(ConnectionStatus.Disconnected);
+      setConnectionStatus(ConnectionStatus.Failed);
       cleanup();
     };
 
