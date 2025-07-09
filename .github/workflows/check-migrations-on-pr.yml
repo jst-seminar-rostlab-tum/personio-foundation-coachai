@@ -2,18 +2,23 @@ name: Check database migrations
 
 on:
   pull_request:
-    branches: ["**"]           # run on every PR
+    branches: ["**"]          # run on every PR
 
 jobs:
+  # ------------------------------------------------------------
+  # 1) PRE-CHECKS – run fast and fail fast
+  # ------------------------------------------------------------
   pre-checks:
     runs-on: ubuntu-22.04
     outputs:
       backend_changed: ${{ steps.filter.outputs.any_changed }}
+
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0       # needed for merge-base checks
+          fetch-depth: 0      # needed for merge-base checks
 
+      # Detect whether anything in the backend/migrations changed
       - name: Detect backend-related changes
         id: filter
         uses: tj-actions/changed-files@v46
@@ -24,6 +29,7 @@ jobs:
             backend/alembic/data/**
             backend/app/data/**
 
+      # Ensure the PR branch is up-to-date with dev
       - name: Ensure latest dev is merged
         if: steps.filter.outputs.any_changed == 'true'
         run: |
@@ -34,6 +40,7 @@ jobs:
           fi
           echo "✅ dev branch is merged."
 
+      # Guard against edits to *existing* migration files on dev
       - name: Guard against edits to existing migrations
         if: steps.filter.outputs.any_changed == 'true'
         run: |
@@ -42,7 +49,6 @@ jobs:
             git ls-tree -r --name-only origin/dev \
               -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.(py|sql)$'
           )
-
           for f in "${dev_migrations[@]}"; do
             git diff --quiet origin/dev -- "$f" && continue
             echo "::error file=$f::Existing migration modified or deleted. Create a new revision instead."
@@ -50,10 +56,14 @@ jobs:
           done
           echo "✅ No existing migrations touched."
 
+      # Short-circuit the whole job when nothing backend-related changed
       - name: Skip – no backend changes
         if: steps.filter.outputs.any_changed != 'true'
         run: echo "No backend-relevant files changed – skipping migration checks."
 
+  # ------------------------------------------------------------
+  # 2) MIGRATION TEST – only runs if backend_changed == true
+  # ------------------------------------------------------------
   migrations:
     needs: pre-checks
     if: needs.pre-checks.outputs.backend_changed == 'true'
@@ -69,24 +79,15 @@ jobs:
         run: uv sync
         working-directory: ./backend
 
+      # --- spin up the minimal Supabase stack -----------------
       - name: Start minimal Supabase stack
         run: |
           docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
-            up -d --quiet-pull db
+            up -d --quiet-pull --wait --wait-timeout 120 db
 
-          # Wait until Postgres reports ready
-          for i in {1..30}; do
-            if docker compose \
-                 -f docker-compose.yml \
-                 -f .husky/docker-compose.ci.yml \
-                 exec -T db pg_isready -U postgres -d postgres; then
-              echo "✅ Database ready after $((i*2))s"; break
-            fi
-            sleep 2
-          done
-
+      # --- run the migration smoke test -----------------------
       - name: Run migration smoke-test
         run: |
           docker compose \
@@ -94,6 +95,16 @@ jobs:
             -f .husky/docker-compose.ci.yml \
             run --build --no-deps test-migrations
 
+      # --- helpful logs if something fails --------------------
+      - name: Dump container logs on failure
+        if: failure()
+        run: |
+          docker compose \
+            -f docker-compose.yml \
+            -f .husky/docker-compose.ci.yml \
+            logs --no-color
+
+      # --- always clean up ------------------------------------
       - name: Tear down stack
         if: always()
         run: |
