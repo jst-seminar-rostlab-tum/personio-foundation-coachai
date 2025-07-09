@@ -113,6 +113,19 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans supabase
 
+      - name: Show Supabase container logs and status
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "==== Supabase container logs (so far) ===="
+          SUPABASE_CID=$(docker ps -qf "name=supabase")
+          if [ -n "$SUPABASE_CID" ]; then
+            docker logs $SUPABASE_CID || true
+          else
+            echo "Supabase container not running yet."
+          fi
+          echo "==== docker compose ps ===="
+          docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml ps
+
       - name: Diagnostics before Supabase healthcheck
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
