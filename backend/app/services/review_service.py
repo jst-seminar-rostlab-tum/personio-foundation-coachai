@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from uuid import UUID
 
-from fastapi import HTTPException, Query
+from fastapi import HTTPException
 from sqlalchemy import case, func
 from sqlalchemy import select as sqlalchemy_select
 from sqlmodel import Session as DBSession
@@ -26,7 +26,7 @@ class ReviewService:
 
     def _query_reviews_with_users(
         self,
-        sort: str = Query('newest'),
+        sort: str = 'newest',
         limit: int | None = None,
         offset: int | None = None,
     ) -> Sequence[tuple[Review, UserProfile]]:
@@ -98,9 +98,9 @@ class ReviewService:
 
     def _get_paginated_reviews(
         self,
-        page: int | None = Query(None),
-        page_size: int = Query(10),
-        sort: str = Query('newest'),
+        page: int | None = None,
+        page_size: int = 10,
+        sort: str = 'newest',
     ) -> PaginatedReviewsResponse:
         """Retrieve paginated reviews with optional sorting."""
 
@@ -148,10 +148,10 @@ class ReviewService:
 
     def get_reviews(
         self,
-        limit: int | None = Query(None),
-        page: int | None = Query(None),
-        page_size: int = Query(10),
-        sort: str = Query('newest'),
+        limit: int | None = None,
+        page: int | None = None,
+        page_size: int = 10,
+        sort: str = 'newest',
     ) -> list[ReviewRead] | PaginatedReviewsResponse:
         """
         Retrieve user reviews with optional pagination, statistics and sorting.
