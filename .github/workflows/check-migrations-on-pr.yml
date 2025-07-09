@@ -71,24 +71,33 @@ jobs:
 
       - name: Start minimal Supabase stack
         run: |
-          docker compose -f docker-compose.yml \
-                         -f docker-compose.ci.yml \
-                         up -d --quiet-pull db
+          docker compose \
+            -f docker-compose.yml \
+            -f .husky/docker-compose.ci.yml \
+            up -d --quiet-pull db
 
           # Wait until Postgres reports ready
           for i in {1..30}; do
-            if docker compose exec -T db pg_isready -U postgres -d postgres; then
+            if docker compose \
+                 -f docker-compose.yml \
+                 -f .husky/docker-compose.ci.yml \
+                 exec -T db pg_isready -U postgres -d postgres; then
               echo "✅ Database ready after $((i*2))s"; break
             fi
             sleep 2
           done
 
       - name: Run migration smoke-test
-        run: docker compose -f docker-compose.yml \
-                            -f docker-compose.ci.yml \
-                            run --build --no-deps test-migrations
+        run: |
+          docker compose \
+            -f docker-compose.yml \
+            -f .husky/docker-compose.ci.yml \
+            run --build --no-deps test-migrations
 
       - name: Tear down stack
         if: always()
-        run: docker compose -f docker-compose.yml \
-                            -f docker-compose.ci.yml down -v
+        run: |
+          docker compose \
+            -f docker-compose.yml \
+            -f .husky/docker-compose.ci.yml \
+            down -v
