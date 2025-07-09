@@ -4,8 +4,6 @@ services:
     ports:
       - "54321:54321" # API
       - "54322:54322" # DB
-    environment:
-      SUPABASE_API_HOST: 0.0.0.0
     healthcheck:
       test: [ "CMD-SHELL", "curl -sf http://localhost:54321/rest-admin/v1/ready || exit 1" ]
       interval: 3s
