@@ -66,15 +66,13 @@ export function useWebRTC(sessionId: string) {
     peerConnectionRef.current = pc;
 
     pc.onconnectionstatechange = () => {
-      const state = pc.connectionState;
-      if (
-        state === ConnectionStatus.Connected ||
-        state === ConnectionStatus.Connecting ||
-        state === ConnectionStatus.Disconnected
-      ) {
-        setConnectionStatus(state as ConnectionStatus);
-      } else if (state === ConnectionStatus.Failed || state === ConnectionStatus.Closed) {
-        setConnectionStatus(state as ConnectionStatus);
+      const state = pc.connectionState as ConnectionStatus;
+
+      if (state !== ConnectionStatus.New) {
+        setConnectionStatus(state);
+      }
+      if (state === ConnectionStatus.Failed || state === ConnectionStatus.Closed) {
+        setConnectionStatus(state);
         cleanup();
       }
     };

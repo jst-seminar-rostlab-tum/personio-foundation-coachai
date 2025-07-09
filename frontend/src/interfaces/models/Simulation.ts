@@ -4,4 +4,5 @@ export enum ConnectionStatus {
   Disconnected = 'disconnected',
   Failed = 'failed',
   Closed = 'closed',
+  New = 'new',
 }
