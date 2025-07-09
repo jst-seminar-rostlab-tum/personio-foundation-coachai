@@ -18,7 +18,6 @@ jobs:
         with:
           fetch-depth: 0      # needed for merge-base checks
 
-      # Detect whether anything in the backend/migrations changed
       - name: Detect backend-related changes
         id: filter
         uses: tj-actions/changed-files@v46
@@ -29,7 +28,6 @@ jobs:
             backend/alembic/data/**
             backend/app/data/**
 
-      # Ensure the PR branch is up-to-date with dev
       - name: Ensure latest dev is merged
         if: steps.filter.outputs.any_changed == 'true'
         run: |
@@ -40,7 +38,6 @@ jobs:
           fi
           echo "✅ dev branch is merged."
 
-      # Guard against edits to *existing* migration files on dev
       - name: Guard against edits to existing migrations
         if: steps.filter.outputs.any_changed == 'true'
         run: |
@@ -56,7 +53,6 @@ jobs:
           done
           echo "✅ No existing migrations touched."
 
-      # Short-circuit the whole job when nothing backend-related changed
       - name: Skip – no backend changes
         if: steps.filter.outputs.any_changed != 'true'
         run: echo "No backend-relevant files changed – skipping migration checks."
@@ -85,7 +81,15 @@ jobs:
           docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
-            up -d --quiet-pull --wait --wait-timeout 120 db
+            up -d --pull always --quiet-pull --wait --wait-timeout 180 db
+
+      # --- show early startup logs & wait for health ----------
+      - name: Show db startup logs
+        run: |
+          docker compose \
+            -f docker-compose.yml \
+            -f .husky/docker-compose.ci.yml \
+            logs --no-color --tail=100 db || true
 
       # --- run the migration smoke test -----------------------
       - name: Run migration smoke-test
