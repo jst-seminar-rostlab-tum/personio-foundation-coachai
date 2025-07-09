@@ -28,36 +28,56 @@ jobs:
           PR_BRANCH: ${{ github.head_ref }}
         run: |
           git fetch origin dev
-          git fetch origin "$PR_BRANCH"
-          if git merge-base --is-ancestor origin/dev origin/"$PR_BRANCH"; then
+          git fetch origin $PR_BRANCH
+          echo "Checking if origin/dev is merged into $PR_BRANCH"
+
+          if git merge-base --is-ancestor origin/dev origin/$PR_BRANCH; then
             echo "✅ Dev branch is merged"
           else
             echo "❌ Dev branch is not fully merged into this branch"
+            echo "Please merge dev branch before proceeding"
             exit 1
           fi
 
       - name: Check for modified dev migration files
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
+          echo "Checking for modifications to existing migration files from dev..."
+
+          # Get list of migration files that exist on dev branch
           DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.py$|\.sql$' || true)
+
           if [[ -n "$DEV_MIGRATIONS" ]]; then
-            MODIFIED=""
-            for f in $DEV_MIGRATIONS; do
-              if git ls-tree -r --name-only HEAD -- "$f" | grep -q .; then
-                if ! git diff --quiet origin/dev HEAD -- "$f"; then
-                  MODIFIED="$MODIFIED\n$f (modified)"
+            echo "Migration files found on dev branch:"
+            echo "$DEV_MIGRATIONS"
+
+            MODIFIED_FILES=""
+            for file in $DEV_MIGRATIONS; do
+              # Does the file exist in this PR branch?
+              if git ls-tree -r --name-only HEAD -- "$file" | grep -q .; then
+                # File exists; check if modified
+                if ! git diff --quiet origin/dev HEAD -- "$file"; then
+                  MODIFIED_FILES="$MODIFIED_FILES\n$file (modified)"
                 fi
               else
-                MODIFIED="$MODIFIED\n$f (deleted)"
+                # File is missing in PR branch (i.e. deleted)
+                MODIFIED_FILES="$MODIFIED_FILES\n$file (deleted)"
               fi
             done
-            if [[ -n "$MODIFIED" ]]; then
+
+            if [[ -n "$MODIFIED_FILES" ]]; then
               echo "❌ Existing migration files from dev have been altered:"
-              echo -e "$MODIFIED"
+              echo -e "$MODIFIED_FILES"
+              echo ""
+              echo "Migration files from dev branch should never be modified or deleted."
+              echo "Revert changes and create new migration files instead."
               exit 1
+            else
+              echo "✅ No existing migration files from dev have been modified"
             fi
+          else
+            echo "✅ No migration files found on dev branch"
           fi
-          echo "✅ Migration files check passed"
 
       - name: No relevant changes, skipping migration pre-checks
         if: steps.changed-files.outputs.any_changed != 'true'
