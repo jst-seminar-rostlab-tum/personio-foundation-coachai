@@ -5,7 +5,7 @@ on:
 
 jobs:
   # ─────────────────────────────────────────────────────────────
-  # Pre-migration static checks (unchanged)
+  # Pre-migration static checks
   # ─────────────────────────────────────────────────────────────
   pre-checks:
     name: Pre-migration checks
@@ -32,22 +32,18 @@ jobs:
         run: |
           git fetch origin dev
           git fetch origin "$PR_BRANCH"
-          echo "Checking if origin/dev is merged into $PR_BRANCH"
           if git merge-base --is-ancestor origin/dev origin/"$PR_BRANCH"; then
             echo "✅ Dev branch is merged"
           else
             echo "❌ Dev branch is not fully merged into this branch"
-            echo "Please merge dev branch before proceeding"
             exit 1
           fi
 
       - name: Check for modified dev migration files
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          echo "Checking for modifications to existing migration files from dev..."
           DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.py$|\.sql$' || true)
           if [[ -n "$DEV_MIGRATIONS" ]]; then
-            echo "$DEV_MIGRATIONS"
             MODIFIED=""
             for f in $DEV_MIGRATIONS; do
               if git ls-tree -r --name-only HEAD -- "$f" | grep -q .; then
@@ -71,7 +67,7 @@ jobs:
         run: echo "No relevant changes, skipping migration pre-checks."
 
   # ─────────────────────────────────────────────────────────────
-  # Main job: spin up Supabase Postgres, run Alembic migrations
+  # Main job: spin up Supabase Postgres 17 and run Alembic tests
   # ─────────────────────────────────────────────────────────────
   migrations:
     name: Check migrations
@@ -99,8 +95,7 @@ jobs:
         run: uv sync
         working-directory: ./backend
 
-      # Spin up a *fresh* Supabase Postgres 17 cluster every time
-      - name: Start database (Supabase Postgres 17 OrioleDB)
+      - name: Start database (Supabase Postgres 17.4)
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           docker compose \
@@ -114,22 +109,11 @@ jobs:
           echo "Waiting for database to be healthy..."
           for i in {1..60}; do
             state=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml ps --format '{{.Health}}' db)
-            if [[ "$state" == "healthy" ]]; then
-              echo "✅ Database ready after $((i*2)) seconds"
-              break
-            elif [[ "$state" == "starting" ]]; then
-              echo "Database starting... ($((i*2))s elapsed)"
-            fi
+            [[ "$state" == "healthy" ]] && { echo "✅ Database ready after $((i*2)) seconds"; break; }
+            [[ "$state" == "starting" ]] && echo "Database starting... ($((i*2))s elapsed)"
             [[ $i -eq 60 ]] && { echo "❌ Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
-
-      # Ensure OrioleDB extension exists (idempotent)
-      - name: Enable OrioleDB extension
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml \
-            exec db psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS orioledb;"
 
       - name: Run migrations
         if: steps.changed-files.outputs.any_changed == 'true'
@@ -140,12 +124,7 @@ jobs:
             run --build --no-deps -d test-migrations | tail -n1)
           docker logs -f "$CID"
           EXIT=$(docker wait "$CID")
-          if [[ "$EXIT" -eq 0 ]]; then
-            echo "✅ Migration checks passed"
-          else
-            echo "❌ Migration checks failed"
-            exit 1
-          fi
+          [[ "$EXIT" -eq 0 ]] && echo "✅ Migration checks passed" || { echo "❌ Migration checks failed"; exit 1; }
 
       - name: No relevant changes, skipping migration checks
         if: steps.changed-files.outputs.any_changed != 'true'

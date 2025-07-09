@@ -1,11 +1,15 @@
 services:
+  # ─────────────────────────────────────────────────────────────
+  # Supabase-flavoured Postgres 17.4 (regular heap tables)
+  # ─────────────────────────────────────────────────────────────
   db:
-    image: supabase/postgres:17.0.1.102-orioledb
+    image: supabase/postgres:17.4.1.05
     restart: unless-stopped
     environment:
       POSTGRES_USER:     postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB:       postgres
+      POSTGRES_PORT:     5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 5s
@@ -13,6 +17,9 @@ services:
       retries: 60
     networks: [test-network]
 
+  # ─────────────────────────────────────────────────────────────
+  # Container that runs your Alembic migrations/tests
+  # ─────────────────────────────────────────────────────────────
   test-migrations:
     build:
       context: ./backend
