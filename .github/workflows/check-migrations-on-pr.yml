@@ -76,20 +76,31 @@ jobs:
         working-directory: ./backend
 
       # --- spin up the minimal Supabase stack -----------------
-      - name: Start minimal Supabase stack
+      - name: Show image that will be used
         run: |
+          set -eu
           docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
+            -f .husky/docker-compose.override.ci.yml \
+            config | grep 'image:' | sed 's/^/▶ /'
+
+      - name: Start db and stream its logs
+        run: |
+          set -eu
+          # pull fresh layers, start detached, wait for health
+          docker compose \
+            -f docker-compose.yml \
+            -f .husky/docker-compose.ci.yml \
+            -f .husky/docker-compose.override.ci.yml \
             up -d --pull always --quiet-pull --wait --wait-timeout 180 db
 
-      # --- show early startup logs & wait for health ----------
-      - name: Show db startup logs
-        run: |
+          # follow the first 300 log lines from Postgres in background
           docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
-            logs --no-color --tail=100 db || true
+            -f .husky/docker-compose.override.ci.yml \
+            logs --no-color --follow --tail=300 db &
 
       # --- run the migration smoke test -----------------------
       - name: Run migration smoke-test
@@ -97,6 +108,7 @@ jobs:
           docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
+            -f .husky/docker-compose.override.ci.yml \
             run --build --no-deps test-migrations
 
       # --- helpful logs if something fails --------------------
@@ -106,6 +118,7 @@ jobs:
           docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
+            -f .husky/docker-compose.override.ci.yml \
             logs --no-color
 
       # --- always clean up ------------------------------------
@@ -115,4 +128,5 @@ jobs:
           docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
+            -f .husky/docker-compose.override.ci.yml \
             down -v
