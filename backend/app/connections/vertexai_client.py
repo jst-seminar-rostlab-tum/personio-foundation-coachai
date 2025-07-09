@@ -66,21 +66,21 @@ else:
 
 def generate_content_vertexai(contents: [Any], model: str = DEFAULT_CHEAP_MODEL) -> str:
     if not ENABLE_AI or vertexai_client is None:
-        print('Cannot upload files to Gemini, AI is disabled')
+        print('Cannot upload files to Gemini on VertexAI, AI is disabled')
         return ''
     if None in contents:
-        print('None found in Gemini contents')
+        print('None found in Gemini on VertexAI contents')
         return ''
     try:
         response = vertexai_client.models.generate_content(model=model, contents=contents)
         return response.text
     except Exception as e:
-        print(f'Gemini content generation failed: {e}')
+        print(f'Gemini on VertexAI content generation failed: {e}')
 
 
 def upload_audio_vertexai(audio_uri: str) -> Part:
     if not ENABLE_AI or vertexai_client is None:
-        print('Cannot upload files to Gemini, AI is disabled')
+        print('Cannot upload files to Gemini on VertexAI, AI is disabled')
     try:
         part = Part.from_uri(file_uri=audio_uri)
         return part
@@ -146,7 +146,7 @@ def call_structured_llm(
     )
 
     if not response.text:
-        raise ValueError('VertexAI LLM did not return a valid response')
+        raise ValueError('Gemini on VertexAI did not return a valid response')
 
     json_response = response.text
     return output_model.model_validate_json(json_response)

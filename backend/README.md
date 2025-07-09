@@ -95,13 +95,14 @@ npm install # Required to initialize Husky which manages the pre-commit hooks
 
 - Create .env file from .env.example
 
-- Fill in variable values. Reach out to TA or Ron for keys and credentials.
+- Fill in variable values. GCP and Gemini on VertexAI use the same credentials, so make sure to set the env variables below to use LLM generative functions.
+- Reach out to TA, Ron or Simon for keys and credentials.
 
 ```bash
-VERTEXAI_PRIVATE_KEY_ID=<...>
-VERTEXAI_PRIVATE_KEY=<...>
-VERTEXAI_CLIENT_EMAIL=<...>
-VERTEXAI_CLIENT_ID=<...>
+GCP_PRIVATE_KEY_ID=<...>
+GCP_PRIVATE_KEY=<...>
+GCP_CLIENT_EMAIL=<...>
+GCP_CLIENT_ID=<...>
 ```
 
 3. Run a local PostgreSQL instace on Docker:
