@@ -118,6 +118,7 @@ class TestScenarioPreparationService(unittest.TestCase):
                 },
             ],
         )
+        self.assertIsInstance(result.document_names, list)
 
     @patch(
         'app.services.scenario_preparation.scenario_preparation_service.generate_key_concept',

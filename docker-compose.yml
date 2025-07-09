@@ -33,7 +33,7 @@ services:
     environment:
       STAGE: dev
       DEV_MODE_SKIP_AUTH: ${DEV_MODE_SKIP_AUTH:-True}
-      DEV_MODE_MOCK_USER_ID: ${DEV_MODE_MOCK_USER_ID:-763c76f3-e5a4-479c-8b53-e3418d5e2ef5}
+      DEV_MODE_MOCK_ADMIN_ID: ${DEV_MODE_MOCK_ADMIN_ID:-763c76f3-e5a4-479c-8b53-e3418d5e2ef5}
       DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:54322/postgres
       POSTGRES_HOST: host.docker.internal
       POSTGRES_PORT: 54322
