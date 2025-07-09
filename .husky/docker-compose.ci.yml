@@ -1,14 +1,10 @@
 services:
   # ─────────────────────────────────────────────────────────────
-  # Supabase-flavoured Postgres 17 with OrioleDB storage engine
+  # Supabase-flavoured Postgres 17 with OrioleDB + pgvector
   # ─────────────────────────────────────────────────────────────
   db:
-    image: supabase/postgres:17.0.1.102-orioledb   # ← updated tag
+    image: supabase/postgres:17.0.1.102-orioledb
     restart: unless-stopped
-    command:
-      - postgres
-      - -c
-      - wal_level=logical
     environment:
       POSTGRES_USER:     postgres
       POSTGRES_PASSWORD: postgres
@@ -21,7 +17,9 @@ services:
       retries: 60
     networks: [test-network]
 
-  # unchanged
+  # ─────────────────────────────────────────────────────────────
+  # Container that runs your Alembic migrations/tests
+  # ─────────────────────────────────────────────────────────────
   test-migrations:
     build:
       context: ./backend
@@ -36,6 +34,11 @@ services:
       - ./.husky/test-migrations.sh:/test-migrations.sh
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+      PGHOST:        db
+      PGPORT:        "5432"
+      PGUSER:        postgres
+      PGPASSWORD:    postgres
+      POSTGRES_DB:   postgres
     entrypoint: ["/bin/bash", "/test-migrations.sh"]
     networks: [test-network]
 
