@@ -93,7 +93,7 @@ class TestLiveFeedbackService(unittest.TestCase):
             self.assertEqual(parsed['heading'], original.heading)
             self.assertEqual(parsed['feedback_text'], original.feedback_text)
 
-    @patch('app.services.live_feedback_service.analyze_voice_gemini_from_file')
+    @patch('app.services.live_feedback_service.analyze_voice')
     @patch('app.services.live_feedback_service.call_structured_llm')
     def test_generate_and_store_live_feedback_success(
         self, mock_call_structured_llm: MagicMock, mock_analyze_voice: MagicMock

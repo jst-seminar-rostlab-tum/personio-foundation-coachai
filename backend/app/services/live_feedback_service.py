@@ -6,11 +6,11 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.connections.openai_client import call_structured_llm
+from app.connections.vertexai_client import call_structured_llm
 from app.models import SessionTurn
 from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
 from app.schemas.live_feedback_schema import LiveFeedback
-from app.services.voice_analysis_service import analyze_voice_gemini_from_file
+from app.services.voice_analysis_service import analyze_voice
 
 
 def fetch_all_for_session(db_session: DBSession, session_id: UUID) -> list[LiveFeedback]:
@@ -57,7 +57,7 @@ def generate_live_feedback_item(
 ) -> LiveFeedback:
     voice_analysis = ''
     if user_audio_path:
-        voice_analysis = analyze_voice_gemini_from_file(user_audio_path)
+        voice_analysis = analyze_voice(user_audio_path)
     if not voice_analysis:
         voice_analysis = 'No voice analysis available.'
 
@@ -114,7 +114,6 @@ def generate_live_feedback_item(
             'You are an expert communication coach analyzing a single speaking turn.'
             'Always respond in the language of the transcript.'
         ),
-        model='gpt-4o-2024-08-06',
         output_model=LiveFeedback,
         mock_response=LiveFeedback(heading='Tone', feedback_text='Speak more calmly.'),
     )
