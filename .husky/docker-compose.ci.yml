@@ -1,34 +1,41 @@
+version: "3.8"
+
 services:
-  supabase:
-    image: supabase/supabase-dev:latest
+  # Supabase-flavoured Postgres (includes pg_graphql, pg_net, pgvector, etc.)
+  db:
+    image: supabase/postgres:15.8.1.094      # pin! avoid :latest surprises
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     ports:
-      - "54321:54321" # API
-      - "54322:54322" # DB
+      - "54322:5432"                         # exposed only for debugging
     healthcheck:
-      test: [ "CMD-SHELL", "curl -sf http://localhost:54321/rest-admin/v1/ready || exit 1" ]
-      interval: 3s
-      timeout: 3s
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
       retries: 10
 
+  # Container that executes your Alembic (or similar) migration test script
   test-migrations:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args: { stage: dev }
+      args:
+        stage: dev                           # matches multi-stage Dockerfile
     depends_on:
-      supabase:
+      db:
         condition: service_healthy
-    volumes:
-      - ./backend:/app
-      - /app/.venv
-      - ./.husky/test-migrations.sh:/test-migrations.sh
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@supabase:54322/postgres
-      PGHOST: supabase
-      PGPORT: "54322"
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+      PGHOST: db
+      PGPORT: "5432"
       PGUSER: postgres
       PGPASSWORD: postgres
       POSTGRES_DB: postgres
+    volumes:
+      - ./backend:/app                       # mount source for flake8/pytest, etc.
+      - /app/.venv                           # keep virtual-env cache
+      - ./.husky/test-migrations.sh:/test-migrations.sh:ro
     entrypoint: ["/bin/bash", "/test-migrations.sh"]
 
 networks:
