@@ -22,7 +22,6 @@ DOC_FOLDER = BASE_DIR / 'documents'
 settings = Settings()
 
 
-EMBEDDING_TYPE = 'gemini'
 TABLE_NAME = 'hr_information'
 SEARCH_TYPE = 'mmr'
 K_SEARCH = 5
@@ -35,7 +34,9 @@ DEFAULT_PROMPT = """
 DEFAULT_POPULATE_DB = False
 
 
-def load_and_index_documents(vector_db: SupabaseVectorStore) -> None:
+def load_and_index_documents(
+    vector_db: SupabaseVectorStore, doc_folder: str = DOC_FOLDER, table_name: str = TABLE_NAME
+) -> None:
     """
     Loads and indexes PDF documents from the configured folder into the provided vector store.
 
@@ -46,15 +47,17 @@ def load_and_index_documents(vector_db: SupabaseVectorStore) -> None:
 
     Parameters:
         vector_db (SupabaseVectorStore): The vector store where documents will be added.
+        doc_folder (str): The folder where the documents are stored.
+        table_name (str): The table name where the documents are stored.
     """
-    os.makedirs(DOC_FOLDER, exist_ok=True)
-    docs = prepare_vector_db_docs(str(DOC_FOLDER))
+    os.makedirs(doc_folder, exist_ok=True)
+    docs = prepare_vector_db_docs(str(doc_folder))
     if not docs:
-        print(f'⚠️ No documents found in folder: {DOC_FOLDER}')
+        print(f'⚠️ No documents found in folder: {doc_folder}')
         return
-
+    print(f'Started adding {len(docs)} document chunks to the vector database...')
     vector_db.add_documents(docs)
-    print(f'Added {len(docs)} documents to vector store: {TABLE_NAME}')
+    print(f'Added {len(docs)} document chunks to vector database: {table_name}')
 
 
 def build_vector_db_retriever(
@@ -72,7 +75,7 @@ def build_vector_db_retriever(
     Returns:
         VectorStoreRetriever: A retriever instance for querying the vector database.
     """
-    embedding = get_embedding_model(EMBEDDING_TYPE)
+    embedding = get_embedding_model()
     vector_db = load_vector_db(embedding, TABLE_NAME)
     if populate_db:
         load_and_index_documents(vector_db)

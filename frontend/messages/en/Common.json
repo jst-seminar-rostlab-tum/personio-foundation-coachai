@@ -53,5 +53,8 @@
   "deleteAccountError": "There was an error deleting the account.",
   "areYouSure": "Are you sure?",
   "deleteAccountConfirmDesc": "This action cannot be undone.",
-  "deleting": "Deleting..."
+  "deleting": "Deleting...",
+  "emailInputLabel": "Email Address",
+  "emailInputPlaceholder": "Enter your email address",
+  "emailInputError": "Please enter a valid email address"
 }

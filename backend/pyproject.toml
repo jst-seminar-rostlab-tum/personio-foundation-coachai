@@ -29,9 +29,11 @@ dependencies = [
     "pgvector>=0.2.5,<0.4",
     "langchain-openai>=0.3.21",
     "google-genai>=1.19.0",
-    "google-cloud-storage>=3.1.1",
+    "google-cloud-storage==2.19",
     "pyjwt>=2.10.1",
     "puremagic>=1.29",
+    "ffmpeg-python>=0.2.0",
+    "langchain-google-vertexai>=2.0.27",
 ]
 
 [tool.setuptools]

@@ -53,7 +53,7 @@ class TestVectorDbContextService(unittest.TestCase):
         assert build_query_general(None, None, None) == ''
 
     @patch('app.services.vector_db_context_service.build_vector_db_retriever')
-    @patch('app.services.vector_db_context_service.analyze_voice_gemini_from_file')
+    @patch('app.services.vector_db_context_service.analyze_voice')
     def test_query_vector_db_with_structured_context(
         self, mock_analyze: MagicMock, mock_retriever_builder: MagicMock
     ) -> None:
@@ -93,7 +93,7 @@ class TestVectorDbContextService(unittest.TestCase):
         self.assertEqual(metadata, [doc_metadata])
 
     @patch('app.services.vector_db_context_service.build_vector_db_retriever')
-    @patch('app.services.vector_db_context_service.analyze_voice_gemini_from_file')
+    @patch('app.services.vector_db_context_service.analyze_voice')
     def test_query_vector_db_complex(
         self, mock_analyze: MagicMock, mock_retriever_builder: MagicMock
     ) -> None:
@@ -144,7 +144,7 @@ class TestVectorDbContextService(unittest.TestCase):
             [{'source': 'doc1'}, {'source': 'doc2'}],
         )
 
-        result = query_vector_db_and_prompt(
+        result, doc_names = query_vector_db_and_prompt(
             generated_object=generated_object,
             session_context=session_context,
             user_transcript=transcript,
@@ -165,7 +165,7 @@ class TestVectorDbContextService(unittest.TestCase):
         generated_object = 'objectives'
         mock_query_vector_db.return_value = (None, None)
 
-        result = query_vector_db_and_prompt(
+        result, doc_names = query_vector_db_and_prompt(
             generated_object=generated_object, session_context=None, user_transcript=None
         )
 
@@ -181,7 +181,7 @@ class TestVectorDbContextService(unittest.TestCase):
         generated_object = 'objectives'
         mock_query_vector_db.return_value = ('', [])
 
-        result = query_vector_db_and_prompt(
+        result, doc_names = query_vector_db_and_prompt(
             generated_object=generated_object, session_context=None, user_transcript=None
         )
 

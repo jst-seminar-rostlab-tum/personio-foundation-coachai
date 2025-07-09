@@ -46,9 +46,11 @@ class Settings(BaseSettings):
 
     ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
+    DEFAULT_CHEAP_MODEL: str = 'gemini-2.0-flash-lite-001'
+    DEFAULT_MODEL: str = 'gemini-2.5-pro'
 
     DEV_MODE_SKIP_AUTH: bool = True
-    DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.USER.value
+    DEV_MODE_MOCK_ADMIN_ID: UUID = MockUserIdsEnum.ADMIN.value
 
     DEMO_USER_EMAIL: str = 'mockuser@example.com'
     DEMO_USER_PASSWORD: str = 'mockuserpassword'
@@ -61,8 +63,12 @@ class Settings(BaseSettings):
     GCP_PRIVATE_KEY: str = ''
     GCP_CLIENT_EMAIL: str = ''
     GCP_CLIENT_ID: str = ''
-    GCP_BUCKET: str = 'coachai'
+    GCP_BUCKET: str = 'coachai-dev'
     GCP_PROJECT_ID: str = 'personio-foundation'
+
+    # Vertex AI credentials
+    VERTEXAI_PROJECT_ID: str = 'personio-foundation'
+    VERTEXAI_LOCATION: str = 'europe-west9'
 
     @property
     def mock_user_data(self) -> MockUser:
