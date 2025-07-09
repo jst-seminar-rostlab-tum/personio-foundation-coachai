@@ -4,6 +4,9 @@ on:
   pull_request:
 
 jobs:
+  # ─────────────────────────────────────────────────────────────
+  # Pre-migration static checks (unchanged)
+  # ─────────────────────────────────────────────────────────────
   pre-checks:
     name: Pre-migration checks
     runs-on: ubuntu-22.04
@@ -22,19 +25,15 @@ jobs:
             backend/alembic/data/**
             backend/app/data/**
 
-      # ─────────────────────────────────────────────────────────────
-      # 1️⃣ Ensure the PR branch contains the latest dev
-      # ─────────────────────────────────────────────────────────────
       - name: Check if dev branch is merged
         if: steps.changed-files.outputs.any_changed == 'true'
         env:
           PR_BRANCH: ${{ github.head_ref }}
         run: |
           git fetch origin dev
-          git fetch origin $PR_BRANCH
+          git fetch origin "$PR_BRANCH"
           echo "Checking if origin/dev is merged into $PR_BRANCH"
-
-          if git merge-base --is-ancestor origin/dev origin/$PR_BRANCH; then
+          if git merge-base --is-ancestor origin/dev origin/"$PR_BRANCH"; then
             echo "✅ Dev branch is merged"
           else
             echo "❌ Dev branch is not fully merged into this branch"
@@ -42,56 +41,38 @@ jobs:
             exit 1
           fi
 
-      # ─────────────────────────────────────────────────────────────
-      # 2️⃣ Block if existing dev-branch migration scripts were edited
-      # ─────────────────────────────────────────────────────────────
       - name: Check for modified dev migration files
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           echo "Checking for modifications to existing migration files from dev..."
-
-          # List every migration file currently on dev
           DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.py$|\.sql$' || true)
-
           if [[ -n "$DEV_MIGRATIONS" ]]; then
-            echo "Migration files found on dev branch:"
             echo "$DEV_MIGRATIONS"
-
-            MODIFIED_FILES=""
-            for file in $DEV_MIGRATIONS; do
-              # If the file exists in the PR branch…
-              if git ls-tree -r --name-only HEAD -- "$file" | grep -q .; then
-                # …check if contents differ
-                if ! git diff --quiet origin/dev HEAD -- "$file"; then
-                  MODIFIED_FILES="$MODIFIED_FILES\n$file (modified)"
+            MODIFIED=""
+            for f in $DEV_MIGRATIONS; do
+              if git ls-tree -r --name-only HEAD -- "$f" | grep -q .; then
+                if ! git diff --quiet origin/dev HEAD -- "$f"; then
+                  MODIFIED="$MODIFIED\n$f (modified)"
                 fi
               else
-                # File was deleted in the PR
-                MODIFIED_FILES="$MODIFIED_FILES\n$file (deleted)"
+                MODIFIED="$MODIFIED\n$f (deleted)"
               fi
             done
-
-            if [[ -n "$MODIFIED_FILES" ]]; then
+            if [[ -n "$MODIFIED" ]]; then
               echo "❌ Existing migration files from dev have been altered:"
-              echo -e "$MODIFIED_FILES"
-              echo ""
-              echo "Migration files from dev branch should never be modified or deleted."
-              echo "Revert changes and create new migration files instead."
+              echo -e "$MODIFIED"
               exit 1
-            else
-              echo "✅ No existing migration files from dev have been modified"
             fi
-          else
-            echo "✅ No migration files found on dev branch"
           fi
+          echo "✅ Migration files check passed"
 
       - name: No relevant changes, skipping migration pre-checks
         if: steps.changed-files.outputs.any_changed != 'true'
         run: echo "No relevant changes, skipping migration pre-checks."
 
-  # ─────────────────────────────────────────────────────────────────────
-  # Main job: spin up Supabase Postgres, run Alembic migrations & tests
-  # ─────────────────────────────────────────────────────────────────────
+  # ─────────────────────────────────────────────────────────────
+  # Main job: spin up Supabase Postgres, run Alembic migrations
+  # ─────────────────────────────────────────────────────────────
   migrations:
     name: Check migrations
     runs-on: ubuntu-22.04
@@ -118,14 +99,14 @@ jobs:
         run: uv sync
         working-directory: ./backend
 
-      # Start only the Supabase-Postgres service (db)
-      - name: Start database (Supabase Postgres)
+      # Spin up a *fresh* Supabase Postgres 17 cluster every time
+      - name: Start database (Supabase Postgres 17 OrioleDB)
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
-            up -d --remove-orphans db
+            up -d --remove-orphans --force-recreate --renew-anon-volumes db
 
       - name: Wait for database startup
         if: steps.changed-files.outputs.any_changed == 'true'
@@ -142,6 +123,13 @@ jobs:
             [[ $i -eq 60 ]] && { echo "❌ Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
+
+      # Ensure OrioleDB extension exists (idempotent)
+      - name: Enable OrioleDB extension
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml \
+            exec db psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS orioledb;"
 
       - name: Run migrations
         if: steps.changed-files.outputs.any_changed == 'true'
