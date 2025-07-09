@@ -8,7 +8,7 @@ from app.dependencies import require_admin, require_user
 from app.schemas.app_config import AppConfigCreate, AppConfigRead
 from app.services.app_config_service import AppConfigService
 
-router = APIRouter(prefix='/app-config', tags=['App Config'])
+router = APIRouter(prefix='/app-configs', tags=['App Config'])
 
 
 def get_app_config_service(
