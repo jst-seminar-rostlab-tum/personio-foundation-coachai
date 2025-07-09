@@ -29,7 +29,9 @@ export function useWebRTC(sessionId: string) {
   const { addAudioToTurn, addMetadataToTurn, addStartOffsetMsToTurn, addEndOffsetMsToTurn } =
     useSessionTurns();
 
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting');
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
+    ConnectionStatus.Connecting
+  );
 
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
@@ -49,7 +51,7 @@ export function useWebRTC(sessionId: string) {
     stopLocalRecording();
     stopRemoteRecording();
     if (remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
-    setConnectionStatus('disconnected');
+    setConnectionStatus(ConnectionStatus.Disconnected);
     hasInitializedRef.current = false;
     stopTimer();
   }, [stopStream, stopLocalRecording, stopRemoteRecording, stopTimer]);
@@ -64,23 +66,13 @@ export function useWebRTC(sessionId: string) {
     peerConnectionRef.current = pc;
 
     pc.onconnectionstatechange = () => {
-      switch (pc.connectionState) {
-        case 'disconnected':
-          setConnectionStatus('disconnected');
-          break;
-        case 'failed':
-        case 'closed':
-          setConnectionStatus('disconnected');
-          cleanup();
-          break;
-        case 'connecting':
-          setConnectionStatus('connecting');
-          break;
-        case 'connected':
-          setConnectionStatus('connected');
-          break;
-        default:
-          break;
+      const state = pc.connectionState;
+
+      if (['disconnected', 'failed', 'closed'].includes(state)) {
+        setConnectionStatus(ConnectionStatus.Disconnected);
+        cleanup();
+      } else if (state === ConnectionStatus.Connecting || state === ConnectionStatus.Connected) {
+        setConnectionStatus(ConnectionStatus[state as keyof typeof ConnectionStatus]);
       }
     };
 
@@ -100,16 +92,16 @@ export function useWebRTC(sessionId: string) {
     dataChannelRef.current = dc;
 
     dc.onopen = () => {
-      setConnectionStatus('connected');
+      setConnectionStatus(ConnectionStatus.Connected);
       startLocalRecording();
       startTimer();
     };
     dc.onclose = () => {
-      setConnectionStatus('disconnected');
+      setConnectionStatus(ConnectionStatus.Disconnected);
       cleanup();
     };
     dc.onerror = () => {
-      setConnectionStatus('disconnected');
+      setConnectionStatus(ConnectionStatus.Disconnected);
       cleanup();
     };
 

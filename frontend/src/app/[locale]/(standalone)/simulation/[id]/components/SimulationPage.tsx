@@ -9,6 +9,7 @@ import { api } from '@/services/ApiClient';
 import { SessionStatus } from '@/interfaces/models/Session';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { ConnectionStatus } from '@/interfaces/models/Simulation';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
@@ -59,8 +60,8 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         <SimulationMessages messages={messages} />
-        {(connectionStatus === 'connecting' ||
-          connectionStatus === 'disconnected' ||
+        {(connectionStatus === ConnectionStatus.Connecting ||
+          connectionStatus === ConnectionStatus.Disconnected ||
           hangupInProgress) && (
           <div className="absolute inset-0 backdrop-blur-sm bg-background z-10"></div>
         )}
@@ -71,20 +72,20 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
       <SimulationFooter
         isMicActive={isMicActive}
         toggleMicrophone={toggleMic}
-        isConnected={connectionStatus === 'connected'}
+        isConnected={connectionStatus === ConnectionStatus.Connected}
         onDisconnect={onDisconnect}
         isDisabled={hangupInProgress}
       />
 
-      {(connectionStatus === 'connecting' ||
-        connectionStatus === 'disconnected' ||
+      {(connectionStatus === ConnectionStatus.Connecting ||
+        connectionStatus === ConnectionStatus.Disconnected ||
         hangupInProgress) && (
         <div className="fixed inset-0 flex flex-col items-center justify-center z-50 pointer-events-none">
           <Loader2 className="h-10 w-10 animate-spin text-marigold-50 mb-4" />
           <div className="text-center text-bw-70 font-medium">
             {hangupInProgress && <p>{t('hangingUp')}</p>}
-            {connectionStatus === 'connecting' && <p>{t('connectingMessage')}</p>}
-            {connectionStatus === 'disconnected' && !hangupInProgress && (
+            {connectionStatus === ConnectionStatus.Connecting && <p>{t('connectingMessage')}</p>}
+            {connectionStatus === ConnectionStatus.Disconnected && !hangupInProgress && (
               <p>{t('disconnectedMessage')}</p>
             )}
           </div>

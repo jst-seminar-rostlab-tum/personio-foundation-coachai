@@ -30,14 +30,14 @@ function formatTime(seconds: number) {
 
 function getConnectionStatusColor(status: ConnectionStatus) {
   switch (status) {
-    case 'connected':
-      return 'bg-green-500';
-    case 'connecting':
-      return 'bg-blue-500';
-    case 'disconnected':
-      return 'bg-red-500';
+    case ConnectionStatus.Connected:
+      return 'bg-forest-50';
+    case ConnectionStatus.Connecting:
+      return 'bg-marigold-50';
+    case ConnectionStatus.Disconnected:
+      return 'bg-flame-50';
     default:
-      return 'bg-gray-500';
+      return 'bg-bw-30';
   }
 }
 
@@ -66,9 +66,9 @@ export default function SimulationHeader({
                   className={`w-2 h-2 rounded-full ${getConnectionStatusColor(connectionStatus)}`}
                 ></div>
                 <span>
-                  {connectionStatus === 'connecting' && t('connecting')}
-                  {connectionStatus === 'connected' && t('connected')}
-                  {connectionStatus === 'disconnected' && t('disconnected')}
+                  {connectionStatus === ConnectionStatus.Connecting && t('connecting')}
+                  {connectionStatus === ConnectionStatus.Connected && t('connected')}
+                  {connectionStatus === ConnectionStatus.Disconnected && t('disconnected')}
                 </span>
               </Badge>
             )}
@@ -86,8 +86,8 @@ export default function SimulationHeader({
           </Avatar>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-md text-gray-900">{characterName}</span>
-              <span className="text-md text-gray-700 font-normal">({characterRole})</span>
+              <span className="font-bold text-md text-bw-90">{characterName}</span>
+              <span className="text-md text-bw-70 font-normal">({characterRole})</span>
             </div>
             <div className="text-xs text-bw-40 leading-tight">{characterDescription}</div>
           </div>

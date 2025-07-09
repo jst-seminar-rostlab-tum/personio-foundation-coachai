@@ -1,1 +1,5 @@
-export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected';
+export enum ConnectionStatus {
+  Connecting = 'connecting',
+  Connected = 'connected',
+  Disconnected = 'disconnected',
+}
