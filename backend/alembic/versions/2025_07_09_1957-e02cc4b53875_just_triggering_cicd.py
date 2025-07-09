@@ -17,17 +17,9 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-# ---------------------------------------------------------------------------
-# Upgrade helpers
-# ---------------------------------------------------------------------------
-
-
 def upgrade() -> None:
     """Upgrade schema."""
 
-    # ---------------------------------------------------------------------
-    # 1. Ensure the Supabase super‑role exists (no‑op on prod)
-    # ---------------------------------------------------------------------
     op.execute(
         """
         DO $$
@@ -41,17 +33,8 @@ def upgrade() -> None:
         $$;
         """
     )
-
-    # ---------------------------------------------------------------------
-    # 2. Install required extensions
-    # ---------------------------------------------------------------------
     op.execute('CREATE EXTENSION IF NOT EXISTS pg_graphql;')
-    op.execute('CREATE EXTENSION IF NOT EXISTS vector;')  # requires supabase_admin
-
-
-# ---------------------------------------------------------------------------
-# Downgrade helpers
-# ---------------------------------------------------------------------------
+    op.execute('CREATE EXTENSION IF NOT EXISTS vector;')
 
 
 def downgrade() -> None:
@@ -64,5 +47,4 @@ def downgrade() -> None:
     are gone.
     """
 
-    # No‑op: leave the extensions in place so older revisions remain valid.
     pass

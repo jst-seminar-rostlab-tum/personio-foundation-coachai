@@ -1,7 +1,4 @@
 services:
-  # ─────────────────────────────────────────────────────────────
-  # Supabase-flavoured Postgres 17.4 (regular heap tables)
-  # ─────────────────────────────────────────────────────────────
   db:
     image: supabase/postgres:17.4.1.052
     restart: unless-stopped
@@ -17,16 +14,14 @@ services:
       retries: 60
     networks: [test-network]
 
-  # ─────────────────────────────────────────────────────────────
-  # Container that runs your Alembic migrations/tests
-  # ─────────────────────────────────────────────────────────────
   test-migrations:
     build:
       context: ./backend
       dockerfile: Dockerfile
       args: { stage: dev }
     depends_on:
-      db: { condition: service_healthy }
+      db:
+        condition: service_healthy
     volumes:
       - ./backend:/app
       - /app/.venv
