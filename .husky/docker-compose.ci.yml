@@ -1,14 +1,14 @@
 services:
   # ─────────────────────────────────────────────────────────────
-  # Supabase-flavoured Postgres (comes with pgvector + 50+ ext’s)
+  # Supabase-flavoured Postgres 17 with OrioleDB storage engine
   # ─────────────────────────────────────────────────────────────
   db:
-    image: supabase/postgres:16.1.1.57   # pin a specific tag for reproducible CI
+    image: supabase/postgres:17.0.1.102-orioledb   # ← updated tag
     restart: unless-stopped
     command:
       - postgres
       - -c
-      - wal_level=logical               # matches Supabase defaults
+      - wal_level=logical
     environment:
       POSTGRES_USER:     postgres
       POSTGRES_PASSWORD: postgres
@@ -21,7 +21,7 @@ services:
       retries: 60
     networks: [test-network]
 
-  # your migration-runner container is unchanged
+  # unchanged
   test-migrations:
     build:
       context: ./backend
