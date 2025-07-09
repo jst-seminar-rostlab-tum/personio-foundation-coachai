@@ -162,7 +162,9 @@ def query_vector_db_and_prompt(
 
 
 @lru_cache(maxsize=256)
-def get_hr_docs_context(persona: str, situational_facts: str, category: str = '') -> tuple[str, list[str]]:
+def get_hr_docs_context(
+    persona: str, situational_facts: str, category: str = ''
+) -> tuple[str, list[str]]:
     return query_vector_db_and_prompt(
         session_context=[category, persona, situational_facts],
         generated_object='output',
