@@ -1,17 +1,25 @@
 services:
-  db:
-    image: pgvector/pgvector:pg16
-    restart: unless-stopped
+  supabase:
+    image: node:20
+    working_dir: /app/supabase
+    network_mode: host
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /app/supabase/node_modules
     environment:
-      POSTGRES_USER:     postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB:       postgres
+      SUPABASE_API_HOST: 0.0.0.0
+    command: >
+      sh -c "
+        npm install &&
+        npx supabase start --debug &&
+        tail -f /dev/null
+      "
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
-      interval: 5s
+      test: [ "CMD-SHELL", "curl -sf http://127.0.0.1:54321/rest-admin/v1/ready || exit 1" ]
+      interval: 3s
       timeout: 3s
-      retries: 60
-    networks: [test-network]
+      retries: 10
 
   test-migrations:
     build:
@@ -19,21 +27,22 @@ services:
       dockerfile: Dockerfile
       args: { stage: dev }
     depends_on:
-      db:
+      supabase:
         condition: service_healthy
     volumes:
       - ./backend:/app
       - /app/.venv
       - ./.husky/test-migrations.sh:/test-migrations.sh
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
-      PGHOST: db
-      PGPORT: "5432"
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+      PGHOST: 127.0.0.1
+      PGPORT: "54322"
       PGUSER: postgres
       PGPASSWORD: postgres
       POSTGRES_DB: postgres
     entrypoint: ["/bin/bash", "/test-migrations.sh"]
-    networks: [test-network]
+    network_mode: host
 
 networks:
-  test-network:
+  default:
+    driver: bridge
