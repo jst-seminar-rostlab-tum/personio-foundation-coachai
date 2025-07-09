@@ -41,7 +41,7 @@ def verify_jwt(
     """
     if settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH:
         logging.info('Skipping JWT verification')
-        return JWTPayload(sub=str(settings.DEV_MODE_MOCK_USER_ID))
+        return JWTPayload(sub=str(settings.DEV_MODE_MOCK_ADMIN_ID))
     logging.info('Verifying JWT')
     if not credentials:
         logging.info('No JWT token')
