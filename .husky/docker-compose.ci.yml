@@ -3,7 +3,7 @@ services:
   # Supabase-flavoured Postgres 17.4 (regular heap tables)
   # ─────────────────────────────────────────────────────────────
   db:
-    image: supabase/postgres:17.4.1.05
+    image: supabase/postgres:17.4.1.052
     restart: unless-stopped
     environment:
       POSTGRES_USER:     postgres
