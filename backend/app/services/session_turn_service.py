@@ -98,7 +98,7 @@ class SessionTurnService:
 
         if turn.speaker == SpeakerEnum.user:
             category = session.scenario.category.name if session.scenario.category else ''
-            hr_docs_context = get_hr_docs_context(
+            hr_docs_context, _ = get_hr_docs_context(
                 persona=session.scenario.persona,
                 situational_facts=session.scenario.situational_facts,
                 category=category,
