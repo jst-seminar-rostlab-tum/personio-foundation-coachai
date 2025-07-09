@@ -109,13 +109,9 @@ jobs:
         run: uv sync
         working-directory: ./backend
 
-      - name: Start database (Supabase Postgres 17.4)
+      - name: Start database
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          docker compose \
-            -f docker-compose.yml \
-            -f .husky/docker-compose.ci.yml \
-            up -d --remove-orphans --force-recreate --renew-anon-volumes db
+        run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans db
 
       - name: Wait for database startup
         if: steps.changed-files.outputs.any_changed == 'true'
@@ -123,9 +119,13 @@ jobs:
           echo "Waiting for database to be healthy..."
           for i in {1..60}; do
             state=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml ps --format '{{.Health}}' db)
-            [[ "$state" == "healthy" ]] && { echo "✅ Database ready after $((i*2)) seconds"; break; }
-            [[ "$state" == "starting" ]] && echo "Database starting... ($((i*2))s elapsed)"
-            [[ $i -eq 60 ]] && { echo "❌ Database not healthy after 2 minutes"; exit 1; }
+            if [[ "$state" == "healthy" ]]; then
+              echo "✅ Database ready after $((i*2)) seconds"
+              break
+            elif [[ "$state" == "starting" ]]; then
+              echo "Database starting... ($((i*2))s elapsed)"
+            fi
+            [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
 
