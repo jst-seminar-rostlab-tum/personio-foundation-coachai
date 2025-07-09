@@ -152,13 +152,15 @@ jobs:
       - name: Run migrations
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          CID=$(docker compose \
-            -f docker-compose.yml \
-            -f .husky/docker-compose.ci.yml \
-            run --build --no-deps -d test-migrations | tail -n1)
+          CID=$(docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --build --no-deps -d test-migrations | tail -n1)
           docker logs -f "$CID"
           EXIT=$(docker wait "$CID")
-          [[ "$EXIT" -eq 0 ]] && echo "✅ Migration checks passed" || { echo "❌ Migration checks failed"; exit 1; }
+          if [[ "$EXIT" -eq 0 ]]; then
+            echo "✅- Migration checks passed"
+          else
+            echo "❌- Migration checks failed"
+            exit 1
+          fi
 
       - name: No relevant changes, skipping migration checks
         if: steps.changed-files.outputs.any_changed != 'true'
