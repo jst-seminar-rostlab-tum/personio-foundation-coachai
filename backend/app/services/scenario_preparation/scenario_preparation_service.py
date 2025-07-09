@@ -264,13 +264,12 @@ def generate_scenario_preparation(
             language_code=new_preparation.language_code,
         )
 
+        # hr_docs_context is used for LLM prompt; doc_names is available for future use
         hr_docs_context, doc_names = get_hr_docs_context(
             persona=new_preparation.persona,
             situational_facts=new_preparation.situational_facts,
             category=new_preparation.category,
-
         )
-        # hr_docs_context is used for LLM prompt; doc_names is available for future use
 
         has_error = False
 
