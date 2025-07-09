@@ -113,12 +113,41 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans supabase
 
+      - name: Diagnostics before Supabase healthcheck
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "==== Docker ps output ===="
+          docker ps -a
+          echo "==== Docker network ls ===="
+          docker network ls
+          echo "==== Docker inspect supabase container (if running) ===="
+          SUPABASE_CID=$(docker ps -qf "name=supabase")
+          if [ -n "$SUPABASE_CID" ]; then
+            docker inspect $SUPABASE_CID
+          else
+            echo "Supabase container not running yet."
+          fi
+          echo "==== List open ports on host ===="
+          netstat -tuln || ss -tuln || echo "netstat/ss not available"
+          echo "==== Try curl to localhost:54321 from host ===="
+          curl -v http://localhost:54321/rest-admin/v1/ready || echo "curl to localhost:54321 failed"
+          echo "==== Try curl to 127.0.0.1:54321 from host ===="
+          curl -v http://127.0.0.1:54321/rest-admin/v1/ready || echo "curl to 127.0.0.1:54321 failed"
+          echo "==== Try curl to supabase:54321 from test-migrations container ===="
+          docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --rm test-migrations curl -v http://supabase:54321/rest-admin/v1/ready || echo "curl from test-migrations to supabase:54321 failed"
+          echo "==== Try psql connection from test-migrations container ===="
+          docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml run --rm test-migrations bash -c 'PGPASSWORD=postgres psql -h supabase -U postgres -p 54322 -d postgres -c "\l"' || echo "psql from test-migrations to supabase:54322 failed"
+
       - name: Wait for Supabase to be healthy
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           echo "Waiting for Supabase to be healthy..."
+          SUPABASE_CID=$(docker ps -qf "name=supabase")
           for i in {1..60}; do
-            state=$(curl -sf http://127.0.0.1:54321/rest-admin/v1/ready && echo healthy || echo starting)
+            echo "[DEBUG] docker ps -qf name=supabase: $SUPABASE_CID"
+            echo "[DEBUG] Attempting docker exec curl inside supabase container..."
+            state=$(docker exec $SUPABASE_CID curl -sf http://localhost:54321/rest-admin/v1/ready && echo healthy || echo starting)
+            echo "[DEBUG] Healthcheck state: $state"
             if [[ "$state" == "healthy" ]]; then
               echo "✅ Supabase ready after $((i*2)) seconds"
               break

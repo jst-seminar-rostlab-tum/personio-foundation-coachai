@@ -2,7 +2,9 @@ services:
   supabase:
     image: node:20
     working_dir: /app/supabase
-    network_mode: host
+    ports:
+      - "54321:54321" # API
+      - "54322:54322" # DB
     volumes:
       - .:/app
       - /var/run/docker.sock:/var/run/docker.sock
@@ -16,7 +18,7 @@ services:
         tail -f /dev/null
       "
     healthcheck:
-      test: [ "CMD-SHELL", "curl -sf http://127.0.0.1:54321/rest-admin/v1/ready || exit 1" ]
+      test: [ "CMD-SHELL", "curl -sf http://localhost:54321/rest-admin/v1/ready || exit 1" ]
       interval: 3s
       timeout: 3s
       retries: 10
@@ -34,14 +36,13 @@ services:
       - /app/.venv
       - ./.husky/test-migrations.sh:/test-migrations.sh
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
-      PGHOST: 127.0.0.1
+      DATABASE_URL: postgresql://postgres:postgres@supabase:54322/postgres
+      PGHOST: supabase
       PGPORT: "54322"
       PGUSER: postgres
       PGPASSWORD: postgres
       POSTGRES_DB: postgres
     entrypoint: ["/bin/bash", "/test-migrations.sh"]
-    network_mode: host
 
 networks:
   default:
