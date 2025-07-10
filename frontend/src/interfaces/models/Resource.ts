@@ -1,4 +1,4 @@
-export interface ResourceItemProps {
+export interface Resource {
   name: string;
   author: string;
   fileUrl: string;

@@ -1,10 +1,5 @@
+import { Resource } from '@/interfaces/models/Resource';
 import ResourceItem from './ResourceItem';
-
-interface Resource {
-  name: string;
-  author: string;
-  fileUrl: string;
-}
 
 interface ResourcesListProps {
   resources: Resource[];

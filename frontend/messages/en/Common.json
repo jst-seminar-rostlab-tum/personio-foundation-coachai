@@ -15,7 +15,10 @@
   "resources": {
     "title": "Resources",
     "subtitle": "Helpful materials to download to deepen your knowledge.",
-    "by": "by"
+    "by": "by",
+    "loading": "Loading resources...",
+    "noResources": "No resources available for this scenario.",
+    "downloadError": "Failed to download resource. Please try again."
   },
   "saving": "Saving...",
   "save": "Save",

@@ -15,7 +15,10 @@
   "resources": {
     "title": "Ressourcen",
     "subtitle": "Hilfreiche Materialien zum Herunterladen, um Ihr Wissen zu vertiefen.",
-    "by": "von"
+    "by": "von",
+    "loading": "Ressourcen werden geladen...",
+    "noResources": "Keine Ressourcen für dieses Szenario verfügbar.",
+    "downloadError": "Fehler beim Herunterladen der Ressource. Bitte versuchen Sie es erneut."
   },
   "saving": "Speichern...",
   "save": "Speichern",
