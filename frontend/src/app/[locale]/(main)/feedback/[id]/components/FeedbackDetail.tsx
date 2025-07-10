@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/utils/toast';
@@ -71,46 +71,18 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    if (h > 0) {
-      return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    }
-    return `${m}:${s.toString().padStart(2, '0')}`;
+    const s = Math.floor(seconds % 60);
+    return h > 0
+      ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+      : `${m}:${s.toString().padStart(2, '0')}`;
   };
 
   // Audio player state
   const [currentTime, setCurrentTime] = useState(0);
-  const totalTime = 3759;
-  const [isPlaying, setIsPlaying] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (isPlaying) {
-      if (currentTime >= totalTime) {
-        setIsPlaying(false);
-        return undefined;
-      }
-      intervalRef.current = setInterval(() => {
-        setCurrentTime((prev) => {
-          if (prev + 1 >= totalTime) {
-            setIsPlaying(false);
-            return totalTime;
-          }
-          return prev + 1;
-        });
-      }, 1000);
-    } else if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    const cleanup = () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-    return cleanup;
-  }, [isPlaying, currentTime, totalTime]);
+  const [isPlaying, setIsPlayingState] = useState(false);
+  const setIsPlaying = useCallback((val: boolean | ((prev: boolean) => boolean)) => {
+    setIsPlayingState(val);
+  }, []);
 
   const examplePositive = feedbackDetail?.feedback?.examplePositive || [];
 
@@ -145,29 +117,11 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
       {!feedbackDetail?.hasReviewed && (
         <FeedbackDialog setFeedbackDetail={setFeedbackDetail} sessionId={sessionId} />
       )}
-      <div className="flex gap-3 items-center w-full justify-between">
-        <div className="flex flex-col gap-4 p-2.5 flex-1">
-          {progressBarData.map((item) => (
-            <div key={item.key} className="flex flex-col gap-2">
-              <div className="flex justify-between text-base">
-                <span>{item.key}</span>
-                <span>{item.value}%</span>
-              </div>
-              <Progress className="w-full" value={item.value} />
-            </div>
-          ))}
-        </div>
-        <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
-          {feedbackDetail?.feedback?.overallScore ?? 0}%
-        </div>
-      </div>
-      <div className="my-4 mx-2 h-px w-full bg-bw-30" />
 
       {/* Replay Conversation */}
       <AudioPlayer
         currentTime={currentTime}
-        totalTime={totalTime}
-        setCurrentTime={(val) => setCurrentTime(val)}
+        setCurrentTime={setCurrentTime}
         isPlaying={isPlaying}
         setIsPlaying={setIsPlaying}
         formatTime={formatTime}
