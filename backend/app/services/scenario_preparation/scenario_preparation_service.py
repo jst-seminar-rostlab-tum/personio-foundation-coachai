@@ -23,7 +23,7 @@ from app.schemas.scenario_preparation import (
     ScenarioPreparationCreate,
     StringListResponse,
 )
-from app.services.vector_db_context_service import query_vector_db_and_prompt
+from app.services.vector_db_context_service import get_hr_docs_context
 
 
 @lru_cache
@@ -261,16 +261,12 @@ def generate_scenario_preparation(
             language_code=new_preparation.language_code,
         )
 
-        # Deconstruct the tuple returned by query_vector_db_and_prompt
-        hr_docs_context, doc_names = query_vector_db_and_prompt(
-            session_context=[
-                new_preparation.category,
-                new_preparation.persona,
-                new_preparation.situational_facts,
-            ],
-            generated_object='output',
-        )
         # hr_docs_context is used for LLM prompt; doc_names is available for future use
+        hr_docs_context, doc_names = get_hr_docs_context(
+            persona=new_preparation.persona,
+            situational_facts=new_preparation.situational_facts,
+            category=new_preparation.category,
+        )
 
         has_error = False
 
