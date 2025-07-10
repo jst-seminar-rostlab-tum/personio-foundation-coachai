@@ -4,7 +4,7 @@ from functools import lru_cache
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.connections.openai_client import call_structured_llm
+from app.connections.vertexai_client import call_structured_llm
 from app.models.language import LanguageCode
 from app.schemas.session_feedback import (
     FeedbackRequest,
@@ -82,7 +82,6 @@ def generate_training_examples(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=SessionExamplesCollection,
         mock_response=mock_response,
     )
@@ -116,7 +115,6 @@ def get_achieved_goals(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=GoalsAchievedCollection,
         mock_response=mock_response,
     )
@@ -146,7 +144,6 @@ def generate_recommendations(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=RecommendationsCollection,
         mock_response=mock_response,
     )

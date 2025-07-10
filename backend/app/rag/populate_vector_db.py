@@ -8,14 +8,13 @@ from app.rag.vector_db import load_vector_db
 
 settings = Settings()
 
-EMBEDDING_TYPE = 'gemini'
 TABLE_NAME = 'hr_information'
 BASE_DIR = Path(__file__).parent
 DOC_FOLDER = BASE_DIR / 'documents'
 
 
 def populate_vector_db(doc_folder: str = DOC_FOLDER) -> None:
-    embedding = get_embedding_model(EMBEDDING_TYPE)
+    embedding = get_embedding_model()
     vector_db = load_vector_db(embedding)
     load_and_index_documents(vector_db, doc_folder)
 

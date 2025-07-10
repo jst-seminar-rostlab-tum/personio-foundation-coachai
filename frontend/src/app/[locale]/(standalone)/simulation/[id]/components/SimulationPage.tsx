@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useWebRTC } from '@/app/[locale]/(standalone)/simulation/[id]/hooks/useWebRTC';
 import { showErrorToast } from '@/lib/utils/toast';
 import { useTranslations } from 'next-intl';
@@ -8,6 +8,8 @@ import { sessionService } from '@/services/SessionService';
 import { api } from '@/services/ApiClient';
 import { SessionStatus } from '@/interfaces/models/Session';
 import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
+import { ConnectionStatus } from '@/interfaces/models/Simulation';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
@@ -16,9 +18,11 @@ import SimulationMessages from './SimulationMessages';
 export default function SimulationPageComponent({ sessionId }: { sessionId: string }) {
   const t = useTranslations('Simulation');
   const router = useRouter();
+  const [hangupInProgress, setHangupInProgress] = useState(false);
+
   const {
     isMicActive,
-    isConnected,
+    connectionStatus,
     initWebRTC,
     remoteAudioRef,
     messages,
@@ -36,12 +40,14 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
 
   const onDisconnect = async () => {
     try {
-      cleanup();
+      setHangupInProgress(true);
       const { data } = await sessionService.updateSession(api, sessionId, {
         status: SessionStatus.COMPLETED,
       });
+      cleanup();
       router.push(`/feedback/${data.id}`);
     } catch (err) {
+      setHangupInProgress(false);
       showErrorToast(err, t('sessionEndError'));
     }
   };
@@ -49,11 +55,20 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
   return (
     <div className="flex flex-col h-screen">
       <div className="mb-2">
-        <SimulationHeader time={elapsedTimeS} />
+        <SimulationHeader time={elapsedTimeS} connectionStatus={connectionStatus} />
       </div>
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         <SimulationMessages messages={messages} />
+        {([
+          ConnectionStatus.Connecting,
+          ConnectionStatus.Disconnected,
+          ConnectionStatus.Closed,
+          ConnectionStatus.Failed,
+        ].includes(connectionStatus) ||
+          hangupInProgress) && (
+          <div className="absolute inset-0 backdrop-blur-sm bg-background z-10"></div>
+        )}
       </div>
 
       <SimulationRealtimeSuggestions />
@@ -61,9 +76,33 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
       <SimulationFooter
         isMicActive={isMicActive}
         toggleMicrophone={toggleMic}
-        isConnected={isConnected}
+        isConnected={connectionStatus === ConnectionStatus.Connected}
         onDisconnect={onDisconnect}
+        isDisabled={hangupInProgress}
       />
+
+      {([
+        ConnectionStatus.Connecting,
+        ConnectionStatus.Disconnected,
+        ConnectionStatus.Closed,
+        ConnectionStatus.Failed,
+      ].includes(connectionStatus) ||
+        hangupInProgress) && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center z-50 pointer-events-none">
+          <Loader2 className="h-10 w-10 animate-spin text-marigold-50 mb-4" />
+          <div className="text-center text-bw-70 font-medium">
+            {hangupInProgress && <p>{t('hangingUp')}</p>}
+            {connectionStatus === ConnectionStatus.Connecting && <p>{t('connectingMessage')}</p>}
+            {[
+              ConnectionStatus.Disconnected,
+              ConnectionStatus.Closed,
+              ConnectionStatus.Failed,
+            ].includes(connectionStatus) &&
+              !hangupInProgress && <p>{t('disconnectedMessage')}</p>}
+          </div>
+        </div>
+      )}
+
       <audio ref={remoteAudioRef} autoPlay playsInline />
     </div>
   );
