@@ -9,6 +9,7 @@ from supabase import AuthError
 from app.config import settings
 from app.database import get_supabase_client
 from app.interfaces import MockUserIdsEnum
+from app.models import LiveFeedback
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig, ConfigType
 from app.models.conversation_category import ConversationCategory
@@ -1676,6 +1677,25 @@ def get_mock_user_data() -> tuple[AdminUserAttributes, AdminUserAttributes]:
             },
         },
     )
+
+
+def get_dummy_live_feedback_data(session_turns: list[SessionTurn]) -> list[LiveFeedback]:
+    return [
+        LiveFeedback(
+            id=uuid4(),
+            session_id=session_turns[0].session_id,
+            heading='Tone',
+            feedback_text='Speak more calmly',
+            created_at=datetime.now(UTC),
+        ),
+        LiveFeedback(
+            id=uuid4(),
+            session_id=session_turns[1].session_id,
+            heading='Content',
+            feedback_text='Use concrete facts for the employee underperforming',
+            created_at=datetime.now(UTC),
+        ),
+    ]
 
 
 def create_mock_users() -> None:

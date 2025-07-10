@@ -8,6 +8,7 @@ from app.data import (
     get_dummy_app_configs,
     get_dummy_conversation_categories,
     get_dummy_conversation_scenarios,
+    get_dummy_live_feedback_data,
     get_dummy_reviews,
     get_dummy_scenario_preparations,
     get_dummy_session_feedback,
@@ -96,6 +97,11 @@ def populate_data() -> None:
 
         app_configs = get_dummy_app_configs()
         db_session.add_all(app_configs)
+
+        # Populate live feedback
+        live_feedback = get_dummy_live_feedback_data(session_turns)
+        db_session.add_all(live_feedback)
+
         # Commit all data
         db_session.commit()
         print('Dummy data populated successfully!')
