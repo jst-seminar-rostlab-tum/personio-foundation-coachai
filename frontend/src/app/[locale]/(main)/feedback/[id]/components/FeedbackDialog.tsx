@@ -58,7 +58,7 @@ export default function FeedbackDialog({ sessionId, setFeedbackDetail }: Feedbac
         allowAdminAccess: shareWithAdmin,
       });
       showSuccessToast(t('submitSuccess'));
-      setFeedbackDetail((prev) => ({ ...prev, hasReviewed: true }));
+      setFeedbackDetail((prev) => ({ ...prev!, hasReviewed: true }));
     } catch (error) {
       showErrorToast(error, t('submitError'));
     } finally {
