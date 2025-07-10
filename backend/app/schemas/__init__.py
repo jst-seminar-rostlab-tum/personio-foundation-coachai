@@ -4,10 +4,10 @@ from app.schemas.conversation_category import ConversationCategoryRead
 from app.schemas.conversation_scenario import ConversationScenarioCreate
 from app.schemas.message_schema import MessageCreateSchema, MessageSchema
 from app.schemas.review import (
-    PaginatedReviewsResponse,
+    PaginatedReviewRead,
+    ReviewConfirm,
     ReviewCreate,
     ReviewRead,
-    ReviewResponse,
     ReviewStatistics,
 )
 from app.schemas.scenario_preparation import (
@@ -73,9 +73,9 @@ __all__ = [
     'ConversationScenarioCreate',
     'ReviewCreate',
     'ReviewRead',
-    'ReviewResponse',
+    'ReviewConfirm',
     'ReviewStatistics',
-    'PaginatedReviewsResponse',
+    'PaginatedReviewRead',
     'ChecklistRequest',
     'ConversationScenarioBase',
     'KeyConcept',
