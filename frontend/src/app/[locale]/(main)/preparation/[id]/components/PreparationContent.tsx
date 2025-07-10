@@ -69,7 +69,7 @@ export default function PreparationContent() {
           return {
             name: docName,
             author: '',
-            fileUrl: docName,
+            fileUrl: '',
           };
         }
       });

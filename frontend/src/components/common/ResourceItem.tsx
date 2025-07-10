@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Resource } from '@/interfaces/models/Resource';
 import { showErrorToast } from '@/lib/utils/toast';
+import { Button } from '../ui/Button';
 
 const ResourceItem: React.FC<Resource> = ({ name, author, fileUrl }) => {
   const t = useTranslations('Common');
@@ -40,19 +41,21 @@ const ResourceItem: React.FC<Resource> = ({ name, author, fileUrl }) => {
           </p>
         )}
       </div>
-      <button
-        onClick={handleDownload}
-        disabled={isLoading}
-        className="flex items-center justify-center p-2 rounded hover:bg-bw-10 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-        aria-label="Download resource"
-        type="button"
-      >
-        {isLoading ? (
-          <Loader2 className="w-6 h-6 animate-spin" />
-        ) : (
-          <Download className="w-6 h-6" />
-        )}
-      </button>
+      {fileUrl && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleDownload}
+          disabled={isLoading}
+          aria-label="Download resource"
+        >
+          {isLoading ? (
+            <Loader2 className="w-6 h-6 animate-spin" />
+          ) : (
+            <Download className="w-6 h-6" />
+          )}
+        </Button>
+      )}
     </div>
   );
 };
