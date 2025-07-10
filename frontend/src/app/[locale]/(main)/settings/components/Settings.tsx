@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import React, { use, useState } from 'react';
-import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import {
@@ -171,12 +170,7 @@ export default function Settings({ userProfile }: SettingsProps) {
                     <div className="text-bw-70">{t('exportData')}</div>
                   </div>
                   <div className="flex items-center">
-                    <ExportUserHandler>
-                      <Button variant="outline" className="w-full">
-                        <Download className="w-4 h-4" />
-                        <span className="hidden sm:inline">{tCommon('export')}</span>
-                      </Button>
-                    </ExportUserHandler>
+                    <ExportUserHandler />
                   </div>
                 </div>
                 {/* Delete Account */}

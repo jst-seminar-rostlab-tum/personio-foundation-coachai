@@ -13,6 +13,7 @@
     "placeholder": "Bitte wählen Sie bis zu 3 Ziele aus",
     "maxOptionsSelected": "Max. Optionen ausgewählt"
   },
+  "export": "Exportieren",
   "exportData": "Persönliche Daten exportieren",
   "exportDataConfirmDesc": "Dies lädt eine ZIP-Datei mit allen Ihren persönlichen Daten herunter, einschließlich Sitzungen, Feedback und Einstellungen.",
   "exporting": "Wird exportiert...",

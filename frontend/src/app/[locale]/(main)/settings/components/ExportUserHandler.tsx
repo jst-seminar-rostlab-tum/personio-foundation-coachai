@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 import { UserProfileService } from '@/services/UserProfileService';
 import { useTranslations } from 'next-intl';
 import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
@@ -17,11 +19,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 
-interface ExportUserHandlerProps {
-  children: React.ReactNode;
-}
-
-export function ExportUserHandler({ children }: ExportUserHandlerProps) {
+export function ExportUserHandler() {
   const [loading, setLoading] = useState(false);
   const tCommon = useTranslations('Common');
   const tSettings = useTranslations('Settings');
@@ -49,7 +47,12 @@ export function ExportUserHandler({ children }: ExportUserHandlerProps) {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline" className="w-full">
+          <Download className="w-4 h-4" />
+          <span className="hidden sm:inline">{tSettings('export')}</span>
+        </Button>
+      </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{tSettings('exportData')}</AlertDialogTitle>
@@ -58,7 +61,7 @@ export function ExportUserHandler({ children }: ExportUserHandlerProps) {
         <AlertDialogFooter>
           <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
           <AlertDialogAction onClick={handleExportUser} disabled={loading}>
-            {loading ? tSettings('exporting') : tCommon('export')}
+            {loading ? tSettings('exporting') : tSettings('export')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

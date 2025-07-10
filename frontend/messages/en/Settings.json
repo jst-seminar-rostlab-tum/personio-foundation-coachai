@@ -13,6 +13,7 @@
     "placeholder": "Please select up to 3 goals",
     "maxOptionsSelected": "Max. options selected"
   },
+  "export": "Export",
   "exportData": "Export Personal Data",
   "exportDataConfirmDesc": "This will download a ZIP file containing all your personal data including sessions, feedback, and settings.",
   "exporting": "Exporting...",
