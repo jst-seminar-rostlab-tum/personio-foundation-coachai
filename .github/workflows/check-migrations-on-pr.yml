@@ -129,25 +129,33 @@ jobs:
             sleep 2
           done
 
-
-      - name: Ensure supabase_admin role
+      # ------------------------------------------------------------------
+      # Ensure both Supabase roles exist (admin + auth)
+      # ------------------------------------------------------------------
+      - name: Ensure Supabase roles
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          # Create the role only if it doesn't exist.
           docker compose \
             -f docker-compose.yml \
             -f .husky/docker-compose.ci.yml \
             exec -T db psql -U postgres -d postgres -v ON_ERROR_STOP=1 -c "
           DO \$\$
           BEGIN
+            -- Superuser role required by some Supabase extensions
             IF NOT EXISTS (
               SELECT 1 FROM pg_roles WHERE rolname = 'supabase_admin'
             ) THEN
               CREATE ROLE supabase_admin SUPERUSER;
             END IF;
+
+            -- Role the Auth service uses for hooks/grants
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_roles WHERE rolname = 'supabase_auth_admin'
+            ) THEN
+              CREATE ROLE supabase_auth_admin;
+            END IF;
           END
           \$\$;"
-
 
       - name: Run migrations
         if: steps.changed-files.outputs.any_changed == 'true'
@@ -165,3 +173,39 @@ jobs:
       - name: No relevant changes, skipping migration checks
         if: steps.changed-files.outputs.any_changed != 'true'
         run: echo "No relevant changes, skipping migration checks."
+
+services:
+  db:
+    image: supabase/postgres:17.4.1.052
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB:       postgres
+      POSTGRES_PORT:     5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+    networks: [test-network]
+
+  test-migrations:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args: { stage: dev }
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+      - ./.husky/test-migrations.sh:/test-migrations.sh
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+    entrypoint: ["/bin/bash", "/test-migrations.sh"]
+    networks: [test-network]
+
+networks:
+  test-network:
