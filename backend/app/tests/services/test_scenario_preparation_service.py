@@ -1,158 +1,141 @@
-"""Add pg_graphql, vector extensions and custom claims (CI‑safe)
+import unittest
+from unittest.mock import MagicMock, patch
 
-Revision ID: e02cc4b53875
-Revises: a1e923719659
-Create Date: 2025-07-09 19:57:37.813168
-"""
-
-from collections.abc import Sequence
-from typing import Union
-
-from alembic import op
-
-# Revision identifiers, used by Alembic.
-revision: str = 'e02cc4b53875'
-down_revision: Union[str, None] = 'a1e923719659'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+from app.schemas.scenario_preparation import (
+    ChecklistRequest,
+    KeyConcept,
+    KeyConceptRequest,
+    KeyConceptResponse,
+    ObjectiveRequest,
+    StringListResponse,
+)
+from app.services.scenario_preparation.scenario_preparation_service import (
+    generate_checklist,
+    generate_key_concept,
+    generate_objectives,
+)
 
 
-def upgrade() -> None:  # noqa: D401
-    """Upgrade schema.
+class TestScenarioPreparationService(unittest.TestCase):
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
+    def test_generate_objectives_returns_correct_list(self, mock_llm: MagicMock) -> None:
+        items = ['1. Prepare outline', '2. Rehearse responses', '3. Stay calm']
+        mock_llm.return_value = StringListResponse(items=items)
 
-    * Ensures critical Supabase roles exist (`supabase_admin`, `supabase_auth_admin`).
-    * Installs the `pg_graphql` and `vector` extensions if missing.
-    * Adds the `custom_access_token_hook` function, plus conditional grants and
-      policy creation so CI can run without the Supabase‑specific roles.
-    """
+        req = ObjectiveRequest(
+            category='Performance Feedback',
+            persona='**Name**: Andrew '
+            '**Training Focus**: Giving constructive criticism '
+            '**Company Positon**: Junior engineer',
+            situational_facts='Quarterly review',
+            num_objectives=3,
+        )
 
-    # ---------------------------------------------------------
-    # Core roles / extensions (idempotent)
-    # ---------------------------------------------------------
-    op.execute(
-        """
-        -- Create core roles if absent.  These commands *may* silently fail in
-        -- CI if the migration user lacks CREATEROLE; that's fine because the
-        -- subsequent security plumbing is now fully conditional.
-        DO $$
-        BEGIN
-            IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'supabase_admin') THEN
-                CREATE ROLE supabase_admin SUPERUSER;
-            END IF;
-            IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'supabase_auth_admin') THEN
-                CREATE ROLE supabase_auth_admin;
-            END IF;
-        EXCEPTION WHEN insufficient_privilege THEN
-            RAISE NOTICE 'Skipping CREATE ROLE (insufficient privileges)';
-        END;
-        $$;
-        """
+        result = generate_objectives(req)
+        self.assertEqual(len(result), 3)
+        self.assertTrue(all(isinstance(item, str) for item in result))
+        for i in range(len(result)):
+            self.assertEqual(result[i], items[i])
+
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
+    def test_generate_checklist_returns_correct_list(self, mock_llm: MagicMock) -> None:
+        items = ['1. Review past performance', '2. Prepare documents', '3. Set up private room']
+        mock_llm.return_value = StringListResponse(items=items)
+
+        req = ChecklistRequest(
+            category='Performance Review',
+            persona='**Name**: Sarah '
+            '**Training Focus**: Addressing underperformance '
+            '**Company Position**: Backend engineer',
+            situational_facts='1:1 review',
+            num_checkpoints=3,
+        )
+
+        result = generate_checklist(req)
+        self.assertEqual(len(result), 3)
+        for i in range(len(result)):
+            self.assertEqual(result[i], items[i])
+
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
+    def test_generate_key_concept_parses_json(self, mock_llm: MagicMock) -> None:
+        mock_key_concept_response = [
+            KeyConcept(
+                header='Clear Communication',
+                value='Express ideas clearly and listen actively to understand others.',
+            ),
+            KeyConcept(
+                header='Empathy',
+                value="Show understanding and concern for the other party's feelings.",
+            ),
+            KeyConcept(
+                header='Effective Questioning',
+                value='Ask open-ended questions to encourage dialogue and exploration.',
+            ),
+        ]
+
+        mock_llm.return_value = KeyConceptResponse(items=mock_key_concept_response)
+
+        req = KeyConceptRequest(
+            category='Feedback',
+            persona='**Name**: Jenny'
+            '**Training Focus**: Deliver effective criticism'
+            '**Company Position**: Project manager',
+            situational_facts='Post-project debrief',
+        )
+
+        result = generate_key_concept(req)
+        self.assertTrue(all(isinstance(x, KeyConcept) for x in result))
+        self.assertEqual(result, mock_key_concept_response)
+
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
+    def test_generate_objectives_with_hr_docs_context(self, mock_llm: MagicMock) -> None:
+        # Analogically for checklist and concepts
+
+        # Set up llm mock and vector db prompt extension
+        mock_llm.return_value = StringListResponse(items=['Objective 1', 'Objective 2'])
+
+        req = ObjectiveRequest(
+            category='Feedback',
+            persona='**Name**: Glenda'
+            '**Training Focus**: Improve team dynamics '
+            '**Company Position**: Team lead',
+            situational_facts='Team meeting',
+            num_objectives=2,
+        )
+
+        hr_docs_context_base = (
+            'The output you generate should comply with the following HR Guideline excerpts:\n'
+        )
+        hr_docs_context_1 = f'{hr_docs_context_base}Respect\n2. Clarity\n'
+        hr_docs_context_2 = ''
+
+        # Assert for hr_docs_context_1
+        _ = generate_objectives(req, hr_docs_context=hr_docs_context_1)
+        self.assertTrue(mock_llm.called)
+        args, kwargs = mock_llm.call_args
+        request_prompt = kwargs['request_prompt']
+        self.assertTrue(hr_docs_context_1 in request_prompt)
+
+        # Assert for hr_docs_context_2
+        _ = generate_objectives(req, hr_docs_context=hr_docs_context_2)
+        self.assertTrue(mock_llm.called)
+        args, kwargs = mock_llm.call_args
+        request_prompt = kwargs['request_prompt']
+        self.assertTrue(hr_docs_context_base not in request_prompt)
+        self.assertTrue(len(request_prompt) > 0)
+
+    @patch(
+        'app.services.vector_db_context_service.query_vector_db_and_prompt',
+        return_value=('Some HR context', ['DocA', 'DocB']),
     )
+    def test_query_vector_db_and_prompt_returns_document_names_list(
+        self, mock_query: MagicMock
+    ) -> None:
+        from app.services.vector_db_context_service import query_vector_db_and_prompt
 
-    op.execute('CREATE EXTENSION IF NOT EXISTS pg_graphql;')
-    op.execute('CREATE EXTENSION IF NOT EXISTS vector;')
-
-    # ---------------------------------------------------------
-    # Custom JWT claim hook (always created)
-    # ---------------------------------------------------------
-    op.execute(
-        """
-        CREATE OR REPLACE FUNCTION public.custom_access_token_hook(event jsonb)
-        RETURNS jsonb
-        LANGUAGE plpgsql
-        STABLE AS $$
-        DECLARE
-            claims     jsonb;
-            user_role  public.accountrole;
-        BEGIN
-            SELECT account_role INTO user_role
-            FROM   public.userprofile
-            WHERE  id = (event->>'user_id')::uuid;
-
-            claims := event->'claims';
-
-            IF user_role IS NOT NULL THEN
-                claims := jsonb_set(claims, '{account_role}', to_jsonb(user_role));
-            ELSE
-                claims := jsonb_set(claims, '{account_role}', 'null');
-            END IF;
-
-            event := jsonb_set(event, '{claims}', claims);
-            RETURN event;
-        END;
-        $$;
-        """
-    )
-
-    # ---------------------------------------------------------
-    # Conditional security plumbing (only if roles exist)
-    # ---------------------------------------------------------
-    op.execute(
-        """
-        DO $$
-        BEGIN
-            IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'supabase_auth_admin') THEN
-                EXECUTE 'GRANT USAGE   ON SCHEMA public TO supabase_auth_admin';
-                EXECUTE 'GRANT EXECUTE ON FUNCTION public.custom_access_token_hook 
-                TO supabase_auth_admin';
-                EXECUTE 'GRANT ALL    ON TABLE   public.userprofile TO supabase_auth_admin';
-
-                -- Revoke broad access only if the target roles exist to avoid
-                -- errors in vanilla CI databases.
-                IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
-                    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.custom_access_token_hook 
-                    FROM authenticated';
-                    EXECUTE 'REVOKE ALL ON TABLE public.userprofile FROM authenticated';
-                END IF;
-
-                IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
-                    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.custom_access_token_hook 
-                    FROM anon';
-                    EXECUTE 'REVOKE ALL ON TABLE public.userprofile FROM anon';
-                END IF;
-
-                -- (The implicit "public" role always exists.)
-                EXECUTE 'REVOKE EXECUTE ON FUNCTION public.custom_access_token_hook 
-                FROM public';
-                EXECUTE 'REVOKE ALL ON TABLE public.userprofile FROM public';
-
-                -- (Re‑)create policy tied to the auth role
-                EXECUTE 'DROP POLICY IF EXISTS "Allow auth admin to read user roles" 
-                ON public.userprofile';
-                EXECUTE 'CREATE POLICY "Allow auth admin to read user roles" 
-                ON public.userprofile '
-                        'AS PERMISSIVE FOR SELECT TO supabase_auth_admin USING (true)';
-            ELSE
-                RAISE NOTICE 'supabase_auth_admin role missing – skipping grants/policy';
-            END IF;
-        END;
-        $$;
-        """
-    )
-
-
-def downgrade() -> None:  # noqa: D401
-    """Downgrade schema.
-
-    Removes the custom claims hook, conditional grants, and policy. Extensions
-    are intentionally **not** dropped because earlier revisions still depend on
-    them; the initial migration handles that once safe.
-    """
-
-    op.execute(
-        """
-        -- Conditional cleanup mirroring the upgrade logic
-        DO $$
-        BEGIN
-            IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'supabase_auth_admin') THEN
-                EXECUTE 'REVOKE ALL ON TABLE public.userprofile FROM supabase_auth_admin';
-                EXECUTE 'REVOKE EXECUTE ON FUNCTION
-                 public.custom_access_token_hook FROM supabase_auth_admin';
-            END IF;
-        END;
-        $$;
-
-        DROP POLICY IF EXISTS "Allow auth admin to read user roles" ON public.userprofile;
-        DROP FUNCTION IF EXISTS public.custom_access_token_hook(event jsonb);
-        """
-    )
+        hr_context, doc_names = query_vector_db_and_prompt(
+            generated_object='output',
+            session_context=['Feedback', 'Persona', 'Facts'],
+        )
+        self.assertIsInstance(doc_names, list)
+        self.assertEqual(doc_names, ['DocA', 'DocB'])

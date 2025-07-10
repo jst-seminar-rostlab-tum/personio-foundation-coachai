@@ -10,18 +10,16 @@ from typing import Union
 
 from alembic import op
 
-# ────────────────────────────────────────────────────────────────────────────────
+# revision identifiers, used by Alembic.
 revision: str = 'f74c5f1db78b'
 down_revision: Union[str, None] = '79cce3e613d2'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
-# ────────────────────────────────────────────────────────────────────────────────
 
 
 def upgrade() -> None:  # noqa: D401
     """Add Supabase roles, extensions and JWT claim hook."""
 
-    # --------------------------------------------------------------------- roles
     op.execute(
         """
         DO $$
@@ -36,11 +34,9 @@ def upgrade() -> None:  # noqa: D401
         """
     )
 
-    # --------------------------------------------------------------- extensions
     op.execute('CREATE EXTENSION IF NOT EXISTS pg_graphql;')
     op.execute('CREATE EXTENSION IF NOT EXISTS vector;')
 
-    # ---------------------------------------------------- custom claims PL/pgSQL
     op.execute(
         """
         ----------------------------------------------------------------------------
