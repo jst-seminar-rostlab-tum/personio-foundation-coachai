@@ -28,10 +28,10 @@ jobs:
           PR_BRANCH: ${{ github.head_ref }}
         run: |
           git fetch origin dev
-          git fetch origin "$PR_BRANCH"
+          git fetch origin $PR_BRANCH
           echo "Checking if origin/dev is merged into $PR_BRANCH"
 
-          if git merge-base --is-ancestor origin/dev origin/"$PR_BRANCH"; then
+          if git merge-base --is-ancestor origin/dev origin/$PR_BRANCH; then
             echo "✅ Dev branch is merged"
           else
             echo "❌ Dev branch is not fully merged into this branch"
@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "Checking for modifications to existing migration files from dev..."
 
-          # List migration files that exist on dev
+          # Get list of migration files that exist on dev branch
           DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.py$|\.sql$' || true)
 
           if [[ -n "$DEV_MIGRATIONS" ]]; then
@@ -53,11 +53,14 @@ jobs:
 
             MODIFIED_FILES=""
             for file in $DEV_MIGRATIONS; do
+              # Does the file exist in this PR branch?
               if git ls-tree -r --name-only HEAD -- "$file" | grep -q .; then
+                # File exists; check if modified
                 if ! git diff --quiet origin/dev HEAD -- "$file"; then
                   MODIFIED_FILES="$MODIFIED_FILES\n$file (modified)"
                 fi
               else
+                # File is missing in PR branch (i.e. deleted)
                 MODIFIED_FILES="$MODIFIED_FILES\n$file (deleted)"
               fi
             done
@@ -65,6 +68,9 @@ jobs:
             if [[ -n "$MODIFIED_FILES" ]]; then
               echo "❌ Existing migration files from dev have been altered:"
               echo -e "$MODIFIED_FILES"
+              echo ""
+              echo "Migration files from dev branch should never be modified or deleted."
+              echo "Revert changes and create new migration files instead."
               exit 1
             else
               echo "✅ No existing migration files from dev have been modified"
@@ -119,13 +125,10 @@ jobs:
             elif [[ "$state" == "starting" ]]; then
               echo "Database starting... ($((i*2))s elapsed)"
             fi
-            [[ $i -eq 60 ]] && { echo "❌ Database not healthy after 2 minutes"; exit 1; }
+            [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
 
-      # --------------------------------------------------
-      # Ensure Supabase roles (admin + auth) exist in CI
-      # --------------------------------------------------
       - name: Ensure Supabase roles
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
@@ -156,9 +159,9 @@ jobs:
           docker logs -f "$CID"
           EXIT=$(docker wait "$CID")
           if [[ "$EXIT" -eq 0 ]]; then
-            echo "✅ Migration checks passed"
+            echo "✅- Migration checks passed"
           else
-            echo "❌ Migration checks failed"
+            echo "❌- Migration checks failed"
             exit 1
           fi
 
