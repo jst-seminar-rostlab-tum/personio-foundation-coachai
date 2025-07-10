@@ -2,5 +2,12 @@
   "metaTitle": "Simulation - Coach AI",
   "metaDescription": "Trainieren Sie Ihre Fähigkeiten in einer interaktiven Simulation",
   "sessionEndError": "Fehler beim Beenden der Sitzung.",
-  "sessionTurnError": "Fehler bei Erstellung eines Session Turns."
+  "sessionTurnError": "Fehler bei Erstellung eines Session Turns.",
+  "sessionConnectToAIError": "Fehler beim Verbindungsaufbau zum AI Assistenten.",
+  "connecting": "Verbindung wird hergestellt…",
+  "connected": "Verbunden",
+  "disconnected": "Verbindung getrennt",
+  "hangingUp": "Anruf wird beendet…",
+  "connectingMessage": "Verbindung wird hergestellt…",
+  "disconnectedMessage": "Verbindung getrennt... Verbindung wird wiederhergestellt..."
 }

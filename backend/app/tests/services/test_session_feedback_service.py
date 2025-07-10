@@ -72,6 +72,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         ]
         return ConversationScenarioWithTranscript(scenario=scenario, transcript=transcript)
 
+    @patch('app.services.session_feedback.session_feedback_service.get_hr_docs_context')
     @patch('app.services.session_feedback.session_feedback_service.get_conversation_data')
     @patch('app.services.session_feedback.session_feedback_llm.generate_training_examples')
     @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')
@@ -82,6 +83,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_goals: MagicMock,
         mock_examples: MagicMock,
         mock_get_conversation_data: MagicMock,
+        mock_get_hr_docs_context: MagicMock,
     ) -> None:
         mock_get_conversation_data.return_value = self._mock_conversation_data()
         mock_examples.return_value = SessionExamplesCollection(
@@ -122,6 +124,8 @@ class TestSessionFeedbackService(unittest.TestCase):
             ]
         )
 
+        mock_get_hr_docs_context.return_value = ('Some HR context', ['Doc1', 'Doc2'])
+
         # Inject mock scoring_service
         class MockScore:
             def __init__(self, metric: str, score: float) -> None:
@@ -143,7 +147,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
@@ -170,6 +174,9 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         self.assertEqual(feedback.session_id, session_id)
         self.assertEqual(feedback.goals_achieved, ['G1', 'G2'])
+
+        self.assertIsInstance(feedback.document_names, list)
+        self.assertEqual(feedback.document_names, ['Doc1', 'Doc2'])
 
         self.assertEqual(len(feedback.example_positive), 1)
         self.assertEqual(feedback.example_positive[0]['heading'], 'Clear Objective Addressed')
@@ -246,13 +253,13 @@ class TestSessionFeedbackService(unittest.TestCase):
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = []
-                    self.overall_score = 0
+                    self.overall_score = 1.0
 
             def __init__(self) -> None:
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
@@ -278,7 +285,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
 
-        self.assertEqual(feedback.overall_score, 0)
+        self.assertEqual(feedback.overall_score, 1)
         self.assertEqual(feedback.transcript_uri, '')
 
     @patch('app.services.session_feedback.session_feedback_llm.call_structured_llm')
@@ -368,7 +375,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
@@ -392,7 +399,9 @@ class TestSessionFeedbackService(unittest.TestCase):
             scoring_service=mock_scoring_service,
             session_turn_service=mock_session_turn_service,
         )
-        self.assertEqual(feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4})
+        self.assertDictEqual(
+            feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4}
+        )
         self.assertEqual(feedback.overall_score, 4.0)
 
 

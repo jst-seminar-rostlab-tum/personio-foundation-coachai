@@ -10,7 +10,7 @@ from uuid import UUID
 from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.connections.openai_client import call_structured_llm
+from app.connections.vertexai_client import call_structured_llm
 from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.schemas.scenario_prep_config import ScenarioPrepConfig
@@ -23,7 +23,7 @@ from app.schemas.scenario_preparation import (
     ScenarioPreparationCreate,
     StringListResponse,
 )
-from app.services.vector_db_context_service import query_vector_db_and_prompt
+from app.services.vector_db_context_service import get_hr_docs_context
 
 
 @lru_cache
@@ -90,7 +90,6 @@ def generate_objectives(request: ObjectiveRequest, hr_docs_context: str = '') ->
     result = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=StringListResponse,
         mock_response=mock_response,
     )
@@ -129,7 +128,6 @@ def generate_checklist(request: ChecklistRequest, hr_docs_context: str = '') -> 
     result = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=StringListResponse,
         mock_response=mock_response,
     )
@@ -197,7 +195,6 @@ def generate_key_concept(request: KeyConceptRequest, hr_docs_context: str = '') 
     result = call_structured_llm(
         request_prompt=prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=KeyConceptResponse,
         mock_response=mock_response,
     )
@@ -264,13 +261,11 @@ def generate_scenario_preparation(
             language_code=new_preparation.language_code,
         )
 
-        hr_docs_context = query_vector_db_and_prompt(
-            session_context=[
-                new_preparation.category,
-                new_preparation.persona,
-                new_preparation.situational_facts,
-            ],
-            generated_object='output',
+        # hr_docs_context is used for LLM prompt; doc_names is available for future use
+        hr_docs_context, doc_names = get_hr_docs_context(
+            persona=new_preparation.persona,
+            situational_facts=new_preparation.situational_facts,
+            category=new_preparation.category,
         )
 
         has_error = False

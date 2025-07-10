@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 from gotrue import AdminUserAttributes
@@ -9,6 +9,7 @@ from supabase import AuthError
 from app.config import settings
 from app.database import get_supabase_client
 from app.interfaces import MockUserIdsEnum
+from app.models import LiveFeedback
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig, ConfigType
 from app.models.conversation_category import ConversationCategory
@@ -52,6 +53,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             professional_role=ProfessionalRole.hr_professional,
             experience=Experience.beginner,
             preferred_learning_style=PreferredLearningStyle.visual,
+            last_logged_in=datetime.now(UTC) - timedelta(days=2),
             store_conversations=False,
             total_sessions=32,
             training_time=4.5,
@@ -69,6 +71,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             professional_role=ProfessionalRole.executive,
             experience=Experience.expert,
             preferred_learning_style=PreferredLearningStyle.kinesthetic,
+            last_logged_in=datetime.now(UTC) - timedelta(days=2),
             store_conversations=True,
             total_sessions=5,
             training_time=4.2,
@@ -884,6 +887,10 @@ def get_dummy_session_feedback(
             overall_score=4.3,
             transcript_uri='https://example.com/transcripts/session1.txt',
             full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -958,6 +965,11 @@ def get_dummy_session_feedback(
             overall_score=4.0,
             transcript_uri='https://example.com/transcripts/session2.txt',
             full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -1031,6 +1043,11 @@ def get_dummy_session_feedback(
             overall_score=4.0,
             transcript_uri='https://example.com/transcripts/session3.txt',
             full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -1104,6 +1121,9 @@ def get_dummy_session_feedback(
             overall_score=4.0,
             transcript_uri='https://example.com/transcripts/session4.txt',
             full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+            ],
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -1179,6 +1199,11 @@ def get_dummy_session_feedback(
             overall_score=4.8,
             transcript_uri='https://example.com/transcripts/session5.txt',
             full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1252,6 +1277,10 @@ def get_dummy_session_feedback(
             overall_score=3.8,
             transcript_uri='https://example.com/transcripts/session6.txt',
             full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1327,6 +1356,11 @@ def get_dummy_session_feedback(
             overall_score=3.8,
             transcript_uri='https://example.com/transcripts/session7.txt',
             full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1397,6 +1431,9 @@ def get_dummy_session_feedback(
             overall_score=3.8,
             transcript_uri='https://example.com/transcripts/session8.txt',
             full_audio_filename='full_audio_123.mp3',
+            document_names=[
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1477,6 +1514,11 @@ def get_dummy_scenario_preparations(
                 'Foster mutual understanding',
                 'End on a positive note',
             ],
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1499,6 +1541,7 @@ def get_dummy_scenario_preparations(
                 'Set expectations for communication',
                 'Identify potential risks',
             ],
+            document_names=['Communication at Work', 'Giving Feedback'],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1521,6 +1564,10 @@ def get_dummy_scenario_preparations(
                 'Align on team roles',
                 'Set expectations for communication',
             ],
+            document_names=[
+                'Psychology of Human Relations',
+                'Teamwork: An Open Access Practical Guide',
+            ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1536,6 +1583,7 @@ def get_dummy_scenario_preparations(
         ScenarioPreparation(
             id=uuid4(),
             scenario_id=conversation_scenarios[3].id,
+            document_names=['Communication at Work', 'A Guide to Effective Negotiations'],
             objectives=[
                 'Bring clarity to the situation',
                 'Encourage open dialogue',
@@ -1629,6 +1677,25 @@ def get_mock_user_data() -> tuple[AdminUserAttributes, AdminUserAttributes]:
             },
         },
     )
+
+
+def get_dummy_live_feedback_data(session_turns: list[SessionTurn]) -> list[LiveFeedback]:
+    return [
+        LiveFeedback(
+            id=uuid4(),
+            session_id=session_turns[0].session_id,
+            heading='Tone',
+            feedback_text='Speak more calmly',
+            created_at=datetime.now(UTC),
+        ),
+        LiveFeedback(
+            id=uuid4(),
+            session_id=session_turns[1].session_id,
+            heading='Content',
+            feedback_text='Use concrete facts for the employee underperforming',
+            created_at=datetime.now(UTC),
+        ),
+    ]
 
 
 def create_mock_users() -> None:

@@ -160,7 +160,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
@@ -253,7 +253,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
@@ -328,7 +328,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
@@ -409,7 +409,9 @@ class TestSessionFeedbackService(unittest.TestCase):
             session_turn_service=mock_session_turn_service,
         )
         # Check feedback score structure
-        self.assertEqual(feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4})
+        self.assertDictEqual(
+            feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4}
+        )
         self.assertEqual(feedback.overall_score, 4.0)
         # Check user_profile statistics
         user = self.session.get(UserProfile, user_id)

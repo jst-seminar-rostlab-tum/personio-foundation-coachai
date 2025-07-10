@@ -7,8 +7,8 @@
   "cancel": "Cancel",
   "confirm": "Confirm",
   "emptyList": {
-    "title": "No {itemType} yet",
-    "description": "Your {itemType} will appear here in the future!",
+    "title": "No {itemType} yet!",
+    "description": "This is where your {itemType} will appear once available.",
     "sessions": "sessions",
     "reviews": "reviews"
   },
@@ -48,5 +48,8 @@
   "deleteAccountError": "There was an error deleting the account.",
   "areYouSure": "Are you sure?",
   "deleteAccountConfirmDesc": "This action cannot be undone.",
-  "deleting": "Deleting..."
+  "deleting": "Deleting...",
+  "emailInputLabel": "Email Address",
+  "emailInputPlaceholder": "Enter your email address",
+  "emailInputError": "Please enter a valid email address"
 }
