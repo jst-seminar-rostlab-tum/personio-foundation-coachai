@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  ChartNoAxesColumnIncreasingIcon,
-  CheckCircle,
-  CircleX,
-  Clock,
-  PlayIcon,
-} from 'lucide-react';
-import Progress from '@/components/ui/Progress';
+import { ChartNoAxesColumnIncreasingIcon, CheckCircle, CircleX } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -15,12 +8,13 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/utils/toast';
 import { formattedDate } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
+import AudioPlayer from './AudioPlayer';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
@@ -74,9 +68,49 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
     { key: tCommon('clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
 
-  const convertTimeToMinutes = (seconds: number) => {
-    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (h > 0) {
+      return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    return `${m}:${s.toString().padStart(2, '0')}`;
   };
+
+  // Audio player state
+  const [currentTime, setCurrentTime] = useState(0);
+  const totalTime = 3759;
+  const [isPlaying, setIsPlaying] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (isPlaying) {
+      if (currentTime >= totalTime) {
+        setIsPlaying(false);
+        return undefined;
+      }
+      intervalRef.current = setInterval(() => {
+        setCurrentTime((prev) => {
+          if (prev + 1 >= totalTime) {
+            setIsPlaying(false);
+            return totalTime;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    } else if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    const cleanup = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+    return cleanup;
+  }, [isPlaying, currentTime, totalTime]);
 
   const examplePositive = feedbackDetail?.feedback?.examplePositive || [];
 
@@ -88,8 +122,8 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
     return <FeedbackDetailLoadingPage />;
   }
   return (
-    <div className="flex flex-col items-center gap-16">
-      <div className="text-2xl ">{t('title')}</div>
+    <div className="flex flex-col items-center gap-12">
+      <div className="text-2xl font-bold text-bw-90 text-left mb-4 w-full">{t('title')}</div>
       <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
         <div className="text-lg text-marigold-90">{feedbackDetail?.title}</div>
         <div className="text-base text-marigold-95">
@@ -110,21 +144,16 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
       <FeedbackDialog sessionId={sessionId} />
 
       {/* Replay Conversation */}
-      <div className="flex items-center justify-center gap-3 mx-1 px-3 w-full h-20 bg-bw-10 rounded-md">
-        <div className="size-11 rounded-full bg-marigold-50 flex items-center justify-center">
-          <PlayIcon size={20} className="text-white" />
-        </div>
-        <div className="flex flex-col justify-between flex-1">
-          <span className="text-md">{t('listenConversation')}</span>
-          <div className="flex gap-3 items-center">
-            <Progress className="w-10 flex-1" value={62} />
-            <div className="flex gap-1 items-center text-base text-bw-40">
-              <Clock size={13} />
-              <span>{convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AudioPlayer
+        currentTime={currentTime}
+        totalTime={totalTime}
+        setCurrentTime={(val) => setCurrentTime(val)}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        formatTime={formatTime}
+        t={t}
+      />
+
       <Accordion type="multiple">
         <AccordionItem value="feedback">
           <AccordionTrigger>{t('accordion.feedback')}</AccordionTrigger>
