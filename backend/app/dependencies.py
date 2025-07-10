@@ -1,5 +1,6 @@
 import logging
-from typing import Annotated, Any, TypedDict
+from datetime import UTC, datetime
+from typing import Annotated, Any, NoReturn, TypedDict
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -30,6 +31,15 @@ class JWTPayload(TypedDict, total=False):
     amr: list[Any]
     session_id: str
     is_anonymous: bool
+
+
+ALLOWED_ROLES = {AccountRole.user.value, AccountRole.admin.value}
+
+
+def _forbidden(detail: str, log_msg: str, *args: str) -> NoReturn:
+    """Log a warning and raise a 403 HttpException."""
+    logging.warning(log_msg, *args)
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
 
 
 def verify_jwt(
@@ -76,19 +86,25 @@ def require_user(
     db: Annotated[Session, Depends(get_db_session)],
 ) -> UserProfile:
     """
-    Checks if the user is authenticated and has the role of 'user' or 'admin'.
+    Checks that the JWT has a 'sub', that a UserProfile exists for it,
+    and that its role is either 'user' or 'admin'.
     """
-    user_id = token['sub']
-    statement = select(UserProfile).where(UserProfile.id == user_id)
-    user = db.exec(statement).first()
-    if not user:
-        logging.warning('User not found for ID: ', user_id)
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Cannot find user')
-    if user.account_role not in [AccountRole.user, AccountRole.admin]:
-        logging.warning('User role is not one of: ', AccountRole.user, AccountRole.admin)
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail='User does not have access'
+    user_id = token.get('sub') or _forbidden('Cannot find user', 'JWT payload missing "sub" claim')
+
+    user = db.exec(select(UserProfile).where(UserProfile.id == user_id)).first() or _forbidden(
+        'Cannot find user', 'User not found for ID %s', user_id
+    )
+
+    if user.account_role.value not in ALLOWED_ROLES:
+        _forbidden(
+            'User does not have access',
+            'User role %s not in allowed roles %s',
+            user.account_role,
+            *ALLOWED_ROLES,
         )
+
+    _update_login_streak(db, user)
+
     return user
 
 
@@ -97,15 +113,43 @@ def require_admin(
     db: Annotated[Session, Depends(get_db_session)],
 ) -> UserProfile:
     """
-    Checks if the user is authenticated and has the role of 'admin'.
+    Ensures the JWT has a 'sub' claim, the user exists, and is an admin.
     """
-    user_id = token['sub']
-    statement = select(UserProfile).where(UserProfile.id == user_id)
-    user = db.exec(statement).first()
-    if not user:
-        logging.warning('User not found for ID: ', user_id)
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Cannot find user')
-    if user.account_role != AccountRole.admin:
-        logging.warning('User role is not: ', AccountRole.admin)
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Admin access required')
+    user_id = token.get('sub') or _forbidden('Cannot find user', 'JWT payload missing "sub" claim')
+
+    user = db.exec(select(UserProfile).where(UserProfile.id == user_id)).first() or _forbidden(
+        'Cannot find user', 'User not found for ID %s', user_id
+    )
+
+    if user.account_role is not AccountRole.admin:
+        _forbidden('Admin access required', 'User role %s is not admin', user.account_role.value)
+
+    _update_login_streak(db, user)
+
     return user
+
+
+def _update_login_streak(db: Session, user_profile: UserProfile) -> None:
+    # Check if the last_logged_in date is available
+    if user_profile.last_logged_in:
+        now = datetime.now(UTC)
+        last_logged_in = user_profile.last_logged_in.replace(tzinfo=UTC)
+
+        # Calculate the difference in days
+        days_difference = (now - last_logged_in).days
+
+        if days_difference == 1:
+            # Increment streak if it's a new day
+            user_profile.current_streak_days += 1
+        elif days_difference > 1:
+            # Reset streak if it's 2+ days later
+            user_profile.current_streak_days = 0
+
+        if days_difference != 0:
+            # Update last_logged_in to the current time only if there is a streak increment or reset
+            user_profile.last_logged_in = datetime.now(UTC)
+
+            # Commit changes to the database
+            db.add(user_profile)
+            db.commit()
+            db.refresh(user_profile)

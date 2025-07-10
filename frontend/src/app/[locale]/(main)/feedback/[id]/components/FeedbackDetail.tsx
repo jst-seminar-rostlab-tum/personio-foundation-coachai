@@ -121,6 +121,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   if (isLoading) {
     return <FeedbackDetailLoadingPage />;
   }
+
   return (
     <div className="flex flex-col items-center gap-12">
       <div className="text-2xl font-bold text-bw-90 text-left mb-4 w-full">{t('title')}</div>
@@ -141,7 +142,26 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         <ProgressBars data={progressBarData} />
       </div>
 
-      <FeedbackDialog sessionId={sessionId} />
+      {!feedbackDetail?.hasReviewed && (
+        <FeedbackDialog setFeedbackDetail={setFeedbackDetail} sessionId={sessionId} />
+      )}
+      <div className="flex gap-3 items-center w-full justify-between">
+        <div className="flex flex-col gap-4 p-2.5 flex-1">
+          {progressBarData.map((item) => (
+            <div key={item.key} className="flex flex-col gap-2">
+              <div className="flex justify-between text-base">
+                <span>{item.key}</span>
+                <span>{item.value}%</span>
+              </div>
+              <Progress className="w-full" value={item.value} />
+            </div>
+          ))}
+        </div>
+        <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
+          {feedbackDetail?.feedback?.overallScore ?? 0}%
+        </div>
+      </div>
+      <div className="my-4 mx-2 h-px w-full bg-bw-30" />
 
       {/* Replay Conversation */}
       <AudioPlayer

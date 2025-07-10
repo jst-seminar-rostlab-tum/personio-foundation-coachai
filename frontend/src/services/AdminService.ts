@@ -12,7 +12,7 @@ const getAdminStats = async (api: AxiosInstance) => {
 
 const updateDailyUserTokenLimit = async (api: AxiosInstance, limit: number) => {
   try {
-    const { data } = await api.put(`/app-config`, {
+    const { data } = await api.put(`/app-configs`, {
       key: 'dailyUserTokenLimit',
       value: limit.toString(),
       type: 'int',

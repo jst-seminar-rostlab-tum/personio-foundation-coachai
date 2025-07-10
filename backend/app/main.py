@@ -12,6 +12,7 @@ from app.routers import (
     auth_route,
     conversation_category_route,
     conversation_scenario_route,
+    live_feedback_route,
     realtime_session_route,
     review_route,
     session_route,
@@ -47,6 +48,7 @@ app.include_router(admin_dashboard_stats_route.router)
 app.include_router(review_route.router)
 app.include_router(realtime_session_route.router)
 app.include_router(signed_url_route.router)
+app.include_router(live_feedback_route.router)
 
 
 # Create database tables on startup
