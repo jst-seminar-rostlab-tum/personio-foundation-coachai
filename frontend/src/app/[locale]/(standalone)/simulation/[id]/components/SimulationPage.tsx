@@ -15,6 +15,19 @@ import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages from './SimulationMessages';
 
+const DISCONNECTED_STATES = [
+  ConnectionStatus.Connecting,
+  ConnectionStatus.Disconnected,
+  ConnectionStatus.Closed,
+  ConnectionStatus.Failed,
+];
+
+const TERMINAL_STATES = [
+  ConnectionStatus.Disconnected,
+  ConnectionStatus.Closed,
+  ConnectionStatus.Failed,
+];
+
 export default function SimulationPageComponent({ sessionId }: { sessionId: string }) {
   const t = useTranslations('Simulation');
   const router = useRouter();
@@ -52,6 +65,11 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
     }
   };
 
+  const isDisconnected = DISCONNECTED_STATES.includes(connectionStatus) || hangupInProgress;
+  const isTerminalState = TERMINAL_STATES.includes(connectionStatus) && !hangupInProgress;
+  const isConnecting = connectionStatus === ConnectionStatus.Connecting;
+  const isConnected = connectionStatus === ConnectionStatus.Connected;
+
   return (
     <div className="flex flex-col h-screen">
       <div className="mb-2">
@@ -60,13 +78,7 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         <SimulationMessages messages={messages} />
-        {([
-          ConnectionStatus.Connecting,
-          ConnectionStatus.Disconnected,
-          ConnectionStatus.Closed,
-          ConnectionStatus.Failed,
-        ].includes(connectionStatus) ||
-          hangupInProgress) && (
+        {isDisconnected && (
           <div className="absolute inset-0 backdrop-blur-sm bg-background z-10"></div>
         )}
       </div>
@@ -76,29 +88,18 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
       <SimulationFooter
         isMicActive={isMicActive}
         toggleMicrophone={toggleMic}
-        isConnected={connectionStatus === ConnectionStatus.Connected}
+        isConnected={isConnected}
         onDisconnect={onDisconnect}
         isDisabled={hangupInProgress}
       />
 
-      {([
-        ConnectionStatus.Connecting,
-        ConnectionStatus.Disconnected,
-        ConnectionStatus.Closed,
-        ConnectionStatus.Failed,
-      ].includes(connectionStatus) ||
-        hangupInProgress) && (
+      {isDisconnected && (
         <div className="fixed inset-0 flex flex-col items-center justify-center z-50 pointer-events-none">
           <Loader2 className="h-10 w-10 animate-spin text-marigold-50 mb-4" />
           <div className="text-center text-bw-70 font-medium">
             {hangupInProgress && <p>{t('hangingUp')}</p>}
-            {connectionStatus === ConnectionStatus.Connecting && <p>{t('connectingMessage')}</p>}
-            {[
-              ConnectionStatus.Disconnected,
-              ConnectionStatus.Closed,
-              ConnectionStatus.Failed,
-            ].includes(connectionStatus) &&
-              !hangupInProgress && <p>{t('disconnectedMessage')}</p>}
+            {isConnecting && <p>{t('connectingMessage')}</p>}
+            {isTerminalState && <p>{t('disconnectedMessage')}</p>}
           </div>
         </div>
       )}
