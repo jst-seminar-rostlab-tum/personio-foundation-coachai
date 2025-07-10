@@ -2,7 +2,7 @@ from typing import Annotated
 from uuid import UUID
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
@@ -11,7 +11,7 @@ from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
-from app.models.session import Session
+from app.models.session import Session, SessionStatus
 from app.models.user_profile import UserProfile
 
 router = APIRouter(prefix='', tags=['realtime-session'])
@@ -34,11 +34,18 @@ async def get_realtime_session(
     """
     api_key = settings.OPENAI_API_KEY
     if not api_key:
-        raise HTTPException(status_code=500, detail='OPENAI_API_KEY not set')
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='OPENAI_API_KEY not set'
+        )
 
     session = db_session.exec(select(Session).where(Session.id == session_id)).first()
     if not session:
-        raise HTTPException(status_code=404, detail='Session not found')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Session not found')
+    if session.status is SessionStatus.completed:
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS, detail='Session is already completed'
+        )
+
     conversation_scenario = db_session.exec(
         select(ConversationScenario).where(ConversationScenario.id == session.scenario_id)
     ).first()
