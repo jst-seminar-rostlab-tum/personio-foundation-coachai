@@ -3,13 +3,17 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from gotrue import AdminUserAttributes, SignUpWithPasswordCredentials
-from pydantic import BaseModel
 from sqlmodel import Session as DBSession
 
 from app.config import Settings
 from app.database import get_db_session, get_supabase_client
 from app.dependencies import JWTPayload, verify_jwt
 from app.models.user_profile import UserProfile
+from app.schemas.auth import (
+    UserCreate,
+    VerificationCodeConfirm,
+    VerificationCodeCreate,
+)
 from app.services.twilio_service import check_verification_code, send_verification_code
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
@@ -17,25 +21,8 @@ router = APIRouter(prefix='/auth', tags=['Auth'])
 settings = Settings()
 
 
-class CreateUserRequest(BaseModel):
-    full_name: str
-    phone: str
-    email: str
-    password: str
-    # code: str
-
-
-class SendVerificationRequest(BaseModel):
-    phone_number: str
-
-
-class VerifyCodeRequest(BaseModel):
-    phone_number: str
-    code: str
-
-
 @router.post('/send-verification', response_model=None)
-def send_verification(req: SendVerificationRequest) -> None:
+def send_verification(req: VerificationCodeCreate) -> None:
     try:
         status = send_verification_code(req.phone_number)
         if status == 'pending':
@@ -51,7 +38,7 @@ def send_verification(req: SendVerificationRequest) -> None:
 
 
 @router.post('/verify-code', response_model=None)
-def verify_code(req: VerifyCodeRequest) -> None:
+def verify_code(req: VerificationCodeConfirm) -> None:
     try:
         status = check_verification_code(req.phone_number, req.code)
         if status != 'approved':
@@ -67,9 +54,9 @@ def verify_code(req: VerifyCodeRequest) -> None:
 
 
 @router.post('', response_model=None, status_code=status.HTTP_201_CREATED)
-def create_user(req: CreateUserRequest) -> None:
+def create_user(req: UserCreate) -> None:
     try:
-        CreateUserRequest.model_validate(req)
+        UserCreate.model_validate(req)
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
