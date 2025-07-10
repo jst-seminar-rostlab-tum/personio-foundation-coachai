@@ -104,7 +104,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-12 items-center w-full justify-between">
+      <div className="flex flex-col md:flex-row gap-12 px-4 items-center w-full justify-between">
         <DonutChart
           percent={feedbackDetail?.feedback?.overallScore ?? 0}
           goalsAchieved={feedbackDetail?.feedback?.goalsAchieved.length ?? 0}
@@ -113,10 +113,6 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         />
         <ProgressBars data={progressBarData} />
       </div>
-
-      {!feedbackDetail?.hasReviewed && (
-        <FeedbackDialog setFeedbackDetail={setFeedbackDetail} sessionId={sessionId} />
-      )}
 
       {/* Replay Conversation */}
       <AudioPlayer
@@ -127,6 +123,10 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         formatTime={formatTime}
         t={t}
       />
+
+      {!feedbackDetail?.hasReviewed && (
+        <FeedbackDialog setFeedbackDetail={setFeedbackDetail} sessionId={sessionId} />
+      )}
 
       <Accordion type="multiple">
         <AccordionItem value="feedback">

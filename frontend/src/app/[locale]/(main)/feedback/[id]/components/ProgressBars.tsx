@@ -1,4 +1,27 @@
 import SegmentedProgress from '@/components/ui/SegmentedProgress';
+import { useEffect, useState } from 'react';
+
+function AnimatedProgressBar({ label, value }: { label: string; value: number }) {
+  const [animatedValue, setAnimatedValue] = useState(0);
+  useEffect(() => {
+    setAnimatedValue(0);
+    if (value > 0) {
+      const current = 0;
+      const interval = setInterval(() => {
+        setAnimatedValue(current + 1);
+        if (current >= value) clearInterval(interval);
+      }, 400);
+      return () => clearInterval(interval);
+    }
+    return undefined;
+  }, [value]);
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-lg">{label}</span>
+      <SegmentedProgress className="w-full" value={animatedValue} />
+    </div>
+  );
+}
 
 interface ProgressBarItem {
   key: string;
@@ -13,15 +36,7 @@ export default function ProgressBars({ data }: ProgressBarsProps) {
   return (
     <div className="flex flex-col gap-8 flex-1 w-full p-2">
       {data.map((item) => (
-        <div key={item.key} className="flex flex-col">
-          <div className="text-lg">
-            <span>{item.key}</span>
-          </div>
-          <div className="flex justify-between items-center text-lg gap-4">
-            <SegmentedProgress className="w-full" value={Math.round(item.value / 20)} />
-            <span>{Math.round(item.value / 20)}/5</span>
-          </div>
-        </div>
+        <AnimatedProgressBar key={item.key} label={item.key} value={item.value} />
       ))}
     </div>
   );
