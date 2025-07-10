@@ -60,7 +60,7 @@ from app.schemas.user_profile import (
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
-    UserStatisticsRead,
+    UserStatistics,
 )
 
 __all__ = [
@@ -105,7 +105,7 @@ __all__ = [
     'UserProfileReplace',
     'UserProfileRead',
     'UserProfileExtendedRead',
-    'UserStatisticsRead',
+    'UserStatistics',
     'ExportConfidenceScore',
     'ExportConversationScenario',
     'ExportReview',
