@@ -6,10 +6,10 @@
   "tryAgain": "Erneut versuchen",
   "cancel": "Abbrechen",
   "confirm": "Bestätigen",
+  "sessions": "Sitzungen",
   "emptyList": {
     "title": "Noch keine {itemType}",
-    "description": "Ihre {itemType} werden hier in Zukunft erscheinen!",
-    "sessions": "Sitzungen"
+    "description": "Ihre {itemType} werden hier in Zukunft erscheinen!"
   },
   "resources": {
     "title": "Ressourcen",
