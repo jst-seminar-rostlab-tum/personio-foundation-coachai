@@ -33,19 +33,6 @@ interface FeedbackDetailProps {
   sessionId: string;
 }
 
-const dummyResources = [
-  {
-    name: 'Giving Feedback (CC BY-NC 4.0)',
-    author: 'Personio Foundation',
-    fileUrl: '/resources/giving-feedback.pdf',
-  },
-  {
-    name: 'Effective Communication',
-    author: 'Jane Doe',
-    fileUrl: '/resources/effective-communication.pdf',
-  },
-];
-
 export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   const t = useTranslations('Feedback');
   const tCommon = useTranslations('Common');
@@ -224,7 +211,14 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         <AccordionItem value="suggestion">
           <AccordionTrigger>{t('accordion.suggestion')}</AccordionTrigger>
           <AccordionContent>
-            <ResourcesList resources={dummyResources} />
+            {feedbackDetail?.feedback?.documentNames &&
+            feedbackDetail.feedback.documentNames.length > 0 ? (
+              <ResourcesList resources={feedbackDetail.feedback.documentNames} />
+            ) : (
+              <div className="flex items-center justify-center w-full min-h-[200px] border border-bw-20 rounded-lg">
+                <p className="text-base text-bw-40">{tCommon('resources.noResources')}</p>
+              </div>
+            )}
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="session">

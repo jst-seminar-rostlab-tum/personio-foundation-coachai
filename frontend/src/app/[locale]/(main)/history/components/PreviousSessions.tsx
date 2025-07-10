@@ -108,7 +108,7 @@ export default function PreviousSessions({
       </div>
       <div className="flex flex-col gap-4">
         {!sessionsStorage || sessionsStorage.length === 0 ? (
-          <EmptyListComponent itemType={tCommon('emptyList.sessions')} />
+          <EmptyListComponent itemType={tCommon('sessions')} />
         ) : (
           sessionsStorage.map((session: SessionFromPagination) => (
             <Link

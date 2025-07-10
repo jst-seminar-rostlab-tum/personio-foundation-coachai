@@ -1,6 +1,8 @@
 import { SessionScores } from './Common';
 
 export interface FeedbackResponse {
+  id: string;
+  scenarioId: string;
   title: string;
   createdAt: string;
   feedback?: SessionFeedback;
@@ -12,6 +14,7 @@ export interface SessionFeedback {
   overallScore: number;
   sessionLengthS: number;
   goalsAchieved: string[];
+  documentNames: string[];
   examplePositive: {
     heading: string;
     feedback: string;

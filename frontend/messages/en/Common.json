@@ -6,17 +6,14 @@
   "tryAgain": "Try Again",
   "cancel": "Cancel",
   "confirm": "Confirm",
+  "sessions": "sessions",
   "emptyList": {
     "title": "No {itemType} yet",
-    "description": "Your {itemType} will appear here in the future!",
-    "sessions": "sessions",
-    "reviews": "reviews"
+    "description": "Your {itemType} will appear here in the future!"
   },
   "resources": {
     "title": "Resources",
     "subtitle": "Helpful materials to download to deepen your knowledge.",
-    "by": "by",
-    "loading": "Loading resources...",
     "noResources": "No resources available for this scenario.",
     "downloadError": "Failed to download resource. Please try again."
   },

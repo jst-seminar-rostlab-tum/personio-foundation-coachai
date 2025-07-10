@@ -9,14 +9,11 @@
   "emptyList": {
     "title": "Noch keine {itemType}",
     "description": "Ihre {itemType} werden hier in Zukunft erscheinen!",
-    "sessions": "Sitzungen",
-    "reviews": "Bewertungen"
+    "sessions": "Sitzungen"
   },
   "resources": {
     "title": "Ressourcen",
     "subtitle": "Hilfreiche Materialien zum Herunterladen, um Ihr Wissen zu vertiefen.",
-    "by": "von",
-    "loading": "Ressourcen werden geladen...",
     "noResources": "Keine Ressourcen für dieses Szenario verfügbar.",
     "downloadError": "Fehler beim Herunterladen der Ressource. Bitte versuchen Sie es erneut."
   },
