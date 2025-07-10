@@ -1,8 +1,9 @@
-"""Add pg_graphql, vector extensions and custom claims (CI‑safe)
+"""supabase setup
 
-Revision ID: e02cc4b53875
-Revises: a1e923719659
-Create Date: 2025-07-09 19:57:37.813168
+Revision ID: f74c5f1db78b
+Revises: 79cce3e613d2
+Create Date: 2025-07-10 02:33:02.845299
+
 """
 
 from collections.abc import Sequence
@@ -10,9 +11,9 @@ from typing import Union
 
 from alembic import op
 
-# Revision identifiers, used by Alembic.
-revision: str = 'e02cc4b53875'
-down_revision: Union[str, None] = 'a1e923719659'
+# revision identifiers, used by Alembic.
+revision: str = 'f74c5f1db78b'
+down_revision: Union[str, None] = '79cce3e613d2'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
