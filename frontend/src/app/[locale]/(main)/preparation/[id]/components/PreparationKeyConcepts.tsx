@@ -6,7 +6,7 @@ interface PreparationKeyConceptsProps {
 
 export default function PreparationKeyConcepts({ keyConcepts }: PreparationKeyConceptsProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {keyConcepts.map((concept, index) => (
         <div key={index} className="flex flex-col gap-2">
           <label
