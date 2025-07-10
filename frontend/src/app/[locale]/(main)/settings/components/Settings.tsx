@@ -14,7 +14,6 @@ import {
 import Switch from '@/components/ui/Switch';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
-import { ExportUserHandler } from '@/components/common/ExportUserHandler';
 import { UserProfileService } from '@/services/UserProfileService';
 import { UserPreference } from '@/interfaces/models/UserInputFields';
 import { UserRoles } from '@/lib/constants/userRoles';
@@ -23,6 +22,7 @@ import { UserProfile } from '@/interfaces/models/UserProfile';
 import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
 import { api } from '@/services/ApiClient';
 import UserPreferences from './UserPreferences';
+import { ExportUserHandler } from './ExportUserHandler';
 
 interface SettingsProps {
   userProfile: Promise<UserProfile>;

@@ -15,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '../ui/AlertDialog';
+} from '@/components/ui/AlertDialog';
 
 interface ExportUserHandlerProps {
   children: React.ReactNode;
