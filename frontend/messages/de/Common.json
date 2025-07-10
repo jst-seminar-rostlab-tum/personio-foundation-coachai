@@ -7,8 +7,8 @@
   "cancel": "Abbrechen",
   "confirm": "Bestätigen",
   "emptyList": {
-    "title": "Noch keine {itemType}",
-    "description": "Ihre {itemType} werden hier in Zukunft erscheinen!",
+    "title": "Noch keine {itemType} vorhanden!",
+    "description": "Hier werden Ihre {itemType} angezeigt, sobald sie verfügbar sind.",
     "sessions": "Sitzungen",
     "reviews": "Bewertungen"
   },
@@ -23,7 +23,6 @@
   "avgScore": "Durchschnittliche Bewertung",
   "reviews": "Bewertungen",
   "delete": "Löschen",
-  "export": "Exportieren",
   "genericError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
   "back": "Zurück",
   "next": "Weiter",
