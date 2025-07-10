@@ -3,7 +3,6 @@
   "metaDescription": "Passen Sie Ihre Trainingsseinstellungen an",
   "privacyControls": "Datenschutzeinstellungen",
   "storeAudioTranscripts": "Gesprächsaufnahmen und Transkripte speichern",
-  "exportData": "Persönliche Daten exportieren",
   "personalizationSettings": "Personalisierungseinstellungen",
   "saveSettings": "Einstellungen speichern",
   "ninetyDays": "Ihre Aufnahmen und Transkripte werden für 90 Tage gespeichert und sind im Trainingsverlauf verfügbar.",
@@ -14,10 +13,11 @@
     "placeholder": "Bitte wählen Sie bis zu 3 Ziele aus",
     "maxOptionsSelected": "Max. Optionen ausgewählt"
   },
-  "exportSettingsSuccess": "Ihre Daten wurden erfolgreich exportiert.",
-  "exportSettingsError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.",
+  "exportData": "Persönliche Daten exportieren",
+  "exportDataConfirmDesc": "Dies lädt eine ZIP-Datei mit allen Ihren persönlichen Daten herunter, einschließlich Sitzungen, Feedback und Einstellungen.",
+  "exporting": "Wird exportiert...",
   "saveSettingsSuccess": "Ihre Einstellungen wurden erfolgreich gespeichert.",
+  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.",
   "exportSuccess": "Ihre Daten wurden erfolgreich exportiert.",
-  "exportError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
-  "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal."
+  "exportError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
 }
