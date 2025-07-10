@@ -3,6 +3,7 @@ from collections.abc import Generator
 from datetime import datetime
 from uuid import uuid4
 
+from fastapi.security import HTTPBearer
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool.impl import StaticPool
@@ -10,7 +11,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine
 
 from app.data.dummy_data import get_dummy_conversation_categories, get_dummy_conversation_scenarios
-from app.dependencies import get_db_session, require_admin, require_user
+from app.dependencies import JWTPayload, get_db_session, security, verify_jwt
 from app.main import app
 from app.models import Review, Session, SessionStatus, UserProfile
 from app.models.user_profile import AccountRole
@@ -35,19 +36,18 @@ class TestReviewRoute(unittest.TestCase):
         # Override the get_db_session dependency
         app.dependency_overrides[get_db_session] = override_get_db
 
-        # mock require_user
         self.test_user = UserProfile(
             id=uuid4(),
             full_name='Test User',
             email='test@example.com',
-            phone_number='1234567890',
+            phone_number='123',
             account_role=AccountRole.user,
         )
         self.db.add(self.test_user)
         self.db.commit()
 
-        app.dependency_overrides[require_user] = lambda: self.test_user
-        app.dependency_overrides[require_admin] = lambda: self.test_user
+        # override verify_jwt to always return a payload with sub=test_user.id
+        app.dependency_overrides[verify_jwt] = lambda: JWTPayload(sub=self.test_user.id)
 
         self.client = TestClient(app)
 
@@ -179,3 +179,31 @@ class TestReviewRoute(unittest.TestCase):
         self.assertEqual(data['pagination']['totalCount'], 7)
         self.assertEqual(data['pagination']['pageSize'], 3)
         self.assertAlmostEqual(data['ratingStatistics']['average'], 3.43)
+
+    def test_get_reviews_unauthenticated(self) -> None:
+        app.dependency_overrides.pop(security, HTTPBearer())
+        app.dependency_overrides.pop(verify_jwt, None)
+
+        response = self.client.get('/review')
+        self.assertEqual(response.status_code, 403)
+        # depending on FastAPI version/detail text:
+        self.assertIn('Not authenticated', response.json()['detail'])
+
+    def test_get_reviews_non_admin_forbidden(self) -> None:
+        # test_user is role=“user”, so require_admin() will 403
+        # app.dependency_overrides[verify_jwt] = lambda: {'sub': self.test_user.id}
+        response = self.client.get('/review')
+        self.assertEqual(response.status_code, 403)
+        # self.assertEqual(response.json()['detail'], 'Admin access required')
+
+    def test_get_reviews_admin_allowed(self) -> None:
+        # promote to admin
+
+        self.test_user.account_role = AccountRole.admin
+        self.db.add(self.test_user)
+        self.db.commit()
+
+        # still using the same verify_jwt override, so token.sub == test_user.id
+        response = self.client.get('/review')
+        self.assertEqual(response.status_code, 200)
+        # (…additional assertions on the body…)

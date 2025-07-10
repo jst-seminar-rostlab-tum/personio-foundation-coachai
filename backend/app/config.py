@@ -47,8 +47,8 @@ class Settings(BaseSettings):
     ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
 
-    DEV_MODE_SKIP_AUTH: bool = True
-    DEV_MODE_MOCK_ADMIN_ID: UUID = MockUserIdsEnum.ADMIN.value
+    DEV_MODE_SKIP_AUTH: bool = False
+    DEV_MODE_MOCK_ADMIN_ID: UUID = MockUserIdsEnum.USER.value
 
     DEMO_USER_EMAIL: str = 'mockuser@example.com'
     DEMO_USER_PASSWORD: str = 'mockuserpassword'
