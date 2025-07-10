@@ -16,14 +16,16 @@ import Checkbox from '@/components/ui/Checkbox';
 import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
 import { reviewService } from '@/services/ReviewService';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { api } from '@/services/ApiClient';
+import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 
-interface ReviewDialogProps {
+interface FeedbackDialogProps {
   sessionId: string;
+  setFeedbackDetail: Dispatch<SetStateAction<FeedbackResponse | null>>;
 }
 
-export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
+export default function FeedbackDialog({ sessionId, setFeedbackDetail }: FeedbackDialogProps) {
   const t = useTranslations('Feedback');
   const tCommon = useTranslations('Common');
   const [rating, setRating] = useState(0);
@@ -56,6 +58,7 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
         allowAdminAccess: shareWithAdmin,
       });
       showSuccessToast(t('submitSuccess'));
+      setFeedbackDetail((prev) => ({ ...prev, hasReviewed: true }));
     } catch (error) {
       showErrorToast(error, t('submitError'));
     } finally {
@@ -91,7 +94,6 @@ export default function ReviewDialog({ sessionId }: ReviewDialogProps) {
           onChange={(e) => setRatingDescription(e.target.value)}
         />
 
-        {/* Share with Admin Checkbox */}
         <div
           className="flex items-center space-x-2 mt-4 cursor-pointer"
           onClick={() => !isSubmitting && setShareWithAdmin(!shareWithAdmin)}
