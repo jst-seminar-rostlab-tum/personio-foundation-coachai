@@ -5,6 +5,7 @@ from app.models.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioStatus,
 )
+from app.models.live_feedback_model import LiveFeedback
 from app.models.review import Review
 from app.models.scenario_preparation import (
     ScenarioPreparation,
@@ -37,4 +38,5 @@ __all__ = [
     'ConfigType',
     'AdminDashboardStats',
     'Review',
+    'LiveFeedback',
 ]
