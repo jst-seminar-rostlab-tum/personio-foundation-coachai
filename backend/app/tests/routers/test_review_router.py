@@ -41,13 +41,13 @@ class TestReviewRoute(unittest.TestCase):
             full_name='Test User',
             email='test@example.com',
             phone_number='123',
-            account_role=AccountRole.user,
+            account_role=AccountRole.admin,
         )
         self.db.add(self.test_user)
         self.db.commit()
 
         # override verify_jwt to always return a payload with sub=test_user.id
-        app.dependency_overrides[verify_jwt] = lambda: JWTPayload(sub=self.test_user.id)
+        app.dependency_overrides[verify_jwt] = lambda: JWTPayload(sub=self.test_user.id.hex)
 
         self.client = TestClient(app)
 
@@ -191,7 +191,10 @@ class TestReviewRoute(unittest.TestCase):
 
     def test_get_reviews_non_admin_forbidden(self) -> None:
         # test_user is role=“user”, so require_admin() will 403
-        # app.dependency_overrides[verify_jwt] = lambda: {'sub': self.test_user.id}
+        self.test_user.account_role = AccountRole.user
+        self.db.add(self.test_user)
+        self.db.commit()
+
         response = self.client.get('/review')
         self.assertEqual(response.status_code, 403)
         # self.assertEqual(response.json()['detail'], 'Admin access required')
