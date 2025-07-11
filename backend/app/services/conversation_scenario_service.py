@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
@@ -6,7 +7,8 @@ from sqlmodel import func, select
 
 from app.database import get_db_session
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import ConversationScenario
+from app.models.conversation_scenario import ConversationScenario, DifficultyLevel
+from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
 from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
@@ -32,12 +34,34 @@ class ConversationScenarioService:
         conversation_scenario: ConversationScenarioCreate,
         user_profile: UserProfile,
         background_tasks: BackgroundTasks,
+        custom_scenario: bool = False,
     ) -> ConversationScenarioConfirm:
         """
         Create a new conversation scenario and start the preparation process in the background.
+
         """
         # Validate category
         category = self._validate_category(conversation_scenario.category_id)
+
+        # Check need for creating a new conversation scenario
+        # if custom_scenario is True, we assume the scenario is custom and needs to be created.
+        if not custom_scenario:
+            # Check if there is an existing scenario with the same category, language and difficulty
+            existing_scenarios = self._get_scenarios_by_category_language_difficulty(
+                user_profile.id,
+                conversation_scenario.category_id,
+                conversation_scenario.language_code,
+                conversation_scenario.difficulty_level,
+            )
+            if len(existing_scenarios) > 0:
+                equal_scenario_id = self._get_equal_scenario(
+                    existing_scenarios, conversation_scenario
+                )
+                if equal_scenario_id:
+                    return ConversationScenarioConfirm(
+                        message='Conversation scenario with the same prompt already exists.',
+                        scenario_id=equal_scenario_id,
+                    )
 
         # Create conversation scenario
         new_conversation_scenario = ConversationScenario(
@@ -314,6 +338,40 @@ class ConversationScenarioService:
             if not category:
                 raise HTTPException(status_code=404, detail='Category not found')
             return category
+        return None
+
+    def _get_scenarios_by_category_language_difficulty(
+        self,
+        user_id: UUID,
+        category_id: str | None,
+        language_code: LanguageCode,
+        difficulty_level: DifficultyLevel,
+    ) -> Sequence[ConversationScenario]:
+        """
+        Retrieve all conversation scenarios for a given user and category.
+        """
+        statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
+        if category_id:
+            statement = statement.where(
+                ConversationScenario.category_id == category_id,
+                ConversationScenario.language_code == language_code,
+                ConversationScenario.difficulty_level == difficulty_level,
+            )
+        return self.db.exec(statement).all()
+
+    def _get_equal_scenario(
+        self, scenarios: Sequence[ConversationScenario], new_scenario: ConversationScenarioCreate
+    ) -> UUID | None:
+        """
+        Check if there are any existing scenarios with the same prompt as the new scenario.
+        """
+        for scenario in scenarios:
+            if scenario.persona.replace(' ', '') == new_scenario.persona.replace(
+                ' ', ''
+            ) and scenario.situational_facts.replace(
+                ' ', ''
+            ) == new_scenario.situational_facts.replace(' ', ''):
+                return scenario.id
         return None
 
     def _start_preparation_task(

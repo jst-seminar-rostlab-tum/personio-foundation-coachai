@@ -7,10 +7,10 @@ from app.schemas.conversation_scenario import (
 )
 from app.schemas.message_schema import MessageCreateSchema, MessageSchema
 from app.schemas.review import (
-    PaginatedReviewsResponse,
+    PaginatedReviewRead,
+    ReviewConfirm,
     ReviewCreate,
     ReviewRead,
-    ReviewResponse,
     ReviewStatistics,
 )
 from app.schemas.scenario_preparation import (
@@ -62,7 +62,7 @@ from app.schemas.user_profile import (
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
-    UserStatisticsRead,
+    UserStatistics,
 )
 
 __all__ = [
@@ -75,9 +75,9 @@ __all__ = [
     'ConversationScenarioCreate',
     'ReviewCreate',
     'ReviewRead',
-    'ReviewResponse',
+    'ReviewConfirm',
     'ReviewStatistics',
-    'PaginatedReviewsResponse',
+    'PaginatedReviewRead',
     'ChecklistCreate',
     'ConversationScenarioAIPromptRead',
     'KeyConcept',
@@ -107,7 +107,7 @@ __all__ = [
     'UserProfileReplace',
     'UserProfileRead',
     'UserProfileExtendedRead',
-    'UserStatisticsRead',
+    'UserStatistics',
     'ExportConfidenceScore',
     'ExportConversationScenario',
     'ExportReview',
