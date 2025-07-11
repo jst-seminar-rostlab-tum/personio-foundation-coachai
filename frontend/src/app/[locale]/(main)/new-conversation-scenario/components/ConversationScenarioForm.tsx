@@ -176,7 +176,7 @@ export default function ConversationScenarioForm({
   } else if (selectedCategoryKey) {
     contextValue = t(`categories.${selectedCategoryKey}.defaultContextLong`);
   }
-  const contextClass = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md bg-white px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${contextMode === 'custom' ? '' : 'text-bw-40 cursor-not-allowed'} resize-none overflow-auto`;
+  const contextClass = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md bg-white px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${contextMode === 'custom' ? '' : 'text-bw-60 cursor-not-allowed'} resize-none overflow-auto`;
 
   return (
     <div className="pb-8">
