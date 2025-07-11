@@ -12,7 +12,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/utils/toast';
-import { formattedDate } from '@/lib/utils/formatDateAndTime';
+import { formattedDateTime } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
 import AudioPlayer from './AudioPlayer';
 import FeedbackQuote from './FeedbackQuote';
@@ -95,18 +95,18 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
 
   return (
     <div className="flex flex-col items-center gap-12">
-      <div className="text-2xl font-bold text-bw-90 text-left mb-4 w-full">{t('title')}</div>
-      <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
-        <div className="text-lg text-marigold-90">{feedbackDetail?.title}</div>
-        <div className="text-base text-marigold-95">
-          {formattedDate(feedbackDetail?.createdAt, locale)}
+      <div className="flex flex-col gap-8 w-full">
+        <div className="text-2xl font-bold text-bw-90 text-left w-full">{t('title')}</div>
+        <div className="bg-marigold-10 p-8 flex flex-col gap-1 rounded-lg text-center w-full">
+          <div className="font-semibold text-2xl text-marigold-90">{feedbackDetail?.title}</div>
+          <div className="text-marigold-90">
+            {formattedDateTime(feedbackDetail?.createdAt, locale)}
+          </div>
         </div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-12 max-w-5xl items-center w-full justify-between">
         <DonutChart
-          goalsAchieved={feedbackDetail?.feedback?.goalsAchieved.length ?? 0}
-          goalsTotal={feedbackDetail?.goalsTotal.length ?? 0}
           label={t('stats.goalsAchieved')}
           totalScore={
             (feedbackDetail?.feedback?.scores.structure ?? 0) +

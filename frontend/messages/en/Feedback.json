@@ -1,7 +1,7 @@
 {
   "metaTitle": "Feedback - Coach AI",
   "metaDescription": "Detailed analysis and evaluation of your training session",
-  "title": "Performance Summary",
+  "title": "Evaluation",
   "reviewDialog": {
     "description": "How was the training session? Help us improve by providing your review.",
     "shareWithAdmin": "Share session with an admin for improvement.",
