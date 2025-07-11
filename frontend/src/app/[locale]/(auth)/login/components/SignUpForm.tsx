@@ -96,12 +96,12 @@ export function SignUpForm() {
         values.phone_number
       );
       if (emailExists) {
-        setError(tLogin('emailAlreadyExistsError'));
+        setError(tLogin('SignUpTab.emailAlreadyExistsError'));
         setIsLoading(false);
         return;
       }
       if (phoneExists) {
-        setError(tLogin('phoneAlreadyExistsError'));
+        setError(tLogin('SignUpTab.phoneAlreadyExistsError'));
         setIsLoading(false);
         return;
       }
