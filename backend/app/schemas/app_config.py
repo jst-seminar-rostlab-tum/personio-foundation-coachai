@@ -1,4 +1,4 @@
-from app.models.app_config import ConfigType
+from app.enums.config_type import ConfigType
 from app.models.camel_case import CamelModel
 
 
