@@ -35,8 +35,6 @@ export default async function DashboardPage() {
   const { sessions } = sessionsData.data;
   const locale = await getLocale();
 
-  const showConversationScenarioSuggestion = true;
-
   return (
     <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
@@ -52,13 +50,11 @@ export default async function DashboardPage() {
         </Link>
       </section>
 
-      {showConversationScenarioSuggestion && (
-        <ConversationScenarioSuggestion
-          suggestion="I see that you had a performance feedback talk recently, where you could have
+      <ConversationScenarioSuggestion
+        suggestion="I see that you had a performance feedback talk recently, where you could have
         given more concrete action points. I would suggest you to train giving concrete
         action points."
-        ></ConversationScenarioSuggestion>
-      )}
+      ></ConversationScenarioSuggestion>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard value={userStats.totalSessions} label={tCommon('totalSessions')} />

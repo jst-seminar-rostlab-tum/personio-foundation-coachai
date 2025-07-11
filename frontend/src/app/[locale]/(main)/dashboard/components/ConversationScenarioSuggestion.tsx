@@ -16,7 +16,7 @@ export default async function ConversationScenarioSuggestion({
       <div className="flex items-center gap-4">
         <Image src="/images/owl.svg" alt="Owl" width={100} height={100} />
         <div className="relative p-4 max-w-lg break-words border rounded-lg border-bw-10 bg-bw-10">
-          <span className="block whitespace-pre-line text-lg">&quot;{suggestion}&quot;</span>
+          <span className="block whitespace-pre-line text-lg">{suggestion}</span>
           <Button variant={'secondary'} className="mt-4">
             {t('startButton')}
           </Button>
