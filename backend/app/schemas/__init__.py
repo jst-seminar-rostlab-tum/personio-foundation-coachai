@@ -3,10 +3,10 @@ from app.schemas.app_config import AppConfigCreate, AppConfigRead
 from app.schemas.conversation_category import ConversationCategoryRead
 from app.schemas.conversation_scenario import ConversationScenarioCreate
 from app.schemas.review import (
-    PaginatedReviewsResponse,
+    PaginatedReviewRead,
+    ReviewConfirm,
     ReviewCreate,
     ReviewRead,
-    ReviewResponse,
     ReviewStatistics,
 )
 from app.schemas.scenario_preparation import (
@@ -59,7 +59,7 @@ from app.schemas.user_profile import (
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
-    UserStatisticsRead,
+    UserStatistics,
 )
 
 __all__ = [
@@ -70,9 +70,9 @@ __all__ = [
     'ConversationScenarioCreate',
     'ReviewCreate',
     'ReviewRead',
-    'ReviewResponse',
+    'ReviewConfirm',
     'ReviewStatistics',
-    'PaginatedReviewsResponse',
+    'PaginatedReviewRead',
     'ChecklistRequest',
     'ConversationScenarioBase',
     'KeyConcept',
@@ -102,7 +102,7 @@ __all__ = [
     'UserProfileReplace',
     'UserProfileRead',
     'UserProfileExtendedRead',
-    'UserStatisticsRead',
+    'UserStatistics',
     'ExportConfidenceScore',
     'ExportConversationScenario',
     'ExportReview',
