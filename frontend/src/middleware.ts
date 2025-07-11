@@ -2,12 +2,16 @@ import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { authMiddleware } from '@/lib/supabase/middleware';
 import routing from '@/i18n/routing';
+import {
+  API_URL,
+  BASE_URL,
+  DEV_MODE_SKIP_AUTH,
+  IS_DEVELOPMENT,
+  STAGING_URL,
+  SUPABASE_URL,
+} from './lib/connector';
 
-const allowedOrigins = [
-  'https://coachai-personio-foundation.vercel.app',
-  'https://coachai-dev-personio-foundation.vercel.app',
-  'http://localhost:3000',
-];
+const allowedOrigins = [BASE_URL, STAGING_URL, 'http://localhost:3000'];
 
 const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -34,11 +38,10 @@ export default async function middleware(request: NextRequest) {
   }
 
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
-  const isDev = process.env.NODE_ENV !== 'production';
   const cspHeader = `
     default-src 'self';
-    connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL} ${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'} https://api.openai.com;
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? 'unsafe-eval' : ''};
+    connect-src 'self' ${SUPABASE_URL} ${API_URL} https://api.openai.com;
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${IS_DEVELOPMENT ? 'unsafe-eval' : ''};
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data:;
     frame-src 'self' https://vercel.live;
@@ -61,10 +64,7 @@ export default async function middleware(request: NextRequest) {
   Object.entries(corsHeaders).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
-  if (
-    process.env.NODE_ENV === 'development' &&
-    process.env.NEXT_PUBLIC_DEV_MODE_SKIP_AUTH === 'true'
-  ) {
+  if (IS_DEVELOPMENT && DEV_MODE_SKIP_AUTH) {
     return response;
   }
   return authMiddleware(request, response);
