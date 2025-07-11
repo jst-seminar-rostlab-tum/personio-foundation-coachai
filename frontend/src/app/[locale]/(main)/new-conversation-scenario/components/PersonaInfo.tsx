@@ -104,8 +104,7 @@ export function PersonaInfo({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [traitsText, focusText, personalityText, contextMode]);
 
-  const lockedClasses =
-    'border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus:outline-none focus:ring-2 focus:ring-bw-40 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
+  const lockedClasses = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md bg-white px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${contextMode === 'custom' ? '' : 'text-bw-60 cursor-not-allowed'} resize-none overflow-auto`;
 
   if (!selectedPersona || selectedPersona.trim() === '' || !selectedPersonaData.traits.length) {
     return null;
