@@ -15,10 +15,10 @@ from app.data import (
     get_dummy_conversation_scenarios,
     get_dummy_user_profiles,
 )
-from app.dependencies import get_db_session, require_user
+from app.dependencies import JWTPayload, get_db_session, verify_jwt
 from app.models import Session, SessionStatus, UserProfile
 from app.models.review import Review
-from app.schemas import PaginatedReviewsResponse, ReviewCreate
+from app.schemas import PaginatedReviewRead, ReviewCreate
 from app.services.review_service import ReviewService
 
 
@@ -70,7 +70,7 @@ class TestReviewService(unittest.TestCase):
         self.service = ReviewService(self.db)
 
         # Override the require_user dependency to return the mocked user
-        self.app.dependency_overrides[require_user] = lambda: self.normal_user
+        self.app.dependency_overrides[verify_jwt] = lambda: JWTPayload(sub=self.normal_user.id.hex)
 
         # Initialize the test client
         self.client = TestClient(self.app)
@@ -322,7 +322,7 @@ class TestReviewService(unittest.TestCase):
         self._create_multiple_dummy_reviews(self.normal_user, 1, 2)
         self._create_multiple_dummy_reviews(self.normal_user, 1, 1)
         reviews = self.service.get_reviews(page=1, page_size=3, sort='newest', limit=None)
-        self.assertIsInstance(reviews, PaginatedReviewsResponse)
+        self.assertIsInstance(reviews, PaginatedReviewRead)
         self.assertEqual(len(reviews.reviews), 3)
         self.assertTrue(
             all(
