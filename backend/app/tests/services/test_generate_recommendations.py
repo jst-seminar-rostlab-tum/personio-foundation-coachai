@@ -2,7 +2,7 @@ import os
 import unittest
 
 from app.models.language import LanguageCode
-from app.schemas.session_feedback import FeedbackRequest, RecommendationsCollection
+from app.schemas.session_feedback import FeedbackCreate, RecommendationsRead
 from app.services.session_feedback.session_feedback_llm import generate_recommendations
 
 
@@ -18,7 +18,7 @@ class TestGenerateRecommendations(unittest.TestCase):
         )
         self.language_code = LanguageCode.en
 
-    def print_recommendations_stats(self, tag: str, result: RecommendationsCollection) -> None:
+    def print_recommendations_stats(self, tag: str, result: RecommendationsRead) -> None:
         print(
             f'[{tag}] num={len(result.recommendations)} '
             f'recommendations={[rec.heading for rec in result.recommendations]}'
@@ -26,7 +26,7 @@ class TestGenerateRecommendations(unittest.TestCase):
 
     def test_no_recommendations_for_empty_or_assistant_only(self) -> None:
         for transcript in ['', 'Assistant: Please follow the instructions.']:
-            req = FeedbackRequest(
+            req = FeedbackCreate(
                 transcript=transcript,
                 objectives=self.base_objectives,
                 key_concepts='Feedback process, Communication essentials',
@@ -52,7 +52,7 @@ class TestGenerateRecommendations(unittest.TestCase):
             'User: You did well, but you need to improve your punctuality.\n'
             'User: Sometimes your work is late, but overall good job.'
         )
-        req = FeedbackRequest(
+        req = FeedbackCreate(
             transcript=transcript,
             objectives=self.base_objectives,
             key_concepts='Constructive feedback, Punctuality, Positive reinforcement',
@@ -71,7 +71,7 @@ class TestGenerateRecommendations(unittest.TestCase):
             'User: I want to show more empathy in my feedback.\n'
             'User: I will try to be clearer next time.'
         )
-        req = FeedbackRequest(
+        req = FeedbackCreate(
             transcript=transcript,
             objectives=self.base_objectives,
             key_concepts='Empathy, Clarity, Feedback improvement',
@@ -93,7 +93,7 @@ class TestGenerateRecommendations(unittest.TestCase):
 
     def test_maximum_number_of_recommendations(self) -> None:
         transcript = '\n'.join([f'User: Issue {i}' for i in range(20)])
-        req = FeedbackRequest(
+        req = FeedbackCreate(
             transcript=transcript,
             objectives=self.base_objectives,
             key_concepts='Prioritization, Focus, Actionable feedback',

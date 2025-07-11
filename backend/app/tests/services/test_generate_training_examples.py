@@ -4,14 +4,14 @@ import string
 import unittest
 
 from app.models.language import LanguageCode
-from app.schemas.session_feedback import FeedbackRequest, SessionExamplesCollection
+from app.schemas.session_feedback import FeedbackCreate, SessionExamplesRead
 from app.services.session_feedback.session_feedback_llm import generate_training_examples
 
 
 @unittest.skipUnless(os.environ.get('RUN_AI_TESTS') == 'true', 'AI test not enabled')
 class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
     def setUp(self) -> None:
-        self.base_feedback_request = FeedbackRequest(
+        self.base_feedback_request = FeedbackCreate(
             transcript='',
             objectives=['Improve communication skills', 'Build good relationships'],
             category='Feedback',
@@ -24,7 +24,7 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
     def remove_punctuation(self, text: str) -> str:
         return text.translate(str.maketrans('', '', string.punctuation))
 
-    def print_example_stats(self, tag: str, result: SessionExamplesCollection) -> None:
+    def print_example_stats(self, tag: str, result: SessionExamplesRead) -> None:
         print(
             f'[{tag}] pos={len(result.positive_examples)} neg={len(result.negative_examples)} '
             f'pos_quotes={[ex.quote for ex in result.positive_examples]} '

@@ -61,7 +61,7 @@ def generate_training_examples(
     if not request.transcript or not any(
         line.strip().startswith('User:') for line in request.transcript.splitlines()
     ):
-        return SessionExamplesCollection(positive_examples=[], negative_examples=[])
+        return SessionExamplesRead(positive_examples=[], negative_examples=[])
 
     lang = request.language_code
     settings = config.root[lang]
@@ -110,7 +110,7 @@ def get_achieved_goals(
     if not request.transcript or not any(
         line.strip().startswith('User:') for line in request.transcript.splitlines()
     ):
-        return GoalsAchievedCollection(goals_achieved=[])
+        return GoalsAchievedRead(goals_achieved=[])
 
     user_prompt = build_goals_achieved_prompt(
         transcript=request.transcript,
@@ -136,7 +136,7 @@ def generate_recommendations(
     if not request.transcript or not any(
         line.strip().startswith('User:') for line in request.transcript.splitlines()
     ):
-        return RecommendationsCollection(recommendations=[])
+        return RecommendationsRead(recommendations=[])
     lang = request.language_code
     settings = config.root[lang]
 
