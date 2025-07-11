@@ -6,7 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from app.connections.gcs_client import get_gcs_audio_manager, get_gcs_docs_manager
 from app.dependencies import require_user
 
-router = APIRouter(prefix='/signed-url', tags=['Signed URLs'], dependencies=[Depends(require_user)])
+router = APIRouter(
+    prefix='/signed-urls', tags=['Signed URLs'], dependencies=[Depends(require_user)]
+)
 
 
 @router.get(

@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 from pathlib import Path
 from typing import BinaryIO, Literal
@@ -114,3 +115,14 @@ class GCSManager:
         blob_name = f'{self.prefix}{filename}'
         blob = self.bucket.blob(blob_name)
         return blob.exists(self.client)
+
+    def delete_document(self, filename: str) -> None:
+        """
+        Delete a single document (blob) from GCS under the current prefix.
+        """
+        blob_name = f'{self.prefix}{filename}'
+        blob = self.bucket.blob(blob_name)
+        if blob.exists(self.client):
+            blob.delete()
+        else:
+            logging.warning(f'Blob does not exist: {blob_name}')
