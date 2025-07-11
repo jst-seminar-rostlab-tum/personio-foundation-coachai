@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
 from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
@@ -27,6 +27,7 @@ def get_session_turn_service(
 @router.post('', response_model=SessionTurnRead)
 async def create_session_turn(
     service: Annotated[SessionTurnService, Depends(get_session_turn_service)],
+    background_tasks: BackgroundTasks,
     session_id: UUID = Form(...),  # noqa: B008
     speaker: SpeakerEnum = Form(...),  # noqa: B008
     start_offset_ms: int = Form(...),  # noqa: B008
@@ -43,4 +44,4 @@ async def create_session_turn(
         text=text,
     )
 
-    return await service.create_session_turn(turn, audio_file)
+    return await service.create_session_turn(turn, audio_file, background_tasks)

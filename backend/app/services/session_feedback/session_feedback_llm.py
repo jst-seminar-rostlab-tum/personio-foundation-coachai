@@ -4,7 +4,7 @@ from functools import lru_cache
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.connections.openai_client import call_structured_llm
+from app.connections.vertexai_client import call_structured_llm
 from app.models.language import LanguageCode
 from app.schemas.session_feedback import (
     FeedbackRequest,
@@ -19,6 +19,7 @@ from app.services.session_feedback.session_feedback_prompt_templates import (
     build_recommendations_prompt,
     build_training_examples_prompt,
 )
+from app.services.utils import normalize_quotes
 
 
 @lru_cache
@@ -57,6 +58,11 @@ def safe_generate_recommendations(
 def generate_training_examples(
     request: FeedbackRequest, hr_docs_context: str = ''
 ) -> SessionExamplesCollection:
+    if not request.transcript or not any(
+        line.strip().startswith('User:') for line in request.transcript.splitlines()
+    ):
+        return SessionExamplesCollection(positive_examples=[], negative_examples=[])
+
     lang = request.language_code
     settings = config.root[lang]
 
@@ -76,10 +82,17 @@ def generate_training_examples(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=SessionExamplesCollection,
         mock_response=mock_response,
     )
+
+    # Normalize all quote fields to ensure consistent output
+    for ex in response.positive_examples:
+        ex.quote = normalize_quotes(ex.quote)
+    for ex in response.negative_examples:
+        ex.quote = normalize_quotes(ex.quote)
+        if hasattr(ex, 'improved_quote') and ex.improved_quote:
+            ex.improved_quote = normalize_quotes(ex.improved_quote)
 
     return response
 
@@ -102,7 +115,6 @@ def get_achieved_goals(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=GoalsAchievedCollection,
         mock_response=mock_response,
     )
@@ -132,7 +144,6 @@ def generate_recommendations(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
         output_model=RecommendationsCollection,
         mock_response=mock_response,
     )
