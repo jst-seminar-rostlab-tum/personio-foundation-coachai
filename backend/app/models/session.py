@@ -43,7 +43,6 @@ class Session(CamelModel, table=True):
         back_populates='session', cascade_delete=True
     )
     session_review: Optional['Review'] = Relationship(back_populates='session', cascade_delete=True)
-    # Automatically update `updated_at` before an update
 
 
 @event.listens_for(Session, 'before_update')

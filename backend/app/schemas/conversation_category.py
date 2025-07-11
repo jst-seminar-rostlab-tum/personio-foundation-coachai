@@ -6,7 +6,7 @@ from app.models.language import LanguageCode
 
 # Schema for reading ConversationCategory data
 class ConversationCategoryRead(CamelModel):
-    id: str  # Changed from UUID to str
+    id: str
     name: str
     is_custom: bool
     language_code: LanguageCode

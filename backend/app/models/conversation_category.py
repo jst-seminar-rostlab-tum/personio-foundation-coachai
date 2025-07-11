@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
 
 
-class ConversationCategory(CamelModel, table=True):  # `table=True` makes it a database table
-    id: str = Field(primary_key=True)  # Changed from UUID to str
+class ConversationCategory(CamelModel, table=True):
+    id: str = Field(primary_key=True)
     name: str = Field(unique=True)
     initial_prompt: str = Field(default='')
     is_custom: bool = Field(default=False)

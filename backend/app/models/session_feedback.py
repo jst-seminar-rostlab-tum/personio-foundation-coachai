@@ -20,7 +20,7 @@ class FeedbackStatusEnum(str, Enum):
     failed = 'failed'
 
 
-class SessionFeedback(CamelModel, table=True):  # `table=True` makes it a database table
+class SessionFeedback(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     session_id: UUID = Field(foreign_key='session.id', ondelete='CASCADE')
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
@@ -42,8 +42,6 @@ class SessionFeedback(CamelModel, table=True):  # `table=True` makes it a databa
 
     # Relationships
     session: Optional['Session'] = Relationship(back_populates='feedback')
-
-    # Automatically update `updated_at` before an update
 
 
 @event.listens_for(SessionFeedback, 'before_update')
