@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     DEFAULT_MODEL: str = 'gemini-2.5-pro'
 
     DEV_MODE_SKIP_AUTH: bool = True
-    DEV_MODE_MOCK_ADMIN_ID: UUID = MockUserIdsEnum.USER.value
+    DEV_MODE_MOCK_ADMIN_ID: UUID = MockUserIdsEnum.ADMIN.value
 
     DEMO_USER_EMAIL: str = 'mockuser@example.com'
     DEMO_USER_PASSWORD: str = 'mockuserpassword'
