@@ -54,7 +54,7 @@ export default async function DashboardPage() {
         suggestion="I see that you had a performance feedback talk recently, where you could have
         given more concrete action points. I would suggest you to train giving concrete
         action points."
-      ></ConversationScenarioSuggestion>
+      />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard value={userStats.totalSessions} label={tCommon('totalSessions')} />
