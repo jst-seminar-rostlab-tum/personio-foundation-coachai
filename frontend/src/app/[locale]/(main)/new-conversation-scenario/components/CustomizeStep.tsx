@@ -7,6 +7,7 @@ import { PersonaInfo } from './PersonaInfo';
 interface CustomizeStepProps {
   difficulty: string;
   selectedPersona: string;
+  contextMode: 'default' | 'custom';
   onDifficultyChange: (difficulty: string) => void;
   onPersonaSelect: (persona: Persona) => void;
   onPersonaDescriptionChange: (description: string) => void;
@@ -15,6 +16,7 @@ interface CustomizeStepProps {
 export function CustomizeStep({
   difficulty,
   selectedPersona,
+  contextMode,
   onDifficultyChange,
   onPersonaSelect,
   onPersonaDescriptionChange,
@@ -55,6 +57,7 @@ export function CustomizeStep({
       <PersonaInfo
         selectedPersona={selectedPersona}
         personas={personas}
+        contextMode={contextMode}
         onPersonaDescriptionChange={onPersonaDescriptionChange}
       />
 

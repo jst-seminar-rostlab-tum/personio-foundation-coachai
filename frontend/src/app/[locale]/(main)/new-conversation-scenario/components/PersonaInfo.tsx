@@ -1,22 +1,22 @@
 import { useTranslations } from 'next-intl';
 import { Persona } from '@/interfaces/models/ConversationScenario';
 import { useEffect, useState, useCallback } from 'react';
-import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 
 interface PersonaInfoProps {
   selectedPersona: string;
   personas: Persona[];
+  contextMode: 'default' | 'custom';
   onPersonaDescriptionChange: (description: string) => void;
 }
 
 export function PersonaInfo({
   selectedPersona,
   personas,
+  contextMode,
   onPersonaDescriptionChange,
 }: PersonaInfoProps) {
   const t = useTranslations('ConversationScenario.customize.persona');
   const tAbout = useTranslations('ConversationScenario.customize.persona.about');
-  const { contextMode } = useConversationScenarioStore();
 
   const getPersonaData = (personaId: string) => {
     if (!personaId || personaId.trim() === '')

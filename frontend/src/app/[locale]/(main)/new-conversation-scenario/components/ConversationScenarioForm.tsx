@@ -73,8 +73,6 @@ export default function ConversationScenarioForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [categories, setCategories] = useState<ConversationCategory[]>(Categories());
-  const { contextMode, setContextMode, customContext, setCustomContext } =
-    useConversationScenarioStore();
 
   const contextModes = [
     {
@@ -109,33 +107,19 @@ export default function ConversationScenarioForm({
 
   useEffect(() => {
     if (defaultContextLong) {
-      // Do not overwrite customContext
       updateForm({ situationalFacts: defaultContextLong });
-      setCustomContext(defaultContextLong);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formState.category, contextMode, defaultContextLong]);
-
-  useEffect(() => {
-    if (contextMode === 'custom') {
-      updateForm({ situationalFacts: customContext });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contextMode, customContext]);
+  }, [formState.category, formState.contextMode, defaultContextLong]);
 
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 0:
-        return !!contextMode;
+        return !!formState.contextMode;
       case 1:
         return !!formState.category && !!formState.situationalFacts;
       case 2:
-        return (
-          !!formState.difficulty &&
-          !!formState.persona &&
-          ((contextMode === 'custom' && !!customContext) ||
-            (contextMode === 'default' && !!defaultContextLong))
-        );
+        return !!formState.difficulty && !!formState.persona;
       default:
         return false;
     }
@@ -170,13 +154,7 @@ export default function ConversationScenarioForm({
     }
   };
 
-  let contextValue = '';
-  if (contextMode === 'custom') {
-    contextValue = customContext;
-  } else if (selectedCategoryKey) {
-    contextValue = t(`categories.${selectedCategoryKey}.defaultContextLong`);
-  }
-  const contextClass = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md bg-white px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${contextMode === 'custom' ? '' : 'text-bw-60 cursor-not-allowed'} resize-none overflow-auto`;
+  const contextClass = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md bg-white px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${formState.contextMode === 'custom' ? '' : 'text-bw-60 cursor-not-allowed'} resize-none overflow-auto`;
 
   return (
     <div className="pb-8">
@@ -198,10 +176,10 @@ export default function ConversationScenarioForm({
             {contextModes.map((option) => (
               <ContextCardButton
                 key={option.value}
-                selected={contextMode === option.value}
+                selected={formState.contextMode === option.value}
                 label={option.label}
                 subtitle={option.subtitle}
-                onClick={() => setContextMode(option.value as 'default' | 'custom')}
+                onClick={() => updateForm({ contextMode: option.value as 'default' | 'custom' })}
               />
             ))}
           </div>
@@ -216,8 +194,7 @@ export default function ConversationScenarioForm({
               updateForm({
                 category: category.id,
                 name: category.name,
-                situationalFacts: contextMode === 'default' ? defaultContextLong : customContext,
-                isCustom: category.isCustom || false,
+                situationalFacts: formState.situationalFacts,
               })
             }
             categories={categories}
@@ -226,19 +203,18 @@ export default function ConversationScenarioForm({
             <div className="mb-4 font-medium text-xl">{t('selectContext')}</div>
             <textarea
               className={contextClass}
-              value={contextValue}
+              value={formState.situationalFacts}
               onChange={
-                contextMode === 'custom'
+                formState.contextMode === 'custom'
                   ? (e) => {
-                      setCustomContext(e.target.value);
                       updateForm({ situationalFacts: e.target.value });
                     }
                   : undefined
               }
               placeholder={t('situation.context.placeholder')}
               rows={16}
-              readOnly={contextMode !== 'custom'}
-              disabled={contextMode !== 'custom'}
+              readOnly={formState.contextMode !== 'custom'}
+              disabled={formState.contextMode !== 'custom'}
             />
           </div>
         </>
@@ -250,6 +226,7 @@ export default function ConversationScenarioForm({
           <CustomizeStep
             difficulty={formState.difficulty}
             selectedPersona={formState.persona}
+            contextMode={formState.contextMode}
             onDifficultyChange={(val) => updateForm({ difficulty: val })}
             onPersonaSelect={(persona: Persona) => updateForm({ persona: persona.id })}
             onPersonaDescriptionChange={(description: string) =>
