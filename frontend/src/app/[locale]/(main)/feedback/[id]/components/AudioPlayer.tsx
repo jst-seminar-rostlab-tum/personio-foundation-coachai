@@ -24,7 +24,6 @@ export default function AudioPlayer({
   const [isDragging, setIsDragging] = useState(false);
   const wasPlayingBeforeDrag = useRef(false);
 
-  // Sync play/pause with audio element
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -35,7 +34,6 @@ export default function AudioPlayer({
     }
   }, [isPlaying]);
 
-  // Sync currentTime with audio element
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -44,7 +42,6 @@ export default function AudioPlayer({
     }
   }, [currentTime]);
 
-  // Update currentTime and totalTime from audio element
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return undefined;
@@ -68,7 +65,6 @@ export default function AudioPlayer({
     };
   }, [setCurrentTime, setIsPlaying]);
 
-  // Pause audio when dragging slider, resume if needed
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -83,10 +79,8 @@ export default function AudioPlayer({
     }
   }, [isDragging, isPlaying, setIsPlaying]);
 
-  // Keyboard shortcuts: right arrow = fast-forward, left arrow = rewind, space = play/pause
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Avoid interfering with input fields
       if (
         (e.target as HTMLElement)?.tagName === 'INPUT' ||
         (e.target as HTMLElement)?.tagName === 'TEXTAREA'
@@ -131,30 +125,34 @@ export default function AudioPlayer({
           <span>{formatTime(totalTime)}</span>
         </div>
         <div className="flex items-center justify-center gap-8 w-full">
-          <RotateCcwIcon
-            className="w-6 h-6 md:w-8 md:h-8 cursor-pointer stroke-bw-40"
-            strokeWidth={2}
+          <button
+            type="button"
+            className="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-colors duration-300 hover:bg-bw-10"
             onClick={() => setCurrentTime(Math.max(0, currentTime - 10))}
             aria-label="Rewind 10 seconds"
-          />
+          >
+            <RotateCcwIcon className="w-6 h-6 stroke-bw-40" strokeWidth={2} />
+          </button>
           <button
-            className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-marigold-40 flex items-center justify-center shadow-md"
+            className="w-12 h-12 rounded-full bg-marigold-40 flex items-center justify-center cursor-pointer transition-colors duration-300 hover:bg-marigold-50"
             onClick={() => setIsPlaying(!isPlaying)}
             aria-label={isPlaying ? 'Pause' : 'Play'}
             type="button"
           >
             {isPlaying ? (
-              <PauseIcon className="w-6 h-6 md:w-8 md:h-8" fill="white" color="white" />
+              <PauseIcon className="w-6 h-6" fill="white" color="white" />
             ) : (
-              <PlayIcon className="w-6 h-6 md:w-8 md:h-8" fill="white" color="white" />
+              <PlayIcon className="w-6 h-6" fill="white" color="white" />
             )}
           </button>
-          <RotateCwIcon
-            className="w-6 h-6 md:w-8 md:h-8 cursor-pointer stroke-bw-40"
-            strokeWidth={2}
+          <button
+            type="button"
+            className="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer transition-colors duration-300 hover:bg-bw-10"
             onClick={() => setCurrentTime(Math.min(totalTime, currentTime + 10))}
             aria-label="Fast forward 10 seconds"
-          />
+          >
+            <RotateCwIcon className="w-6 h-6 stroke-bw-40" strokeWidth={2} />
+          </button>
         </div>
       </div>
     </div>

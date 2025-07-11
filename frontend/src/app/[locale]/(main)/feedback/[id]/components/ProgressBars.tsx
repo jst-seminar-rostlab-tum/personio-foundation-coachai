@@ -6,10 +6,14 @@ function AnimatedProgressBar({ label, value }: { label: string; value: number })
   useEffect(() => {
     setAnimatedValue(0);
     if (value > 0) {
-      const current = 0;
       const interval = setInterval(() => {
-        setAnimatedValue(current + 1);
-        if (current >= value) clearInterval(interval);
+        setAnimatedValue((prev) => {
+          if (prev + 1 >= value) {
+            clearInterval(interval);
+            return value;
+          }
+          return prev + 1;
+        });
       }, 400);
       return () => clearInterval(interval);
     }

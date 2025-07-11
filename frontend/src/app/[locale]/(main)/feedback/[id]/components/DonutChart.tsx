@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 
 interface DonutChartProps {
   percent: number;
@@ -13,18 +13,17 @@ const normalizedRadius = radius;
 const circumference = 2 * Math.PI * normalizedRadius;
 
 export default function DonutChart({ percent, goalsAchieved, goalsTotal, label }: DonutChartProps) {
-  const [animatedPercent, setAnimatedPercent] = React.useState(0);
-  const [animatedNumber, setAnimatedNumber] = React.useState(0);
+  const [animatedPercent, setAnimatedPercent] = useState(0);
+  const [animatedNumber, setAnimatedNumber] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const duration = 1000;
     const startValue = Math.max(percent - 10, 0);
     let chartStart = 0;
     let numberStart = 0;
-    // Ease-in-out cubic function
-    function easeInOutCubic(t: number) {
-      return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
-    }
+
+    const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+
     function animateChartFill(now: number) {
       if (!chartStart) chartStart = now;
       const elapsed = now - chartStart;
@@ -48,7 +47,6 @@ export default function DonutChart({ percent, goalsAchieved, goalsTotal, label }
     setAnimatedNumber(startValue);
     requestAnimationFrame(animateChartFill);
     requestAnimationFrame(animateNumber);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [percent]);
 
   const offset = circumference * (1 - animatedPercent / 100);

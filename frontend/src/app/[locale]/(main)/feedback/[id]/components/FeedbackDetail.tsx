@@ -77,7 +77,6 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
       : `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Audio player state
   const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlayingState] = useState(false);
   const setIsPlaying = useCallback((val: boolean | ((prev: boolean) => boolean)) => {
@@ -104,7 +103,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-12 px-4 items-center w-full justify-between">
+      <div className="flex flex-col md:flex-row gap-12 max-w-5xl items-center w-full justify-between">
         <DonutChart
           percent={feedbackDetail?.feedback?.overallScore ?? 0}
           goalsAchieved={feedbackDetail?.feedback?.goalsAchieved.length ?? 0}
@@ -114,7 +113,6 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         <ProgressBars data={progressBarData} />
       </div>
 
-      {/* Replay Conversation */}
       <AudioPlayer
         currentTime={currentTime}
         setCurrentTime={setCurrentTime}
