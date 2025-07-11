@@ -17,6 +17,7 @@ from app.schemas.conversation_scenario import (
 from app.schemas.session_feedback import (
     FeedbackRequest,
     GoalsAchievedCollection,
+    GoalsAchievementRequest,
     NegativeExample,
     PositiveExample,
     Recommendation,
@@ -403,6 +404,76 @@ class TestSessionFeedbackService(unittest.TestCase):
             feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4}
         )
         self.assertEqual(feedback.overall_score, 4.0)
+
+    def test_generate_training_examples_with_audio(self) -> None:
+        from app.services.session_feedback import session_feedback_llm
+
+        dummy_audio_url = 'https://dummy-audio-url'
+        dummy_json = '{"positive_examples": [], "negative_examples": []}'
+        req = FeedbackRequest(
+            transcript='User: Hello',
+            objectives=['Obj1'],
+            persona='P',
+            situational_facts='S',
+            category='C',
+            key_concepts='K',
+        )
+        with patch.object(
+            session_feedback_llm, 'call_llm_with_audio', return_value=dummy_json
+        ) as mock_audio:
+            result = session_feedback_llm.generate_training_examples(
+                req, hr_docs_context='', audio_url=dummy_audio_url
+            )
+            mock_audio.assert_called_once()
+            self.assertEqual(mock_audio.call_args.kwargs['audio_uri'], dummy_audio_url)
+            self.assertTrue(hasattr(result, 'positive_examples'))
+            self.assertTrue(hasattr(result, 'negative_examples'))
+
+    def test_generate_recommendations_with_audio(self) -> None:
+        from app.services.session_feedback import session_feedback_llm
+
+        dummy_audio_url = 'https://dummy-audio-url'
+        dummy_json = '{"recommendations": [{"heading": "h", "recommendation": "r"}]}'
+        req = FeedbackRequest(
+            transcript='User: Hello',
+            objectives=['Obj1'],
+            persona='P',
+            situational_facts='S',
+            category='C',
+            key_concepts='K',
+        )
+        with patch.object(
+            session_feedback_llm, 'call_llm_with_audio', return_value=dummy_json
+        ) as mock_audio:
+            result = session_feedback_llm.generate_recommendations(
+                req, hr_docs_context='', audio_url=dummy_audio_url
+            )
+            mock_audio.assert_called_once()
+            self.assertEqual(mock_audio.call_args.kwargs['audio_uri'], dummy_audio_url)
+            self.assertTrue(hasattr(result, 'recommendations'))
+            self.assertEqual(result.recommendations[0].heading, 'h')
+            self.assertEqual(result.recommendations[0].recommendation, 'r')
+
+    def test_get_achieved_goals_with_audio(self) -> None:
+        from app.services.session_feedback import session_feedback_llm
+
+        dummy_audio_url = 'https://dummy-audio-url'
+        dummy_json = '{"goals_achieved": ["G1", "G2"]}'
+        req = GoalsAchievementRequest(
+            transcript='User: Hello',
+            objectives=['Obj1'],
+            language_code=LanguageCode.en,
+        )
+        with patch.object(
+            session_feedback_llm, 'call_llm_with_audio', return_value=dummy_json
+        ) as mock_audio:
+            result = session_feedback_llm.get_achieved_goals(
+                req, hr_docs_context='', audio_url=dummy_audio_url
+            )
+            mock_audio.assert_called_once()
+            self.assertEqual(mock_audio.call_args.kwargs['audio_uri'], dummy_audio_url)
+            self.assertTrue(hasattr(result, 'goals_achieved'))
+            self.assertEqual(result.goals_achieved, ['G1', 'G2'])
 
 
 if __name__ == '__main__':

@@ -3,7 +3,6 @@ import logging
 from datetime import UTC, datetime
 from typing import Optional
 from uuid import UUID, uuid4
-import uuid
 
 from fastapi import HTTPException
 from pydantic import Field
@@ -92,6 +91,7 @@ class FeedbackGenerationResult(CamelModel):
     has_error: bool = False
     full_audio_filename: str = ''
     document_names: list[str] = Field(default_factory=list)
+    audio_url: str | None = None
 
 
 def generate_feedback_components(
@@ -115,15 +115,25 @@ def generate_feedback_components(
     output_blob_name: str | None = ''
     audio_signed_url: str | None = None
 
-
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        future_examples = executor.submit(
-            safe_generate_training_examples, feedback_request, hr_docs_context
-        )
-        future_goals = executor.submit(safe_get_achieved_goals, goals_request, hr_docs_context)
-        future_recommendations = executor.submit(
-            safe_generate_recommendations, feedback_request, hr_docs_context
-        )
+        if audio_signed_url is not None:
+            future_examples = executor.submit(
+                safe_generate_training_examples, feedback_request, hr_docs_context, audio_signed_url
+            )
+            future_goals = executor.submit(
+                safe_get_achieved_goals, goals_request, hr_docs_context, audio_signed_url
+            )
+            future_recommendations = executor.submit(
+                safe_generate_recommendations, feedback_request, hr_docs_context, audio_signed_url
+            )
+        else:
+            future_examples = executor.submit(
+                safe_generate_training_examples, feedback_request, hr_docs_context
+            )
+            future_goals = executor.submit(safe_get_achieved_goals, goals_request, hr_docs_context)
+            future_recommendations = executor.submit(
+                safe_generate_recommendations, feedback_request, hr_docs_context
+            )
         future_scoring = executor.submit(scoring_service.safe_score_conversation, conversation)
         future_audio_stitch = executor.submit(
             session_turn_service.stitch_mp3s_from_gcs,
@@ -131,20 +141,6 @@ def generate_feedback_components(
             f'{session_id}.mp3',
         )
 
-        try:
-            output_blob_name = future_audio_stitch.result()
-            if output_blob_name:
-                gcs = get_gcs_audio_manager()
-                if gcs:
-                    try:
-                        audio_signed_url = gcs.generate_signed_url(output_blob_name)
-                    except Exception as e:
-                        logging.warning(f'Failed to generate signed url for audio: {e}')
-        except Exception as e:
-            has_error = True
-            logging.warning('Failed to call Audio Stitching: %s', e)
-
-        # 其余 LLM 调用需传 audio_signed_url
         try:
             examples: SessionExamplesCollection = future_examples.result()
             examples_positive = examples.positive_examples
@@ -176,6 +172,21 @@ def generate_feedback_components(
             scores_json = {}
             overall_score = 0.0
 
+        try:
+            output_blob_name = future_audio_stitch.result()
+            # 新增：生成签名 URL
+            if output_blob_name:
+                gcs = get_gcs_audio_manager()
+                if gcs:
+                    try:
+                        audio_signed_url = gcs.generate_signed_url(output_blob_name)
+                    except Exception as e:
+                        logging.warning(f'Failed to generate signed url for audio: {e}')
+        except Exception as e:
+            has_error = True
+            logging.warning('Failed to call Audio Stitching: %s', e)
+
+    # 新增：将 audio_signed_url 传递给 FeedbackGenerationResult
     return FeedbackGenerationResult(
         examples_positive=examples_positive,
         examples_negative=examples_negative,
@@ -186,6 +197,7 @@ def generate_feedback_components(
         full_audio_filename=output_blob_name or '',
         document_names=document_names,
         has_error=has_error,
+        audio_url=audio_signed_url,  # 新增
     )
 
 

@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.connections.openai_client import call_structured_llm
+from app.connections.vertexai_client import call_structured_llm
 from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
 from app.schemas.scoring_schema import ScoringResult
 from app.services.utils import normalize_quotes
@@ -35,6 +35,7 @@ class ScoringService:
             f'{json.dumps(self.rubric, indent=2)}'
             '\n\n'
             "You MUST act as if the Assistant's utterances do not exist at all. Only the User's utterances are relevant for scoring. If you mention or consider the Assistant in your justification, that is a mistake.\n"
+            "Please also take into account the user's vocal emotion, tone, and expressive style in your evaluation if audio is provided.（请结合语音的情感、语气、表达风格进行评价。）"
         )
         return system_prompt
 
@@ -64,19 +65,23 @@ class ScoringService:
     def score_conversation(
         self,
         conversation: ConversationScenarioWithTranscript,
-        model: str = 'o4-mini-2025-04-16',
         temperature: float = 0.0,
+        audio_url: Optional[str] = None,
     ) -> ScoringResult:
         user_prompt = self._build_user_prompt(conversation)
         system_prompt = self._build_system_prompt()
 
-        response = call_structured_llm(
-            request_prompt=user_prompt,
-            system_prompt=system_prompt,
-            model=model,
-            output_model=ScoringResult,
-            temperature=temperature,
-        )
+        try:
+            response = call_structured_llm(
+                request_prompt=user_prompt,
+                system_prompt=system_prompt,
+                max_tokens=1000,
+                output_model=ScoringResult,
+                temperature=temperature,
+                audio_uri=audio_url,
+            )
+        except Exception:
+            raise
 
         # Recalculate the overall score based on the rubric
         response.scoring.scores = [
