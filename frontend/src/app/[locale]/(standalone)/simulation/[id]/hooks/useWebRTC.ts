@@ -58,7 +58,8 @@ export function useWebRTC(sessionId: string) {
     setConnectionStatus(ConnectionStatus.Disconnected);
     hasInitializedRef.current = false;
     stopTimer();
-  }, [stopStream, stopLocalRecording, stopRemoteRecording, stopTimer]);
+    stopGetLiveFeedbackInterval();
+  }, [stopStream, stopLocalRecording, stopRemoteRecording, stopTimer, stopGetLiveFeedbackInterval]);
 
   const initWebRTC = useCallback(async () => {
     if (hasInitializedRef.current) return;
@@ -103,11 +104,9 @@ export function useWebRTC(sessionId: string) {
     dc.onclose = () => {
       setConnectionStatus(ConnectionStatus.Closed);
       cleanup();
-      stopGetLiveFeedbackInterval();
     };
     dc.onerror = () => {
       setConnectionStatus(ConnectionStatus.Failed);
-      stopGetLiveFeedbackInterval();
       cleanup();
     };
 
@@ -226,7 +225,6 @@ export function useWebRTC(sessionId: string) {
     addEndOffsetMsToTurn,
     cleanup,
     startGetLiveFeedbackInterval,
-    stopGetLiveFeedbackInterval,
     t,
   ]);
 
