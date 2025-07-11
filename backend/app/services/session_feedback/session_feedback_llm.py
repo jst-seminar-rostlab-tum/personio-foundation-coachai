@@ -83,6 +83,7 @@ def generate_training_examples(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         output_model=SessionExamplesCollection,
+        temperature=0.0,
         mock_response=mock_response,
     )
 
@@ -121,6 +122,7 @@ def get_achieved_goals(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         output_model=GoalsAchievedCollection,
+        temperature=0.0,
         mock_response=mock_response,
     )
 
@@ -155,6 +157,7 @@ def generate_recommendations(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         output_model=RecommendationsCollection,
+        temperature=0.0,
         mock_response=mock_response,
     )
 
