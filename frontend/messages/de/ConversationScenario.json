@@ -160,8 +160,8 @@
     "context": {
       "default": "Standardkontext",
       "custom": "Individueller Kontext",
-      "defaultSubtitle": "Empfohlener Kontext für dieses Szenario.",
-      "customSubtitle": "Eigenen Kontext für dieses Training eingeben."
+      "defaultSubtitle": "Aus vordefinierten Szenarien und Personas auswählen",
+      "customSubtitle": "Passen Sie die Szenario und Persona nach Ihren Wünschen an."
     }
   },
   "categories": {

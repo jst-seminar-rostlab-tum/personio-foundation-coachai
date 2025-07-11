@@ -165,8 +165,8 @@
     "context": {
       "default": "Default Context",
       "custom": "Custom Context",
-      "defaultSubtitle": "Use the recommended context for this scenario.",
-      "customSubtitle": "Write your own context for this training."
+      "defaultSubtitle": "Choose from pre-set scenarios and personas",
+      "customSubtitle": "Customize the scenario and persona pre-sets to your liking."
     }
   },
   "categories": {
