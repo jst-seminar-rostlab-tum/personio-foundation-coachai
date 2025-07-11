@@ -5,7 +5,6 @@ from app.schemas.conversation_scenario import (
     ConversationScenarioAIPromptRead,
     ConversationScenarioCreate,
 )
-from app.schemas.message_schema import MessageCreateSchema, MessageSchema
 from app.schemas.review import (
     PaginatedReviewRead,
     ReviewConfirm,
@@ -30,15 +29,15 @@ from app.schemas.session import (
     SessionUpdate,
 )
 from app.schemas.session_feedback import (
-    FeedbackRequest,
-    GoalsAchievedCollection,
-    GoalsAchievementRequest,
+    FeedbackCreate,
+    GoalsAchievedCreate,
+    GoalsAchievedRead,
     NegativeExample,
     PositiveExample,
     Recommendation,
-    RecommendationsCollection,
-    SessionExamplesCollection,
-    SessionFeedbackMetrics,
+    RecommendationsRead,
+    SessionExamplesRead,
+    SessionFeedbackRead,
 )
 from app.schemas.session_turn import (
     SessionTurnCreate,
@@ -66,8 +65,6 @@ from app.schemas.user_profile import (
 )
 
 __all__ = [
-    'MessageSchema',
-    'MessageCreateSchema',
     'AdminDashboardStatsRead',
     'AppConfigCreate',
     'AppConfigRead',
@@ -87,15 +84,15 @@ __all__ = [
     'ScenarioPreparationCreate',
     'ScenarioPreparationRead',
     'StringListRead',
-    'FeedbackRequest',
-    'GoalsAchievedCollection',
-    'GoalsAchievementRequest',
+    'FeedbackCreate',
+    'GoalsAchievedRead',
+    'GoalsAchievedCreate',
     'NegativeExample',
     'PositiveExample',
     'Recommendation',
-    'RecommendationsCollection',
-    'SessionExamplesCollection',
-    'SessionFeedbackMetrics',
+    'RecommendationsRead',
+    'SessionExamplesRead',
+    'SessionFeedbackRead',
     'SessionTurnCreate',
     'SessionTurnRead',
     'SessionCreate',

@@ -1,7 +1,6 @@
 import concurrent.futures
 import logging
 from datetime import UTC, datetime
-from typing import Optional
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
@@ -20,14 +19,14 @@ from app.schemas.conversation_scenario import (
     ConversationScenarioRead,
 )
 from app.schemas.session_feedback import (
-    FeedbackRequest,
-    GoalsAchievedCollection,
-    GoalsAchievementRequest,
+    FeedbackCreate,
+    GoalsAchievedCreate,
+    GoalsAchievedRead,
     NegativeExample,
     PositiveExample,
     Recommendation,
-    RecommendationsCollection,
-    SessionExamplesCollection,
+    RecommendationsRead,
+    SessionExamplesRead,
 )
 from app.schemas.session_turn import SessionTurnRead
 from app.services.scoring_service import ScoringService, get_scoring_service
@@ -41,15 +40,15 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 
 def prepare_feedback_requests(
-    example_request: FeedbackRequest,
-) -> tuple[GoalsAchievementRequest, FeedbackRequest]:
+    example_request: FeedbackCreate,
+) -> tuple[GoalsAchievedCreate, FeedbackCreate]:
     """Prepare all feedback-related request objects."""
-    goals_request = GoalsAchievementRequest(
+    goals_request = GoalsAchievedCreate(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         language_code=example_request.language_code,
     )
-    recommendations_request = FeedbackRequest(
+    recommendations_request = FeedbackCreate(
         category=example_request.category,
         persona=example_request.persona,
         situational_facts=example_request.situational_facts,
@@ -62,7 +61,7 @@ def prepare_feedback_requests(
 
 
 def get_hr_docs_context(
-    recommendations_request: FeedbackRequest,
+    recommendations_request: FeedbackCreate,
 ) -> tuple[str, list[str]]:
     """Generate HR docs context using the vector DB."""
     return query_vector_db_and_prompt(
@@ -81,9 +80,7 @@ def get_hr_docs_context(
 class FeedbackGenerationResult(CamelModel):
     examples_positive: list[PositiveExample] = Field(default_factory=list)
     examples_negative: list[NegativeExample] = Field(default_factory=list)
-    goals: GoalsAchievedCollection = Field(
-        default_factory=lambda: GoalsAchievedCollection(goals_achieved=[])
-    )
+    goals: GoalsAchievedRead = Field(default_factory=lambda: GoalsAchievedRead(goals_achieved=[]))
     recommendations: list[Recommendation] = Field(default_factory=list)
     scores_json: dict[str, float] = Field(default_factory=dict)
     overall_score: float = 0.0
@@ -93,8 +90,8 @@ class FeedbackGenerationResult(CamelModel):
 
 
 def generate_feedback_components(
-    feedback_request: FeedbackRequest,
-    goals_request: GoalsAchievementRequest,
+    feedback_request: FeedbackCreate,
+    goals_request: GoalsAchievedCreate,
     hr_docs_context: str,
     document_names: list[str],
     conversation: ConversationScenarioRead,
@@ -105,7 +102,7 @@ def generate_feedback_components(
     """Run all feedback-related generation in parallel."""
     examples_positive: list[PositiveExample] = []
     examples_negative: list[NegativeExample] = []
-    goals: GoalsAchievedCollection = GoalsAchievedCollection(goals_achieved=[])
+    goals: GoalsAchievedRead = GoalsAchievedRead(goals_achieved=[])
     recommendations: list[Recommendation] = []
     scores_json: dict[str, float] = {}
     overall_score: float = 0.0
@@ -128,7 +125,7 @@ def generate_feedback_components(
         )
 
         try:
-            examples: SessionExamplesCollection = future_examples.result()
+            examples: SessionExamplesRead = future_examples.result()
             examples_positive = examples.positive_examples
             examples_negative = examples.negative_examples
         except Exception as e:
@@ -142,7 +139,7 @@ def generate_feedback_components(
             logging.warning('Failed to generate goals: %s', e)
 
         try:
-            recs: RecommendationsCollection = future_recommendations.result()
+            recs: RecommendationsRead = future_recommendations.result()
             recommendations = recs.recommendations
         except Exception as e:
             has_error = True
@@ -179,8 +176,8 @@ def generate_feedback_components(
 
 def update_statistics(
     db_session: 'DBSession',
-    conversation: Optional[ConversationScenarioRead],
-    goals: GoalsAchievedCollection,
+    conversation: ConversationScenarioRead | None,
+    goals: GoalsAchievedRead,
     overall_score: float,
     has_error: bool,
 ) -> FeedbackStatusEnum:
@@ -268,10 +265,10 @@ def get_conversation_data(db_session: DBSession, session_id: UUID) -> Conversati
 
 def generate_and_store_feedback(
     session_id: UUID,
-    feedback_request: FeedbackRequest,
+    feedback_request: FeedbackCreate,
     db_session: DBSession,
-    scoring_service: Optional[ScoringService] = None,
-    session_turn_service: Optional[SessionTurnService] = None,
+    scoring_service: ScoringService | None = None,
+    session_turn_service: SessionTurnService | None = None,
 ) -> SessionFeedback:
     """
     Generates feedback for a given session, stores it in the database, and returns the resulting
