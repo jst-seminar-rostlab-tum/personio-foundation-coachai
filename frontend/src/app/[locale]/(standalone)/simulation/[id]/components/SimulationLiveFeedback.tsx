@@ -28,7 +28,6 @@ export default function SimulationLiveFeedback({ liveFeedbacks }: SimulationLive
           </span>
         </div>
       </div>
-
       <div
         className={`w-full overflow-hidden transition-all duration-600 ease-in-out ${
           showSuggestions ? 'max-h-[45vh]' : 'max-h-0'
