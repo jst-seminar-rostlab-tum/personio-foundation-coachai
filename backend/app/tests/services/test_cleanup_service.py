@@ -74,15 +74,15 @@ def test_cleanup_old_session_turns(db: DBSession, gcs_manager: GCSManager) -> No
     db.add(new_turn)
     db.commit()
 
-    # Run cleanup
-    cleanup_old_session_turns(db)
-    db.commit()
+    old_turn_id = old_turn.id
+    new_turn_id = new_turn.id
 
-    # Assert
-    assert db.get(SessionTurn, old_turn.id) is None, (
-        'The record from 91 days ago should be deleted.'
-    )
-    assert db.get(SessionTurn, new_turn.id) is not None, 'The record from today should be kept.'
+    with patch('app.services.cleanup_service.get_gcs_audio_manager', return_value=gcs_manager):
+        cleanup_old_session_turns(db)
+        db.commit()
+
+    assert db.get(SessionTurn, old_turn_id) is None
+    assert db.get(SessionTurn, new_turn_id) is not None
 
 
 def test_cleanup_old_session_turns_gcs(db: DBSession, gcs_manager: GCSManager) -> None:
