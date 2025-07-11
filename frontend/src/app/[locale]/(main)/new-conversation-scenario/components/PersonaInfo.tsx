@@ -1,14 +1,19 @@
 import { useTranslations } from 'next-intl';
-import { Persona } from '@/interfaces/Persona';
-import { useState } from 'react';
+import { Persona } from '@/interfaces/models/ConversationScenario';
+import { useEffect, useState, useCallback } from 'react';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 
 interface PersonaInfoProps {
   selectedPersona: string;
   personas: Persona[];
+  onPersonaDescriptionChange: (description: string) => void;
 }
 
-export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
+export function PersonaInfo({
+  selectedPersona,
+  personas,
+  onPersonaDescriptionChange,
+}: PersonaInfoProps) {
   const t = useTranslations('ConversationScenario.customize.persona');
   const tAbout = useTranslations('ConversationScenario.customize.persona.about');
   const { contextMode } = useConversationScenarioStore();
@@ -29,30 +34,80 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
   const selectedPersonaData: { traits: string[]; trainingFocus: string[]; personality?: string } =
     getPersonaData(selectedPersona);
   const personaName = personas.find((p) => p.id === selectedPersona)?.name || selectedPersona;
-  const [traitsText, setTraitsText] = useState(selectedPersonaData.traits.join('\n'));
-  const [focusText, setFocusText] = useState(selectedPersonaData.trainingFocus.join('\n'));
-  const [personalityText, setPersonalityText] = useState(
-    renderBullets(selectedPersonaData?.personality || personaName)
-  );
 
-  // Shared style for locked/disabled state (matches context Textarea)
-  const lockedClasses =
-    'border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content h-[120px] w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus:outline-none focus:ring-2 focus:ring-bw-40 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
-
-  // Helper to render bullet points for locked fields
-  function renderBullets(textOrArray: string[] | string | undefined) {
+  // Helper to render bullet points for fields
+  const renderBullets = useCallback((textOrArray: string[] | string | undefined) => {
     if (Array.isArray(textOrArray)) {
       return textOrArray.map((item) => `• ${item}`).join('\n');
     }
     if (typeof textOrArray === 'string') {
-      // Split comma-separated string for personality
       return textOrArray
         .split(',')
         .map((s) => `• ${s.trim()}`)
         .join('\n');
     }
     return '';
-  }
+  }, []);
+
+  const [traitsText, setTraitsText] = useState(() => renderBullets(selectedPersonaData.traits));
+  const [focusText, setFocusText] = useState(() =>
+    renderBullets(selectedPersonaData.trainingFocus)
+  );
+  const [personalityText, setPersonalityText] = useState(() =>
+    renderBullets(selectedPersonaData?.personality || personaName)
+  );
+
+  const generateDescription = useCallback(() => {
+    let currentPersonality = '';
+    let currentTraits = '';
+    let currentFocus = '';
+
+    if (contextMode === 'default') {
+      currentPersonality = renderBullets(selectedPersonaData?.personality || personaName);
+      currentTraits = renderBullets(selectedPersonaData.traits);
+      currentFocus = renderBullets(selectedPersonaData.trainingFocus);
+    } else {
+      currentPersonality = personalityText;
+      currentTraits = traitsText;
+      currentFocus = focusText;
+    }
+
+    let newDescription = '';
+    newDescription += `${tAbout('personality')}:\n ${currentPersonality}\n\n`;
+    newDescription += `${t('behavioralTraits')}:\n ${currentTraits}\n\n`;
+    newDescription += `${t('trainingFocus')}:\n ${currentFocus}`;
+    return newDescription;
+  }, [
+    contextMode,
+    selectedPersonaData,
+    personaName,
+    personalityText,
+    traitsText,
+    focusText,
+    renderBullets,
+    tAbout,
+    t,
+  ]);
+
+  useEffect(() => {
+    setTraitsText(renderBullets(selectedPersonaData.traits));
+    setFocusText(renderBullets(selectedPersonaData.trainingFocus));
+    setPersonalityText(renderBullets(selectedPersonaData?.personality || personaName));
+
+    onPersonaDescriptionChange(generateDescription());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPersona, contextMode]);
+
+  useEffect(() => {
+    if (contextMode === 'custom') {
+      onPersonaDescriptionChange(generateDescription());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [traitsText, focusText, personalityText, contextMode]);
+
+  // Shared style for locked/disabled state (matches context Textarea)
+  const lockedClasses =
+    'border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content h-[120px] w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus:outline-none focus:ring-2 focus:ring-bw-40 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
 
   if (!selectedPersona || selectedPersona.trim() === '' || !selectedPersonaData.traits.length) {
     return null;
@@ -73,7 +128,9 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
               : personalityText
           }
           onChange={(event) => {
-            if (contextMode === 'custom') setPersonalityText(event.target.value);
+            if (contextMode === 'custom') {
+              setPersonalityText(event.target.value);
+            }
           }}
           disabled={contextMode === 'default'}
           rows={5}
@@ -89,7 +146,9 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
               contextMode === 'default' ? renderBullets(selectedPersonaData.traits) : traitsText
             }
             onChange={(event) => {
-              if (contextMode === 'custom') setTraitsText(event.target.value);
+              if (contextMode === 'custom') {
+                setTraitsText(event.target.value);
+              }
             }}
             rows={5}
             disabled={contextMode === 'default'}
@@ -105,7 +164,9 @@ export function PersonaInfo({ selectedPersona, personas }: PersonaInfoProps) {
                 : focusText
             }
             onChange={(event) => {
-              if (contextMode === 'custom') setFocusText(event.target.value);
+              if (contextMode === 'custom') {
+                setFocusText(event.target.value);
+              }
             }}
             rows={5}
             disabled={contextMode === 'default'}

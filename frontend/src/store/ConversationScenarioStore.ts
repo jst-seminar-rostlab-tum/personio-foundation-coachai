@@ -8,13 +8,11 @@ import { persist } from 'zustand/middleware';
 const initialFormState: ConversationScenarioFormState = {
   category: '',
   customCategory: '',
+  situationalFacts: '',
   name: '',
-  otherParty: '',
-  context: '',
-  goal: '',
   difficulty: '',
-  complexity: '',
   persona: '',
+  personaDescription: '',
   isCustom: false,
 };
 

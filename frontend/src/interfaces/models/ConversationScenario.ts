@@ -1,11 +1,9 @@
 export interface ConversationScenario {
   categoryId: string;
   customCategoryLabel: string;
-  context: string;
-  goal: string;
-  otherParty: string;
   difficultyLevel: string;
-  status?: string;
+  persona: string;
+  situationalFacts: string;
   languageCode: string;
 }
 
@@ -13,16 +11,20 @@ export interface ConversationCategory {
   id: string;
   name: string;
   iconUri: string;
-  defaultContext?: string;
-  defaultGoal?: string;
-  defaultOtherParty?: string;
   isCustom?: boolean;
+  defaultContext?: string;
   description?: string;
 }
 
 export interface ConversationScenarioResponse {
   message: string;
   scenarioId: string;
+}
+
+export interface Persona {
+  id: string;
+  name: string;
+  imageUri: string;
 }
 
 export type KeyConcept = {

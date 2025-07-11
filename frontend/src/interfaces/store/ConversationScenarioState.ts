@@ -1,13 +1,11 @@
 export interface ConversationScenarioFormState {
   category: string;
   customCategory: string;
+  situationalFacts: string;
   name: string;
-  otherParty: string;
-  context: string;
-  goal: string;
   difficulty: string;
-  complexity: string;
   persona: string;
+  personaDescription: string;
   isCustom: boolean;
 }
 

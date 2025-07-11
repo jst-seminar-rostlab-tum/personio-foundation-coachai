@@ -5,12 +5,12 @@ import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { Persona } from '@/interfaces/Persona';
 import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { showErrorToast } from '@/lib/utils/toast';
 import {
   ConversationScenario,
   ConversationCategory,
+  Persona,
 } from '@/interfaces/models/ConversationScenario';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { api } from '@/services/ApiClient';
@@ -100,7 +100,7 @@ export default function ConversationScenarioForm({
   useEffect(() => {
     if (contextMode === 'default' && defaultContextLong) {
       // Do not overwrite customContext
-      updateForm({ context: defaultContextLong });
+      updateForm({ situationalFacts: defaultContextLong });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formState.category, contextMode, defaultContextLong]);
@@ -108,7 +108,7 @@ export default function ConversationScenarioForm({
   // When switching to custom, restore the last customContext
   useEffect(() => {
     if (contextMode === 'custom') {
-      updateForm({ context: customContext });
+      updateForm({ situationalFacts: customContext });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextMode, customContext]);
@@ -116,16 +116,14 @@ export default function ConversationScenarioForm({
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 0:
-        return !!formState.category;
+        return !!contextMode;
       case 1:
-        return !!formState.difficulty && !!formState.persona;
+        return !!formState.category && !!formState.situationalFacts;
       case 2:
         return (
           !!formState.category &&
           !!formState.difficulty &&
           !!formState.persona &&
-          !!formState.goal &&
-          !!formState.otherParty &&
           ((contextMode === 'custom' && !!customContext) ||
             (contextMode === 'default' && !!defaultContextLong))
         );
@@ -147,17 +145,16 @@ export default function ConversationScenarioForm({
     const scenario: ConversationScenario = {
       categoryId: formState.category,
       customCategoryLabel: formState.customCategory,
-      context: contextMode === 'custom' ? customContext : defaultContextLong,
-      goal: formState.goal,
-      otherParty: formState.otherParty,
       difficultyLevel: formState.difficulty,
+      persona: formState.personaDescription,
+      situationalFacts: formState.situationalFacts,
       languageCode: locale as string,
     };
 
     try {
       const { data } = await conversationScenarioService.createConversationScenario(api, scenario);
       router.push(`/preparation/${data.scenarioId}`);
-      setTimeout(reset, 2000);
+      setTimeout(reset, 4000);
     } catch (error) {
       showErrorToast(error, t('errorMessage'));
       setIsSubmitting(false);
@@ -223,9 +220,7 @@ export default function ConversationScenarioForm({
               updateForm({
                 category: category.id,
                 name: category.name,
-                context: contextMode === 'default' ? defaultContextLong : customContext,
-                goal: category.defaultGoal || '',
-                otherParty: category.defaultOtherParty || '',
+                situationalFacts: contextMode === 'default' ? defaultContextLong : customContext,
                 isCustom: category.isCustom || false,
               })
             }
@@ -240,7 +235,7 @@ export default function ConversationScenarioForm({
                 contextMode === 'custom'
                   ? (e) => {
                       setCustomContext(e.target.value);
-                      updateForm({ context: e.target.value });
+                      updateForm({ situationalFacts: e.target.value });
                     }
                   : undefined
               }
@@ -261,6 +256,9 @@ export default function ConversationScenarioForm({
             selectedPersona={formState.persona}
             onDifficultyChange={(val) => updateForm({ difficulty: val })}
             onPersonaSelect={(persona: Persona) => updateForm({ persona: persona.id })}
+            onPersonaDescriptionChange={(description: string) =>
+              updateForm({ personaDescription: description })
+            }
           />
         </>
       )}

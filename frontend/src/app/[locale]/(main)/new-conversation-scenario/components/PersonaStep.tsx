@@ -1,7 +1,13 @@
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { PersonaStepProps } from '@/interfaces/PersonaStepProps';
+import { Persona } from '@/interfaces/models/ConversationScenario';
 import { PersonaButton } from './PersonaButton';
+
+interface PersonaStepProps {
+  selectedPersona: string;
+  onPersonaSelect: (persona: Persona) => void;
+  personas: Persona[];
+}
 
 export function PersonaStep({ selectedPersona, onPersonaSelect, personas }: PersonaStepProps) {
   const t = useTranslations('ConversationScenario.persona');

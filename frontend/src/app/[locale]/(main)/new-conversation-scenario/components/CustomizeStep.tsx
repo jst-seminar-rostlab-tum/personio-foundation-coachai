@@ -1,14 +1,23 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { CustomizeStepProps } from '@/interfaces/CustomizeStepProps';
+import { Persona } from '@/interfaces/models/ConversationScenario';
 import { PersonaButton } from './PersonaButton';
 import { PersonaInfo } from './PersonaInfo';
+
+interface CustomizeStepProps {
+  difficulty: string;
+  selectedPersona: string;
+  onDifficultyChange: (difficulty: string) => void;
+  onPersonaSelect: (persona: Persona) => void;
+  onPersonaDescriptionChange: (description: string) => void;
+}
 
 export function CustomizeStep({
   difficulty,
   selectedPersona,
   onDifficultyChange,
   onPersonaSelect,
+  onPersonaDescriptionChange,
 }: CustomizeStepProps) {
   const t = useTranslations('ConversationScenario');
 
@@ -39,7 +48,11 @@ export function CustomizeStep({
       </div>
 
       {/* Persona Information */}
-      <PersonaInfo selectedPersona={selectedPersona} personas={personas} />
+      <PersonaInfo
+        selectedPersona={selectedPersona}
+        personas={personas}
+        onPersonaDescriptionChange={onPersonaDescriptionChange}
+      />
 
       <div className="mb-4 font-medium text-xl">{t('difficultyTitle')}</div>
       <div className="mb-16 grid grid-cols-3 gap-4 w-full mx-auto">
