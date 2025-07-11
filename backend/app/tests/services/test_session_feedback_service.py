@@ -12,7 +12,7 @@ from app.models.language import LanguageCode
 from app.models.session_turn import SpeakerEnum
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
 from app.schemas.session_feedback import (
     FeedbackRequest,
@@ -43,9 +43,7 @@ class TestSessionFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    def _mock_conversation_data(
-        self, user_id: UUID | None = None
-    ) -> ConversationScenarioWithTranscript:
+    def _mock_conversation_data(self, user_id: UUID | None = None) -> ConversationScenarioRead:
         if user_id is None:
             user_id = uuid4()
         scenario = ConversationScenario(
@@ -70,7 +68,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 created_at=datetime.now(),
             )
         ]
-        return ConversationScenarioWithTranscript(scenario=scenario, transcript=transcript)
+        return ConversationScenarioRead(scenario=scenario, transcript=transcript)
 
     @patch('app.services.session_feedback.session_feedback_service.get_hr_docs_context')
     @patch('app.services.session_feedback.session_feedback_service.get_conversation_data')

@@ -1,7 +1,10 @@
 from app.schemas.admin_dashboard_stats import AdminDashboardStatsRead
 from app.schemas.app_config import AppConfigCreate, AppConfigRead
 from app.schemas.conversation_category import ConversationCategoryRead
-from app.schemas.conversation_scenario import ConversationScenarioCreate
+from app.schemas.conversation_scenario import (
+    ConversationScenarioAIPromptRead,
+    ConversationScenarioCreate,
+)
 from app.schemas.message_schema import MessageCreateSchema, MessageSchema
 from app.schemas.review import (
     PaginatedReviewRead,
@@ -11,15 +14,14 @@ from app.schemas.review import (
     ReviewStatistics,
 )
 from app.schemas.scenario_preparation import (
-    ChecklistRequest,
-    ConversationScenarioBase,
+    ChecklistCreate,
     KeyConcept,
-    KeyConceptRequest,
-    KeyConceptResponse,
-    ObjectiveRequest,
+    KeyConceptsCreate,
+    KeyConceptsRead,
+    ObjectivesCreate,
     ScenarioPreparationCreate,
     ScenarioPreparationRead,
-    StringListResponse,
+    StringListRead,
 )
 from app.schemas.session import (
     SessionCreate,
@@ -76,15 +78,15 @@ __all__ = [
     'ReviewConfirm',
     'ReviewStatistics',
     'PaginatedReviewRead',
-    'ChecklistRequest',
-    'ConversationScenarioBase',
+    'ChecklistCreate',
+    'ConversationScenarioAIPromptRead',
     'KeyConcept',
-    'KeyConceptRequest',
-    'KeyConceptResponse',
-    'ObjectiveRequest',
+    'KeyConceptsCreate',
+    'KeyConceptsRead',
+    'ObjectivesCreate',
     'ScenarioPreparationCreate',
     'ScenarioPreparationRead',
-    'StringListResponse',
+    'StringListRead',
     'FeedbackRequest',
     'GoalsAchievedCollection',
     'GoalsAchievementRequest',
