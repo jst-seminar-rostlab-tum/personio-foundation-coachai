@@ -22,13 +22,17 @@ router = APIRouter(
 def get_docs_signed_url(
     filename: str = Query(..., min_length=1, description='Name of the document file'),
 ) -> dict:
+    bucket_name = None
+    prefix = None
     try:
         gcs = get_gcs_docs_manager()
+        bucket_name = gcs.bucket_name
+        prefix = gcs.prefix
         url = gcs.generate_signed_url(filename)
     except FileNotFoundError as file_not_found_error:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail=(f"Document '{filename}' not found in bucket '{gcs.bucket_name}/{gcs.prefix}'"),
+            detail=(f"Document '{filename}' not found in bucket '{bucket_name}/{prefix}'"),
         ) from file_not_found_error
     except Exception as exception:
         logging.exception('Error generating signed URL for docs')
@@ -50,15 +54,17 @@ def get_docs_signed_url(
 def get_audio_signed_url(
     filename: str = Query(..., min_length=1, description='Name of the audio file'),
 ) -> dict:
+    bucket_name = None
+    prefix = None
     try:
         gcs = get_gcs_audio_manager()
+        bucket_name = gcs.bucket_name
+        prefix = gcs.prefix
         url = gcs.generate_signed_url(filename)
     except FileNotFoundError as file_not_found_error:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail=(
-                f"Audio file '{filename}' not found in bucket '{gcs.bucket_name}/{gcs.prefix}'"
-            ),
+            detail=(f"Audio file '{filename}' not found in bucket '{bucket_name}/{prefix}'"),
         ) from file_not_found_error
     except Exception as exception:
         logging.exception('Error generating signed URL for audio')

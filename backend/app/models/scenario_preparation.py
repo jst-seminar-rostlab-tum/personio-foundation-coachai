@@ -28,8 +28,6 @@ class ScenarioPreparation(CamelModel, table=True):
     # Relationships
     scenario: Optional['ConversationScenario'] = Relationship(back_populates='preparation')
 
-    # Automatically update `updated_at` before an update
-
 
 @event.listens_for(ScenarioPreparation, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioPreparation') -> None:

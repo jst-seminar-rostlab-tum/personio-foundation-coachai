@@ -57,7 +57,6 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     # TODO: Add performance_over_time and skills_performance
 
 
-# Automatically update `updated_at` before an update
 @event.listens_for(UserProfile, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfile') -> None:
     target.updated_at = datetime.now(UTC)
