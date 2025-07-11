@@ -268,6 +268,25 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
         self.assertIsInstance(result, type(generate_training_examples(self.base_feedback_request)))
         self.print_example_stats('very_short_transcript_handling', result)
 
+    def test_generate_training_examples_with_various_audios(self) -> None:
+        from app.connections.gcs_client import get_gcs_audio_manager
+        audio_files = [
+            "standard.mp3",
+            "playful.mp3",
+            "excited.mp3",
+            "strong_expressive.mp3"
+        ]
+        request = self.base_feedback_request.model_copy()
+        request.transcript = 'User: Hello'
+        for audio_file in audio_files:
+            audio_url = get_gcs_audio_manager().generate_signed_url(audio_file)
+            print(f"\n==== Testing with audio: {audio_file} ====")
+            try:
+                result = generate_training_examples(request, audio_url=audio_url)
+                print(result.model_dump_json(indent=2))
+            except Exception as e:
+                print(f"Error with {audio_file}: {e}")
+
 
 if __name__ == '__main__':
     unittest.main()
