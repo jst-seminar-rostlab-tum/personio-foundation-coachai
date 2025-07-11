@@ -10,7 +10,7 @@ from app.models.language import LanguageCode
 from app.models.session_turn import SpeakerEnum
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
 from app.schemas.session_turn import SessionTurnRead
 from app.services.scoring_service import scoring_service
@@ -58,7 +58,7 @@ class TestSessionFeedbackAI(unittest.TestCase):
                 created_at=datetime.now(),
             ),
         ]
-        conversation = ConversationScenarioWithTranscript(
+        conversation = ConversationScenarioRead(
             scenario=scenario,
             transcript=transcript,
         )
