@@ -64,7 +64,7 @@ export default async function DashboardPage() {
           <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
         </div>
         {!sessions || sessions.length === 0 ? (
-          <EmptyListComponent itemType={tCommon('emptyList.sessions')} />
+          <EmptyListComponent itemType={tCommon('sessions')} />
         ) : (
           <>
             {sessions.map((session: SessionFromPagination) => (
