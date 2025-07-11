@@ -6,11 +6,16 @@
   "tryAgain": "Erneut versuchen",
   "cancel": "Abbrechen",
   "confirm": "Bestätigen",
+  "sessions": "Sitzungen",
   "emptyList": {
-    "title": "Noch keine {itemType}",
-    "description": "Ihre {itemType} werden hier in Zukunft erscheinen!",
-    "sessions": "Sitzungen",
-    "reviews": "Bewertungen"
+    "title": "Noch keine {itemType} vorhanden!",
+    "description": "Hier werden Ihre {itemType} angezeigt, sobald sie verfügbar sind."
+  },
+  "resources": {
+    "title": "Ressourcen",
+    "subtitle": "Hilfreiche Materialien zum Herunterladen, um Ihr Wissen zu vertiefen.",
+    "noResources": "Keine Ressourcen für dieses Szenario verfügbar.",
+    "downloadError": "Fehler beim Herunterladen der Ressource. Bitte versuchen Sie es erneut."
   },
   "saving": "Speichern...",
   "save": "Speichern",
@@ -23,7 +28,6 @@
   "avgScore": "Durchschnittliche Bewertung",
   "reviews": "Bewertungen",
   "delete": "Löschen",
-  "export": "Exportieren",
   "genericError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
   "back": "Zurück",
   "next": "Weiter",

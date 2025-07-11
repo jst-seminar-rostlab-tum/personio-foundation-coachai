@@ -4,7 +4,7 @@
   "dashboardTitle": "Admin-Dashboard",
   "dashboardSubtitle": "Nutzer analysieren und verwalten",
   "statActiveUsers": "Aktive Nutzer",
-  "tokensPerUserLabel": "Tokens pro Benutzer und Tag",
+  "tokensPerUserLabel": "Sitzungen pro Benutzer und Tag",
   "userManagement": "Benutzerverwaltung",
   "trainingCategories": "Trainingskategorien",
   "trainingScenarios": "Trainingsszenarien",
