@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from app.models.language import LanguageCode
+from app.enums.language import LanguageCode
 from app.schemas.session_feedback import GoalsAchievedCollection, GoalsAchievementRequest
 from app.services.session_feedback.session_feedback_llm import get_achieved_goals
 

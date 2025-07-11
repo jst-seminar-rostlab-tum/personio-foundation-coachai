@@ -7,9 +7,9 @@ from sqlmodel import func, select
 
 from app.database import get_db_session
 from app.enums.account_role import AccountRole
+from app.enums.language import LanguageCode
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario, DifficultyLevel
-from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
 from app.models.session_feedback import FeedbackStatus, SessionFeedback
