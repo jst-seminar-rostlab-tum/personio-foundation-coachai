@@ -2,7 +2,7 @@ import os
 import unittest
 
 from app.models.language import LanguageCode
-from app.schemas.session_feedback import GoalsAchievedCollection, GoalsAchievementRequest
+from app.schemas.session_feedback import GoalsAchievedCreate, GoalsAchievedRead
 from app.services.session_feedback.session_feedback_llm import get_achieved_goals
 
 
@@ -16,7 +16,7 @@ class TestGetAchievedGoals(unittest.TestCase):
         ]
         self.language_code = LanguageCode.en
 
-    def print_goals_stats(self, tag: str, result: GoalsAchievedCollection) -> None:
+    def print_goals_stats(self, tag: str, result: GoalsAchievedRead) -> None:
         print(
             f'[{tag}] achieved={len(result.goals_achieved)} goals_achieved={result.goals_achieved}'
         )
@@ -26,7 +26,7 @@ class TestGetAchievedGoals(unittest.TestCase):
             'User: I want to make sure we are clear about the next steps.\n'
             "User: Let's keep this professional."
         )
-        req = GoalsAchievementRequest(
+        req = GoalsAchievedCreate(
             transcript=transcript,
             objectives=self.base_objectives,
             language_code=self.language_code,
@@ -39,7 +39,7 @@ class TestGetAchievedGoals(unittest.TestCase):
         )
 
     def test_no_goals_achieved_if_none_addressed(self) -> None:
-        req = GoalsAchievementRequest(
+        req = GoalsAchievedCreate(
             transcript='User: Hello, how are you?\nUser: Nice weather today!',
             objectives=['Provide feedback', 'Set clear goals'],
             language_code=self.language_code,
@@ -54,7 +54,7 @@ class TestGetAchievedGoals(unittest.TestCase):
             "User: Let's keep this professional.\n"
             'User: Please share your thoughts.'
         )
-        req = GoalsAchievementRequest(
+        req = GoalsAchievedCreate(
             transcript=transcript,
             objectives=self.base_objectives,
             language_code=self.language_code,
@@ -64,7 +64,7 @@ class TestGetAchievedGoals(unittest.TestCase):
         self.assertSetEqual(set(result.goals_achieved), set(self.base_objectives))
 
     def test_partial_achievement_subset(self) -> None:
-        req = GoalsAchievementRequest(
+        req = GoalsAchievedCreate(
             transcript="User: Let's keep this professional.",
             objectives=self.base_objectives,
             language_code=self.language_code,
@@ -75,7 +75,7 @@ class TestGetAchievedGoals(unittest.TestCase):
 
     def test_only_assistant_or_empty_transcript(self) -> None:
         for transcript in ['Assistant: Please share your thoughts.', '']:
-            req = GoalsAchievementRequest(
+            req = GoalsAchievedCreate(
                 transcript=transcript,
                 objectives=self.base_objectives,
                 language_code=self.language_code,
