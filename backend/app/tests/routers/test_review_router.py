@@ -11,9 +11,10 @@ from sqlmodel import SQLModel, create_engine
 
 from app.data.dummy_data import get_dummy_conversation_categories, get_dummy_conversation_scenarios
 from app.dependencies import get_db_session, require_user
+from app.enums.account_role import AccountRole
+from app.enums.session_status import SessionStatus
 from app.main import app
-from app.models import Session, SessionStatus, UserProfile
-from app.models.user_profile import AccountRole
+from app.models import Session, UserProfile
 
 
 class TestReviewRoute(unittest.TestCase):

@@ -1,8 +1,8 @@
 from datetime import datetime
 from uuid import UUID
 
+from app.enums.session_status import SessionStatus
 from app.models.camel_case import CamelModel
-from app.models.session import SessionStatus
 
 
 class SkillScores(CamelModel):
@@ -23,7 +23,7 @@ class SessionItem(CamelModel):
     allow_admin_access: bool = False
 
 
-class PaginatedSessionsResponse(CamelModel):
+class PaginatedSessionRead(CamelModel):
     page: int
     limit: int
     total_pages: int

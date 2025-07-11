@@ -7,7 +7,8 @@ from sqlalchemy import create_engine
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel
 
-from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
+from app.enums.scenario_preparation_status import ScenarioPreparationStatus
+from app.models.scenario_preparation import ScenarioPreparation
 from app.schemas.scenario_preparation import KeyConcept, ScenarioPreparationCreate
 from app.services.scenario_preparation.scenario_preparation_service import (
     create_pending_preparation,
