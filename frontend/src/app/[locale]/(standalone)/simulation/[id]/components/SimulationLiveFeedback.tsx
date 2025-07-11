@@ -28,13 +28,22 @@ export default function SimulationLiveFeedback({ liveFeedbacks }: SimulationLive
           </span>
         </div>
       </div>
+
       <div
         className={`w-full overflow-hidden transition-all duration-600 ease-in-out ${
-          showSuggestions ? 'h-[45vh] max-h-[45vh]' : 'h-0 max-h-0'
+          showSuggestions ? 'max-h-[45vh]' : 'max-h-0'
         }`}
       >
         <div className="w-full">
-          <div className="w-full max-w-7xl mx-auto flex flex-col overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] p-6 h-full px-[clamp(1.25rem,4vw,4rem)]">
+          <div
+            className="w-full max-w-7xl mx-auto flex flex-col overflow-y-auto 
+            [&::-webkit-scrollbar]:hidden 
+            [-ms-overflow-style:'none'] 
+            [scrollbar-width:'none'] 
+            p-6 
+            px-[clamp(1.25rem,4vw,4rem)] 
+            h-[45vh]"
+          >
             <ul className="flex flex-col gap-4 w-full">
               {liveFeedbacks.map((liveFeedback, idx) => (
                 <li key={idx} className="bg-background-light rounded-lg border border-bw-20 p-4">
