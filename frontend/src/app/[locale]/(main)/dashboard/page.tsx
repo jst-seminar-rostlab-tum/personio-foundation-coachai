@@ -1,18 +1,22 @@
 import Link from 'next/link';
-import { ArrowRightIcon, Plus } from 'lucide-react';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { Plus } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { Button } from '@/components/ui/Button';
-import { sessionService } from '@/services/SessionService';
 import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
-import EmptyListComponent from '@/components/common/EmptyListComponent';
-import { SessionFromPagination } from '@/interfaces/models/Session';
-import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiServer';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/Table';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -22,19 +26,12 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 export default async function DashboardPage() {
   const t = await getTranslations('Dashboard');
   const tCommon = await getTranslations('Common');
-  const PAGE_SIZE = 3;
   const userProfilePromise = UserProfileService.getUserProfile(api);
   const userStatsPromise = UserProfileService.getUserStats(api);
-  const sessionsPromise = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
-  const [userProfile, userStats, sessionsData] = await Promise.all([
-    userProfilePromise,
-    userStatsPromise,
-    sessionsPromise,
-  ]);
-  const { sessions } = sessionsData.data;
-  const locale = await getLocale();
+  const [userProfile, userStats] = await Promise.all([userProfilePromise, userStatsPromise]);
+
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-16">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         <p className="text-2xl text-center md:text-left">
           {t('header.greeting')}
@@ -58,40 +55,43 @@ export default async function DashboardPage() {
         <StatCard value={`${userStats.averageScore ?? 0}%`} label={tCommon('avgScore')} />
       </div>
 
-      <section className="flex flex-col gap-4">
+      <section className="flex flex-col gap-6">
         <div>
           <h2 className="text-xl">{t('recentSessions.title')}</h2>
           <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
         </div>
-        {!sessions || sessions.length === 0 ? (
-          <EmptyListComponent itemType={tCommon('sessions')} />
-        ) : (
-          <>
-            {sessions.map((session: SessionFromPagination) => (
-              <Link
-                key={session.sessionId}
-                href={`/feedback/${session.sessionId}`}
-                className="border border-bw-20 rounded-lg p-8 flex justify-between items-center gap-x-8 cursor-pointer transition-all duration-300 hover:shadow-md"
-              >
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-xl">{session.title}</h2>
-                  <p className="text-base text-bw-40">{session.summary}</p>
-                </div>
-                <div className="flex flex-col justify-center text-center min-w-max">
-                  <p className="text-base whitespace-nowrap">
-                    {formatDateFlexible(session.date, locale)}
-                  </p>
-                </div>
-              </Link>
-            ))}
-            <Link href="/history">
-              <Button size="full">
-                {t('recentSessions.showEntireHistory')}
-                <ArrowRightIcon />
-              </Button>
-            </Link>
-          </>
-        )}
+        <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Session</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Score</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Giving Feedback 101</TableCell>
+                <TableCell>2024-07-10</TableCell>
+                <TableCell>Completed</TableCell>
+                <TableCell>92%</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Conflict Resolution</TableCell>
+                <TableCell>2024-07-08</TableCell>
+                <TableCell>Completed</TableCell>
+                <TableCell>88%</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Active Listening</TableCell>
+                <TableCell>2024-07-05</TableCell>
+                <TableCell>Missed</TableCell>
+                <TableCell>-</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
       </section>
     </div>
   );
