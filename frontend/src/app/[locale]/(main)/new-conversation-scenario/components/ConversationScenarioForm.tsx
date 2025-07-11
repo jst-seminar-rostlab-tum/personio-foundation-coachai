@@ -264,7 +264,7 @@ export default function ConversationScenarioForm({
       )}
 
       <div className="fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] py-6 flex gap-4 justify-center">
+        <div className="max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] py-6 flex gap-4 justify-center shadow-2xl">
           {/* Step 0: Context - only Next */}
           {currentStep === 0 && (
             <Button
