@@ -10,11 +10,7 @@ import {
   SUPABASE_URL,
 } from './lib/connector';
 
-const allowedOrigins = [
-  BASE_URL,
-  'https://coachai-dev-personio-foundation.vercel.app',
-  'http://localhost:3000',
-];
+const allowedOrigins = [BASE_URL];
 
 const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
