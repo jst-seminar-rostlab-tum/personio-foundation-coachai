@@ -117,6 +117,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   if (isLoading) {
     return <FeedbackDetailLoadingPage />;
   }
+
   return (
     <div className="flex flex-col items-center gap-8">
       <div className="text-2xl ">{t('title')}</div>
@@ -126,7 +127,9 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
           {formattedDate(feedbackDetail?.createdAt, locale)}
         </div>
       </div>
-      <FeedbackDialog sessionId={sessionId} />
+      {!feedbackDetail?.hasReviewed && (
+        <FeedbackDialog setFeedbackDetail={setFeedbackDetail} sessionId={sessionId} />
+      )}
       <div className="flex gap-3 items-center w-full justify-between">
         <div className="flex flex-col gap-4 p-2.5 flex-1">
           {progressBarData.map((item) => (

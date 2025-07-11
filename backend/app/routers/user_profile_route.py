@@ -12,17 +12,17 @@ from app.database import get_db_session
 from app.dependencies import require_admin, require_user
 from app.models.user_profile import UserProfile
 from app.schemas.user_profile import (
-    PaginatedUserResponse,
+    PaginatedUserRead,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
-    UserStatisticsRead,
+    UserStatistics,
 )
 from app.services.user_export_service import build_user_data_export
 from app.services.user_profile_service import UserService
 
-router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
+router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
 
 
 def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserService:
@@ -31,7 +31,7 @@ def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserS
 
 @router.get(
     '',
-    response_model=PaginatedUserResponse,
+    response_model=PaginatedUserRead,
     dependencies=[Depends(require_admin)],
 )
 def get_user_profiles(
@@ -44,7 +44,7 @@ def get_user_profiles(
         min_length=1,
         max_length=100,
     ),
-) -> PaginatedUserResponse:
+) -> PaginatedUserRead:
     """
     Retrieve all user profiles.
     """
@@ -72,11 +72,11 @@ def get_user_profile(
     return service.get_user_profile_by_id(user_id=user_profile.id, detailed=detailed)
 
 
-@router.get('/stats', response_model=UserStatisticsRead)
+@router.get('/stats', response_model=UserStatistics)
 def get_user_stats(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[UserService, Depends(get_user_service)],
-) -> UserStatisticsRead:
+) -> UserStatistics:
     return service.get_user_statistics(user_id=user_profile.id)
 
 

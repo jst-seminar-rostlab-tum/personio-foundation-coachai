@@ -7,6 +7,7 @@ export interface FeedbackResponse {
   createdAt: string;
   feedback?: SessionFeedback;
   goalsTotal: string[];
+  hasReviewed: boolean;
 }
 
 export interface SessionFeedback {
