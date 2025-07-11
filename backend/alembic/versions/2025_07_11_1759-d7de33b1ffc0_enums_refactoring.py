@@ -3,7 +3,6 @@
 Revision ID: d7de33b1ffc0
 Revises: 3dfcba1ec486
 Create Date: 2025-07-11 17:59:16.821357
-
 """
 
 from collections.abc import Sequence
@@ -24,54 +23,65 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     """Upgrade schema."""
 
-    # Create new ENUM types
-    feedback_status_enum = sa.Enum('pending', 'completed', 'failed', name='feedbackstatus')
-    speaker_type_enum = sa.Enum('user', 'assistant', name='speakertype')
+    feedback_status = sa.Enum('pending', 'completed', 'failed', name='feedbackstatus')
+    speaker_type = sa.Enum('user', 'assistant', name='speakertype')
 
-    feedback_status_enum.create(op.get_bind())
-    speaker_type_enum.create(op.get_bind())
+    feedback_status.create(op.get_bind(), checkfirst=True)
+    speaker_type.create(op.get_bind(), checkfirst=True)
 
-    # Alter columns using explicit cast
     op.alter_column(
         'sessionfeedback',
         'status',
         existing_type=postgresql.ENUM('pending', 'completed', 'failed', name='feedbackstatusenum'),
-        type_=feedback_status_enum,
+        type_=feedback_status,
         existing_nullable=False,
         postgresql_using='status::text::feedbackstatus',
     )
+
     op.alter_column(
         'sessionturn',
         'speaker',
         existing_type=postgresql.ENUM('user', 'assistant', name='speakerenum'),
-        type_=speaker_type_enum,
+        type_=speaker_type,
         existing_nullable=False,
         postgresql_using='speaker::text::speakertype',
     )
+    op.execute('DROP TYPE IF EXISTS feedbackstatusenum')
+    op.execute('DROP TYPE IF EXISTS speakerenum')
 
 
 def downgrade() -> None:
     """Downgrade schema."""
 
-    # Revert columns to old ENUMs
-    op.alter_column(
-        'sessionturn',
-        'speaker',
-        existing_type=sa.Enum('user', 'assistant', name='speakertype'),
-        type_=postgresql.ENUM('user', 'assistant', name='speakerenum'),
-        existing_nullable=False,
+    bind = op.get_bind()
+    old_feedback_status = postgresql.ENUM(
+        'pending', 'completed', 'failed', name='feedbackstatusenum'
     )
+    old_speaker_enum = postgresql.ENUM('user', 'assistant', name='speakerenum')
+
+    old_feedback_status.create(bind, checkfirst=True)
+    old_speaker_enum.create(bind, checkfirst=True)
+
     op.alter_column(
         'sessionfeedback',
         'status',
         existing_type=sa.Enum('pending', 'completed', 'failed', name='feedbackstatus'),
-        type_=postgresql.ENUM('pending', 'completed', 'failed', name='feedbackstatusenum'),
+        type_=old_feedback_status,
         existing_nullable=False,
+        postgresql_using='status::text::feedbackstatusenum',
     )
 
-    # Drop the new ENUM types
-    speaker_type_enum = sa.Enum('user', 'assistant', name='speakertype')
-    feedback_status_enum = sa.Enum('pending', 'completed', 'failed', name='feedbackstatus')
-    speaker_type_enum.drop(op.get_bind())
-    feedback_status_enum.drop(op.get_bind())
-    # ### end Alembic commands ###
+    op.alter_column(
+        'sessionturn',
+        'speaker',
+        existing_type=sa.Enum('user', 'assistant', name='speakertype'),
+        type_=old_speaker_enum,
+        existing_nullable=False,
+        postgresql_using='speaker::text::speakerenum',
+    )
+
+    feedback_status = sa.Enum('pending', 'completed', 'failed', name='feedbackstatus')
+    speaker_type = sa.Enum('user', 'assistant', name='speakertype')
+
+    feedback_status.drop(bind, checkfirst=True)
+    speaker_type.drop(bind, checkfirst=True)
