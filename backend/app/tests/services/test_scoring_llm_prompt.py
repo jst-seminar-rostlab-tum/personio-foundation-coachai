@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
 from app.schemas.scoring_schema import ScoringResult
 from app.schemas.session_turn import SessionTurnRead
@@ -26,14 +26,14 @@ def format_scores(result: ScoringResult) -> str:
     )
 
 
-def load_conversation_data(json_path: Path) -> ConversationScenarioWithTranscript:
+def load_conversation_data(json_path: Path) -> ConversationScenarioRead:
     with open(json_path, encoding='utf-8') as f:
         data = json.load(f)
     # scenario
     scenario = ConversationScenario(**data['scenario'])
     # transcript
     transcript = [SessionTurnRead(**turn) for turn in data['transcript']]
-    return ConversationScenarioWithTranscript(scenario=scenario, transcript=transcript)
+    return ConversationScenarioRead(scenario=scenario, transcript=transcript)
 
 
 @unittest.skipUnless(os.environ.get('RUN_AI_TESTS') == 'true', 'AI test not enabled')
@@ -172,7 +172,6 @@ class TestScoringServiceIntegration(unittest.TestCase):
         conversation = load_conversation_data(structure_5_path)
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.safe_score_conversation(conversation)
-        print(result.scoring.scores)
         self.assertIsInstance(result, ScoringResult)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         self.assertEqual(scores_dict['structure'], 5)
