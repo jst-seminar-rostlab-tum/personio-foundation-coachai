@@ -17,9 +17,10 @@ from app.data.dummy_data import (
 )
 from app.dependencies import get_db_session, require_user
 from app.enums.account_role import AccountRole
+from app.enums.session_status import SessionStatus
 from app.enums.speaker import SpeakerType
 from app.main import app
-from app.models import Review, Session, SessionStatus, UserProfile
+from app.models import Review, Session, UserProfile
 from app.schemas.session_turn import SessionTurnRead
 
 
