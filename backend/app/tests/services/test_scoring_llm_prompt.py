@@ -272,39 +272,5 @@ class TestScoringServiceIntegration(unittest.TestCase):
             except Exception as e:
                 print(f'Error with {audio_file}: {e}')
 
-
-def upload_audio_files_to_gcs() -> None:
-    """
-    Upload all mp3 files in backend/app/data/audio to GCS audio bucket and print GCS paths.
-    """
-    import os
-
-    audio_dir = os.path.join(os.path.dirname(__file__), '../../data/audio')
-    gcs = get_gcs_audio_manager()
-    for fname in os.listdir(audio_dir):
-        if fname.endswith('.mp3'):
-            fpath = os.path.join(audio_dir, fname)
-            with open(fpath, 'rb') as f:
-                gcs.upload_from_fileobj(f, fname)
-            print(f'Uploaded {fname} to GCS: audio/{fname}')
-
-
-def remove_audio_files_from_gcs() -> None:
-    """
-    Remove all mp3 files in backend/app/data/audio from GCS audio bucket and print results.
-    """
-    import os
-
-    audio_dir = os.path.join(os.path.dirname(__file__), '../../data/audio')
-    gcs = get_gcs_audio_manager()
-    for fname in os.listdir(audio_dir):
-        if fname.endswith('.mp3'):
-            try:
-                gcs.delete_file(f'audio/{fname}')
-                print(f'Removed {fname} from GCS: audio/{fname}')
-            except Exception as e:
-                print(f'Failed to remove {fname} from GCS: {e}')
-
-
 if __name__ == '__main__':
     unittest.main()
