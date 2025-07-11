@@ -83,6 +83,7 @@ def generate_training_examples(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         output_model=SessionExamplesCollection,
+        temperature=0.0,
         mock_response=mock_response,
     )
 
@@ -106,6 +107,11 @@ def get_achieved_goals(
     mock_response = settings.mocks.goals_achieved
     system_prompt = settings.system_prompts.goals_achieved
 
+    if not request.transcript or not any(
+        line.strip().startswith('User:') for line in request.transcript.splitlines()
+    ):
+        return GoalsAchievedCollection(goals_achieved=[])
+
     user_prompt = build_goals_achieved_prompt(
         transcript=request.transcript,
         objectives=request.objectives,
@@ -116,15 +122,21 @@ def get_achieved_goals(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         output_model=GoalsAchievedCollection,
+        temperature=0.0,
         mock_response=mock_response,
     )
 
+    response.goals_achieved = [goal for goal in response.goals_achieved if goal.strip()]
     return response
 
 
 def generate_recommendations(
     request: FeedbackRequest, hr_docs_context: str = ''
 ) -> RecommendationsCollection:
+    if not request.transcript or not any(
+        line.strip().startswith('User:') for line in request.transcript.splitlines()
+    ):
+        return RecommendationsCollection(recommendations=[])
     lang = request.language_code
     settings = config.root[lang]
 
@@ -145,6 +157,7 @@ def generate_recommendations(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         output_model=RecommendationsCollection,
+        temperature=0.0,
         mock_response=mock_response,
     )
 

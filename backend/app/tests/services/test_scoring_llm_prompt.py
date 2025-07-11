@@ -172,7 +172,6 @@ class TestScoringServiceIntegration(unittest.TestCase):
         conversation = load_conversation_data(structure_5_path)
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.safe_score_conversation(conversation)
-        print(result.scoring.scores)
         self.assertIsInstance(result, ScoringResult)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         self.assertEqual(scores_dict['structure'], 5)

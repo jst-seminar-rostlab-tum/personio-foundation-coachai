@@ -3,7 +3,7 @@ import { AxiosInstance } from 'axios';
 
 const getUserProfile = async (api: AxiosInstance) => {
   try {
-    const { data } = await api.get(`/user-profile/profile`, {
+    const { data } = await api.get(`/user-profiles/profile`, {
       params: { detailed: true },
     });
     return data;
@@ -15,7 +15,7 @@ const getUserProfile = async (api: AxiosInstance) => {
 
 const getUserStats = async (api: AxiosInstance) => {
   try {
-    const { data } = await api.get(`/user-profile/stats`);
+    const { data } = await api.get(`/user-profiles/stats`);
     return data;
   } catch (error) {
     console.error('Error getting user stats:', error);
@@ -28,7 +28,7 @@ const updateUserProfile = async (
   userProfile: UserProfileUpdate
 ): Promise<UserProfile> => {
   try {
-    const { data } = await api.patch<UserProfile>('/user-profile', userProfile);
+    const { data } = await api.patch<UserProfile>('/user-profiles', userProfile);
     return data;
   } catch (error) {
     console.error('Error updating user profile:', error);
@@ -38,7 +38,7 @@ const updateUserProfile = async (
 
 const exportUserData = async (api: AxiosInstance) => {
   try {
-    const response = await api.get('/user-profile/export', { responseType: 'blob' });
+    const response = await api.get('/user-profiles/export', { responseType: 'blob' });
     return response.data;
   } catch (error) {
     console.error('Error exporting user data:', error);
@@ -48,7 +48,7 @@ const exportUserData = async (api: AxiosInstance) => {
 
 const deleteUser = async (api: AxiosInstance, deleteUserId?: string) => {
   try {
-    const url = `/user-profile${deleteUserId ? `?delete_user_id=${deleteUserId}` : ''}`;
+    const url = `/user-profiles${deleteUserId ? `?delete_user_id=${deleteUserId}` : ''}`;
     const { data } = await api.delete(url);
     return data;
   } catch (error) {
@@ -64,7 +64,7 @@ const getPaginatedUsers = async (
   emailSubstring?: string
 ) => {
   try {
-    const { data } = await api.get('/user-profile', {
+    const { data } = await api.get('/user-profiles', {
       params: {
         page,
         limit,
