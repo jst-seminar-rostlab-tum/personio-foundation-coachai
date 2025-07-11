@@ -145,7 +145,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.metric = metric
                 self.score = score
 
-        class MockScoringResult:
+        class MockScoringRead:
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = [
@@ -160,7 +160,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
@@ -243,7 +243,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         )
 
         # mock scoring_service
-        class MockScoringResult:
+        class MockScoringRead:
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = []
@@ -253,7 +253,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
@@ -311,7 +311,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.metric = metric
                 self.score = score
 
-        class MockScoringResult:
+        class MockScoringRead:
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = [
@@ -326,7 +326,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
