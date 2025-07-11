@@ -113,7 +113,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
         </div>
       </div>
       {!reviewsStorage || reviewsStorage.length === 0 ? (
-        <EmptyListComponent itemType={tCommon('emptyList.reviews')} />
+        <EmptyListComponent itemType={tCommon('reviews')} />
       ) : (
         <div className="w-full mb-8 text-left">
           <div className="flex items-center justify-between mb-4">

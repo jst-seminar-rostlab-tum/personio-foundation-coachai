@@ -6,11 +6,16 @@
   "tryAgain": "Erneut versuchen",
   "cancel": "Abbrechen",
   "confirm": "Bestätigen",
+  "sessions": "Sitzungen",
   "emptyList": {
     "title": "Noch keine {itemType} vorhanden!",
-    "description": "Hier werden Ihre {itemType} angezeigt, sobald sie verfügbar sind.",
-    "sessions": "Sitzungen",
-    "reviews": "Bewertungen"
+    "description": "Hier werden Ihre {itemType} angezeigt, sobald sie verfügbar sind."
+  },
+  "resources": {
+    "title": "Ressourcen",
+    "subtitle": "Hilfreiche Materialien zum Herunterladen, um Ihr Wissen zu vertiefen.",
+    "noResources": "Keine Ressourcen für dieses Szenario verfügbar.",
+    "downloadError": "Fehler beim Herunterladen der Ressource. Bitte versuchen Sie es erneut."
   },
   "saving": "Speichern...",
   "save": "Speichern",

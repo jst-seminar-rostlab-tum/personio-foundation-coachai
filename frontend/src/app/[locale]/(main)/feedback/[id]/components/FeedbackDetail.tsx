@@ -9,6 +9,8 @@ import {
 } from '@/components/ui/Accordion';
 import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 import { useCallback, useEffect, useState } from 'react';
+import ResourcesList from '@/components/common/ResourcesList';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { useLocale, useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/utils/toast';
@@ -169,6 +171,14 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         </AccordionItem>
         <AccordionItem value="suggestion">
           <AccordionTrigger>{t('accordion.suggestion')}</AccordionTrigger>
+          <AccordionContent>
+            {feedbackDetail?.feedback?.documentNames &&
+            feedbackDetail.feedback.documentNames.length > 0 ? (
+              <ResourcesList resources={feedbackDetail.feedback.documentNames} columns={2} />
+            ) : (
+              <EmptyListComponent itemType={tCommon('resources.title')} />
+            )}
+          </AccordionContent>
         </AccordionItem>
         <AccordionItem value="session">
           <AccordionTrigger>{t('accordion.sessions')}</AccordionTrigger>
