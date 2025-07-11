@@ -45,7 +45,6 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
         request = self.base_feedback_request.model_copy()
         request.transcript = transcript
         result = generate_training_examples(request)
-        print(result)
         # Get all User utterances
         user_utterances = [
             line[len('User: ') :] for line in transcript.split('\n') if line.startswith('User: ')
@@ -72,7 +71,6 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
         request = self.base_feedback_request.model_copy()
         request.transcript = transcript
         result = generate_training_examples(request)
-        print(result)
         self.assertGreaterEqual(
             len(result.positive_examples), 1, 'Should have at least one positive example.'
         )
@@ -88,7 +86,6 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
         request = self.base_feedback_request.model_copy()
         request.transcript = ''
         result = generate_training_examples(request)
-        print(result)
         self.assertEqual(
             len(result.positive_examples), 0, 'Empty transcript should have no positive examples.'
         )
@@ -110,7 +107,6 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
         request = self.base_feedback_request.model_copy()
         request.transcript = transcript
         result = generate_training_examples(request)
-        print(result)
         expected_quotes = [
             "I'd like to discuss the project progress, including some special characters!@#$%^&*().",
             'This project is really complex, needs multiple lines to describe.',
@@ -138,7 +134,6 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
         request = self.base_feedback_request.model_copy()
         request.transcript = transcript
         result = generate_training_examples(request)
-        print(result)
         for ex in result.negative_examples:
             self.assertIsNotNone(
                 ex.improved_quote, 'Negative example should have an improved quote.'
@@ -161,7 +156,6 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
         request = self.base_feedback_request.model_copy()
         request.transcript = transcript
         result = generate_training_examples(request)
-        print(result)
         self.assertEqual(
             len(result.positive_examples),
             0,
@@ -188,7 +182,6 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
         request = self.base_feedback_request.model_copy()
         request.transcript = transcript
         result = generate_training_examples(request)
-        print(result)
         self.assertLessEqual(
             len(result.positive_examples), 3, 'Positive examples should not exceed 3.'
         )
@@ -209,7 +202,6 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
         request = self.base_feedback_request.model_copy()
         request.transcript = transcript
         result = generate_training_examples(request)
-        print(result)
         user_only_quotes = [
             "I'd like to discuss the project progress.",
             'Your work is great.',
@@ -234,7 +226,6 @@ class TestGenerateTrainingExamplesIntegration(unittest.TestCase):
         request = self.base_feedback_request.model_copy()
         request.transcript = transcript
         result = generate_training_examples(request)
-        print(result)
         self.assertTrue(
             any('Deine Arbeit war großartig' in ex.quote for ex in result.positive_examples),
             "Positive examples should contain 'Deine Arbeit war großartig'",

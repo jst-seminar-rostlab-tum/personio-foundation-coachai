@@ -32,7 +32,6 @@ class TestGetAchievedGoals(unittest.TestCase):
             language_code=self.language_code,
         )
         result = get_achieved_goals(req)
-        print(result)
         self.print_goals_stats('only_clearly_demonstrated_goals_achieved', result)
         self.assertSetEqual(
             set(result.goals_achieved),
@@ -61,7 +60,6 @@ class TestGetAchievedGoals(unittest.TestCase):
             language_code=self.language_code,
         )
         result = get_achieved_goals(req)
-        print(result)
         self.print_goals_stats('all_goals_achieved', result)
         self.assertSetEqual(set(result.goals_achieved), set(self.base_objectives))
 
@@ -72,7 +70,6 @@ class TestGetAchievedGoals(unittest.TestCase):
             language_code=self.language_code,
         )
         result = get_achieved_goals(req)
-        print(result)
         self.print_goals_stats('partial_achievement_subset', result)
         self.assertEqual(result.goals_achieved, ['Maintain professionalism'])
 
@@ -84,7 +81,6 @@ class TestGetAchievedGoals(unittest.TestCase):
                 language_code=self.language_code,
             )
             result = get_achieved_goals(req)
-            print(result)
             self.print_goals_stats('only_assistant_or_empty_transcript', result)
             self.assertEqual(result.goals_achieved, [])
 
