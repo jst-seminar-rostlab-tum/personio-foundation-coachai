@@ -100,4 +100,8 @@ async def get_realtime_session(
         except httpx.HTTPStatusError as e:
             raise HTTPException(status_code=response.status_code, detail=str(e)) from e
 
-        return response.json()
+        data = response.json()
+        data['persona_name'] = conversation_scenario.persona_name
+        data['category_name'] = conversation_category.name
+
+        return data
