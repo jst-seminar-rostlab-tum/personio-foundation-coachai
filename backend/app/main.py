@@ -35,6 +35,7 @@ scheduler = BackgroundScheduler()
 
 
 def scheduled_cleanup() -> None:
+    print('定时任务触发了！')  # 用于验证定时任务是否执行
     db_gen = get_db_session()
     db = next(db_gen)
     try:
@@ -46,7 +47,7 @@ def scheduled_cleanup() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     create_db_and_tables()
-    scheduler.add_job(scheduled_cleanup, 'cron', hour=3, minute=0)
+    scheduler.add_job(scheduled_cleanup, 'interval', seconds=5)  # 每5秒触发一次
     scheduler.start()
     yield
     scheduler.shutdown()
