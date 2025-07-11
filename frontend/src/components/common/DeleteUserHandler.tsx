@@ -5,6 +5,8 @@ import { UserProfileService } from '@/services/UserProfileService';
 import { useTranslations } from 'next-intl';
 import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
 import { api } from '@/services/ApiClient';
+import { createClient } from '@/lib/supabase/client';
+import { logoutUser } from '@/lib/supabase/logout';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,6 +35,8 @@ export function DeleteUserHandler({ children, id, onDeleteSuccess }: DeleteUserH
       await UserProfileService.deleteUser(api, deleteUserId);
       showSuccessToast(tCommon('deleteAccountSuccess'));
       onDeleteSuccess();
+
+      await logoutUser(createClient);
     } catch (error) {
       showErrorToast(error, tCommon('deleteAccountError'));
     } finally {
