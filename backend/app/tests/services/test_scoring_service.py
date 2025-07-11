@@ -98,7 +98,6 @@ class TestScoringService(unittest.TestCase):
         self.assertIn('Test Rubric', system_prompt)
         self.assertIn('**Conversation Scenario:**\n', user_prompt)
         self.assertIn('provide a score from 1 to 5 for each metric', user_prompt)
-        print(user_prompt)
 
     def test_rubric_to_markdown_real_rubric(self) -> None:
         real_rubric_path = Path(__file__).parent.parent.parent / 'data' / 'conversation_rubric.json'
@@ -112,6 +111,7 @@ class TestScoringService(unittest.TestCase):
         self.assertIn('## Clarity', md)
         self.assertIn('## Common Levels', md)
         self.assertIn('- **Score 0**: Complete failure to demonstrate the skill.', md)
+        print(md)
 
     def test_metric_score_out_of_range(self) -> None:
         with self.assertRaises(ValidationError):

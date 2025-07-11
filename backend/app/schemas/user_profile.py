@@ -64,7 +64,7 @@ class UserEmailRead(CamelModel):
     email: str
 
 
-class PaginatedUserResponse(CamelModel):
+class PaginatedUserRead(CamelModel):
     page: int
     limit: int
     total_pages: int
@@ -73,7 +73,7 @@ class PaginatedUserResponse(CamelModel):
 
 
 # Schema for reading User Statistics
-class UserStatisticsRead(CamelModel):
+class UserStatistics(CamelModel):
     total_sessions: int
     training_time: float  # in hours
     current_streak_days: int
