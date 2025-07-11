@@ -12,7 +12,6 @@ const normalizedRadius = radius;
 const circumference = 2 * Math.PI * normalizedRadius;
 
 export default function DonutChart({ label, totalScore, maxScore }: DonutChartProps) {
-  // Calculate percent as totalScore / maxScore * 100
   const percent = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
   const [animatedPercent, setAnimatedPercent] = useState(0);
   const [animatedNumber, setAnimatedNumber] = useState(0);
@@ -20,7 +19,7 @@ export default function DonutChart({ label, totalScore, maxScore }: DonutChartPr
     const duration = 1000;
     let start = 0;
     const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
-    function animate(now: number) {
+    const animate = (now: number) => {
       if (!start) start = now;
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
@@ -30,7 +29,7 @@ export default function DonutChart({ label, totalScore, maxScore }: DonutChartPr
       if (progress < 1) {
         requestAnimationFrame(animate);
       }
-    }
+    };
     setAnimatedPercent(0);
     setAnimatedNumber(0);
     requestAnimationFrame(animate);

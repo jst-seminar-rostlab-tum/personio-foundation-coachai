@@ -3,18 +3,18 @@ import { cn } from '@/lib/utils/cnMerge';
 
 interface SegmentedProgressProps {
   className?: string;
-  value: number; // 1-5
-  max?: number; // default 5
+  value: number;
+  max?: number;
 }
 
 function SegmentedProgress({ className, value, max = 5 }: SegmentedProgressProps) {
   return (
-    <div className={cn('flex w-80 h-2 gap-0.5', className)}>
+    <div className={cn('flex w-80 h-2.5 gap-1', className)}>
       {Array.from({ length: max }).map((_, i) => {
         let rounded = '';
         if (i === 0) rounded = 'rounded-l-full';
         else if (i === max - 1) rounded = 'rounded-r-full';
-        // Calculate fill percent for this segment
+
         let fill = 0;
         if (value > i) {
           fill = value >= i + 1 ? 100 : (value - i) * 100;

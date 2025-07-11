@@ -14,7 +14,7 @@ import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { useLocale, useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/utils/toast';
-import { formattedDateTime } from '@/lib/utils/formatDateAndTime';
+import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
 import AudioPlayer from './AudioPlayer';
 import FeedbackQuote from './FeedbackQuote';
@@ -91,6 +91,14 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
 
   const recommendations = feedbackDetail?.feedback?.recommendations || [];
 
+  const totalScore =
+    (feedbackDetail?.feedback?.scores.structure ?? 0) +
+    (feedbackDetail?.feedback?.scores.empathy ?? 0) +
+    (feedbackDetail?.feedback?.scores.focus ?? 0) +
+    (feedbackDetail?.feedback?.scores.clarity ?? 0);
+
+  const maxScore = Object.values(feedbackDetail?.feedback?.scores ?? {}).length * 5;
+
   if (isLoading) {
     return <FeedbackDetailLoadingPage />;
   }
@@ -99,25 +107,19 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
     <div className="flex flex-col items-center gap-12">
       <div className="flex flex-col gap-8 w-full">
         <div className="text-2xl font-bold text-bw-90 text-left w-full">{t('title')}</div>
-        <div className="bg-marigold-10 p-8 flex flex-col gap-1 rounded-lg text-center w-full">
-          <div className="font-semibold text-2xl text-marigold-90">{feedbackDetail?.title}</div>
-          <div className="text-marigold-90">
-            {formattedDateTime(feedbackDetail?.createdAt, locale)}
+
+        {feedbackDetail?.title && (
+          <div className="bg-marigold-10 p-8 flex flex-col gap-1 rounded-lg text-center w-full">
+            <div className="font-semibold text-2xl text-marigold-90">{feedbackDetail.title}</div>
+            <div className="text-marigold-90">
+              {formatDateFlexible(feedbackDetail?.createdAt, locale, true)}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="flex flex-col md:flex-row gap-12 max-w-5xl items-center w-full justify-between">
-        <DonutChart
-          label={t('stats.goalsAchieved')}
-          totalScore={
-            (feedbackDetail?.feedback?.scores.structure ?? 0) +
-            (feedbackDetail?.feedback?.scores.empathy ?? 0) +
-            (feedbackDetail?.feedback?.scores.focus ?? 0) +
-            (feedbackDetail?.feedback?.scores.clarity ?? 0)
-          }
-          maxScore={Object.values(feedbackDetail?.feedback?.scores ?? {}).length * 5}
-        />
+        <DonutChart label={t('stats.goalsAchieved')} totalScore={totalScore} maxScore={maxScore} />
         <ProgressBars data={progressBarData} />
       </div>
 
