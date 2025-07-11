@@ -105,10 +105,16 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
 
       <div className="flex flex-col md:flex-row gap-12 max-w-5xl items-center w-full justify-between">
         <DonutChart
-          percent={feedbackDetail?.feedback?.overallScore ?? 0}
           goalsAchieved={feedbackDetail?.feedback?.goalsAchieved.length ?? 0}
           goalsTotal={feedbackDetail?.goalsTotal.length ?? 0}
           label={t('stats.goalsAchieved')}
+          totalScore={
+            (feedbackDetail?.feedback?.scores.structure ?? 0) +
+            (feedbackDetail?.feedback?.scores.empathy ?? 0) +
+            (feedbackDetail?.feedback?.scores.focus ?? 0) +
+            (feedbackDetail?.feedback?.scores.clarity ?? 0)
+          }
+          maxScore={Object.values(feedbackDetail?.feedback?.scores ?? {}).length * 5}
         />
         <ProgressBars data={progressBarData} />
       </div>
