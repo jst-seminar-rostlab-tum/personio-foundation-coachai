@@ -76,8 +76,8 @@ class SessionFeedbackMetrics(CamelModel):
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: float
     transcript_uri: str
-    full_audio_url: str | None = (
-        Field(default=None, description='Signed URL to the stitched audio file of the session'),
+    full_audio_url: str | None = Field(
+        default=None, description='Signed URL to the stitched audio file of the session'
     )
     document_names: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     speak_time_percent: float
