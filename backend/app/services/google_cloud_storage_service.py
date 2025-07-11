@@ -36,7 +36,7 @@ class GCSManager:
         self.client = storage.Client(credentials=credentials, project=creds_info['project_id'])
         self.bucket = self.client.bucket(self.bucket_name)
 
-    def upload_documents(self, directory: Path = None) -> None:
+    def upload_documents(self, directory: Path | None = None) -> None:
         upload_dir = Path(directory) if directory else self.local_dir
 
         if not upload_dir.exists() or not upload_dir.is_dir():
@@ -54,7 +54,7 @@ class GCSManager:
             print(f'{path.name} → gs://{self.bucket.name}/{blob_name}')
 
     def upload_from_fileobj(
-        self, file_obj: BinaryIO, blob_name: str, content_type: str = None
+        self, file_obj: BinaryIO, blob_name: str, content_type: str | None = None
     ) -> str:
         """
         Upload a file-like object to GCS.
@@ -67,7 +67,7 @@ class GCSManager:
         print(f'{blob_name} → gs://{self.bucket.name}/{blob.name}')
         return f'gs://{self.bucket.name}/{blob.name}'
 
-    def download_documents(self, directory: Path = None) -> None:
+    def download_documents(self, directory: Path | None = None) -> None:
         target_dir = Path(directory) if directory else self.download_dir
         target_dir.mkdir(parents=True, exist_ok=True)
 
