@@ -22,7 +22,6 @@ export function AppHeader() {
     { key: 'dashboard', href: '/dashboard' },
     { key: 'newConversationScenario', href: '/new-conversation-scenario' },
     ...(user.accountRole === AccountRole.admin ? [{ key: 'admin', href: '/admin' }] : []),
-    { key: 'history', href: '/history' },
     { key: 'settings', href: '/settings' },
   ];
 

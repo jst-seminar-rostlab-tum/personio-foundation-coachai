@@ -10,5 +10,12 @@
   "deleteAllSessionsConfirmation": "Sind Sie sicher, dass Sie alle Sitzungen löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
   "deleteSuccess": "Erfolgreich gelöscht.",
   "deleteError": "Fehler beim Löschen. Bitte versuchen Sie es erneut.",
-  "clearAll": "Alle löschen"
+  "clearAll": "Alle löschen",
+  "practiceAgain": "Erneut üben",
+  "statistics": "Statistiken",
+  "difficulty": "Schwierigkeit",
+  "deleteConfirmTitle": "Eintrag löschen?",
+  "deleteConfirmDescription": "Möchten Sie diesen Eintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "deleteConfirmCancel": "Abbrechen",
+  "deleteConfirmDelete": "Löschen"
 }

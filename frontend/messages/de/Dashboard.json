@@ -10,8 +10,12 @@
     "currentStreak": "Aktuelle Serie"
   },
   "recentSessions": {
-    "title": "Letzte Trainingssitzungen",
-    "subtitle": "Ihre letzten abgeschlossenen Trainingssitzungen im Überblick",
+    "title": "Ihre Szenarien",
+    "subtitle": "Eine Übersicht all Ihrer bisherigen Trainings-Konfigurationen",
     "showEntireHistory": "Gesamten Verlauf anzeigen"
-  }
+  },
+  "deleteConfirmTitle": "Eintrag löschen?",
+  "deleteConfirmDescription": "Möchten Sie diesen Eintrag wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "deleteConfirmCancel": "Abbrechen",
+  "deleteConfirmDelete": "Löschen"
 }

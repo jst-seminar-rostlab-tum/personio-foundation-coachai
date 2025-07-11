@@ -9,14 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
 import { api } from '@/services/ApiServer';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from '@/components/ui/Table';
+import ClickableTable from './ClickableTable';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -61,36 +54,8 @@ export default async function DashboardPage() {
           <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
         </div>
         <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Session</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Score</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>Giving Feedback 101</TableCell>
-                <TableCell>2024-07-10</TableCell>
-                <TableCell>Completed</TableCell>
-                <TableCell>92%</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Conflict Resolution</TableCell>
-                <TableCell>2024-07-08</TableCell>
-                <TableCell>Completed</TableCell>
-                <TableCell>88%</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Active Listening</TableCell>
-                <TableCell>2024-07-05</TableCell>
-                <TableCell>Missed</TableCell>
-                <TableCell>-</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          {/* Use the client-side ClickableTable component */}
+          <ClickableTable />
         </div>
       </section>
     </div>
