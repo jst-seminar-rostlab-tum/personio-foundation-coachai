@@ -9,32 +9,6 @@ export const SUPABASE_ANON_KEY =
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-export const BASE_URL =
-  process.env.NEXT_PUBLIC_BASE_URL || 'https://coachai-personio-foundation.vercel.app';
-
-export const STAGING_URL = 'https://coachai-dev-personio-foundation.vercel.app';
+export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 export const DEV_MODE_SKIP_AUTH = process.env.NEXT_PUBLIC_DEV_MODE_SKIP_AUTH === 'true';
-
-export const config = {
-  env: {
-    NODE_ENV,
-    IS_DEVELOPMENT,
-    IS_PRODUCTION,
-  },
-  supabase: {
-    url: SUPABASE_URL,
-    anonKey: SUPABASE_ANON_KEY,
-  },
-  api: {
-    url: API_URL,
-  },
-  app: {
-    baseUrl: BASE_URL,
-  },
-  development: {
-    skipAuth: DEV_MODE_SKIP_AUTH,
-  },
-} as const;
-
-export default config;

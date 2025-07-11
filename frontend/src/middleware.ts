@@ -7,11 +7,14 @@ import {
   BASE_URL,
   DEV_MODE_SKIP_AUTH,
   IS_DEVELOPMENT,
-  STAGING_URL,
   SUPABASE_URL,
 } from './lib/connector';
 
-const allowedOrigins = [BASE_URL, STAGING_URL, 'http://localhost:3000'];
+const allowedOrigins = [
+  BASE_URL,
+  'https://coachai-dev-personio-foundation.vercel.app',
+  'http://localhost:3000',
+];
 
 const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
