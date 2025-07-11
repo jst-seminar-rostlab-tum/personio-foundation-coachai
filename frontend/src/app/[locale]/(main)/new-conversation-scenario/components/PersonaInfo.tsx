@@ -35,7 +35,6 @@ export function PersonaInfo({
     getPersonaData(selectedPersona);
   const personaName = personas.find((p) => p.id === selectedPersona)?.name || selectedPersona;
 
-  // Helper to render bullet points for fields
   const renderBullets = useCallback((textOrArray: string[] | string | undefined) => {
     if (Array.isArray(textOrArray)) {
       return textOrArray.map((item) => `• ${item}`).join('\n');
@@ -105,7 +104,6 @@ export function PersonaInfo({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [traitsText, focusText, personalityText, contextMode]);
 
-  // Shared style for locked/disabled state (matches context Textarea)
   const lockedClasses =
     'border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus:outline-none focus:ring-2 focus:ring-bw-40 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
 

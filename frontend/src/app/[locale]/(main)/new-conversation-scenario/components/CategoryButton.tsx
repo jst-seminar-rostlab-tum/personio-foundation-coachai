@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import { cn } from '@/lib/utils/cnMerge';
+import { ButtonHTMLAttributes } from 'react';
 
-interface CategoryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface CategoryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   selected?: boolean;
   children?: React.ReactNode;
 }
@@ -17,7 +18,7 @@ function CategoryButton({ className, selected, children, ...props }: CategoryBut
 
   if (Array.isArray(children)) {
     [image, title, description] = children;
-  } else if (children && typeof children === 'object') {
+  } else {
     image = children;
     title = null;
     description = null;
@@ -26,11 +27,7 @@ function CategoryButton({ className, selected, children, ...props }: CategoryBut
   return (
     <button
       data-slot="button"
-      className={[
-        buttonStyles,
-        selected ? 'outline-none bg-marigold-30' : '',
-        className || '',
-      ].join(' ')}
+      className={cn(buttonStyles, selected ? 'outline-none bg-marigold-30' : '', className || '')}
       {...props}
     >
       <div className="flex flex-col items-center w-full h-full">

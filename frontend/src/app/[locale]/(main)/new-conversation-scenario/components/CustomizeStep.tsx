@@ -27,6 +27,11 @@ export function CustomizeStep({
     name: t(`customize.persona.personas.${key}.name`),
     imageUri: t.raw(`customize.persona.personas.${key}.imageUri`),
   }));
+  const difficultyOptions = [
+    { value: 'easy', icon: '/images/difficulty/easy.svg', label: t('easy') },
+    { value: 'medium', icon: '/images/difficulty/medium.svg', label: t('medium') },
+    { value: 'hard', icon: '/images/difficulty/hard.svg', label: t('hard') },
+  ];
 
   return (
     <div>
@@ -47,7 +52,6 @@ export function CustomizeStep({
         ))}
       </div>
 
-      {/* Persona Information */}
       <PersonaInfo
         selectedPersona={selectedPersona}
         personas={personas}
@@ -56,11 +60,7 @@ export function CustomizeStep({
 
       <div className="mb-4 font-medium text-xl">{t('difficultyTitle')}</div>
       <div className="mb-16 grid grid-cols-3 gap-4 w-full mx-auto">
-        {[
-          { value: 'easy', icon: '/images/difficulty/easy.svg', label: t('easy') },
-          { value: 'medium', icon: '/images/difficulty/medium.svg', label: t('medium') },
-          { value: 'hard', icon: '/images/difficulty/hard.svg', label: t('hard') },
-        ].map((diff) => (
+        {difficultyOptions.map((diff) => (
           <PersonaButton
             key={diff.value}
             onClick={() => onDifficultyChange(diff.value)}

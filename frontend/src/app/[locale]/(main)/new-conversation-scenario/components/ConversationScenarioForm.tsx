@@ -76,6 +76,19 @@ export default function ConversationScenarioForm({
   const { contextMode, setContextMode, customContext, setCustomContext } =
     useConversationScenarioStore();
 
+  const contextModes = [
+    {
+      value: 'default',
+      label: tContext('default'),
+      subtitle: tContext('defaultSubtitle'),
+    },
+    {
+      value: 'custom',
+      label: tContext('custom'),
+      subtitle: tContext('customSubtitle'),
+    },
+  ];
+
   useEffect(() => {
     setCategories((prev) =>
       prev.map((cat) => {
@@ -85,18 +98,15 @@ export default function ConversationScenarioForm({
     );
   }, [categoriesData]);
 
-  // Find the selected category object and key
   const selectedCategoryObj = categories.find((cat) => cat.id === formState.category);
   const selectedCategoryKey = Object.entries(t.raw('categories')).find(
     ([, val]) => (val as { name: string }).name === selectedCategoryObj?.name
   )?.[0];
 
-  // Use translation-based long default context
   const defaultContextLong = selectedCategoryKey
     ? t(`categories.${selectedCategoryKey}.defaultContextLong`)
     : '';
 
-  // When scenario changes, if contextMode is 'default', update context in form state
   useEffect(() => {
     if (defaultContextLong) {
       // Do not overwrite customContext
@@ -106,7 +116,6 @@ export default function ConversationScenarioForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formState.category, contextMode, defaultContextLong]);
 
-  // When switching to custom, restore the last customContext
   useEffect(() => {
     if (contextMode === 'custom') {
       updateForm({ situationalFacts: customContext });
@@ -161,7 +170,6 @@ export default function ConversationScenarioForm({
     }
   };
 
-  // Determine value and class for context textarea
   let contextValue = '';
   if (contextMode === 'custom') {
     contextValue = customContext;
@@ -181,25 +189,13 @@ export default function ConversationScenarioForm({
         className="mb-8 md:w-3/4 mx-auto"
       />
 
-      {/* Step 0: Context Selection */}
       {currentStep === 0 && (
         <>
           <h2 className="text-xl font-semibold text-center w-full mb-8">
             {t('customizationTitle')}
           </h2>
           <div className="mb-10 w-full flex flex-col sm:flex-row gap-4">
-            {[
-              {
-                value: 'default',
-                label: tContext('default'),
-                subtitle: tContext('defaultSubtitle'),
-              },
-              {
-                value: 'custom',
-                label: tContext('custom'),
-                subtitle: tContext('customSubtitle'),
-              },
-            ].map((option) => (
+            {contextModes.map((option) => (
               <ContextCardButton
                 key={option.value}
                 selected={contextMode === option.value}
@@ -265,7 +261,6 @@ export default function ConversationScenarioForm({
 
       <div className="fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] py-6 flex gap-4 justify-center shadow-2xl">
-          {/* Step 0: Context - only Next */}
           {currentStep === 0 && (
             <Button
               size="full"
@@ -277,7 +272,6 @@ export default function ConversationScenarioForm({
               <ArrowRightIcon />
             </Button>
           )}
-          {/* Step 1: Situation - Back and Next */}
           {currentStep === 1 && (
             <>
               <Button size="full" variant="outline" onClick={() => setStep(currentStep - 1)}>
@@ -295,7 +289,6 @@ export default function ConversationScenarioForm({
               </Button>
             </>
           )}
-          {/* Step 2: Other Party - Back and Create Training */}
           {currentStep === 2 && (
             <>
               <Button size="full" variant="outline" onClick={() => setStep(currentStep - 1)}>
