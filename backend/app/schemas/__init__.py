@@ -1,25 +1,26 @@
 from app.schemas.admin_dashboard_stats import AdminDashboardStatsRead
 from app.schemas.app_config import AppConfigCreate, AppConfigRead
 from app.schemas.conversation_category import ConversationCategoryRead
-from app.schemas.conversation_scenario import ConversationScenarioCreate
-from app.schemas.message_schema import MessageCreateSchema, MessageSchema
+from app.schemas.conversation_scenario import (
+    ConversationScenarioAIPromptRead,
+    ConversationScenarioCreate,
+)
 from app.schemas.review import (
-    PaginatedReviewsResponse,
+    PaginatedReviewRead,
+    ReviewConfirm,
     ReviewCreate,
     ReviewRead,
-    ReviewResponse,
     ReviewStatistics,
 )
 from app.schemas.scenario_preparation import (
-    ChecklistRequest,
-    ConversationScenarioBase,
+    ChecklistCreate,
     KeyConcept,
-    KeyConceptRequest,
-    KeyConceptResponse,
-    ObjectiveRequest,
+    KeyConceptsCreate,
+    KeyConceptsRead,
+    ObjectivesCreate,
     ScenarioPreparationCreate,
     ScenarioPreparationRead,
-    StringListResponse,
+    StringListRead,
 )
 from app.schemas.session import (
     SessionCreate,
@@ -28,15 +29,15 @@ from app.schemas.session import (
     SessionUpdate,
 )
 from app.schemas.session_feedback import (
-    FeedbackRequest,
-    GoalsAchievedCollection,
-    GoalsAchievementRequest,
+    FeedbackCreate,
+    GoalsAchievedCreate,
+    GoalsAchievedRead,
     NegativeExample,
     PositiveExample,
     Recommendation,
-    RecommendationsCollection,
-    SessionExamplesCollection,
-    SessionFeedbackMetrics,
+    RecommendationsRead,
+    SessionExamplesRead,
+    SessionFeedbackRead,
 )
 from app.schemas.session_turn import (
     SessionTurnCreate,
@@ -60,12 +61,10 @@ from app.schemas.user_profile import (
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
-    UserStatisticsRead,
+    UserStatistics,
 )
 
 __all__ = [
-    'MessageSchema',
-    'MessageCreateSchema',
     'AdminDashboardStatsRead',
     'AppConfigCreate',
     'AppConfigRead',
@@ -73,27 +72,27 @@ __all__ = [
     'ConversationScenarioCreate',
     'ReviewCreate',
     'ReviewRead',
-    'ReviewResponse',
+    'ReviewConfirm',
     'ReviewStatistics',
-    'PaginatedReviewsResponse',
-    'ChecklistRequest',
-    'ConversationScenarioBase',
+    'PaginatedReviewRead',
+    'ChecklistCreate',
+    'ConversationScenarioAIPromptRead',
     'KeyConcept',
-    'KeyConceptRequest',
-    'KeyConceptResponse',
-    'ObjectiveRequest',
+    'KeyConceptsCreate',
+    'KeyConceptsRead',
+    'ObjectivesCreate',
     'ScenarioPreparationCreate',
     'ScenarioPreparationRead',
-    'StringListResponse',
-    'FeedbackRequest',
-    'GoalsAchievedCollection',
-    'GoalsAchievementRequest',
+    'StringListRead',
+    'FeedbackCreate',
+    'GoalsAchievedRead',
+    'GoalsAchievedCreate',
     'NegativeExample',
     'PositiveExample',
     'Recommendation',
-    'RecommendationsCollection',
-    'SessionExamplesCollection',
-    'SessionFeedbackMetrics',
+    'RecommendationsRead',
+    'SessionExamplesRead',
+    'SessionFeedbackRead',
     'SessionTurnCreate',
     'SessionTurnRead',
     'SessionCreate',
@@ -105,7 +104,7 @@ __all__ = [
     'UserProfileReplace',
     'UserProfileRead',
     'UserProfileExtendedRead',
-    'UserStatisticsRead',
+    'UserStatistics',
     'ExportConfidenceScore',
     'ExportConversationScenario',
     'ExportReview',

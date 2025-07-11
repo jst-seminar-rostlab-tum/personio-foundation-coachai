@@ -11,9 +11,10 @@ from sqlmodel import SQLModel, create_engine
 
 from app.data.dummy_data import get_dummy_conversation_categories, get_dummy_conversation_scenarios
 from app.dependencies import get_db_session, require_user
+from app.enums.account_role import AccountRole
+from app.enums.session_status import SessionStatus
 from app.main import app
-from app.models import Session, SessionStatus, UserProfile
-from app.models.user_profile import AccountRole
+from app.models import Session, UserProfile
 
 
 class TestReviewRoute(unittest.TestCase):
@@ -86,15 +87,15 @@ class TestReviewRoute(unittest.TestCase):
             'allowAdminAccess': False,
         }
         # Test invalid rating
-        response = self.client.post('/review', json=review_payload)
+        response = self.client.post('/reviews', json=review_payload)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['detail'], 'Rating must be between 1 and 5')
 
         # Test valid review
         review_payload['rating'] = 5
-        response = self.client.post('/review', json=review_payload)
+        response = self.client.post('/reviews', json=review_payload)
         self.assertEqual(response.status_code, 200)
 
         # Test duplicate review
-        response = self.client.post('/review', json=review_payload)
+        response = self.client.post('/reviews', json=review_payload)
         self.assertEqual(response.status_code, 409)

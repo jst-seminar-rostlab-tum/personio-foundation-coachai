@@ -12,7 +12,7 @@ class ReviewCreate(CamelModel):
     allow_admin_access: bool = False  # admin access to session details
 
 
-class ReviewResponse(CamelModel):
+class ReviewConfirm(CamelModel):
     message: str = 'Review submitted successfully'
     review_id: UUID
 
@@ -38,7 +38,7 @@ class ReviewStatistics(CamelModel):
     num_one_star: int
 
 
-class PaginatedReviewsResponse(CamelModel):
+class PaginatedReviewRead(CamelModel):
     reviews: list[ReviewRead]
     pagination: dict
     rating_statistics: ReviewStatistics

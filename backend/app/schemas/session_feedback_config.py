@@ -1,11 +1,11 @@
 from pydantic import RootModel
 
+from app.enums.language import LanguageCode
 from app.models.camel_case import CamelModel
-from app.models.language import LanguageCode
 from app.schemas.session_feedback import (
-    GoalsAchievedCollection,
-    RecommendationsCollection,
-    SessionExamplesCollection,
+    GoalsAchievedRead,
+    RecommendationsRead,
+    SessionExamplesRead,
 )
 
 
@@ -16,9 +16,9 @@ class SessionFeedbackSystemPromptSet(CamelModel):
 
 
 class SessionFeedbackMockSet(CamelModel):
-    session_examples: SessionExamplesCollection
-    goals_achieved: GoalsAchievedCollection
-    recommendations: RecommendationsCollection
+    session_examples: SessionExamplesRead
+    goals_achieved: GoalsAchievedRead
+    recommendations: RecommendationsRead
 
 
 class SessionFeedbackLanguageSettings(CamelModel):
@@ -26,5 +26,5 @@ class SessionFeedbackLanguageSettings(CamelModel):
     mocks: SessionFeedbackMockSet
 
 
-class SessionFeedbackConfig(RootModel[dict[LanguageCode, SessionFeedbackLanguageSettings]]):
+class SessionFeedbackConfigRead(RootModel[dict[LanguageCode, SessionFeedbackLanguageSettings]]):
     pass
