@@ -89,6 +89,7 @@ def _build_export_scenarios(
                 category_id=s.category_id,
                 custom_category_label=s.custom_category_label,
                 language_code=str(s.language_code),
+                persona_name=s.persona_name,
                 persona=s.persona,
                 situational_facts=s.situational_facts,
                 difficulty_level=str(s.difficulty_level),

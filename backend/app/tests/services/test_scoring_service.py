@@ -31,6 +31,7 @@ class TestScoringService(unittest.TestCase):
             user_id=uuid4(),
             category_id='feedback',
             custom_category_label=None,
+            persona_name='Test Persona',
             persona='',
             situational_facts='',
             difficulty_level=DifficultyLevel.medium,

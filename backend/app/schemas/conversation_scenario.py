@@ -13,6 +13,7 @@ from app.schemas.session_turn import SessionTurnRead
 class ConversationScenarioCreate(CamelModel):
     category_id: str | None = None
     custom_category_label: str | None = None
+    persona_name: str
     persona: str
     situational_facts: str
     difficulty_level: DifficultyLevel
