@@ -119,17 +119,17 @@ class TestReviewRoute(unittest.TestCase):
             'allowAdminAccess': False,
         }
         # Test invalid rating
-        response = self.client.post('/review', json=review_payload)
+        response = self.client.post('/reviews', json=review_payload)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['detail'], 'Rating must be between 1 and 5')
 
         # Test valid review
         review_payload['rating'] = 5
-        response = self.client.post('/review', json=review_payload)
+        response = self.client.post('/reviews', json=review_payload)
         self.assertEqual(response.status_code, 200)
 
         # Test duplicate review
-        response = self.client.post('/review', json=review_payload)
+        response = self.client.post('/reviews', json=review_payload)
         self.assertEqual(response.status_code, 409)
 
     def test_get_reviews_route_sort_and_limit(self) -> None:

@@ -12,10 +12,10 @@ from app.models.review import Review
 from app.models.session import Session
 from app.models.user_profile import AccountRole, UserProfile
 from app.schemas.review import (
-    PaginatedReviewsResponse,
+    PaginatedReviewRead,
+    ReviewConfirm,
     ReviewCreate,
     ReviewRead,
-    ReviewResponse,
     ReviewStatistics,
 )
 
@@ -107,7 +107,7 @@ class ReviewService:
         # Pagination
         total_count = self.db.exec(select(func.count()).select_from(Review)).one()
         if total_count == 0:
-            return PaginatedReviewsResponse(
+            return PaginatedReviewRead(
                 reviews=[],
                 pagination={
                     'currentPage': page if page else 1,
@@ -135,7 +135,7 @@ class ReviewService:
 
         review_statistics = self._get_review_statistics()
 
-        return PaginatedReviewsResponse(
+        return PaginatedReviewRead(
             reviews=review_list,
             pagination={
                 'currentPage': page if page else 1,
@@ -207,7 +207,7 @@ class ReviewService:
         self,
         review: ReviewCreate,
         user_profile: UserProfile,
-    ) -> ReviewResponse:
+    ) -> ReviewConfirm:
         """
         Create a new review.
         """
@@ -246,7 +246,7 @@ class ReviewService:
                 self.db.commit()
                 self.db.refresh(session)
 
-        return ReviewResponse(
+        return ReviewConfirm(
             message='Review submitted successfully',
             review_id=new_review.id,
         )

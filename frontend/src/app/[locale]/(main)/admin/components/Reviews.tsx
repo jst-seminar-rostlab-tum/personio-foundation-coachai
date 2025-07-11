@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/Select';
 import { useRouter } from 'next/navigation';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
-import { formattedDate } from '@/lib/utils/formatDateAndTime';
+import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
 
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
@@ -113,7 +113,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
         </div>
       </div>
       {!reviewsStorage || reviewsStorage.length === 0 ? (
-        <EmptyListComponent itemType={tCommon('emptyList.reviews')} />
+        <EmptyListComponent itemType={tCommon('reviews')} />
       ) : (
         <div className="w-full mb-8 text-left">
           <div className="flex items-center justify-between mb-4">
@@ -154,7 +154,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                   ))}
                 </div>
                 <div className="text-sm text-bw-70 mb-2">{review.comment}</div>
-                <div className="text-sm text-bw-40">{formattedDate(review.date, locale)}</div>
+                <div className="text-sm text-bw-40">{formatDateFlexible(review.date, locale)}</div>
               </div>
             ))}
           </div>

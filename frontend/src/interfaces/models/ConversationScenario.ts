@@ -35,6 +35,7 @@ export type ConversationScenarioPreparation = {
   id: string;
   caseId: string;
   objectives: string[];
+  documentNames: string[];
   keyConcepts: KeyConcept[];
   prepChecklist: string[];
   status: string;
