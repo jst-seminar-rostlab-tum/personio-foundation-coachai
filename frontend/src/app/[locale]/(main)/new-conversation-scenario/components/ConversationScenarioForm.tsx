@@ -40,7 +40,7 @@ function ContextCardButton({
   return (
     <button
       type="button"
-      className={`w-full md:w-1/2 box-border rounded-2xl flex flex-col items-start justify-center text-lg outline outline-2 outline-bw-20 cursor-pointer hover:bg-marigold-30/80 active:outline-none active:bg-marigold-30 disabled:pointer-events-none p-8 group ${selected ? 'outline-none bg-marigold-30' : ''}`}
+      className={`w-full md:w-1/2 box-border rounded-2xl flex flex-col items-start justify-center text-lg outline outline-2 outline-bw-20 cursor-pointer hover:bg-marigold-30/80 active:outline-none active:bg-marigold-30 disabled:pointer-events-none p-6 group ${selected ? 'outline-none bg-marigold-30' : ''}`}
       onClick={onClick}
       {...props}
     >
@@ -98,9 +98,10 @@ export default function ConversationScenarioForm({
 
   // When scenario changes, if contextMode is 'default', update context in form state
   useEffect(() => {
-    if (contextMode === 'default' && defaultContextLong) {
+    if (defaultContextLong) {
       // Do not overwrite customContext
       updateForm({ situationalFacts: defaultContextLong });
+      setCustomContext(defaultContextLong);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formState.category, contextMode, defaultContextLong]);
@@ -121,7 +122,6 @@ export default function ConversationScenarioForm({
         return !!formState.category && !!formState.situationalFacts;
       case 2:
         return (
-          !!formState.category &&
           !!formState.difficulty &&
           !!formState.persona &&
           ((contextMode === 'custom' && !!customContext) ||
@@ -168,7 +168,7 @@ export default function ConversationScenarioForm({
   } else if (selectedCategoryKey) {
     contextValue = t(`categories.${selectedCategoryKey}.defaultContextLong`);
   }
-  const contextClass = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content h-[320px] w-full rounded-md bg-white px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${contextMode === 'custom' ? '' : 'text-bw-40'} resize-none overflow-auto`;
+  const contextClass = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md bg-white px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${contextMode === 'custom' ? '' : 'text-bw-40 cursor-not-allowed'} resize-none overflow-auto`;
 
   return (
     <div className="pb-8">
@@ -178,7 +178,7 @@ export default function ConversationScenarioForm({
         currentStep={currentStep}
         showAllStepNumbers={true}
         showStepLabels={false}
-        className="mb-8 w-3/4 mx-auto"
+        className="mb-8 md:w-3/4 mx-auto"
       />
 
       {/* Step 0: Context Selection */}

@@ -31,7 +31,7 @@ export function CustomizeStep({
   return (
     <div>
       <div className="mb-4 font-medium text-xl">{t('personaSelection')}</div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 w-full mx-auto mb-12">
+      <div className="grid grid-cols-3 gap-4 w-full mx-auto mb-12">
         {personas.map((persona) => (
           <PersonaButton
             key={persona.id}
