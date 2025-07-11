@@ -19,14 +19,21 @@ class ConversationScenarioCreate(CamelModel):
     language_code: LanguageCode = LanguageCode.en
 
 
-class ConversationScenarioCreateResponse(CamelModel):
+class ConversationScenarioConfirm(CamelModel):
     message: str
     scenario_id: UUID
 
 
-class ConversationScenarioWithTranscript(CamelModel):
+class ConversationScenarioRead(CamelModel):
     scenario: ConversationScenario
     transcript: list[SessionTurnRead]
+
+
+class ConversationScenarioAIPromptRead(CamelModel):
+    category_name: str
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = LanguageCode.en
 
 
 class ConversationScenarioSummary(CamelModel):

@@ -17,7 +17,7 @@ from app.models.session_turn import SessionTurn
 from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
 from app.schemas.session_feedback import (
     FeedbackRequest,
@@ -97,7 +97,7 @@ def generate_feedback_components(
     goals_request: GoalsAchievementRequest,
     hr_docs_context: str,
     document_names: list[str],
-    conversation: ConversationScenarioWithTranscript,
+    conversation: ConversationScenarioRead,
     scoring_service: ScoringService,
     session_turn_service: SessionTurnService,
     session_id: UUID,
@@ -179,7 +179,7 @@ def generate_feedback_components(
 
 def update_statistics(
     db_session: 'DBSession',
-    conversation: Optional[ConversationScenarioWithTranscript],
+    conversation: Optional[ConversationScenarioRead],
     goals: GoalsAchievedCollection,
     overall_score: float,
     has_error: bool,
@@ -245,9 +245,7 @@ def save_session_feedback(
     return feedback
 
 
-def get_conversation_data(
-    db_session: DBSession, session_id: UUID
-) -> ConversationScenarioWithTranscript:
+def get_conversation_data(db_session: DBSession, session_id: UUID) -> ConversationScenarioRead:
     """
     Get conversation data from the database in a single transaction.
     """
@@ -265,7 +263,7 @@ def get_conversation_data(
             select(SessionTurn).where(SessionTurn.session_id == session_id)
         ).all()
         transcript = [SessionTurnRead.model_validate(turn) for turn in turns]
-        return ConversationScenarioWithTranscript(scenario=scenario_read, transcript=transcript)
+        return ConversationScenarioRead(scenario=scenario_read, transcript=transcript)
 
 
 def generate_and_store_feedback(
