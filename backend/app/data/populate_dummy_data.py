@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, text
 
@@ -6,6 +8,7 @@ from app.data import (
     get_dummy_app_configs,
     get_dummy_conversation_categories,
     get_dummy_conversation_scenarios,
+    get_dummy_live_feedback_data,
     get_dummy_reviews,
     get_dummy_scenario_preparations,
     get_dummy_session_feedback,
@@ -94,6 +97,11 @@ def populate_data() -> None:
 
         app_configs = get_dummy_app_configs()
         db_session.add_all(app_configs)
+
+        # Populate live feedback
+        live_feedback = get_dummy_live_feedback_data(session_turns)
+        db_session.add_all(live_feedback)
+
         # Commit all data
         db_session.commit()
         print('Dummy data populated successfully!')
@@ -102,8 +110,11 @@ def populate_data() -> None:
         empty_vector_data = HrInformation(content='', meta_data={}, embedding=[0.0] * 768)
         db_session.add(empty_vector_data)
         db_session.commit()
+        path_match_documents = Path(__file__).resolve().parent.parent / 'rag' / 'match_function.sql'
+        sql_query_match_documents = path_match_documents.read_text(encoding='utf-8')
+        db_session.execute(text(sql_query_match_documents))
+        db_session.commit()
         print('Vector store created successfully!')
-
         # print('Creating mock users...')
         # create_mock_users()
 

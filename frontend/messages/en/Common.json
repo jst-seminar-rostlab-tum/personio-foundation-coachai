@@ -6,11 +6,16 @@
   "tryAgain": "Try Again",
   "cancel": "Cancel",
   "confirm": "Confirm",
+  "sessions": "sessions",
   "emptyList": {
-    "title": "No {itemType} yet",
-    "description": "Your {itemType} will appear here in the future!",
-    "sessions": "sessions",
-    "reviews": "reviews"
+    "title": "No {itemType} yet!",
+    "description": "This is where your {itemType} will appear once available."
+  },
+  "resources": {
+    "title": "Resources",
+    "subtitle": "Helpful materials to download to deepen your knowledge.",
+    "noResources": "No resources available for this scenario.",
+    "downloadError": "Failed to download resource. Please try again."
   },
   "saving": "Saving...",
   "save": "Save",
@@ -23,7 +28,6 @@
   "avgScore": "Average Score",
   "reviews": "Reviews",
   "delete": "Delete",
-  "export": "Export",
   "genericError": "An error occurred. Please try again later.",
   "back": "Back",
   "next": "Next",
