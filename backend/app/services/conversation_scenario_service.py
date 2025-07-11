@@ -15,8 +15,8 @@ from app.models.session import Session
 from app.models.session_feedback import FeedbackStatus, SessionFeedback
 from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
+    ConversationScenarioConfirm,
     ConversationScenarioCreate,
-    ConversationScenarioCreateResponse,
     ConversationScenarioSummary,
 )
 from app.schemas.scenario_preparation import ScenarioPreparationCreate, ScenarioPreparationRead
@@ -36,7 +36,7 @@ class ConversationScenarioService:
         user_profile: UserProfile,
         background_tasks: BackgroundTasks,
         custom_scenario: bool = False,
-    ) -> ConversationScenarioCreateResponse:
+    ) -> ConversationScenarioConfirm:
         """
         Create a new conversation scenario and start the preparation process in the background.
 
@@ -59,7 +59,7 @@ class ConversationScenarioService:
                     existing_scenarios, conversation_scenario
                 )
                 if equal_scenario_id:
-                    return ConversationScenarioCreateResponse(
+                    return ConversationScenarioConfirm(
                         message='Conversation scenario with the same prompt already exists.',
                         scenario_id=equal_scenario_id,
                     )
@@ -78,7 +78,7 @@ class ConversationScenarioService:
         # Start background task for preparation
         self._start_preparation_task(prep.id, new_conversation_scenario, category, background_tasks)
 
-        return ConversationScenarioCreateResponse(
+        return ConversationScenarioConfirm(
             message='Conversation scenario created, preparation started.',
             scenario_id=new_conversation_scenario.id,
         )

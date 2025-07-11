@@ -123,7 +123,7 @@ class TestSessionRoute(unittest.TestCase):
         self.db.close()
 
     def test_get_session_by_id(self) -> None:
-        response = self.client.get(f'/session/{self.test_session.id}')
+        response = self.client.get(f'/sessions/{self.test_session.id}')
 
         # Assert without feedback yet
         self.assertEqual(response.status_code, 202)
@@ -133,7 +133,7 @@ class TestSessionRoute(unittest.TestCase):
         self.db.add_all(dummy_feedback)
         self.db.commit()
 
-        response = self.client.get(f'/session/{self.test_session.id}')
+        response = self.client.get(f'/sessions/{self.test_session.id}')
         self.assertEqual(response.status_code, 200)
         data = response.json()
 
@@ -159,7 +159,7 @@ class TestSessionRoute(unittest.TestCase):
         self.db.add(review)
         self.db.commit()
 
-        response = self.client.get(f'/session/{self.test_session.id}')
+        response = self.client.get(f'/sessions/{self.test_session.id}')
         data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['scenarioId'], str(self.test_session.scenario_id))
