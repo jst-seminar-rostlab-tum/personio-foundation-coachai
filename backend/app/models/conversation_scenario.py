@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -8,27 +7,16 @@ from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import Field, Relationship
 
+from app.enums.conversation_scenario_status import ConversationScenarioStatus
+from app.enums.difficulty_level import DifficultyLevel
+from app.enums.language import LanguageCode
 from app.models.camel_case import CamelModel
-from app.models.language import LanguageCode
 
 if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
     from app.models.scenario_preparation import ScenarioPreparation
     from app.models.session import Session
     from app.models.user_profile import UserProfile
-
-
-# Enum for status
-class ConversationScenarioStatus(str, Enum):
-    draft = 'draft'
-    ready = 'ready'
-    archived = 'archived'
-
-
-class DifficultyLevel(str, Enum):
-    easy = 'easy'
-    medium = 'medium'
-    hard = 'hard'
 
 
 class ConversationScenario(CamelModel, table=True):

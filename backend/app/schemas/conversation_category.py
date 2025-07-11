@@ -1,7 +1,7 @@
 from datetime import datetime
 
+from app.enums.language import LanguageCode
 from app.models.camel_case import CamelModel
-from app.models.language import LanguageCode
 
 
 # Schema for reading ConversationCategory data

@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -8,6 +7,7 @@ from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import Field, Relationship
 
+from app.enums.session_status import SessionStatus
 from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
@@ -15,12 +15,6 @@ if TYPE_CHECKING:
     from app.models.review import Review
     from app.models.session_feedback import SessionFeedback
     from app.models.session_turn import SessionTurn
-
-
-class SessionStatus(str, Enum):
-    started = 'started'
-    completed = 'completed'
-    failed = 'failed'
 
 
 class Session(CamelModel, table=True):

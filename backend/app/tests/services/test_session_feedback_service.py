@@ -6,10 +6,10 @@ from uuid import UUID, uuid4
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine
 
-from app.models import FeedbackStatusEnum
+from app.enums import FeedbackStatus
+from app.enums.language import LanguageCode
+from app.enums.speaker import SpeakerType
 from app.models.conversation_scenario import ConversationScenarioStatus
-from app.models.language import LanguageCode
-from app.models.session_turn import SpeakerEnum
 from app.schemas.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioRead,
@@ -61,7 +61,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         transcript = [
             SessionTurnRead(
                 id=uuid4(),
-                speaker=SpeakerEnum.user,
+                speaker=SpeakerType.user,
                 full_audio_start_offset_ms=0,
                 text='Hello, Sam!',
                 ai_emotion='neutral',
@@ -207,7 +207,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             'End feedback conversations with agreed-upon action'
             ' items, timelines, and follow-up plans.',
         )
-        self.assertEqual(feedback.status, FeedbackStatusEnum.completed)
+        self.assertEqual(feedback.status, FeedbackStatus.completed)
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
 
@@ -270,7 +270,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             session_turn_service=mock_session_turn_service,
         )
 
-        self.assertEqual(feedback.status, FeedbackStatusEnum.failed)
+        self.assertEqual(feedback.status, FeedbackStatus.failed)
         self.assertEqual(feedback.goals_achieved, ['G1'])
         self.assertEqual(len(feedback.example_positive), 0)
         self.assertEqual(len(feedback.recommendations), 1)

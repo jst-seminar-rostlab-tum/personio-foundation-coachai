@@ -7,9 +7,10 @@ from uuid import uuid4
 
 from pydantic import ValidationError
 
-from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
-from app.models.language import LanguageCode
-from app.models.session_turn import SpeakerEnum
+from app.enums.conversation_scenario_status import ConversationScenarioStatus
+from app.enums.difficulty_level import DifficultyLevel
+from app.enums.language import LanguageCode
+from app.enums.speaker import SpeakerType
 from app.schemas.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioRead,
@@ -42,7 +43,7 @@ class TestScoringService(unittest.TestCase):
         self.transcript = [
             SessionTurnRead(
                 id=uuid4(),
-                speaker=SpeakerEnum.user,
+                speaker=SpeakerType.user,
                 full_audio_start_offset_ms=0,
                 text='Hello',
                 ai_emotion='neutral',

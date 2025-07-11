@@ -3,7 +3,7 @@ import os
 import string
 import unittest
 
-from app.models.language import LanguageCode
+from app.enums.language import LanguageCode
 from app.schemas.session_feedback import FeedbackCreate, SessionExamplesRead
 from app.services.session_feedback.session_feedback_llm import generate_training_examples
 
