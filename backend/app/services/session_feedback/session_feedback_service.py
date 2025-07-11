@@ -3,12 +3,14 @@ import logging
 from datetime import UTC, datetime
 from typing import Optional
 from uuid import UUID, uuid4
+import uuid
 
 from fastapi import HTTPException
 from pydantic import Field
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
+from app.connections.gcs_client import get_gcs_audio_manager
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.camel_case import CamelModel
 from app.models.session import Session
@@ -111,6 +113,8 @@ def generate_feedback_components(
     overall_score: float = 0.0
     has_error: bool = False
     output_blob_name: str | None = ''
+    audio_signed_url: str | None = None
+
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_examples = executor.submit(
@@ -127,6 +131,20 @@ def generate_feedback_components(
             f'{session_id}.mp3',
         )
 
+        try:
+            output_blob_name = future_audio_stitch.result()
+            if output_blob_name:
+                gcs = get_gcs_audio_manager()
+                if gcs:
+                    try:
+                        audio_signed_url = gcs.generate_signed_url(output_blob_name)
+                    except Exception as e:
+                        logging.warning(f'Failed to generate signed url for audio: {e}')
+        except Exception as e:
+            has_error = True
+            logging.warning('Failed to call Audio Stitching: %s', e)
+
+        # 其余 LLM 调用需传 audio_signed_url
         try:
             examples: SessionExamplesCollection = future_examples.result()
             examples_positive = examples.positive_examples
@@ -157,12 +175,6 @@ def generate_feedback_components(
             logging.warning('Failed to call ScoringService: %s', e)
             scores_json = {}
             overall_score = 0.0
-
-        try:
-            output_blob_name = future_audio_stitch.result()
-        except Exception as e:
-            has_error = True
-            logging.warning('Failed to call Audio Stitching: %s', e)
 
     return FeedbackGenerationResult(
         examples_positive=examples_positive,
