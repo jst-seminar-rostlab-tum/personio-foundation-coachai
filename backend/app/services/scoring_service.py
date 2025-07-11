@@ -6,7 +6,7 @@ from typing import Any, Optional
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
-from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
+from app.schemas.conversation_scenario import ConversationScenarioRead
 from app.schemas.scoring_schema import ScoringRead
 from app.services.utils import normalize_quotes
 
@@ -38,7 +38,7 @@ class ScoringService:
         )
         return system_prompt
 
-    def _build_user_prompt(self, conversation: ConversationScenarioWithTranscript) -> str:
+    def _build_user_prompt(self, conversation: ConversationScenarioRead) -> str:
         scenario = conversation.scenario
         transcript = conversation.transcript
         prompt = (
@@ -63,7 +63,7 @@ class ScoringService:
 
     def score_conversation(
         self,
-        conversation: ConversationScenarioWithTranscript,
+        conversation: ConversationScenarioRead,
         model: str = 'o4-mini-2025-04-16',
         temperature: float = 0.0,
     ) -> ScoringRead:
@@ -117,9 +117,7 @@ class ScoringService:
         return md
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-    def safe_score_conversation(
-        self, conversation: ConversationScenarioWithTranscript
-    ) -> ScoringRead:
+    def safe_score_conversation(self, conversation: ConversationScenarioRead) -> ScoringRead:
         return self.score_conversation(conversation)
 
 

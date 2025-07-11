@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
 from app.schemas.scoring_schema import ScoringRead
 from app.schemas.session_turn import SessionTurnRead
@@ -26,14 +26,14 @@ def format_scores(result: ScoringRead) -> str:
     )
 
 
-def load_conversation_data(json_path: Path) -> ConversationScenarioWithTranscript:
+def load_conversation_data(json_path: Path) -> ConversationScenarioRead:
     with open(json_path, encoding='utf-8') as f:
         data = json.load(f)
     # scenario
     scenario = ConversationScenario(**data['scenario'])
     # transcript
     transcript = [SessionTurnRead(**turn) for turn in data['transcript']]
-    return ConversationScenarioWithTranscript(scenario=scenario, transcript=transcript)
+    return ConversationScenarioRead(scenario=scenario, transcript=transcript)
 
 
 @unittest.skipUnless(os.environ.get('RUN_AI_TESTS') == 'true', 'AI test not enabled')

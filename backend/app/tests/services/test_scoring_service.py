@@ -12,7 +12,7 @@ from app.models.language import LanguageCode
 from app.models.session_turn import SpeakerEnum
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
 from app.schemas.scoring_schema import ConversationScore, MetricScore, ScoringRead
 from app.schemas.session_turn import SessionTurnRead
@@ -49,7 +49,7 @@ class TestScoringService(unittest.TestCase):
                 created_at=datetime(2024, 6, 28, 10, 0, 1),
             )
         ]
-        self.conversation = ConversationScenarioWithTranscript(
+        self.conversation = ConversationScenarioRead(
             scenario=self.scenario, transcript=self.transcript
         )
         self.scoring_service = ScoringService(rubric_path=self.rubric_path)
