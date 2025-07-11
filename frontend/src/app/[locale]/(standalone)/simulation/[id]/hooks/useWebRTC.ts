@@ -11,6 +11,7 @@ import { useElapsedTime } from './useElapsedTime';
 import { useLocalAudioRecorder } from './useLocalAudioRecorder';
 import { useRemoteAudioRecorder } from './useRemoteAudioRecorder';
 import { useSessionTurns } from './useSessionTurns';
+import { useSimulationLiveFeedback } from './useSimulationLiveFeedback';
 
 export function useWebRTC(sessionId: string) {
   const t = useTranslations('Simulation');
@@ -28,6 +29,9 @@ export function useWebRTC(sessionId: string) {
 
   const { addAudioToTurn, addMetadataToTurn, addStartOffsetMsToTurn, addEndOffsetMsToTurn } =
     useSessionTurns();
+
+  const { stopGetLiveFeedbackInterval, startGetLiveFeedbackInterval, sessionLiveFeedbacks } =
+    useSimulationLiveFeedback(sessionId);
 
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     ConnectionStatus.Connecting
@@ -99,9 +103,11 @@ export function useWebRTC(sessionId: string) {
     dc.onclose = () => {
       setConnectionStatus(ConnectionStatus.Closed);
       cleanup();
+      stopGetLiveFeedbackInterval();
     };
     dc.onerror = () => {
       setConnectionStatus(ConnectionStatus.Failed);
+      stopGetLiveFeedbackInterval();
       cleanup();
     };
 
@@ -164,6 +170,7 @@ export function useWebRTC(sessionId: string) {
               )
             );
             addEndOffsetMsToTurn(parsed.item_id, parsed.audio_end_ms);
+            startGetLiveFeedbackInterval();
             break;
 
           case 'response.content_part.added':
@@ -218,6 +225,8 @@ export function useWebRTC(sessionId: string) {
     localStreamRef,
     addEndOffsetMsToTurn,
     cleanup,
+    startGetLiveFeedbackInterval,
+    stopGetLiveFeedbackInterval,
     t,
   ]);
 
@@ -230,5 +239,6 @@ export function useWebRTC(sessionId: string) {
     messages,
     elapsedTimeS,
     cleanup,
+    sessionLiveFeedbacks,
   };
 }

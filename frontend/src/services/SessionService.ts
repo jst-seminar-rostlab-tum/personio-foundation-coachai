@@ -95,12 +95,23 @@ const getSdpResponseTextFromRealtimeApi = async (
   }
 };
 
+const getSessionLiveFeedback = async (api: AxiosInstance, sessionId: string) => {
+  try {
+    const sessionLiveFeedback = await api.get(`/live-feedback/session/${sessionId}`);
+    return sessionLiveFeedback;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 export const sessionService = {
   getPaginatedSessions,
   clearAllSessions,
   createSession,
   updateSession,
   getSessionFeedback,
+  getSessionLiveFeedback,
   createSessionTurn,
   getSdpResponseTextFromRealtimeApi,
 };

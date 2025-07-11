@@ -2,29 +2,16 @@
 
 import { useState } from 'react';
 import { ChevronUp } from 'lucide-react';
+import { SessionLiveFeedback } from '@/interfaces/models/SessionLiveFeedback';
+import { useTranslations } from 'next-intl';
 
-export default function SimulationRealtimeSuggestions() {
+interface SimulationLiveFeedbackProps {
+  liveFeedbacks: SessionLiveFeedback[];
+}
+
+export default function SimulationLiveFeedback({ liveFeedbacks }: SimulationLiveFeedbackProps) {
+  const t = useTranslations('Simulation.LiveFeedback');
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const suggestions = [
-    {
-      title: 'Positive Tone',
-      message: 'Your tone is calm. Keep it up',
-    },
-    {
-      title: 'Mind What You Say',
-      message:
-        'Responding with "Oops" after being confronted with an accusation is not professional.',
-    },
-    {
-      title: 'Try Asking',
-      message: '"What specific challenges are you facing with these deadlines?"',
-    },
-    {
-      title: 'Potential Next Steps',
-      message:
-        'You could try asking: "What specific challenges are you facing with these deadlines?"',
-    },
-  ];
 
   return (
     <>
@@ -37,7 +24,7 @@ export default function SimulationRealtimeSuggestions() {
             className={`w-5 h-5 transition-transform duration-600 ${showSuggestions ? 'rotate-180' : ''}`}
           />
           <span className="font-medium text-font-dark text-sm group-hover:underline">
-            Real-time Suggestions
+            {t('title')}
           </span>
         </div>
       </div>
@@ -49,10 +36,12 @@ export default function SimulationRealtimeSuggestions() {
         <div className="w-full">
           <div className="w-full max-w-7xl mx-auto flex flex-col overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] p-6 h-full px-[clamp(1.25rem,4vw,4rem)]">
             <ul className="flex flex-col gap-4 w-full">
-              {suggestions.map((suggestion, idx) => (
+              {liveFeedbacks.map((liveFeedback, idx) => (
                 <li key={idx} className="bg-background-light rounded-lg border border-bw-20 p-4">
-                  <div className="font-semibold text-font-dark mb-1">{suggestion.title}</div>
-                  <div className="text-sm text-font-dark leading-snug">{suggestion.message}</div>
+                  <div className="font-semibold text-font-dark mb-1">{liveFeedback.heading}</div>
+                  <div className="text-sm text-font-dark leading-snug">
+                    {liveFeedback.feedbackText}
+                  </div>
                 </li>
               ))}
             </ul>

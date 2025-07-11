@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 import { ConnectionStatus } from '@/interfaces/models/Simulation';
 import SimulationHeader from './SimulationHeader';
 import SimulationFooter from './SimulationFooter';
-import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
+import SimulationLiveFeedback from './SimulationLiveFeedback';
 import SimulationMessages from './SimulationMessages';
 
 const DISCONNECTED_STATES = [
@@ -42,6 +42,7 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
     elapsedTimeS,
     toggleMic,
     cleanup,
+    sessionLiveFeedbacks,
   } = useWebRTC(sessionId);
 
   useEffect(() => {
@@ -83,7 +84,7 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
         )}
       </div>
 
-      <SimulationRealtimeSuggestions />
+      <SimulationLiveFeedback liveFeedbacks={sessionLiveFeedbacks} />
 
       <SimulationFooter
         isMicActive={isMicActive}
