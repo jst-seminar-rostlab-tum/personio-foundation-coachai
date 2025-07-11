@@ -11,7 +11,7 @@ import StatCard from '@/components/common/StatCard';
 import { getTranslations } from 'next-intl/server';
 import { api } from '@/services/ApiServer';
 import AdminLoadingPage from './loading';
-import TokenSetter from './components/TokenSetter';
+import SessionSetter from './components/SessionSetter';
 import Reviews from './components/Reviews';
 import UserManagement from './components/UserManagement';
 
@@ -50,7 +50,7 @@ export default async function AdminPage() {
             <StatCard key={i} value={stat.value} label={stat.label} />
           ))}
         </div>
-        <TokenSetter dailyTokenLimit={stats.dailyTokenLimit} />
+        <SessionSetter dailySessionLimit={stats.dailySessionLimit} />
         <Reviews {...reviews} />
         <UserManagement usersPaginationData={users} />
       </div>

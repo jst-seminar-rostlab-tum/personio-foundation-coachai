@@ -20,5 +20,9 @@
   "sortNewest": "Newest",
   "sortOldest": "Oldest",
   "sortHighest": "Highest",
-  "sortLowest": "Lowest"
+  "sortLowest": "Lowest",
+  "sessionsPerUserLabel": "Sessions per user per day",
+  "sessionSuccess": "Session limit saved successfully",
+  "sessionFailed": "Error saving session limit",
+  "sessionNumberFailed": "Please enter a valid number (1-1000)"
 }
