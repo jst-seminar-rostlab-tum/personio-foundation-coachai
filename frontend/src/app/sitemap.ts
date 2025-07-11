@@ -1,6 +1,5 @@
 import { MetadataRoute } from 'next';
-
-const BASE_URL = 'https://personiofoundation-coachai.com';
+import { BASE_URL } from '@/lib/connector';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
