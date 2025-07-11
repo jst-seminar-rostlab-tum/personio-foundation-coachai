@@ -3,9 +3,9 @@ from uuid import UUID
 
 from sqlmodel import JSON, Column, Field
 
+from app.enums.language import LanguageCode
+from app.enums.scenario_preparation_status import ScenarioPreparationStatus
 from app.models.camel_case import CamelModel
-from app.models.language import LanguageCode
-from app.models.scenario_preparation import ScenarioPreparationStatus
 
 # Schemas for scenario preparation requests
 

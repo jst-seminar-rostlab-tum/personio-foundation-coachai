@@ -9,9 +9,11 @@ from sqlmodel import col, select
 from supabase import AuthError
 
 from app.database import get_supabase_client
+from app.enums.account_role import AccountRole
+from app.enums.goal import Goal
 from app.models.user_confidence_score import UserConfidenceScore
-from app.models.user_goal import Goal, UserGoal
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.user_goal import UserGoal
+from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
     PaginatedUserResponse,

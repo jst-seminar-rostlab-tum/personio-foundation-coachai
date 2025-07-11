@@ -1,15 +1,7 @@
-from enum import Enum as PyEnum
-
 from sqlmodel import Column, Enum, Field
 
+from app.enums.config_type import ConfigType
 from app.models.camel_case import CamelModel
-
-
-# Enum for the type column
-class ConfigType(PyEnum):
-    int = 'int'
-    string = 'string'
-    boolean = 'boolean'
 
 
 class AppConfig(CamelModel, table=True):

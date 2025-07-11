@@ -1,7 +1,7 @@
 from sqlmodel import JSON, Column, Field
 
+from app.enums.language import LanguageCode
 from app.models.camel_case import CamelModel
-from app.models.language import LanguageCode
 from app.schemas.session_turn import SessionTurnRead
 
 

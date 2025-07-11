@@ -8,14 +8,18 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, func, select
 
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.enums.account_role import AccountRole
+from app.enums.feedback_status import FeedbackStatus
+from app.enums.scenario_preparation_status import ScenarioPreparationStatus
+from app.enums.session_status import SessionStatus
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
-from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.models.session import Session, SessionStatus
-from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
+from app.models.scenario_preparation import ScenarioPreparation
+from app.models.session import Session
+from app.models.session_feedback import SessionFeedback
 from app.models.session_turn import SessionTurn
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.user_profile import UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
 from app.schemas.session_feedback import FeedbackRequest, SessionFeedbackMetrics
 from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
@@ -396,9 +400,9 @@ class SessionService:
         feedback = self.db.exec(
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
         ).first()
-        if not feedback or feedback.status == FeedbackStatusEnum.pending:
+        if not feedback or feedback.status == FeedbackStatus.pending:
             raise HTTPException(status_code=202, detail='Session feedback in progress.')
-        if feedback.status == FeedbackStatusEnum.failed:
+        if feedback.status == FeedbackStatus.failed:
             raise HTTPException(status_code=500, detail='Session feedback failed.')
 
         audio_file_exists = False

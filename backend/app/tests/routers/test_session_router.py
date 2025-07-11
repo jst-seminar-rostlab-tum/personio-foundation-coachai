@@ -16,10 +16,10 @@ from app.data.dummy_data import (
     get_dummy_session_feedback,
 )
 from app.dependencies import get_db_session, require_user
+from app.enums.account_role import AccountRole
+from app.enums.speaker import SpeakerType
 from app.main import app
 from app.models import Review, Session, SessionStatus, UserProfile
-from app.models.session_turn import SpeakerEnum
-from app.models.user_profile import AccountRole
 from app.schemas.session_turn import SessionTurnRead
 
 
@@ -103,7 +103,7 @@ class TestSessionRoute(unittest.TestCase):
         fake_turn_svc.get_session_turns.return_value = [
             SessionTurnRead(
                 id=uuid4(),
-                speaker=SpeakerEnum.user,
+                speaker=SpeakerType.user,
                 full_audio_start_offset_ms=0,
                 text='hello',
                 ai_emotion='neutral',

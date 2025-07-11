@@ -1,11 +1,9 @@
 from uuid import UUID
 
+from app.enums.difficulty_level import DifficultyLevel
+from app.enums.language import LanguageCode
 from app.models.camel_case import CamelModel
-from app.models.conversation_scenario import (
-    ConversationScenario,
-    DifficultyLevel,
-)
-from app.models.language import LanguageCode
+from app.models.conversation_scenario import ConversationScenario
 from app.schemas.session_turn import SessionTurnRead
 
 

@@ -3,17 +3,19 @@ from datetime import datetime
 from unittest.mock import MagicMock, patch
 from uuid import UUID, uuid4
 
+from backend.app.enums.language import LanguageCode
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine, select
 
-from app.models import FeedbackStatusEnum
+from app.enums.conversation_scenario_status import ConversationScenarioStatus
+from app.enums.feedback_status import FeedbackStatus
+from app.enums.session_status import SessionStatus
+from app.enums.speaker import SpeakerType
 from app.models.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioStatus,
 )
-from app.models.language import LanguageCode
-from app.models.session import Session, SessionStatus
-from app.models.session_turn import SessionTurn, SpeakerEnum
+from app.models.session import Session
+from app.models.session_turn import SessionTurn
 from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
 from app.schemas.session_feedback import (
     FeedbackRequest,
@@ -70,7 +72,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         turn = SessionTurn(
             id=uuid4(),
             session_id=session_id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=1000,
             text='Hello, Sam!',
@@ -89,7 +91,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(conversation.scenario.situational_facts, 'Feedback context')
         self.assertEqual(len(conversation.transcript), 1)
         self.assertEqual(conversation.transcript[0].text, 'Hello, Sam!')
-        self.assertEqual(conversation.transcript[0].speaker, SpeakerEnum.user)
+        self.assertEqual(conversation.transcript[0].speaker, SpeakerType.user)
 
     @patch('app.services.session_feedback.session_feedback_llm.generate_training_examples')
     @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')
@@ -216,7 +218,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             'End feedback conversations with agreed-upon action'
             ' items, timelines, and follow-up plans.',
         )
-        self.assertEqual(feedback.status, FeedbackStatusEnum.completed)
+        self.assertEqual(feedback.status, FeedbackStatus.completed)
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
 
@@ -275,7 +277,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             session_turn_service=mock_session_turn_service,
         )
 
-        self.assertEqual(feedback.status, FeedbackStatusEnum.failed)
+        self.assertEqual(feedback.status, FeedbackStatus.failed)
         self.assertEqual(feedback.goals_achieved, ['G1'])
         self.assertEqual(len(feedback.example_positive), 0)
         self.assertEqual(len(feedback.recommendations), 1)
@@ -341,7 +343,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             ConversationScenarioStatus,
         )
         from app.models.session import Session
-        from app.models.session_turn import SessionTurn, SpeakerEnum
+        from app.models.session_turn import SessionTurn, SpeakerType
         from app.models.user_profile import UserProfile
 
         user_id = uuid4()
@@ -382,7 +384,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         turn = SessionTurn(
             id=uuid4(),
             session_id=session_id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=1000,
             text='Hello, Sam!',

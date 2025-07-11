@@ -6,8 +6,9 @@ from uuid import UUID, uuid4
 
 from sqlmodel import Session, SQLModel, create_engine, select
 
+from app.enums.speaker import SpeakerType
 from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
-from app.models.session_turn import SessionTurn, SpeakerEnum
+from app.models.session_turn import SessionTurn
 from app.schemas.live_feedback_schema import LiveFeedback
 from app.services.live_feedback_service import (
     fetch_all_for_session,
@@ -34,7 +35,7 @@ class TestLiveFeedbackService(unittest.TestCase):
             return SessionTurn(
                 id=uuid4(),
                 session_id=session_id,
-                speaker=SpeakerEnum.user,
+                speaker=SpeakerType.user,
                 start_offset_ms=0,
                 end_offset_ms=0,
                 full_audio_start_offset_ms=0,
@@ -46,7 +47,7 @@ class TestLiveFeedbackService(unittest.TestCase):
         return SessionTurn(
             id=uuid4(),
             session_id=session_id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=0,
             full_audio_start_offset_ms=0,

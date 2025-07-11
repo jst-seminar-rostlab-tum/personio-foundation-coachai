@@ -1,8 +1,8 @@
 from datetime import datetime
 from uuid import UUID
 
+from app.enums.session_status import SessionStatus
 from app.models.camel_case import CamelModel
-from app.models.session import SessionStatus
 
 
 class SkillScores(CamelModel):

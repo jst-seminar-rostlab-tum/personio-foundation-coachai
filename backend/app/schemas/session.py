@@ -4,8 +4,8 @@ from uuid import UUID
 
 from sqlmodel import Field
 
+from app.enums.session_status import SessionStatus
 from app.models.camel_case import CamelModel
-from app.models.session import SessionStatus
 from app.schemas.session_feedback import SessionFeedbackMetrics
 
 

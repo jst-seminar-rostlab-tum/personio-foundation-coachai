@@ -6,8 +6,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
 from sqlmodel import Field, Relationship
 
+from app.enums.language import LanguageCode
 from app.models.camel_case import CamelModel
-from app.models.language import LanguageCode
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
