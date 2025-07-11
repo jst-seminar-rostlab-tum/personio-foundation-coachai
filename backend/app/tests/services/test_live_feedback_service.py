@@ -6,8 +6,11 @@ from uuid import UUID, uuid4
 
 from sqlmodel import Session, SQLModel, create_engine, select
 
+from app.models.conversation_scenario import ConversationScenario
 from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
+from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn, SpeakerEnum
+from app.models.user_profile import UserProfile
 from app.schemas.live_feedback_schema import LiveFeedback
 from app.services.live_feedback_service import (
     fetch_latest_five_for_session,
@@ -58,19 +61,38 @@ class TestLiveFeedbackService(unittest.TestCase):
 
     def test_fetch_latest_five_for_session_returns_items_in_order(self) -> None:
         session_id = uuid4()
+        user_id = uuid4()
+
+        # Create and insert a Scenario
+        scenario = ConversationScenario(
+            id=uuid4(), user_id=user_id, persona='', situational_facts=''
+        )
+        self.session.add(scenario)
+        self.session.commit()
+
+        # Create and insert a Session linked to that Scenario
+        test_session = SessionModel(id=session_id, scenario_id=scenario.id)
+        self.session.add(test_session)
+        self.session.commit()
+
+        # Create and insert LiveFeedbackDB items linked to the session
         item1 = LiveFeedbackDB(
             session_id=session_id, heading='Tone', feedback_text='Speak clearly.'
         )
         item2 = LiveFeedbackDB(
             session_id=session_id, heading='Clarity', feedback_text='Be more direct.'
         )
-
         self.session.add(item1)
         self.session.add(item2)
         self.session.commit()
 
-        results: list[LiveFeedbackDB] = fetch_latest_five_for_session(self.session, session_id)
+        # Create matching UserProfile mock
+        user_profile = UserProfile(id=user_id)
 
+        # Call the function
+        results = fetch_latest_five_for_session(self.session, session_id, user_profile)
+
+        # Assert correct order (reversed because newest comes first)
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0].heading, 'Tone')
         self.assertEqual(results[1].heading, 'Clarity')
