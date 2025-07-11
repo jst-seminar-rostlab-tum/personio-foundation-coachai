@@ -8,7 +8,22 @@ from app.services.google_cloud_storage_service import GCSManager
 
 @pytest.fixture
 def gcs_manager() -> GCSManager:
-    with patch('app.services.google_cloud_storage_service.storage.Client'):
+    with (
+        patch('app.services.google_cloud_storage_service.settings') as mock_settings,
+        patch('app.services.google_cloud_storage_service.storage.Client'),
+        patch(
+            'app.services.google_cloud_storage_service.service_account.Credentials.from_service_account_info'
+        ) as mock_creds,
+    ):
+        mock_settings.GCP_PROJECT_ID = 'dummy'
+        mock_settings.GCP_PRIVATE_KEY_ID = 'dummy'
+        mock_settings.GCP_PRIVATE_KEY = (
+            '-----BEGIN PRIVATE KEY-----\\ndummy\\n-----END PRIVATE KEY-----\\n'
+        )
+        mock_settings.GCP_CLIENT_EMAIL = 'dummy@dummy.iam.gserviceaccount.com'
+        mock_settings.GCP_CLIENT_ID = 'dummy'
+        mock_settings.GCP_BUCKET = 'dummy'
+        mock_creds.return_value = MagicMock()
         manager = GCSManager('audio')
         manager.bucket = MagicMock()
         return manager
