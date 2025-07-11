@@ -20,6 +20,7 @@ class ExportUserProfile(BaseModel):
     current_streak_days: int
     score_sum: int
     goals_achieved: int
+    num_remaining_daily_sessions: Optional[int] = None
 
 
 class ExportUserGoal(BaseModel):

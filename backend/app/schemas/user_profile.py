@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from uuid import UUID
 
 from app.models.camel_case import CamelModel
@@ -51,6 +51,9 @@ class UserProfileRead(CamelModel):
     preferred_learning_style: PreferredLearningStyle
     updated_at: datetime
     store_conversations: bool
+    sessions_created_today: int
+    sessions_created_today_date: date
+    num_remaining_daily_sessions: int | None = None
 
 
 class UserProfileExtendedRead(UserProfileRead):
@@ -83,3 +86,6 @@ class UserStatisticsRead(CamelModel):
     goals_achieved: int  # summation of all goals achieved
     performance_over_time: list[int]
     skills_performance: dict[str, int]
+    daily_session_limit: int | None = None
+    remaining_sessions_today: int | None = None
+    num_remaining_daily_sessions: int | None = None

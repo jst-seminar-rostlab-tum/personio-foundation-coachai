@@ -9,6 +9,7 @@ from sqlmodel import col, func, select
 
 from app.connections.gcs_client import get_gcs_audio_manager
 from app.models.admin_dashboard_stats import AdminDashboardStats
+from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
@@ -102,6 +103,29 @@ class SessionService:
     def create_new_session(
         self, session_data: SessionCreate, user_profile: UserProfile
     ) -> SessionRead:
+        # Enforce daily session limit for non-admin users
+        if user_profile.account_role != AccountRole.admin:
+            # Get session limit from AppConfig
+            session_limit_config = self.db.exec(
+                select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
+            ).first()
+            if session_limit_config is not None:
+                session_limit = int(session_limit_config)
+                # Count user's sessions started today
+                today = datetime.now(UTC).date()
+                scenario_ids = self._get_user_scenario_ids(user_profile.id)
+                if scenario_ids:
+                    session_count = self.db.exec(
+                        select(func.count())
+                        .select_from(Session)
+                        .where(Session.scenario_id.in_(scenario_ids))
+                        .where(func.date(Session.started_at) == today)
+                    ).one()
+                    if session_count >= session_limit:
+                        raise HTTPException(
+                            status_code=403,
+                            detail=f'You have reached the daily session limit of {session_limit}.',
+                        )
         conversation_scenario = self.db.get(ConversationScenario, session_data.scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
@@ -116,6 +140,14 @@ class SessionService:
         new_session = Session(**session_data.model_dump())
         new_session.status = SessionStatus.started
         new_session.started_at = datetime.now(UTC)
+
+        # Update user's daily session counter
+        today = new_session.started_at.date()
+        if user_profile.sessions_created_today_date != today:
+            user_profile.sessions_created_today = 0
+            user_profile.sessions_created_today_date = today
+        user_profile.sessions_created_today += 1
+        self.db.add(user_profile)
 
         self.db.add(new_session)
         self.db.commit()

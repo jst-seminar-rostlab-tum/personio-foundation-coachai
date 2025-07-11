@@ -23,6 +23,26 @@ from app.schemas.user_export import (
 def _build_export_user_profile(user_profile: UserProfile) -> ExportUserProfile:
     """Build export user profile from UserProfile model."""
     try:
+        # Fetch daily session limit from AppConfig
+        from app.models.app_config import AppConfig
+
+        db_session = (
+            user_profile.__sa_session__ if hasattr(user_profile, '__sa_session__') else DBSession()
+        )
+        daily_session_limit = None
+        if db_session is not None:
+            daily_session_limit = db_session.exec(
+                select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
+            ).first()
+            daily_session_limit = (
+                int(daily_session_limit) if daily_session_limit is not None else None
+            )
+        if daily_session_limit is not None:
+            num_remaining_daily_sessions = max(
+                0, daily_session_limit - user_profile.sessions_created_today
+            )
+        else:
+            num_remaining_daily_sessions = None
         return ExportUserProfile(
             user_id=str(user_profile.id),
             full_name=user_profile.full_name,
@@ -40,6 +60,7 @@ def _build_export_user_profile(user_profile: UserProfile) -> ExportUserProfile:
             current_streak_days=user_profile.current_streak_days,
             score_sum=user_profile.score_sum,
             goals_achieved=user_profile.goals_achieved,
+            num_remaining_daily_sessions=num_remaining_daily_sessions,
         )
     except Exception as e:
         # Add debugging information

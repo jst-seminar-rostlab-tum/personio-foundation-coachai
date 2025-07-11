@@ -24,6 +24,12 @@ class AdminDashboardService:
         ).first()
         return int(daily_token_limit) if daily_token_limit is not None else None
 
+    def _get_daily_session_limit(self) -> int | None:
+        daily_session_limit = self.db.exec(
+            select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
+        ).first()
+        return int(daily_session_limit) if daily_session_limit is not None else None
+
     def _get_admin_stats(self) -> AdminDashboardStats:
         stats = self.db.exec(select(AdminDashboardStats)).first()
         if not stats:
@@ -43,6 +49,9 @@ class AdminDashboardService:
         # Get daily token limit from app_config with key 'dailyUserTokenLimit'
         daily_token_limit = self._get_daily_token_limit()
 
+        # Get daily session limit from app_config with key 'dailyUserSessionLimit'
+        daily_session_limit = self._get_daily_session_limit()
+
         # Get admin stats
         stats = self._get_admin_stats()
 
@@ -52,4 +61,5 @@ class AdminDashboardService:
             total_reviews=total_reviews,
             score_sum=stats.score_sum,
             daily_token_limit=daily_token_limit,
+            daily_session_limit=daily_session_limit,
         )

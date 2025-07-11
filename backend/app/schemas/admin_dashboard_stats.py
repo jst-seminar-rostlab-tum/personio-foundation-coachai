@@ -8,3 +8,4 @@ class AdminDashboardStatsRead(CamelModel):
     total_reviews: int  # number of reviews
     score_sum: float
     daily_token_limit: int | None  # daily token limit retrieved from app_config table
+    daily_session_limit: int | None  # daily session limit retrieved from app_config table

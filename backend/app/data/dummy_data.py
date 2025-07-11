@@ -1633,6 +1633,7 @@ def get_dummy_app_configs() -> list[AppConfig]:
     """
     return [
         AppConfig(key='dailyUserTokenLimit', value='100', type=ConfigType.int),
+        AppConfig(key='dailyUserSessionLimit', value='10', type=ConfigType.int),
     ]
 
 
