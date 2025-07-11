@@ -12,17 +12,17 @@ from app.models.language import LanguageCode
 from app.models.session_turn import SpeakerEnum
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
 from app.schemas.session_feedback import (
-    FeedbackRequest,
-    GoalsAchievedCollection,
+    FeedbackCreate,
+    GoalsAchievedRead,
     GoalsAchievementRequest,
     NegativeExample,
     PositiveExample,
     Recommendation,
-    RecommendationsCollection,
-    SessionExamplesCollection,
+    RecommendationsRead,
+    SessionExamplesRead,
 )
 from app.schemas.session_turn import SessionTurnRead
 from app.services.session_feedback.session_feedback_llm import generate_recommendations
@@ -44,9 +44,7 @@ class TestSessionFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    def _mock_conversation_data(
-        self, user_id: UUID | None = None
-    ) -> ConversationScenarioWithTranscript:
+    def _mock_conversation_data(self, user_id: UUID | None = None) -> ConversationScenarioRead:
         if user_id is None:
             user_id = uuid4()
         scenario = ConversationScenario(
@@ -71,7 +69,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 created_at=datetime.now(),
             )
         ]
-        return ConversationScenarioWithTranscript(scenario=scenario, transcript=transcript)
+        return ConversationScenarioRead(scenario=scenario, transcript=transcript)
 
     @patch('app.services.session_feedback.session_feedback_service.get_hr_docs_context')
     @patch('app.services.session_feedback.session_feedback_service.get_conversation_data')
@@ -87,7 +85,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_get_hr_docs_context: MagicMock,
     ) -> None:
         mock_get_conversation_data.return_value = self._mock_conversation_data()
-        mock_examples.return_value = SessionExamplesCollection(
+        mock_examples.return_value = SessionExamplesRead(
             positive_examples=[
                 PositiveExample(
                     heading='Clear Objective Addressed',
@@ -104,8 +102,8 @@ class TestSessionFeedbackService(unittest.TestCase):
                 )
             ],
         )
-        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=['G1', 'G2'])
-        mock_recommendations.return_value = RecommendationsCollection(
+        mock_goals.return_value = GoalsAchievedRead(goals_achieved=['G1', 'G2'])
+        mock_recommendations.return_value = RecommendationsRead(
             recommendations=[
                 Recommendation(
                     heading='Practice the STAR method',
@@ -133,7 +131,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.metric = metric
                 self.score = score
 
-        class MockScoringResult:
+        class MockScoringRead:
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = [
@@ -148,12 +146,12 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
             persona='**Name**: Someone\n**Training Focus**: Goal\n'
@@ -228,8 +226,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_get_conversation_data.return_value = self._mock_conversation_data()
         mock_examples.side_effect = Exception('Failed to generate examples')
 
-        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=['G1'])
-        mock_recommendations.return_value = RecommendationsCollection(
+        mock_goals.return_value = GoalsAchievedRead(goals_achieved=['G1'])
+        mock_recommendations.return_value = RecommendationsRead(
             recommendations=[
                 Recommendation(
                     heading='Some heading',
@@ -238,7 +236,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             ]
         )
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Error case transcript...',
             objectives=['ObjX'],
             persona='**Name**: Example User\n**Training Focus**: Goal\n'
@@ -250,7 +248,7 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         session_id = uuid4()
 
-        class MockScoringResult:
+        class MockScoringRead:
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = []
@@ -260,7 +258,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
@@ -298,7 +296,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         category = 'Project Management'
 
         # Set up llm mock and vector db prompt extension
-        mock_llm.return_value = RecommendationsCollection(
+        mock_llm.return_value = RecommendationsRead(
             recommendations=[
                 Recommendation(
                     heading='Practice the STAR method',
@@ -308,7 +306,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             ]
         )
 
-        req = FeedbackRequest(
+        req = FeedbackCreate(
             category=category,
             transcript=transcript,
             objectives=objectives,
@@ -350,18 +348,16 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_examples: MagicMock,
         mock_get_conversation_data: MagicMock,
     ) -> None:
-        mock_examples.return_value = SessionExamplesCollection(
-            positive_examples=[], negative_examples=[]
-        )
-        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=[])
-        mock_recommendations.return_value = RecommendationsCollection(recommendations=[])
+        mock_examples.return_value = SessionExamplesRead(positive_examples=[], negative_examples=[])
+        mock_goals.return_value = GoalsAchievedRead(goals_achieved=[])
+        mock_recommendations.return_value = RecommendationsRead(recommendations=[])
 
         class MockScore:
             def __init__(self, metric: str, score: float) -> None:
                 self.metric = metric
                 self.score = score
 
-        class MockScoringResult:
+        class MockScoringRead:
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = [
@@ -376,7 +372,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
@@ -385,7 +381,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         session_id = uuid4()
         mock_get_conversation_data.return_value = self._mock_conversation_data(user_id=user_id)
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
             persona='**Name**: Someone\n**Training Focus**: Goal',
@@ -410,7 +406,7 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         dummy_audio_url = 'https://dummy-audio-url'
         dummy_json = '{"positive_examples": [], "negative_examples": []}'
-        req = FeedbackRequest(
+        req = FeedbackCreate(
             transcript='User: Hello',
             objectives=['Obj1'],
             persona='P',
@@ -434,7 +430,7 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         dummy_audio_url = 'https://dummy-audio-url'
         dummy_json = '{"recommendations": [{"heading": "h", "recommendation": "r"}]}'
-        req = FeedbackRequest(
+        req = FeedbackCreate(
             transcript='User: Hello',
             objectives=['Obj1'],
             persona='P',

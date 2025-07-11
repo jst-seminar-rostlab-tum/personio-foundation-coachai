@@ -134,7 +134,7 @@ def call_structured_llm(
     model: str = DEFAULT_MODEL,
     temperature: float = 1,
     max_tokens: int = 500,
-    audio_uri: Optional[str] = None,  # 支持音频
+    audio_uri: Optional[str] = None,
     mock_response: T | None = None,
 ) -> T:
     if not ENABLE_AI or vertexai_client is None:

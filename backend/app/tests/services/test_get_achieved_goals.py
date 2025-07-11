@@ -2,7 +2,7 @@ import os
 import unittest
 
 from app.models.language import LanguageCode
-from app.schemas.session_feedback import GoalsAchievedCollection, GoalsAchievementRequest
+from app.schemas.session_feedback import GoalsAchievedCreate, GoalsAchievedRead
 from app.services.session_feedback.session_feedback_llm import get_achieved_goals
 
 
@@ -16,7 +16,7 @@ class TestGetAchievedGoals(unittest.TestCase):
         ]
         self.language_code = LanguageCode.en
 
-    def print_goals_stats(self, tag: str, result: GoalsAchievedCollection) -> None:
+    def print_goals_stats(self, tag: str, result: GoalsAchievedRead) -> None:
         print(
             f'[{tag}] achieved={len(result.goals_achieved)} goals_achieved={result.goals_achieved}'
         )
@@ -26,7 +26,7 @@ class TestGetAchievedGoals(unittest.TestCase):
             'User: I want to make sure we are clear about the next steps.\n'
             "User: Let's keep this professional."
         )
-        req = GoalsAchievementRequest(
+        req = GoalsAchievedCreate(
             transcript=transcript,
             objectives=self.base_objectives,
             language_code=self.language_code,
@@ -39,7 +39,7 @@ class TestGetAchievedGoals(unittest.TestCase):
         )
 
     def test_no_goals_achieved_if_none_addressed(self) -> None:
-        req = GoalsAchievementRequest(
+        req = GoalsAchievedCreate(
             transcript='User: Hello, how are you?\nUser: Nice weather today!',
             objectives=['Provide feedback', 'Set clear goals'],
             language_code=self.language_code,
@@ -54,7 +54,7 @@ class TestGetAchievedGoals(unittest.TestCase):
             "User: Let's keep this professional.\n"
             'User: Please share your thoughts.'
         )
-        req = GoalsAchievementRequest(
+        req = GoalsAchievedCreate(
             transcript=transcript,
             objectives=self.base_objectives,
             language_code=self.language_code,
@@ -64,7 +64,7 @@ class TestGetAchievedGoals(unittest.TestCase):
         self.assertSetEqual(set(result.goals_achieved), set(self.base_objectives))
 
     def test_partial_achievement_subset(self) -> None:
-        req = GoalsAchievementRequest(
+        req = GoalsAchievedCreate(
             transcript="User: Let's keep this professional.",
             objectives=self.base_objectives,
             language_code=self.language_code,
@@ -75,7 +75,7 @@ class TestGetAchievedGoals(unittest.TestCase):
 
     def test_only_assistant_or_empty_transcript(self) -> None:
         for transcript in ['Assistant: Please share your thoughts.', '']:
-            req = GoalsAchievementRequest(
+            req = GoalsAchievedCreate(
                 transcript=transcript,
                 objectives=self.base_objectives,
                 language_code=self.language_code,
@@ -86,25 +86,21 @@ class TestGetAchievedGoals(unittest.TestCase):
 
     def test_get_achieved_goals_with_various_audios(self) -> None:
         from app.connections.gcs_client import get_gcs_audio_manager
-        audio_files = [
-            "standard.mp3",
-            "playful.mp3",
-            "excited.mp3",
-            "strong_expressive.mp3"
-        ]
-        req = GoalsAchievementRequest(
-            transcript="User: Hello",
+
+        audio_files = ['standard.mp3', 'playful.mp3', 'excited.mp3', 'strong_expressive.mp3']
+        req = GoalsAchievedCreate(
+            transcript='User: Hello',
             objectives=self.base_objectives,
             language_code=self.language_code,
         )
         for audio_file in audio_files:
             audio_url = get_gcs_audio_manager().generate_signed_url(audio_file)
-            print(f"\n==== Testing with audio: {audio_file} ====")
+            print(f'\n==== Testing with audio: {audio_file} ====')
             try:
                 result = get_achieved_goals(req, audio_url=audio_url)
                 print(result.model_dump_json(indent=2))
             except Exception as e:
-                print(f"Error with {audio_file}: {e}")
+                print(f'Error with {audio_file}: {e}')
 
 
 if __name__ == '__main__':

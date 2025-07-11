@@ -12,14 +12,14 @@ from app.models.conversation_scenario import ConversationScenarioStatus, Difficu
 from app.models.language import LanguageCode
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
-from app.schemas.scoring_schema import ScoringResult
+from app.schemas.scoring_schema import ScoringRead
 from app.schemas.session_turn import SessionTurnRead, SpeakerEnum
 from app.services.scoring_service import ScoringService
 
 
-def format_scores(result: ScoringResult) -> str:
+def format_scores(result: ScoringRead) -> str:
     """Helper function to format all metric scores for printing."""
     scores = {s.metric: s.score for s in result.scoring.scores}
     return (
@@ -31,14 +31,14 @@ def format_scores(result: ScoringResult) -> str:
     )
 
 
-def load_conversation_data(json_path: Path) -> ConversationScenarioWithTranscript:
+def load_conversation_data(json_path: Path) -> ConversationScenarioRead:
     with open(json_path, encoding='utf-8') as f:
         data = json.load(f)
     # scenario
     scenario = ConversationScenario(**data['scenario'])
     # transcript
     transcript = [SessionTurnRead(**turn) for turn in data['transcript']]
-    return ConversationScenarioWithTranscript(scenario=scenario, transcript=transcript)
+    return ConversationScenarioRead(scenario=scenario, transcript=transcript)
 
 
 TEST_TRANSCRIPT = 'User: Hello, thank you for meeting with me today. I’d like to discuss your recent performance and see how I can support you.'
@@ -72,7 +72,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.safe_score_conversation(conversation)
 
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
         self.assertGreaterEqual(result.scoring.overall_score, 3.5)
         print(f'Good Example -> {format_scores(result)}')
 
@@ -85,7 +85,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.safe_score_conversation(conversation)
 
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
 
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         empathy_score = scores_dict['empathy']
@@ -101,12 +101,13 @@ class TestScoringServiceIntegration(unittest.TestCase):
         low_clarity_path = self.base_path / 'dummy_conversation_low_clarity.json'
         conversation = load_conversation_data(low_clarity_path)
         with patch('app.connections.openai_client.ENABLE_AI', True):
-            result = self.scoring_service.safe_score_conversation(conversation)
+            result = self.scoring_service.score_conversation(conversation)
 
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
 
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         clarity_score = scores_dict['clarity']
+
         self.assertIsNotNone(clarity_score, "Metric 'Clarity' not found in response.")
         self.assertLessEqual(clarity_score, 2)
         print(f'Low Clarity  -> {format_scores(result)}')
@@ -120,7 +121,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.safe_score_conversation(conversation)
 
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
 
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         structure_score = scores_dict['structure']
@@ -137,7 +138,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.safe_score_conversation(conversation)
 
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
 
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         focus_score = scores_dict['focus']
@@ -154,7 +155,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         print('==== LLM structure output(structure_1) ====')
         print(result.model_dump_json(indent=2))
         print('==== LLM structure output(structure_1)end ====')
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         expected = 1
         tolerance = 1
@@ -171,6 +172,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         print('==== LLM structure output(structure_2) ====')
         print(result.model_dump_json(indent=2))
         print('==== LLM structure output(structure_2)end ====')
+        self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         expected = 2
         tolerance = 1
@@ -187,6 +189,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         print('==== LLM structure output(structure_3) ====')
         print(result.model_dump_json(indent=2))
         print('==== LLM structure output(structure_3)end ====')
+        self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         expected = 3
         tolerance = 1
@@ -203,6 +206,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         print('==== LLM structure output(structure_4) ====')
         print(result.model_dump_json(indent=2))
         print('==== LLM structure output(structure_4)end ====')
+        self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         expected = 4
         tolerance = 1
@@ -216,10 +220,11 @@ class TestScoringServiceIntegration(unittest.TestCase):
         conversation = load_conversation_data(structure_5_path)
         with patch('app.connections.openai_client.ENABLE_AI', True):
             result = self.scoring_service.safe_score_conversation(conversation)
-        self.assertIsInstance(result, ScoringResult)
+        self.assertIsInstance(result, ScoringRead)
         print('==== LLM structure output(structure_5) ====')
         print(result.model_dump_json(indent=2))
         print('==== LLM structure output(structure_5)end ====')
+        self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         expected = 5
         tolerance = 1
@@ -232,10 +237,9 @@ class TestScoringServiceIntegration(unittest.TestCase):
         """
         Test the full end-to-end scoring process with various audio.
         """
-        from app.connections.gcs_client import get_gcs_audio_manager
 
         audio_files = ['standard.mp3', 'playful.mp3', 'excited.mp3', 'strong_expressive.mp3']
-        conversation = ConversationScenarioWithTranscript(
+        conversation = ConversationScenarioRead(
             scenario=ConversationScenario(
                 id=uuid.uuid4(),
                 user_id=uuid.uuid4(),
@@ -261,16 +265,17 @@ class TestScoringServiceIntegration(unittest.TestCase):
             ],
         )
         for audio_file in audio_files:
-            audio_url = get_gcs_audio_manager().generate_signed_url(audio_file)
+            audio_uri = get_gcs_audio_manager().generate_signed_url(audio_file)
             print(f'\n==== Testing with audio: {audio_file} ====')
             try:
                 result = self.scoring_service.score_conversation(
                     conversation,
-                    audio_url=audio_url,
+                    audio_uri=audio_uri,
                 )
                 print(result.model_dump_json(indent=2))
             except Exception as e:
                 print(f'Error with {audio_file}: {e}')
+
 
 if __name__ == '__main__':
     unittest.main()
