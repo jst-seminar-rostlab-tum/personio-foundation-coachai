@@ -31,7 +31,7 @@ class DifficultyLevel(str, Enum):
     hard = 'hard'
 
 
-class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a database table
+class ConversationScenario(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False, ondelete='CASCADE')
     category_id: Optional[str] = Field(
