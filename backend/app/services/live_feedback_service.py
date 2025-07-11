@@ -2,6 +2,7 @@ import concurrent.futures
 import json
 from uuid import UUID
 
+from fastapi import HTTPException, status
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 from tenacity import retry, stop_after_attempt, wait_fixed
@@ -9,15 +10,26 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 from app.connections.vertexai_client import call_structured_llm
 from app.models import SessionTurn
 from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
+from app.models.session import Session
+from app.models.user_profile import UserProfile
 from app.schemas.live_feedback_schema import LiveFeedback
 from app.services.voice_analysis_service import analyze_voice
 
 
-def fetch_all_for_session(db_session: DBSession, session_id: UUID) -> list[LiveFeedback]:
+def fetch_latest_five_for_session(
+    db_session: DBSession, session_id: UUID, user_profile: UserProfile
+) -> list[LiveFeedback]:
+    session = db_session.exec(select(Session).where(Session.id == session_id)).first()
+
+    if not session.scenario.user_id == user_profile.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail='User is not the owner of the scenario'
+        )
     statement = (
         select(LiveFeedbackDB)
         .where(LiveFeedbackDB.session_id == session_id)
-        .order_by(LiveFeedbackDB.created_at)
+        .order_by(LiveFeedbackDB.created_at.desc())
+        .limit(5)
     )
     feedback_items = db_session.exec(statement).all()
     return [
@@ -125,7 +137,7 @@ def generate_and_store_live_feedback(
     session_turn_context: SessionTurn,
     hr_docs_context: str = '',
 ) -> LiveFeedback | None:
-    feedback_items = fetch_all_for_session(db_session, session_id)
+    feedback_items = fetch_latest_five_for_session(db_session, session_id)
     formatted_lines = format_feedback_lines(feedback_items)
     previous_feedback = '\n'.join(formatted_lines)
 

@@ -10,7 +10,7 @@ from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
 from app.models.session_turn import SessionTurn, SpeakerEnum
 from app.schemas.live_feedback_schema import LiveFeedback
 from app.services.live_feedback_service import (
-    fetch_all_for_session,
+    fetch_latest_five_for_session,
     format_feedback_lines,
     generate_and_store_live_feedback,
 )
@@ -56,7 +56,7 @@ class TestLiveFeedbackService(unittest.TestCase):
             created_at=datetime.now(),
         )
 
-    def test_fetch_all_for_session_returns_items_in_order(self) -> None:
+    def test_fetch_latest_five_for_session_returns_items_in_order(self) -> None:
         session_id = uuid4()
         item1 = LiveFeedbackDB(
             session_id=session_id, heading='Tone', feedback_text='Speak clearly.'
@@ -69,7 +69,7 @@ class TestLiveFeedbackService(unittest.TestCase):
         self.session.add(item2)
         self.session.commit()
 
-        results: list[LiveFeedbackDB] = fetch_all_for_session(self.session, session_id)
+        results: list[LiveFeedbackDB] = fetch_latest_five_for_session(self.session, session_id)
 
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0].heading, 'Tone')
