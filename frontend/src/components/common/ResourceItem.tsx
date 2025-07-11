@@ -1,4 +1,4 @@
-import { Download, Loader2 } from 'lucide-react';
+import { Download, Loader2, FileText } from 'lucide-react';
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { showErrorToast } from '@/lib/utils/toast';
@@ -15,15 +15,16 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ name }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDownload = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.preventDefault();
     if (isLoading) return;
     setIsLoading(true);
+    const fileName = `${name}.pdf`;
     try {
-      const response = await getDocsSignedUrl(api, name);
+      const response = await getDocsSignedUrl(api, fileName);
       const downloadUrl = response.url;
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = `${name}.pdf`;
+      link.download = fileName;
       link.target = '_blank';
       document.body.appendChild(link);
       link.click();
@@ -36,21 +37,28 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ name }) => {
   };
 
   return (
-    <div className="border border-bw-20 rounded-lg p-8 flex justify-between items-center gap-x-8 transition-all duration-300">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-xl">{name}</h2>
+    <div
+      onClick={handleDownload}
+      className="w-full flex items-center justify-between py-2 px-4 rounded-lg border border-bw-20 hover:border-bw-30 hover:bg-bw-10/50 transition-all duration-200 ease-in-out cursor-pointer group"
+    >
+      <div className="flex items-center gap-3 flex-1">
+        <FileText className="w-4 h-4 text-bw-50 group-hover:text-bw-60 transition-colors duration-200" />
+        <span className="text-sm font-medium group-hover:underline transition-all duration-200">
+          {name}
+        </span>
       </div>
+
       <Button
         variant="ghost"
         size="icon"
-        onClick={handleDownload}
         disabled={isLoading}
-        aria-label="Download resource"
+        className="bg-marigold-5 hover:bg-marigold-10"
+        aria-label={`Download ${name}`}
       >
         {isLoading ? (
-          <Loader2 className="w-6 h-6 animate-spin" />
+          <Loader2 className="w-5 h-5 animate-spin text-marigold-90" />
         ) : (
-          <Download className="w-6 h-6" />
+          <Download className="w-5 h-5 text-marigold-90" />
         )}
       </Button>
     </div>

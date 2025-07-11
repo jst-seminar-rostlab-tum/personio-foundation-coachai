@@ -20,6 +20,7 @@ import {
 import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 import { useCallback, useEffect, useState } from 'react';
 import ResourcesList from '@/components/common/ResourcesList';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { useLocale, useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/utils/toast';
@@ -213,11 +214,9 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
           <AccordionContent>
             {feedbackDetail?.feedback?.documentNames &&
             feedbackDetail.feedback.documentNames.length > 0 ? (
-              <ResourcesList resources={feedbackDetail.feedback.documentNames} />
+              <ResourcesList resources={feedbackDetail.feedback.documentNames} columns={2} />
             ) : (
-              <div className="flex items-center justify-center w-full min-h-[200px] border border-bw-20 rounded-lg">
-                <p className="text-base text-bw-40">{tCommon('resources.noResources')}</p>
-              </div>
+              <EmptyListComponent itemType={tCommon('resources.title')} />
             )}
           </AccordionContent>
         </AccordionItem>

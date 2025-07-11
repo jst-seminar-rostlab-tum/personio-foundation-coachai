@@ -8,8 +8,8 @@
   "confirm": "Confirm",
   "sessions": "sessions",
   "emptyList": {
-    "title": "No {itemType} yet",
-    "description": "Your {itemType} will appear here in the future!"
+    "title": "No {itemType} yet!",
+    "description": "This is where your {itemType} will appear once available."
   },
   "resources": {
     "title": "Resources",

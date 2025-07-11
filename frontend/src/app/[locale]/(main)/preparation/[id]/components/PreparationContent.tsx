@@ -81,30 +81,32 @@ export default function PreparationContent() {
           </div>
           {preparationData && <ObjectivesList objectives={preparationData.objectives} />}
         </section>
+        <section className="flex flex-col gap-8 w-full border border-bw-20 rounded-lg p-8">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl">{t('keyConcepts')}</h2>
+          </div>
+          {preparationData && <PreparationKeyConcepts keyConcepts={preparationData.keyConcepts} />}
+        </section>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
             <h2 className="text-xl">{t('preparation')}</h2>
           </div>
           {preparationData && <PreparationChecklist checklist={preparationData.prepChecklist} />}
         </section>
+        <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
+          <div>
+            <h2 className="text-xl">{tCommon('resources.title')}</h2>
+            <p className="text-base text-bw-40">{tCommon('resources.subtitle')}</p>
+          </div>
+          {preparationData?.documentNames && preparationData.documentNames.length > 0 ? (
+            <ResourcesList resources={preparationData.documentNames} />
+          ) : (
+            <EmptyListComponent itemType={tCommon('resources.title')} />
+          )}
+        </section>
       </div>
-      <section className="flex flex-col gap-8 w-full border border-bw-20 rounded-lg p-8">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xl">{t('keyConcepts')}</h2>
-        </div>
-        {preparationData && <PreparationKeyConcepts keyConcepts={preparationData.keyConcepts} />}
-      </section>
-      <section className="flex flex-col gap-4 mt-8 w-full">
-        <div>
-          <h2 className="text-xl">{tCommon('resources.title')}</h2>
-          <p className="text-base text-bw-40">{tCommon('resources.subtitle')}</p>
-        </div>
-        {preparationData?.documentNames && preparationData.documentNames.length > 0 ? (
-          <ResourcesList resources={preparationData.documentNames} />
-        ) : (
-          <EmptyListComponent itemType={tCommon('resources.title')} />
-        )}
-      </section>
     </>
   );
 }
