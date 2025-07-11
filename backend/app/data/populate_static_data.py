@@ -2,12 +2,12 @@ import json
 import os
 from datetime import UTC, datetime
 
-from backend.app.enums.language import LanguageCode
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
 from app.data import create_mock_users, delete_mock_users, get_dummy_user_profiles
 from app.database import engine
+from app.enums.language import LanguageCode
 from app.models import ConversationCategory, UserProfile
 
 base_dir = os.path.dirname(__file__)

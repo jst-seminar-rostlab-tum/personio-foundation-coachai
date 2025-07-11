@@ -3,12 +3,12 @@ from datetime import datetime
 from unittest.mock import MagicMock, patch
 from uuid import UUID, uuid4
 
-from backend.app.enums.language import LanguageCode
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine, select
 
 from app.enums.conversation_scenario_status import ConversationScenarioStatus
 from app.enums.feedback_status import FeedbackStatus
+from app.enums.language import LanguageCode
 from app.enums.session_status import SessionStatus
 from app.enums.speaker import SpeakerType
 from app.models.conversation_scenario import (
