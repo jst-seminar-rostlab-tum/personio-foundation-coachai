@@ -39,14 +39,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-12">
-      <div></div>
-      {showConversationScenarioSuggestion && (
-        <ConversationScenarioSuggestion
-          suggestion="I see that you had a performance feedback talk recently, where you could have
-        given more concrete action points. I would suggest you to train giving concrete
-        action points."
-        ></ConversationScenarioSuggestion>
-      )}
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         <p className="text-2xl text-center md:text-left">
           {t('header.greeting')}
@@ -59,6 +51,14 @@ export default async function DashboardPage() {
           </Button>
         </Link>
       </section>
+
+      {showConversationScenarioSuggestion && (
+        <ConversationScenarioSuggestion
+          suggestion="I see that you had a performance feedback talk recently, where you could have
+        given more concrete action points. I would suggest you to train giving concrete
+        action points."
+        ></ConversationScenarioSuggestion>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard value={userStats.totalSessions} label={tCommon('totalSessions')} />
