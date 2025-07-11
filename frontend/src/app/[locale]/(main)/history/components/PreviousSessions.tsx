@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, Download, Trash2 } from 'lucide-react';
+import { ChevronDown, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -82,9 +82,6 @@ export default function PreviousSessions({
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-2 md:gap-0">
         <div className="text-xl">{t('previousSessions')}</div>
         <div className="flex justify-between md:gap-6">
-          <Button variant="ghost">
-            {tCommon('export')} <Download />
-          </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" className="hover:text-flame-50" disabled={isDeleting}>
@@ -108,7 +105,7 @@ export default function PreviousSessions({
       </div>
       <div className="flex flex-col gap-4">
         {!sessionsStorage || sessionsStorage.length === 0 ? (
-          <EmptyListComponent itemType={tCommon('emptyList.sessions')} />
+          <EmptyListComponent itemType={tCommon('sessions')} />
         ) : (
           sessionsStorage.map((session: SessionFromPagination) => (
             <Link
