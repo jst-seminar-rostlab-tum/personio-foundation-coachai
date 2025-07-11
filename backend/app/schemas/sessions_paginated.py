@@ -23,7 +23,7 @@ class SessionItem(CamelModel):
     allow_admin_access: bool = False
 
 
-class PaginatedSessionsResponse(CamelModel):
+class PaginatedSessionRead(CamelModel):
     page: int
     limit: int
     total_pages: int
