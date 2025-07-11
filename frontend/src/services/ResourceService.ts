@@ -1,8 +1,5 @@
 import { AxiosInstance } from 'axios';
-
-export interface SignedUrlResponse {
-  url: string;
-}
+import { SignedUrlResponse } from '@/interfaces/models/Resource';
 
 export const getDocsSignedUrl = async (
   api: AxiosInstance,
