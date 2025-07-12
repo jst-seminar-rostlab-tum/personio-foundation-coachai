@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -8,16 +7,11 @@ from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import JSON, Column, Field, Relationship
 
+from app.enums.scenario_preparation_status import ScenarioPreparationStatus
 from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
-
-
-class ScenarioPreparationStatus(str, Enum):
-    pending = 'pending'
-    completed = 'completed'
-    failed = 'failed'
 
 
 class ScenarioPreparation(CamelModel, table=True):
@@ -33,8 +27,6 @@ class ScenarioPreparation(CamelModel, table=True):
 
     # Relationships
     scenario: Optional['ConversationScenario'] = Relationship(back_populates='preparation')
-
-    # Automatically update `updated_at` before an update
 
 
 @event.listens_for(ScenarioPreparation, 'before_update')

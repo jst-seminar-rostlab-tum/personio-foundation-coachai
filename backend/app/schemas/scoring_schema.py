@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field, conint
+from pydantic import Field, conint
+
+from app.models.camel_case import CamelModel
 
 
-class MetricScore(BaseModel):
+class MetricScore(CamelModel):
     metric: str = Field(
         ..., description="The name of the metric being scored, e.g., 'Structure', 'Empathy'."
     )
@@ -11,18 +13,13 @@ class MetricScore(BaseModel):
     )
 
 
-class ConversationScore(BaseModel):
+class ConversationScore(CamelModel):
     overall_score: float = Field(..., description='The average score across all metrics.')
     scores: list[MetricScore] = Field(
         ..., description='A list of scores for each individual metric.'
     )
 
 
-class ScoringRequest(BaseModel):
-    scenario: dict
-    transcript: list[dict]
-
-
-class ScoringResult(BaseModel):
+class ScoringRead(CamelModel):
     conversation_summary: str = Field(..., description='A brief summary of the conversation.')
     scoring: ConversationScore = Field(..., description='The detailed scoring of the conversation.')

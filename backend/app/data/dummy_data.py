@@ -8,34 +8,34 @@ from supabase import AuthError
 
 from app.config import settings
 from app.database import get_supabase_client
+from app.enums.account_role import AccountRole
+from app.enums.confidence_area import ConfidenceArea
+from app.enums.config_type import ConfigType
+from app.enums.conversation_scenario_status import ConversationScenarioStatus
+from app.enums.difficulty_level import DifficultyLevel
+from app.enums.experience import Experience
+from app.enums.feedback_status import FeedbackStatus
+from app.enums.goal import Goal
+from app.enums.language import LanguageCode
+from app.enums.preferred_learning_style import PreferredLearningStyle
+from app.enums.professional_role import ProfessionalRole
+from app.enums.scenario_preparation_status import ScenarioPreparationStatus
+from app.enums.session_status import SessionStatus
+from app.enums.speaker import SpeakerType
 from app.interfaces import MockUserIdsEnum
 from app.models import LiveFeedback
 from app.models.admin_dashboard_stats import AdminDashboardStats
-from app.models.app_config import AppConfig, ConfigType
+from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import (
-    ConversationScenario,
-    ConversationScenarioStatus,
-    DifficultyLevel,
-)
-from app.models.language import LanguageCode
+from app.models.conversation_scenario import ConversationScenario
 from app.models.review import Review
-from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.models.session import Session, SessionStatus
-from app.models.session_feedback import (
-    FeedbackStatusEnum,
-    SessionFeedback,
-)
-from app.models.session_turn import SessionTurn, SpeakerEnum
-from app.models.user_confidence_score import ConfidenceArea, UserConfidenceScore
-from app.models.user_goal import Goal, UserGoal
-from app.models.user_profile import (
-    AccountRole,
-    Experience,
-    PreferredLearningStyle,
-    ProfessionalRole,
-    UserProfile,
-)
+from app.models.scenario_preparation import ScenarioPreparation
+from app.models.session import Session
+from app.models.session_feedback import SessionFeedback
+from app.models.session_turn import SessionTurn
+from app.models.user_confidence_score import UserConfidenceScore
+from app.models.user_goal import UserGoal
+from app.models.user_profile import UserProfile
 
 
 def get_dummy_user_profiles() -> list[UserProfile]:
@@ -446,7 +446,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[0].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=5000,
             text='Hello, how can I help you?',
@@ -457,7 +457,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[0].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=5000,
             end_offset_ms=10000,
             text="Hi! I'd like to check your schedule today. Are you available at 2 PM?",
@@ -468,7 +468,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[0].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=10000,
             end_offset_ms=15000,
             text='Sure, 2 PM works fine.',
@@ -480,7 +480,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=4000,
             text='I need assistance with my account.',
@@ -491,7 +491,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=4000,
             end_offset_ms=9000,
             text='Of course. Could you please tell me what issue you are facing?',
@@ -502,7 +502,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=9000,
             end_offset_ms=13000,
             text="I'm not able to log in since yesterday.",
@@ -513,7 +513,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=13000,
             end_offset_ms=17000,
             text='Thanks for the info. I will reset your credentials and email you shortly.',
@@ -525,7 +525,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=3000,
             text='Can you prepare the sales report by end of day?',
@@ -536,7 +536,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=3000,
             end_offset_ms=7000,
             text="Absolutely. I'll make sure to include the latest figures.",
@@ -547,7 +547,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=7000,
             end_offset_ms=10000,
             text='Good. Please double-check the Q2 numbers.',
@@ -558,7 +558,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=10000,
             end_offset_ms=13500,
             text="Will do. I'll send you a draft in a couple of hours.",
@@ -570,7 +570,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=2800,
             text="How's the client presentation coming along?",
@@ -581,7 +581,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=2800,
             end_offset_ms=6500,
             text="I've finished most of the slides. Just adding the final data now.",
@@ -592,7 +592,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=6500,
             end_offset_ms=9500,
             text='Great. Make sure the figures are up-to-date.',
@@ -603,7 +603,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=9500,
             end_offset_ms=12800,
             text="Understood. I'll send it for your review by 3 PM.",
@@ -615,7 +615,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=3200,
             text='Did you submit your leave request for next week?',
@@ -626,7 +626,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=3200,
             end_offset_ms=6000,
             text='Yes, I submitted it yesterday. Waiting for approval.',
@@ -637,7 +637,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=6000,
             end_offset_ms=9000,
             text='Alright. Make sure all your tasks are handed over before you go.',
@@ -648,7 +648,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=9000,
             end_offset_ms=12500,
             text="Of course. I'll update the team and share the status report tomorrow.",
@@ -660,7 +660,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=3500,
             text='I noticed the budget forecast is still pending. Any update?',
@@ -671,7 +671,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
             text="Apologies for the delay. I'll finalize it by this afternoon.",
@@ -682,7 +682,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=7000,
             end_offset_ms=10500,
             text="Alright, please prioritize it. We're presenting it tomorrow.",
@@ -693,7 +693,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
             text="Understood. I'll share it with you before the end of the day.",
@@ -705,7 +705,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=3500,
             text='I noticed the budget forecast is still pending. Any update?',
@@ -716,7 +716,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
             text="Apologies for the delay. I'll finalize it by this afternoon.",
@@ -727,7 +727,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=7000,
             end_offset_ms=10500,
             text="Alright, please prioritize it. We're presenting it tomorrow.",
@@ -738,7 +738,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
             text="Understood. I'll share it with you before the end of the day.",
@@ -750,7 +750,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=3500,
             text='I noticed the budget forecast is still pending. Any update?',
@@ -761,7 +761,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
             text="Apologies for the delay. I'll finalize it by this afternoon.",
@@ -772,7 +772,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=7000,
             end_offset_ms=10500,
             text="Alright, please prioritize it. We're presenting it tomorrow.",
@@ -783,7 +783,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
             text="Understood. I'll share it with you before the end of the day.",
@@ -957,7 +957,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -1035,7 +1035,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,
+            status=FeedbackStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -1113,7 +1113,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,
+            status=FeedbackStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -1191,7 +1191,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,
+            status=FeedbackStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -1269,7 +1269,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -1348,7 +1348,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -1423,7 +1423,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -1496,7 +1496,7 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),

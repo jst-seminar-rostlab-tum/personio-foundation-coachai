@@ -9,7 +9,7 @@ from app.dependencies import require_user
 from app.models.user_profile import UserProfile
 from app.services.realtime_session_service import RealtimeSessionService
 
-router = APIRouter(prefix='', tags=['realtime-session'])
+router = APIRouter(prefix='/realtime-sessions', tags=['realtime-session'])
 
 
 def get_realtime_session_service(
@@ -21,7 +21,7 @@ def get_realtime_session_service(
     return RealtimeSessionService(db_session)
 
 
-@router.get('/realtime-session/{session_id}')
+@router.get('/{id}')
 async def get_realtime_session(
     service: Annotated[RealtimeSessionService, Depends(get_realtime_session_service)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
