@@ -13,6 +13,7 @@ from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session, SessionStatus
 from app.models.user_profile import UserProfile
+from app.services.realtime_session_service import RealtimeSessionService
 
 router = APIRouter(prefix='', tags=['realtime-session'])
 
@@ -20,6 +21,15 @@ if settings.FORCE_CHEAP_MODEL:
     MODEL = 'gpt-4o-mini-realtime-preview-2024-12-17'
 else:
     MODEL = 'gpt-4o-realtime-preview-2025-06-03'
+
+
+def get_realtime_session_service(
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> RealtimeSessionService:
+    """
+    Dependency factory to inject the RealtimeSessionService.
+    """
+    return RealtimeSessionService(db_session)
 
 
 @router.get('/realtime-session/{session_id}')
