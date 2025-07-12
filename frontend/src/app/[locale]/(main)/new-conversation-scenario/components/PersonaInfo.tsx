@@ -1,11 +1,11 @@
 import { useTranslations } from 'next-intl';
-import { Persona } from '@/interfaces/models/ConversationScenario';
+import { ContextMode, Persona } from '@/interfaces/models/ConversationScenario';
 import { useEffect, useState, useCallback } from 'react';
 
 interface PersonaInfoProps {
   selectedPersona: string;
   personas: Persona[];
-  contextMode: 'default' | 'custom';
+  contextMode: ContextMode;
   onPersonaDescriptionChange: (description: string) => void;
 }
 

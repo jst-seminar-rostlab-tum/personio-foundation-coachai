@@ -1,3 +1,5 @@
+import { ContextMode } from '../models/ConversationScenario';
+
 export interface ConversationScenarioFormState {
   category: string;
   customCategory: string;
@@ -6,7 +8,7 @@ export interface ConversationScenarioFormState {
   difficulty: string;
   persona: string;
   personaDescription: string;
-  contextMode: 'default' | 'custom';
+  contextMode: ContextMode;
 }
 
 export interface ConversationScenarioState {

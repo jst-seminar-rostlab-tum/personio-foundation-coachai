@@ -11,7 +11,6 @@ export interface ConversationCategory {
   id: string;
   name: string;
   iconUri: string;
-  isCustom?: boolean;
   defaultContext?: string;
   description?: string;
 }
@@ -32,6 +31,11 @@ export type KeyConcept = {
   value: string;
 };
 
+export enum ContextMode {
+  DEFAULT = 'default',
+  CUSTOM = 'custom',
+}
+
 export type ConversationScenarioPreparation = {
   id: string;
   caseId: string;
@@ -43,5 +47,5 @@ export type ConversationScenarioPreparation = {
   createdAt: string;
   updatedAt: string;
   categoryName: string;
-  context: string;
+  context: ContextMode;
 };
