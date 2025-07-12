@@ -21,6 +21,23 @@ class RealtimeSessionService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
 
+    def _get_voice(self, persona_name: str) -> str:
+        """
+        Returns the voice to be used based on the persona name.
+        """
+        if 'Alex' in persona_name:
+            return 'verse'
+        elif 'Pam' in persona_name:
+            return 'shimmer'
+        elif 'Candice' in persona_name:
+            return 'alloy'
+        elif 'Sandra' in persona_name:
+            return 'sage'
+        elif 'Leo' in persona_name:
+            return 'ash'
+        else:
+            return 'echo'
+
     async def get_realtime_session(self, session_id: UUID, user_profile: UserProfile) -> dict:
         """
         Proxies a POST request to OpenAI's realtime sessions endpoint
@@ -83,6 +100,8 @@ class RealtimeSessionService:
                 f'{conversation_category.initial_prompt}\n'
             )
 
+        ai_voice = self._get_voice(conversation_scenario.persona_name)
+
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 'https://api.openai.com/v1/realtime/sessions',
@@ -92,7 +111,7 @@ class RealtimeSessionService:
                 },
                 json={
                     'model': MODEL,
-                    'voice': 'echo',
+                    'voice': ai_voice,
                     'input_audio_transcription': {'language': 'en', 'model': 'gpt-4o-transcribe'},
                     'instructions': instructions,
                     'turn_detection': {
