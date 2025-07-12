@@ -1,112 +1,81 @@
 import { useTranslations } from 'next-intl';
-import { ContextMode, Persona } from '@/interfaces/models/ConversationScenario';
-import { useEffect, useState, useCallback } from 'react';
+import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
+import { ContextModeEnums } from '@/interfaces/models/ConversationScenario';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { PersonaTextarea } from './PersonaTextarea';
 
-interface PersonaInfoProps {
-  selectedPersona: string;
-  personas: Persona[];
-  contextMode: ContextMode;
-  onPersonaDescriptionChange: (description: string) => void;
-}
-
-export function PersonaInfo({
-  selectedPersona,
-  personas,
-  contextMode,
-  onPersonaDescriptionChange,
-}: PersonaInfoProps) {
+export function PersonaInfo() {
+  const { formState, updateForm } = useConversationScenarioStore();
   const t = useTranslations('ConversationScenario.customize.persona');
-  const tAbout = useTranslations('ConversationScenario.customize.persona.about');
+  const { contextMode, persona } = formState;
+  const isCustomContextMode = contextMode === ContextModeEnums.CUSTOM;
 
   const getPersonaData = (personaId: string) => {
     if (!personaId || personaId.trim() === '')
-      return { traits: [], trainingFocus: [], personality: '' };
-    try {
-      const traits = t.raw(`personas.${personaId}.traits`) as string[];
-      const trainingFocus = t.raw(`personas.${personaId}.trainingFocus`) as string[];
-      const personality = t.raw(`personas.${personaId}.personality`) as string;
-      return { traits, trainingFocus, personality };
-    } catch {
-      return { traits: [], trainingFocus: [], personality: '' };
-    }
+      return { traits: [], trainingFocus: [], personality: [] };
+
+    const traits = t.raw(`personas.${personaId}.traits`) as string[];
+    const trainingFocus = t.raw(`personas.${personaId}.trainingFocus`) as string[];
+    const personality = t.raw(`personas.${personaId}.personality`) as string[];
+    return { traits, trainingFocus, personality };
   };
 
-  const selectedPersonaData: { traits: string[]; trainingFocus: string[]; personality?: string } =
-    getPersonaData(selectedPersona);
-  const personaName = personas.find((p) => p.id === selectedPersona)?.name || selectedPersona;
+  const selectedPersonaData = getPersonaData(persona);
+  const personaName = t.raw(`personas.${persona}.name`) as string;
 
-  const renderBullets = useCallback((textOrArray: string[] | string | undefined) => {
-    if (Array.isArray(textOrArray)) {
-      return textOrArray.map((item) => `• ${item}`).join('\n');
-    }
-    if (typeof textOrArray === 'string') {
-      return textOrArray
-        .split(',')
-        .map((s) => `• ${s.trim()}`)
-        .join('\n');
-    }
-    return '';
+  const renderBullets = useCallback((textArray?: string[]) => {
+    if (!textArray || textArray.length === 0) return '';
+    return textArray.map((s) => `- ${s.trim()}`).join('\n');
   }, []);
 
-  const [traitsText, setTraitsText] = useState(() => renderBullets(selectedPersonaData.traits));
-  const [focusText, setFocusText] = useState(() =>
-    renderBullets(selectedPersonaData.trainingFocus)
-  );
-  const [personalityText, setPersonalityText] = useState(() =>
-    renderBullets(selectedPersonaData?.personality || personaName)
+  const initialTexts = useMemo(
+    () => ({
+      traits: renderBullets(selectedPersonaData.traits),
+      focus: renderBullets(selectedPersonaData.trainingFocus),
+      personality: renderBullets(selectedPersonaData.personality),
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      selectedPersonaData.traits,
+      selectedPersonaData.trainingFocus,
+      selectedPersonaData.personality,
+      personaName,
+      renderBullets,
+    ]
   );
 
-  const generateDescription = useCallback(() => {
-    let currentPersonality = '';
-    let currentTraits = '';
-    let currentFocus = '';
+  const [texts, setTexts] = useState(initialTexts);
 
-    if (contextMode === 'default') {
-      currentPersonality = renderBullets(selectedPersonaData?.personality || personaName);
-      currentTraits = renderBullets(selectedPersonaData.traits);
-      currentFocus = renderBullets(selectedPersonaData.trainingFocus);
-    } else {
-      currentPersonality = personalityText;
-      currentTraits = traitsText;
-      currentFocus = focusText;
+  const generateDescription = useCallback(
+    (textData: typeof texts) => {
+      return `${t('about.personality')}:\n ${textData.personality}\n\n${t('about.behavioralTraits')}:\n ${textData.traits}\n\n${t('about.trainingFocus')}:\n ${textData.focus}`;
+    },
+    [t]
+  );
+
+  useEffect(() => {
+    setTexts(initialTexts);
+  }, [initialTexts]);
+
+  useEffect(() => {
+    if (isCustomContextMode && generateDescription(texts) !== formState.personaDescription) {
+      updateForm({ personaDescription: generateDescription(texts) });
+    } else if (
+      !isCustomContextMode &&
+      formState.personaDescription !== generateDescription(initialTexts)
+    ) {
+      updateForm({ personaDescription: generateDescription(initialTexts) });
     }
-
-    let newDescription = '';
-    newDescription += `${tAbout('personality')}:\n ${currentPersonality}\n\n`;
-    newDescription += `${t('behavioralTraits')}:\n ${currentTraits}\n\n`;
-    newDescription += `${t('trainingFocus')}:\n ${currentFocus}`;
-    return newDescription;
   }, [
-    contextMode,
-    selectedPersonaData,
-    personaName,
-    personalityText,
-    traitsText,
-    focusText,
-    renderBullets,
-    tAbout,
-    t,
+    texts,
+    isCustomContextMode,
+    generateDescription,
+    initialTexts,
+    updateForm,
+    formState.personaDescription,
   ]);
 
-  useEffect(() => {
-    setTraitsText(renderBullets(selectedPersonaData.traits));
-    setFocusText(renderBullets(selectedPersonaData.trainingFocus));
-    setPersonalityText(renderBullets(selectedPersonaData?.personality || personaName));
-
-    onPersonaDescriptionChange(generateDescription());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPersona, contextMode]);
-
-  useEffect(() => {
-    if (contextMode === 'custom') {
-      onPersonaDescriptionChange(generateDescription());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [traitsText, focusText, personalityText, contextMode]);
-
-  const lockedClasses = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md bg-white px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${contextMode === 'custom' ? '' : 'text-bw-60 cursor-not-allowed'} resize-none overflow-auto`;
-
-  if (!selectedPersona || selectedPersona.trim() === '' || !selectedPersonaData.traits.length) {
+  if (!persona || persona.trim() === '' || !selectedPersonaData.traits.length) {
     return null;
   }
 
@@ -115,60 +84,29 @@ export function PersonaInfo({
       <div className="text-xl text-font-dark text-left mb-8">
         {t('aboutLabel')}: {personaName}
       </div>
+
       <div className="mb-6">
-        <label className="mb-2 font-medium text-lg block">{tAbout('personality')}</label>
-        <textarea
-          className={lockedClasses}
-          value={
-            contextMode === 'default'
-              ? renderBullets(selectedPersonaData?.personality || personaName)
-              : personalityText
-          }
-          onChange={(event) => {
-            if (contextMode === 'custom') {
-              setPersonalityText(event.target.value);
-            }
-          }}
-          disabled={contextMode === 'default'}
-          rows={5}
-          style={{ resize: 'none' }}
+        <PersonaTextarea
+          label={t('about.personality')}
+          value={isCustomContextMode ? texts.personality : initialTexts.personality}
+          onChange={(val: string) => setTexts((prev) => ({ ...prev, personality: val }))}
+          isCustomContextMode={isCustomContextMode}
         />
       </div>
+
       <div className="flex flex-col sm:flex-row gap-6 items-start justify-center">
-        <div className="w-full sm:flex-1 min-w-0">
-          <label className="mb-2 font-medium text-lg block">{t('behavioralTraits')}</label>
-          <textarea
-            className={`${lockedClasses} resize-none`}
-            value={
-              contextMode === 'default' ? renderBullets(selectedPersonaData.traits) : traitsText
-            }
-            onChange={(event) => {
-              if (contextMode === 'custom') {
-                setTraitsText(event.target.value);
-              }
-            }}
-            rows={5}
-            disabled={contextMode === 'default'}
-          />
-        </div>
-        <div className="w-full sm:flex-1 min-w-0">
-          <label className="mb-2 font-medium text-lg block">{t('trainingFocus')}</label>
-          <textarea
-            className={`${lockedClasses} resize-none`}
-            value={
-              contextMode === 'default'
-                ? renderBullets(selectedPersonaData.trainingFocus)
-                : focusText
-            }
-            onChange={(event) => {
-              if (contextMode === 'custom') {
-                setFocusText(event.target.value);
-              }
-            }}
-            rows={5}
-            disabled={contextMode === 'default'}
-          />
-        </div>
+        <PersonaTextarea
+          label={t('about.behavioralTraits')}
+          value={isCustomContextMode ? texts.traits : initialTexts.traits}
+          onChange={(val: string) => setTexts((prev) => ({ ...prev, traits: val }))}
+          isCustomContextMode={isCustomContextMode}
+        />
+        <PersonaTextarea
+          label={t('about.trainingFocus')}
+          value={isCustomContextMode ? texts.focus : initialTexts.focus}
+          onChange={(val: string) => setTexts((prev) => ({ ...prev, focus: val }))}
+          isCustomContextMode={isCustomContextMode}
+        />
       </div>
     </div>
   );

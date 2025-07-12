@@ -1,6 +1,5 @@
 export interface ConversationScenario {
   categoryId: string;
-  customCategoryLabel: string;
   difficultyLevel: string;
   persona: string;
   situationalFacts: string;
@@ -31,10 +30,20 @@ export type KeyConcept = {
   value: string;
 };
 
-export enum ContextMode {
+export enum PersonaEnums {
+  POSITIVE = 'positive',
+  ANGRY = 'angry',
+  SHY = 'shy',
+  CASUAL = 'casual',
+  SAD = 'sad',
+}
+
+export enum ContextModeEnums {
   DEFAULT = 'default',
   CUSTOM = 'custom',
 }
+
+export type ContextMode = ContextModeEnums.CUSTOM | ContextModeEnums.DEFAULT;
 
 export type ConversationScenarioPreparation = {
   id: string;
@@ -47,5 +56,5 @@ export type ConversationScenarioPreparation = {
   createdAt: string;
   updatedAt: string;
   categoryName: string;
-  context: ContextMode;
+  situationalFacts: string;
 };

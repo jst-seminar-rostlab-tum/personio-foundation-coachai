@@ -1,3 +1,4 @@
+import { ContextModeEnums, PersonaEnums } from '@/interfaces/models/ConversationScenario';
 import {
   ConversationScenarioFormState,
   ConversationScenarioState,
@@ -7,13 +8,12 @@ import { persist } from 'zustand/middleware';
 
 const initialFormState: ConversationScenarioFormState = {
   category: '',
-  customCategory: '',
   situationalFacts: '',
   name: '',
   difficulty: '',
-  persona: '',
+  persona: PersonaEnums.POSITIVE,
   personaDescription: '',
-  contextMode: 'default',
+  contextMode: ContextModeEnums.DEFAULT,
 };
 
 export const useConversationScenarioStore = create<ConversationScenarioState>()(

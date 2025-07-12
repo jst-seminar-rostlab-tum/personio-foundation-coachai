@@ -2,51 +2,19 @@
   "metaTitle": "New Training - Coach AI",
   "metaDescription": "Start a new training session with personal coaching",
   "title": "New Training Session",
-  "steps": {
-    "category": "Category",
-    "situation": "Situation",
-    "customize": "Customize"
-  },
-  "category": {
-    "title": "2. Situation",
-    "options": {
-      "feedback": "Giving Feedback",
-      "conflict": "Conflict Resolution",
-      "performance": "Performance Reviews",
-      "salary": "Salary Discussions",
-      "custom": "Custom"
-    },
-    "customPlaceholder": "e.g. Promotion discussion, onboarding new team members ...",
-    "customInput": "Define your own conversation topic"
-  },
-  "situation": {
-    "title": "Describe Your Situation",
-    "otherParty": {
-      "title": "Who is the other party?",
-      "placeholder": "Enter name"
-    },
-    "context": {
-      "title": "What is the context?",
-      "placeholder": "Please describe the context of the conversation."
-    },
-    "goal": {
-      "title": "What is your goal?",
-      "placeholder": "What outcome do you want to achieve?"
-    }
-  },
   "customize": {
     "title": "Customize Other Party",
     "persona": {
       "title": "Choose a Persona",
       "about": {
-        "personality": "Personality"
+        "personality": "Personality",
+        "behavioralTraits": "Behavioral Traits",
+        "trainingFocus": "Training Focus"
       },
-      "behavioralTraits": "Behavioral Traits",
-      "trainingFocus": "Training Focus",
       "personas": {
         "positive": {
           "name": "Positive Pam",
-          "personality": "Upbeat, eager to please, growth-oriented, avoids negativity",
+          "personality": ["Upbeat", "Eager to please", "Growth-oriented", "Avoids negativity"],
           "traits": [
             "Overly agreeable — avoids conflict or disagreement",
             "Deflects criticism with enthusiasm (“I'll fix it!”)",
@@ -65,7 +33,7 @@
         },
         "angry": {
           "name": "Angry Alex",
-          "personality": "Confrontational, defensive, emotionally volatile",
+          "personality": ["Confrontational", "Defensive", "Emotionally volatile"],
           "traits": [
             "Assumes bad intent",
             "Easily offended, especially with criticism",
@@ -82,7 +50,12 @@
         },
         "shy": {
           "name": "Shy Sandra",
-          "personality": "Quiet, reserved, conflict-avoidant, anxious about saying the wrong thing",
+          "personality": [
+            "Quiet",
+            "Reserved",
+            "Conflict-avoidant",
+            "Anxious about saying the wrong thing"
+          ],
           "traits": [
             "Speaks in a soft, hesitant voice with frequent pauses",
             "Uses filler words ('um...', 'I guess...', 'maybe...') and trails off mid-sentence",
@@ -103,7 +76,7 @@
         },
         "casual": {
           "name": "Casual Candice",
-          "personality": "Laid-back, informal, friendly but sometimes unfocused",
+          "personality": ["Laid-back", "Informal", "Friendly but sometimes unfocused"],
           "traits": [
             "Uses humor or casual language",
             "May not take feedback seriously",
@@ -120,7 +93,7 @@
         },
         "sad": {
           "name": "Low-Energy Leo",
-          "personality": "Withdrawn, low energy, emotionally distant",
+          "personality": ["Withdrawn", "Low energy", "Emotionally distant"],
           "traits": [
             "Flat tone, minimal expressions",
             "Expresses hopelessness or dissatisfaction",
@@ -138,30 +111,6 @@
       },
       "aboutLabel": "About"
     },
-    "difficulty": {
-      "title": "Difficulty Level",
-      "options": {
-        "easy": "Easy",
-        "medium": "Medium",
-        "hard": "Hard"
-      }
-    },
-    "emotionalTone": {
-      "title": "Emotional Tone",
-      "options": {
-        "positive": "Positive",
-        "neutral": "Neutral",
-        "negative": "Negative"
-      }
-    },
-    "complexity": {
-      "title": "Response Complexity",
-      "options": {
-        "simple": "Simple",
-        "medium": "Medium",
-        "complex": "Complex"
-      }
-    },
     "context": {
       "default": "Default Context",
       "custom": "Custom Context",
@@ -172,48 +121,25 @@
   "categories": {
     "givingFeedback": {
       "name": "Giving Feedback",
-      "iconUri": "/icons/category-giving_feedback.svg",
-      "description": "Give constructive feedback to help others improve.",
-      "defaultContext": "One-on-one meeting with a team member.",
-      "defaultContextLong": "Missed Deadlines\n- Quarterly partner-impact report arrived 5 days late despite reminders.\n- Field-visit summary incomplete; colleague had to rewrite it under pressure.\nAttendance\n- In the last 2 months, the other party skipped 4 of 8 team check-ins without notice.\n- When present, often keeps camera off and engages minimally.\nPeer Feedback\n- Two colleagues needed multiple nudges for inputs.\n- One now avoids assigning shared tasks to the other party due to reliability concerns.\nPrior Support\n- Six weeks ago, the manager set clear expectations and a prioritization plan.\n- Calendar tips and admin help were offered; little improvement seen.\n\nSilver Lining\nThe other party shows real creativity in outreach planning and still has growth potential.",
-      "defaultGoal": "Provide constructive feedback effectively.",
-      "defaultOtherParty": "Team member"
+      "defaultContext": "Missed Deadlines\n- Quarterly partner-impact report arrived 5 days late despite reminders.\n- Field-visit summary incomplete; colleague had to rewrite it under pressure.\nAttendance\n- In the last 2 months, the other party skipped 4 of 8 team check-ins without notice.\n- When present, often keeps camera off and engages minimally.\nPeer Feedback\n- Two colleagues needed multiple nudges for inputs.\n- One now avoids assigning shared tasks to the other party due to reliability concerns.\nPrior Support\n- Six weeks ago, the manager set clear expectations and a prioritization plan.\n- Calendar tips and admin help were offered; little improvement seen.\n\nSilver Lining\nThe other party shows real creativity in outreach planning and still has growth potential."
     },
     "performanceReviews": {
       "name": "Performance Reviews",
-      "iconUri": "/icons/category-performance_reviews.svg",
-      "description": "Motivate and guide with effective reviews.",
-      "defaultContext": "Formal performance review meeting.",
-      "defaultContextLong": "Positive Performance\n- The other party developed two successful community outreach pilots.\n- Partners often compliment the other party's creativity and energy.\n\nAreas for Improvement\n- The other party sometimes misses internal deadlines for reports and data submissions.\n- Team members report the other party can be hard to reach on short notice.\n\nReview Outcome\n- Overall rating is 'Meets Expectations' — strong external impact but inconsistency in internal follow-through prevented 'Exceeds Expectations'.\n- A standard 3% merit raise will be applied, same as most peers.\n\nOrganizational Context\n- The NGO emphasizes reliability to secure renewed donor funding.\n- This review cycle is slightly stricter due to new funder accountability requirements.\n\nSilver Lining\nThe manager believes the other party can reach 'Exceeds Expectations' next year with more consistent internal coordination.",
-      "defaultGoal": "Evaluate and discuss employee performance.",
-      "defaultOtherParty": "Employee"
+      "defaultContext": "Positive Performance\n- The other party developed two successful community outreach pilots.\n- Partners often compliment the other party's creativity and energy.\n\nAreas for Improvement\n- The other party sometimes misses internal deadlines for reports and data submissions.\n- Team members report the other party can be hard to reach on short notice.\n\nReview Outcome\n- Overall rating is 'Meets Expectations' — strong external impact but inconsistency in internal follow-through prevented 'Exceeds Expectations'.\n- A standard 3% merit raise will be applied, same as most peers.\n\nOrganizational Context\n- The NGO emphasizes reliability to secure renewed donor funding.\n- This review cycle is slightly stricter due to new funder accountability requirements.\n\nSilver Lining\nThe manager believes the other party can reach 'Exceeds Expectations' next year with more consistent internal coordination."
     },
     "conflictResolution": {
       "name": "Conflict Resolution",
-      "iconUri": "/icons/category-conflict_resolution.svg",
-      "description": "Resolve conflicts and build a positive team.",
-      "defaultContext": "Conflict resolution meeting between team members.",
-      "defaultContextLong": "Conflict Background\n- The other party and Jordan collaborated on a partner event that went off-track due to miscommunication.\n- The other party feels Jordan oversteps boundaries and takes credit for ideas.\n- Jordan has privately complained that the other party misses deadlines and ignores messages.\n\nPrior Attempts\n- Two team meetings were held to clarify roles; tension persists.\n- The other party agreed to share updates more frequently; Jordan promised to check before redoing the other party's work.\n\nCurrent Impact\n- Other teammates feel awkward and avoid putting the other party and Jordan on the same tasks.\n- The manager is under pressure to ensure team cohesion before a major donor site visit.\n\nSilver Lining\nBoth the other party and Jordan care deeply about partner success and have complementary skills when working well together.",
-      "defaultGoal": "Resolve conflicts and improve team dynamics.",
-      "defaultOtherParty": "Team members"
+      "defaultContext": "Conflict Background\n- The other party and Jordan collaborated on a partner event that went off-track due to miscommunication.\n- The other party feels Jordan oversteps boundaries and takes credit for ideas.\n- Jordan has privately complained that the other party misses deadlines and ignores messages.\n\nPrior Attempts\n- Two team meetings were held to clarify roles; tension persists.\n- The other party agreed to share updates more frequently; Jordan promised to check before redoing the other party's work.\n\nCurrent Impact\n- Other teammates feel awkward and avoid putting the other party and Jordan on the same tasks.\n- The manager is under pressure to ensure team cohesion before a major donor site visit.\n\nSilver Lining\nBoth the other party and Jordan care deeply about partner success and have complementary skills when working well together."
     },
     "salaryDiscussions": {
       "name": "Salary Discussions",
-      "iconUri": "/icons/category-salary_discussions.svg",
-      "description": "Prepare for open salary conversations.",
-      "defaultContext": "Salary negotiation meeting.",
-      "defaultContextLong": "Current Salary\n- The other party earns slightly below the midpoint for Program Officers in this NGO.\n- Last annual raise was 4%.\n\nPerformance Context\n- Solid on creative outreach and community partnerships.\n- Mixed record on deadlines and internal coordination.\n\nRecent Request\n- Last week, the other party emailed HR asking for a 10% raise, citing cost of living and workload growth.\n\nOrganizational Context\n- The NGO faces tight budgets due to a new funder's spending cap.\n- Managers can approve up to 3% merit raise without director sign-off.\n\nSilver Lining\nPeers respect the other party's community engagement; manager has praised initiative on outreach campaigns.",
-      "defaultGoal": "Reach a mutually beneficial agreement on salary.",
-      "defaultOtherParty": "Employer"
+      "defaultContext": "Current Salary\n- The other party earns slightly below the midpoint for Program Officers in this NGO.\n- Last annual raise was 4%.\n\nPerformance Context\n- Solid on creative outreach and community partnerships.\n- Mixed record on deadlines and internal coordination.\n\nRecent Request\n- Last week, the other party emailed HR asking for a 10% raise, citing cost of living and workload growth.\n\nOrganizational Context\n- The NGO faces tight budgets due to a new funder's spending cap.\n- Managers can approve up to 3% merit raise without director sign-off.\n\nSilver Lining\nPeers respect the other party's community engagement; manager has praised initiative on outreach campaigns."
     }
   },
   "errorMessage": "An error occurred while creating the scenario. Please try again later.",
   "easy": "Easy",
   "medium": "Medium",
   "hard": "Hard",
-  "simple": "Simple",
-  "complex": "Complex",
-  "neutral": "Neutral",
   "creating": "Creating...",
   "create": "Create",
   "personaSelection": "Select Persona",
@@ -222,5 +148,6 @@
   "contextCustom": "Custom Context",
   "selectContext": "Context",
   "chooseOtherParty": "3. Other Party",
-  "customizationTitle": "1. Customization"
+  "customizationTitle": "1. Customization",
+  "situationTitle": "2. Situation"
 }

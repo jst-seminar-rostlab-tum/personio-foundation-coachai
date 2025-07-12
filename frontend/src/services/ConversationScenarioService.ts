@@ -4,17 +4,6 @@ import {
 } from '@/interfaces/models/ConversationScenario';
 import { AxiosInstance } from 'axios';
 
-const getConversationCategories = async (api: AxiosInstance) => {
-  try {
-    const response = await api.get('/conversation-categories');
-    return response;
-  } catch (error) {
-    console.error('Error fetching conversation categories:', error);
-    throw error;
-  }
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getConversationScenarios = async (api: AxiosInstance) => {
   try {
     const response = await api.get('/conversation-scenarios');
@@ -25,7 +14,6 @@ const getConversationScenarios = async (api: AxiosInstance) => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getConversationScenario = async (api: AxiosInstance, id: string) => {
   try {
     const response = await api.get(`/conversation-scenario/${id}`);
@@ -60,7 +48,8 @@ const getPreparation = async (api: AxiosInstance, id: string) => {
 };
 
 export const conversationScenarioService = {
-  getConversationCategories,
   getPreparation,
   createConversationScenario,
+  getConversationScenarios,
+  getConversationScenario,
 };

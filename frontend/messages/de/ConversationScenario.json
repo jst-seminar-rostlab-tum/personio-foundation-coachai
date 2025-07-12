@@ -2,46 +2,24 @@
   "metaTitle": "Neues Training - Coach AI",
   "metaDescription": "Starten Sie eine neue Trainingssitzung mit persönlichem Coaching",
   "title": "Neue Trainingssitzung",
-  "steps": {
-    "category": "Kategorie",
-    "situation": "Situation",
-    "customize": "Anpassen"
-  },
-  "customizationTitle": "1. Anpassung",
-  "category": {
-    "title": "2. Situation",
-    "customPlaceholder": "z.B. Beförderungsgespräch, Einarbeitung neuer Kollegen ...",
-    "customInput": "Definieren Sie Ihr eigenes Gesprächsthema *"
-  },
-  "situation": {
-    "title": "Beschreiben Sie Ihre Situation",
-    "otherParty": {
-      "title": "Wer ist der Gesprächspartner? *",
-      "placeholder": "Namen eingeben"
-    },
-    "context": {
-      "title": "Was ist der Kontext? *",
-      "placeholder": "Beschreiben Sie hier den Gesprächskontext."
-    },
-    "goal": {
-      "title": "Was ist Ihr Ziel? *",
-      "placeholder": "Welches Ergebnis möchten Sie erzielen?"
-    }
-  },
   "customize": {
     "title": "Andere Partei anpassen",
-    "customizationTitle": "1. Anpassung",
     "persona": {
       "title": "Wählen Sie eine Persona",
       "about": {
-        "personality": "Persönlichkeit"
+        "personality": "Persönlichkeit",
+        "behavioralTraits": "Verhaltensmerkmale",
+        "trainingFocus": "Trainingsfokus"
       },
-      "behavioralTraits": "Verhaltensmerkmale",
-      "trainingFocus": "Trainingsfokus",
       "personas": {
         "positive": {
           "name": "Positive Paula",
-          "personality": "Optimistisch, bemüht es allen recht zu machen, wachstumsorientiert, vermeidet Negativität",
+          "personality": [
+            "Optimistisch",
+            "Bemüht es allen recht zu machen",
+            "Wachstumsorientiert",
+            "Vermeidet Negativität"
+          ],
           "traits": [
             "Übermäßig zustimmend – vermeidet Konflikte oder Meinungsverschiedenheiten",
             "Weicht Kritik mit Enthusiasmus aus („Kein Problem, ich mach das sofort!“)",
@@ -60,7 +38,7 @@
         },
         "angry": {
           "name": "Lauter Lukas",
-          "personality": "Konfrontativ, defensiv, emotional instabil",
+          "personality": ["Konfrontativ", "Defensiv", "Emotionell instabil"],
           "traits": [
             "Unterstellt anderen häufig schlechte Absichten",
             "Fühlt sich schnell angegriffen, besonders bei Kritik",
@@ -77,7 +55,13 @@
         },
         "shy": {
           "name": "Schüchterne Sandra",
-          "personality": "Ruhig, zurückhaltend, konfliktscheu, ängstlich davor, etwas Falsches zu sagen",
+          "personality": [
+            "Ruhig",
+            "Zurückhaltend",
+            "Konfliktscheu",
+            "Ängstlich davor",
+            "Etwas Falsches zu sagen"
+          ],
           "traits": [
             "Spricht leise, zögerlich und macht häufig Pausen",
             "Verwendet viele Füllwörter („ähm...“, „ich glaube...“, „vielleicht...“) und bricht Sätze oft ab",
@@ -98,7 +82,7 @@
         },
         "casual": {
           "name": "Coole Carla",
-          "personality": "Entspannt, locker, freundlich – aber manchmal unkonzentriert",
+          "personality": ["Entspannt", "Locker", "Freundlich – aber manchmal unkonzentriert"],
           "traits": [
             "Verwendet Humor oder informelle Sprache",
             "Nimmt Feedback möglicherweise nicht ernst",
@@ -115,7 +99,7 @@
         },
         "sad": {
           "name": "Müder Marius",
-          "personality": "Zurückgezogen, energielos, emotional distanziert",
+          "personality": ["Zurückgezogen", "Energielos", "Emotionell distanziert"],
           "traits": [
             "Spricht mit flacher Stimme und wenig Ausdruck",
             "Äußert Unzufriedenheit oder Hoffnungslosigkeit",
@@ -133,30 +117,6 @@
       },
       "aboutLabel": "Über"
     },
-    "difficulty": {
-      "title": "Schwierigkeitsgrad",
-      "options": {
-        "easy": "Einfach",
-        "medium": "Mittel",
-        "hard": "Schwer"
-      }
-    },
-    "emotionalTone": {
-      "title": "Emotionaler Ton",
-      "options": {
-        "positive": "Positiv",
-        "neutral": "Neutral",
-        "negative": "Negativ"
-      }
-    },
-    "complexity": {
-      "title": "Antwortkomplexität",
-      "options": {
-        "simple": "Einfach",
-        "medium": "Mittel",
-        "complex": "Komplex"
-      }
-    },
     "context": {
       "default": "Standardkontext",
       "custom": "Individueller Kontext",
@@ -167,48 +127,25 @@
   "categories": {
     "givingFeedback": {
       "name": "Feedback geben",
-      "iconUri": "/icons/category-giving_feedback.svg",
-      "description": "Konstruktives Feedback geben, um anderen zu helfen, sich zu verbessern.",
-      "defaultContext": "Einzelgespräch mit einem Teammitglied.",
-      "defaultContextLong": "Verpasste Deadlines\n- Quartalsbericht über Partnerauswirkungen kam trotz Erinnerungen 5 Tage zu spät.\n- Zusammenfassung des Vor-Ort-Besuchs unvollständig; Kollege musste sie unter Druck neu schreiben.\nAnwesenheit\n- In den letzten 2 Monaten hat die andere Partei 4 von 8 Team-Check-ins ohne Ankündigung versäumt.\n- Bei Anwesenheit oft Kamera aus und minimales Engagement.\nPeer-Feedback\n- Zwei Kollegen benötigten mehrere Erinnerungen für Inputs.\n- Einer vermeidet jetzt, der anderen Partei gemeinsame Aufgaben zuzuweisen aufgrund von Zuverlässigkeitsbedenken.\nVorherige Unterstützung\n- Vor sechs Wochen setzte der Manager klare Erwartungen und einen Priorisierungsplan.\n- Kalender-Tipps und Admin-Hilfe wurden angeboten; wenig Verbesserung sichtbar.\n\nSilberstreif am Horizont\nDie andere Partei zeigt echte Kreativität in der Outreach-Planung und hat noch Wachstumspotenzial.",
-      "defaultGoal": "Konstruktives Feedback effektiv geben.",
-      "defaultOtherParty": "Teammitglied"
+      "defaultContext": "Verpasste Deadlines\n- Quartalsbericht über Partnerauswirkungen kam trotz Erinnerungen 5 Tage zu spät.\n- Zusammenfassung des Vor-Ort-Besuchs unvollständig; Kollege musste sie unter Druck neu schreiben.\nAnwesenheit\n- In den letzten 2 Monaten hat die andere Partei 4 von 8 Team-Check-ins ohne Ankündigung versäumt.\n- Bei Anwesenheit oft Kamera aus und minimales Engagement.\nPeer-Feedback\n- Zwei Kollegen benötigten mehrere Erinnerungen für Inputs.\n- Einer vermeidet jetzt, der anderen Partei gemeinsame Aufgaben zuzuweisen aufgrund von Zuverlässigkeitsbedenken.\nVorherige Unterstützung\n- Vor sechs Wochen setzte der Manager klare Erwartungen und einen Priorisierungsplan.\n- Kalender-Tipps und Admin-Hilfe wurden angeboten; wenig Verbesserung sichtbar.\n\nSilberstreif am Horizont\nDie andere Partei zeigt echte Kreativität in der Outreach-Planung und hat noch Wachstumspotenzial."
     },
     "performanceReviews": {
       "name": "Leistungsbewertungen",
-      "iconUri": "/icons/category-performance_reviews.svg",
-      "description": "Motivieren und mit effektiven Bewertungen führen.",
-      "defaultContext": "Formales Leistungsbewertungsgespräch.",
-      "defaultContextLong": "Positive Leistung\n- Die andere Partei hat zwei erfolgreiche Community-Outreach-Pilotprojekte entwickelt.\n- Partner loben oft die Kreativität und Energie der anderen Partei.\n\nVerbesserungsbereiche\n- Die andere Partei verpasst manchmal interne Deadlines für Berichte und Dateneingaben.\n- Teammitglieder berichten, dass die andere Partei kurzfristig schwer erreichbar ist.\n\nBewertungsergebnis\n- Gesamtbewertung ist 'Erfüllt Erwartungen' — starke externe Wirkung, aber Inkonsistenz bei interner Nacharbeit verhinderte 'Übertrifft Erwartungen'.\n- Eine standardmäßige 3% Leistungszulage wird angewendet, gleich wie bei den meisten Kollegen.\n\nOrganisationskontext\n- Die NGO betont Zuverlässigkeit, um erneute Geldgeber-Finanzierung zu sichern.\n- Dieser Bewertungszyklus ist aufgrund neuer Geldgeber-Verantwortlichkeitsanforderungen etwas strenger.\n\nSilberstreif am Horizont\nDer Manager glaubt, dass die andere Partei nächstes Jahr 'Übertrifft Erwartungen' erreichen kann mit konsistenterer interner Koordination.",
-      "defaultGoal": "Leistung von Mitarbeitern evaluieren und besprechen.",
-      "defaultOtherParty": "Mitarbeiter/in"
+      "defaultContext": "Positive Leistung\n- Die andere Partei hat zwei erfolgreiche Community-Outreach-Pilotprojekte entwickelt.\n- Partner loben oft die Kreativität und Energie der anderen Partei.\n\nVerbesserungsbereiche\n- Die andere Partei verpasst manchmal interne Deadlines für Berichte und Dateneingaben.\n- Teammitglieder berichten, dass die andere Partei kurzfristig schwer erreichbar ist.\n\nBewertungsergebnis\n- Gesamtbewertung ist 'Erfüllt Erwartungen' — starke externe Wirkung, aber Inkonsistenz bei interner Nacharbeit verhinderte 'Übertrifft Erwartungen'.\n- Eine standardmäßige 3% Leistungszulage wird angewendet, gleich wie bei den meisten Kollegen.\n\nOrganisationskontext\n- Die NGO betont Zuverlässigkeit, um erneute Geldgeber-Finanzierung zu sichern.\n- Dieser Bewertungszyklus ist aufgrund neuer Geldgeber-Verantwortlichkeitsanforderungen etwas strenger.\n\nSilberstreif am Horizont\nDer Manager glaubt, dass die andere Partei nächstes Jahr 'Übertrifft Erwartungen' erreichen kann mit konsistenterer interner Koordination."
     },
     "conflictResolution": {
       "name": "Konfliktlösung",
-      "iconUri": "/icons/category-conflict_resolution.svg",
-      "description": "Konflikte lösen und ein positives Team aufbauen.",
-      "defaultContext": "Konfliktlösungsgespräch zwischen Teammitgliedern.",
-      "defaultContextLong": "Konflikthintergrund\n- Die andere Partei und Jordan haben bei einem Partner-Event zusammengearbeitet, das aufgrund von Missverständnissen aus dem Ruder lief.\n- Die andere Partei fühlt, dass Jordan Grenzen überschreitet und sich Ideen aneignet.\n- Jordan hat sich privat beschwert, dass die andere Partei Deadlines verpasst und Nachrichten ignoriert.\n\nVorherige Versuche\n- Zwei Team-Meetings wurden abgehalten, um Rollen zu klären; Spannungen bestehen weiterhin.\n- Die andere Partei stimmte zu, Updates häufiger zu teilen; Jordan versprach, vor dem Überarbeiten der Arbeit der anderen Partei nachzufragen.\n\nAktuelle Auswirkungen\n- Andere Teammitglieder fühlen sich unwohl und vermeiden es, die andere Partei und Jordan auf dieselben Aufgaben zu setzen.\n- Der Manager steht unter Druck, Team-Zusammenhalt vor einem wichtigen Geldgeber-Besuch sicherzustellen.\n\nSilberstreif am Horizont\nBeide, die andere Partei und Jordan, kümmern sich tief um Partner-Erfolg und haben komplementäre Fähigkeiten, wenn sie gut zusammenarbeiten.",
-      "defaultGoal": "Konflikte lösen und Teamdynamik verbessern.",
-      "defaultOtherParty": "Teammitglieder"
+      "defaultContext": "Konflikthintergrund\n- Die andere Partei und Jordan haben bei einem Partner-Event zusammengearbeitet, das aufgrund von Missverständnissen aus dem Ruder lief.\n- Die andere Partei fühlt, dass Jordan Grenzen überschreitet und sich Ideen aneignet.\n- Jordan hat sich privat beschwert, dass die andere Partei Deadlines verpasst und Nachrichten ignoriert.\n\nVorherige Versuche\n- Zwei Team-Meetings wurden abgehalten, um Rollen zu klären; Spannungen bestehen weiterhin.\n- Die andere Partei stimmte zu, Updates häufiger zu teilen; Jordan versprach, vor dem Überarbeiten der Arbeit der anderen Partei nachzufragen.\n\nAktuelle Auswirkungen\n- Andere Teammitglieder fühlen sich unwohl und vermeiden es, die andere Partei und Jordan auf dieselben Aufgaben zu setzen.\n- Der Manager steht unter Druck, Team-Zusammenhalt vor einem wichtigen Geldgeber-Besuch sicherzustellen.\n\nSilberstreif am Horizont\nBeide, die andere Partei und Jordan, kümmern sich tief um Partner-Erfolg und haben komplementäre Fähigkeiten, wenn sie gut zusammenarbeiten."
     },
     "salaryDiscussions": {
       "name": "Gehaltsgespräche",
-      "iconUri": "/icons/category-salary_discussions.svg",
-      "description": "Sich auf offene Gehaltsgespräche vorbereiten.",
-      "defaultContext": "Gehaltsverhandlungsgespräch.",
-      "defaultContextLong": "Aktuelles Gehalt\n- Die andere Partei verdient leicht unter dem Mittelwert für Programmbeauftragte in dieser NGO.\n- Letzte jährliche Gehaltserhöhung war 4%.\n\nLeistungskontext\n- Solide bei kreativem Outreach und Community-Partnerschaften.\n- Gemischte Bilanz bei Deadlines und interner Koordination.\n\nJüngste Anfrage\n- Letzte Woche hat die andere Partei HR eine E-Mail geschickt und um 10% Gehaltserhöhung gebeten, mit Verweis auf Lebenshaltungskosten und Arbeitsbelastungswachstum.\n\nOrganisationskontext\n- Die NGO steht vor knappen Budgets aufgrund der Ausgabenobergrenze eines neuen Geldgebers.\n- Manager können bis zu 3% Leistungszulage ohne Direktor-Unterschrift genehmigen.\n\nSilberstreif am Horizont\nKollegen respektieren das Community-Engagement der anderen Partei; Manager hat Initiative bei Outreach-Kampagnen gelobt.",
-      "defaultGoal": "Eine für beide Seiten vorteilhafte Gehaltsvereinbarung treffen.",
-      "defaultOtherParty": "Arbeitgeber"
+      "defaultContext": "Aktuelles Gehalt\n- Die andere Partei verdient leicht unter dem Mittelwert für Programmbeauftragte in dieser NGO.\n- Letzte jährliche Gehaltserhöhung war 4%.\n\nLeistungskontext\n- Solide bei kreativem Outreach und Community-Partnerschaften.\n- Gemischte Bilanz bei Deadlines und interner Koordination.\n\nJüngste Anfrage\n- Letzte Woche hat die andere Partei HR eine E-Mail geschickt und um 10% Gehaltserhöhung gebeten, mit Verweis auf Lebenshaltungskosten und Arbeitsbelastungswachstum.\n\nOrganisationskontext\n- Die NGO steht vor knappen Budgets aufgrund der Ausgabenobergrenze eines neuen Geldgebers.\n- Manager können bis zu 3% Leistungszulage ohne Direktor-Unterschrift genehmigen.\n\nSilberstreif am Horizont\nKollegen respektieren das Community-Engagement der anderen Partei; Manager hat Initiative bei Outreach-Kampagnen gelobt."
     }
   },
   "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später noch einmal.",
   "easy": "Einfach",
   "medium": "Mittel",
   "hard": "Schwer",
-  "simple": "Einfach",
-  "complex": "Komplex",
-  "neutral": "Neutral",
   "creating": "Wird erstellt...",
   "create": "Erstellen",
   "personaSelection": "Persona-Auswahl",
@@ -218,5 +155,7 @@
   "selectContext": "Kontext",
   "defaultContextLabel": "Standardkontext",
   "customContextLabel": "Individueller Kontext",
-  "chooseOtherParty": "3. Gesprächspartner"
+  "chooseOtherParty": "3. Gesprächspartner",
+  "customizationTitle": "1. Anpassung",
+  "situationTitle": "2. Situation"
 }

@@ -1,32 +1,32 @@
 import { ConversationCategory } from '@/interfaces/models/ConversationScenario';
 import { useTranslations } from 'next-intl';
 
-export function Categories(): ConversationCategory[] {
+export function Categories(): Record<string, ConversationCategory> {
   const t = useTranslations('ConversationScenario.categories');
-  return [
-    {
+  return {
+    giving_feedback: {
       id: 'giving_feedback',
       name: t('givingFeedback.name'),
       iconUri: '/images/category/giving-feedback.svg',
-      description: t('givingFeedback.description'),
+      defaultContext: t('givingFeedback.defaultContext'),
     },
-    {
+    performance_reviews: {
       id: 'performance_reviews',
       name: t('performanceReviews.name'),
       iconUri: '/images/category/performance-reviews.svg',
-      description: t('performanceReviews.description'),
+      defaultContext: t('performanceReviews.defaultContext'),
     },
-    {
+    conflict_resolution: {
       id: 'conflict_resolution',
       name: t('conflictResolution.name'),
       iconUri: '/images/category/conflict-resolution.svg',
-      description: t('conflictResolution.description'),
+      defaultContext: t('conflictResolution.defaultContext'),
     },
-    {
+    salary_discussions: {
       id: 'salary_discussions',
       name: t('salaryDiscussions.name'),
       iconUri: '/images/category/salary-discussions.svg',
-      description: t('salaryDiscussions.description'),
+      defaultContext: t('salaryDiscussions.defaultContext'),
     },
-  ];
+  };
 }

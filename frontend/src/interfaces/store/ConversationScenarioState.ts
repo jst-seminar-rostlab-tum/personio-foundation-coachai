@@ -2,7 +2,6 @@ import { ContextMode } from '../models/ConversationScenario';
 
 export interface ConversationScenarioFormState {
   category: string;
-  customCategory: string;
   situationalFacts: string;
   name: string;
   difficulty: string;

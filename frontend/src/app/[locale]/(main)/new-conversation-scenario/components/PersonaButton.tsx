@@ -1,23 +1,27 @@
-import React from 'react';
+import Image from 'next/image';
 
 interface PersonaButtonProps {
-  children: React.ReactNode;
   onClick?: () => void;
   selected?: boolean;
   className?: string;
+  image: string;
+  label: string;
 }
 
 const personaButtonStyles =
   'w-full box-border rounded-2xl flex flex-col items-center justify-center text-lg outline outline-2 outline-bw-20 cursor-pointer hover:bg-marigold-30/80 active:outline-none active:bg-marigold-30 disabled:pointer-events-none p-4';
 
-export function PersonaButton({ children, selected, onClick, className }: PersonaButtonProps) {
+export function PersonaButton({ selected, onClick, className, image, label }: PersonaButtonProps) {
   return (
     <button
       type="button"
       className={`${personaButtonStyles}${selected ? ' outline-none bg-marigold-30' : ''}${className ? ` ${className}` : ''}`}
       onClick={onClick}
     >
-      {children}
+      <div className="relative w-16 h-16 rounded-full overflow-hidden bg-white mb-3 flex-shrink-0 mx-auto">
+        <Image src={image} alt={label} fill className="object-contain p-2 " />
+      </div>
+      <span className="text-sm text-center">{label}</span>
     </button>
   );
 }
