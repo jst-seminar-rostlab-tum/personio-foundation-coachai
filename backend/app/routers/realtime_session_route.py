@@ -9,10 +9,11 @@ from sqlmodel import select
 from app.config import settings
 from app.database import get_db_session
 from app.dependencies import require_user
+from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session, SessionStatus
-from app.models.user_profile import UserProfile
+from app.models.user_profile import AccountRole, UserProfile
 
 router = APIRouter(prefix='', tags=['realtime-session'])
 
@@ -45,6 +46,22 @@ async def get_realtime_session(
         raise HTTPException(
             status.HTTP_429_TOO_MANY_REQUESTS, detail='Session is already completed'
         )
+
+    # Check daily session limit for non-admin users
+    if user_profile.account_role != AccountRole.admin:
+        # Get session limit from AppConfig
+        session_limit_config = db_session.exec(
+            select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
+        ).first()
+        if session_limit_config is not None:
+            session_limit = int(session_limit_config)
+            # Check if the user has reached the daily session limit
+            if user_profile.sessions_created_today >= session_limit:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f'You have reached the daily session limit of {session_limit}. '
+                    'Cannot start real-time session.',
+                )
 
     conversation_scenario = db_session.exec(
         select(ConversationScenario).where(ConversationScenario.id == session.scenario_id)
