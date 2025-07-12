@@ -97,7 +97,9 @@ const getSdpResponseTextFromRealtimeApi = async (
 
 const getSessionLiveFeedback = async (api: AxiosInstance, sessionId: string) => {
   try {
-    const sessionLiveFeedback = await api.get(`/live-feedback/session/${sessionId}`);
+    const sessionLiveFeedback = await api.get(`/live-feedback/session/${sessionId}`, {
+      params: { limit: 5 },
+    });
     return sessionLiveFeedback;
   } catch (error) {
     console.error(error);
