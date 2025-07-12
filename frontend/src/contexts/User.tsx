@@ -1,17 +1,33 @@
 'use client';
 
 import { UserProfile } from '@/interfaces/models/UserProfile';
-import { createContext, useContext } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { logoutUser } from '@/lib/supabase/logout';
+import { api } from '@/services/ApiClient';
+import { UserProfileService } from '@/services/UserProfileService';
+import { useRouter } from 'next/navigation';
+import { createContext, useContext, useEffect, useState } from 'react';
 
-const UserContext = createContext<UserProfile>(undefined!);
+const UserContext = createContext<UserProfile | undefined>(undefined);
 
-export function UserContextProvider({
-  children,
-  user,
-}: {
-  children: React.ReactNode;
-  user: UserProfile;
-}) {
+export function UserContextProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<UserProfile | undefined>(undefined);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userProfile = await UserProfileService.getUserProfile(api);
+        setUser(userProfile);
+      } catch (err) {
+        console.error('Error fetching user profile:', err);
+        await logoutUser(createClient);
+      }
+    };
+
+    fetchUser();
+  }, [router]);
+
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
 

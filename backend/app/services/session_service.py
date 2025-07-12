@@ -1,6 +1,5 @@
 from datetime import UTC, datetime
 from math import ceil
-from typing import Optional
 from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
@@ -8,18 +7,22 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, func, select
 
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.enums.account_role import AccountRole
+from app.enums.feedback_status import FeedbackStatus
+from app.enums.scenario_preparation_status import ScenarioPreparationStatus
+from app.enums.session_status import SessionStatus
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
-from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.models.session import Session, SessionStatus
-from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
+from app.models.scenario_preparation import ScenarioPreparation
+from app.models.session import Session
+from app.models.session_feedback import SessionFeedback
 from app.models.session_turn import SessionTurn
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.user_profile import UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
-from app.schemas.session_feedback import FeedbackRequest, SessionFeedbackMetrics
-from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
+from app.schemas.session_feedback import FeedbackCreate, SessionFeedbackRead
+from app.schemas.sessions_paginated import PaginatedSessionRead, SessionItem, SkillScores
 from app.services.review_service import ReviewService
 from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 from app.services.session_turn_service import SessionTurnService
@@ -70,8 +73,8 @@ class SessionService:
         user_profile: UserProfile,
         page: int,
         page_size: int,
-        scenario_id: Optional[UUID] = None,
-    ) -> PaginatedSessionsResponse:
+        scenario_id: UUID | None = None,
+    ) -> PaginatedSessionRead:
         if scenario_id:
             scenario = self._validate_scenario_access(scenario_id, user_profile)
             scenario_ids = [scenario.id]
@@ -79,20 +82,20 @@ class SessionService:
             scenario_ids = self._get_user_scenario_ids(user_profile.id)
 
         if not scenario_ids:
-            return PaginatedSessionsResponse(
+            return PaginatedSessionRead(
                 page=page, limit=page_size, total_pages=0, total_sessions=0, sessions=[]
             )
 
         total_sessions = self._count_sessions(scenario_ids)
         if total_sessions == 0:
-            return PaginatedSessionsResponse(
+            return PaginatedSessionRead(
                 page=page, limit=page_size, total_pages=0, total_sessions=0, sessions=[]
             )
 
         sessions = self._get_sessions_paginated(scenario_ids, page, page_size)
         session_list = [self._build_session_item(sess) for sess in sessions]
 
-        return PaginatedSessionsResponse(
+        return PaginatedSessionRead(
             page=page,
             limit=page_size,
             total_pages=ceil(total_sessions / page_size),
@@ -341,7 +344,7 @@ class SessionService:
 
         key_concepts_str = '\n'.join(f'{item["header"]}: {item["value"]}' for item in key_concepts)
 
-        request = FeedbackRequest(
+        request = FeedbackCreate(
             category=category.name
             if category
             else conversation_scenario.custom_category_label or 'Unknown Category',
@@ -424,13 +427,13 @@ class SessionService:
             return scenario.custom_category_label
         return 'No Title available'
 
-    def _get_session_feedback(self, session_id: UUID) -> SessionFeedbackMetrics | None:
+    def _get_session_feedback(self, session_id: UUID) -> SessionFeedbackRead | None:
         feedback = self.db.exec(
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
         ).first()
-        if not feedback or feedback.status == FeedbackStatusEnum.pending:
+        if not feedback or feedback.status == FeedbackStatus.pending:
             raise HTTPException(status_code=202, detail='Session feedback in progress.')
-        if feedback.status == FeedbackStatusEnum.failed:
+        if feedback.status == FeedbackStatus.failed:
             raise HTTPException(status_code=500, detail='Session feedback failed.')
 
         audio_file_exists = False
@@ -449,7 +452,7 @@ class SessionService:
         session_turn_service = SessionTurnService(self.db)
         session_turn_transcripts = session_turn_service.get_session_turns(session_id=session_id)
 
-        return SessionFeedbackMetrics(
+        return SessionFeedbackRead(
             scores=feedback.scores,
             tone_analysis=feedback.tone_analysis,
             overall_score=feedback.overall_score,

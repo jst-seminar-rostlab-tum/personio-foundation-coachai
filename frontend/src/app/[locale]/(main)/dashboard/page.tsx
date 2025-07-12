@@ -11,7 +11,7 @@ import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { SessionFromPagination } from '@/interfaces/models/Session';
-import { formattedDate } from '@/lib/utils/formatDateAndTime';
+import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiServer';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -60,8 +60,8 @@ export default async function DashboardPage() {
         <StatCard
           value={
             userProfile.accountRole === 'admin'
-              ? `#/${userStats.dailySessionLimit ?? 0}`
-              : `${userStats.numRemainingDailySessions}/${userStats.dailySessionLimit ?? 0}`
+              ? `#/${userStats.dailySessionLimit}`
+              : `${userStats.numRemainingDailySessions}/${userStats.dailySessionLimit}`
           }
           label={t('userStats.remainingSessionsToday')}
         />
@@ -73,7 +73,7 @@ export default async function DashboardPage() {
           <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
         </div>
         {!sessions || sessions.length === 0 ? (
-          <EmptyListComponent itemType={tCommon('emptyList.sessions')} />
+          <EmptyListComponent itemType={tCommon('sessions')} />
         ) : (
           <>
             {sessions.map((session: SessionFromPagination) => (
@@ -88,7 +88,7 @@ export default async function DashboardPage() {
                 </div>
                 <div className="flex flex-col justify-center text-center min-w-max">
                   <p className="text-base whitespace-nowrap">
-                    {formattedDate(session.date, locale)}
+                    {formatDateFlexible(session.date, locale)}
                   </p>
                 </div>
               </Link>

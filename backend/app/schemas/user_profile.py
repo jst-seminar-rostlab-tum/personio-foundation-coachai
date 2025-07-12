@@ -1,15 +1,13 @@
 from datetime import date, datetime
 from uuid import UUID
 
+from app.enums.account_role import AccountRole
+from app.enums.experience import Experience
+from app.enums.language import LanguageCode
+from app.enums.preferred_learning_style import PreferredLearningStyle
+from app.enums.professional_role import ProfessionalRole
 from app.models.camel_case import CamelModel
-from app.models.language import LanguageCode
 from app.models.user_goal import Goal
-from app.models.user_profile import (
-    AccountRole,
-    Experience,
-    PreferredLearningStyle,
-    ProfessionalRole,
-)
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 
 
@@ -53,7 +51,7 @@ class UserProfileRead(CamelModel):
     store_conversations: bool
     sessions_created_today: int
     last_session_date: date
-    num_remaining_daily_sessions: int | None = None
+    num_remaining_daily_sessions: int
 
 
 class UserProfileExtendedRead(UserProfileRead):
@@ -69,7 +67,7 @@ class UserEmailRead(CamelModel):
     email: str
 
 
-class PaginatedUserResponse(CamelModel):
+class PaginatedUserRead(CamelModel):
     page: int
     limit: int
     total_pages: int
@@ -78,7 +76,7 @@ class PaginatedUserResponse(CamelModel):
 
 
 # Schema for reading User Statistics
-class UserStatisticsRead(CamelModel):
+class UserStatistics(CamelModel):
     total_sessions: int
     training_time: float  # in hours
     current_streak_days: int

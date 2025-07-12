@@ -8,7 +8,7 @@ const getPaginatedReviews = async (
   sort: string = 'newest'
 ) => {
   try {
-    const { data } = await api.get(`/review`, {
+    const { data } = await api.get(`/reviews`, {
       params: {
         page,
         page_size: pageSize,
@@ -24,7 +24,7 @@ const getPaginatedReviews = async (
 
 const createReview = async (api: AxiosInstance, review: ReviewCreate) => {
   try {
-    const { data } = await api.post('/review', review);
+    const { data } = await api.post('/reviews', review);
     return data;
   } catch (error) {
     console.error('Error creating review:', error);

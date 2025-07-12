@@ -2,7 +2,8 @@ from fastapi import HTTPException
 from sqlmodel import Session as DBsession
 from sqlmodel import select
 
-from app.models.app_config import AppConfig, ConfigType
+from app.enums.config_type import ConfigType
+from app.models.app_config import AppConfig
 from app.schemas.app_config import AppConfigCreate, AppConfigRead
 
 

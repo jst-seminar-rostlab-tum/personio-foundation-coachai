@@ -1,5 +1,4 @@
 from datetime import UTC, date, datetime
-from enum import Enum
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
@@ -8,40 +7,18 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
 from sqlmodel import Field, Relationship
 
+from app.enums.account_role import AccountRole
+from app.enums.experience import Experience
+from app.enums.language import LanguageCode
+from app.enums.preferred_learning_style import PreferredLearningStyle
+from app.enums.professional_role import ProfessionalRole
 from app.models.camel_case import CamelModel
-from app.models.language import LanguageCode
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
     from app.models.review import Review
     from app.models.user_confidence_score import UserConfidenceScore
     from app.models.user_goal import UserGoal
-
-
-class AccountRole(str, Enum):
-    user = 'user'
-    admin = 'admin'
-
-
-class ProfessionalRole(str, Enum):
-    hr_professional = 'hr_professional'
-    team_leader = 'team_leader'
-    executive = 'executive'
-    other = 'other'
-
-
-class Experience(str, Enum):
-    beginner = 'beginner'
-    intermediate = 'intermediate'
-    skilled = 'skilled'
-    advanced = 'advanced'
-    expert = 'expert'
-
-
-class PreferredLearningStyle(str, Enum):
-    visual = 'visual'
-    auditory = 'auditory'
-    kinesthetic = 'kinesthetic'
 
 
 class UserProfile(CamelModel, table=True):  # `table=True` makes it a database table
@@ -84,7 +61,6 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     last_session_date: date = Field(default_factory=lambda: datetime.now(UTC).date())
 
 
-# Automatically update `updated_at` before an update
 @event.listens_for(UserProfile, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfile') -> None:
     target.updated_at = datetime.now(UTC)

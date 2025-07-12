@@ -1,14 +1,13 @@
+import { ContextMode } from '../models/ConversationScenario';
+
 export interface ConversationScenarioFormState {
   category: string;
-  customCategory: string;
+  situationalFacts: string;
   name: string;
-  otherParty: string;
-  context: string;
-  goal: string;
   difficulty: string;
-  emotionalTone: string;
-  complexity: string;
-  isCustom: boolean;
+  persona: string;
+  personaDescription: string;
+  contextMode: ContextMode;
 }
 
 export interface ConversationScenarioState {

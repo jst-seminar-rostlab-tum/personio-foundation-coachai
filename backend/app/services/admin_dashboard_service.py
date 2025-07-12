@@ -18,11 +18,11 @@ class AdminDashboardService:
     def _get_review_count(self) -> int:
         return self.db.exec(select(func.count()).select_from(Review)).one()
 
-    def _get_daily_session_limit(self) -> int | None:
+    def _get_daily_session_limit(self) -> int:
         daily_session_limit = self.db.exec(
             select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
         ).first()
-        return int(daily_session_limit) if daily_session_limit is not None else None
+        return int(daily_session_limit) if daily_session_limit is not None else 0
 
     def _get_admin_stats(self) -> AdminDashboardStats:
         stats = self.db.exec(select(AdminDashboardStats)).first()

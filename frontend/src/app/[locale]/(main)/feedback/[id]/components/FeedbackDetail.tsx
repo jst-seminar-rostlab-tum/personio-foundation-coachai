@@ -1,16 +1,6 @@
 'use client';
 
-import {
-  ChartNoAxesColumnIncreasingIcon,
-  CheckCircle,
-  CircleX,
-  Clock,
-  MessageCircle,
-  MessageCircleQuestion,
-  Mic,
-  PlayIcon,
-} from 'lucide-react';
-import Progress from '@/components/ui/Progress';
+import { ChartNoAxesColumnIncreasingIcon, CheckCircle, CircleX } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -19,14 +9,19 @@ import {
 } from '@/components/ui/Accordion';
 import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 import { useCallback, useEffect, useState } from 'react';
+import ResourcesList from '@/components/common/ResourcesList';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { useLocale, useTranslations } from 'next-intl';
 import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/utils/toast';
-import { formattedDate } from '@/lib/utils/formatDateAndTime';
+import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
+import AudioPlayer from './AudioPlayer';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
 import FeedbackDetailLoadingPage from '../loading';
+import DonutChart from './DonutChart';
+import ProgressBars from './ProgressBars';
 
 interface FeedbackDetailProps {
   sessionId: string;
@@ -75,24 +70,20 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
     { key: tCommon('clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
 
-  const convertTimeToMinutes = (seconds: number) => {
-    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    return h > 0
+      ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+      : `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  const roundCardStats = [
-    {
-      key: t('sessionLength'),
-      value: convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0),
-      icon: 'Clock',
-    },
-    {
-      key: tCommon('goalsAchieved'),
-      value: `${feedbackDetail?.feedback?.goalsAchieved.length ?? 0} / ${
-        feedbackDetail?.goalsTotal.length ?? 0
-      }`,
-      icon: 'Check',
-    },
-  ];
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isPlaying, setIsPlayingState] = useState(false);
+  const setIsPlaying = useCallback((val: boolean | ((prev: boolean) => boolean)) => {
+    setIsPlayingState(val);
+  }, []);
 
   const examplePositive = feedbackDetail?.feedback?.examplePositive || [];
 
@@ -100,81 +91,51 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
 
   const recommendations = feedbackDetail?.feedback?.recommendations || [];
 
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'Mic':
-        return <Mic size={20} />;
-      case 'Message':
-        return <MessageCircle size={20} />;
-      case 'Clock':
-        return <Clock size={20} />;
-      default:
-        return <MessageCircleQuestion size={20} />;
-    }
-  };
+  const totalScore =
+    (feedbackDetail?.feedback?.scores.structure ?? 0) +
+    (feedbackDetail?.feedback?.scores.empathy ?? 0) +
+    (feedbackDetail?.feedback?.scores.focus ?? 0) +
+    (feedbackDetail?.feedback?.scores.clarity ?? 0);
+
+  const maxScore = Object.values(feedbackDetail?.feedback?.scores ?? {}).length * 5;
+
   if (isLoading) {
     return <FeedbackDetailLoadingPage />;
   }
 
   return (
-    <div className="flex flex-col items-center gap-8">
-      <div className="text-2xl ">{t('title')}</div>
-      <div className="h-20 bg-marigold-10 px-4 py-5 rounded-md text-center w-full">
-        <div className="text-lg text-marigold-90">{feedbackDetail?.title}</div>
-        <div className="text-base text-marigold-95">
-          {formattedDate(feedbackDetail?.createdAt, locale)}
-        </div>
+    <div className="flex flex-col items-center gap-12">
+      <div className="flex flex-col gap-8 w-full">
+        <div className="text-2xl font-bold text-bw-90 text-left w-full">{t('title')}</div>
+
+        {feedbackDetail?.title && (
+          <div className="bg-marigold-10 p-8 flex flex-col gap-1 rounded-lg text-center w-full">
+            <div className="font-semibold text-2xl text-marigold-90">{feedbackDetail.title}</div>
+            <div className="text-marigold-90">
+              {formatDateFlexible(feedbackDetail?.createdAt, locale, true)}
+            </div>
+          </div>
+        )}
       </div>
+
+      <div className="flex flex-col md:flex-row gap-12 max-w-5xl items-center w-full justify-between">
+        <DonutChart label={t('stats.goalsAchieved')} totalScore={totalScore} maxScore={maxScore} />
+        <ProgressBars data={progressBarData} />
+      </div>
+
+      <AudioPlayer
+        currentTime={currentTime}
+        setCurrentTime={setCurrentTime}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        formatTime={formatTime}
+        t={t}
+      />
+
       {!feedbackDetail?.hasReviewed && (
         <FeedbackDialog setFeedbackDetail={setFeedbackDetail} sessionId={sessionId} />
       )}
-      <div className="flex gap-3 items-center w-full justify-between">
-        <div className="flex flex-col gap-4 p-2.5 flex-1">
-          {progressBarData.map((item) => (
-            <div key={item.key} className="flex flex-col gap-2">
-              <div className="flex justify-between text-base">
-                <span>{item.key}</span>
-                <span>{item.value}%</span>
-              </div>
-              <Progress className="w-full" value={item.value} />
-            </div>
-          ))}
-        </div>
-        <div className="size-25 rounded-full bg-marigold-10 flex items-center justify-center text-2xl text-marigold-90">
-          {feedbackDetail?.feedback?.overallScore ?? 0}%
-        </div>
-      </div>
-      <div className="my-4 mx-2 h-px w-full bg-bw-30" />
 
-      <div className="flex justify-evenly w-full">
-        {roundCardStats.map((stat) => (
-          <div className="flex gap-2 items-center" key={stat.key}>
-            <div className="rounded-full size-11 border-1 border-bw-30 bg-bw-10 flex items-center justify-center">
-              {getIcon(stat.icon)}
-            </div>
-            <div className="flex flex-col gap-1 justify-between">
-              <span className="text-base">{stat.key}</span>
-              <span className="text-md">{stat.value}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="my-4 mx-2 h-px w-full bg-bw-30" />
-      <div className="flex items-center justify-center gap-3 mx-1 px-3 w-full h-20 bg-bw-10 rounded-md">
-        <div className="size-11 rounded-full bg-marigold-50 flex items-center justify-center">
-          <PlayIcon size={20} className="text-white" />
-        </div>
-        <div className="flex flex-col justify-between flex-1">
-          <span className="text-md">{t('listenConversation')}</span>
-          <div className="flex gap-3 items-center">
-            <Progress className="w-10 flex-1" value={62} />
-            <div className="flex gap-1 items-center text-base text-bw-40">
-              <Clock size={13} />
-              <span>{convertTimeToMinutes(feedbackDetail?.feedback?.sessionLengthS ?? 0)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
       <Accordion type="multiple">
         <AccordionItem value="feedback">
           <AccordionTrigger>{t('accordion.feedback')}</AccordionTrigger>
@@ -212,6 +173,14 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         </AccordionItem>
         <AccordionItem value="suggestion">
           <AccordionTrigger>{t('accordion.suggestion')}</AccordionTrigger>
+          <AccordionContent>
+            {feedbackDetail?.feedback?.documentNames &&
+            feedbackDetail.feedback.documentNames.length > 0 ? (
+              <ResourcesList resources={feedbackDetail.feedback.documentNames} columns={2} />
+            ) : (
+              <EmptyListComponent itemType={tCommon('resources.title')} />
+            )}
+          </AccordionContent>
         </AccordionItem>
         <AccordionItem value="session">
           <AccordionTrigger>{t('accordion.sessions')}</AccordionTrigger>
