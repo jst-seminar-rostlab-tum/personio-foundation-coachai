@@ -40,5 +40,7 @@
   },
   "personaProfile": "Persönliches Profil",
   "personaProfileHeader": "Persönliches Profil",
-  "myScenario": "Mein Szenario"
+  "myScenario": "Mein Szenario",
+  "difficultyLabel": "Schwierigkeitsgrad",
+  "otherPartyLabel": "Gesprächspartner"
 }

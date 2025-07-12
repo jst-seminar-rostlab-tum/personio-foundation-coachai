@@ -10,7 +10,7 @@ import {
   AlertDialogDescription,
   AlertDialogAction,
   AlertDialogCancel,
-} from './AlertDialog';
+} from '@/components/ui/AlertDialog';
 
 interface DeleteConfirmButtonProps {
   onConfirm: () => void;

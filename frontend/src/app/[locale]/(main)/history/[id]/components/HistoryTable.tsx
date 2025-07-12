@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
-import { ClickableTable, ClickableTableColumn } from '@/components/ui/ClickableTable';
-import { DeleteConfirmButton } from '@/components/ui/DeleteConfirmButton';
+import { ClickableTable, ClickableTableColumn } from '@/components/common/ClickableTable';
+import { DeleteConfirmButton } from '@/components/common/DeleteConfirmButton';
 
 const initialRows = [
   {

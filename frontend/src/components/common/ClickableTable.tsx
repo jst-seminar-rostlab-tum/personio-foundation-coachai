@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './Table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/Table';
 
 export type ClickableTableColumn<T> = {
   header: React.ReactNode;

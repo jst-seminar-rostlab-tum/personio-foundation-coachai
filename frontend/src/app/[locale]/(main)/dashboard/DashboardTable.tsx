@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
-import { ClickableTable, ClickableTableColumn } from '@/components/ui/ClickableTable';
-import { DeleteConfirmButton } from '@/components/ui/DeleteConfirmButton';
+import { ClickableTable, ClickableTableColumn } from '@/components/common/ClickableTable';
+import { DeleteConfirmButton } from '@/components/common/DeleteConfirmButton';
 import { Badge } from '@/components/ui/Badge';
+import Image from 'next/image';
 
 function formatDateTime(dateString: string) {
   // Format as yyyy-MM-dd, HH:mm
@@ -18,25 +19,53 @@ function formatDateTime(dateString: string) {
   return `${yyyy}-${mm}-${dd}, ${hh}:${min}`;
 }
 
+const personaOptions = [
+  {
+    id: 'angry',
+    name: 'Angry Alex',
+    image: '/images/personas/persona-angry.png',
+  },
+  {
+    id: 'casual',
+    name: 'Casual Candice',
+    image: '/images/personas/persona-casual.png',
+  },
+  {
+    id: 'positive',
+    name: 'Positive Pam',
+    image: '/images/personas/persona-positive.png',
+  },
+  {
+    id: 'shy',
+    name: 'Shy Sandra',
+    image: '/images/personas/persona-shy.png',
+  },
+  {
+    id: 'sad',
+    name: 'Low-Energy Leo',
+    image: '/images/personas/persona-sad.png',
+  },
+];
+
 const initialRows = [
   {
     id: 1,
     context: 'Giving Feedback',
-    persona: 'Manager',
+    persona: personaOptions[0],
     difficulty: 'Hard',
     lastSession: '2024-07-10T14:00:00',
   },
   {
     id: 2,
     context: 'Conflict Resolution',
-    persona: 'Colleague',
+    persona: personaOptions[1],
     difficulty: 'Medium',
     lastSession: '2024-07-08T09:30:00',
   },
   {
     id: 3,
     context: 'Active Listening',
-    persona: 'Employee',
+    persona: personaOptions[2],
     difficulty: 'Easy',
     lastSession: '2024-07-05T16:15:00',
   },
@@ -57,8 +86,20 @@ export default function DashboardTable() {
       accessor: 'context',
     },
     {
-      header: 'Other Party',
+      header: 'Persona',
       accessor: 'persona',
+      cell: (row) => (
+        <div className="flex items-center gap-2">
+          <Image
+            src={row.persona.image}
+            alt={row.persona.name}
+            width={28}
+            height={28}
+            className="rounded-full bg-white"
+          />
+          <span className="text-sm">{row.persona.name}</span>
+        </div>
+      ),
     },
     {
       header: 'Difficulty',

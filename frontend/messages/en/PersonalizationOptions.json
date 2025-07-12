@@ -40,5 +40,7 @@
   },
   "personaProfile": "Persona Profile",
   "personaProfileHeader": "Persona Profile",
-  "myScenario": "My Scenario"
+  "myScenario": "My Scenario",
+  "difficultyLabel": "Difficulty",
+  "otherPartyLabel": "Other Party"
 }

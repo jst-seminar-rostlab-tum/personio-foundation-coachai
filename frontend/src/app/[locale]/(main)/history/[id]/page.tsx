@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { UserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiServer';
-import ScenarioBox from '@/components/ui/ScenarioBox';
+import ScenarioBox from './components/ScenarioBox';
 import HistoryHeader from './components/HistoryHeader';
 import Loading from './loading';
 import HistoryTable from './components/HistoryTable';
