@@ -1,10 +1,10 @@
 import unittest
 from datetime import datetime
 from unittest.mock import MagicMock, patch
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from sqlmodel import Session as DBSession
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import SQLModel, create_engine, select
 
 from app.enums import FeedbackStatus
 from app.enums.language import LanguageCode
@@ -44,19 +44,23 @@ class TestSessionFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    def _mock_conversation_data(self, user_id: UUID | None = None) -> ConversationScenarioRead:
-        if user_id is None:
-            user_id = uuid4()
-            self.session.add(
-                UserProfile(
-                    id=user_id,
-                    full_name='Test',
-                    email='a@b.com',
-                    phone_number='123',
-                    preferred_language_code=LanguageCode.en,
-                )
-            )
+    def _mock_conversation_data(self) -> ConversationScenarioRead:
+        user = self.session.exec(select(UserProfile)).first()
+        # delete user if exists --> email+phone have to be unique
+        if user:
+            self.session.delete(user)
             self.session.commit()
+        user_id = uuid4()
+        self.session.add(
+            UserProfile(
+                id=user_id,
+                full_name='Test',
+                email='a@b.com',
+                phone_number='123',
+                preferred_language_code=LanguageCode.en,
+            )
+        )
+        self.session.commit()
         scenario = ConversationScenario(
             id=uuid4(),
             user_id=user_id,
@@ -386,9 +390,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
 
-        user_id = uuid4()
         session_id = uuid4()
-        mock_get_conversation_data.return_value = self._mock_conversation_data(user_id=user_id)
+        mock_get_conversation_data.return_value = self._mock_conversation_data()
 
         example_request = FeedbackCreate(
             transcript='Sample transcript...',
