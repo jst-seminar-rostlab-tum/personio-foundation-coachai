@@ -225,7 +225,6 @@ def save_session_feedback(
         scores=feedback_generation_result.scores_json,
         tone_analysis={},
         overall_score=feedback_generation_result.overall_score,
-        transcript_uri='',
         full_audio_filename=feedback_generation_result.full_audio_filename,
         document_names=feedback_generation_result.document_names,
         speak_time_percent=0,

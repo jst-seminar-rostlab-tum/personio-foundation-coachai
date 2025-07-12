@@ -291,7 +291,6 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertIsNotNone(feedback.updated_at)
 
         self.assertEqual(feedback.overall_score, 0)
-        self.assertEqual(feedback.transcript_uri, '')
 
     @patch('app.services.session_feedback.session_feedback_llm.generate_training_examples')
     @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')

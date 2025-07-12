@@ -222,7 +222,6 @@ def _build_export_session_feedback(sessions: list) -> list[ExportSessionFeedback
             scores=fb.scores,
             tone_analysis=fb.tone_analysis,
             overall_score=fb.overall_score,
-            transcript_uri=fb.transcript_uri,
             speak_time_percent=fb.speak_time_percent,
             questions_asked=fb.questions_asked,
             session_length_s=fb.session_length_s,
