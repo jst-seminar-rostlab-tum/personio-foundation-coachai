@@ -53,26 +53,40 @@ async def get_realtime_session(
         raise HTTPException(
             status_code=404, detail='No conversation scenario found for this session'
         )
-    conversation_category = db_session.exec(
-        select(ConversationCategory).where(
-            ConversationCategory.id == conversation_scenario.category_id
-        )
-    ).first()
-    if not conversation_category:
-        raise HTTPException(
-            status_code=404, detail='No conversation category found for this scenario'
-        )
+
+    conversation_category = None
+    if conversation_scenario.category_id:
+        conversation_category = db_session.exec(
+            select(ConversationCategory).where(
+                ConversationCategory.id == conversation_scenario.category_id
+            )
+        ).first()
+        if not conversation_category:
+            raise HTTPException(
+                status_code=404, detail='No conversation category found for this scenario'
+            )
+
+    conversation_category_name = None
+    if conversation_category:
+        conversation_category_name = conversation_category.name
+    elif conversation_scenario.custom_category_label:
+        conversation_category_name = conversation_scenario.custom_category_label
+    else:
+        conversation_category_name = 'Custom Conversation'
 
     instructions = (
-        f"Your user wants to practice conversations about '{conversation_category.name}'. "
+        f"Your user wants to practice conversations about '{conversation_category_name}'. "
         f'Your job is to simulate the other party in that conversation.\n'
         f'Therefore adopt the following persona:\n {conversation_scenario.persona}\n\n'
         f'Stay in that character, respond naturally, and encourage realistic dialogue.'
         f'To have a better understanding of the background of the conversation about'
-        f"'{conversation_category.name}' here are some more background informations:"
+        f"'{conversation_category_name}' here are some more background informations:"
         f'{conversation_scenario.situational_facts}\n'
-        f'Additional instructions before starting:\n{conversation_category.initial_prompt}\n'
     )
+    if conversation_category and conversation_category.initial_prompt:
+        instructions += (
+            f'Additional instructions before starting:\n{conversation_category.initial_prompt}\n'
+        )
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -102,6 +116,6 @@ async def get_realtime_session(
 
         data = response.json()
         data['persona_name'] = conversation_scenario.persona_name
-        data['category_name'] = conversation_category.name
+        data['category_name'] = conversation_category_name
 
         return data
