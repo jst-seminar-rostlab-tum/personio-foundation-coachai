@@ -23,6 +23,30 @@ from app.services.google_cloud_storage_service import GCSManager
 from app.services.session_turn_service import SessionTurnService
 
 
+def create_mock_gcs_manager() -> GCSManager:
+    with (
+        patch('app.services.google_cloud_storage_service.settings') as mock_settings,
+        patch('app.services.google_cloud_storage_service.storage.Client'),
+        patch(
+            'app.services.google_cloud_storage_service.service_account.Credentials.from_service_account_info'
+        ) as mock_creds,
+    ):
+        mock_settings.GCP_PROJECT_ID = 'dummy'
+        mock_settings.GCP_PRIVATE_KEY_ID = 'dummy'
+        mock_settings.GCP_PRIVATE_KEY = (
+            '-----BEGIN PRIVATE KEY-----\\ndummy\\n-----END PRIVATE KEY-----\\n'
+        )
+        mock_settings.GCP_CLIENT_EMAIL = 'dummy@dummy.iam.gserviceaccount.com'
+        mock_settings.GCP_CLIENT_ID = 'dummy'
+        mock_settings.GCP_BUCKET = 'dummy'
+        mock_creds.return_value = MagicMock()
+
+        manager = GCSManager('audio')
+        manager.bucket = MagicMock()
+        manager.delete_document = MagicMock()
+        return manager
+
+
 class TestSessionService(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -41,44 +65,11 @@ class TestSessionService(unittest.TestCase):
         cls.app.dependency_overrides[get_db_session] = override_get_db
 
     def setUp(self) -> None:
-        # Patch settings, storage.Client, and Credentials
-        settings_patch = patch('app.services.google_cloud_storage_service.settings')
-        client_patch = patch('app.services.google_cloud_storage_service.storage.Client')
-        creds_patch = patch(
-            'app.services.google_cloud_storage_service.service_account.Credentials.from_service_account_info'
-        )
-
-        self.mock_settings = settings_patch.start()
-        self.mock_client = client_patch.start()
-        self.mock_creds = creds_patch.start()
-
-        self.addCleanup(settings_patch.stop)
-        self.addCleanup(client_patch.stop)
-        self.addCleanup(creds_patch.stop)
-
-        # Provide dummy values for settings
-        self.mock_settings.GCP_PROJECT_ID = 'dummy'
-        self.mock_settings.GCP_PRIVATE_KEY_ID = 'dummy'
-        self.mock_settings.GCP_PRIVATE_KEY = (
-            '-----BEGIN PRIVATE KEY-----\\ndummy\\n-----END PRIVATE KEY-----\\n'
-        )
-        self.mock_settings.GCP_CLIENT_EMAIL = 'dummy@dummy.iam.gserviceaccount.com'
-        self.mock_settings.GCP_CLIENT_ID = 'dummy'
-        self.mock_settings.GCP_BUCKET = 'dummy'
-
-        self.mock_creds.return_value = MagicMock()
-
-        # Create GCSManager with mocked internals
-        self.gcs_manager = GCSManager('audio')
-        self.gcs_manager.bucket = MagicMock()
-        self.gcs_manager.delete_document = MagicMock()  # Optional: easier to assert calls
-
         SQLModel.metadata.drop_all(self.engine)
         SQLModel.metadata.create_all(self.engine)
 
         self.db = self.SessionLocal()
 
-        # 创建用户和场景
         self.users = get_dummy_user_profiles()
         self.db.add_all(self.users)
         self.db.commit()
@@ -92,7 +83,7 @@ class TestSessionService(unittest.TestCase):
         self.db.add_all(self.scenarios)
         self.db.commit()
 
-        # 创建 session
+        # Create session
         self.session = Session(
             id=uuid4(),
             scenario_id=self.scenarios[0].id,
@@ -104,10 +95,10 @@ class TestSessionService(unittest.TestCase):
         self.db.add(self.session)
         self.db.commit()
 
-        # 创建 session turns
+        # Create session turns
         self.turn1 = SessionTurn(
             id=uuid4(),
-            session_id=uuid4(),
+            session_id=self.session.id,
             speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=5000,
@@ -118,7 +109,7 @@ class TestSessionService(unittest.TestCase):
         )
         self.turn2 = SessionTurn(
             id=uuid4(),
-            session_id=uuid4(),
+            session_id=self.session.id,
             speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=5000,
@@ -131,7 +122,13 @@ class TestSessionService(unittest.TestCase):
         self.db.commit()
 
         # mock GCSManager
-        self.mock_gcs = unittest.mock.MagicMock()
+        self.mock_gcs = create_mock_gcs_manager()
+
+        patcher = patch(
+            'app.services.session_turn_service.get_gcs_audio_manager', return_value=self.mock_gcs
+        )
+        self.addCleanup(patcher.stop)
+        patcher.start()
 
         self.service = SessionTurnService(self.db)
 
