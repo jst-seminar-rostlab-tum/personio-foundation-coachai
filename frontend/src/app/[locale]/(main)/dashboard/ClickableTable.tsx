@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 import { ClickableTable, ClickableTableColumn } from '@/components/ui/ClickableTable';
 import { DeleteConfirmButton } from '@/components/ui/DeleteConfirmButton';
+import { Badge } from '@/components/ui/Badge';
 
 function formatDateTime(dateString: string) {
   // Format as yyyy-MM-dd, HH:mm
@@ -62,6 +63,11 @@ export default function DashboardTable() {
     {
       header: 'Difficulty',
       accessor: 'difficulty',
+      cell: (row) => (
+        <Badge difficulty={row.difficulty.toLowerCase() as 'easy' | 'medium' | 'hard'}>
+          {row.difficulty}
+        </Badge>
+      ),
     },
     {
       header: 'Last Session',

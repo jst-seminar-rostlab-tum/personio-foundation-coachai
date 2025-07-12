@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { ArrowRight } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
@@ -18,7 +18,7 @@ export default function HistoryHeader() {
         type="button"
         onClick={() => router.push('/preparation/1')}
       >
-        <ArrowRight />
+        <RotateCcw />
         {t('practiceAgain')}
       </Button>
     </section>
