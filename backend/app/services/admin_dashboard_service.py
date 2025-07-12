@@ -18,12 +18,6 @@ class AdminDashboardService:
     def _get_review_count(self) -> int:
         return self.db.exec(select(func.count()).select_from(Review)).one()
 
-    def _get_daily_token_limit(self) -> int | None:
-        daily_token_limit = self.db.exec(
-            select(AppConfig.value).where(AppConfig.key == 'dailyUserTokenLimit')
-        ).first()
-        return int(daily_token_limit) if daily_token_limit is not None else None
-
     def _get_daily_session_limit(self) -> int | None:
         daily_session_limit = self.db.exec(
             select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
@@ -46,9 +40,6 @@ class AdminDashboardService:
         # Get total reviews
         total_reviews = self._get_review_count()
 
-        # Get daily token limit from app_config with key 'dailyUserTokenLimit'
-        daily_token_limit = self._get_daily_token_limit()
-
         # Get daily session limit from app_config with key 'dailyUserSessionLimit'
         daily_session_limit = self._get_daily_session_limit()
 
@@ -60,6 +51,5 @@ class AdminDashboardService:
             total_trainings=stats.total_trainings,
             total_reviews=total_reviews,
             score_sum=stats.score_sum,
-            daily_token_limit=daily_token_limit,
             daily_session_limit=daily_session_limit,
         )
