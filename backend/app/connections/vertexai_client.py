@@ -85,6 +85,7 @@ def upload_audio_vertexai(audio_uri: str) -> Part:
         part = Part.from_uri(file_uri=audio_uri)
         return part
     except Exception as e:
+        print('upload_audio_vertexai')
         print(f"Error uploading audio file '{audio_uri}': {e}")
 
 
@@ -114,6 +115,7 @@ def call_llm_with_audio(
             return ''
         return response.text
     except Exception as e:
+        print('call_llm_with_audio')
         print(f"Error uploading audio file '{audio_uri}': {e}")
         return ''
 
