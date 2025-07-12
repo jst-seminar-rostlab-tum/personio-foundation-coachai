@@ -10,6 +10,7 @@ from app.enums import FeedbackStatus
 from app.enums.language import LanguageCode
 from app.enums.speaker import SpeakerType
 from app.models.conversation_scenario import ConversationScenarioStatus
+from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioRead,
@@ -46,6 +47,16 @@ class TestSessionFeedbackService(unittest.TestCase):
     def _mock_conversation_data(self, user_id: UUID | None = None) -> ConversationScenarioRead:
         if user_id is None:
             user_id = uuid4()
+            self.session.add(
+                UserProfile(
+                    id=user_id,
+                    full_name='Test',
+                    email='a@b.com',
+                    phone_number='123',
+                    preferred_language_code=LanguageCode.en,
+                )
+            )
+            self.session.commit()
         scenario = ConversationScenario(
             id=uuid4(),
             user_id=user_id,
