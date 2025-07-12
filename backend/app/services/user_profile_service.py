@@ -36,10 +36,11 @@ class UserService:
             select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
         ).first()
         daily_session_limit = int(daily_session_limit) if daily_session_limit is not None else None
-        if daily_session_limit is not None:
-            num_remaining_daily_sessions = max(0, daily_session_limit - user.sessions_created_today)
+        # If session limit is not configured, assume limit is hit (safety feature)
+        if daily_session_limit is None:
+            num_remaining_daily_sessions = 0
         else:
-            num_remaining_daily_sessions = None
+            num_remaining_daily_sessions = max(0, daily_session_limit - user.sessions_created_today)
         return UserProfileExtendedRead(
             user_id=user.id,
             full_name=user.full_name,
@@ -159,10 +160,12 @@ class UserService:
             select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
         ).first()
         daily_session_limit = int(daily_session_limit) if daily_session_limit is not None else None
-        if daily_session_limit is not None:
-            num_remaining_daily_sessions = max(0, daily_session_limit - user.sessions_created_today)
+
+        # If session limit is not configured, assume limit is hit (safety feature)
+        if daily_session_limit is None:
+            num_remaining_daily_sessions = 0
         else:
-            num_remaining_daily_sessions = None
+            num_remaining_daily_sessions = max(0, daily_session_limit - user.sessions_created_today)
         return UserStatisticsRead(
             total_sessions=user.total_sessions,
             training_time=user.training_time,

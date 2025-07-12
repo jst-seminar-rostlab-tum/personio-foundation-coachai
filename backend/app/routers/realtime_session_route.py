@@ -53,15 +53,23 @@ async def get_realtime_session(
         session_limit_config = db_session.exec(
             select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
         ).first()
-        if session_limit_config is not None:
-            session_limit = int(session_limit_config)
-            # Check if the user has reached the daily session limit
-            if user_profile.sessions_created_today >= session_limit:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f'You have reached the daily session limit of {session_limit}. '
-                    'Cannot start real-time session.',
-                )
+
+        # If session limit is not configured, assume limit is hit (safety feature)
+        if session_limit_config is None:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail='Daily session limit is not configured. Cannot start real-time session. '
+                'Please contact an administrator.',
+            )
+
+        session_limit = int(session_limit_config)
+        # Check if the user has reached the daily session limit
+        if user_profile.sessions_created_today >= session_limit:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f'You have reached the daily session limit of {session_limit}. '
+                'Cannot start real-time session.',
+            )
 
     conversation_scenario = db_session.exec(
         select(ConversationScenario).where(ConversationScenario.id == session.scenario_id)

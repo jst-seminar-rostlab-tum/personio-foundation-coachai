@@ -109,20 +109,28 @@ class SessionService:
             session_limit_config = self.db.exec(
                 select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
             ).first()
-            if session_limit_config is not None:
-                session_limit = int(session_limit_config)
-                # Update user's daily session counter
-                today = datetime.now(UTC).date()
-                if user_profile.last_session_date != today:
-                    user_profile.sessions_created_today = 0
-                    user_profile.last_session_date = today
 
-                # Check if the user has reached the daily session limit
-                if user_profile.sessions_created_today >= session_limit:
-                    raise HTTPException(
-                        status_code=403,
-                        detail=f'You have reached the daily session limit of {session_limit}.',
-                    )
+            # If session limit is not configured, assume limit is hit (safety feature)
+            if session_limit_config is None:
+                raise HTTPException(
+                    status_code=403,
+                    detail='Daily session limit is not configured. '
+                    'Please contact an administrator.',
+                )
+
+            session_limit = int(session_limit_config)
+            # Update user's daily session counter
+            today = datetime.now(UTC).date()
+            if user_profile.last_session_date != today:
+                user_profile.sessions_created_today = 0
+                user_profile.last_session_date = today
+
+            # Check if the user has reached the daily session limit
+            if user_profile.sessions_created_today >= session_limit:
+                raise HTTPException(
+                    status_code=403,
+                    detail=f'You have reached the daily session limit of {session_limit}.',
+                )
         conversation_scenario = self.db.get(ConversationScenario, session_data.scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
