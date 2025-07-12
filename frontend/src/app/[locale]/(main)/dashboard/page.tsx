@@ -11,7 +11,7 @@ import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { SessionFromPagination } from '@/interfaces/models/Session';
-import { formattedDate } from '@/lib/utils/formatDateAndTime';
+import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiServer';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -79,7 +79,7 @@ export default async function DashboardPage() {
                 </div>
                 <div className="flex flex-col justify-center text-center min-w-max">
                   <p className="text-base whitespace-nowrap">
-                    {formattedDate(session.date, locale)}
+                    {formatDateFlexible(session.date, locale)}
                   </p>
                 </div>
               </Link>

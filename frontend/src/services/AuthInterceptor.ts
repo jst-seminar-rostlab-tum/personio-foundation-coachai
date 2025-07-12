@@ -1,3 +1,4 @@
+import { DEV_MODE_SKIP_AUTH, IS_DEVELOPMENT } from '@/lib/connector';
 import type { AxiosInstance } from 'axios';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -8,10 +9,7 @@ export const setupAuthInterceptor = (api: AxiosInstance, getSupabaseClient: any)
         return config;
       }
 
-      if (
-        process.env.NODE_ENV === 'development' &&
-        process.env.NEXT_PUBLIC_DEV_MODE_SKIP_AUTH === 'true'
-      ) {
+      if (IS_DEVELOPMENT && DEV_MODE_SKIP_AUTH) {
         return config;
       }
 

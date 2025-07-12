@@ -13,8 +13,9 @@ from sqlmodel import col, select
 
 from app.config import Settings
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.enums.speaker import SpeakerType
 from app.models.session import Session as SessionModel
-from app.models.session_turn import SessionTurn, SpeakerEnum
+from app.models.session_turn import SessionTurn
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.live_feedback_service import generate_and_store_live_feedback
 from app.services.vector_db_context_service import get_hr_docs_context
@@ -96,7 +97,7 @@ class SessionTurnService:
         self.db.commit()
         self.db.refresh(new_turn)
 
-        if turn.speaker == SpeakerEnum.user:
+        if turn.speaker == SpeakerType.user:
             category = session.scenario.category.name if session.scenario.category else ''
             hr_docs_context, _ = get_hr_docs_context(
                 persona=session.scenario.persona,
