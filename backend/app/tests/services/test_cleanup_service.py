@@ -10,7 +10,7 @@ from sqlmodel import SQLModel, create_engine
 from app.enums.speaker import SpeakerType
 from app.models.session import Session
 from app.models.session_turn import SessionTurn
-from app.services.cleanup_service import cleanup_old_session_turns
+from app.services.data_retention_service import cleanup_old_session_turns
 from app.services.google_cloud_storage_service import GCSManager
 
 
