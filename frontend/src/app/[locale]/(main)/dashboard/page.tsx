@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
 import { api } from '@/services/ApiServer';
-import ClickableTable from './ClickableTable';
+import ClickableTable from './DashboardTable';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -53,10 +53,7 @@ export default async function DashboardPage() {
           <h2 className="text-xl">{t('recentSessions.title')}</h2>
           <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
         </div>
-        <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
-          {/* Use the client-side ClickableTable component */}
-          <ClickableTable />
-        </div>
+        <ClickableTable />
       </section>
     </div>
   );

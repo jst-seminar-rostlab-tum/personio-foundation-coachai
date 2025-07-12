@@ -1,4 +1,3 @@
-import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
@@ -8,27 +7,17 @@ import { api } from '@/services/ApiServer';
 import { Badge } from '@/components/ui/Badge';
 import HistoryHeader from './components/HistoryHeader';
 import Loading from './loading';
-import HistoryTable from './HistoryTable';
+import HistoryTable from './components/HistoryTable';
 import HistoryStats from './components/HistoryStats';
+import {
+  DifficultyLabel,
+  StatisticsLabel,
+  PreviousSessionsLabel,
+} from './components/HistoryLabels';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/history', true);
-}
-
-function ClientPreviousSessionsLabel() {
-  const t = useTranslations('History');
-  return <div className="text-xl font-bold text-bw-70">{t('previousSessions')}</div>;
-}
-
-function ClientStatisticsTitle() {
-  const t = useTranslations('History');
-  return <div className="text-xl font-bold text-bw-70">{t('statistics')}</div>;
-}
-
-function DifficultyLabel() {
-  const t = useTranslations('History');
-  return <div className="text-lg not-italic text-bw-70">{t('difficulty')}</div>;
 }
 
 export default async function HistoryPage() {
@@ -55,10 +44,10 @@ export default async function HistoryPage() {
             </div>
           </div>
         </div>
-        <ClientStatisticsTitle />
+        <StatisticsLabel />
         <HistoryStats stats={userStatsData} />
         <div className="flex flex-col gap-6">
-          <ClientPreviousSessionsLabel />
+          <PreviousSessionsLabel />
           <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
             <HistoryTable />
           </div>

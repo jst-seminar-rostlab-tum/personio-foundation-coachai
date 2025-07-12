@@ -91,11 +91,13 @@ export default function DashboardTable() {
   ];
 
   return (
-    <ClickableTable
-      columns={columns}
-      data={rows}
-      onRowClick={handleRowClick}
-      rowKey={(row) => row.id}
-    />
+    <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
+      <ClickableTable
+        columns={columns}
+        data={rows}
+        onRowClick={handleRowClick}
+        rowKey={(row) => row.id}
+      />
+    </div>
   );
 }
