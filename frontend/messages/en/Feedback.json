@@ -1,14 +1,14 @@
 {
   "metaTitle": "Feedback - Coach AI",
   "metaDescription": "Detailed analysis and evaluation of your training session",
-  "title": "Performance Summary",
+  "title": "Evaluation",
   "reviewDialog": {
     "description": "How was the training session? Help us improve by providing your review.",
     "shareWithAdmin": "Share session with an admin for improvement.",
     "submitReview": "Submit Review"
   },
   "sessionLength": "Session Length",
-  "listenConversation": "Listen to Conversation",
+  "listenConversation": "Replay Conversation",
   "accordion": {
     "feedback": "Detailed Feedback",
     "suggestion": "Suggested Resources",
@@ -20,5 +20,8 @@
   },
   "submitError": "Error while submitting. Please try again later.",
   "submitSuccess": "Submitted successfully. Thank you!",
-  "fetchError": "Error while fetching data. Please try again later."
+  "fetchError": "Error while fetching data. Please try again later.",
+  "stats": {
+    "goalsAchieved": "Goals achieved"
+  }
 }

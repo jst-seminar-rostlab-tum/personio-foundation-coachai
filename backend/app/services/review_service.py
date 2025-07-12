@@ -7,10 +7,11 @@ from sqlalchemy import select as sqlalchemy_select
 from sqlmodel import Session as DBSession
 from sqlmodel import asc, desc, select
 
+from app.enums.account_role import AccountRole
 from app.models.conversation_scenario import ConversationScenario
 from app.models.review import Review
 from app.models.session import Session
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.user_profile import UserProfile
 from app.schemas.review import (
     PaginatedReviewRead,
     ReviewConfirm,

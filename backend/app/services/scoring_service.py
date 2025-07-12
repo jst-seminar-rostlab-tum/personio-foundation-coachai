@@ -6,8 +6,8 @@ from typing import Any, Optional
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.openai_client import call_structured_llm
-from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
-from app.schemas.scoring_schema import ScoringResult
+from app.schemas.conversation_scenario import ConversationScenarioRead
+from app.schemas.scoring_schema import ScoringRead
 from app.services.utils import normalize_quotes
 
 
@@ -38,7 +38,7 @@ class ScoringService:
         )
         return system_prompt
 
-    def _build_user_prompt(self, conversation: ConversationScenarioWithTranscript) -> str:
+    def _build_user_prompt(self, conversation: ConversationScenarioRead) -> str:
         scenario = conversation.scenario
         transcript = conversation.transcript
         prompt = (
@@ -56,17 +56,17 @@ class ScoringService:
             'and give a justification for each score.\n'
             'You MUST provide a score and justification for all four metrics, '
             'and also give an overall summary of the "User"\'s performance.\n'
-            'Format the output as a JSON object matching the ScoringResult schema.\n'
+            'Format the output as a JSON object matching the ScoringRead schema.\n'
             'Do not include markdown, explanation, or code formatting.\n'
         )
         return prompt
 
     def score_conversation(
         self,
-        conversation: ConversationScenarioWithTranscript,
+        conversation: ConversationScenarioRead,
         model: str = 'o4-mini-2025-04-16',
         temperature: float = 0.0,
-    ) -> ScoringResult:
+    ) -> ScoringRead:
         user_prompt = self._build_user_prompt(conversation)
         system_prompt = self._build_system_prompt()
 
@@ -74,7 +74,7 @@ class ScoringService:
             request_prompt=user_prompt,
             system_prompt=system_prompt,
             model=model,
-            output_model=ScoringResult,
+            output_model=ScoringRead,
             temperature=temperature,
         )
 
@@ -117,9 +117,7 @@ class ScoringService:
         return md
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-    def safe_score_conversation(
-        self, conversation: ConversationScenarioWithTranscript
-    ) -> ScoringResult:
+    def safe_score_conversation(self, conversation: ConversationScenarioRead) -> ScoringRead:
         return self.score_conversation(conversation)
 
 

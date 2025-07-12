@@ -6,6 +6,7 @@ import type { Viewport } from 'next';
 import { getLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import Script from 'next/script';
+import { BASE_URL } from '@/lib/connector';
 
 const inter = Inter({ subsets: ['latin'] });
 const bebasNeue = BebasNeue({ subsets: ['latin'], weight: '400' });
@@ -24,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Coach AI',
-    url: 'https://personiofoundation-coachai.com',
+    url: BASE_URL,
   };
 
   return (
