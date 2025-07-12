@@ -111,21 +111,18 @@ class SessionService:
             ).first()
             if session_limit_config is not None:
                 session_limit = int(session_limit_config)
-                # Count user's sessions started today
+                # Update user's daily session counter
                 today = datetime.now(UTC).date()
-                scenario_ids = self._get_user_scenario_ids(user_profile.id)
-                if scenario_ids:
-                    session_count = self.db.exec(
-                        select(func.count())
-                        .select_from(Session)
-                        .where(Session.scenario_id.in_(scenario_ids))
-                        .where(func.date(Session.started_at) == today)
-                    ).one()
-                    if session_count >= session_limit:
-                        raise HTTPException(
-                            status_code=403,
-                            detail=f'You have reached the daily session limit of {session_limit}.',
-                        )
+                if user_profile.last_session_date != today:
+                    user_profile.sessions_created_today = 0
+                    user_profile.last_session_date = today
+
+                # Check if the user has reached the daily session limit
+                if user_profile.sessions_created_today >= session_limit:
+                    raise HTTPException(
+                        status_code=403,
+                        detail=f'You have reached the daily session limit of {session_limit}.',
+                    )
         conversation_scenario = self.db.get(ConversationScenario, session_data.scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
@@ -141,11 +138,6 @@ class SessionService:
         new_session.status = SessionStatus.started
         new_session.started_at = datetime.now(UTC)
 
-        # Update user's daily session counter
-        today = new_session.started_at.date()
-        if user_profile.last_session_date != today:
-            user_profile.sessions_created_today = 0
-            user_profile.last_session_date = today
         user_profile.sessions_created_today += 1
         self.db.add(user_profile)
 
