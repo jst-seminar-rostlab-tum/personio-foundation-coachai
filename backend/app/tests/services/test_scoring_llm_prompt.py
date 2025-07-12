@@ -8,14 +8,14 @@ from pathlib import Path
 from unittest.mock import patch
 
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.enums.language import LanguageCode
 from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
-from app.models.language import LanguageCode
 from app.schemas.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioRead,
 )
 from app.schemas.scoring_schema import ScoringRead
-from app.schemas.session_turn import SessionTurnRead, SpeakerEnum
+from app.schemas.session_turn import SessionTurnRead, SpeakerType
 from app.services.scoring_service import ScoringService
 
 
@@ -256,7 +256,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
             transcript=[
                 SessionTurnRead(
                     id=uuid.uuid4(),
-                    speaker=SpeakerEnum.user,
+                    speaker=SpeakerType.user,
                     text=TEST_TRANSCRIPT,
                     ai_emotion=None,
                     created_at=datetime.now(),
