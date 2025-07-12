@@ -8,7 +8,7 @@ export type UserStats = {
   goalsAchieved: number;
   performanceOverTime: number[];
   skillsPerformance: SessionScores;
-  dailySessionLimit: number | null;
+  dailySessionLimit: number;
   numRemainingDailySessions: number;
 };
 

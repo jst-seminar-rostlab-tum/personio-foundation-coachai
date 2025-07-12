@@ -159,10 +159,10 @@ class UserService:
         daily_session_limit = self.db.exec(
             select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
         ).first()
-        daily_session_limit = int(daily_session_limit) if daily_session_limit is not None else None
+        daily_session_limit = int(daily_session_limit) if daily_session_limit is not None else 0
 
         # If session limit is not configured, assume limit is hit (safety feature)
-        if daily_session_limit is None:
+        if daily_session_limit == 0:
             num_remaining_daily_sessions = 0
         else:
             num_remaining_daily_sessions = max(0, daily_session_limit - user.sessions_created_today)
