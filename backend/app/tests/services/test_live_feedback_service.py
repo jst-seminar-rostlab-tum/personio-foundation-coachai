@@ -1,6 +1,6 @@
 import json
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 from uuid import UUID, uuid4
 
@@ -59,11 +59,19 @@ class TestLiveFeedbackService(unittest.TestCase):
 
     def test_fetch_all_for_session_returns_items_in_order(self) -> None:
         session_id = uuid4()
+        now = datetime.now()
+
         item1 = LiveFeedbackDB(
-            session_id=session_id, heading='Tone', feedback_text='Speak clearly.'
+            session_id=session_id,
+            heading='Tone',
+            feedback_text='Speak clearly.',
+            created_at=now - timedelta(seconds=1),
         )
         item2 = LiveFeedbackDB(
-            session_id=session_id, heading='Clarity', feedback_text='Be more direct.'
+            session_id=session_id,
+            heading='Clarity',
+            feedback_text='Be more direct.',
+            created_at=now,
         )
 
         self.session.add(item1)
