@@ -106,12 +106,6 @@ class SessionService:
     def create_new_session(
         self, session_data: SessionCreate, user_profile: UserProfile
     ) -> SessionRead:
-        # Update user's daily session counter for all users (consistency)
-        today = datetime.now(UTC).date()
-        if user_profile.last_session_date != today:
-            user_profile.sessions_created_today = 0
-            user_profile.last_session_date = today
-
         # Enforce daily session limit for non-admin users
         if user_profile.account_role != AccountRole.admin:
             # Get session limit from AppConfig
