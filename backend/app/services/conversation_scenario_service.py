@@ -6,13 +6,14 @@ from sqlmodel import Session as DBSession
 from sqlmodel import func, select
 
 from app.database import get_db_session
+from app.enums.account_role import AccountRole
+from app.enums.language import LanguageCode
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario, DifficultyLevel
-from app.models.language import LanguageCode
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
-from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.session_feedback import FeedbackStatus, SessionFeedback
+from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenarioConfirm,
     ConversationScenarioCreate,
@@ -173,7 +174,7 @@ class ConversationScenarioService:
             # session  → feedback (may be zero)
             .outerjoin(SessionFeedback, SessionFeedback.session_id == Session.id)
             .where(
-                SessionFeedback.status == FeedbackStatusEnum.completed,
+                SessionFeedback.status == FeedbackStatus.completed,
             )
             .group_by(
                 ConversationScenario.id,
@@ -310,7 +311,7 @@ class ConversationScenarioService:
                 [
                     session.feedback.overall_score
                     for session in scenario.sessions
-                    if session.feedback and session.feedback.status == FeedbackStatusEnum.completed
+                    if session.feedback and session.feedback.status == FeedbackStatus.completed
                 ]
             )
             / total_sessions

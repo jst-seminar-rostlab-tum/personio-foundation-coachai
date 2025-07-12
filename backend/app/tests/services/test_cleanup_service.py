@@ -7,8 +7,9 @@ import pytest
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine
 
+from app.enums.speaker import SpeakerType
 from app.models.session import Session
-from app.models.session_turn import SessionTurn, SpeakerEnum
+from app.models.session_turn import SessionTurn
 from app.services.cleanup_service import cleanup_old_session_turns
 from app.services.google_cloud_storage_service import GCSManager
 
@@ -53,7 +54,7 @@ def test_cleanup_old_session_turns(db: DBSession, gcs_manager: GCSManager) -> No
     # Insert a record from 91 days ago (should be deleted)
     old_turn = SessionTurn(
         session_id=session_id,
-        speaker=SpeakerEnum.user,
+        speaker=SpeakerType.user,
         start_offset_ms=0,
         end_offset_ms=1000,
         text='old',
@@ -63,7 +64,7 @@ def test_cleanup_old_session_turns(db: DBSession, gcs_manager: GCSManager) -> No
     # Insert a record from today (should be kept)
     new_turn = SessionTurn(
         session_id=session_id,
-        speaker=SpeakerEnum.user,
+        speaker=SpeakerType.user,
         start_offset_ms=0,
         end_offset_ms=1000,
         text='new',
@@ -93,7 +94,7 @@ def test_cleanup_old_session_turns_gcs(db: DBSession, gcs_manager: GCSManager) -
     old_audio_uri = 'old_uri.mp3'
     old_turn = SessionTurn(
         session_id=session_id,
-        speaker=SpeakerEnum.user,
+        speaker=SpeakerType.user,
         start_offset_ms=0,
         end_offset_ms=1000,
         text='old',

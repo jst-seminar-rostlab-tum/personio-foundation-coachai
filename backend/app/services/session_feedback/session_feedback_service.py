@@ -9,10 +9,11 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.enums.feedback_status import FeedbackStatus
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.camel_case import CamelModel
 from app.models.session import Session
-from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
+from app.models.session_feedback import SessionFeedback
 from app.models.session_turn import SessionTurn
 from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
@@ -202,7 +203,7 @@ def update_statistics(
     goals: GoalsAchievedRead,
     overall_score: float,
     has_error: bool,
-) -> FeedbackStatusEnum:
+) -> FeedbackStatus:
     """Update user profile and admin dashboard stats, handle commit/rollback."""
     if conversation and conversation.scenario and conversation.scenario.user_id:
         user = db_session.exec(
@@ -223,10 +224,10 @@ def update_statistics(
             admin_stats.total_trainings += 1
             db_session.add(admin_stats)
         db_session.commit()
-        status = FeedbackStatusEnum.completed if not has_error else FeedbackStatusEnum.failed
+        status = FeedbackStatus.completed if not has_error else FeedbackStatus.failed
     except Exception as e:
         db_session.rollback()
-        status = FeedbackStatusEnum.failed
+        status = FeedbackStatus.failed
         has_error = True
         logging.error('Failed to update statistics: %s', e)
     return status
@@ -236,7 +237,7 @@ def save_session_feedback(
     db_session: 'DBSession',
     session_id: UUID,
     feedback_generation_result: FeedbackGenerationResult,
-    status: FeedbackStatusEnum,
+    status: FeedbackStatus,
 ) -> SessionFeedback:
     """Build and save the SessionFeedback record."""
     feedback = SessionFeedback(
@@ -324,7 +325,7 @@ def generate_and_store_feedback(
             session_id=session_id,
         )
 
-    status: FeedbackStatusEnum = update_statistics(
+    status: FeedbackStatus = update_statistics(
         db_session,
         conversation,
         feedback_generation_result.goals,

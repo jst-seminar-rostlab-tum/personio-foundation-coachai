@@ -6,7 +6,7 @@ from typing import Optional
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.vertexai_client import call_structured_llm
-from app.models.language import LanguageCode
+from app.enums.language import LanguageCode
 from app.schemas.session_feedback import (
     FeedbackCreate,
     GoalsAchievedCreate,
