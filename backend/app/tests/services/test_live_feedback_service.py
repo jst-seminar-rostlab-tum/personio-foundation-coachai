@@ -80,8 +80,10 @@ class TestLiveFeedbackService(unittest.TestCase):
 
     def test_format_feedback_lines_returns_json_strings(self) -> None:
         feedback_items = [
-            LiveFeedback(heading='Tone', feedback_text='Speak more calmly.'),
-            LiveFeedback(heading='Content', feedback_text='Be more specific with your request.'),
+            LiveFeedback(id=uuid4(), heading='Tone', feedback_text='Speak more calmly.'),
+            LiveFeedback(
+                id=uuid4(), heading='Content', feedback_text='Be more specific with your request.'
+            ),
         ]
 
         formatted = format_feedback_lines(feedback_items)
@@ -106,6 +108,7 @@ class TestLiveFeedbackService(unittest.TestCase):
         session_turn_context = self.get_session_turn(session_id)
 
         mock_feedback = LiveFeedback(
+            id=uuid4(),
             heading='Tone',
             feedback_text='Speak more calmly.',
         )
