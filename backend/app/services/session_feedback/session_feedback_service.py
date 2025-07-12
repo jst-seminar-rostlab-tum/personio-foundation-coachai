@@ -171,7 +171,6 @@ def generate_feedback_components(
 
         try:
             output_blob_name = future_audio_stitch.result()
-            # 新增：生成签名 URL
             if output_blob_name:
                 gcs = get_gcs_audio_manager()
                 if gcs:
@@ -183,7 +182,6 @@ def generate_feedback_components(
             has_error = True
             logging.warning('Failed to call Audio Stitching: %s', e)
 
-    # 新增：将 audio_signed_url 传递给 FeedbackGenerationResult
     return FeedbackGenerationResult(
         examples_positive=examples_positive,
         examples_negative=examples_negative,
@@ -194,7 +192,7 @@ def generate_feedback_components(
         full_audio_filename=output_blob_name or '',
         document_names=document_names,
         has_error=has_error,
-        audio_url=audio_signed_url,  # 新增
+        audio_url=audio_signed_url,
     )
 
 
