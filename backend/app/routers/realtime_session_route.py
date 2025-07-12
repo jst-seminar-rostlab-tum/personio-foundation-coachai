@@ -48,6 +48,12 @@ async def get_realtime_session(
             status.HTTP_429_TOO_MANY_REQUESTS, detail='Session is already completed'
         )
 
+    # Update user's daily session counter for all users (consistency)
+    today = datetime.now(UTC).date()
+    if user_profile.last_session_date != today:
+        user_profile.sessions_created_today = 0
+        user_profile.last_session_date = today
+
     # Check daily session limit for non-admin users
     if user_profile.account_role != AccountRole.admin:
         # Get session limit from AppConfig
@@ -64,12 +70,6 @@ async def get_realtime_session(
             )
 
         session_limit = int(session_limit_config)
-
-        # Update user's daily session counter
-        today = datetime.now(UTC).date()
-        if user_profile.last_session_date != today:
-            user_profile.sessions_created_today = 0
-            user_profile.last_session_date = today
 
         # Check if the user has reached the daily session limit
         if user_profile.sessions_created_today >= session_limit:
