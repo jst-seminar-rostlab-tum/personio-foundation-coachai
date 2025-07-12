@@ -2,9 +2,9 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.connections.vertexai_client import call_structured_llm
-from app.models import FeedbackStatusEnum, SessionFeedback
 from app.models.conversation_scenario import DifficultyLevel
 from app.models.language import LanguageCode
+from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
 from app.schemas import ConversationScenarioCreate
 from app.schemas.advisor_response import AdvisorResponse
 from app.services.realtime_context_service import get_scenario_info
