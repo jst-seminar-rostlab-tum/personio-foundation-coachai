@@ -24,6 +24,8 @@ from app.services.scenario_preparation.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,
 )
+from app.services.session_service import SessionService
+from app.services.session_turn_service import SessionTurnService
 
 
 class ConversationScenarioService:
@@ -215,21 +217,30 @@ class ConversationScenarioService:
         if scenario.user_id != user_id:
             raise HTTPException(status_code=403, detail='Not authorized to delete this scenario.')
 
-        total_deleted_sessions = 0
-        audio_uris = []
+        to_be_deleted_session_turns = []
+        session_ids = []
         for session in scenario.sessions:
+            session_ids.append(session.id)
             for turn in session.session_turns:
                 if turn.audio_uri:
-                    audio_uris.append(turn.audio_uri)
-                    total_deleted_sessions += 1
+                    to_be_deleted_session_turns.append(turn)
 
-        # TODO: Delete audio File self._delete_audio_files(audio_uris)
-        self._delete_audio_files(audio_uris=audio_uris)  # Dummy function to delete audios
+        # Delete session turns with audio URIs
+        session_turn_service = SessionTurnService(self.db)
+        deleted_audios = session_turn_service.delete_session_turns(to_be_deleted_session_turns)
+
+        # Delete the full audio from session feedback if it exists
+        session_service = SessionService(self.db)
+        for session_id in session_ids:
+            deleted_full_audio = session_service.delete_full_audio_from_session_feedback(session_id)
+            if deleted_full_audio:
+                deleted_audios.append(deleted_full_audio)
+
         self.db.delete(scenario)
         self.db.commit()
         return {
-            'message': f'Deleted {total_deleted_sessions} sessions for user ID {user_id}',
-            'audios': audio_uris,
+            'message': f'Deleted {len(session_ids)} sessions for user ID {user_id}',
+            'audios': deleted_audios,
         }
 
     def clear_all_conversation_scenarios(self, user_profile: UserProfile) -> dict:
@@ -246,13 +257,15 @@ class ConversationScenarioService:
                 'audios': [],
             }
 
+        to_be_deleted_session_turns = []
+        session_ids = []
         total_deleted_scenarios = 0
-        audio_uris = []
         for scenario in scenarios:
             for session in scenario.sessions:
+                session_ids.append(session.id)
                 for turn in session.session_turns:
                     if turn.audio_uri:
-                        audio_uris.append(turn.audio_uri)
+                        to_be_deleted_session_turns.append(turn)
 
         # Let the database handle cascade deletes by just deleting the scenarios
         for scenario in scenarios:
@@ -260,13 +273,21 @@ class ConversationScenarioService:
             total_deleted_scenarios += 1
         self.db.commit()
 
-        # TODO: Delete audio File self._delete_audio_files(audio_uris)
-        self._delete_audio_files(audio_uris=audio_uris)  # Dummy function to delete audios
+        # Delete session turns with audio URIs
+        session_turn_service = SessionTurnService(self.db)
+        deleted_audios = session_turn_service.delete_session_turns(to_be_deleted_session_turns)
+
+        # Delete the full audio from session feedback if it exists
+        session_service = SessionService(self.db)
+        for session_id in session_ids:
+            deleted_full_audio = session_service.delete_full_audio_from_session_feedback(session_id)
+            if deleted_full_audio:
+                deleted_audios.append(deleted_full_audio)
 
         self.db.commit()
         return {
             'message': f'Deleted {total_deleted_scenarios} scenario for user ID {user_id}',
-            'audios': audio_uris,
+            'audios': deleted_audios,
         }
 
     def get_scenario_summary(
@@ -396,9 +417,3 @@ class ConversationScenarioService:
         background_tasks.add_task(
             generate_scenario_preparation, prep_id, new_preparation, get_db_session
         )
-
-    def _delete_audio_files(self, audio_uris: list[str]) -> None:
-        """Mock function to delete audio files from object storage.
-        Replace this with your actual object storage client logic."""
-        for uri in audio_uris:  # TODO: delete audios on object storage.  # noqa: B007
-            pass
