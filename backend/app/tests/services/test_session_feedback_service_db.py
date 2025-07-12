@@ -11,11 +11,11 @@ from app.enums.feedback_status import FeedbackStatus
 from app.enums.language import LanguageCode
 from app.enums.session_status import SessionStatus
 from app.enums.speaker import SpeakerType
-from app.models.conversation_scenario import (
-    ConversationScenario,
-)
+from app.models.admin_dashboard_stats import AdminDashboardStats
+from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session
 from app.models.session_turn import SessionTurn
+from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import ConversationScenarioRead
 from app.schemas.session_feedback import (
     FeedbackCreate,
@@ -331,17 +331,6 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         mock_session_turn_service = MagicMock()
         mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
-
-        from datetime import datetime
-
-        from app.models.admin_dashboard_stats import AdminDashboardStats
-        from app.models.conversation_scenario import (
-            ConversationScenario,
-            ConversationScenarioStatus,
-        )
-        from app.models.session import Session
-        from app.models.session_turn import SessionTurn, SpeakerType
-        from app.models.user_profile import UserProfile
 
         user_id = uuid4()
         scenario_id = uuid4()
