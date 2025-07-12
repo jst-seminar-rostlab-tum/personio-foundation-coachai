@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
@@ -63,6 +64,13 @@ async def get_realtime_session(
             )
 
         session_limit = int(session_limit_config)
+
+        # Update user's daily session counter
+        today = datetime.now(UTC).date()
+        if user_profile.last_session_date != today:
+            user_profile.sessions_created_today = 0
+            user_profile.last_session_date = today
+
         # Check if the user has reached the daily session limit
         if user_profile.sessions_created_today >= session_limit:
             raise HTTPException(
@@ -70,6 +78,11 @@ async def get_realtime_session(
                 detail=f'You have reached the daily session limit of {session_limit}. '
                 'Cannot start real-time session.',
             )
+
+        # Increment session counter for non-admin users
+        user_profile.sessions_created_today += 1
+        db_session.add(user_profile)
+        db_session.commit()
 
     conversation_scenario = db_session.exec(
         select(ConversationScenario).where(ConversationScenario.id == session.scenario_id)

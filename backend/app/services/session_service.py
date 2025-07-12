@@ -123,6 +123,8 @@ class SessionService:
 
             session_limit = int(session_limit_config)
             # Update user's daily session counter
+            # This also eists in realtime_session_route.py
+            # keeping it here should also be fine
             today = datetime.now(UTC).date()
             if user_profile.last_session_date != today:
                 user_profile.sessions_created_today = 0
@@ -148,9 +150,6 @@ class SessionService:
         new_session = Session(**session_data.model_dump())
         new_session.status = SessionStatus.started
         new_session.started_at = datetime.now(UTC)
-
-        user_profile.sessions_created_today += 1
-        self.db.add(user_profile)
 
         self.db.add(new_session)
         self.db.commit()
