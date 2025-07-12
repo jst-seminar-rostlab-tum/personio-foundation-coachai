@@ -1,11 +1,14 @@
 import logging
 import sys
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
+from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.database import create_db_and_tables
+from app.database import create_db_and_tables, get_db_session
 from app.routers import (
     admin_dashboard_stats_route,
     app_config_route,
@@ -20,6 +23,7 @@ from app.routers import (
     signed_url_route,
     user_profile_route,
 )
+from app.services.cleanup_service import cleanup_old_session_turns
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,7 +31,28 @@ logging.basicConfig(
     format='%(message)s',
 )
 
-app = FastAPI(title='CoachAI', debug=settings.stage == 'dev')
+scheduler = BackgroundScheduler()
+
+
+def scheduled_cleanup() -> None:
+    db_gen = get_db_session()
+    db = next(db_gen)
+    try:
+        cleanup_old_session_turns(db)
+    finally:
+        db_gen.close()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    create_db_and_tables()
+    scheduler.add_job(scheduled_cleanup, 'cron', hour=3, minute=0)
+    scheduler.start()
+    yield
+    scheduler.shutdown()
+
+
+app = FastAPI(title='CoachAI', debug=settings.stage == 'dev', lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -49,9 +74,3 @@ app.include_router(review_route.router)
 app.include_router(realtime_session_route.router)
 app.include_router(signed_url_route.router)
 app.include_router(live_feedback_route.router)
-
-
-# Create database tables on startup
-@app.on_event('startup')
-def on_startup() -> None:
-    create_db_and_tables()

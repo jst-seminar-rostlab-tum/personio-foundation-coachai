@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
@@ -8,17 +7,11 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
 from sqlmodel import Field, Relationship
 
+from app.enums.confidence_area import ConfidenceArea
 from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
     from app.models.user_profile import UserProfile
-
-
-class ConfidenceArea(str, Enum):
-    # Define the confidence areas as needed
-    giving_difficult_feedback = 'giving_difficult_feedback'
-    managing_team_conflicts = 'managing_team_conflicts'
-    leading_challenging_conversations = 'leading_challenging_conversations'
 
 
 class UserConfidenceScore(CamelModel, table=True):
@@ -32,7 +25,6 @@ class UserConfidenceScore(CamelModel, table=True):
     user: Optional['UserProfile'] = Relationship(back_populates='user_confidence_scores')
 
 
-# Automatically update `updated_at` before an update
 @event.listens_for(UserConfidenceScore, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserConfidenceScore') -> None:
     target.updated_at = datetime.now(UTC)
