@@ -143,9 +143,9 @@ class SessionService:
 
         # Update user's daily session counter
         today = new_session.started_at.date()
-        if user_profile.sessions_created_today_date != today:
+        if user_profile.last_session_date != today:
             user_profile.sessions_created_today = 0
-            user_profile.sessions_created_today_date = today
+            user_profile.last_session_date = today
         user_profile.sessions_created_today += 1
         self.db.add(user_profile)
 

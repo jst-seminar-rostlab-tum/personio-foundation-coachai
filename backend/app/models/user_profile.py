@@ -81,7 +81,7 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
 
     # Daily session tracking
     sessions_created_today: int = Field(default=0)
-    sessions_created_today_date: date = Field(default_factory=lambda: datetime.now(UTC).date())
+    last_session_date: date = Field(default_factory=lambda: datetime.now(UTC).date())
 
 
 # Automatically update `updated_at` before an update

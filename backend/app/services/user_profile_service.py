@@ -61,7 +61,7 @@ class UserService:
             updated_at=user.updated_at,
             store_conversations=user.store_conversations,
             sessions_created_today=user.sessions_created_today,
-            sessions_created_today_date=user.sessions_created_today_date,
+            last_session_date=user.last_session_date,
             num_remaining_daily_sessions=num_remaining_daily_sessions,
         )
 
@@ -89,7 +89,7 @@ class UserService:
             updated_at=user.updated_at,
             store_conversations=user.store_conversations,
             sessions_created_today=user.sessions_created_today,
-            sessions_created_today_date=user.sessions_created_today_date,
+            last_session_date=user.last_session_date,
             num_remaining_daily_sessions=num_remaining_daily_sessions,
         )
 

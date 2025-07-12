@@ -52,7 +52,7 @@ class UserProfileRead(CamelModel):
     updated_at: datetime
     store_conversations: bool
     sessions_created_today: int
-    sessions_created_today_date: date
+    last_session_date: date
     num_remaining_daily_sessions: int | None = None
 
 
