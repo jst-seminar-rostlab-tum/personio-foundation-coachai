@@ -235,15 +235,10 @@ class SessionService:
         feedback = self.db.exec(
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
         ).first()
-        if not feedback or feedback.status == FeedbackStatus.pending:
-            raise HTTPException(status_code=202, detail='Session feedback in progress.')
-        if feedback.status == FeedbackStatus.failed:
-            raise HTTPException(status_code=500, detail='Session feedback failed.')
-
         # Check if the feedback has a full audio filename
         stitched_audio = feedback.full_audio_filename
         gcs_manager = get_gcs_audio_manager()
-        if not stitched_audio:
+        if stitched_audio:
             try:
                 gcs_manager.delete_document(stitched_audio)
             except Exception as e:
