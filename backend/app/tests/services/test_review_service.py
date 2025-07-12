@@ -16,7 +16,8 @@ from app.data import (
     get_dummy_user_profiles,
 )
 from app.dependencies import JWTPayload, get_db_session, verify_jwt
-from app.models import Session, SessionStatus, UserProfile
+from app.enums.session_status import SessionStatus
+from app.models import Session, UserProfile
 from app.models.review import Review
 from app.schemas import PaginatedReviewRead, ReviewCreate
 from app.services.review_service import ReviewService

@@ -13,7 +13,8 @@ from sqlmodel import SQLModel, create_engine
 from app.data.dummy_data import get_dummy_conversation_categories, get_dummy_conversation_scenarios
 from app.dependencies import JWTPayload, get_db_session, security, verify_jwt
 from app.main import app
-from app.models import Review, Session, SessionStatus, UserProfile
+from app.models import Review, Session, UserProfile
+from app.models.session import SessionStatus
 from app.models.user_profile import AccountRole
 
 
