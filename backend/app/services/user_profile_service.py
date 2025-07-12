@@ -176,7 +176,6 @@ class UserService:
             performance_over_time=[72, 65, 70, 68, 74, 71, 78, 80, 69, 82],
             skills_performance={'structure': 85, 'empathy': 70, 'focus': 75, 'clarity': 75},
             daily_session_limit=daily_session_limit,
-            remaining_sessions_today=num_remaining_daily_sessions,
             num_remaining_daily_sessions=num_remaining_daily_sessions,
         )
 

@@ -61,7 +61,7 @@ export default async function DashboardPage() {
           value={
             userProfile.accountRole === 'admin'
               ? `#/${userStats.dailySessionLimit ?? 0}`
-              : `${userStats.remainingSessionsToday ?? 0}/${userStats.dailySessionLimit ?? 0}`
+              : `${userStats.numRemainingDailySessions ?? 0}/${userStats.dailySessionLimit ?? 0}`
           }
           label={t('userStats.remainingSessionsToday')}
         />
