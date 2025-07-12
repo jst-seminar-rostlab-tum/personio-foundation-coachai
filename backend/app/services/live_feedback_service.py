@@ -25,7 +25,7 @@ def fetch_live_feedback_for_session(
     )
     feedback_items = db_session.exec(statement).all()
     return [
-        LiveFeedback(heading=item.heading, feedback_text=item.feedback_text)
+        LiveFeedback(id=item.id, heading=item.heading, feedback_text=item.feedback_text)
         for item in feedback_items
     ]
 

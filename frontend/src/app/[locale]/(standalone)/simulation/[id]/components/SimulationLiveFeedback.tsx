@@ -30,7 +30,7 @@ export default function SimulationLiveFeedback({ liveFeedbacks }: SimulationLive
       </div>
       <div
         className={`w-full overflow-hidden transition-all duration-600 ease-in-out ${
-          showSuggestions ? 'max-h-[45vh]' : 'max-h-0'
+          showSuggestions ? 'max-h-[30vh] md:max-h-[25vh]' : 'max-h-0'
         }`}
       >
         <div className="w-full">
@@ -41,7 +41,7 @@ export default function SimulationLiveFeedback({ liveFeedbacks }: SimulationLive
             [scrollbar-width:'none'] 
             p-6 
             px-[clamp(1.25rem,4vw,4rem)] 
-            h-[45vh]"
+            max-h-[30vh] md:max-h-[25vh]"
           >
             <ul className="flex flex-col gap-4 w-full">
               {liveFeedbacks.map((liveFeedback, idx) => (

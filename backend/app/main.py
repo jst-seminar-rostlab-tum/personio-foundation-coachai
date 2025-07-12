@@ -20,7 +20,7 @@ from app.routers import (
     review_route,
     session_turn_route,
     sessions_route,
-    signed_url_route,
+    signed_urls_route,
     user_profile_route,
 )
 from app.services.cleanup_service import cleanup_old_session_turns
@@ -72,5 +72,5 @@ app.include_router(app_config_route.router)
 app.include_router(admin_dashboard_stats_route.router)
 app.include_router(review_route.router)
 app.include_router(realtime_session_route.router)
-app.include_router(signed_url_route.router)
+app.include_router(signed_urls_route.router)
 app.include_router(live_feedback_route.router)
