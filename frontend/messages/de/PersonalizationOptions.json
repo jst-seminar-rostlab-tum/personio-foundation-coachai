@@ -37,5 +37,8 @@
       "min": "Nicht sicher",
       "max": "Sehr sicher"
     }
-  }
+  },
+  "personaProfile": "Persönliches Profil",
+  "personaProfileHeader": "Persönliches Profil",
+  "myScenario": "Mein Szenario"
 }

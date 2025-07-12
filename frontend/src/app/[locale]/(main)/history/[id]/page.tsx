@@ -4,16 +4,12 @@ import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { UserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiServer';
-import { Badge } from '@/components/ui/Badge';
+import ScenarioBox from '@/components/ui/ScenarioBox';
 import HistoryHeader from './components/HistoryHeader';
 import Loading from './loading';
 import HistoryTable from './components/HistoryTable';
 import HistoryStats from './components/HistoryStats';
-import {
-  DifficultyLabel,
-  StatisticsLabel,
-  PreviousSessionsLabel,
-} from './components/HistoryLabels';
+import { StatisticsLabel, PreviousSessionsLabel } from './components/HistoryLabels';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -28,21 +24,25 @@ export default async function HistoryPage() {
       <div className="flex flex-col gap-12">
         <div className="flex flex-col gap-8">
           <HistoryHeader />
-          <div className="flex flex-col gap-12 w-full leading-loose border border-bw-20 rounded-lg p-8 text-bw-70 text-base mb-2">
-            <span className="italic">
-              &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-              exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-              dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur.&quot;
-            </span>
-            <div className="flex flex-col gap-2">
-              <DifficultyLabel />
-              <Badge difficulty={difficulty}>
-                {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-              </Badge>
-            </div>
-          </div>
+          <ScenarioBox
+            header="Salary Discussions"
+            description={`"Current Salary - The other party earns slightly below the midpoint for Program Officers in this NGO. - Last annual raise was 4%. Performance Context - Solid on creative outreach and community partnerships. - Mixed record on deadlines and internal coordination. Recent Request - Last week, the other party emailed HR asking for a 10% raise, citing cost of living and workload growth. Organizational Context - The NGO faces tight budgets due to a new funder’s spending cap. - Managers can approve up to 3% merit raise without director sign-off. Silver Lining Peers respect the other party’s community engagement; manager has praised initiative on outreach campaigns."`}
+            difficulty={difficulty}
+            personalizationItems={[
+              {
+                title: 'Personality',
+                description: 'This is the first personalization setting description.',
+              },
+              {
+                title: 'Behavioral Traits',
+                description: 'This is the second personalization setting description.',
+              },
+              {
+                title: 'Training Focus',
+                description: 'This is the third personalization setting description.',
+              },
+            ]}
+          />
         </div>
         <StatisticsLabel />
         <HistoryStats stats={userStatsData} />

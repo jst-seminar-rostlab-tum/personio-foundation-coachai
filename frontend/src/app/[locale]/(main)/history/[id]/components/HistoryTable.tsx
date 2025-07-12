@@ -73,6 +73,8 @@ export default function HistoryTable() {
     {
       header: 'Performance',
       accessor: 'performance',
+      className: 'text-right',
+      align: 'right',
     },
     {
       header: '',
