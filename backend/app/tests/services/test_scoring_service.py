@@ -7,14 +7,15 @@ from uuid import uuid4
 
 from pydantic import ValidationError
 
-from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
-from app.models.language import LanguageCode
-from app.models.session_turn import SpeakerEnum
+from app.enums.conversation_scenario_status import ConversationScenarioStatus
+from app.enums.difficulty_level import DifficultyLevel
+from app.enums.language import LanguageCode
+from app.enums.speaker import SpeakerType
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
-from app.schemas.scoring_schema import ConversationScore, MetricScore, ScoringResult
+from app.schemas.scoring_schema import ConversationScore, MetricScore, ScoringRead
 from app.schemas.session_turn import SessionTurnRead
 from app.services.scoring_service import ScoringService
 
@@ -42,14 +43,14 @@ class TestScoringService(unittest.TestCase):
         self.transcript = [
             SessionTurnRead(
                 id=uuid4(),
-                speaker=SpeakerEnum.user,
+                speaker=SpeakerType.user,
                 full_audio_start_offset_ms=0,
                 text='Hello',
                 ai_emotion='neutral',
                 created_at=datetime(2024, 6, 28, 10, 0, 1),
             )
         ]
-        self.conversation = ConversationScenarioWithTranscript(
+        self.conversation = ConversationScenarioRead(
             scenario=self.scenario, transcript=self.transcript
         )
         self.scoring_service = ScoringService(rubric_path=self.rubric_path)
@@ -68,7 +69,7 @@ class TestScoringService(unittest.TestCase):
     def test_score_conversation_calls_llm_and_returns_valid_structure(
         self, mock_call_structured_llm: MagicMock
     ) -> None:
-        mock_result = ScoringResult(
+        mock_result = ScoringRead(
             conversation_summary='The User initiated the conversation clearly'
             + 'and maintained a professional tone.',
             scoring=ConversationScore(
@@ -86,7 +87,7 @@ class TestScoringService(unittest.TestCase):
         mock_call_structured_llm.assert_called_once()
         _, kwargs = mock_call_structured_llm.call_args
         self.assertIn('request_prompt', kwargs)
-        self.assertEqual(kwargs['output_model'], ScoringResult)
+        self.assertEqual(kwargs['output_model'], ScoringRead)
         self.assertEqual(result, mock_result)
         self.assertEqual(result.scoring.overall_score, 4.25)
         self.assertEqual(len(result.scoring.scores), 4)
