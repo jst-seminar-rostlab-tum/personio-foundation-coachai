@@ -48,6 +48,15 @@ class TestSessionFeedbackService(unittest.TestCase):
     def insert_minimal_conversation(self) -> UUID:
         scenario_id = uuid4()
         user_id = uuid4()
+        self.session.add(
+            UserProfile(
+                id=user_id,
+                full_name='Test',
+                email='a@b.com',
+                phone_number='123',
+                preferred_language_code=LanguageCode.en,
+            )
+        )
         scenario = ConversationScenario(
             id=scenario_id,
             user_id=user_id,
