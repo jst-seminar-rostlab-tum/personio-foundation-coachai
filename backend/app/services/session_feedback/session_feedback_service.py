@@ -30,6 +30,7 @@ from app.schemas.session_feedback import (
     SessionExamplesRead,
 )
 from app.schemas.session_turn import SessionTurnRead
+from app.services.data_retention_service import delete_session_turns_by_session_id
 from app.services.scoring_service import ScoringService, get_scoring_service
 from app.services.session_feedback.session_feedback_llm import (
     safe_generate_recommendations,
@@ -317,4 +318,32 @@ def generate_and_store_feedback(
         feedback_generation_result,
         status,
     )
+
+    # If user doesn't want to store the conversation data (audio + transcript) delete it
+    check_data_retention(db_session, session_id, conversation.scenario)
+
     return feedback
+
+
+def check_data_retention(
+    db_session: DBSession, session_id: UUID, conversation_scenario: ConversationScenario
+) -> None:
+    """
+    Check if the user has opted out of data retention and delete session turns, audio files
+    and transcript if so.
+    """
+    # Get user profile
+    user_profile = db_session.exec(
+        select(UserProfile).where(UserProfile.id == conversation_scenario.user_id)
+    ).first()
+    if not user_profile:
+        raise HTTPException(
+            status_code=404, detail='User profile not found for the conversation scenario.'
+        )
+
+    if user_profile.store_conversations:
+        return
+
+    # User opted out of data retention
+    # delete session turns and audio files
+    delete_session_turns_by_session_id(db_session, session_id)

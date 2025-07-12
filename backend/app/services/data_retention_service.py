@@ -1,6 +1,7 @@
 import logging
 from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
+from uuid import UUID
 
 from sqlmodel import Session as DBSession
 from sqlmodel import select
@@ -66,7 +67,7 @@ def delete_session_turns_and_audio_files(db: DBSession, turns: Sequence[SessionT
     db.commit()
 
 
-def delete_session_turns_by_session_id(db: DBSession, session_id: str) -> None:
+def delete_session_turns_by_session_id(db: DBSession, session_id: UUID) -> None:
     """
     Delete all session_turn records for a given session_id.
     """
