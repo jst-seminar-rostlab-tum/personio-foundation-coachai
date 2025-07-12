@@ -6,7 +6,7 @@ from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
 from app.dependencies import require_user
-from app.models.session_turn import SpeakerEnum
+from app.enums.speaker import SpeakerType
 from app.models.user_profile import UserProfile
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.session_turn_service import SessionTurnService
@@ -31,7 +31,7 @@ async def create_session_turn(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     background_tasks: BackgroundTasks,
     session_id: UUID = Form(...),  # noqa: B008
-    speaker: SpeakerEnum = Form(...),  # noqa: B008
+    speaker: SpeakerType = Form(...),  # noqa: B008
     start_offset_ms: int = Form(...),  # noqa: B008
     end_offset_ms: int = Form(...),  # noqa: B008
     text: str = Form(...),  # noqa: B008
