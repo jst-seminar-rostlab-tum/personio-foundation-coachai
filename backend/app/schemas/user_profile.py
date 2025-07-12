@@ -87,4 +87,4 @@ class UserStatisticsRead(CamelModel):
     performance_over_time: list[int]
     skills_performance: dict[str, int]
     daily_session_limit: int | None = None
-    num_remaining_daily_sessions: int | None = None
+    num_remaining_daily_sessions: int

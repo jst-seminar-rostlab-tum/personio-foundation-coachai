@@ -56,12 +56,12 @@ export default async function DashboardPage() {
         />
         <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
         <StatCard value={`${userStats.averageScore ?? 0}%`} label={tCommon('avgScore')} />
-        {/* Remaining sessions stat card - shows N/A for admins */}
+        {/* Remaining sessions stat card - always shown */}
         <StatCard
           value={
             userProfile.accountRole === 'admin'
               ? `#/${userStats.dailySessionLimit ?? 0}`
-              : `${userStats.numRemainingDailySessions ?? 0}/${userStats.dailySessionLimit ?? 0}`
+              : `${userStats.numRemainingDailySessions}/${userStats.dailySessionLimit ?? 0}`
           }
           label={t('userStats.remainingSessionsToday')}
         />

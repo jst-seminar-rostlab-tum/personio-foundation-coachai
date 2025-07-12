@@ -9,7 +9,7 @@ export type UserStats = {
   performanceOverTime: number[];
   skillsPerformance: SessionScores;
   dailySessionLimit: number | null;
-  remainingSessionsToday: number | null;
+  numRemainingDailySessions: number;
 };
 
 export type UserStatsResponse = {
