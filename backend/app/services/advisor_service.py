@@ -2,12 +2,12 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.connections.vertexai_client import call_structured_llm
+from app.enums.feedback_status import FeedbackStatus
+from app.enums.language import LanguageCode
 from app.models.conversation_scenario import DifficultyLevel
-from app.models.language import LanguageCode
-from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
+from app.models.session_feedback import SessionFeedback
 from app.schemas import ConversationScenarioCreate
 from app.schemas.advisor_response import AdvisorResponse
-from app.services.realtime_context_service import get_scenario_info
 
 mock_persona = """
                 **Name**: Positive Pam
@@ -61,8 +61,7 @@ def get_mock_advisor_response() -> AdvisorResponse:
         persona=mock_persona,
         situational_facts=mock_situational_facts,
         difficulty_level=DifficultyLevel.medium,
-        mascot_speech='You were previously a bit vague in your training, '
-        'how about you try Performance Reviews again?',
+        mascot_speech='Hi! How about you try training for a Performance Review?',
     )
 
 
@@ -140,7 +139,7 @@ def get_mock_session_feedback() -> SessionFeedback:
                 ),
             },
         ],
-        status=FeedbackStatusEnum.completed,
+        status=FeedbackStatus.completed,
         created_at=datetime.now(UTC),
         updated_at=datetime.now(UTC),
     )
@@ -158,13 +157,13 @@ class AdvisorService:
     def generate_advice(
         self, session_feedback: SessionFeedback
     ) -> tuple[ConversationScenarioCreate, str]:
-        try:
-            previous_scenario = get_scenario_info(session_feedback.session_id.hex)
-        except Exception as e:
-            print(f'Exception while retrieving previous scenario info: {e}')
-            previous_scenario = None
-
         language_code = LanguageCode.en
+        try:
+            previous_scenario = session_feedback.session.scenario
+            language_code = session_feedback.session.scenario.language_code
+        except Exception as e:
+            print(f'No previous scenario for generating advice found: {e}')
+            previous_scenario = None
 
         prompt = f"""
         Analyze the following feedback from an HR employee's conversation training session. Using
