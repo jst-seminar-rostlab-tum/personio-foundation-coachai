@@ -101,6 +101,7 @@ class RealtimeSessionService:
             )
 
         ai_voice = self._get_voice(conversation_scenario.persona_name)
+        language = conversation_scenario.language_code.value
 
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -112,7 +113,10 @@ class RealtimeSessionService:
                 json={
                     'model': MODEL,
                     'voice': ai_voice,
-                    'input_audio_transcription': {'language': 'en', 'model': 'gpt-4o-transcribe'},
+                    'input_audio_transcription': {
+                        'language': language,
+                        'model': 'gpt-4o-transcribe',
+                    },
                     'instructions': instructions,
                     'turn_detection': {
                         'type': 'server_vad',
