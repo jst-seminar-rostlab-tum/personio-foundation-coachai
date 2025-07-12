@@ -1,6 +1,7 @@
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
+from app.models.app_config import AppConfig
 from app.models.conversation_scenario import ConversationScenario
 from app.models.review import Review
 from app.models.user_confidence_score import UserConfidenceScore
@@ -20,29 +21,23 @@ from app.schemas.user_export import (
 )
 
 
-def _build_export_user_profile(user_profile: UserProfile) -> ExportUserProfile:
+def _build_export_user_profile(
+    user_profile: UserProfile, db_session: DBSession
+) -> ExportUserProfile:
     """Build export user profile from UserProfile model."""
     try:
-        # Fetch daily session limit from AppConfig
-        from app.models.app_config import AppConfig
+        daily_session_limit = db_session.exec(
+            select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
+        ).first()
+        daily_session_limit = int(daily_session_limit) if daily_session_limit is not None else 0
 
-        db_session = (
-            user_profile.__sa_session__ if hasattr(user_profile, '__sa_session__') else DBSession()
-        )
-        daily_session_limit = None
-        if db_session is not None:
-            daily_session_limit = db_session.exec(
-                select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
-            ).first()
-            daily_session_limit = (
-                int(daily_session_limit) if daily_session_limit is not None else None
-            )
-        if daily_session_limit is not None:
+        # If session limit is not configured, assume limit is hit (safety feature)
+        if daily_session_limit == 0:
+            num_remaining_daily_sessions = 0
+        else:
             num_remaining_daily_sessions = max(
                 0, daily_session_limit - user_profile.sessions_created_today
             )
-        else:
-            num_remaining_daily_sessions = None
         return ExportUserProfile(
             user_id=str(user_profile.id),
             full_name=user_profile.full_name,
@@ -296,7 +291,7 @@ def build_user_data_export(user_profile: UserProfile, db_session: DBSession) -> 
 
     # Build export data
     return UserDataExport(
-        profile=_build_export_user_profile(user_profile),
+        profile=_build_export_user_profile(user_profile, db_session),
         goals=_build_export_goals(goals),
         confidence_scores=_build_export_confidence_scores(confidence_scores),
         scenarios=_build_export_scenarios(scenarios),

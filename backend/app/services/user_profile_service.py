@@ -9,6 +9,7 @@ from sqlmodel import col, select
 from supabase import AuthError
 
 from app.database import get_supabase_client
+from app.models.app_config import AppConfig
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import Goal, UserGoal
 from app.models.user_profile import AccountRole, UserProfile
@@ -29,9 +30,6 @@ class UserService:
         self.db = db
 
     def _get_detailed_user_profile_response(self, user: UserProfile) -> UserProfileExtendedRead:
-        # Fetch daily session limit from AppConfig
-        from app.models.app_config import AppConfig
-
         daily_session_limit = self.db.exec(
             select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
         ).first()
@@ -67,8 +65,6 @@ class UserService:
         )
 
     def _get_user_profile_response(self, user: UserProfile) -> UserProfileRead:
-        from app.models.app_config import AppConfig
-
         daily_session_limit = self.db.exec(
             select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
         ).first()
@@ -154,7 +150,6 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail='User profile not found.',
             )
-        from app.models.app_config import AppConfig
 
         daily_session_limit = self.db.exec(
             select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
