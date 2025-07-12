@@ -35,7 +35,7 @@ class ScoringService:
             f'{json.dumps(self.rubric, indent=2)}'
             '\n\n'
             "You MUST act as if the Assistant's utterances do not exist at all. Only the User's utterances are relevant for scoring. If you mention or consider the Assistant in your justification, that is a mistake.\n"
-            "Please also take into account the user's vocal emotion, tone, and expressive style in your evaluation if audio is provided.（请结合语音的情感、语气、表达风格进行评价。）"
+            "Please also take into account the user's vocal emotion, tone, and expressive style in your evaluation if audio is provided."
         )
         return system_prompt
 
@@ -77,6 +77,7 @@ class ScoringService:
             system_prompt=system_prompt,
             model=model,
             output_model=ScoringRead,
+            max_tokens=1000,
             temperature=temperature,
             audio_uri=audio_uri,
         )

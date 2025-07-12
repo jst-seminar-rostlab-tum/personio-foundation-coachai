@@ -94,10 +94,10 @@ class TestGetAchievedGoals(unittest.TestCase):
             language_code=self.language_code,
         )
         for audio_file in audio_files:
-            audio_url = get_gcs_audio_manager().generate_signed_url(audio_file)
+            audio_uri = get_gcs_audio_manager().generate_signed_url(audio_file)
             print(f'\n==== Testing with audio: {audio_file} ====')
             try:
-                result = get_achieved_goals(req, audio_url=audio_url)
+                result = get_achieved_goals(req, audio_uri=audio_uri)
                 print(result.model_dump_json(indent=2))
             except Exception as e:
                 print(f'Error with {audio_file}: {e}')

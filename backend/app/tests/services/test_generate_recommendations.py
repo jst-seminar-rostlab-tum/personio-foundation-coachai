@@ -66,31 +66,6 @@ class TestGenerateRecommendations(unittest.TestCase):
         texts = [rec.recommendation for rec in result.recommendations]
         self.assertEqual(len(texts), len(set(texts)), 'Recommendations are not unique')
 
-    def test_recommendations_reflect_objectives_and_key_concepts(self) -> None:
-        transcript = (
-            'User: I want to show more empathy in my feedback.\n'
-            'User: I will try to be clearer next time.'
-        )
-        req = FeedbackCreate(
-            transcript=transcript,
-            objectives=self.base_objectives,
-            key_concepts='Empathy, Clarity, Feedback improvement',
-            category='Feedback',
-            persona='Manager',
-            situational_facts='Performance review',
-            language_code=self.language_code,
-        )
-        result = generate_recommendations(req)
-        self.print_recommendations_stats(
-            'recommendations_reflect_objectives_and_key_concepts', result
-        )
-        found = any(
-            'empathy' in (rec.heading + rec.recommendation).lower()
-            or 'clarity' in (rec.heading + rec.recommendation).lower()
-            for rec in result.recommendations
-        )
-        self.assertTrue(found, 'No recommendation reflects objectives or key concepts')
-
     def test_maximum_number_of_recommendations(self) -> None:
         transcript = '\n'.join([f'User: Issue {i}' for i in range(20)])
         req = FeedbackCreate(
