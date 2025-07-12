@@ -75,8 +75,8 @@ class TestLiveFeedbackService(unittest.TestCase):
         )
 
         self.assertEqual(len(results), 2)
-        self.assertEqual(results[0].heading, 'Tone')
-        self.assertEqual(results[1].heading, 'Clarity')
+        self.assertEqual(results[0].heading, 'Clarity')
+        self.assertEqual(results[1].heading, 'Tone')
 
     def test_format_feedback_lines_returns_json_strings(self) -> None:
         feedback_items = [
