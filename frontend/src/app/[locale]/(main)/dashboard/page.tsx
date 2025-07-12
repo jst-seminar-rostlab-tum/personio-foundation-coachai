@@ -56,15 +56,15 @@ export default async function DashboardPage() {
         />
         <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
         <StatCard value={`${userStats.averageScore ?? 0}%`} label={tCommon('avgScore')} />
-        {/* Remaining sessions stat card for non-admin users */}
-        {userProfile.accountRole !== 'admin' &&
-          userStats.dailySessionLimit != null &&
-          userStats.remainingSessionsToday != null && (
-            <StatCard
-              value={`${userStats.remainingSessionsToday}/${userStats.dailySessionLimit}`}
-              label={t('userStats.remainingSessionsToday')}
-            />
-          )}
+        {/* Remaining sessions stat card - shows N/A for admins */}
+        <StatCard
+          value={
+            userProfile.accountRole === 'admin'
+              ? `#/${userStats.dailySessionLimit ?? 0}`
+              : `${userStats.remainingSessionsToday ?? 0}/${userStats.dailySessionLimit ?? 0}`
+          }
+          label={t('userStats.remainingSessionsToday')}
+        />
       </div>
 
       <section className="flex flex-col gap-4">
