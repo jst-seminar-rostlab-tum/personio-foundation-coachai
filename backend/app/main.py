@@ -23,7 +23,7 @@ from app.routers import (
     signed_urls_route,
     user_profile_route,
 )
-from app.services.cleanup_service import cleanup_old_session_turns
+from app.services.data_retention_service import cleanup_old_session_turns
 
 logging.basicConfig(
     level=logging.INFO,

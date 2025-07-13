@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 interface DonutChartProps {
-  label: string;
   totalScore: number;
   maxScore: number;
 }
@@ -11,7 +10,7 @@ const stroke = 8;
 const normalizedRadius = radius;
 const circumference = 2 * Math.PI * normalizedRadius;
 
-export default function DonutChart({ label, totalScore, maxScore }: DonutChartProps) {
+export default function DonutChart({ totalScore, maxScore }: DonutChartProps) {
   const percent = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
   const [animatedPercent, setAnimatedPercent] = useState(0);
   const [animatedNumber, setAnimatedNumber] = useState(0);
@@ -69,7 +68,6 @@ export default function DonutChart({ label, totalScore, maxScore }: DonutChartPr
             <span className="font-medium text-7xl fill-bw-60 text-bw-60">{animatedNumber}</span>
             <span className="font-regular text-5xl text-bw-40">/{maxScore}</span>
           </span>
-          <span className="text-bw-40">{label}</span>
         </div>
       </div>
     </div>

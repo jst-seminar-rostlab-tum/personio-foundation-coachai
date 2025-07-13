@@ -9,6 +9,7 @@ interface SimulationLiveFeedbackProps {
 
 export default function SimulationLiveFeedback({ liveFeedbacks }: SimulationLiveFeedbackProps) {
   const t = useTranslations('Simulation.LiveFeedback');
+  const tCommon = useTranslations('Common');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [newLiveFeedbackIds, setNewLiveFeedbackIds] = useState<string[]>([]);
@@ -102,6 +103,9 @@ export default function SimulationLiveFeedback({ liveFeedbacks }: SimulationLive
                 </li>
               ))}
             </ul>
+            <div className="mt-4 text-center">
+              <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
+            </div>
           </div>
         </div>
       </div>

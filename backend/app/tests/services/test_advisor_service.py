@@ -43,6 +43,7 @@ def get_previous_session() -> Session:
         id=uuid4(),
         user_id=scenario_id,
         category_id='performance_reviews',
+        persona_name='Angry Alex',
         persona="""
                 **Name**: Angry Alex
                 **Personality**: Confrontational, defensive, emotionally volatile
