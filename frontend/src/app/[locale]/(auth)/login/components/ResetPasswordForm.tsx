@@ -28,7 +28,7 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 
 export default function ResetPasswordForm() {
-  const t = useTranslations('Reset');
+  const t = useTranslations('Login.Reset');
   const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>();

@@ -28,7 +28,7 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 
 export default function UpdatePasswordForm() {
-  const t = useTranslations('UpdatePassword');
+  const t = useTranslations('Login.UpdatePassword');
   const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>();

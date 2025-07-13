@@ -6,12 +6,10 @@ import ConfirmationForm from './components/ConfirmationForm';
 import UpdatePasswordForm from './components/UpdatePasswordForm';
 import ResetPasswordForm from './components/ResetPasswordForm';
 
-export async function generateMetadata({ params, searchParams }: MetadataProps): Promise<Metadata> {
+export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
-  const { step } = searchParams ? await searchParams : {};
-  const currentStep = step ?? 'login';
 
-  return generateDynamicMetadata(locale, `/${currentStep}`, true);
+  return generateDynamicMetadata(locale, '/login', true);
 }
 
 interface LoginPageProps {
