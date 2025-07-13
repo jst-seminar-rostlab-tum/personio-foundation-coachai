@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useWebRTC } from '@/app/[locale]/(standalone)/simulation/[id]/hooks/useWebRTC';
 import { showErrorToast } from '@/lib/utils/toast';
 import { useTranslations } from 'next-intl';
 import { sessionService } from '@/services/SessionService';
@@ -10,10 +9,11 @@ import { SessionStatus } from '@/interfaces/models/Session';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { ConnectionStatus } from '@/interfaces/models/Simulation';
-import SimulationHeader from './SimulationHeader';
-import SimulationFooter from './SimulationFooter';
-import SimulationLiveFeedback from './SimulationLiveFeedback';
-import SimulationMessages from './SimulationMessages';
+import { useWebRTC } from '@/app/[locale]/(standalone)/session/[id]/hooks/useWebRTC';
+import SessionHeader from './SessionHeader';
+import SessionFooter from './SessionFooter';
+import SessionLiveFeedback from './SessionLiveFeedback';
+import SessionMessages from './SessionMessages';
 
 const DISCONNECTED_STATES = [
   ConnectionStatus.Connecting,
@@ -28,7 +28,7 @@ const TERMINAL_STATES = [
   ConnectionStatus.Failed,
 ];
 
-export default function SimulationPageComponent({ sessionId }: { sessionId: string }) {
+export default function SessionPageComponent({ sessionId }: { sessionId: string }) {
   const t = useTranslations('Simulation');
   const router = useRouter();
   const [hangupInProgress, setHangupInProgress] = useState(false);
@@ -74,19 +74,19 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
   return (
     <div className="flex flex-col h-screen">
       <div className="mb-2">
-        <SimulationHeader time={elapsedTimeS} connectionStatus={connectionStatus} />
+        <SessionHeader time={elapsedTimeS} connectionStatus={connectionStatus} />
       </div>
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-        <SimulationMessages messages={messages} />
+        <SessionMessages messages={messages} />
         {isDisconnected && (
           <div className="absolute inset-0 backdrop-blur-sm bg-background z-10"></div>
         )}
       </div>
 
-      <SimulationLiveFeedback liveFeedbacks={sessionLiveFeedbacks} />
+      <SessionLiveFeedback liveFeedbacks={sessionLiveFeedbacks} />
 
-      <SimulationFooter
+      <SessionFooter
         isMicActive={isMicActive}
         toggleMicrophone={toggleMic}
         isConnected={isConnected}

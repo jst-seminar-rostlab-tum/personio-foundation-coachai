@@ -54,3 +54,9 @@ export enum MessageSender {
   USER = 'user',
   ASSISTANT = 'assistant',
 }
+
+export interface SessionLiveFeedback {
+  id: string;
+  heading: string;
+  feedbackText: string;
+}

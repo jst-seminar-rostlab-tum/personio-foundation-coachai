@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { ChevronUp } from 'lucide-react';
-import { SessionLiveFeedback } from '@/interfaces/models/SessionLiveFeedback';
 import { useTranslations } from 'next-intl';
+import type { SessionLiveFeedback } from '@/interfaces/models/Session';
 
-interface SimulationLiveFeedbackProps {
+interface SessionLiveFeedbackProps {
   liveFeedbacks: SessionLiveFeedback[];
 }
 
-export default function SimulationLiveFeedback({ liveFeedbacks }: SimulationLiveFeedbackProps) {
+export default function SessionLiveFeedback({ liveFeedbacks }: SessionLiveFeedbackProps) {
   const t = useTranslations('Simulation.LiveFeedback');
   const tCommon = useTranslations('Common');
   const [showSuggestions, setShowSuggestions] = useState(false);

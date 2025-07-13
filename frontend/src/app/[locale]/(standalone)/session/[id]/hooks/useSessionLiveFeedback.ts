@@ -1,9 +1,9 @@
-import { SessionLiveFeedback } from '@/interfaces/models/SessionLiveFeedback';
+import { SessionLiveFeedback } from '@/interfaces/models/Session';
 import { api } from '@/services/ApiClient';
 import { sessionService } from '@/services/SessionService';
 import { useCallback, useRef, useState } from 'react';
 
-export function useSimulationLiveFeedback(sessionId: string) {
+export function useSessionLiveFeedback(sessionId: string) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isFetchingRef = useRef(false);
   const [sessionLiveFeedbacks, setSessionLiveFeedbacks] = useState<SessionLiveFeedback[]>([]);

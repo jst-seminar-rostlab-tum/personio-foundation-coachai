@@ -11,7 +11,7 @@ import { useElapsedTime } from './useElapsedTime';
 import { useLocalAudioRecorder } from './useLocalAudioRecorder';
 import { useRemoteAudioRecorder } from './useRemoteAudioRecorder';
 import { useSessionTurns } from './useSessionTurns';
-import { useSimulationLiveFeedback } from './useSimulationLiveFeedback';
+import { useSessionLiveFeedback } from './useSessionLiveFeedback';
 
 export function useWebRTC(sessionId: string) {
   const t = useTranslations('Simulation');
@@ -31,7 +31,7 @@ export function useWebRTC(sessionId: string) {
     useSessionTurns();
 
   const { stopGetLiveFeedbackInterval, startGetLiveFeedbackInterval, sessionLiveFeedbacks } =
-    useSimulationLiveFeedback(sessionId);
+    useSessionLiveFeedback(sessionId);
 
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     ConnectionStatus.Connecting

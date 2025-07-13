@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/Badge';
 import { useTranslations } from 'next-intl';
 import { ConnectionStatus } from '@/interfaces/models/Simulation';
 
-interface SimulationHeaderProps {
+interface SessionHeaderProps {
   characterName?: string;
   characterRole?: string;
   characterDescription?: string;
@@ -43,7 +43,7 @@ function getConnectionStatusColor(status: ConnectionStatus) {
   }
 }
 
-export default function SimulationHeader({
+export default function SessionHeader({
   characterName = 'Alex',
   characterRole = 'Team Member',
   characterDescription = 'Defensive at first, but open to feedback',
@@ -51,7 +51,7 @@ export default function SimulationHeader({
   avatarSrc,
   time = 0,
   connectionStatus,
-}: SimulationHeaderProps) {
+}: SessionHeaderProps) {
   const t = useTranslations('Simulation');
 
   return (
