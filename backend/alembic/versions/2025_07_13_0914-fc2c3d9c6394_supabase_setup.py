@@ -1,8 +1,9 @@
 """Supabase setup
 
-Revision ID: f74c5f1db78b
-Revises: 79cce3e613d2
-Create Date: 2025-07-10 02:33:02.845299
+Revision ID: fc2c3d9c6394
+Revises: d7de33b1ffc0
+Create Date: 2025-07-13 09:14:30.762979
+
 """
 
 from collections.abc import Sequence
@@ -11,8 +12,8 @@ from typing import Union
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = 'f74c5f1db78b'
-down_revision: Union[str, None] = '79cce3e613d2'
+revision: str = 'fc2c3d9c6394'
+down_revision: Union[str, None] = 'd7de33b1ffc0'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
