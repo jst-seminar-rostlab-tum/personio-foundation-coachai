@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from app.enums.difficulty_level import DifficultyLevel
@@ -39,5 +40,31 @@ class ConversationScenarioSummary(CamelModel):
     scenario_id: UUID
     language_code: LanguageCode
     category_name: str
+    category_id: str | None = None
     total_sessions: int
-    average_score: float | None = None  # None if there are no sessions
+    persona_name: str
+    difficulty_level: DifficultyLevel
+    last_session_at: datetime | None
+    average_score: float | None = None
+
+
+class ConversationScenarioReadDetail(CamelModel):
+    scenario_id: UUID
+    language_code: LanguageCode
+    category_name: str
+    category_id: str | None = None
+    total_sessions: int
+    persona_name: str
+    persona: str
+    situational_facts: str
+    difficulty_level: DifficultyLevel
+    last_session_at: datetime | None
+    average_score: float | None = None
+
+
+class PaginatedConversationScenarioSummary(CamelModel):
+    scenarios: list[ConversationScenarioSummary]
+    total_pages: int
+    total_scenarios: int
+    page: int
+    limit: int
