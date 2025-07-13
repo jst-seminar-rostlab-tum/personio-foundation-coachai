@@ -51,6 +51,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             user_id=user_id,
             category_id='feedback',
             custom_category_label=None,
+            persona_name='Test Persona',
             persona='',
             situational_facts='',
             language_code=LanguageCode.en,
