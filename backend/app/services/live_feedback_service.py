@@ -104,16 +104,12 @@ def generate_live_feedback_item(
     ### Examples
     Feedback items in order of generating:
     1. {{"heading": "Tone", "feedback_text": "Speak more calmly." }}
-    2. {{"heading": "Engagement", 
-    "feedback_text": "Acknowledge their emotions directly." }}
-    3. {{"heading": "Content", 
-    "feedback_text": "State clear facts for bad performance." }}
-    4. {{"heading": "Clarity", "feedback_text": 
-    "Replace vague phrases with specific outcomes." }}
-    5. {{"heading": "Next Step", 
-    "feedback_text": "Ask them to complete any paperwork necessary."}}
+    2. {{"heading": "Engagement", "feedback_text": "Acknowledge their emotions directly." }}
+    3. {{"heading": "Content", "feedback_text": "State clear facts for bad performance." }}
+    4. {{"heading": "Clarity", "feedback_text": "Replace vague phrases with specific outcomes." }}
+    5. {{"heading": "Next Step", "feedback_text": "Ask them to complete any paperwork necessary."}}
     6. {{"heading": "Tone", "feedback_text": "Great tone – keep it up!" }}
-
+    
     """
 
     return call_structured_llm(
