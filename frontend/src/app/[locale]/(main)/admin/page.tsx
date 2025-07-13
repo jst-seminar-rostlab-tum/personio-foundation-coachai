@@ -13,7 +13,7 @@ import { api } from '@/services/ApiServer';
 import AdminLoadingPage from './loading';
 import SessionSetter from './components/SessionSetter';
 import Reviews from './components/Reviews';
-import UserManagement from './components/UserManagement';
+import UsersList from './components/UsersList';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -52,7 +52,7 @@ export default async function AdminPage() {
         </div>
         <SessionSetter dailySessionLimit={stats.dailySessionLimit} />
         <Reviews {...reviews} />
-        <UserManagement usersPaginationData={users} />
+        <UsersList {...users} />
       </div>
     </Suspense>
   );
