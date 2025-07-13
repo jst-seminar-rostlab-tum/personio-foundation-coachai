@@ -76,3 +76,25 @@ def delete_session_turns_by_session_id(db: DBSession, session_id: UUID) -> None:
         return
     delete_session_turns_and_audio_files(db, turns)
     logging.info(f'Deleted {len(turns)} session_turn records for session {session_id}.')
+
+
+def delete_full_audio_for_feedback_by_session_id(db: DBSession, session_id: UUID) -> None:
+    """
+    Delete all full audio files from GCS referenced by SessionFeedback.full_audio_filename
+    for a given session_id, and set full_audio_filename to an empty string.
+    """
+    gcs = get_gcs_audio_manager()
+    feedbacks = db.exec(
+        select(SessionFeedback).where(SessionFeedback.session_id == session_id)
+    ).all()
+    for feedback in feedbacks:
+        audio_uri = feedback.full_audio_filename
+        if gcs and audio_uri:
+            try:
+                if gcs.document_exists(audio_uri):
+                    gcs.delete_document(audio_uri)
+            except Exception as e:
+                logging.warning(f'Failed to delete GCS feedback audio {audio_uri}: {e}')
+        feedback.full_audio_filename = ''
+        db.add(feedback)
+    db.commit()
