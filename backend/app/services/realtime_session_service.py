@@ -48,7 +48,7 @@ class RealtimeSessionService:
 
         print(f'Loading persona difficulty modifiers from {modifiers_path}')
         try:
-            with open(modifiers_path) as f:
+            with open(modifiers_path, encoding='utf-8') as f:
                 modifiers = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             return None

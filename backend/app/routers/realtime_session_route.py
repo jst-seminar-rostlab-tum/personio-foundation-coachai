@@ -1,11 +1,11 @@
 from typing import Annotated
 
-from backend.app.models.session import Session
 from fastapi import APIRouter, Depends
 from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
 from app.dependencies import require_session
+from app.models.session import Session
 from app.services.realtime_session_service import RealtimeSessionService
 
 router = APIRouter(prefix='/realtime-sessions', tags=['realtime-session'])
