@@ -119,7 +119,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
       </div>
 
       <div className="flex flex-col md:flex-row gap-12 max-w-5xl items-center w-full justify-between">
-        <DonutChart label={t('stats.goalsAchieved')} totalScore={totalScore} maxScore={maxScore} />
+        <DonutChart totalScore={totalScore} maxScore={maxScore} />
         <ProgressBars data={progressBarData} />
       </div>
 
@@ -170,6 +170,9 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
                 <FeedbackQuote key={index} {...recommendation} icon="Info" />
               ))}
             </div>
+            <div className="mt-6">
+              <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
+            </div>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="suggestion">
@@ -182,9 +185,6 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
               <EmptyListComponent itemType={tCommon('resources.title')} />
             )}
           </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="session">
-          <AccordionTrigger>{t('accordion.sessions')}</AccordionTrigger>
         </AccordionItem>
       </Accordion>
     </div>

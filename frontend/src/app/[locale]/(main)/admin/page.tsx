@@ -11,7 +11,7 @@ import { api } from '@/services/ApiServer';
 import AdminLoadingPage from './loading';
 import TokenSetter from './components/TokenSetter';
 import Reviews from './components/Reviews';
-import UserManagement from './components/UserManagement';
+import UsersList from './components/UsersList';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -45,7 +45,7 @@ export default async function AdminPage() {
         </div>
         <TokenSetter dailyTokenLimit={stats.dailyTokenLimit} />
         <Reviews {...reviews} />
-        <UserManagement usersPaginationData={users} />
+        <UsersList {...users} />
       </div>
     </Suspense>
   );

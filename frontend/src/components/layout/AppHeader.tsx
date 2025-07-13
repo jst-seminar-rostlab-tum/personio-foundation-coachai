@@ -20,10 +20,7 @@ export function AppHeader() {
   const isAdmin = user?.accountRole === AccountRole.admin;
 
   const navigationLinks = [
-    { key: 'dashboard', href: '/dashboard' },
-    { key: 'newConversationScenario', href: '/new-conversation-scenario' },
     ...(isAdmin ? [{ key: 'admin', href: '/admin' }] : []),
-    { key: 'history', href: '/history' },
     { key: 'settings', href: '/settings' },
   ];
 
