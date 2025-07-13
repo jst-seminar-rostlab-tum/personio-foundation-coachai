@@ -16,6 +16,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { ModalWrapper } from './ModelWrapper';
 
 export default function ConfirmationForm() {
   const t = useTranslations('Login');
@@ -113,83 +114,85 @@ export default function ConfirmationForm() {
   };
 
   return (
-    <Card className="border-0 bg-white animate-in fade-in zoom-in duration-200">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(verifyOTP)}>
-          <CardContent className="space-y-4 p-4">
-            <h2 className="text-xl text-center">{t('ConfirmationForm.title')}</h2>
-            <p className="text-base text-center text-bw-50">
-              {!showResendButton
-                ? t('ConfirmationForm.description')
-                : t('ConfirmationForm.expiredDescription')}
-            </p>
+    <ModalWrapper>
+      <Card className="border-0 bg-white animate-in fade-in zoom-in duration-200">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(verifyOTP)}>
+            <CardContent className="space-y-4 p-4">
+              <h2 className="text-xl text-center">{t('ConfirmationForm.title')}</h2>
+              <p className="text-base text-center text-bw-50">
+                {!showResendButton
+                  ? t('ConfirmationForm.description')
+                  : t('ConfirmationForm.expiredDescription')}
+              </p>
 
-            {!showResendButton && (
-              <FormField
-                control={form.control}
-                name="code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-center">{t('codeInputLabel')}</FormLabel>
+              {!showResendButton && (
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-center">{t('codeInputLabel')}</FormLabel>
 
-                    <div className="flex justify-center gap-2">
-                      {[...Array(codeSize)].map((_, idx) => (
-                        <Input
-                          key={idx}
-                          type="text"
-                          inputMode="numeric"
-                          maxLength={1}
-                          className="w-10 text-center text-lg"
-                          disabled={isLoading}
-                          value={field.value[idx] || ''}
-                          ref={(el) => {
-                            inputRefs.current[idx] = el;
-                          }}
-                          onChange={(e) => {
-                            handleInputChange(e, field, idx, codeSize, inputRefs.current);
-                          }}
-                          onPaste={(e) => {
-                            handlePasteEvent(e, field, codeSize, inputRefs.current);
-                          }}
-                          onKeyDown={(e) => {
-                            handleKeyDown(e, field, idx, inputRefs.current);
-                          }}
-                          autoFocus={idx === 0}
-                        />
-                      ))}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+                      <div className="flex justify-center gap-2">
+                        {[...Array(codeSize)].map((_, idx) => (
+                          <Input
+                            key={idx}
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={1}
+                            className="w-10 text-center text-lg"
+                            disabled={isLoading}
+                            value={field.value[idx] || ''}
+                            ref={(el) => {
+                              inputRefs.current[idx] = el;
+                            }}
+                            onChange={(e) => {
+                              handleInputChange(e, field, idx, codeSize, inputRefs.current);
+                            }}
+                            onPaste={(e) => {
+                              handlePasteEvent(e, field, codeSize, inputRefs.current);
+                            }}
+                            onKeyDown={(e) => {
+                              handleKeyDown(e, field, idx, inputRefs.current);
+                            }}
+                            autoFocus={idx === 0}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
-            <FormMessage />
-          </CardContent>
-          <CardFooter className="flex-col gap-2 p-4">
-            {!showResendButton && (
-              <Button
-                size="full"
-                type="submit"
-                disabled={isLoading || form.watch('code').length !== codeSize}
-              >
-                {isLoading ? t('confirming') : tCommon('confirm')}
-              </Button>
-            )}
+              <FormMessage />
+            </CardContent>
+            <CardFooter className="flex-col gap-2 p-4">
+              {!showResendButton && (
+                <Button
+                  size="full"
+                  type="submit"
+                  disabled={isLoading || form.watch('code').length !== codeSize}
+                >
+                  {isLoading ? t('confirming') : tCommon('confirm')}
+                </Button>
+              )}
 
-            {showResendButton && (
-              <Button
-                size="full"
-                type="button"
-                onClick={resendConfirmationEmail}
-                disabled={isLoading}
-              >
-                {t('resendCodeButtonLabel')}
-              </Button>
-            )}
-          </CardFooter>
-        </form>
-      </Form>
-    </Card>
+              {showResendButton && (
+                <Button
+                  size="full"
+                  type="button"
+                  onClick={resendConfirmationEmail}
+                  disabled={isLoading}
+                >
+                  {t('resendCodeButtonLabel')}
+                </Button>
+              )}
+            </CardFooter>
+          </form>
+        </Form>
+      </Card>
+    </ModalWrapper>
   );
 }

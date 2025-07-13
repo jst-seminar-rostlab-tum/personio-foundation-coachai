@@ -26,6 +26,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { ModalWrapper } from './ModelWrapper';
 
 export default function ResetPasswordForm() {
   const t = useTranslations('Login.Reset');
@@ -76,46 +77,48 @@ export default function ResetPasswordForm() {
   };
 
   return (
-    <Card className="border-0 bg-white animate-in fade-in zoom-in duration-200">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(sendPasswordReset)}>
-          <CardHeader>
-            <CardTitle>{t('title')}</CardTitle>
-            <CardDescription>{t('description')}</CardDescription>
-          </CardHeader>
+    <ModalWrapper>
+      <Card className="border-0 bg-white animate-in fade-in zoom-in duration-200">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(sendPasswordReset)}>
+            <CardHeader>
+              <CardTitle>{t('title')}</CardTitle>
+              <CardDescription>{t('description')}</CardDescription>
+            </CardHeader>
 
-          <CardContent className="space-y-4 p-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={tCommon('emailInputPlaceholder')}
-                      {...field}
-                      className="w-full"
-                      type="email"
-                      disabled={isLoading}
-                      autoComplete="section-login username"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <CardContent className="space-y-4 p-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={tCommon('emailInputPlaceholder')}
+                        {...field}
+                        className="w-full"
+                        type="email"
+                        disabled={isLoading}
+                        autoComplete="section-login username"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormMessage />
-          </CardContent>
+              <FormMessage />
+            </CardContent>
 
-          <CardFooter className="flex-col gap-2 p-4">
-            <Button type="submit" size="full" disabled={isLoading}>
-              {t('sendResetEmailButtonLabel')}
-            </Button>
-          </CardFooter>
-        </form>
-      </Form>
-    </Card>
+            <CardFooter className="flex-col gap-2 p-4">
+              <Button type="submit" size="full" disabled={isLoading}>
+                {t('sendResetEmailButtonLabel')}
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+      </Card>
+    </ModalWrapper>
   );
 }

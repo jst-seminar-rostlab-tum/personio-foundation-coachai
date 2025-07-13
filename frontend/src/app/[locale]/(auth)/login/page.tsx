@@ -5,7 +5,6 @@ import LoginPageComponent from './components/LoginPage';
 import ConfirmationForm from './components/ConfirmationForm';
 import UpdatePasswordForm from './components/UpdatePasswordForm';
 import ResetPasswordForm from './components/ResetPasswordForm';
-import { ModalWrapper } from './components/ModelWrapper';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -25,23 +24,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <div className="w-full max-w-md">
         <LoginPageComponent />
 
-        {currentStep === 'confirm' && (
-          <ModalWrapper>
-            <ConfirmationForm />
-          </ModalWrapper>
-        )}
+        {currentStep === 'confirm' && <ConfirmationForm />}
 
-        {currentStep === 'reset' && (
-          <ModalWrapper>
-            <ResetPasswordForm />
-          </ModalWrapper>
-        )}
+        {currentStep === 'reset' && <ResetPasswordForm />}
 
-        {currentStep === 'update-password' && (
-          <ModalWrapper>
-            <UpdatePasswordForm />
-          </ModalWrapper>
-        )}
+        {currentStep === 'update-password' && <UpdatePasswordForm />}
       </div>
     </div>
   );

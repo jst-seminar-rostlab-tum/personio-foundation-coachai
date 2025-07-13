@@ -26,6 +26,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { ModalWrapper } from './ModelWrapper';
 
 export default function UpdatePasswordForm() {
   const t = useTranslations('Login.UpdatePassword');
@@ -89,65 +90,67 @@ export default function UpdatePasswordForm() {
   };
 
   return (
-    <Card className="border-0 bg-white animate-in fade-in zoom-in duration-200">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(updatePassword)}>
-          <CardHeader>
-            <CardTitle>{t('title')}</CardTitle>
-            <CardDescription>{t('description')}</CardDescription>
-          </CardHeader>
+    <ModalWrapper>
+      <Card className="border-0 bg-white animate-in fade-in zoom-in duration-200">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(updatePassword)}>
+            <CardHeader>
+              <CardTitle>{t('title')}</CardTitle>
+              <CardDescription>{t('description')}</CardDescription>
+            </CardHeader>
 
-          <CardContent className="space-y-4 p-4">
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('passwordInputLabel')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('passwordInputPlaceholder')}
-                      {...field}
-                      className="w-full"
-                      type="password"
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <CardContent className="space-y-4 p-4">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('passwordInputLabel')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('passwordInputPlaceholder')}
+                        {...field}
+                        className="w-full"
+                        type="password"
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('confirmPasswordInputLabel')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('confirmPasswordInputPlaceholder')}
-                      {...field}
-                      className="w-full"
-                      type="password"
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('confirmPasswordInputLabel')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('confirmPasswordInputPlaceholder')}
+                        {...field}
+                        className="w-full"
+                        type="password"
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormMessage />
-          </CardContent>
+              <FormMessage />
+            </CardContent>
 
-          <CardFooter className="flex-col gap-2 p-4">
-            <Button type="submit" size="full" disabled={isLoading}>
-              {t('updatePasswordButtonLabel')}
-            </Button>
-          </CardFooter>
-        </form>
-      </Form>
-    </Card>
+            <CardFooter className="flex-col gap-2 p-4">
+              <Button type="submit" size="full" disabled={isLoading}>
+                {t('updatePasswordButtonLabel')}
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+      </Card>
+    </ModalWrapper>
   );
 }
