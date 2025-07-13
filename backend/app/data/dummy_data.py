@@ -177,6 +177,7 @@ def get_dummy_conversation_scenarios(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=categories[0].id,  # Giving Feedback
+            persona_name='Angry Alex',
             persona="""
                 **Name**: Angry Alex
                 **Personality**: Confrontational, defensive, emotionally volatile
@@ -221,6 +222,7 @@ def get_dummy_conversation_scenarios(
             user_id=user_profiles[1].id,
             category_id=categories[1].id,  # Performance Review
             custom_category_label='Custom Category 2',
+            persona_name='Positive Pam',
             persona="""
                 **Name**: Positive Pam
                 **Personality**: Upbeat, eager to please, growth-oriented, avoids negativity
@@ -273,6 +275,7 @@ def get_dummy_conversation_scenarios(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=categories[2].id,  # Conflict Resolution
+            persona_name='Casual Candice',
             persona="""
                 **Name**: Casual Candice
                 **Personality**: Laid-back, informal, friendly but sometimes unfocused
@@ -320,6 +323,7 @@ def get_dummy_conversation_scenarios(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=categories[3].id,  # Salary Discussion
+            persona_name='Shy Sandra',
             persona="""
                 **Name**: Shy Sandra
                 **Personality**: Quiet, reserved, conflict-avoidant, anxious about saying the wrong
