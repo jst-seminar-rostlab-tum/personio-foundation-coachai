@@ -1,8 +1,8 @@
 """add persona_name to conversation scenario
 
-Revision ID: 35e6776e0add
-Revises: d7de33b1ffc0
-Create Date: 2025-07-12 13:01:20.615719
+Revision ID: 47073b70baec
+Revises: fc2c3d9c6394
+Create Date: 2025-07-13 15:56:18.761845
 
 """
 
@@ -15,8 +15,8 @@ import sqlmodel
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '35e6776e0add'
-down_revision: Union[str, None] = 'd7de33b1ffc0'
+revision: str = '47073b70baec'
+down_revision: Union[str, None] = 'fc2c3d9c6394'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -30,6 +30,7 @@ def upgrade() -> None:
     )
     op.execute("UPDATE conversationscenario SET persona_name = ''")
     op.alter_column('conversationscenario', 'persona_name', nullable=False)
+
     # ### end Alembic commands ###
 
 
