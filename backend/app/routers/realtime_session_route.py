@@ -26,7 +26,7 @@ else:
 async def get_realtime_session(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
-    session_id: UUID,
+    id: UUID,
 ) -> dict:
     """
     Proxies a POST request to OpenAI's realtime sessions endpoint
@@ -38,7 +38,7 @@ async def get_realtime_session(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='OPENAI_API_KEY not set'
         )
 
-    session = db_session.exec(select(Session).where(Session.id == session_id)).first()
+    session = db_session.exec(select(Session).where(Session.id == id)).first()
     if not session:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Session not found')
     if session.status is SessionStatus.completed:
