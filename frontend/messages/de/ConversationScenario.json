@@ -38,18 +38,24 @@
         },
         "angry": {
           "name": "Lauter Lukas",
-          "personality": ["Konfrontativ", "Defensiv", "Emotionell instabil"],
+          "personality": [
+            "Unberechenbar",
+            "Brutal konfrontativ",
+            "So aggressiv, dass es die Team-Moral gefährdet"
+          ],
           "traits": [
-            "Unterstellt anderen häufig schlechte Absichten",
-            "Fühlt sich schnell angegriffen, besonders bei Kritik",
-            "Stellt Autoritäten oder Entscheidungen offen infrage",
-            "Neigt dazu, laut zu werden oder impulsiv zu reagieren"
+            "Geht sofort von Verrat, Dummheit oder Sabotage aus",
+            "Nimmt alles persönlich – jedes Problem wird als direkte Beleidigung empfunden",
+            "Fällt anderen ins Wort, flucht ununterbrochen, schlägt auf Tische, verlässt wütend Meetings",
+            "Fordert Kontrolle und Gehorsam oder droht mit sofortigen und drastischen Konsequenzen",
+            "Beschämt Führungskräfte öffentlich, demütigt Teammitglieder und eskaliert ohne Zögern",
+            "Droht damit, alles hinzuschmeißen, zu kündigen und das ganze Projekt zu zerstören"
           ],
           "trainingFocus": [
-            "Deeskalationstechniken effektiv einsetzen",
-            "Negative Rückmeldungen ruhig und klar kommunizieren",
-            "In hitzigen Situationen souverän bleiben",
-            "Emotionen anerkennen, ohne die eigene Autorität zu verlieren"
+            "Deeskalationstechniken",
+            "Negatives Feedback ruhig vermitteln",
+            "Kontrolle in hitzigen Situationen bewahren",
+            "Emotionen validieren, ohne Autorität zu verlieren"
           ],
           "imageUri": "/images/personas/persona-angry.png"
         },
