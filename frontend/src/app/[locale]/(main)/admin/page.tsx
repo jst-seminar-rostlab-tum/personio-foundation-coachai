@@ -8,6 +8,7 @@ import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
 import { getTranslations } from 'next-intl/server';
 import { api } from '@/services/ApiServer';
+import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import AdminLoadingPage from './loading';
 import TokenSetter from './components/TokenSetter';
 import Reviews from './components/Reviews';
@@ -26,11 +27,14 @@ export default async function AdminPage() {
   const [stats, reviews, users] = await Promise.all([statsData, reviewsData, usersData]);
   const t = await getTranslations('Admin');
   const tCommon = await getTranslations('Common');
+
+  const averageScore = calculateAverageScore(stats.scoreSum, stats.totalTrainings);
+
   const statsArray = [
     { value: stats.totalUsers, label: t('statActiveUsers') },
     { value: stats.totalTrainings, label: tCommon('totalSessions') },
     { value: stats.totalReviews, label: tCommon('reviews') },
-    { value: `${stats.averageScore ?? 0}%`, label: tCommon('avgScore') },
+    { value: `${averageScore}/5`, label: tCommon('avgScore') },
   ];
 
   return (
