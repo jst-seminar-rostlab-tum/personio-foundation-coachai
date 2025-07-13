@@ -9,6 +9,7 @@
   },
   "sessionLength": "Session Length",
   "listenConversation": "Replay Conversation",
+  "audioUnavailable": "Audio is currently not available for this session.",
   "accordion": {
     "feedback": "Detailed Feedback",
     "suggestion": "Suggested Resources"

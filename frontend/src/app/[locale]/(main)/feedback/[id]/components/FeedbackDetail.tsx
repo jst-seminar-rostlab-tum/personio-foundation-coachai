@@ -128,6 +128,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
         setCurrentTime={setCurrentTime}
         isPlaying={isPlaying}
         setIsPlaying={setIsPlaying}
+        fullAudioUrl={feedbackDetail?.feedback?.fullAudioUrl || null}
         formatTime={formatTime}
         t={t}
       />

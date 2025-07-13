@@ -9,6 +9,7 @@
   },
   "sessionLength": "Sitzungsdauer",
   "listenConversation": "Konversation abspielen",
+  "audioUnavailable": "Audio ist für diese Sitzung derzeit nicht verfügbar.",
   "accordion": {
     "feedback": "Detailliertes Feedback",
     "suggestion": "Empfohlene Ressourcen"
