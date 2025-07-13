@@ -33,12 +33,18 @@
         },
         "angry": {
           "name": "Angry Alex",
-          "personality": ["Confrontational", "Defensive", "Emotionally volatile"],
+          "personality": [
+            "Volatile",
+            "Brutally confrontational",
+            "Aggressive to the point of being dangerous to team morale"
+          ],
           "traits": [
-            "Assumes bad intent",
-            "Easily offended, especially with criticism",
-            "Challenges authority or decisions",
-            "Might raise voice"
+            "Immediately assumes betrayal, stupidity, or sabotage",
+            "Everything is personal — every issue feels like a direct insult",
+            "Talks over people, swears nonstop, slams tables, storms out of meetings",
+            "Demands control and obedience, or threatens immediate and dramatic consequences",
+            "Will publicly shame leadership, humiliate teammates, and escalate without hesitation",
+            "Threatens to walk out, quit, and blow the whole thing up"
           ],
           "trainingFocus": [
             "De-escalation techniques",
