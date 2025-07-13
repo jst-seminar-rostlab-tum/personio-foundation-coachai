@@ -64,7 +64,7 @@ export default function OnboardingPageComponent() {
   const updateUserProfile = async () => {
     try {
       await UserProfileService.updateUserProfile(api, {
-        fullName: userProfile.fullName,
+        fullName: userProfile?.fullName as string,
         professionalRole: role,
         goals,
         confidenceScores: [

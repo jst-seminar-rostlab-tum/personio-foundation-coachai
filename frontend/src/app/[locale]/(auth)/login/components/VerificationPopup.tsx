@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
-import { CreateUserRequest } from '@/interfaces/models/Auth';
+import { UserCreate } from '@/interfaces/models/Auth';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/AuthService';
 import { showErrorToast } from '@/lib/utils/toast';
@@ -69,7 +69,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     try {
       setIsLoading(true);
       await authService.sendVerificationCode(api, {
-        phone_number: signUpFormData.phone_number,
+        phoneNumber: signUpFormData.phone_number,
       });
       setVerificationSent(true);
       setResendCooldown(30);
@@ -99,13 +99,13 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     try {
       // First verify the code
       await authService.verifyCode(api, {
-        phone_number: signUpFormData.phone_number,
+        phoneNumber: signUpFormData.phone_number,
         code: form.getValues('code'),
       });
 
       // If verification successful, create the user
-      const data: CreateUserRequest = {
-        full_name: signUpFormData.fullName,
+      const data: UserCreate = {
+        fullName: signUpFormData.fullName,
         email: signUpFormData.email,
         phone: signUpFormData.phone_number,
         password: signUpFormData.password,
@@ -126,7 +126,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     try {
       setIsLoading(true);
       await authService.sendVerificationCode(api, {
-        phone_number: signUpFormData.phone_number,
+        phoneNumber: signUpFormData.phone_number,
       });
       setResendCooldown(30);
     } catch (err) {
