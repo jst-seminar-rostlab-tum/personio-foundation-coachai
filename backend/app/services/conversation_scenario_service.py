@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
 from sqlmodel import Session as DBSession
-from sqlmodel import col, func, select
+from sqlmodel import func, select
 
 from app.database import get_db_session
 from app.enums.account_role import AccountRole
@@ -192,7 +192,7 @@ class ConversationScenarioService:
                 ConversationCategory.name,
                 ConversationScenario.custom_category_label,
             )
-            .order_by(col(ConversationScenario.created_at).desc())
+            .order_by(func.max(Session.started_at).desc())  # Order by latest session start date
         )
 
         if user_profile.account_role != AccountRole.admin:
