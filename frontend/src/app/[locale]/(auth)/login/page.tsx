@@ -1,46 +1,33 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
-import { SignInForm } from '@/app/[locale]/(auth)/login/components/SignInForm';
-import { SignUpForm } from '@/app/[locale]/(auth)/login/components/SignUpForm';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import { getTranslations } from 'next-intl/server';
+import LoginPageComponent from './components/LoginPage';
+import ConfirmationForm from './components/ConfirmationForm';
+import UpdatePasswordForm from './components/UpdatePasswordForm';
+import ResetPasswordForm from './components/ResetPasswordForm';
 
-export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
-  return generateDynamicMetadata(locale, '/login', true);
+  const { step } = searchParams ? await searchParams : {};
+  const currentStep = step ?? 'login';
+
+  return generateDynamicMetadata(locale, `/${currentStep}`, true);
 }
 
-export default async function LoginPage() {
-  const t = await getTranslations('Login');
+interface LoginPageProps {
+  searchParams: Promise<{ step?: string }>;
+}
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const { step } = searchParams ? await searchParams : {};
+  const currentStep = step ?? 'login';
 
   return (
     <div className="min-h-screen flex items-center justify-center py-4">
       <div className="w-full max-w-md">
-        <Card>
-          <CardHeader className="mt-5">
-            <CardTitle>{t('welcome')}</CardTitle>
-            <CardDescription>{t('description')}</CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <Tabs defaultValue="sign-in" className="mt-5">
-              <TabsList>
-                <TabsTrigger value="sign-in">{t('signIn')}</TabsTrigger>
-                <TabsTrigger value="sign-up">{t('signUp')}</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="sign-in">
-                <SignInForm />
-              </TabsContent>
-
-              <TabsContent value="sign-up" className="mt-0">
-                <SignUpForm />
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+        {currentStep === 'login' && <LoginPageComponent />}
+        {currentStep === 'confirm' && <ConfirmationForm />}
+        {currentStep === 'reset' && <ResetPasswordForm />}
+        {currentStep === 'update-password' && <UpdatePasswordForm />}
       </div>
     </div>
   );
