@@ -7,11 +7,10 @@ from sqlmodel import select
 
 from app.config import settings
 from app.database import get_db_session
-from app.dependencies import require_session, require_user
+from app.dependencies import require_session
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session
-from app.models.user_profile import UserProfile
 
 router = APIRouter(prefix='/realtime-sessions', tags=['realtime-session'])
 
@@ -24,7 +23,6 @@ else:
 @router.get('/{session_id}')
 async def get_realtime_session(
     db_session: Annotated[DBSession, Depends(get_db_session)],
-    user_profile: Annotated[UserProfile, Depends(require_user)],
     session: Annotated[Session, Depends(require_session)],
 ) -> dict:
     """
