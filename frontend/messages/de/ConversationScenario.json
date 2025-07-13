@@ -2,76 +2,160 @@
   "metaTitle": "Neues Training - Coach AI",
   "metaDescription": "Starten Sie eine neue Trainingssitzung mit persönlichem Coaching",
   "title": "Neue Trainingssitzung",
-  "steps": {
-    "category": "Kategorie",
-    "situation": "Situation",
-    "customize": "Anpassen"
-  },
-  "category": {
-    "title": "Wählen Sie eine Gesprächskategorie *",
-    "customPlaceholder": "z.B. Beförderungsgespräch, Einarbeitung neuer Kollegen ...",
-    "customInput": "Definieren Sie Ihr eigenes Gesprächsthema *"
-  },
-  "situation": {
-    "title": "Beschreiben Sie Ihre Situation",
-    "otherParty": {
-      "title": "Wer ist der Gesprächspartner? *",
-      "placeholder": "Namen eingeben"
+  "customize": {
+    "title": "Andere Partei anpassen",
+    "persona": {
+      "title": "Wählen Sie eine Persona",
+      "about": {
+        "personality": "Persönlichkeit",
+        "behavioralTraits": "Verhaltensmerkmale",
+        "trainingFocus": "Trainingsfokus"
+      },
+      "personas": {
+        "positive": {
+          "name": "Positive Paula",
+          "personality": [
+            "Optimistisch",
+            "Bemüht es allen recht zu machen",
+            "Wachstumsorientiert",
+            "Vermeidet Negativität"
+          ],
+          "traits": [
+            "Übermäßig zustimmend – vermeidet Konflikte oder Meinungsverschiedenheiten",
+            "Weicht Kritik mit Enthusiasmus aus („Kein Problem, ich mach das sofort!“)",
+            "Versteckt Stress oder Überlastung hinter guter Laune",
+            "Drängt auf Beförderungen oder mehr Verantwortung, bevor sie wirklich bereit ist",
+            "Nutzt übertriebene Positivität, um ernste Themen abzutun"
+          ],
+          "trainingFocus": [
+            "Konstruktives Feedback geben, ohne es zu beschönigen",
+            "Ehrliche Selbstreflexion und Verantwortungsübernahme fördern",
+            "Anzeichen von verstecktem Stress oder Burnout erkennen",
+            "Realistische Wachstumsperspektiven aufzeigen",
+            "Schwierige Gespräche mit leistungsstarken, ehrgeizigen Mitarbeitenden führen"
+          ],
+          "imageUri": "/images/personas/persona-positive.png"
+        },
+        "angry": {
+          "name": "Lauter Lukas",
+          "personality": ["Konfrontativ", "Defensiv", "Emotionell instabil"],
+          "traits": [
+            "Unterstellt anderen häufig schlechte Absichten",
+            "Fühlt sich schnell angegriffen, besonders bei Kritik",
+            "Stellt Autoritäten oder Entscheidungen offen infrage",
+            "Neigt dazu, laut zu werden oder impulsiv zu reagieren"
+          ],
+          "trainingFocus": [
+            "Deeskalationstechniken effektiv einsetzen",
+            "Negative Rückmeldungen ruhig und klar kommunizieren",
+            "In hitzigen Situationen souverän bleiben",
+            "Emotionen anerkennen, ohne die eigene Autorität zu verlieren"
+          ],
+          "imageUri": "/images/personas/persona-angry.png"
+        },
+        "shy": {
+          "name": "Schüchterne Sandra",
+          "personality": [
+            "Ruhig",
+            "Zurückhaltend",
+            "Konfliktscheu",
+            "Ängstlich davor",
+            "Etwas Falsches zu sagen"
+          ],
+          "traits": [
+            "Spricht leise, zögerlich und macht häufig Pausen",
+            "Verwendet viele Füllwörter („ähm...“, „ich glaube...“, „vielleicht...“) und bricht Sätze oft ab",
+            "Stimmt verbal zu („ja... okay... passt schon“), auch wenn sie sich unwohl oder unsicher fühlt",
+            "Vermeidet es, Meinungen zu äußern oder Fragen zu stellen",
+            "Längere Gesprächspausen bei direkten oder emotionalen Fragen",
+            "Entschuldigt sich oft oder spielt ihre eigenen Beiträge herunter"
+          ],
+          "trainingFocus": [
+            "Offene und ehrliche Kommunikation durch Tonfall und Gesprächsführung fördern",
+            "Aktives Nachfragen, ob echtes Verständnis und Wohlbefinden vorhanden sind (nicht nur Zustimmung)",
+            "Pausen gezielt einsetzen, ohne sie unangenehm zu überbrücken",
+            "Psychologische Sicherheit schaffen, damit Sandra sich traut zu sprechen",
+            "Einfühlsames und geduldiges Zuhören trainieren",
+            "Strategien lernen, um stille oder zurückhaltende Mitarbeitende behutsam einzubinden"
+          ],
+          "imageUri": "/images/personas/persona-shy.png"
+        },
+        "casual": {
+          "name": "Coole Carla",
+          "personality": ["Entspannt", "Locker", "Freundlich – aber manchmal unkonzentriert"],
+          "traits": [
+            "Verwendet Humor oder informelle Sprache",
+            "Nimmt Feedback möglicherweise nicht ernst",
+            "Weicht Druck durch Witze oder Ablenkung aus",
+            "Schätzt Flexibilität mehr als klare Strukturen"
+          ],
+          "trainingFocus": [
+            "Gespräche professionell lenken",
+            "Grenzen und Erwartungen klar definieren",
+            "Leistungsschwächen ansprechen, ohne übermäßig formell zu sein",
+            "Den Fokus in lockeren Gesprächssituationen behalten"
+          ],
+          "imageUri": "/images/personas/persona-casual.png"
+        },
+        "sad": {
+          "name": "Müder Marius",
+          "personality": ["Zurückgezogen", "Energielos", "Emotionell distanziert"],
+          "traits": [
+            "Spricht mit flacher Stimme und wenig Ausdruck",
+            "Äußert Unzufriedenheit oder Hoffnungslosigkeit",
+            "Erwähnt möglicherweise Erschöpfung, Überlastung oder das Gefühl, nicht wertgeschätzt zu werden",
+            "Wirkt unbeteiligt, demotiviert oder innerlich gekündigt"
+          ],
+          "trainingFocus": [
+            "Anzeichen für mentale oder emotionale Belastungen erkennen",
+            "Unterstützung anbieten, ohne Grenzen zu überschreiten",
+            "Raum für Emotionen schaffen und dabei professionell bleiben",
+            "Gespräche über Leistung oder Wohlbefinden einfühlsam führen"
+          ],
+          "imageUri": "/images/personas/persona-sad.png"
+        }
+      },
+      "aboutLabel": "Über"
     },
     "context": {
-      "title": "Was ist der Kontext? *",
-      "placeholder": "Beschreiben Sie hier den Gesprächskontext."
-    },
-    "goal": {
-      "title": "Was ist Ihr Ziel? *",
-      "placeholder": "Welches Ergebnis möchten Sie erzielen?"
-    }
-  },
-  "customize": {
-    "title": "Passen Sie Ihr Training an",
-    "difficulty": {
-      "title": "Schwierigkeitsgrad *"
-    },
-    "emotionalTone": {
-      "title": "Emotionaler Ton *"
-    },
-    "complexity": {
-      "title": "Antwortkomplexität *"
+      "default": "Standardkontext",
+      "custom": "Individueller Kontext",
+      "defaultSubtitle": "Aus vordefinierten Szenarien und Personas auswählen",
+      "customSubtitle": "Passen Sie die Szenario und Persona nach Ihren Wünschen an."
     }
   },
   "categories": {
     "givingFeedback": {
       "name": "Feedback geben",
-      "defaultContext": "Einzelgespräch mit einem Teammitglied.",
-      "defaultGoal": "Konstruktives Feedback effektiv geben.",
-      "defaultOtherParty": "Teammitglied"
+      "defaultContext": "Verpasste Deadlines\n- Quartalsbericht über Partnerauswirkungen kam trotz Erinnerungen 5 Tage zu spät.\n- Zusammenfassung des Vor-Ort-Besuchs unvollständig; Kollege musste sie unter Druck neu schreiben.\nAnwesenheit\n- In den letzten 2 Monaten hat die andere Partei 4 von 8 Team-Check-ins ohne Ankündigung versäumt.\n- Bei Anwesenheit oft Kamera aus und minimales Engagement.\nPeer-Feedback\n- Zwei Kollegen benötigten mehrere Erinnerungen für Inputs.\n- Einer vermeidet jetzt, der anderen Partei gemeinsame Aufgaben zuzuweisen aufgrund von Zuverlässigkeitsbedenken.\nVorherige Unterstützung\n- Vor sechs Wochen setzte der Manager klare Erwartungen und einen Priorisierungsplan.\n- Kalender-Tipps und Admin-Hilfe wurden angeboten; wenig Verbesserung sichtbar.\n\nSilberstreif am Horizont\nDie andere Partei zeigt echte Kreativität in der Outreach-Planung und hat noch Wachstumspotenzial."
     },
     "performanceReviews": {
-      "name": "Leistungsbeurteilungen",
-      "defaultContext": "Formelles Gespräch zur Leistungsbeurteilung.",
-      "defaultGoal": "Leistung von Mitarbeitern evaluieren und besprechen.",
-      "defaultOtherParty": "Mitarbeiter/in"
+      "name": "Leistungsbewertungen",
+      "defaultContext": "Positive Leistung\n- Die andere Partei hat zwei erfolgreiche Community-Outreach-Pilotprojekte entwickelt.\n- Partner loben oft die Kreativität und Energie der anderen Partei.\n\nVerbesserungsbereiche\n- Die andere Partei verpasst manchmal interne Deadlines für Berichte und Dateneingaben.\n- Teammitglieder berichten, dass die andere Partei kurzfristig schwer erreichbar ist.\n\nBewertungsergebnis\n- Gesamtbewertung ist 'Erfüllt Erwartungen' — starke externe Wirkung, aber Inkonsistenz bei interner Nacharbeit verhinderte 'Übertrifft Erwartungen'.\n- Eine standardmäßige 3% Leistungszulage wird angewendet, gleich wie bei den meisten Kollegen.\n\nOrganisationskontext\n- Die NGO betont Zuverlässigkeit, um erneute Geldgeber-Finanzierung zu sichern.\n- Dieser Bewertungszyklus ist aufgrund neuer Geldgeber-Verantwortlichkeitsanforderungen etwas strenger.\n\nSilberstreif am Horizont\nDer Manager glaubt, dass die andere Partei nächstes Jahr 'Übertrifft Erwartungen' erreichen kann mit konsistenterer interner Koordination."
     },
     "conflictResolution": {
       "name": "Konfliktlösung",
-      "defaultContext": "Konfliktlösungsgespräch zwischen Teammitgliedern.",
-      "defaultGoal": "Konflikte lösen und Teamdynamik verbessern.",
-      "defaultOtherParty": "Teammitglieder"
+      "defaultContext": "Konflikthintergrund\n- Die andere Partei und Jordan haben bei einem Partner-Event zusammengearbeitet, das aufgrund von Missverständnissen aus dem Ruder lief.\n- Die andere Partei fühlt, dass Jordan Grenzen überschreitet und sich Ideen aneignet.\n- Jordan hat sich privat beschwert, dass die andere Partei Deadlines verpasst und Nachrichten ignoriert.\n\nVorherige Versuche\n- Zwei Team-Meetings wurden abgehalten, um Rollen zu klären; Spannungen bestehen weiterhin.\n- Die andere Partei stimmte zu, Updates häufiger zu teilen; Jordan versprach, vor dem Überarbeiten der Arbeit der anderen Partei nachzufragen.\n\nAktuelle Auswirkungen\n- Andere Teammitglieder fühlen sich unwohl und vermeiden es, die andere Partei und Jordan auf dieselben Aufgaben zu setzen.\n- Der Manager steht unter Druck, Team-Zusammenhalt vor einem wichtigen Geldgeber-Besuch sicherzustellen.\n\nSilberstreif am Horizont\nBeide, die andere Partei und Jordan, kümmern sich tief um Partner-Erfolg und haben komplementäre Fähigkeiten, wenn sie gut zusammenarbeiten."
     },
     "salaryDiscussions": {
       "name": "Gehaltsgespräche",
-      "defaultContext": "Gehaltsverhandlungsgespräch.",
-      "defaultGoal": "Eine für beide Seiten vorteilhafte Gehaltsvereinbarung treffen.",
-      "defaultOtherParty": "Arbeitgeber"
+      "defaultContext": "Aktuelles Gehalt\n- Die andere Partei verdient leicht unter dem Mittelwert für Programmbeauftragte in dieser NGO.\n- Letzte jährliche Gehaltserhöhung war 4%.\n\nLeistungskontext\n- Solide bei kreativem Outreach und Community-Partnerschaften.\n- Gemischte Bilanz bei Deadlines und interner Koordination.\n\nJüngste Anfrage\n- Letzte Woche hat die andere Partei HR eine E-Mail geschickt und um 10% Gehaltserhöhung gebeten, mit Verweis auf Lebenshaltungskosten und Arbeitsbelastungswachstum.\n\nOrganisationskontext\n- Die NGO steht vor knappen Budgets aufgrund der Ausgabenobergrenze eines neuen Geldgebers.\n- Manager können bis zu 3% Leistungszulage ohne Direktor-Unterschrift genehmigen.\n\nSilberstreif am Horizont\nKollegen respektieren das Community-Engagement der anderen Partei; Manager hat Initiative bei Outreach-Kampagnen gelobt."
     }
   },
   "errorMessage": "Fehler beim Erstellen des Szenarios. Bitte versuchen Sie es später noch einmal.",
   "easy": "Einfach",
   "medium": "Mittel",
   "hard": "Schwer",
-  "simple": "Einfach",
-  "complex": "Komplex",
-  "neutral": "Neutral",
   "creating": "Wird erstellt...",
-  "create": "Erstellen"
+  "create": "Erstellen",
+  "personaSelection": "Persona-Auswahl",
+  "difficultyTitle": "Schwierigkeitsgrad",
+  "contextDefault": "Standardkontext",
+  "contextCustom": "Individueller Kontext",
+  "selectContext": "Kontext",
+  "defaultContextLabel": "Standardkontext",
+  "customContextLabel": "Individueller Kontext",
+  "chooseOtherParty": "3. Gesprächspartner",
+  "customizationTitle": "1. Anpassung",
+  "situationTitle": "2. Situation"
 }

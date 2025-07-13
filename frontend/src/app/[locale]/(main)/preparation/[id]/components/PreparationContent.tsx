@@ -71,7 +71,7 @@ export default function PreparationContent() {
       {preparationData && (
         <section className="flex flex-col gap-4 bg-marigold-5 border border-marigold-30 rounded-lg p-8 text-marigold-95">
           <h2 className="text-xl">{preparationData.categoryName}</h2>
-          <div className="text-base italic leading-loose">{preparationData.context}</div>
+          <div className="text-base italic leading-loose">{preparationData.situationalFacts}</div>
         </section>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

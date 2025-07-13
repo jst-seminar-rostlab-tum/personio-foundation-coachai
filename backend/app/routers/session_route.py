@@ -8,10 +8,10 @@ from app.database import get_db_session
 from app.dependencies import require_user
 from app.models.user_profile import UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
-from app.schemas.sessions_paginated import PaginatedSessionsResponse
+from app.schemas.sessions_paginated import PaginatedSessionRead
 from app.services.session_service import SessionService
 
-router = APIRouter(prefix='/session', tags=['Sessions'])
+router = APIRouter(prefix='/sessions', tags=['Sessions'])
 
 
 def get_session_service(
@@ -23,26 +23,26 @@ def get_session_service(
     return SessionService(db_session)
 
 
-@router.get('/{session_id}', response_model=SessionDetailsRead)
+@router.get('/{id}', response_model=SessionDetailsRead)
 def get_session_by_id(
-    session_id: UUID,
+    id: UUID,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[SessionService, Depends(get_session_service)],
 ) -> SessionDetailsRead:
     """
     Retrieve a session by its ID.
     """
-    return service.fetch_session_details(session_id, user_profile)
+    return service.fetch_session_details(id, user_profile)
 
 
-@router.get('', response_model=PaginatedSessionsResponse)
+@router.get('', response_model=PaginatedSessionRead)
 def get_sessions(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[SessionService, Depends(get_session_service)],
     scenario_id: UUID | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
-) -> PaginatedSessionsResponse:
+) -> PaginatedSessionRead:
     """
     Return paginated list of completed sessions for a user.
     """
@@ -61,9 +61,9 @@ def create_session(
     return service.create_new_session(session_data, user_profile)
 
 
-@router.put('/{session_id}', response_model=SessionRead)
+@router.put('/{id}', response_model=SessionRead)
 def update_session(
-    session_id: UUID,
+    id: UUID,
     updated_data: SessionUpdate,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     background_tasks: BackgroundTasks,
@@ -72,7 +72,7 @@ def update_session(
     """
     Update an existing session.
     """
-    return service.update_existing_session(session_id, updated_data, user_profile, background_tasks)
+    return service.update_existing_session(id, updated_data, user_profile, background_tasks)
 
 
 @router.delete('/clear-all', response_model=dict)
@@ -86,13 +86,13 @@ def delete_sessions_by_user(
     return service.delete_all_user_sessions(user_profile)
 
 
-@router.delete('/{session_id}', response_model=dict)
+@router.delete('/{id}', response_model=dict)
 def delete_session(
-    session_id: UUID,
+    id: UUID,
     service: Annotated[SessionService, Depends(get_session_service)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> dict:
     """
     Delete a session.
     """
-    return service.delete_session_by_id(session_id, user_profile)
+    return service.delete_session_by_id(id, user_profile)

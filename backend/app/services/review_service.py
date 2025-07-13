@@ -1,16 +1,17 @@
 from collections.abc import Sequence
 from uuid import UUID
 
-from fastapi import HTTPException, Query
+from fastapi import HTTPException
 from sqlalchemy import case, func
 from sqlalchemy import select as sqlalchemy_select
 from sqlmodel import Session as DBSession
 from sqlmodel import asc, desc, select
 
+from app.enums.account_role import AccountRole
 from app.models.conversation_scenario import ConversationScenario
 from app.models.review import Review
 from app.models.session import Session
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.user_profile import UserProfile
 from app.schemas.review import (
     PaginatedReviewRead,
     ReviewConfirm,
@@ -26,7 +27,7 @@ class ReviewService:
 
     def _query_reviews_with_users(
         self,
-        sort: str = Query('newest'),
+        sort: str = 'newest',
         limit: int | None = None,
         offset: int | None = None,
     ) -> Sequence[tuple[Review, UserProfile]]:
@@ -98,9 +99,9 @@ class ReviewService:
 
     def _get_paginated_reviews(
         self,
-        page: int | None = Query(None),
-        page_size: int = Query(10),
-        sort: str = Query('newest'),
+        page: int | None = None,
+        page_size: int = 10,
+        sort: str = 'newest',
     ) -> PaginatedReviewRead:
         """Retrieve paginated reviews with optional sorting."""
 
@@ -148,10 +149,10 @@ class ReviewService:
 
     def get_reviews(
         self,
-        limit: int | None = Query(None),
-        page: int | None = Query(None),
-        page_size: int = Query(10),
-        sort: str = Query('newest'),
+        limit: int | None = None,
+        page: int | None = None,
+        page_size: int = 10,
+        sort: str = 'newest',
     ) -> list[ReviewRead] | PaginatedReviewRead:
         """
         Retrieve user reviews with optional pagination, statistics and sorting.

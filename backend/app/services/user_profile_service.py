@@ -9,9 +9,11 @@ from sqlmodel import col, select
 from supabase import AuthError
 
 from app.database import get_supabase_client
+from app.enums.account_role import AccountRole
+from app.enums.goal import Goal
 from app.models.user_confidence_score import UserConfidenceScore
-from app.models.user_goal import Goal, UserGoal
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.user_goal import UserGoal
+from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
     PaginatedUserRead,
@@ -22,6 +24,7 @@ from app.schemas.user_profile import (
     UserProfileUpdate,
     UserStatistics,
 )
+from app.services.conversation_scenario_service import ConversationScenarioService
 
 
 class UserService:
@@ -259,6 +262,16 @@ class UserService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail='User profile not found'
             )
+
+        conversation_service = ConversationScenarioService(self.db)
+        try:
+            conversation_service.clear_all_conversation_scenarios(user)
+        except Exception as e:
+            logging.error(f'Failed to clear conversation scenarios for user {user_id}: {e}')
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail='Failed to clear conversation scenarios',
+            ) from e
 
         try:
             self.db.delete(user)

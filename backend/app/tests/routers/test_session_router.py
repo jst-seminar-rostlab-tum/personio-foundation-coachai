@@ -16,10 +16,11 @@ from app.data.dummy_data import (
     get_dummy_session_feedback,
 )
 from app.dependencies import get_db_session, require_user
+from app.enums.account_role import AccountRole
+from app.enums.session_status import SessionStatus
+from app.enums.speaker import SpeakerType
 from app.main import app
-from app.models import Review, Session, SessionStatus, UserProfile
-from app.models.session_turn import SpeakerEnum
-from app.models.user_profile import AccountRole
+from app.models import Review, Session, UserProfile
 from app.schemas.session_turn import SessionTurnRead
 
 
@@ -103,7 +104,7 @@ class TestSessionRoute(unittest.TestCase):
         fake_turn_svc.get_session_turns.return_value = [
             SessionTurnRead(
                 id=uuid4(),
-                speaker=SpeakerEnum.user,
+                speaker=SpeakerType.user,
                 full_audio_start_offset_ms=0,
                 text='hello',
                 ai_emotion='neutral',
@@ -122,7 +123,7 @@ class TestSessionRoute(unittest.TestCase):
         self.db.close()
 
     def test_get_session_by_id(self) -> None:
-        response = self.client.get(f'/session/{self.test_session.id}')
+        response = self.client.get(f'/sessions/{self.test_session.id}')
 
         # Assert without feedback yet
         self.assertEqual(response.status_code, 202)
@@ -132,7 +133,7 @@ class TestSessionRoute(unittest.TestCase):
         self.db.add_all(dummy_feedback)
         self.db.commit()
 
-        response = self.client.get(f'/session/{self.test_session.id}')
+        response = self.client.get(f'/sessions/{self.test_session.id}')
         self.assertEqual(response.status_code, 200)
         data = response.json()
 
@@ -158,7 +159,7 @@ class TestSessionRoute(unittest.TestCase):
         self.db.add(review)
         self.db.commit()
 
-        response = self.client.get(f'/session/{self.test_session.id}')
+        response = self.client.get(f'/sessions/{self.test_session.id}')
         data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['scenarioId'], str(self.test_session.scenario_id))
