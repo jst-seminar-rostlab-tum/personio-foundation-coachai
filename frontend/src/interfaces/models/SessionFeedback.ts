@@ -16,6 +16,7 @@ export interface SessionFeedback {
   sessionLengthS: number;
   goalsAchieved: string[];
   documentNames: string[];
+  fullAudioUrl: string;
   examplePositive: {
     heading: string;
     feedback: string;
