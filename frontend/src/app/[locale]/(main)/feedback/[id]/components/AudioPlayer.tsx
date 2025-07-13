@@ -70,16 +70,29 @@ export default function AudioPlayer({
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+
+    if (!isDragging && wasPlayingBeforeDrag.current !== null) {
+      if (Math.abs(audio.currentTime - currentTime) > 1) {
+        audio.currentTime = currentTime;
+      }
+
+      if (wasPlayingBeforeDrag.current) {
+        audio.play().catch((err) => {
+          console.warn('Playback resume failed:', err);
+        });
+        setIsPlaying(true);
+      }
+
+      wasPlayingBeforeDrag.current = false;
+    }
+
     if (isDragging) {
       wasPlayingBeforeDrag.current = isPlaying;
       if (isPlaying) {
-        setIsPlaying(false);
+        audio.pause();
       }
     }
-    if (!isDragging && wasPlayingBeforeDrag.current) {
-      setIsPlaying(true);
-    }
-  }, [isDragging, isPlaying, setIsPlaying]);
+  }, [isDragging, isPlaying, currentTime, setIsPlaying]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
