@@ -57,6 +57,26 @@ const deleteUser = async (api: AxiosInstance, deleteUserId?: string) => {
   }
 };
 
+const deleteUnconfirmedUser = async (api: AxiosInstance, email: string) => {
+  try {
+    const { data } = await api.post('/auth/delete-unconfirmed', { email });
+    return data;
+  } catch (error) {
+    console.error('Error deleting unconfirmed user:', error);
+    throw error;
+  }
+};
+
+const checkUnique = async (api: AxiosInstance, email: string, phone: string) => {
+  try {
+    const { data } = await api.post('/auth/check-unique', { email, phone });
+    return data;
+  } catch (error) {
+    console.error('Error checking unique email/phone:', error);
+    throw error;
+  }
+};
+
 const getPaginatedUsers = async (
   api: AxiosInstance,
   page: number,
@@ -84,5 +104,7 @@ export const UserProfileService = {
   updateUserProfile,
   exportUserData,
   deleteUser,
+  deleteUnconfirmedUser,
+  checkUnique,
   getPaginatedUsers,
 };
