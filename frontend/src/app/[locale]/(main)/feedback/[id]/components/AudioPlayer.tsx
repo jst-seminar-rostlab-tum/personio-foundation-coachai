@@ -88,9 +88,6 @@ export default function AudioPlayer({
 
     if (isDragging) {
       wasPlayingBeforeDrag.current = isPlaying;
-      if (isPlaying) {
-        audio.pause();
-      }
     }
   }, [isDragging, isPlaying, currentTime, setIsPlaying]);
 
