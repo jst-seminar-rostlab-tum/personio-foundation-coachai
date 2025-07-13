@@ -65,7 +65,8 @@ export default function UsersList({
 
   return (
     <>
-      <div className="mb-4">
+      <div className=" mt-4 mb-4">
+        <div className="text-lg mb-4 font-semibold text-bw-70">{t('users')}</div>
         <div className="relative">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-bw-40">
             <Search className="w-4 h-4" />

@@ -57,4 +57,5 @@ export type ConversationScenarioPreparation = {
   updatedAt: string;
   categoryName: string;
   situationalFacts: string;
+  persona: string;
 };
