@@ -147,9 +147,7 @@ class RealtimeSessionService:
 
         conversation_category_name = None
         if conversation_category:
-            conversation_category_name = conversation_category.name
-        elif conversation_scenario.custom_category_label:
-            conversation_category_name = conversation_scenario.custom_category_label
+            conversation_category_name = conversation_category.id
         else:
             conversation_category_name = 'Custom Conversation'
 
