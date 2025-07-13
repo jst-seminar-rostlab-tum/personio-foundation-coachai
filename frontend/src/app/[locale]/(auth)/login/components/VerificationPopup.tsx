@@ -114,7 +114,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
       await authService.createUser(api, data);
       setIsLoading(false);
 
-      router.push(`/confirm?email=${encodeURIComponent(signUpFormData.email)}`);
+      router.push(`/login?step=confirm&email=${encodeURIComponent(signUpFormData.email)}`);
     } catch (err) {
       setError(err instanceof z.ZodError ? err.errors[0].message : tCommon('genericError'));
       setIsLoading(false);

@@ -304,7 +304,7 @@ class SessionService:
         ).all()
         transcripts = None
         if session_turns:
-            transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
+            transcripts = '\n'.join([f'{turn.speaker.name}: {turn.text}' for turn in session_turns])
 
         # Fetch conversation category
         category = None
