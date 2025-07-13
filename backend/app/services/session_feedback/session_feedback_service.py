@@ -30,7 +30,10 @@ from app.schemas.session_feedback import (
     SessionExamplesRead,
 )
 from app.schemas.session_turn import SessionTurnRead
-from app.services.data_retention_service import delete_session_turns_by_session_id
+from app.services.data_retention_service import (
+    delete_full_audio_for_feedback_by_session_id,
+    delete_session_turns_by_session_id,
+)
 from app.services.scoring_service import ScoringService, get_scoring_service
 from app.services.session_feedback.session_feedback_llm import (
     safe_generate_recommendations,
@@ -346,3 +349,6 @@ def check_data_retention(
     # User opted out of data retention
     # delete session turns and audio files
     delete_session_turns_by_session_id(db_session, session_id)
+
+    # Also delete full audio files from feedback
+    delete_full_audio_for_feedback_by_session_id(db_session, session_id)
