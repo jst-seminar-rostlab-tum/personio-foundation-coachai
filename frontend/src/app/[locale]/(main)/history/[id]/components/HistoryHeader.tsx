@@ -14,7 +14,7 @@ export default function HistoryHeader() {
       <Link href="/preparation/1" passHref legacyBehavior>
         <Button className="w-full md:w-auto md:!size-default">
           <RotateCcw />
-          {t('practiceAgain')}
+          {t('tryAgain')}
         </Button>
       </Link>
     </section>

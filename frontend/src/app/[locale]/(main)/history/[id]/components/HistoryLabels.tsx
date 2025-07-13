@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 export function StatisticsLabel() {
   const t = useTranslations('History');
-  return <div className="text-xl font-bold text-bw-70">{t('statistics')}</div>;
+  return <div className="text-xl font-bold text-bw-70">{t('scores')}</div>;
 }
 
 export function PreviousSessionsLabel() {

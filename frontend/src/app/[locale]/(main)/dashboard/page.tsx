@@ -41,7 +41,7 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard value={userStats.totalSessions} label={tCommon('totalSessions')} />
         <StatCard
-          value={`${userStats.trainingTime.toFixed(1)}h`}
+          value={`${userStats.trainingTime.toFixed(2)}h`}
           label={t('userStats.trainingTime')}
         />
         <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
