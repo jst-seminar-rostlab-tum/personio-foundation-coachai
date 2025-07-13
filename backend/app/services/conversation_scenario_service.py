@@ -18,6 +18,7 @@ from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenarioConfirm,
     ConversationScenarioCreate,
+    ConversationScenarioReadDetail,
     ConversationScenarioSummary,
     PaginatedConversationScenarioSummary,
 )
@@ -325,7 +326,7 @@ class ConversationScenarioService:
 
     def get_scenario_summary(
         self, scenario_id: UUID, user_profile: UserProfile
-    ) -> ConversationScenarioSummary:
+    ) -> ConversationScenarioReadDetail:
         """
         Retrieve a summary for a specific conversation scenario.
 
@@ -376,7 +377,7 @@ class ConversationScenarioService:
             scenario.category.name if scenario.category else scenario.custom_category_label or ''
         )
 
-        return ConversationScenarioSummary(
+        return ConversationScenarioReadDetail(
             scenario_id=scenario.id,
             language_code=scenario.language_code,
             category_name=category_name,
@@ -384,6 +385,8 @@ class ConversationScenarioService:
             total_sessions=total_sessions,
             average_score=average_score,
             persona_name=scenario.persona_name,
+            persona=scenario.persona,
+            situational_facts=scenario.situational_facts,
             difficulty_level=scenario.difficulty_level,
             last_session_at=max(
                 (session.started_at for session in scenario.sessions if session.started_at),

@@ -10,7 +10,7 @@ from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenarioConfirm,
     ConversationScenarioCreate,
-    ConversationScenarioSummary,
+    ConversationScenarioReadDetail,
     PaginatedConversationScenarioSummary,
 )
 from app.schemas.scenario_preparation import ScenarioPreparationRead
@@ -48,14 +48,14 @@ def list_conversation_scenarios(
 
 @router.get(
     '/{id}',
-    response_model=ConversationScenarioSummary,
+    response_model=ConversationScenarioReadDetail,
     dependencies=[Depends(require_user)],
 )
 def get_conversation_scenario_metadata(
     id: UUID,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
-) -> ConversationScenarioSummary:
+) -> ConversationScenarioReadDetail:
     """
     Retrieve detailed metadata for a single conversation scenario.
     """

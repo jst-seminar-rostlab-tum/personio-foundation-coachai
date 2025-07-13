@@ -45,7 +45,21 @@ class ConversationScenarioSummary(CamelModel):
     persona_name: str
     difficulty_level: DifficultyLevel
     last_session_at: datetime | None
-    average_score: float | None = None  # None if there are no sessions
+    average_score: float | None = None
+
+
+class ConversationScenarioReadDetail(CamelModel):
+    scenario_id: UUID
+    language_code: LanguageCode
+    category_name: str
+    category_id: str | None = None
+    total_sessions: int
+    persona_name: str
+    persona: str
+    situational_facts: str
+    difficulty_level: DifficultyLevel
+    last_session_at: datetime | None
+    average_score: float | None = None
 
 
 class PaginatedConversationScenarioSummary(CamelModel):
