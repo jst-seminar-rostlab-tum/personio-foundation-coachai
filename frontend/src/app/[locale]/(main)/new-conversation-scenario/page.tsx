@@ -1,8 +1,6 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
-import { conversationScenarioService } from '@/services/ConversationScenarioService';
-import { api } from '@/services/ApiServer';
 import ConversationScenarioForm from './components/ConversationScenarioForm';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -11,6 +9,5 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function ConversationScenarioPage() {
-  const categories = await conversationScenarioService.getConversationCategories(api);
-  return <ConversationScenarioForm categoriesData={categories.data} />;
+  return <ConversationScenarioForm />;
 }

@@ -25,10 +25,10 @@ def get_realtime_session_service(
 async def get_realtime_session(
     service: Annotated[RealtimeSessionService, Depends(get_realtime_session_service)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
-    session_id: UUID,
+    id: UUID,
 ) -> dict:
     """
     Proxies a POST request to OpenAI's realtime sessions endpoint
     and returns the JSON response.
     """
-    return await service.get_realtime_session(session_id, user_profile)
+    return await service.get_realtime_session(id, user_profile)
