@@ -236,9 +236,9 @@ class SessionService:
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
         ).first()
         # Check if the feedback has a full audio filename
-        stitched_audio = feedback.full_audio_filename
-        gcs_manager = get_gcs_audio_manager()
+        stitched_audio = feedback.full_audio_filename if feedback else None
         if stitched_audio:
+            gcs_manager = get_gcs_audio_manager()
             try:
                 gcs_manager.delete_document(stitched_audio)
             except Exception as e:

@@ -267,12 +267,6 @@ class ConversationScenarioService:
                     if turn.audio_uri:
                         to_be_deleted_session_turns.append(turn)
 
-        # Let the database handle cascade deletes by just deleting the scenarios
-        for scenario in scenarios:
-            self.db.delete(scenario)
-            total_deleted_scenarios += 1
-        self.db.commit()
-
         # Delete session turns with audio URIs
         session_turn_service = SessionTurnService(self.db)
         deleted_audios = session_turn_service.delete_session_turns(to_be_deleted_session_turns)
@@ -285,6 +279,13 @@ class ConversationScenarioService:
                 deleted_audios.append(deleted_full_audio)
 
         self.db.commit()
+
+        # Let the database handle cascade deletes by just deleting the scenarios
+        for scenario in scenarios:
+            self.db.delete(scenario)
+            total_deleted_scenarios += 1
+        self.db.commit()
+
         return {
             'message': f'Deleted {total_deleted_scenarios} scenario for user ID {user_id}',
             'audios': deleted_audios,
