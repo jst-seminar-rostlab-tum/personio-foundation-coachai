@@ -7,7 +7,7 @@ import SessionPageComponent from './components/SessionPage';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
-  return generateDynamicMetadata(locale, '/simulation/[id]', true);
+  return generateDynamicMetadata(locale, '/session/[id]', true);
 }
 
 export default async function SimulationPage(props: PagesProps) {
