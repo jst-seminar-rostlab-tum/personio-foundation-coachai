@@ -460,7 +460,6 @@ class SessionService:
             scores=feedback.scores,
             tone_analysis=feedback.tone_analysis,
             overall_score=feedback.overall_score,
-            transcript_uri=feedback.transcript_uri,
             speak_time_percent=feedback.speak_time_percent,
             questions_asked=feedback.questions_asked,
             session_length_s=feedback.session_length_s,

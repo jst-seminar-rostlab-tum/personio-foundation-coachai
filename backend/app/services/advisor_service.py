@@ -73,7 +73,6 @@ def get_mock_session_feedback() -> SessionFeedback:
         scores={'structure': 4, 'empathy': 5, 'focus': 4, 'clarity': 4},
         tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
         overall_score=4.3,
-        transcript_uri='https://example.com/transcripts/session1.txt',
         full_audio_filename='full_audio_123.mp3',
         document_names=[
             'Teamwork: An Open Access Practical Guide',
