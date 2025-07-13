@@ -178,6 +178,7 @@ export function SignUpForm() {
                         autoComplete="section-signup tel"
                       />
                     </FormControl>
+                    <p className="text-xs text-bw-50 mt-1">{tLogin('phoneNumberInputHelper')}</p>
                     <FormMessage />
                   </FormItem>
                 )}

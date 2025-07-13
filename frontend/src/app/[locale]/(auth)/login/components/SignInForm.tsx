@@ -21,7 +21,7 @@ import { createClient } from '@/lib/supabase/client';
 import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/utils/toast';
-import ConfirmationForm from '@/app/[locale]/(auth)/confirm/components/ConfirmationForm';
+import ConfirmationForm from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
 
 export function SignInForm() {
   const tLogin = useTranslations('Login');
@@ -151,7 +151,7 @@ export function SignInForm() {
               variant="link"
               className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
               disabled={isLoading}
-              onClick={() => router.push('/reset')}
+              onClick={() => router.push('?step=reset')}
             >
               {tLogin('forgotPassword')}
             </Button>

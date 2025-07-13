@@ -9,10 +9,10 @@
   },
   "sessionLength": "Sitzungsdauer",
   "listenConversation": "Konversation abspielen",
+  "audioUnavailable": "Audio ist für diese Sitzung derzeit nicht verfügbar.",
   "accordion": {
     "feedback": "Detailliertes Feedback",
-    "suggestion": "Empfohlene Ressourcen",
-    "sessions": "Empfohlene Sitzungen"
+    "suggestion": "Empfohlene Ressourcen"
   },
   "detailedFeedback": {
     "recommendations": "Empfehlungen",
@@ -20,8 +20,5 @@
   },
   "submitError": "Fehler beim Abgeben. Bitte versuchen Sie es später erneut.",
   "submitSuccess": "Erfolgreich abgegeben. Vielen Dank!",
-  "fetchError": "Fehler beim Abrufen der Daten. Bitte versuchen Sie es später erneut.",
-  "stats": {
-    "goalsAchieved": "Ziele erreicht"
-  }
+  "fetchError": "Fehler beim Abrufen der Daten. Bitte versuchen Sie es später erneut."
 }

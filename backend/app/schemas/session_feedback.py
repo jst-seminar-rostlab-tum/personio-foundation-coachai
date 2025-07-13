@@ -75,7 +75,6 @@ class SessionFeedbackRead(CamelModel):
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: float
-    transcript_uri: str
     full_audio_url: str | None = Field(
         default=None, description='Signed URL to the stitched audio file of the session'
     )

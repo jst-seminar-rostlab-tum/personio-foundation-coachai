@@ -12,6 +12,7 @@ import EmptyListComponent from '@/components/common/EmptyListComponent';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
+import PreparationCollapsibleSection from './PreparationCollapsibleSection';
 
 export default function PreparationContent() {
   const t = useTranslations('Preparation');
@@ -69,9 +70,12 @@ export default function PreparationContent() {
   return (
     <>
       {preparationData && (
-        <section className="flex flex-col gap-4 bg-marigold-5 border border-marigold-30 rounded-lg p-8 text-marigold-95">
-          <h2 className="text-xl">{preparationData.categoryName}</h2>
-          <div className="text-base italic leading-loose">{preparationData.context}</div>
+        <section className="flex flex-col gap-6 bg-marigold-5 border border-marigold-30 rounded-lg p-6 text-marigold-95">
+          <h2 className="text-xl font-semibold">{preparationData.categoryName}</h2>
+          <PreparationCollapsibleSection
+            situationalFacts={preparationData?.situationalFacts}
+            persona={preparationData?.persona}
+          />
         </section>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
