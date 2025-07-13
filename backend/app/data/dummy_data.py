@@ -177,6 +177,7 @@ def get_dummy_conversation_scenarios(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=categories[0].id,  # Giving Feedback
+            persona_name='Angry Alex',
             persona="""
                 **Name**: Angry Alex
                 **Personality**: Confrontational, defensive, emotionally volatile
@@ -221,6 +222,7 @@ def get_dummy_conversation_scenarios(
             user_id=user_profiles[1].id,
             category_id=categories[1].id,  # Performance Review
             custom_category_label='Custom Category 2',
+            persona_name='Positive Pam',
             persona="""
                 **Name**: Positive Pam
                 **Personality**: Upbeat, eager to please, growth-oriented, avoids negativity
@@ -273,6 +275,7 @@ def get_dummy_conversation_scenarios(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=categories[2].id,  # Conflict Resolution
+            persona_name='Casual Candice',
             persona="""
                 **Name**: Casual Candice
                 **Personality**: Laid-back, informal, friendly but sometimes unfocused
@@ -320,6 +323,7 @@ def get_dummy_conversation_scenarios(
             id=uuid4(),
             user_id=user_profiles[0].id,
             category_id=categories[3].id,  # Salary Discussion
+            persona_name='Shy Sandra',
             persona="""
                 **Name**: Shy Sandra
                 **Personality**: Quiet, reserved, conflict-avoidant, anxious about saying the wrong
@@ -885,7 +889,7 @@ def get_dummy_session_feedback(
             scores={'structure': 4, 'empathy': 5, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=4.3,
-            full_audio_filename='full_audio_123.mp3',
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Teamwork: An Open Access Practical Guide',
                 'Psychology of Human Relations',
@@ -962,7 +966,7 @@ def get_dummy_session_feedback(
             scores={'structure': 3, 'empathy': 4, 'focus': 5, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=4.0,
-            full_audio_filename='full_audio_123.mp3',
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
                 'Teamwork: An Open Access Practical Guide',
@@ -1039,7 +1043,7 @@ def get_dummy_session_feedback(
             scores={'structure': 5, 'empathy': 4, 'focus': 3, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=4.0,
-            full_audio_filename='full_audio_123.mp3',
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
                 'Teamwork: An Open Access Practical Guide',
@@ -1116,7 +1120,7 @@ def get_dummy_session_feedback(
             scores={'structure': 4, 'empathy': 3, 'focus': 5, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=4.0,
-            full_audio_filename='full_audio_123.mp3',
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
             ],
@@ -1193,7 +1197,7 @@ def get_dummy_session_feedback(
             scores={'structure': 5, 'empathy': 5, 'focus': 4, 'clarity': 5},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=4.8,
-            full_audio_filename='full_audio_123.mp3',
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
                 'Teamwork: An Open Access Practical Guide',
@@ -1270,7 +1274,7 @@ def get_dummy_session_feedback(
             scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=3.8,
-            full_audio_filename='full_audio_123.mp3',
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
                 'Psychology of Human Relations',
@@ -1348,7 +1352,7 @@ def get_dummy_session_feedback(
             scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=3.8,
-            full_audio_filename='full_audio_123.mp3',
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
                 'Teamwork: An Open Access Practical Guide',
@@ -1422,7 +1426,7 @@ def get_dummy_session_feedback(
             scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=3.8,
-            full_audio_filename='full_audio_123.mp3',
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Psychology of Human Relations',
             ],

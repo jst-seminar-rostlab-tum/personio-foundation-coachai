@@ -260,7 +260,10 @@ def get_conversation_data(db_session: DBSession, session_id: UUID) -> Conversati
         turns = db_session.exec(
             select(SessionTurn).where(SessionTurn.session_id == session_id)
         ).all()
-        transcript = [SessionTurnRead.model_validate(turn) for turn in turns]
+        transcript = [
+            SessionTurnRead.model_validate({**turn.model_dump(), 'speaker': turn.speaker.name})
+            for turn in turns
+        ]
         return ConversationScenarioRead(scenario=scenario_read, transcript=transcript)
 
 

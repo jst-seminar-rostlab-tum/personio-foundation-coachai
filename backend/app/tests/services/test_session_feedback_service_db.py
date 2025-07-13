@@ -96,6 +96,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             status=ConversationScenarioStatus.ready,
             created_at=datetime.now(),
             updated_at=datetime.now(),
+            persona_name='Test Persona',
             persona='',
             situational_facts='Feedback context',
         )

@@ -27,6 +27,7 @@ class ConversationScenario(CamelModel, table=True):
     )
     custom_category_label: str | None = None
     language_code: LanguageCode = Field(default=LanguageCode.en)
+    persona_name: str
     persona: str
     situational_facts: str
     difficulty_level: DifficultyLevel = Field(default=DifficultyLevel.easy)
