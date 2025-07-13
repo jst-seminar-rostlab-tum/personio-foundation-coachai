@@ -76,49 +76,46 @@ export default function ResetPasswordForm() {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-      <Card className="relative w-[90%] max-w-sm border-0 bg-white animate-in fade-in zoom-in duration-200">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(sendPasswordReset)}>
-            <CardHeader>
-              <CardTitle>{t('title')}</CardTitle>
-              <CardDescription>{t('description')}</CardDescription>
-            </CardHeader>
+    <Card className="border-0 bg-white animate-in fade-in zoom-in duration-200">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(sendPasswordReset)}>
+          <CardHeader>
+            <CardTitle>{t('title')}</CardTitle>
+            <CardDescription>{t('description')}</CardDescription>
+          </CardHeader>
 
-            <CardContent className="space-y-4 p-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={tCommon('emailInputPlaceholder')}
-                        {...field}
-                        className="w-full"
-                        type="email"
-                        disabled={isLoading}
-                        autoComplete="section-login username"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <CardContent className="space-y-4 p-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={tCommon('emailInputPlaceholder')}
+                      {...field}
+                      className="w-full"
+                      type="email"
+                      disabled={isLoading}
+                      autoComplete="section-login username"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormMessage />
-            </CardContent>
+            <FormMessage />
+          </CardContent>
 
-            <CardFooter className="flex-col gap-2 p-4">
-              <Button type="submit" size="full" disabled={isLoading}>
-                {t('sendResetEmailButtonLabel')}
-              </Button>
-            </CardFooter>
-          </form>
-        </Form>
-      </Card>
-    </div>
+          <CardFooter className="flex-col gap-2 p-4">
+            <Button type="submit" size="full" disabled={isLoading}>
+              {t('sendResetEmailButtonLabel')}
+            </Button>
+          </CardFooter>
+        </form>
+      </Form>
+    </Card>
   );
 }
