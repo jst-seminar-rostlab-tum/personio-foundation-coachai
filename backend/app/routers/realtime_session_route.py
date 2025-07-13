@@ -67,7 +67,7 @@ async def get_realtime_session(
         # Check if the user has reached the daily session limit
         if user_profile.sessions_created_today >= session_limit:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail=f'You have reached the daily session limit of {session_limit}. '
                 'Cannot start real-time session.',
             )

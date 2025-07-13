@@ -126,7 +126,7 @@ class SessionService:
             # Check if the user has reached the daily session limit
             if user_profile.sessions_created_today >= session_limit:
                 raise HTTPException(
-                    status_code=403,
+                    status_code=429,
                     detail=f'You have reached the daily session limit of {session_limit}.',
                 )
         conversation_scenario = self.db.get(ConversationScenario, session_data.scenario_id)
