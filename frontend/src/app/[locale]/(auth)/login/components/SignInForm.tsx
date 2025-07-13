@@ -129,7 +129,7 @@ export function SignInForm() {
               variant="link"
               className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
               disabled={isLoading}
-              onClick={() => router.push('/reset')}
+              onClick={() => router.push('?step=reset')}
             >
               {tLogin('forgotPassword')}
             </Button>
