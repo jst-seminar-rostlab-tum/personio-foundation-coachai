@@ -6,8 +6,6 @@
   "statActiveUsers": "Aktive Nutzer",
   "tokensPerUserLabel": "Sitzungen pro Benutzer und Tag",
   "userManagement": "Benutzerverwaltung",
-  "trainingCategories": "Trainingskategorien",
-  "trainingScenarios": "Trainingsszenarien",
   "deleteUser": "Benutzer löschen",
   "tokenSuccess": "Token-Limit wurde erfolgreich gespeichert",
   "tokenFailed": "Fehler beim Speichern des Token-Limits",
