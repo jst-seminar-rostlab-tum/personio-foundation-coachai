@@ -1,5 +1,4 @@
 from typing import Annotated
-from uuid import UUID
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -8,10 +7,10 @@ from sqlmodel import select
 
 from app.config import settings
 from app.database import get_db_session
-from app.dependencies import require_user
+from app.dependencies import require_session, require_user
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
-from app.models.session import Session, SessionStatus
+from app.models.session import Session
 from app.models.user_profile import UserProfile
 
 router = APIRouter(prefix='/realtime-sessions', tags=['realtime-session'])
@@ -26,7 +25,7 @@ else:
 async def get_realtime_session(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
-    session_id: UUID,
+    session: Annotated[Session, Depends(require_session)],
 ) -> dict:
     """
     Proxies a POST request to OpenAI's realtime sessions endpoint
@@ -36,20 +35,6 @@ async def get_realtime_session(
     if not settings.ENABLE_AI or not api_key:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Realtime api not setup'
-        )
-
-    session = db_session.exec(select(Session).where(Session.id == session_id)).first()
-
-    if not session.scenario.user_id == user_profile.id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail='User is not the owner of the scenario'
-        )
-
-    if not session:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Session not found')
-    if session.status is SessionStatus.completed:
-        raise HTTPException(
-            status.HTTP_429_TOO_MANY_REQUESTS, detail='Session is already completed'
         )
 
     conversation_scenario = db_session.exec(
