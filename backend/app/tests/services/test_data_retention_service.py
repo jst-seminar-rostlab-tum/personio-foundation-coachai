@@ -10,7 +10,7 @@ from sqlmodel import SQLModel, create_engine
 from app.enums.speaker import SpeakerType
 from app.models.session import Session
 from app.models.session_turn import SessionTurn
-from app.services.cleanup_service import cleanup_old_session_turns
+from app.services.data_retention_service import cleanup_old_session_turns
 from app.services.google_cloud_storage_service import GCSManager
 
 
@@ -78,7 +78,9 @@ def test_cleanup_old_session_turns(db: DBSession, gcs_manager: GCSManager) -> No
     old_turn_id = old_turn.id
     new_turn_id = new_turn.id
 
-    with patch('app.services.cleanup_service.get_gcs_audio_manager', return_value=gcs_manager):
+    with patch(
+        'app.services.data_retention_service.get_gcs_audio_manager', return_value=gcs_manager
+    ):
         cleanup_old_session_turns(db)
         db.commit()
 
@@ -105,7 +107,9 @@ def test_cleanup_old_session_turns_gcs(db: DBSession, gcs_manager: GCSManager) -
     db.commit()
 
     with (
-        patch('app.services.cleanup_service.get_gcs_audio_manager', return_value=gcs_manager),
+        patch(
+            'app.services.data_retention_service.get_gcs_audio_manager', return_value=gcs_manager
+        ),
         patch.object(gcs_manager, 'delete_document') as mock_delete,
     ):
         cleanup_old_session_turns(db)
