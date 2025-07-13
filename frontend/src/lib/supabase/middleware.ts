@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import routing from '@/i18n/routing';
+import { jwtDecode } from 'jwt-decode';
+import { AccountRole } from '@/interfaces/models/UserProfile';
 import { createClient } from './server';
 
 const acceptedLocales = routing.locales
@@ -18,6 +20,7 @@ const stripLocaleFromPath = (path: string): string => {
 
 const publicRoutes = ['/', '/terms', '/privacy', '/reset', '/update-password'];
 const authRoutes = ['/login', '/confirm'];
+const adminRoutes = ['/admin'];
 
 export async function authMiddleware(
   request: NextRequest,
@@ -26,6 +29,7 @@ export async function authMiddleware(
   const path = stripLocaleFromPath(request.nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
+  const isAdminRoute = adminRoutes.includes(path);
 
   if (isPublicRoute) {
     return response;
@@ -44,6 +48,26 @@ export async function authMiddleware(
 
   if (isAuthRoute) {
     return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+  }
+
+  if (isAdminRoute) {
+    const token = request.cookies.get('sb-access-token')?.value;
+
+    if (!token) {
+      return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+    }
+
+    try {
+      const decoded = jwtDecode<{ account_role?: string }>(token);
+      const role = decoded.account_role;
+
+      if (role !== AccountRole.admin) {
+        return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+      }
+    } catch (err) {
+      console.error('JWT decode error:', err);
+      return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+    }
   }
 
   return response;
