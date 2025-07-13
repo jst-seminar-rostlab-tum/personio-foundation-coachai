@@ -41,14 +41,33 @@
   "signIn": "Sign In",
   "signUp": "Sign Up",
   "ConfirmationForm": {
-    "metaTitle": "Confirm - Coach AI",
-    "metaDescription": "Confirm Your Account - Coach AI",
     "title": "Confirm Your Account",
     "description": "Please enter the confirmation code sent to your email address.",
     "expiredDescription": "Your confirmation code has expired. Please request a new code to continue.",
     "expiredOtpError": "The confirmation code has expired. Please request a new code.",
     "genericError": "An error occurred while confirming your account. Please try again later."
   },
+  "Reset": {
+    "title": "Reset Your Password",
+    "description": "Please enter your email address to receive a password reset link.",
+    "sendResetEmailButtonLabel": "Reset Password",
+    "successMessage": "If an account with that email exists, a password reset link has been sent."
+  },
+  "UpdatePassword": {
+    "title": "Update Your Password",
+    "description": "Please enter your new password.",
+    "passwordInputLabel": "New Password",
+    "passwordInputPlaceholder": "Enter your new password",
+    "confirmPasswordInputLabel": "Confirm New Password",
+    "confirmPasswordInputPlaceholder": "Re-enter your new password",
+    "updatePasswordButtonLabel": "Update Password",
+    "passwordsMustMatchError": "Passwords must match",
+    "codeInputError": "Missing code",
+    "passwordLengthError": "Password must be at least 8 characters long",
+    "passwordUppercaseError": "Password must contain at least one uppercase letter",
+    "passwordSpecialCharError": "Password must contain at least one special character"
+  },
+
   "confirming": "Confirming...",
   "forgotPassword": "Forgot Password?"
 }

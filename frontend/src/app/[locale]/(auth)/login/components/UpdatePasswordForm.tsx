@@ -19,19 +19,22 @@ import {
 } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
 import { createClient } from '@/lib/supabase/client';
-import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { ModalWrapper } from './ModelWrapper';
 
-export default function ResetPasswordForm() {
-  const t = useTranslations('Reset');
+export default function UpdatePasswordForm() {
+  const t = useTranslations('Login.UpdatePassword');
   const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>();
+
+  const router = useRouter();
 
   useEffect(() => {
     if (error) {
@@ -39,34 +42,45 @@ export default function ResetPasswordForm() {
     }
   }, [error]);
 
-  const passwordResetFormSchema = z.object({
-    email: z.string().email(tCommon('emailInputError')),
-  });
+  const updatePasswordFormSchema = z
+    .object({
+      code: z.string().nonempty(t('codeInputError')),
+      password: z
+        .string()
+        .min(8, t('passwordLengthError'))
+        .regex(/[A-Z]/, t('passwordUppercaseError'))
+        .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, t('passwordSpecialCharError'))
+        .trim(),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t('passwordsMustMatchError'),
+      path: ['confirmPassword'],
+    });
 
   const form = useForm({
-    resolver: zodResolver(passwordResetFormSchema),
-    mode: 'onTouched',
+    resolver: zodResolver(updatePasswordFormSchema),
+    mode: 'onChange',
     defaultValues: {
-      email: useSearchParams().get('email') ?? '',
+      code: useSearchParams().get('code') ?? '',
     },
   });
 
-  const sendPasswordReset = async (values: z.infer<typeof passwordResetFormSchema>) => {
+  const updatePassword = async (values: z.infer<typeof updatePasswordFormSchema>) => {
     setError(null);
     setIsLoading(true);
-
     try {
       const supabase = await createClient();
-      const { error: supabaseError } = await supabase.auth.resetPasswordForEmail(values.email, {
-        redirectTo: `${window.location.origin}/update-password`,
+      const { error: supabaseError } = await supabase.auth.updateUser({
+        password: values.password,
       });
+
       if (supabaseError) {
         setError(supabaseError.message || tCommon('unknownError'));
         return;
       }
-      showSuccessToast(t('successMessage'));
 
-      form.reset();
+      router.push('/dashboard');
     } catch (err) {
       console.error('Error sending password reset:', err);
       setError(tCommon('unknownError'));
@@ -76,11 +90,10 @@ export default function ResetPasswordForm() {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-      <Card className="relative w-[90%] max-w-sm border-0 bg-white animate-in fade-in zoom-in duration-200">
+    <ModalWrapper>
+      <Card className="border-0 bg-white animate-in fade-in zoom-in duration-200">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(sendPasswordReset)}>
+          <form onSubmit={form.handleSubmit(updatePassword)}>
             <CardHeader>
               <CardTitle>{t('title')}</CardTitle>
               <CardDescription>{t('description')}</CardDescription>
@@ -89,18 +102,37 @@ export default function ResetPasswordForm() {
             <CardContent className="space-y-4 p-4">
               <FormField
                 control={form.control}
-                name="email"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
+                    <FormLabel>{t('passwordInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={tCommon('emailInputPlaceholder')}
+                        placeholder={t('passwordInputPlaceholder')}
                         {...field}
                         className="w-full"
-                        type="email"
+                        type="password"
                         disabled={isLoading}
-                        autoComplete="section-login username"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('confirmPasswordInputLabel')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t('confirmPasswordInputPlaceholder')}
+                        {...field}
+                        className="w-full"
+                        type="password"
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -113,12 +145,12 @@ export default function ResetPasswordForm() {
 
             <CardFooter className="flex-col gap-2 p-4">
               <Button type="submit" size="full" disabled={isLoading}>
-                {t('sendResetEmailButtonLabel')}
+                {t('updatePasswordButtonLabel')}
               </Button>
             </CardFooter>
           </form>
         </Form>
       </Card>
-    </div>
+    </ModalWrapper>
   );
 }
