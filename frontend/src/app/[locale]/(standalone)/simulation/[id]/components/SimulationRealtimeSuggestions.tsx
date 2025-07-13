@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { ChevronUp } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function SimulationRealtimeSuggestions() {
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const tCommon = useTranslations('Common');
   const suggestions = [
     {
       title: 'Positive Tone',
@@ -56,6 +58,9 @@ export default function SimulationRealtimeSuggestions() {
                 </li>
               ))}
             </ul>
+            <div className="mt-4 text-center">
+              <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
+            </div>
           </div>
         </div>
       </div>
