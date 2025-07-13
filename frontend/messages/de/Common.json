@@ -55,5 +55,7 @@
   "deleting": "Wird gelöscht...",
   "emailInputLabel": "E-Mail-Adresse",
   "emailInputPlaceholder": "Bitte geben Sie Ihre E-Mail-Adresse ein",
-  "emailInputError": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
+  "emailInputError": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+  "aiDisclaimer": "KI-Systeme können unbeabsichtigt schädliche oder anstößige Inhalte produzieren",
+  "aiGeneratedDisclaimer": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich unten bereitgestellten Quellen generiert"
 }

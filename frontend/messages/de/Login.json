@@ -30,6 +30,7 @@
   "phoneNumberInputLabel": "Telefonnummer",
   "phoneNumberInputPlaceholder": "Geben Sie Ihre Telefonnummer ein",
   "phoneNumberInputError": "Bitte geben Sie eine gültige Telefonnummer ein",
+  "phoneNumberInputHelper": "Ländercode erforderlich (z.B. +49 für Deutschland)",
   "passwordInputLabel": "Passwort",
   "passwordInputPlaceholder": "Geben Sie Ihr Passwort ein",
   "passwordInputError": "Bitte geben Sie ein gültiges Passwort ein",

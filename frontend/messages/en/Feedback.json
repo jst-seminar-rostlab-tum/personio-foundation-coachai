@@ -11,8 +11,7 @@
   "listenConversation": "Replay Conversation",
   "accordion": {
     "feedback": "Detailed Feedback",
-    "suggestion": "Suggested Resources",
-    "sessions": "Recommended Sessions"
+    "suggestion": "Suggested Resources"
   },
   "detailedFeedback": {
     "recommendations": "Recommendations",
@@ -20,8 +19,5 @@
   },
   "submitError": "Error while submitting. Please try again later.",
   "submitSuccess": "Submitted successfully. Thank you!",
-  "fetchError": "Error while fetching data. Please try again later.",
-  "stats": {
-    "goalsAchieved": "Goals achieved"
-  }
+  "fetchError": "Error while fetching data. Please try again later."
 }
