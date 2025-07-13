@@ -889,7 +889,6 @@ def get_dummy_session_feedback(
             scores={'structure': 4, 'empathy': 5, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=4.3,
-            transcript_uri='',
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Teamwork: An Open Access Practical Guide',
@@ -967,7 +966,6 @@ def get_dummy_session_feedback(
             scores={'structure': 3, 'empathy': 4, 'focus': 5, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=4.0,
-            transcript_uri='',
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1045,7 +1043,6 @@ def get_dummy_session_feedback(
             scores={'structure': 5, 'empathy': 4, 'focus': 3, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=4.0,
-            transcript_uri='',
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1123,7 +1120,6 @@ def get_dummy_session_feedback(
             scores={'structure': 4, 'empathy': 3, 'focus': 5, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=4.0,
-            transcript_uri='',
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1201,7 +1197,6 @@ def get_dummy_session_feedback(
             scores={'structure': 5, 'empathy': 5, 'focus': 4, 'clarity': 5},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=4.8,
-            transcript_uri='',
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1279,7 +1274,6 @@ def get_dummy_session_feedback(
             scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=3.8,
-            transcript_uri='',
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1358,7 +1352,6 @@ def get_dummy_session_feedback(
             scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=3.8,
-            transcript_uri='',
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1433,7 +1426,6 @@ def get_dummy_session_feedback(
             scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=3.8,
-            transcript_uri='',
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Psychology of Human Relations',
