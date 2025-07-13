@@ -7,7 +7,8 @@
   },
   "userStats": {
     "trainingTime": "Trainingszeit",
-    "currentStreak": "Aktuelle Serie"
+    "currentStreak": "Aktuelle Serie",
+    "remainingSessionsToday": "Verbleibende Sitzungen heute"
   },
   "recentSessions": {
     "title": "Letzte Trainingssitzungen",

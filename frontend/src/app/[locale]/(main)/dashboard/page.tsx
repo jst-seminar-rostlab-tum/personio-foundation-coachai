@@ -33,6 +33,7 @@ export default async function DashboardPage() {
   ]);
   const { sessions } = sessionsData.data;
   const locale = await getLocale();
+  const isAdmin = userProfile.accountRole === 'admin';
   return (
     <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
@@ -56,10 +57,9 @@ export default async function DashboardPage() {
         />
         <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
         <StatCard value={`${userStats.averageScore ?? 0}%`} label={tCommon('avgScore')} />
-        {/* Remaining sessions stat card - always shown */}
         <StatCard
           value={
-            userProfile.accountRole === 'admin'
+            isAdmin
               ? `#/${userStats.dailySessionLimit}`
               : `${userStats.numRemainingDailySessions}/${userStats.dailySessionLimit}`
           }

@@ -10,20 +10,6 @@ const getAdminStats = async (api: AxiosInstance) => {
   }
 };
 
-const updateDailyUserTokenLimit = async (api: AxiosInstance, limit: number) => {
-  try {
-    const { data } = await api.put(`/app-configs`, {
-      key: 'dailyUserTokenLimit',
-      value: limit.toString(),
-      type: 'int',
-    });
-    return data;
-  } catch (error) {
-    console.error('Error updating daily user token limit: ', error);
-    throw error;
-  }
-};
-
 const updateDailyUserSessionLimit = async (api: AxiosInstance, limit: number) => {
   try {
     const { data } = await api.put(`/app-configs`, {
@@ -40,6 +26,5 @@ const updateDailyUserSessionLimit = async (api: AxiosInstance, limit: number) =>
 
 export const adminService = {
   getAdminStats,
-  updateDailyUserTokenLimit,
   updateDailyUserSessionLimit,
 };
