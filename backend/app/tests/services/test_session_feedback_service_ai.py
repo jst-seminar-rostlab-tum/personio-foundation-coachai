@@ -5,12 +5,12 @@ from datetime import datetime
 from unittest.mock import patch
 from uuid import uuid4
 
+from app.enums.language import LanguageCode
+from app.enums.speaker import SpeakerType
 from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
-from app.models.language import LanguageCode
-from app.models.session_turn import SpeakerEnum
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
 from app.schemas.session_turn import SessionTurnRead
 from app.services.scoring_service import scoring_service
@@ -29,13 +29,14 @@ class TestSessionFeedbackAI(unittest.TestCase):
             status=ConversationScenarioStatus.ready,
             created_at=datetime.now(),
             updated_at=datetime.now(),
+            persona_name='Test Persona',
             persona='',
             situational_facts='',
         )
         transcript = [
             SessionTurnRead(
                 id=uuid4(),
-                speaker=SpeakerEnum.user,
+                speaker=SpeakerType.user,
                 full_audio_start_offset_ms=0,
                 text="Hi Sam, let's talk about the project communication.",
                 ai_emotion='neutral',
@@ -43,7 +44,7 @@ class TestSessionFeedbackAI(unittest.TestCase):
             ),
             SessionTurnRead(
                 id=uuid4(),
-                speaker=SpeakerEnum.assistant,
+                speaker=SpeakerType.assistant,
                 full_audio_start_offset_ms=2000,
                 text='Sure, I think there were some misunderstandings about the deadlines.',
                 ai_emotion='neutral',
@@ -51,14 +52,14 @@ class TestSessionFeedbackAI(unittest.TestCase):
             ),
             SessionTurnRead(
                 id=uuid4(),
-                speaker=SpeakerEnum.user,
+                speaker=SpeakerType.user,
                 full_audio_start_offset_ms=4000,
                 text="Yes, let's clarify expectations and improve our communication going forward.",
                 ai_emotion='neutral',
                 created_at=datetime.now(),
             ),
         ]
-        conversation = ConversationScenarioWithTranscript(
+        conversation = ConversationScenarioRead(
             scenario=scenario,
             transcript=transcript,
         )

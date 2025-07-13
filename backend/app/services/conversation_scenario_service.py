@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
@@ -5,15 +6,17 @@ from sqlmodel import Session as DBSession
 from sqlmodel import func, select
 
 from app.database import get_db_session
+from app.enums.account_role import AccountRole
+from app.enums.language import LanguageCode
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import ConversationScenario
+from app.models.conversation_scenario import ConversationScenario, DifficultyLevel
 from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
 from app.models.session import Session
-from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.session_feedback import FeedbackStatus, SessionFeedback
+from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
+    ConversationScenarioConfirm,
     ConversationScenarioCreate,
-    ConversationScenarioCreateResponse,
     ConversationScenarioSummary,
 )
 from app.schemas.scenario_preparation import ScenarioPreparationCreate, ScenarioPreparationRead
@@ -21,6 +24,8 @@ from app.services.scenario_preparation.scenario_preparation_service import (
     create_pending_preparation,
     generate_scenario_preparation,
 )
+from app.services.session_service import SessionService
+from app.services.session_turn_service import SessionTurnService
 
 
 class ConversationScenarioService:
@@ -32,12 +37,34 @@ class ConversationScenarioService:
         conversation_scenario: ConversationScenarioCreate,
         user_profile: UserProfile,
         background_tasks: BackgroundTasks,
-    ) -> ConversationScenarioCreateResponse:
+        custom_scenario: bool = False,
+    ) -> ConversationScenarioConfirm:
         """
         Create a new conversation scenario and start the preparation process in the background.
+
         """
         # Validate category
         category = self._validate_category(conversation_scenario.category_id)
+
+        # Check need for creating a new conversation scenario
+        # if custom_scenario is True, we assume the scenario is custom and needs to be created.
+        if not custom_scenario:
+            # Check if there is an existing scenario with the same category, language and difficulty
+            existing_scenarios = self._get_scenarios_by_category_language_difficulty(
+                user_profile.id,
+                conversation_scenario.category_id,
+                conversation_scenario.language_code,
+                conversation_scenario.difficulty_level,
+            )
+            if len(existing_scenarios) > 0:
+                equal_scenario_id = self._get_equal_scenario(
+                    existing_scenarios, conversation_scenario
+                )
+                if equal_scenario_id:
+                    return ConversationScenarioConfirm(
+                        message='Conversation scenario with the same prompt already exists.',
+                        scenario_id=equal_scenario_id,
+                    )
 
         # Create conversation scenario
         new_conversation_scenario = ConversationScenario(
@@ -53,7 +80,7 @@ class ConversationScenarioService:
         # Start background task for preparation
         self._start_preparation_task(prep.id, new_conversation_scenario, category, background_tasks)
 
-        return ConversationScenarioCreateResponse(
+        return ConversationScenarioConfirm(
             message='Conversation scenario created, preparation started.',
             scenario_id=new_conversation_scenario.id,
         )
@@ -149,7 +176,7 @@ class ConversationScenarioService:
             # session  → feedback (may be zero)
             .outerjoin(SessionFeedback, SessionFeedback.session_id == Session.id)
             .where(
-                SessionFeedback.status == FeedbackStatusEnum.completed,
+                SessionFeedback.status == FeedbackStatus.completed,
             )
             .group_by(
                 ConversationScenario.id,
@@ -174,6 +201,95 @@ class ConversationScenarioService:
             )
             for row in rows
         ]
+
+    def delete_conversation_scenario(self, scenario_id: UUID, user_profile: UserProfile) -> dict:
+        """
+        Deletes a single conversation scenario by ID, ensuring cascade deletion of sessions.
+        """
+        user_id = user_profile.id
+        scenario = self.db.get(ConversationScenario, scenario_id)
+        if not scenario:
+            return {
+                'message': f'No scenario found for scenario ID {scenario_id}',
+                'audios': [],
+            }
+
+        if scenario.user_id != user_id:
+            raise HTTPException(status_code=403, detail='Not authorized to delete this scenario.')
+
+        to_be_deleted_session_turns = []
+        session_ids = []
+        for session in scenario.sessions:
+            session_ids.append(session.id)
+            for turn in session.session_turns:
+                if turn.audio_uri:
+                    to_be_deleted_session_turns.append(turn)
+
+        # Delete session turns with audio URIs
+        session_turn_service = SessionTurnService(self.db)
+        deleted_audios = session_turn_service.delete_session_turns(to_be_deleted_session_turns)
+
+        # Delete the full audio from session feedback if it exists
+        session_service = SessionService(self.db)
+        for session_id in session_ids:
+            deleted_full_audio = session_service.delete_full_audio_from_session_feedback(session_id)
+            if deleted_full_audio:
+                deleted_audios.append(deleted_full_audio)
+
+        self.db.delete(scenario)
+        self.db.commit()
+        return {
+            'message': f'Deleted {len(session_ids)} sessions for user ID {user_id}',
+            'audios': deleted_audios,
+        }
+
+    def clear_all_conversation_scenarios(self, user_profile: UserProfile) -> dict:
+        """
+        Deletes all conversation scenarios for the authenticated user, ensuring cascade deletion of
+        sessions.
+        """
+        user_id = user_profile.id
+        statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
+        scenarios = self.db.exec(statement).all()
+        if not scenarios:
+            return {
+                'message': f'No scenario found for user ID {user_id}',
+                'audios': [],
+            }
+
+        to_be_deleted_session_turns = []
+        session_ids = []
+        total_deleted_scenarios = 0
+        for scenario in scenarios:
+            for session in scenario.sessions:
+                session_ids.append(session.id)
+                for turn in session.session_turns:
+                    if turn.audio_uri:
+                        to_be_deleted_session_turns.append(turn)
+
+        # Delete session turns with audio URIs
+        session_turn_service = SessionTurnService(self.db)
+        deleted_audios = session_turn_service.delete_session_turns(to_be_deleted_session_turns)
+
+        # Delete the full audio from session feedback if it exists
+        session_service = SessionService(self.db)
+        for session_id in session_ids:
+            deleted_full_audio = session_service.delete_full_audio_from_session_feedback(session_id)
+            if deleted_full_audio:
+                deleted_audios.append(deleted_full_audio)
+
+        self.db.commit()
+
+        # Let the database handle cascade deletes by just deleting the scenarios
+        for scenario in scenarios:
+            self.db.delete(scenario)
+            total_deleted_scenarios += 1
+        self.db.commit()
+
+        return {
+            'message': f'Deleted {total_deleted_scenarios} scenario for user ID {user_id}',
+            'audios': deleted_audios,
+        }
 
     def get_scenario_summary(
         self, scenario_id: UUID, user_profile: UserProfile
@@ -217,7 +333,7 @@ class ConversationScenarioService:
                 [
                     session.feedback.overall_score
                     for session in scenario.sessions
-                    if session.feedback and session.feedback.status == FeedbackStatusEnum.completed
+                    if session.feedback and session.feedback.status == FeedbackStatus.completed
                 ]
             )
             / total_sessions
@@ -245,6 +361,40 @@ class ConversationScenarioService:
             if not category:
                 raise HTTPException(status_code=404, detail='Category not found')
             return category
+        return None
+
+    def _get_scenarios_by_category_language_difficulty(
+        self,
+        user_id: UUID,
+        category_id: str | None,
+        language_code: LanguageCode,
+        difficulty_level: DifficultyLevel,
+    ) -> Sequence[ConversationScenario]:
+        """
+        Retrieve all conversation scenarios for a given user and category.
+        """
+        statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
+        if category_id:
+            statement = statement.where(
+                ConversationScenario.category_id == category_id,
+                ConversationScenario.language_code == language_code,
+                ConversationScenario.difficulty_level == difficulty_level,
+            )
+        return self.db.exec(statement).all()
+
+    def _get_equal_scenario(
+        self, scenarios: Sequence[ConversationScenario], new_scenario: ConversationScenarioCreate
+    ) -> UUID | None:
+        """
+        Check if there are any existing scenarios with the same prompt as the new scenario.
+        """
+        for scenario in scenarios:
+            if scenario.persona.replace(' ', '') == new_scenario.persona.replace(
+                ' ', ''
+            ) and scenario.situational_facts.replace(
+                ' ', ''
+            ) == new_scenario.situational_facts.replace(' ', ''):
+                return scenario.id
         return None
 
     def _start_preparation_task(

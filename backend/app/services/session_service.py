@@ -1,6 +1,5 @@
 from datetime import UTC, datetime
 from math import ceil
-from typing import Optional
 from uuid import UUID
 
 from fastapi import BackgroundTasks, HTTPException
@@ -8,17 +7,21 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, func, select
 
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.enums.account_role import AccountRole
+from app.enums.feedback_status import FeedbackStatus
+from app.enums.scenario_preparation_status import ScenarioPreparationStatus
+from app.enums.session_status import SessionStatus
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
-from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.models.session import Session, SessionStatus
-from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
+from app.models.scenario_preparation import ScenarioPreparation
+from app.models.session import Session
+from app.models.session_feedback import SessionFeedback
 from app.models.session_turn import SessionTurn
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.user_profile import UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
-from app.schemas.session_feedback import FeedbackRequest, SessionFeedbackMetrics
-from app.schemas.sessions_paginated import PaginatedSessionsResponse, SessionItem, SkillScores
+from app.schemas.session_feedback import FeedbackCreate, SessionFeedbackRead
+from app.schemas.sessions_paginated import PaginatedSessionRead, SessionItem, SkillScores
 from app.services.review_service import ReviewService
 from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 from app.services.session_turn_service import SessionTurnService
@@ -69,8 +72,8 @@ class SessionService:
         user_profile: UserProfile,
         page: int,
         page_size: int,
-        scenario_id: Optional[UUID] = None,
-    ) -> PaginatedSessionsResponse:
+        scenario_id: UUID | None = None,
+    ) -> PaginatedSessionRead:
         if scenario_id:
             scenario = self._validate_scenario_access(scenario_id, user_profile)
             scenario_ids = [scenario.id]
@@ -78,20 +81,20 @@ class SessionService:
             scenario_ids = self._get_user_scenario_ids(user_profile.id)
 
         if not scenario_ids:
-            return PaginatedSessionsResponse(
+            return PaginatedSessionRead(
                 page=page, limit=page_size, total_pages=0, total_sessions=0, sessions=[]
             )
 
         total_sessions = self._count_sessions(scenario_ids)
         if total_sessions == 0:
-            return PaginatedSessionsResponse(
+            return PaginatedSessionRead(
                 page=page, limit=page_size, total_pages=0, total_sessions=0, sessions=[]
             )
 
         sessions = self._get_sessions_paginated(scenario_ids, page, page_size)
         session_list = [self._build_session_item(sess) for sess in sessions]
 
-        return PaginatedSessionsResponse(
+        return PaginatedSessionRead(
             page=page,
             limit=page_size,
             total_pages=ceil(total_sessions / page_size),
@@ -167,24 +170,31 @@ class SessionService:
                 'audios': [],
             }
 
-        total_deleted_sessions = 0
-        audio_uris = []
+        to_be_deleted_session_turns = []
+        session_ids = []
         for scenario in conversation_scenarios:
             for session in scenario.sessions:
+                session_ids.append(session.id)
                 for turn in session.session_turns:
                     if turn.audio_uri:
-                        audio_uris.append(turn.audio_uri)
-                        total_deleted_sessions += 1
+                        to_be_deleted_session_turns.append(turn)
+
         # Let the database handle cascade deletes by just deleting the scenarios
         for scenario in conversation_scenarios:
             self.db.delete(scenario)
         self.db.commit()
 
-        # TODO: Delete audio File self._delete_audio_files(audio_uris)
-        self._delete_audio_files(audio_uris=audio_uris)  # Dummy function to delete audios
+        session_turn_service = SessionTurnService(self.db)
+        deleted_audios = session_turn_service.delete_session_turns(to_be_deleted_session_turns)
+
+        for session_id in session_ids:
+            deleted_full_audio = self.delete_full_audio_from_session_feedback(session_id)
+            if deleted_full_audio:
+                deleted_audios.append(deleted_full_audio)
+
         return {
-            'message': f'Deleted {total_deleted_sessions} sessions for user ID {user_id}',
-            'audios': audio_uris,
+            'message': f'Deleted {len(session_ids)} sessions for user ID {user_id}',
+            'audios': deleted_audios,
         }
 
     def delete_session_by_id(self, session_id: UUID, user_profile: UserProfile) -> dict:
@@ -198,22 +208,51 @@ class SessionService:
             raise HTTPException(
                 status_code=403, detail='You do not have permission to delete this session'
             )
-        # TODO: Delete audio File self._delete_audio_files(session.audio_uris)
-        total_deleted_sessions = 0
-        audio_uris = []
+
+        to_be_deleted_session_turns = []
+        # Collect all session turns with audio URIs to delete
         for turn in session.session_turns:
             if turn.audio_uri:
-                audio_uris.append(turn.audio_uri)
-                total_deleted_sessions += 1
-        # TODO: Delete audio File self._delete_audio_files(audio_uris)
-        self._delete_audio_files(audio_uris=audio_uris)  # Dummy function to delete audios
+                to_be_deleted_session_turns.append(turn)
+
+        # Delete session turns with audio URIs
+        session_turn_service = SessionTurnService(self.db)
+        deleted_audios = session_turn_service.delete_session_turns(to_be_deleted_session_turns)
+
+        # Delete the full audio from session feedback if it exists
+        deleted_full_audio = self.delete_full_audio_from_session_feedback(session_id)
+        if deleted_full_audio:
+            deleted_audios.append(deleted_full_audio)
 
         self.db.delete(session)
         self.db.commit()
         return {
             'message': 'Session deleted successfully',
-            'audios': audio_uris,
+            'audios': deleted_audios,
         }
+
+    def delete_full_audio_from_session_feedback(self, session_id: UUID) -> str | None:
+        feedback = self.db.exec(
+            select(SessionFeedback).where(SessionFeedback.session_id == session_id)
+        ).first()
+        # Check if the feedback has a full audio filename
+        stitched_audio = feedback.full_audio_filename if feedback else None
+        if stitched_audio:
+            gcs_manager = get_gcs_audio_manager()
+            try:
+                gcs_manager.delete_document(stitched_audio)
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f'Failed to delete audio file: {e}'
+                ) from e
+
+            # Clear the filename in the feedback
+            feedback.full_audio_filename = ''
+
+            # Currently, we are not deleting the feedback from the database
+            # self.db.add(feedback)
+            # self.db.commit()
+        return stitched_audio
 
     def _is_session_being_completed(
         self,
@@ -265,7 +304,7 @@ class SessionService:
         ).all()
         transcripts = None
         if session_turns:
-            transcripts = '\n'.join([f'{turn.speaker}: {turn.text}' for turn in session_turns])
+            transcripts = '\n'.join([f'{turn.speaker.name}: {turn.text}' for turn in session_turns])
 
         # Fetch conversation category
         category = None
@@ -309,7 +348,7 @@ class SessionService:
 
         key_concepts_str = '\n'.join(f'{item["header"]}: {item["value"]}' for item in key_concepts)
 
-        request = FeedbackRequest(
+        request = FeedbackCreate(
             category=category.name
             if category
             else conversation_scenario.custom_category_label or 'Unknown Category',
@@ -392,13 +431,13 @@ class SessionService:
             return scenario.custom_category_label
         return 'No Title available'
 
-    def _get_session_feedback(self, session_id: UUID) -> SessionFeedbackMetrics | None:
+    def _get_session_feedback(self, session_id: UUID) -> SessionFeedbackRead | None:
         feedback = self.db.exec(
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
         ).first()
-        if not feedback or feedback.status == FeedbackStatusEnum.pending:
+        if not feedback or feedback.status == FeedbackStatus.pending:
             raise HTTPException(status_code=202, detail='Session feedback in progress.')
-        if feedback.status == FeedbackStatusEnum.failed:
+        if feedback.status == FeedbackStatus.failed:
             raise HTTPException(status_code=500, detail='Session feedback failed.')
 
         audio_file_exists = False
@@ -417,11 +456,10 @@ class SessionService:
         session_turn_service = SessionTurnService(self.db)
         session_turn_transcripts = session_turn_service.get_session_turns(session_id=session_id)
 
-        return SessionFeedbackMetrics(
+        return SessionFeedbackRead(
             scores=feedback.scores,
             tone_analysis=feedback.tone_analysis,
             overall_score=feedback.overall_score,
-            transcript_uri=feedback.transcript_uri,
             speak_time_percent=feedback.speak_time_percent,
             questions_asked=feedback.questions_asked,
             session_length_s=feedback.session_length_s,
@@ -497,12 +535,6 @@ class SessionService:
             skills=scores,
             allow_admin_access=sess.allow_admin_access,
         )
-
-    def _delete_audio_files(self, audio_uris: list[str]) -> None:
-        """Mock function to delete audio files from object storage.
-        Replace this with your actual object storage client logic."""
-        for uri in audio_uris:  # TODO: delete audios on object storage.  # noqa: B007
-            pass
 
     def _validate_scenario_access(
         self, scenario_id: UUID, user_profile: UserProfile

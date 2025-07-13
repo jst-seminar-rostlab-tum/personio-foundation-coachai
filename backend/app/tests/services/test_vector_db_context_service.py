@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from langchain.schema import Document
 
-from app.schemas.scenario_preparation import ConversationScenarioBase
+from app.schemas.conversation_scenario import ConversationScenarioAIPromptRead
 from app.services.vector_db_context_service import (
     build_query_general,
     build_query_prep_feedback,
@@ -14,8 +14,8 @@ from app.services.vector_db_context_service import (
 
 class TestVectorDbContextService(unittest.TestCase):
     def test_build_query_prep_feedback_all_fields(self) -> None:
-        session = ConversationScenarioBase(
-            category='Performance Review',
+        session = ConversationScenarioAIPromptRead(
+            category_name='Performance Review',
             persona='Intern',
             situational_facts='Annual evaluation meeting',
         )
@@ -53,7 +53,7 @@ class TestVectorDbContextService(unittest.TestCase):
         assert build_query_general(None, None, None) == ''
 
     @patch('app.services.vector_db_context_service.build_vector_db_retriever')
-    @patch('app.services.vector_db_context_service.analyze_voice_gemini_from_file')
+    @patch('app.services.vector_db_context_service.analyze_voice')
     def test_query_vector_db_with_structured_context(
         self, mock_analyze: MagicMock, mock_retriever_builder: MagicMock
     ) -> None:
@@ -73,8 +73,8 @@ class TestVectorDbContextService(unittest.TestCase):
         mock_retriever_builder.return_value = fake_retriever
 
         # Set up conversation scenario
-        scenario = ConversationScenarioBase(
-            category='Coaching',
+        scenario = ConversationScenarioAIPromptRead(
+            category_name='Coaching',
             persona='Jacob. Training Focus: Set growth plan. Company Position: Intern',
             situational_facts='Career development',
         )
@@ -93,7 +93,7 @@ class TestVectorDbContextService(unittest.TestCase):
         self.assertEqual(metadata, [doc_metadata])
 
     @patch('app.services.vector_db_context_service.build_vector_db_retriever')
-    @patch('app.services.vector_db_context_service.analyze_voice_gemini_from_file')
+    @patch('app.services.vector_db_context_service.analyze_voice')
     def test_query_vector_db_complex(
         self, mock_analyze: MagicMock, mock_retriever_builder: MagicMock
     ) -> None:

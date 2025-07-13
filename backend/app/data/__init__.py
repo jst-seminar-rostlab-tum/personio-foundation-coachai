@@ -5,6 +5,7 @@ from .dummy_data import (
     get_dummy_app_configs,
     get_dummy_conversation_categories,
     get_dummy_conversation_scenarios,
+    get_dummy_live_feedback_data,
     get_dummy_reviews,
     get_dummy_scenario_preparations,
     get_dummy_session_feedback,
@@ -32,4 +33,5 @@ __all__ = [
     'get_mock_user_data',
     'create_mock_users',
     'delete_mock_users',
+    'get_dummy_live_feedback_data',
 ]

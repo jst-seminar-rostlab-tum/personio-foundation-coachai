@@ -8,11 +8,11 @@
     "submitReview": "Bewertung abgeben"
   },
   "sessionLength": "Sitzungsdauer",
-  "listenConversation": "Gespräch anhören",
+  "listenConversation": "Konversation abspielen",
+  "audioUnavailable": "Audio ist für diese Sitzung derzeit nicht verfügbar.",
   "accordion": {
     "feedback": "Detailliertes Feedback",
-    "suggestion": "Empfohlene Ressourcen",
-    "sessions": "Empfohlene Sitzungen"
+    "suggestion": "Empfohlene Ressourcen"
   },
   "detailedFeedback": {
     "recommendations": "Empfehlungen",

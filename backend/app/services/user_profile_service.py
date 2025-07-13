@@ -9,19 +9,22 @@ from sqlmodel import col, select
 from supabase import AuthError
 
 from app.database import get_supabase_client
+from app.enums.account_role import AccountRole
+from app.enums.goal import Goal
 from app.models.user_confidence_score import UserConfidenceScore
-from app.models.user_goal import Goal, UserGoal
-from app.models.user_profile import AccountRole, UserProfile
+from app.models.user_goal import UserGoal
+from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
-    PaginatedUserResponse,
+    PaginatedUserRead,
     UserEmailRead,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
-    UserStatisticsRead,
+    UserStatistics,
 )
+from app.services.conversation_scenario_service import ConversationScenarioService
 
 
 class UserService:
@@ -68,7 +71,7 @@ class UserService:
 
     def get_user_profiles(
         self, page: int = 1, page_size: int = 10, email_substring: str | None = None
-    ) -> PaginatedUserResponse:
+    ) -> PaginatedUserRead:
         statement = select(UserProfile)
         if email_substring:
             statement = statement.where(col(UserProfile.email).like(f'%{email_substring}%'))
@@ -78,7 +81,7 @@ class UserService:
         all_users = self.db.exec(statement).all()
         total_users = len(all_users)
         if total_users == 0:
-            return PaginatedUserResponse(
+            return PaginatedUserRead(
                 page=page,
                 limit=page_size,
                 total_pages=1,
@@ -96,7 +99,7 @@ class UserService:
         users = all_users[(page - 1) * page_size : (page) * page_size]
         user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
 
-        return PaginatedUserResponse(
+        return PaginatedUserRead(
             page=page,
             limit=page_size,
             total_pages=total_pages,
@@ -119,7 +122,7 @@ class UserService:
         else:
             return self._get_user_profile_response(user)
 
-    def get_user_statistics(self, user_id: UUID) -> UserStatisticsRead:
+    def get_user_statistics(self, user_id: UUID) -> UserStatistics:
         user = self.db.get(UserProfile, user_id)
         if not user:
             raise HTTPException(
@@ -127,7 +130,7 @@ class UserService:
                 detail='User profile not found.',
             )
 
-        return UserStatisticsRead(
+        return UserStatistics(
             total_sessions=user.total_sessions,
             training_time=user.training_time,
             current_streak_days=user.current_streak_days,
@@ -259,6 +262,16 @@ class UserService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail='User profile not found'
             )
+
+        conversation_service = ConversationScenarioService(self.db)
+        try:
+            conversation_service.clear_all_conversation_scenarios(user)
+        except Exception as e:
+            logging.error(f'Failed to clear conversation scenarios for user {user_id}: {e}')
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail='Failed to clear conversation scenarios',
+            ) from e
 
         try:
             self.db.delete(user)

@@ -4,29 +4,30 @@ from functools import lru_cache
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.connections.openai_client import call_structured_llm
-from app.models.language import LanguageCode
+from app.connections.vertexai_client import call_structured_llm
+from app.enums.language import LanguageCode
 from app.schemas.session_feedback import (
-    FeedbackRequest,
-    GoalsAchievedCollection,
-    GoalsAchievementRequest,
-    RecommendationsCollection,
-    SessionExamplesCollection,
+    FeedbackCreate,
+    GoalsAchievedCreate,
+    GoalsAchievedRead,
+    RecommendationsRead,
+    SessionExamplesRead,
 )
-from app.schemas.session_feedback_config import SessionFeedbackConfig
+from app.schemas.session_feedback_config import SessionFeedbackConfigRead
 from app.services.session_feedback.session_feedback_prompt_templates import (
     build_goals_achieved_prompt,
     build_recommendations_prompt,
     build_training_examples_prompt,
 )
+from app.services.utils import normalize_quotes
 
 
 @lru_cache
-def load_session_feedback_config() -> SessionFeedbackConfig:
+def load_session_feedback_config() -> SessionFeedbackConfigRead:
     config_path = os.path.join(os.path.dirname(__file__), 'session_feedback_config.json')
     with open(config_path, encoding='utf-8') as f:
         data = json.load(f)  # Python dict
-    return SessionFeedbackConfig.model_validate(data)
+    return SessionFeedbackConfigRead.model_validate(data)
 
 
 CONFIG_PATH = os.path.join('app', 'config', 'session_feedback_config.json')
@@ -35,28 +36,28 @@ config = load_session_feedback_config()
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_training_examples(
-    request: FeedbackRequest, hr_docs_context: str = ''
-) -> SessionExamplesCollection:
+    request: FeedbackCreate, hr_docs_context: str = ''
+) -> SessionExamplesRead:
     return generate_training_examples(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_get_achieved_goals(
-    request: GoalsAchievementRequest, hr_docs_context: str = ''
-) -> GoalsAchievedCollection:
+    request: GoalsAchievedCreate, hr_docs_context: str = ''
+) -> GoalsAchievedRead:
     return get_achieved_goals(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_recommendations(
-    request: FeedbackRequest, hr_docs_context: str = ''
-) -> RecommendationsCollection:
+    request: FeedbackCreate, hr_docs_context: str = ''
+) -> RecommendationsRead:
     return generate_recommendations(request, hr_docs_context)
 
 
 def generate_training_examples(
-    request: FeedbackRequest, hr_docs_context: str = ''
-) -> SessionExamplesCollection:
+    request: FeedbackCreate, hr_docs_context: str = ''
+) -> SessionExamplesRead:
     lang = request.language_code
     settings = config.root[lang]
 
@@ -76,17 +77,25 @@ def generate_training_examples(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
-        output_model=SessionExamplesCollection,
+        output_model=SessionExamplesRead,
+        temperature=0.0,
         mock_response=mock_response,
     )
+
+    # Normalize all quote fields to ensure consistent output
+    for ex in response.positive_examples:
+        ex.quote = normalize_quotes(ex.quote)
+    for ex in response.negative_examples:
+        ex.quote = normalize_quotes(ex.quote)
+        if hasattr(ex, 'improved_quote') and ex.improved_quote:
+            ex.improved_quote = normalize_quotes(ex.improved_quote)
 
     return response
 
 
 def get_achieved_goals(
-    request: GoalsAchievementRequest, hr_docs_context: str = ''
-) -> GoalsAchievedCollection:
+    request: GoalsAchievedCreate, hr_docs_context: str = ''
+) -> GoalsAchievedRead:
     lang = request.language_code
     settings = config.root[lang]
 
@@ -102,17 +111,18 @@ def get_achieved_goals(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
-        output_model=GoalsAchievedCollection,
+        output_model=GoalsAchievedRead,
+        temperature=0.0,
         mock_response=mock_response,
     )
 
+    response.goals_achieved = [goal for goal in response.goals_achieved if goal.strip()]
     return response
 
 
 def generate_recommendations(
-    request: FeedbackRequest, hr_docs_context: str = ''
-) -> RecommendationsCollection:
+    request: FeedbackCreate, hr_docs_context: str = ''
+) -> RecommendationsRead:
     lang = request.language_code
     settings = config.root[lang]
 
@@ -132,8 +142,8 @@ def generate_recommendations(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        model='gpt-4o-2024-08-06',
-        output_model=RecommendationsCollection,
+        output_model=RecommendationsRead,
+        temperature=0.0,
         mock_response=mock_response,
     )
 
@@ -142,7 +152,7 @@ def generate_recommendations(
 
 if __name__ == '__main__':
     # Example usage of the service functions
-    example_request = FeedbackRequest(
+    example_request = FeedbackCreate(
         category='Termination',
         persona=(
             '**Name**: Julian '
@@ -197,7 +207,7 @@ if __name__ == '__main__':
 
     print('Training examples generated successfully.')
 
-    goals_achievement_request = GoalsAchievementRequest(
+    goals_achievement_request = GoalsAchievedCreate(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         language_code=example_request.language_code,
@@ -208,7 +218,7 @@ if __name__ == '__main__':
         + f'{len(goals_achieved.goals_achieved)} / {len(example_request.objectives)}'
     )
 
-    recommendation_request = FeedbackRequest(
+    recommendation_request = FeedbackCreate(
         category=example_request.category,
         persona=example_request.persona,
         situational_facts=example_request.situational_facts,

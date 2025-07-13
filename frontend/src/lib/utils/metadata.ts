@@ -1,8 +1,6 @@
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-
-const BASE_URL =
-  process.env.NEXT_PUBLIC_BASE_URL || 'https://coachai-personio-foundation.vercel.app';
+import { BASE_URL } from '../connector';
 
 function getNamespaceFromPath(path: string): string {
   const cleanPath = path.replace(/^\/|\/$/g, '');
@@ -27,9 +25,6 @@ function getNamespaceFromPath(path: string): string {
     simulation: 'Simulation',
     settings: 'Settings',
     terms: 'TermsOfService',
-    confirm: 'Login.ConfirmationForm',
-    reset: 'Reset',
-    'update-password': 'UpdatePassword',
   };
 
   return pathMap[pathSegment] || 'HomePage';

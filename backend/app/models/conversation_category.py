@@ -6,15 +6,15 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
 from sqlmodel import Field, Relationship
 
+from app.enums.language import LanguageCode
 from app.models.camel_case import CamelModel
-from app.models.language import LanguageCode
 
 if TYPE_CHECKING:
     from app.models.conversation_scenario import ConversationScenario
 
 
-class ConversationCategory(CamelModel, table=True):  # `table=True` makes it a database table
-    id: str = Field(primary_key=True)  # Changed from UUID to str
+class ConversationCategory(CamelModel, table=True):
+    id: str = Field(primary_key=True)
     name: str = Field(unique=True)
     initial_prompt: str = Field(default='')
     is_custom: bool = Field(default=False)

@@ -3,9 +3,12 @@ import json
 from pathlib import Path
 from typing import Any, Optional
 
+from tenacity import retry, stop_after_attempt, wait_fixed
+
 from app.connections.openai_client import call_structured_llm
-from app.schemas.conversation_scenario import ConversationScenarioWithTranscript
-from app.schemas.scoring_schema import ScoringResult
+from app.schemas.conversation_scenario import ConversationScenarioRead
+from app.schemas.scoring_schema import ScoringRead
+from app.services.utils import normalize_quotes
 
 
 class ScoringService:
@@ -20,19 +23,22 @@ class ScoringService:
 
     def _build_system_prompt(self) -> str:
         system_prompt = (
-            'You are an expert communication coach who grades conversations based on a rubric.\n\n'
+            'You are an expert communication coach who grades conversations based on a strict rubric.\n\n'
             '**Scoring Instructions:**\n'
-            '- Only evaluate the User, strictly following the rubric. Ignore all Assistant content.\n'
-            "- For each metric, carefully compare User's behavior to all rubric levels and select the best match.\n"
-            '- If performance fully matches the lowest level, assign the lowest score. If between levels, pick the closest and explain.\n'
-            '- In doubt, refer to the rubric and use your best judgment. Do not always default to the lowest.\n'
-            '- Justifications must reference rubric descriptions. Be strict, fair, and consider context.\n'
+            "- For every metric, you MUST ONLY consider the User's utterances. Completely ignore all Assistant utterances, even if they are helpful, on-topic, or try to bring the conversation back to focus.\n"
+            "- For each metric, in your justification, explicitly compare the User's behavior to every rubric level (1-5), and state why it does or does not meet each level. Only after this comparison, select the best matching score.\n"
+            '- You MUST provide a score and justification for ALL FOUR metrics: structure, empathy, focus, and clarity. Do not omit any metric, even if the performance is very poor.\n'
+            "- If the User's utterances are completely irrelevant, incomprehensible, or show no attempt to engage with the metric, you MUST assign a score of 1 for that metric.\n"
+            '- If the overall performance is good enough and only contains minor lapses or imperfections, a score of 5 is appropriate.\n'
             'Here is the evaluation rubric:\n'
+            "- You may use the common levels (e.g., 0) as a reference for scoring if the user's utterances are completely irrelevant, incomprehensible, or show no attempt to engage with the metric.\n"
             f'{json.dumps(self.rubric, indent=2)}'
+            '\n\n'
+            "You MUST act as if the Assistant's utterances do not exist at all. Only the User's utterances are relevant for scoring. If you mention or consider the Assistant in your justification, that is a mistake.\n"
         )
         return system_prompt
 
-    def _build_user_prompt(self, conversation: ConversationScenarioWithTranscript) -> str:
+    def _build_user_prompt(self, conversation: ConversationScenarioRead) -> str:
         scenario = conversation.scenario
         transcript = conversation.transcript
         prompt = (
@@ -50,17 +56,17 @@ class ScoringService:
             'and give a justification for each score.\n'
             'You MUST provide a score and justification for all four metrics, '
             'and also give an overall summary of the "User"\'s performance.\n'
-            'Format the output as a JSON object matching the ScoringResult schema.\n'
+            'Format the output as a JSON object matching the ScoringRead schema.\n'
             'Do not include markdown, explanation, or code formatting.\n'
         )
         return prompt
 
     def score_conversation(
         self,
-        conversation: ConversationScenarioWithTranscript,
+        conversation: ConversationScenarioRead,
         model: str = 'o4-mini-2025-04-16',
         temperature: float = 0.0,
-    ) -> ScoringResult:
+    ) -> ScoringRead:
         user_prompt = self._build_user_prompt(conversation)
         system_prompt = self._build_system_prompt()
 
@@ -68,19 +74,24 @@ class ScoringService:
             request_prompt=user_prompt,
             system_prompt=system_prompt,
             model=model,
-            output_model=ScoringResult,
+            output_model=ScoringRead,
             temperature=temperature,
         )
 
         # Recalculate the overall score based on the rubric
-        scores = {s.metric.lower(): s.score for s in response.scoring.scores}
+        response.scoring.scores = [
+            s.model_copy(update={'metric': s.metric.lower()}) for s in response.scoring.scores
+        ]
+        scores = {s.metric: s.score for s in response.scoring.scores}
         overall = (
-            scores.get('structure')  # should never be None
-            + scores.get('empathy')
-            + scores.get('focus')
-            + scores.get('clarity')
+            scores['structure'] + scores['empathy'] + scores['focus'] + scores['clarity']
         ) / 4
         response.scoring.overall_score = overall
+
+        # Normalize all quotes in the response
+        response.conversation_summary = normalize_quotes(response.conversation_summary)
+        for score in response.scoring.scores:
+            score.justification = normalize_quotes(score.justification)
 
         return response
 
@@ -104,6 +115,10 @@ class ScoringService:
             for score, desc in common_levels.items():
                 md += f'- **Score {score}**: {desc}\n'
         return md
+
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+    def safe_score_conversation(self, conversation: ConversationScenarioRead) -> ScoringRead:
+        return self.score_conversation(conversation)
 
 
 scoring_service = ScoringService()

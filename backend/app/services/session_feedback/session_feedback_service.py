@@ -1,7 +1,6 @@
 import concurrent.futures
 import logging
 from datetime import UTC, datetime
-from typing import Optional
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
@@ -9,27 +8,32 @@ from pydantic import Field
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
+from app.enums.feedback_status import FeedbackStatus
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.camel_case import CamelModel
 from app.models.session import Session
-from app.models.session_feedback import FeedbackStatusEnum, SessionFeedback
+from app.models.session_feedback import SessionFeedback
 from app.models.session_turn import SessionTurn
 from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenario,
-    ConversationScenarioWithTranscript,
+    ConversationScenarioRead,
 )
 from app.schemas.session_feedback import (
-    FeedbackRequest,
-    GoalsAchievedCollection,
-    GoalsAchievementRequest,
+    FeedbackCreate,
+    GoalsAchievedCreate,
+    GoalsAchievedRead,
     NegativeExample,
     PositiveExample,
     Recommendation,
-    RecommendationsCollection,
-    SessionExamplesCollection,
+    RecommendationsRead,
+    SessionExamplesRead,
 )
 from app.schemas.session_turn import SessionTurnRead
+from app.services.data_retention_service import (
+    delete_full_audio_for_feedback_by_session_id,
+    delete_session_turns_by_session_id,
+)
 from app.services.scoring_service import ScoringService, get_scoring_service
 from app.services.session_feedback.session_feedback_llm import (
     safe_generate_recommendations,
@@ -41,15 +45,15 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 
 
 def prepare_feedback_requests(
-    example_request: FeedbackRequest,
-) -> tuple[GoalsAchievementRequest, FeedbackRequest]:
+    example_request: FeedbackCreate,
+) -> tuple[GoalsAchievedCreate, FeedbackCreate]:
     """Prepare all feedback-related request objects."""
-    goals_request = GoalsAchievementRequest(
+    goals_request = GoalsAchievedCreate(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         language_code=example_request.language_code,
     )
-    recommendations_request = FeedbackRequest(
+    recommendations_request = FeedbackCreate(
         category=example_request.category,
         persona=example_request.persona,
         situational_facts=example_request.situational_facts,
@@ -62,7 +66,7 @@ def prepare_feedback_requests(
 
 
 def get_hr_docs_context(
-    recommendations_request: FeedbackRequest,
+    recommendations_request: FeedbackCreate,
 ) -> tuple[str, list[str]]:
     """Generate HR docs context using the vector DB."""
     return query_vector_db_and_prompt(
@@ -81,9 +85,7 @@ def get_hr_docs_context(
 class FeedbackGenerationResult(CamelModel):
     examples_positive: list[PositiveExample] = Field(default_factory=list)
     examples_negative: list[NegativeExample] = Field(default_factory=list)
-    goals: GoalsAchievedCollection = Field(
-        default_factory=lambda: GoalsAchievedCollection(goals_achieved=[])
-    )
+    goals: GoalsAchievedRead = Field(default_factory=lambda: GoalsAchievedRead(goals_achieved=[]))
     recommendations: list[Recommendation] = Field(default_factory=list)
     scores_json: dict[str, float] = Field(default_factory=dict)
     overall_score: float = 0.0
@@ -93,11 +95,11 @@ class FeedbackGenerationResult(CamelModel):
 
 
 def generate_feedback_components(
-    feedback_request: FeedbackRequest,
-    goals_request: GoalsAchievementRequest,
+    feedback_request: FeedbackCreate,
+    goals_request: GoalsAchievedCreate,
     hr_docs_context: str,
     document_names: list[str],
-    conversation: ConversationScenarioWithTranscript,
+    conversation: ConversationScenarioRead,
     scoring_service: ScoringService,
     session_turn_service: SessionTurnService,
     session_id: UUID,
@@ -105,7 +107,7 @@ def generate_feedback_components(
     """Run all feedback-related generation in parallel."""
     examples_positive: list[PositiveExample] = []
     examples_negative: list[NegativeExample] = []
-    goals: GoalsAchievedCollection = GoalsAchievedCollection(goals_achieved=[])
+    goals: GoalsAchievedRead = GoalsAchievedRead(goals_achieved=[])
     recommendations: list[Recommendation] = []
     scores_json: dict[str, float] = {}
     overall_score: float = 0.0
@@ -120,7 +122,7 @@ def generate_feedback_components(
         future_recommendations = executor.submit(
             safe_generate_recommendations, feedback_request, hr_docs_context
         )
-        future_scoring = executor.submit(scoring_service.score_conversation, conversation)
+        future_scoring = executor.submit(scoring_service.safe_score_conversation, conversation)
         future_audio_stitch = executor.submit(
             session_turn_service.stitch_mp3s_from_gcs,
             session_id,
@@ -128,7 +130,7 @@ def generate_feedback_components(
         )
 
         try:
-            examples: SessionExamplesCollection = future_examples.result()
+            examples: SessionExamplesRead = future_examples.result()
             examples_positive = examples.positive_examples
             examples_negative = examples.negative_examples
         except Exception as e:
@@ -142,7 +144,7 @@ def generate_feedback_components(
             logging.warning('Failed to generate goals: %s', e)
 
         try:
-            recs: RecommendationsCollection = future_recommendations.result()
+            recs: RecommendationsRead = future_recommendations.result()
             recommendations = recs.recommendations
         except Exception as e:
             has_error = True
@@ -179,11 +181,11 @@ def generate_feedback_components(
 
 def update_statistics(
     db_session: 'DBSession',
-    conversation: Optional[ConversationScenarioWithTranscript],
-    goals: GoalsAchievedCollection,
+    conversation: ConversationScenarioRead | None,
+    goals: GoalsAchievedRead,
     overall_score: float,
     has_error: bool,
-) -> FeedbackStatusEnum:
+) -> FeedbackStatus:
     """Update user profile and admin dashboard stats, handle commit/rollback."""
     if conversation and conversation.scenario and conversation.scenario.user_id:
         user = db_session.exec(
@@ -204,10 +206,10 @@ def update_statistics(
             admin_stats.total_trainings += 1
             db_session.add(admin_stats)
         db_session.commit()
-        status = FeedbackStatusEnum.completed if not has_error else FeedbackStatusEnum.failed
+        status = FeedbackStatus.completed if not has_error else FeedbackStatus.failed
     except Exception as e:
         db_session.rollback()
-        status = FeedbackStatusEnum.failed
+        status = FeedbackStatus.failed
         has_error = True
         logging.error('Failed to update statistics: %s', e)
     return status
@@ -217,7 +219,7 @@ def save_session_feedback(
     db_session: 'DBSession',
     session_id: UUID,
     feedback_generation_result: FeedbackGenerationResult,
-    status: FeedbackStatusEnum,
+    status: FeedbackStatus,
 ) -> SessionFeedback:
     """Build and save the SessionFeedback record."""
     feedback = SessionFeedback(
@@ -226,7 +228,6 @@ def save_session_feedback(
         scores=feedback_generation_result.scores_json,
         tone_analysis={},
         overall_score=feedback_generation_result.overall_score,
-        transcript_uri='',
         full_audio_filename=feedback_generation_result.full_audio_filename,
         document_names=feedback_generation_result.document_names,
         speak_time_percent=0,
@@ -245,9 +246,7 @@ def save_session_feedback(
     return feedback
 
 
-def get_conversation_data(
-    db_session: DBSession, session_id: UUID
-) -> ConversationScenarioWithTranscript:
+def get_conversation_data(db_session: DBSession, session_id: UUID) -> ConversationScenarioRead:
     """
     Get conversation data from the database in a single transaction.
     """
@@ -264,16 +263,19 @@ def get_conversation_data(
         turns = db_session.exec(
             select(SessionTurn).where(SessionTurn.session_id == session_id)
         ).all()
-        transcript = [SessionTurnRead.model_validate(turn) for turn in turns]
-        return ConversationScenarioWithTranscript(scenario=scenario_read, transcript=transcript)
+        transcript = [
+            SessionTurnRead.model_validate({**turn.model_dump(), 'speaker': turn.speaker.name})
+            for turn in turns
+        ]
+        return ConversationScenarioRead(scenario=scenario_read, transcript=transcript)
 
 
 def generate_and_store_feedback(
     session_id: UUID,
-    feedback_request: FeedbackRequest,
+    feedback_request: FeedbackCreate,
     db_session: DBSession,
-    scoring_service: Optional[ScoringService] = None,
-    session_turn_service: Optional[SessionTurnService] = None,
+    scoring_service: ScoringService | None = None,
+    session_turn_service: SessionTurnService | None = None,
 ) -> SessionFeedback:
     """
     Generates feedback for a given session, stores it in the database, and returns the resulting
@@ -307,7 +309,7 @@ def generate_and_store_feedback(
             session_id=session_id,
         )
 
-    status: FeedbackStatusEnum = update_statistics(
+    status: FeedbackStatus = update_statistics(
         db_session,
         conversation,
         feedback_generation_result.goals,
@@ -321,4 +323,35 @@ def generate_and_store_feedback(
         feedback_generation_result,
         status,
     )
+
+    # If user doesn't want to store the conversation data (audio + transcript) delete it
+    check_data_retention(db_session, session_id, conversation.scenario)
+
     return feedback
+
+
+def check_data_retention(
+    db_session: DBSession, session_id: UUID, conversation_scenario: ConversationScenario
+) -> None:
+    """
+    Check if the user has opted out of data retention and delete session turns, audio files
+    and transcript if so.
+    """
+    # Get user profile
+    user_profile = db_session.exec(
+        select(UserProfile).where(UserProfile.id == conversation_scenario.user_id)
+    ).first()
+    if not user_profile:
+        raise HTTPException(
+            status_code=404, detail='User profile not found for the conversation scenario.'
+        )
+
+    if user_profile.store_conversations:
+        return
+
+    # User opted out of data retention
+    # delete session turns and audio files
+    delete_session_turns_by_session_id(db_session, session_id)
+
+    # Also delete full audio files from feedback
+    delete_full_audio_for_feedback_by_session_id(db_session, session_id)
