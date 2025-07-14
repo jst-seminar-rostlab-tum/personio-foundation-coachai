@@ -7,6 +7,7 @@ from sqlmodel import Session as DBSession
 from app.database import get_db_session
 from app.dependencies import require_user
 from app.enums.speaker import SpeakerType
+from app.models.user_profile import UserProfile
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.session_turn_service import SessionTurnService
 
@@ -27,6 +28,7 @@ def get_session_turn_service(
 @router.post('', response_model=SessionTurnRead)
 async def create_session_turn(
     service: Annotated[SessionTurnService, Depends(get_session_turn_service)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
     background_tasks: BackgroundTasks,
     session_id: UUID = Form(...),  # noqa: B008
     speaker: SpeakerType = Form(...),  # noqa: B008
@@ -44,4 +46,4 @@ async def create_session_turn(
         text=text,
     )
 
-    return await service.create_session_turn(turn, audio_file, background_tasks)
+    return await service.create_session_turn(turn, audio_file, user_profile, background_tasks)

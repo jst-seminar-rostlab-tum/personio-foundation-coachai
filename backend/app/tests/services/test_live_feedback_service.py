@@ -1,17 +1,17 @@
 import json
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 from uuid import UUID, uuid4
 
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.enums.speaker import SpeakerType
-from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
+from app.models.live_feedback_model import LiveFeedback
 from app.models.session_turn import SessionTurn
-from app.schemas.live_feedback_schema import LiveFeedback
+from app.schemas.live_feedback_schema import LiveFeedbackLlmOutput, LiveFeedbackRead
 from app.services.live_feedback_service import (
-    fetch_all_for_session,
+    fetch_live_feedback_for_session,
     format_feedback_lines,
     generate_and_store_live_feedback,
 )
@@ -59,27 +59,39 @@ class TestLiveFeedbackService(unittest.TestCase):
 
     def test_fetch_all_for_session_returns_items_in_order(self) -> None:
         session_id = uuid4()
-        item1 = LiveFeedbackDB(
-            session_id=session_id, heading='Tone', feedback_text='Speak clearly.'
+        now = datetime.now()
+
+        item1 = LiveFeedback(
+            session_id=session_id,
+            heading='Tone',
+            feedback_text='Speak clearly.',
+            created_at=now - timedelta(seconds=1),
         )
-        item2 = LiveFeedbackDB(
-            session_id=session_id, heading='Clarity', feedback_text='Be more direct.'
+        item2 = LiveFeedback(
+            session_id=session_id,
+            heading='Clarity',
+            feedback_text='Be more direct.',
+            created_at=now,
         )
 
         self.session.add(item1)
         self.session.add(item2)
         self.session.commit()
 
-        results: list[LiveFeedbackDB] = fetch_all_for_session(self.session, session_id)
+        results: list[LiveFeedbackRead] = fetch_live_feedback_for_session(
+            self.session, session_id, None
+        )
 
         self.assertEqual(len(results), 2)
-        self.assertEqual(results[0].heading, 'Tone')
-        self.assertEqual(results[1].heading, 'Clarity')
+        self.assertEqual(results[0].heading, 'Clarity')
+        self.assertEqual(results[1].heading, 'Tone')
 
     def test_format_feedback_lines_returns_json_strings(self) -> None:
         feedback_items = [
-            LiveFeedback(heading='Tone', feedback_text='Speak more calmly.'),
-            LiveFeedback(heading='Content', feedback_text='Be more specific with your request.'),
+            LiveFeedbackRead(id=uuid4(), heading='Tone', feedback_text='Speak more calmly.'),
+            LiveFeedbackRead(
+                id=uuid4(), heading='Content', feedback_text='Be more specific with your request.'
+            ),
         ]
 
         formatted = format_feedback_lines(feedback_items)
@@ -103,7 +115,7 @@ class TestLiveFeedbackService(unittest.TestCase):
 
         session_turn_context = self.get_session_turn(session_id)
 
-        mock_feedback = LiveFeedback(
+        mock_feedback = LiveFeedbackLlmOutput(
             heading='Tone',
             feedback_text='Speak more calmly.',
         )
@@ -114,7 +126,7 @@ class TestLiveFeedbackService(unittest.TestCase):
 
         result = generate_and_store_live_feedback(self.session, session_id, session_turn_context)
         stored_items = self.session.exec(
-            select(LiveFeedbackDB).where(LiveFeedbackDB.session_id == session_id)
+            select(LiveFeedback).where(LiveFeedback.session_id == session_id)
         ).all()
 
         # Check result of generate_and_store_live_feedback

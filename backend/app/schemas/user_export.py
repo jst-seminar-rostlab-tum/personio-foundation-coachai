@@ -20,6 +20,7 @@ class ExportUserProfile(BaseModel):
     current_streak_days: int
     score_sum: float
     goals_achieved: int
+    num_remaining_daily_sessions: int
 
 
 class ExportUserGoal(BaseModel):

@@ -22,3 +22,8 @@ class SessionTurnRead(CamelModel):
     text: str
     ai_emotion: str | None = None
     created_at: datetime
+
+
+class SessionTurnStitchAudioSuccess(CamelModel):
+    output_filename: str
+    audio_duration_s: int

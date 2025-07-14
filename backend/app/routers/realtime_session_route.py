@@ -1,11 +1,11 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
-from app.dependencies import require_user
+from app.dependencies import require_session_access, require_user
+from app.models.session import Session
 from app.models.user_profile import UserProfile
 from app.services.realtime_session_service import RealtimeSessionService
 
@@ -21,14 +21,14 @@ def get_realtime_session_service(
     return RealtimeSessionService(db_session)
 
 
-@router.get('/{id}')
+@router.get('/{session_id}')
 async def get_realtime_session(
     service: Annotated[RealtimeSessionService, Depends(get_realtime_session_service)],
+    session: Annotated[Session, Depends(require_session_access)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
-    id: UUID,
 ) -> dict:
     """
     Proxies a POST request to OpenAI's realtime sessions endpoint
     and returns the JSON response.
     """
-    return await service.get_realtime_session(id, user_profile)
+    return await service.get_realtime_session(session, user_profile)

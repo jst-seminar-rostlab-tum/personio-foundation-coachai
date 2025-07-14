@@ -9,5 +9,8 @@
   "disconnected": "Verbindung getrennt",
   "hangingUp": "Anruf wird beendet…",
   "connectingMessage": "Verbindung wird hergestellt…",
-  "disconnectedMessage": "Verbindung getrennt... Verbindung wird wiederhergestellt..."
+  "disconnectedMessage": "Verbindung getrennt... Verbindung wird wiederhergestellt...",
+  "LiveFeedback": {
+    "title": "Real-Time Feedback"
+  }
 }

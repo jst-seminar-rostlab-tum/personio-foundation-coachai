@@ -7,7 +7,7 @@ interface MessageItemProps {
   message: Message;
 }
 
-interface SimulationMessagesProps {
+interface SessionMessagesProps {
   messages: Message[];
 }
 
@@ -62,7 +62,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   );
 };
 
-export default function SimulationMessages({ messages }: SimulationMessagesProps) {
+export default function SessionMessages({ messages }: SessionMessagesProps) {
   const messageEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
