@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
-
+import { ArrowRightIcon, Plus } from 'lucide-react';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
@@ -11,6 +10,7 @@ import StatCard from '@/components/common/StatCard';
 import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import { api } from '@/services/ApiServer';
 import ClickableTable from './components/DashboardTable';
+import { sessionService } from '@/services/SessionService';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -22,7 +22,16 @@ export default async function DashboardPage() {
   const tCommon = await getTranslations('Common');
   const userProfilePromise = UserProfileService.getUserProfile(api);
   const userStatsPromise = UserProfileService.getUserStats(api);
-  const [userProfile, userStats] = await Promise.all([userProfilePromise, userStatsPromise]);
+  const PAGE_SIZE = 10;
+  const sessionsPromise = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
+  const [userProfile, userStats, sessionsData] = await Promise.all([
+    userProfilePromise,
+    userStatsPromise,
+    sessionsPromise,
+  ]);
+  const { sessions } = sessionsData.data;
+  const locale = await getLocale();
+  const isAdmin = userProfile.accountRole === 'admin';
   const averageScore = calculateAverageScore(userStats.scoreSum, userStats.totalSessions);
 
   return (
@@ -48,6 +57,14 @@ export default async function DashboardPage() {
         />
         <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
         <StatCard value={`${averageScore}/5`} label={tCommon('avgScore')} />
+        <StatCard
+          value={
+            isAdmin
+              ? `#/${userStats.dailySessionLimit}`
+              : `${userStats.numRemainingDailySessions}/${userStats.dailySessionLimit}`
+          }
+          label={t('userStats.remainingSessionsToday')}
+        />
       </div>
 
       <section className="flex flex-col gap-6">

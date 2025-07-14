@@ -155,5 +155,10 @@
   "selectContext": "Context",
   "chooseOtherParty": "3. Other Party",
   "customizationTitle": "1. Customization",
-  "situationTitle": "2. Situation"
+  "situationTitle": "2. Situation",
+  "sessionLimitReached": {
+    "title": "Daily Session Limit Reached",
+    "description": "You've reached your daily session limit. Come back tomorrow to continue your training!",
+    "backToDashboard": "Back to Dashboard"
+  }
 }

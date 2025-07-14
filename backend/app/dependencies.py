@@ -154,3 +154,12 @@ def _update_login_streak(db: Session, user_profile: UserProfile) -> None:
             db.add(user_profile)
             db.commit()
             db.refresh(user_profile)
+
+    # Reset daily session counter if it's a new day
+    today = datetime.now(UTC).date()
+    if user_profile.last_session_date != today:
+        user_profile.sessions_created_today = 0
+        user_profile.last_session_date = today
+        db.add(user_profile)
+        db.commit()
+        db.refresh(user_profile)

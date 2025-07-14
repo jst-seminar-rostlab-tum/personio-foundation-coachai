@@ -163,5 +163,10 @@
   "customContextLabel": "Individueller Kontext",
   "chooseOtherParty": "3. Gesprächspartner",
   "customizationTitle": "1. Anpassung",
-  "situationTitle": "2. Situation"
+  "situationTitle": "2. Situation",
+  "sessionLimitReached": {
+    "title": "Tägliches Sitzungslimit erreicht",
+    "description": "Sie haben Ihr tägliches Sitzungslimit erreicht. Kommen Sie morgen zurück, um Ihr Training fortzusetzen!",
+    "backToDashboard": "Zurück zum Dashboard"
+  }
 }
