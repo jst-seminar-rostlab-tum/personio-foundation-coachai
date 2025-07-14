@@ -5,10 +5,9 @@ import { showErrorToast } from '@/lib/utils/toast';
 import { useTranslations } from 'next-intl';
 import { sessionService } from '@/services/SessionService';
 import { api } from '@/services/ApiClient';
-import { SessionStatus } from '@/interfaces/models/Session';
+import { ConnectionStatus, SessionStatus } from '@/interfaces/models/Session';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import { ConnectionStatus } from '@/interfaces/models/Simulation';
 import { useWebRTC } from '@/app/[locale]/(standalone)/session/[id]/hooks/useWebRTC';
 import SessionHeader from './SessionHeader';
 import SessionFooter from './SessionFooter';
@@ -29,7 +28,7 @@ const TERMINAL_STATES = [
 ];
 
 export default function SessionPageComponent({ sessionId }: { sessionId: string }) {
-  const t = useTranslations('Simulation');
+  const t = useTranslations('Session');
   const router = useRouter();
   const [hangupInProgress, setHangupInProgress] = useState(false);
 

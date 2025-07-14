@@ -1,7 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { sessionService } from '@/services/SessionService';
-import { MessageSender } from '@/interfaces/models/Session';
-import { ConnectionStatus } from '@/interfaces/models/Simulation';
+import { ConnectionStatus, MessageSender } from '@/interfaces/models/Session';
 import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/utils/toast';
 import { useTranslations } from 'next-intl';
@@ -14,7 +13,7 @@ import { useSessionTurns } from './useSessionTurns';
 import { useSessionLiveFeedback } from './useSessionLiveFeedback';
 
 export function useWebRTC(sessionId: string) {
-  const t = useTranslations('Simulation');
+  const t = useTranslations('Session');
 
   const { localStreamRef, startStream, stopStream, isMicActive, toggleMic } = useMediaStream();
 

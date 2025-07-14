@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
   return generateDynamicMetadata(locale, '/session/[id]', true);
 }
 
-export default async function SimulationPage(props: PagesProps) {
+export default async function SessionPage(props: PagesProps) {
   const { id } = await props.params;
   const tCommon = await getTranslations('Common');
 

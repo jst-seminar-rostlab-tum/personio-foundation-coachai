@@ -4,7 +4,7 @@ import { User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { useTranslations } from 'next-intl';
-import { ConnectionStatus } from '@/interfaces/models/Simulation';
+import { ConnectionStatus } from '@/interfaces/models/Session';
 
 interface SessionHeaderProps {
   characterName?: string;
@@ -52,7 +52,7 @@ export default function SessionHeader({
   time = 0,
   connectionStatus,
 }: SessionHeaderProps) {
-  const t = useTranslations('Simulation');
+  const t = useTranslations('Session');
 
   return (
     <div className="relative border-b border-bw-10 w-full">

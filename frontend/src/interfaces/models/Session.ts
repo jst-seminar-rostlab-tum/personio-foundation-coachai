@@ -60,3 +60,12 @@ export interface SessionLiveFeedback {
   heading: string;
   feedbackText: string;
 }
+
+export enum ConnectionStatus {
+  Connecting = 'connecting',
+  Connected = 'connected',
+  Disconnected = 'disconnected',
+  Failed = 'failed',
+  Closed = 'closed',
+  New = 'new',
+}

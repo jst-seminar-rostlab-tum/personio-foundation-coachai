@@ -8,7 +8,7 @@ interface SessionLiveFeedbackProps {
 }
 
 export default function SessionLiveFeedback({ liveFeedbacks }: SessionLiveFeedbackProps) {
-  const t = useTranslations('Simulation.LiveFeedback');
+  const t = useTranslations('Session.LiveFeedback');
   const tCommon = useTranslations('Common');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
