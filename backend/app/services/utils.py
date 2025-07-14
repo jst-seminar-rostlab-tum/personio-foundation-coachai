@@ -11,3 +11,31 @@ def normalize_quotes(s: str) -> str:
     user input, and transcript content.
     """
     return unicodedata.normalize('NFKC', s.replace('’', "'").replace('‘', "'")) if s else s
+
+
+def strip_markdown_code_block(s: str) -> str:
+    """
+    Remove markdown code block (```json ... ``` or ``` ... ```) from LLM output, if present.
+    Returns the inner JSON string.
+    """
+    import re
+
+    if not s:
+        return s
+    # Match ```json ... ``` or ``` ... ```
+    match = re.match(r'^```(?:json)?\n([\s\S]*?)\n```$', s.strip())
+    if match:
+        return match.group(1)
+    return s
+
+
+def auto_strip_markdown_code_block(s: str) -> str:
+    """
+    Only strip markdown code block if s starts with ``` or ```json, otherwise return as is.
+    """
+    if not s:
+        return s
+    s_strip = s.strip()
+    if s_strip.startswith('```'):
+        return strip_markdown_code_block(s_strip)
+    return s
