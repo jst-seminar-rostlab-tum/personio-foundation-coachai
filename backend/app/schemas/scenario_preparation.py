@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
+from enums import DifficultyLevel
 from sqlmodel import JSON, Column, Field
 
 from app.enums.language import LanguageCode
@@ -79,7 +80,9 @@ class ScenarioPreparationRead(CamelModel):
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: ScenarioPreparationStatus
     category_name: str | None = None
+    persona_name: str
     persona: str
+    difficulty_level: DifficultyLevel
     situational_facts: str
     created_at: datetime
     updated_at: datetime
