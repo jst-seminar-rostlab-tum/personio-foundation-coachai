@@ -28,15 +28,16 @@ class RealtimeSessionService:
         """
         Returns the voice to be used based on the persona name.
         """
-        if 'Alex' in persona_name:
+        persona_name = persona_name.lower()
+        if 'angry' in persona_name:
             return 'verse'
-        elif 'Pam' in persona_name:
+        elif 'positive' in persona_name:
             return 'shimmer'
-        elif 'Candice' in persona_name:
+        elif 'casual' in persona_name:
             return 'alloy'
-        elif 'Sandra' in persona_name:
+        elif 'shy' in persona_name:
             return 'sage'
-        elif 'Leo' in persona_name:
+        elif 'sad' in persona_name:
             return 'ash'
         else:
             return 'echo'

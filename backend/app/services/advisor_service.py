@@ -59,7 +59,7 @@ def get_mock_advisor_response() -> AdvisorResponse:
     return AdvisorResponse(
         custom_category_label='Performance Reviews',
         persona=mock_persona,
-        persona_name='Positive Pam',
+        persona_name='positive',
         situational_facts=mock_situational_facts,
         difficulty_level=DifficultyLevel.medium,
         mascot_speech='Hi! How about you try training for a Performance Review?',

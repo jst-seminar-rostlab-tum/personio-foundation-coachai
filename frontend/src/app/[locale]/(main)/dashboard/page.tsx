@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { ArrowRightIcon, Plus } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
-
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
@@ -12,6 +11,7 @@ import StatCard from '@/components/common/StatCard';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { SessionFromPagination } from '@/interfaces/models/Session';
 import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
+import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import { api } from '@/services/ApiServer';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -34,6 +34,8 @@ export default async function DashboardPage() {
   const { sessions } = sessionsData.data;
   const locale = await getLocale();
   const isAdmin = userProfile.accountRole === 'admin';
+  const averageScore = calculateAverageScore(userStats.scoreSum, userStats.totalSessions);
+  
   return (
     <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
@@ -56,7 +58,7 @@ export default async function DashboardPage() {
           label={t('userStats.trainingTime')}
         />
         <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
-        <StatCard value={`${userStats.averageScore ?? 0}%`} label={tCommon('avgScore')} />
+        <StatCard value={`${averageScore}/5`} label={tCommon('avgScore')} />
         <StatCard
           value={
             isAdmin
