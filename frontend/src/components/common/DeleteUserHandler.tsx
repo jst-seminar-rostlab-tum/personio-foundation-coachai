@@ -24,5 +24,5 @@ export function DeleteUserHandler({ id, onDeleteSuccess }: DeleteUserHandlerProp
     }
   }
 
-  return <DeleteConfirmButton onConfirm={() => handleDeleteUser(id)} />;
+  return <DeleteConfirmButton isButton={!id} onConfirm={() => handleDeleteUser(id)} />;
 }

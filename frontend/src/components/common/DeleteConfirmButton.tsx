@@ -12,12 +12,14 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from '@/components/ui/AlertDialog';
+import { Button } from '../ui/Button';
 
 interface DeleteConfirmButtonProps {
   onConfirm: () => Promise<void>;
+  isButton?: boolean;
 }
 
-export function DeleteConfirmButton({ onConfirm }: DeleteConfirmButtonProps) {
+export function DeleteConfirmButton({ onConfirm, isButton = false }: DeleteConfirmButtonProps) {
   const t = useTranslations('Common');
   const [open, setOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -25,21 +27,25 @@ export function DeleteConfirmButton({ onConfirm }: DeleteConfirmButtonProps) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <button
-          type="button"
-          className="text-bw-40 hover:text-flame-50 transition-colors cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            setOpen(true);
-          }}
-          disabled={isDeleting}
-        >
-          {isDeleting ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <Trash2 className="w-5 h-5" />
-          )}
-        </button>
+        {isButton ? (
+          <Button variant="destructive">{t('deleteAccount')}</Button>
+        ) : (
+          <button
+            type="button"
+            className="text-bw-40 hover:text-flame-50 transition-colors cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(true);
+            }}
+            disabled={isDeleting}
+          >
+            {isDeleting ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Trash2 className="w-5 h-5" />
+            )}
+          </button>
+        )}
       </AlertDialogTrigger>
       <AlertDialogContent onClick={(e) => e.stopPropagation()}>
         <AlertDialogHeader className="gap-4">
