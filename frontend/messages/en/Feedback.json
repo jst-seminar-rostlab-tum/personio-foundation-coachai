@@ -1,42 +1,24 @@
 {
   "metaTitle": "Feedback - Coach AI",
   "metaDescription": "Detailed analysis and evaluation of your training session",
-  "title": "Performance Summary",
+  "title": "Evaluation",
   "reviewDialog": {
-    "open": "Give Review",
-    "title": "Review",
     "description": "How was the training session? Help us improve by providing your review.",
-    "rate": "Submit Review",
-    "submitting": "Submitting...",
-    "submitReviewError": "Error while submitting review. Please try again later.",
-    "submitReviewSuccess": "Review submitted successfully. Thank you for your review!",
-    "shareWithAdmin": "Share session with an admin for improvement."
+    "shareWithAdmin": "Share session with an admin for improvement.",
+    "submitReview": "Submit Review"
   },
-  "progressBars": {
-    "structure": "Structure",
-    "empathy": "Empathy",
-    "focus": "Focus",
-    "clarity": "Clarity"
-  },
-  "stats": {
-    "speakingTime": "Speaking Time",
-    "questionsAsked": "Questions Asked",
-    "sessionLength": "Session Length",
-    "goalsAchieved": "Goals Achieved"
-  },
-  "listenConversation": "Listen to Conversation",
-  "compareAI": "Compare with AI",
-  "accordian": {
+  "sessionLength": "Session Length",
+  "listenConversation": "Replay Conversation",
+  "audioUnavailable": "Audio is currently not available for this session.",
+  "accordion": {
     "feedback": "Detailed Feedback",
-    "suggestion": "Suggested Resources",
-    "sessions": "Recommended Sessions"
+    "suggestion": "Suggested Resources"
   },
   "detailedFeedback": {
-    "positive": "What Went Well",
-    "negative": "Areas for Improvement",
     "recommendations": "Recommendations",
-    "nextTime": "Next time, try asking:"
+    "nextTime": "Next time, try:"
   },
-  "return": "Return to Dashboard",
-  "getSessionDetailError": "Error while fetching session feedback. Please try again later."
+  "submitError": "Error while submitting. Please try again later.",
+  "submitSuccess": "Submitted successfully. Thank you!",
+  "fetchError": "Error while fetching data. Please try again later."
 }

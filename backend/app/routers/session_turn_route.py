@@ -1,10 +1,13 @@
 from typing import Annotated
+from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
 from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
 from app.dependencies import require_user
+from app.enums.speaker import SpeakerType
+from app.models.user_profile import UserProfile
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
 from app.services.session_turn_service import SessionTurnService
 
@@ -23,11 +26,24 @@ def get_session_turn_service(
 
 
 @router.post('', response_model=SessionTurnRead)
-def create_session_turn(
-    turn: SessionTurnCreate,
+async def create_session_turn(
     service: Annotated[SessionTurnService, Depends(get_session_turn_service)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    background_tasks: BackgroundTasks,
+    session_id: UUID = Form(...),  # noqa: B008
+    speaker: SpeakerType = Form(...),  # noqa: B008
+    start_offset_ms: int = Form(...),  # noqa: B008
+    end_offset_ms: int = Form(...),  # noqa: B008
+    text: str = Form(...),  # noqa: B008
+    audio_file: UploadFile = File(...),  # noqa: B008
 ) -> SessionTurnRead:
-    """
-    Create a new session turn.
-    """
-    return service.create_session_turn(turn)
+    # manually create SessionTurnCreate
+    turn = SessionTurnCreate(
+        session_id=session_id,
+        speaker=speaker,
+        start_offset_ms=start_offset_ms,
+        end_offset_ms=end_offset_ms,
+        text=text,
+    )
+
+    return await service.create_session_turn(turn, audio_file, user_profile, background_tasks)

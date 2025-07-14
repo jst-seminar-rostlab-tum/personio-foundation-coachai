@@ -13,13 +13,21 @@ import {
 import { Rating, RatingButton } from '@/components/ui/Rating';
 import { Textarea } from '@/components/ui/Textarea';
 import Checkbox from '@/components/ui/Checkbox';
-import { showErrorToast, showSuccessToast } from '@/lib/toast';
-import { reviewService } from '@/services/client/ReviewService';
+import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
+import { reviewService } from '@/services/ReviewService';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
+import { api } from '@/services/ApiClient';
+import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 
-export default function ReviewDialog({ sessionId }: { sessionId: string }) {
-  const t = useTranslations('Feedback.reviewDialog');
+interface FeedbackDialogProps {
+  sessionId: string;
+  setFeedbackDetail: Dispatch<SetStateAction<FeedbackResponse | null>>;
+}
+
+export default function FeedbackDialog({ sessionId, setFeedbackDetail }: FeedbackDialogProps) {
+  const t = useTranslations('Feedback');
+  const tCommon = useTranslations('Common');
   const [rating, setRating] = useState(0);
   const [ratingDescription, setRatingDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,14 +51,16 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
     setIsSubmitting(true);
 
     try {
-      await reviewService.createReview({
+      await reviewService.createReview(api, {
         rating,
         comment: ratingDescription,
         sessionId,
+        allowAdminAccess: shareWithAdmin,
       });
-      showSuccessToast(t('submitReviewSuccess'));
+      showSuccessToast(t('submitSuccess'));
+      setFeedbackDetail((prev) => ({ ...prev!, hasReviewed: true }));
     } catch (error) {
-      showErrorToast(error, t('submitReviewError'));
+      showErrorToast(error, t('submitError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -59,12 +69,14 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
   return (
     <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="full">{t('open')}</Button>
+        <Button size="full">{t('reviewDialog.submitReview')}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl">{t('title')}</DialogTitle>
-          <DialogDescription className="text-marigold-90">{t('description')}</DialogDescription>
+          <DialogTitle className="text-2xl">{tCommon('reviews')}</DialogTitle>
+          <DialogDescription className="text-marigold-90">
+            {t('reviewDialog.description')}
+          </DialogDescription>
         </DialogHeader>
 
         <Rating
@@ -82,13 +94,12 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
           onChange={(e) => setRatingDescription(e.target.value)}
         />
 
-        {/* Share with Admin Checkbox */}
         <div
           className="flex items-center space-x-2 mt-4 cursor-pointer"
           onClick={() => !isSubmitting && setShareWithAdmin(!shareWithAdmin)}
         >
           <Checkbox checked={shareWithAdmin} disabled={isSubmitting} />
-          <label className="text-sm text-bw-70">{t('shareWithAdmin')}</label>
+          <label className="text-sm text-bw-70">{t('reviewDialog.shareWithAdmin')}</label>
         </div>
 
         <DialogClose asChild>
@@ -97,7 +108,7 @@ export default function ReviewDialog({ sessionId }: { sessionId: string }) {
             onClick={rateFeedback}
             disabled={!rating || isSubmitting}
           >
-            {isSubmitting ? t('submitting') : t('rate')}
+            {isSubmitting ? tCommon('submitting') : t('reviewDialog.submitReview')}
           </Button>
         </DialogClose>
       </DialogContent>

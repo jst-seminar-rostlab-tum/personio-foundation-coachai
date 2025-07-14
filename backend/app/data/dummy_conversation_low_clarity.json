@@ -1,0 +1,77 @@
+{
+  "scenario": {
+    "id": "11111111-1111-1111-1111-111111111120",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "category_id": "feedback",
+    "custom_category_label": null,
+    "language_code": "en",
+    "persona": "",
+    "situational_facts": "",
+    "difficulty_level": "medium",
+    "status": "ready",
+    "created_at": "2024-06-28T10:00:00Z",
+    "updated_at": "2024-06-28T10:00:00Z"
+  },
+  "transcript": [
+    {
+      "id": "bcb15bb7-e4dc-475c-a871-d3cf85bdbebd",
+      "session_id": "0cae1196-567a-4bf8-8131-b9324283a3dd",
+      "speaker": "user",
+      "start_offset_ms": 0,
+      "end_offset_ms": 2000,
+      "full_audio_start_offset_ms": 0,
+      "text": "So, um, you know, like, the thing with the project, it's kind of, well, you know, it's just not, like, there yet, you know?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:01Z"
+    },
+    {
+      "id": "bf67b2a2-58e0-4d75-8f05-47164847888a",
+      "session_id": "0cae1196-567a-4bf8-8131-b9324283a3dd",
+      "speaker": "assistant",
+      "start_offset_ms": 2000,
+      "end_offset_ms": 4000,
+      "full_audio_start_offset_ms": 2000,
+      "text": "Could you clarify what you mean?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:03Z"
+    },
+    {
+      "id": "deb4afc5-57f1-4684-9ec2-52f2857560d4",
+      "session_id": "0cae1196-567a-4bf8-8131-b9324283a3dd",
+      "speaker": "user",
+      "start_offset_ms": 4000,
+      "end_offset_ms": 6000,
+      "full_audio_start_offset_ms": 4000,
+      "text": "Yeah, it's just, you know, the stuff isn't, like, matching up with the other stuff, and, um, maybe we should, like, do something about it, or not, I guess.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:05Z"
+    },
+    {
+      "id": "87ff2ade-4fb6-451b-83d7-66565ca23c7b",
+      "session_id": "0cae1196-567a-4bf8-8131-b9324283a3dd",
+      "speaker": "assistant",
+      "start_offset_ms": 6000,
+      "end_offset_ms": 8000,
+      "full_audio_start_offset_ms": 6000,
+      "text": "Is there a specific example?",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:07Z"
+    },
+    {
+      "id": "797d1641-190d-4450-aa9f-854d487a9e16",
+      "session_id": "0cae1196-567a-4bf8-8131-b9324283a3dd",
+      "speaker": "user",
+      "start_offset_ms": 8000,
+      "end_offset_ms": 10000,
+      "full_audio_start_offset_ms": 8000,
+      "text": "Well, you know, like, the thing last week, it was, um, not really, you know, what we wanted, I think.",
+      "audio_uri": "",
+      "ai_emotion": "neutral",
+      "created_at": "2024-06-28T10:00:09Z"
+    }
+  ]
+}

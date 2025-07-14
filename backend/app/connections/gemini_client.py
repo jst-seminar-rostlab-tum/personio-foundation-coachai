@@ -11,11 +11,11 @@ DEFAULT_MODEL = 'gemini-2.0-flash'
 GEMINI_API_KEY = settings.GEMINI_API_KEY
 
 
-def _is_valid_api_key(key: str | None) -> bool:
+def is_valid_api_key(key: str | None) -> bool:
     return bool(key and isinstance(key, str) and key.strip())
 
 
-if not _is_valid_api_key(GEMINI_API_KEY):
+if not is_valid_api_key(GEMINI_API_KEY):
     print(
         '[WARNING] GEMINI_API_KEY is missing or invalid. '
         'AI features will be disabled and mock responses will be used.'
@@ -39,12 +39,15 @@ def generate_gemini_content(contents: [Any], model: str = DEFAULT_MODEL) -> str:
         return response.text
     except Exception as e:
         print(f'Gemini content generation failed: {e}')
+        return ''
 
 
-def upload_audio_gemini(audio_path: str) -> File:
+def upload_audio_gemini(audio_path: str) -> File | None:
     if not ENABLE_AI or gemini_client is None:
         print('Cannot upload files to Gemini, AI is disabled')
+        return None
     try:
         return gemini_client.files.upload(file=audio_path)
     except Exception as e:
         print(f"Error uploading audio file '{audio_path}': {e}")
+        return None

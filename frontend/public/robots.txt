@@ -8,6 +8,6 @@ Disallow: /feedback/
 Disallow: /history/
 Disallow: /new-conversation-scenario/
 Disallow: /preparation/
-Disallow: /simulation/
+Disallow: /session/
 
-Sitemap: https://personiofoundation-coachai.com/sitemap.xml 
+Sitemap: https://coachai-personio-foundation.vercel.app/sitemap.xml

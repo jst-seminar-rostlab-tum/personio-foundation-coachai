@@ -1,39 +1,41 @@
 import json
 import os
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 from gotrue import AdminUserAttributes
-from supabase import AuthError, create_client
+from supabase import AuthError
 
 from app.config import settings
+from app.database import get_supabase_client
+from app.enums.account_role import AccountRole
+from app.enums.confidence_area import ConfidenceArea
+from app.enums.config_type import ConfigType
+from app.enums.conversation_scenario_status import ConversationScenarioStatus
+from app.enums.difficulty_level import DifficultyLevel
+from app.enums.experience import Experience
+from app.enums.feedback_status import FeedbackStatus
+from app.enums.goal import Goal
+from app.enums.language import LanguageCode
+from app.enums.preferred_learning_style import PreferredLearningStyle
+from app.enums.professional_role import ProfessionalRole
+from app.enums.scenario_preparation_status import ScenarioPreparationStatus
+from app.enums.session_status import SessionStatus
+from app.enums.speaker import SpeakerType
 from app.interfaces import MockUserIdsEnum
+from app.models import LiveFeedback
 from app.models.admin_dashboard_stats import AdminDashboardStats
-from app.models.app_config import AppConfig, ConfigType
+from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
-from app.models.conversation_scenario import (
-    ConversationScenario,
-    ConversationScenarioStatus,
-    DifficultyLevel,
-)
-from app.models.language import LanguageCode
+from app.models.conversation_scenario import ConversationScenario
 from app.models.review import Review
-from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
-from app.models.session import Session, SessionStatus
-from app.models.session_feedback import (
-    FeedbackStatusEnum,
-    SessionFeedback,
-)
-from app.models.session_turn import SessionTurn, SpeakerEnum
-from app.models.user_confidence_score import ConfidenceArea, UserConfidenceScore
-from app.models.user_goal import Goal, UserGoal
-from app.models.user_profile import (
-    AccountRole,
-    Experience,
-    PreferredLearningStyle,
-    ProfessionalRole,
-    UserProfile,
-)
+from app.models.scenario_preparation import ScenarioPreparation
+from app.models.session import Session
+from app.models.session_feedback import SessionFeedback
+from app.models.session_turn import SessionTurn
+from app.models.user_confidence_score import UserConfidenceScore
+from app.models.user_goal import UserGoal
+from app.models.user_profile import UserProfile
 
 
 def get_dummy_user_profiles() -> list[UserProfile]:
@@ -51,11 +53,12 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             professional_role=ProfessionalRole.hr_professional,
             experience=Experience.beginner,
             preferred_learning_style=PreferredLearningStyle.visual,
+            last_logged_in=datetime.now(UTC) - timedelta(days=2),
             store_conversations=False,
             total_sessions=32,
             training_time=4.5,
-            current_streak_days=3,
-            average_score=82,
+            current_streak_days=5,
+            score_sum=32 * 82,
             goals_achieved=4,  # Summation of all goals achieved
         ),
         UserProfile(
@@ -68,11 +71,12 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             professional_role=ProfessionalRole.executive,
             experience=Experience.expert,
             preferred_learning_style=PreferredLearningStyle.kinesthetic,
+            last_logged_in=datetime.now(UTC) - timedelta(days=2),
             store_conversations=True,
             total_sessions=5,
             training_time=4.2,
             current_streak_days=2,
-            average_score=87,
+            score_sum=5 * 87,
             goals_achieved=2,  # Summation of all goals achieved
         ),
     ]
@@ -172,13 +176,43 @@ def get_dummy_conversation_scenarios(
         ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[0].id,
-            category_id=categories[0].id,
-            context='Context',
-            goal='Goal 1',
-            other_party='Other Party 1',
+            category_id=categories[0].id,  # Giving Feedback
+            persona_name='angry',
+            persona="""
+                **Name**: Angry Alex
+                **Personality**: Confrontational, defensive, emotionally volatile
+                **Behavioral Traits**:
+                - Assumes bad intent
+                - Easily offended, especially with criticism
+                - Challenges authority or decisions
+                - Might raise voice
+                **Training Focus**:
+                - De-escalation techniques
+                - Delivering negative feedback calmly
+                - Maintaining control in heated situations
+                - Validating emotions without losing authority
+                **Company Position**: Development Coordinator (5 years experience)""",
+            situational_facts="""
+                **Missed Deadlines**
+                - Quarterly partner-impact report arrived 5 days late despite reminders.
+                - Field-visit summary incomplete; colleague had to rewrite it under pressure.
+
+                **Attendance**
+                - In the last 2 months, Alex skipped 4 of 8 team check-ins without notice.
+                - When present, often keeps camera off and engages minimally.
+                
+                **Peer Feedback**
+                - Two colleagues needed multiple nudges for inputs.
+                - One now avoids assigning shared tasks to Alex due to reliability concerns.
+                
+                **Prior Support**
+                - Six weeks ago, the manager set clear expectations and a prioritization plan.
+                - Calendar tips and admin help were offered; little improvement seen.
+
+                **Silver Lining**
+                - Alex shows real creativity in outreach planning and still has growth potential.
+            """,
             difficulty_level=DifficultyLevel.easy,
-            tone='Friendly',
-            complexity='Low',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -186,14 +220,53 @@ def get_dummy_conversation_scenarios(
         ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[1].id,
-            category_id=categories[1].id,
+            category_id=categories[1].id,  # Performance Review
             custom_category_label='Custom Category 2',
-            context='Context 2',
-            goal='Goal 2',
-            other_party='Other Party 2',
+            persona_name='positive',
+            persona="""
+                **Name**: Positive Pam
+                **Personality**: Upbeat, eager to please, growth-oriented, avoids negativity
+                **Behavioral Traits**:
+                - Overly agreeable 
+                — avoids conflict or disagreement
+                - Deflects criticism with enthusiasm ("I'll fix it!")
+                - Often hides stress or burnout behind optimism
+                - Pushes for promotions or more responsibility before ready
+                - Uses toxic positivity to dismiss serious concerns
+                
+                **Training Focus**:
+                - Delivering constructive feedback without sugarcoating
+                - Encouraging honest reflection and accountability
+                - Identifying signs of masked stress or burnout
+                - Setting realistic growth expectations
+                - Navigating emotionally complex conversations with high performers
+                
+                **Company Position**: Development Coordinator (5 years experience)""",
+            situational_facts="""
+                **Positive Performance**
+                - Pam developed two successful community outreach pilots.
+                - Partners often compliment Pam's creativity and energy.
+
+                **Areas for Improvement**
+                - Pam sometimes misses internal deadlines for reports and data submissions.
+                - Team members report Pam can be hard to reach on short notice.
+
+                **Review Outcome**
+                - Overall rating is "Meets Expectations" — strong external impact but inconsistency 
+                in internal follow-through prevented "Exceeds Expectations".
+                - A standard 3% merit raise will be applied, same as most peers.
+
+                **Organizational Context**
+                - The NGO emphasizes reliability to secure renewed donor funding.
+                - This review cycle is slightly stricter due to new funder accountability 
+                requirements.
+
+                **Silver Lining**
+                - The manager believes Pam can reach "Exceeds Expectations" next year with more 
+                consistent internal coordination.
+
+            """,
             difficulty_level=DifficultyLevel.medium,
-            tone='Professional',
-            complexity='Medium',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -201,13 +274,47 @@ def get_dummy_conversation_scenarios(
         ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[0].id,
-            category_id=categories[2].id,
-            context='Context 1',
-            goal='Goal 1',
-            other_party='Other Party 1',
+            category_id=categories[2].id,  # Conflict Resolution
+            persona_name='casual',
+            persona="""
+                **Name**: Casual Candice
+                **Personality**: Laid-back, informal, friendly but sometimes unfocused
+                **Behavioral Traits**:
+                - Uses humor or casual language
+                - May not take feedback seriously
+                - Tends to deflect or joke under pressure
+                - Values flexibility over structure
+                **Training Focus**:
+                - Redirecting conversations professionally
+                - Setting boundaries and expectations
+                - Addressing underperformance without being overly formal
+                - Keeping focus during relaxed interactions
+                **Company Position**: Development Coordinator (5 years experience)""",
+            situational_facts="""
+                **Conflict Background**
+                - Candice and Jordan collaborated on a partner event that went off-track due to 
+                miscommunication.
+                - Candice feels Jordan oversteps boundaries and takes credit for ideas.
+                - Jordan has privately complained that Candice misses deadlines and ignores 
+                messages.
+
+                **Prior Attempts**
+                - Two team meetings were held to clarify roles; tension persists.
+                - Candice agreed to share updates more frequently; Jordan promised to check before 
+                redoing Candice's work.
+
+                **Current Impact**
+                - Other teammates feel awkward and avoid putting Candice and Jordan on the same 
+                tasks.
+                - The manager is under pressure to ensure team cohesion before a major donor site 
+                visit.
+
+                **Silver Lining**
+                - Both Candice and Jordan care deeply about partner success and have complementary 
+                skills when working well together.
+
+            """,
             difficulty_level=DifficultyLevel.easy,
-            tone='Friendly',
-            complexity='Low',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -215,13 +322,49 @@ def get_dummy_conversation_scenarios(
         ConversationScenario(
             id=uuid4(),
             user_id=user_profiles[0].id,
-            category_id=categories[3].id,
-            context='Context 1',
-            goal='Goal 1',
-            other_party='Other Party 1',
+            category_id=categories[3].id,  # Salary Discussion
+            persona_name='shy',
+            persona="""
+                **Name**: Shy Sandra
+                **Personality**: Quiet, reserved, conflict-avoidant, anxious about saying the wrong
+                  thing
+                **Behavioral Traits:**
+                - Speaks in a soft, hesitant voice with frequent pauses
+                - Uses filler words ("um…", "I guess…", "maybe…") and trails off mid-sentenceAgrees 
+                verbally ("yeah… sure… okay") even when uncertain or uncomfortable
+                - Avoids asserting opinions or asking questions
+                - Long silences when asked direct or emotional questions
+                - May apologize unnecessarily or downplay her own contributions
+                **Training Focus:**
+                - Encouraging open and honest communication through tone and phrasing
+                - Actively checking for true understanding and comfort (not just verbal agreement)
+                - Using silence constructively without rushing to fill it
+                - Creating psychological safety so Sandra feels safe to speak up
+                - Practicing empathetic, patient listening
+                - Learning to gently draw out insights from passive participants
+                **Company Position**: Development Coordinator (5 years experience)""",
+            situational_facts="""
+                **Current Salary**
+                - Sandra earns slightly below the midpoint for Program Officers in this NGO.
+                - Last annual raise was 4%.
+
+                **Performance Context**
+                - Solid on creative outreach and community partnerships.
+                - Mixed record on deadlines and internal coordination.
+
+                **Recent Request**
+                - Last week, Sandra emailed HR asking for a 10% raise, citing cost of living and 
+                workload growth.
+
+                **Organizational Context**
+                - The NGO faces tight budgets due to a new funder's spending cap.
+                - Managers can approve up to 3% merit raise without director sign-off.
+
+                **Silver Lining**
+                - Peers respect Sandra's community engagement; manager has praised initiative on 
+                outreach campaigns.
+            """,
             difficulty_level=DifficultyLevel.easy,
-            tone='Friendly',
-            complexity='Low',
             status=ConversationScenarioStatus.draft,  # Use the enum instead of a string
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -238,27 +381,13 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
     except Exception:
         initial_prompt_data = {}
 
-    default_context_path = os.path.join(os.path.dirname(__file__), 'default_contexts.json')
-    try:
-        with open(default_context_path, encoding='utf-8') as f:
-            default_context_data = json.load(f)
-    except Exception:
-        default_context_data = {}
-
     return [
         ConversationCategory(
             id='giving_feedback',
             name='Giving Feedback',
-            system_prompt='You are an expert in providing constructive feedback.',
             initial_prompt=initial_prompt_data.get(
                 'giving_feedback', 'One-on-one meeting with a team member.'
             ),
-            ai_setup={'type': 'feedback', 'complexity': 'medium'},
-            default_context=default_context_data.get(
-                'giving_feedback', 'One-on-one meeting with a team member.'
-            ),
-            default_goal='Provide constructive feedback effectively.',
-            default_other_party='Team member',
             is_custom=False,
             language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
@@ -267,16 +396,9 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
         ConversationCategory(
             id='performance_reviews',
             name='Performance Reviews',
-            system_prompt='You are a manager conducting performance reviews.',
             initial_prompt=initial_prompt_data.get(
                 'performance_reviews', 'Formal performance review meeting.'
             ),
-            ai_setup={'type': 'review', 'complexity': 'high'},
-            default_context=default_context_data.get(
-                'performance_reviews', 'Formal performance review meeting.'
-            ),
-            default_goal='Evaluate and discuss employee performance.',
-            default_other_party='Employee',
             is_custom=False,
             language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
@@ -285,16 +407,9 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
         ConversationCategory(
             id='conflict_resolution',
             name='Conflict Resolution',
-            system_prompt='You are a mediator resolving conflicts.',
             initial_prompt=initial_prompt_data.get(
                 'conflict_resolution', 'Conflict resolution meeting between team members.'
             ),
-            ai_setup={'type': 'mediation', 'complexity': 'high'},
-            default_context=default_context_data.get(
-                'conflict_resolution', 'Conflict resolution meeting between team members.'
-            ),
-            default_goal='Resolve conflicts and improve team dynamics.',
-            default_other_party='Team members',
             is_custom=False,
             language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
@@ -303,16 +418,9 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
         ConversationCategory(
             id='salary_discussions',
             name='Salary Discussions',
-            system_prompt='You are a negotiator discussing salary expectations.',
             initial_prompt=initial_prompt_data.get(
                 'salary_discussions', 'Salary negotiation meeting.'
             ),
-            ai_setup={'type': 'negotiation', 'complexity': 'medium'},
-            default_context=default_context_data.get(
-                'salary_discussions', 'Salary negotiation meeting with an employee.'
-            ),
-            default_goal='Reach a mutually beneficial agreement on salary.',
-            default_other_party='Employer',
             is_custom=False,
             language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
@@ -321,12 +429,7 @@ def get_dummy_conversation_categories() -> list[ConversationCategory]:
         ConversationCategory(
             id='custom',
             name='Custom Category',
-            system_prompt='',
             initial_prompt='',
-            ai_setup={},
-            default_context='',
-            default_goal='',
-            default_other_party='',
             is_custom=True,
             language_code=LanguageCode.en,
             created_at=datetime.now(UTC),
@@ -343,7 +446,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[0].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=5000,
             text='Hello, how can I help you?',
@@ -354,10 +457,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[0].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=5000,
             end_offset_ms=10000,
-            text='Hi! I’d like to check your schedule today. Are you available at 2 PM?',
+            text="Hi! I'd like to check your schedule today. Are you available at 2 PM?",
             audio_uri='https://example.com/audio/ai_schedule_check.mp3',
             ai_emotion='friendly',
             created_at=datetime.now(UTC),
@@ -365,7 +468,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[0].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=10000,
             end_offset_ms=15000,
             text='Sure, 2 PM works fine.',
@@ -377,7 +480,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=4000,
             text='I need assistance with my account.',
@@ -388,7 +491,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=4000,
             end_offset_ms=9000,
             text='Of course. Could you please tell me what issue you are facing?',
@@ -399,10 +502,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=9000,
             end_offset_ms=13000,
-            text='I’m not able to log in since yesterday.',
+            text="I'm not able to log in since yesterday.",
             audio_uri='https://example.com/audio/user_login_issue.mp3',
             ai_emotion='worried',
             created_at=datetime.now(UTC),
@@ -410,7 +513,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[1].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=13000,
             end_offset_ms=17000,
             text='Thanks for the info. I will reset your credentials and email you shortly.',
@@ -422,7 +525,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=3000,
             text='Can you prepare the sales report by end of day?',
@@ -433,10 +536,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=3000,
             end_offset_ms=7000,
-            text='Absolutely. I’ll make sure to include the latest figures.',
+            text="Absolutely. I'll make sure to include the latest figures.",
             audio_uri='https://example.com/audio/employee_confirm_report.mp3',
             ai_emotion='motivated',
             created_at=datetime.now(UTC),
@@ -444,7 +547,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=7000,
             end_offset_ms=10000,
             text='Good. Please double-check the Q2 numbers.',
@@ -455,10 +558,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[2].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=10000,
             end_offset_ms=13500,
-            text='Will do. I’ll send you a draft in a couple of hours.',
+            text="Will do. I'll send you a draft in a couple of hours.",
             audio_uri='https://example.com/audio/employee_confirm_draft.mp3',
             ai_emotion='reliable',
             created_at=datetime.now(UTC),
@@ -467,10 +570,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=2800,
-            text='How’s the client presentation coming along?',
+            text="How's the client presentation coming along?",
             audio_uri='https://example.com/audio/manager_check_presentation.mp3',
             ai_emotion='inquisitive',
             created_at=datetime.now(UTC),
@@ -478,10 +581,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=2800,
             end_offset_ms=6500,
-            text='I’ve finished most of the slides. Just adding the final data now.',
+            text="I've finished most of the slides. Just adding the final data now.",
             audio_uri='https://example.com/audio/employee_update_presentation.mp3',
             ai_emotion='focused',
             created_at=datetime.now(UTC),
@@ -489,7 +592,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=6500,
             end_offset_ms=9500,
             text='Great. Make sure the figures are up-to-date.',
@@ -500,10 +603,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[3].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=9500,
             end_offset_ms=12800,
-            text='Understood. I’ll send it for your review by 3 PM.',
+            text="Understood. I'll send it for your review by 3 PM.",
             audio_uri='https://example.com/audio/employee_confirm_review.mp3',
             ai_emotion='proactive',
             created_at=datetime.now(UTC),
@@ -512,7 +615,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=3200,
             text='Did you submit your leave request for next week?',
@@ -523,7 +626,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=3200,
             end_offset_ms=6000,
             text='Yes, I submitted it yesterday. Waiting for approval.',
@@ -534,7 +637,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=6000,
             end_offset_ms=9000,
             text='Alright. Make sure all your tasks are handed over before you go.',
@@ -545,10 +648,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[4].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=9000,
             end_offset_ms=12500,
-            text='Of course. I’ll update the team and share the status report tomorrow.',
+            text="Of course. I'll update the team and share the status report tomorrow.",
             audio_uri='https://example.com/audio/employee_confirm_handover.mp3',
             ai_emotion='assuring',
             created_at=datetime.now(UTC),
@@ -557,7 +660,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=3500,
             text='I noticed the budget forecast is still pending. Any update?',
@@ -568,10 +671,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
-            text='Apologies for the delay. I’ll finalize it by this afternoon.',
+            text="Apologies for the delay. I'll finalize it by this afternoon.",
             audio_uri='https://example.com/audio/employee_apology_budget.mp3',
             ai_emotion='apologetic',
             created_at=datetime.now(UTC),
@@ -579,10 +682,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=7000,
             end_offset_ms=10500,
-            text='Alright, please prioritize it. We’re presenting it tomorrow.',
+            text="Alright, please prioritize it. We're presenting it tomorrow.",
             audio_uri='https://example.com/audio/manager_instruction_prioritize.mp3',
             ai_emotion='urgent',
             created_at=datetime.now(UTC),
@@ -590,10 +693,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[5].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
-            text='Understood. I’ll share it with you before the end of the day.',
+            text="Understood. I'll share it with you before the end of the day.",
             audio_uri='https://example.com/audio/employee_confirm_budget.mp3',
             ai_emotion='committed',
             created_at=datetime.now(UTC),
@@ -602,7 +705,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=3500,
             text='I noticed the budget forecast is still pending. Any update?',
@@ -613,10 +716,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
-            text='Apologies for the delay. I’ll finalize it by this afternoon.',
+            text="Apologies for the delay. I'll finalize it by this afternoon.",
             audio_uri='https://example.com/audio/employee_apology_budget.mp3',
             ai_emotion='apologetic',
             created_at=datetime.now(UTC),
@@ -624,10 +727,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=7000,
             end_offset_ms=10500,
-            text='Alright, please prioritize it. We’re presenting it tomorrow.',
+            text="Alright, please prioritize it. We're presenting it tomorrow.",
             audio_uri='https://example.com/audio/manager_instruction_prioritize.mp3',
             ai_emotion='urgent',
             created_at=datetime.now(UTC),
@@ -635,10 +738,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[6].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
-            text='Understood. I’ll share it with you before the end of the day.',
+            text="Understood. I'll share it with you before the end of the day.",
             audio_uri='https://example.com/audio/employee_confirm_budget.mp3',
             ai_emotion='committed',
             created_at=datetime.now(UTC),
@@ -647,7 +750,7 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=0,
             end_offset_ms=3500,
             text='I noticed the budget forecast is still pending. Any update?',
@@ -658,10 +761,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=3500,
             end_offset_ms=7000,
-            text='Apologies for the delay. I’ll finalize it by this afternoon.',
+            text="Apologies for the delay. I'll finalize it by this afternoon.",
             audio_uri='https://example.com/audio/employee_apology_budget.mp3',
             ai_emotion='apologetic',
             created_at=datetime.now(UTC),
@@ -669,10 +772,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.user,
+            speaker=SpeakerType.user,
             start_offset_ms=7000,
             end_offset_ms=10500,
-            text='Alright, please prioritize it. We’re presenting it tomorrow.',
+            text="Alright, please prioritize it. We're presenting it tomorrow.",
             audio_uri='https://example.com/audio/manager_instruction_prioritize.mp3',
             ai_emotion='urgent',
             created_at=datetime.now(UTC),
@@ -680,10 +783,10 @@ def get_dummy_session_turns(
         SessionTurn(
             id=uuid4(),
             session_id=sessions[7].id,
-            speaker=SpeakerEnum.assistant,
+            speaker=SpeakerType.assistant,
             start_offset_ms=10500,
             end_offset_ms=13800,
-            text='Understood. I’ll share it with you before the end of the day.',
+            text="Understood. I'll share it with you before the end of the day.",
             audio_uri='https://example.com/audio/employee_confirm_budget.mp3',
             ai_emotion='committed',
             created_at=datetime.now(UTC),
@@ -699,7 +802,6 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
             status=SessionStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -710,7 +812,6 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            ai_persona={'persona_name': 'AI Mentor', 'persona_role': 'Guide'},
             status=SessionStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -721,7 +822,6 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            ai_persona={'persona_name': 'AI Mentor', 'persona_role': 'Guide'},
             status=SessionStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -732,7 +832,6 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            ai_persona={'persona_name': 'AI Mentor', 'persona_role': 'Guide'},
             status=SessionStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -743,7 +842,6 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
             status=SessionStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -754,7 +852,6 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
             status=SessionStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -765,7 +862,6 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
             status=SessionStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -776,7 +872,6 @@ def get_dummy_sessions(conversation_scenarios: list[ConversationScenario]) -> li
             scheduled_at=datetime.now(UTC),
             started_at=datetime.now(UTC),
             ended_at=datetime.now(UTC),
-            ai_persona={'persona_name': 'AI Assistant', 'persona_role': 'Helper'},
             status=SessionStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
@@ -791,10 +886,14 @@ def get_dummy_session_feedback(
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[0].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            scores={'structure': 4, 'empathy': 5, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=85,
-            transcript_uri='https://example.com/transcripts/session1.txt',
+            overall_score=4.3,
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
+            document_names=[
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -811,8 +910,8 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
+                        "I've noticed that several deadlines were missed last week, and "
+                        "it's causing team to fall behind on the overall project timeline."
                     ),
                 }
             ],
@@ -820,7 +919,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -857,17 +956,22 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[1].id,  # Link to the second session
-            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
+            scores={'structure': 3, 'empathy': 4, 'focus': 5, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=90,
-            transcript_uri='https://example.com/transcripts/session2.txt',
+            overall_score=4.0,
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -883,7 +987,7 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        "I've noticed that several deadlines were missed last week, and it's "
                         'causing our team to fall behind on the overall project timeline.'
                     ),
                 }
@@ -892,7 +996,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -929,17 +1033,22 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,
+            status=FeedbackStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         SessionFeedback(
             id=uuid4(),
-            session_id=sessions[2].id,  # Link to the second session
-            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
+            session_id=sessions[2].id,  # Link to the third session
+            scores={'structure': 5, 'empathy': 4, 'focus': 3, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=90,
-            transcript_uri='https://example.com/transcripts/session2.txt',
+            overall_score=4.0,
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -955,7 +1064,7 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        "I've noticed that several deadlines were missed last week, and it's "
                         'causing our team to fall behind on the overall project timeline.'
                     ),
                 }
@@ -964,7 +1073,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1001,17 +1110,20 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,
+            status=FeedbackStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         SessionFeedback(
             id=uuid4(),
-            session_id=sessions[3].id,  # Link to the second session
-            scores={'structure': 76, 'empathy': 88, 'focus': 80, 'clarity': 81},
+            session_id=sessions[3].id,  # Link to the fourth session
+            scores={'structure': 4, 'empathy': 3, 'focus': 5, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=90,
-            transcript_uri='https://example.com/transcripts/session2.txt',
+            overall_score=4.0,
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
+            document_names=[
+                'Communication at Work',
+            ],
             speak_time_percent=55.0,
             questions_asked=7,
             session_length_s=2000,
@@ -1029,7 +1141,7 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and it’s '
+                        "I've noticed that several deadlines were missed last week, and it's "
                         'causing our team to fall behind on the overall project timeline.'
                     ),
                 }
@@ -1038,7 +1150,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1075,17 +1187,22 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,
+            status=FeedbackStatus.completed,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         SessionFeedback(
             id=uuid4(),
-            session_id=sessions[4].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            session_id=sessions[4].id,  # Link to the fifth session
+            scores={'structure': 5, 'empathy': 5, 'focus': 4, 'clarity': 5},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=85,
-            transcript_uri='https://example.com/transcripts/session1.txt',
+            overall_score=4.8,
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1101,8 +1218,8 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
+                        "I've noticed that several deadlines were missed last week, and "
+                        "it's causing team to fall behind on the overall project timeline."
                     ),
                 }
             ],
@@ -1110,7 +1227,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1147,88 +1264,21 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         SessionFeedback(
             id=uuid4(),
             session_id=sessions[5].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=85,
-            transcript_uri='https://example.com/transcripts/session1.txt',
-            speak_time_percent=60.5,
-            questions_asked=5,
-            session_length_s=1800,
-            goals_achieved=[
-                'Bring clarity to the situation',
+            overall_score=3.8,
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
+            document_names=[
+                'Communication at Work',
+                'Psychology of Human Relations',
             ],
-            example_positive=[
-                {
-                    'heading': 'Clear framing of the issue',
-                    'feedback': (
-                        'You effectively communicated the specific issue (missed deadlines) and its'
-                        ' impact on the team without being accusatory.'
-                    ),
-                    'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
-                    ),
-                }
-            ],
-            example_negative=[
-                {
-                    'heading': 'Lack of specific examples',
-                    'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
-                        'instances or data to illustrate the issue. Including concrete examples '
-                        'would strengthen your feedback.'
-                    ),
-                    'quote': (
-                        'The report due on Friday was submitted on Monday, which delayed our '
-                        'progress.'
-                    ),
-                    'improved_quote': (
-                        'Ensure deadlines are met by setting clear expectations and providing '
-                        'specific examples of missed deadlines.'
-                    ),
-                }
-            ],
-            recommendations=[
-                {
-                    'heading': 'Practice the STAR method',
-                    'recommendation': (
-                        'When giving feedback, use the Situation, Task, Action, Result framework to'
-                        ' provide more concrete examples.'
-                    ),
-                },
-                {
-                    'heading': 'Ask more diagnostic questions',
-                    'recommendation': (
-                        'Spend more time understanding root causes before moving to solutions. This'
-                        ' builds empathy and leads to more effective outcomes.'
-                    ),
-                },
-                {
-                    'heading': 'Define next steps',
-                    'recommendation': (
-                        'End feedback conversations with agreed-upon actions to ensure clarity and '
-                        'accountability.'
-                    ),
-                },
-            ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
-            created_at=datetime.now(UTC),
-            updated_at=datetime.now(UTC),
-        ),
-        SessionFeedback(
-            id=uuid4(),
-            session_id=sessions[6].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
-            tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=85,
-            transcript_uri='https://example.com/transcripts/session1.txt',
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1246,8 +1296,8 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
+                        "I've noticed that several deadlines were missed last week, and "
+                        "it's causing team to fall behind on the overall project timeline."
                     ),
                 }
             ],
@@ -1255,7 +1305,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1292,17 +1342,22 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
         SessionFeedback(
             id=uuid4(),
-            session_id=sessions[7].id,  # Link to the first session
-            scores={'structure': 82, 'empathy': 85, 'focus': 84, 'clarity': 83},
+            session_id=sessions[6].id,  # Link to the first session
+            scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=85,
-            transcript_uri='https://example.com/transcripts/session1.txt',
+            overall_score=3.8,
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
+            ],
             speak_time_percent=60.5,
             questions_asked=5,
             session_length_s=1800,
@@ -1315,8 +1370,8 @@ def get_dummy_session_feedback(
                         ' impact on the team without being accusatory.'
                     ),
                     'quote': (
-                        'I’ve noticed that several deadlines were missed last week, and '
-                        'it’s causing team to fall behind on the overall project timeline.'
+                        "I've noticed that several deadlines were missed last week, and "
+                        "it's causing team to fall behind on the overall project timeline."
                     ),
                 }
             ],
@@ -1324,7 +1379,7 @@ def get_dummy_session_feedback(
                 {
                     'heading': 'Lack of specific examples',
                     'feedback': (
-                        'While you mentioned missed deadlines, you didn’t provide specific '
+                        "While you mentioned missed deadlines, you didn't provide specific "
                         'instances or data to illustrate the issue. Including concrete examples '
                         'would strengthen your feedback.'
                     ),
@@ -1361,7 +1416,79 @@ def get_dummy_session_feedback(
                     ),
                 },
             ],
-            status=FeedbackStatusEnum.completed,  # Use the enum for status
+            status=FeedbackStatus.completed,  # Use the enum for status
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
+        ),
+        SessionFeedback(
+            id=uuid4(),
+            session_id=sessions[7].id,  # Link to the first session
+            scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
+            tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
+            overall_score=3.8,
+            full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
+            document_names=[
+                'Psychology of Human Relations',
+            ],
+            speak_time_percent=60.5,
+            questions_asked=5,
+            session_length_s=1800,
+            goals_achieved=['Bring clarity to the situation'],
+            example_positive=[
+                {
+                    'heading': 'Clear framing of the issue',
+                    'feedback': (
+                        'You effectively communicated the specific issue (missed deadlines) and its'
+                        ' impact on the team without being accusatory.'
+                    ),
+                    'quote': (
+                        "I've noticed that several deadlines were missed last week, and "
+                        "it's causing team to fall behind on the overall project timeline."
+                    ),
+                }
+            ],
+            example_negative=[
+                {
+                    'heading': 'Lack of specific examples',
+                    'feedback': (
+                        "While you mentioned missed deadlines, you didn't provide specific "
+                        'instances or data to illustrate the issue. Including concrete examples '
+                        'would strengthen your feedback.'
+                    ),
+                    'quote': (
+                        'The report due on Friday was submitted on Monday, which delayed our '
+                        'progress.'
+                    ),
+                    'improved_quote': (
+                        'Ensure deadlines are met by setting clear expectations and providing '
+                        'specific examples of missed deadlines.'
+                    ),
+                }
+            ],
+            recommendations=[
+                {
+                    'heading': 'Practice the STAR method',
+                    'recommendation': (
+                        'When giving feedback, use the Situation, Task, Action, Result framework to'
+                        ' provide more concrete examples.'
+                    ),
+                },
+                {
+                    'heading': 'Ask more diagnostic questions',
+                    'recommendation': (
+                        'Spend more time understanding root causes before moving to solutions. This'
+                        ' builds empathy and leads to more effective outcomes.'
+                    ),
+                },
+                {
+                    'heading': 'Define next steps',
+                    'recommendation': (
+                        'End feedback conversations with agreed-upon actions to ensure clarity and '
+                        'accountability.'
+                    ),
+                },
+            ],
+            status=FeedbackStatus.completed,  # Use the enum for status
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         ),
@@ -1382,6 +1509,11 @@ def get_dummy_scenario_preparations(
                 'Provide specific feedback',
                 'Foster mutual understanding',
                 'End on a positive note',
+            ],
+            document_names=[
+                'Communication at Work',
+                'Teamwork: An Open Access Practical Guide',
+                'Psychology of Human Relations',
             ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
@@ -1405,6 +1537,7 @@ def get_dummy_scenario_preparations(
                 'Set expectations for communication',
                 'Identify potential risks',
             ],
+            document_names=['Communication at Work', 'Giving Feedback'],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1427,6 +1560,10 @@ def get_dummy_scenario_preparations(
                 'Align on team roles',
                 'Set expectations for communication',
             ],
+            document_names=[
+                'Psychology of Human Relations',
+                'Teamwork: An Open Access Practical Guide',
+            ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1442,6 +1579,7 @@ def get_dummy_scenario_preparations(
         ScenarioPreparation(
             id=uuid4(),
             scenario_id=conversation_scenarios[3].id,
+            document_names=['Communication at Work', 'A Guide to Effective Negotiations'],
             objectives=[
                 'Bring clarity to the situation',
                 'Encourage open dialogue',
@@ -1490,7 +1628,7 @@ def get_dummy_app_configs() -> list[AppConfig]:
     Generate dummy data for AppConfig.
     """
     return [
-        AppConfig(key='dailyUserTokenLimit', value='100', type=ConfigType.int),
+        AppConfig(key='dailyUserSessionLimit', value='10', type=ConfigType.int),
     ]
 
 
@@ -1502,7 +1640,7 @@ def get_dummy_admin_stats() -> list[AdminDashboardStats]:
         AdminDashboardStats(
             id=uuid4(),
             total_trainings=34533,
-            average_score=86,
+            score_sum=34533 * 3.5,
         )
     ]
 
@@ -1537,10 +1675,29 @@ def get_mock_user_data() -> tuple[AdminUserAttributes, AdminUserAttributes]:
     )
 
 
-def create_mock_users() -> None:
-    supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+def get_dummy_live_feedback_data(session_turns: list[SessionTurn]) -> list[LiveFeedback]:
+    return [
+        LiveFeedback(
+            id=uuid4(),
+            session_id=session_turns[0].session_id,
+            heading='Tone',
+            feedback_text='Speak more calmly',
+            created_at=datetime.now(UTC),
+        ),
+        LiveFeedback(
+            id=uuid4(),
+            session_id=session_turns[1].session_id,
+            heading='Content',
+            feedback_text='Use concrete facts for the employee underperforming',
+            created_at=datetime.now(UTC),
+        ),
+    ]
 
+
+def create_mock_users() -> None:
     attributes, admin_attributes = get_mock_user_data()
+
+    supabase = get_supabase_client()
 
     # Create mock user
     try:
@@ -1556,7 +1713,8 @@ def create_mock_users() -> None:
 
 
 def delete_mock_users() -> None:
-    supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+    supabase = get_supabase_client()
+
     for user_id in [MockUserIdsEnum.USER.value, MockUserIdsEnum.ADMIN.value]:
         try:
             supabase.auth.admin.delete_user(user_id.__str__())

@@ -1,39 +1,70 @@
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
+from app.enums.difficulty_level import DifficultyLevel
+from app.enums.language import LanguageCode
 from app.models.camel_case import CamelModel
-from app.models.conversation_scenario import ConversationScenarioStatus, DifficultyLevel
-from app.models.language import LanguageCode
+from app.models.conversation_scenario import ConversationScenario
+from app.schemas.session_turn import SessionTurnRead
 
 
 # Schema for creating a new ConversationScenario
 class ConversationScenarioCreate(CamelModel):
-    category_id: Optional[str] = None
-    custom_category_label: Optional[str] = None
-    context: str
-    goal: str
-    other_party: str
+    category_id: str | None = None
+    custom_category_label: str | None = None
+    persona_name: str
+    persona: str
+    situational_facts: str
     difficulty_level: DifficultyLevel
-    tone: Optional[str] = None
-    complexity: Optional[str] = None
     language_code: LanguageCode = LanguageCode.en
-    status: ConversationScenarioStatus = ConversationScenarioStatus.draft
 
 
-# Schema for reading ConversationScenario data
+class ConversationScenarioConfirm(CamelModel):
+    message: str
+    scenario_id: UUID
+
+
 class ConversationScenarioRead(CamelModel):
-    id: UUID
-    user_id: UUID
-    category_id: Optional[str]
-    custom_category_label: Optional[str]
-    context: str
-    goal: str
-    other_party: str
-    difficulty_level: DifficultyLevel
-    tone: Optional[str]
-    complexity: Optional[str]
+    scenario: ConversationScenario
+    transcript: list[SessionTurnRead]
+
+
+class ConversationScenarioAIPromptRead(CamelModel):
+    category_name: str
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = LanguageCode.en
+
+
+class ConversationScenarioSummary(CamelModel):
+    scenario_id: UUID
     language_code: LanguageCode
-    status: ConversationScenarioStatus
-    created_at: datetime
-    updated_at: datetime
+    category_name: str
+    category_id: str | None = None
+    total_sessions: int
+    persona_name: str
+    difficulty_level: DifficultyLevel
+    last_session_at: datetime | None
+    average_score: float | None = None
+
+
+class ConversationScenarioReadDetail(CamelModel):
+    scenario_id: UUID
+    language_code: LanguageCode
+    category_name: str
+    category_id: str | None = None
+    total_sessions: int
+    persona_name: str
+    persona: str
+    situational_facts: str
+    difficulty_level: DifficultyLevel
+    last_session_at: datetime | None
+    average_score: float | None = None
+
+
+class PaginatedConversationScenarioSummary(CamelModel):
+    scenarios: list[ConversationScenarioSummary]
+    total_pages: int
+    total_scenarios: int
+    page: int
+    limit: int

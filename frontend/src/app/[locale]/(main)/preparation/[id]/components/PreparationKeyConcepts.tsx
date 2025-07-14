@@ -1,6 +1,13 @@
-import { KeyConcept } from '@/interfaces/ConversationScenario';
+import { KeyConcept } from '@/interfaces/models/ConversationScenario';
+import { useTranslations } from 'next-intl';
 
-export default function PreparationKeyConcepts({ keyConcepts }: { keyConcepts: KeyConcept[] }) {
+interface PreparationKeyConceptsProps {
+  keyConcepts: KeyConcept[];
+}
+
+export default function PreparationKeyConcepts({ keyConcepts }: PreparationKeyConceptsProps) {
+  const tCommon = useTranslations('Common');
+
   return (
     <div className="space-y-4">
       {keyConcepts.map((concept, index) => (
@@ -14,6 +21,9 @@ export default function PreparationKeyConcepts({ keyConcepts }: { keyConcepts: K
           <p className="text-base text-bw-70">{concept.value}</p>
         </div>
       ))}
+      <div className="mt-3">
+        <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
+      </div>
     </div>
   );
 }

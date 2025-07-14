@@ -9,9 +9,10 @@ class ReviewCreate(CamelModel):
     session_id: UUID | None = None  # Optional, can be None if not related to a session
     rating: int
     comment: str
+    allow_admin_access: bool = False  # admin access to session details
 
 
-class ReviewResponse(CamelModel):
+class ReviewConfirm(CamelModel):
     message: str = 'Review submitted successfully'
     review_id: UUID
 
@@ -24,6 +25,7 @@ class ReviewRead(CamelModel):
     session_id: UUID | None = None  # Optional, can be None if not related to a session
     rating: int
     comment: str
+    allow_admin_access: bool = False  # admin access to session details
     date: date
 
 
@@ -36,7 +38,7 @@ class ReviewStatistics(CamelModel):
     num_one_star: int
 
 
-class PaginatedReviewsResponse(CamelModel):
+class PaginatedReviewRead(CamelModel):
     reviews: list[ReviewRead]
     pagination: dict
     rating_statistics: ReviewStatistics

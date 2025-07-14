@@ -1,5 +1,5 @@
+from app.enums.confidence_area import ConfidenceArea
 from app.models.camel_case import CamelModel
-from app.models.user_confidence_score import ConfidenceArea
 
 
 class ConfidenceScoreRead(CamelModel):

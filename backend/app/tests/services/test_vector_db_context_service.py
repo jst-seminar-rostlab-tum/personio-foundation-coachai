@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from langchain.schema import Document
 
-from app.schemas.scenario_preparation import ConversationScenarioBase
+from app.schemas.conversation_scenario import ConversationScenarioAIPromptRead
 from app.services.vector_db_context_service import (
     build_query_general,
     build_query_prep_feedback,
@@ -14,11 +14,10 @@ from app.services.vector_db_context_service import (
 
 class TestVectorDbContextService(unittest.TestCase):
     def test_build_query_prep_feedback_all_fields(self) -> None:
-        session = ConversationScenarioBase(
-            category='Performance Review',
-            other_party='Intern',
-            context='Annual evaluation meeting',
-            goal='Provide balanced feedback',
+        session = ConversationScenarioAIPromptRead(
+            category_name='Performance Review',
+            persona='Intern',
+            situational_facts='Annual evaluation meeting',
         )
         transcript = 'I appreciate your hard work this year'
         audio_analysis = 'calm and encouraging'
@@ -29,7 +28,6 @@ class TestVectorDbContextService(unittest.TestCase):
             'This is a/an Performance Review. '
             'The HR employee is speaking to Intern. '
             'The context is: Annual evaluation meeting '
-            'The goal is Provide balanced feedback. '
             'The HR employee said: I appreciate your hard work this year. '
             'It was spoken in the manner: calm and encouraging.'
         )
@@ -55,7 +53,7 @@ class TestVectorDbContextService(unittest.TestCase):
         assert build_query_general(None, None, None) == ''
 
     @patch('app.services.vector_db_context_service.build_vector_db_retriever')
-    @patch('app.services.vector_db_context_service.analyze_voice_gemini_from_file')
+    @patch('app.services.vector_db_context_service.analyze_voice')
     def test_query_vector_db_with_structured_context(
         self, mock_analyze: MagicMock, mock_retriever_builder: MagicMock
     ) -> None:
@@ -75,11 +73,10 @@ class TestVectorDbContextService(unittest.TestCase):
         mock_retriever_builder.return_value = fake_retriever
 
         # Set up conversation scenario
-        scenario = ConversationScenarioBase(
-            category='Coaching',
-            other_party='Junior employee',
-            context='Career development',
-            goal='Set growth plan',
+        scenario = ConversationScenarioAIPromptRead(
+            category_name='Coaching',
+            persona='Jacob. Training Focus: Set growth plan. Company Position: Intern',
+            situational_facts='Career development',
         )
 
         # Build expected values and results
@@ -96,7 +93,7 @@ class TestVectorDbContextService(unittest.TestCase):
         self.assertEqual(metadata, [doc_metadata])
 
     @patch('app.services.vector_db_context_service.build_vector_db_retriever')
-    @patch('app.services.vector_db_context_service.analyze_voice_gemini_from_file')
+    @patch('app.services.vector_db_context_service.analyze_voice')
     def test_query_vector_db_complex(
         self, mock_analyze: MagicMock, mock_retriever_builder: MagicMock
     ) -> None:
@@ -147,7 +144,7 @@ class TestVectorDbContextService(unittest.TestCase):
             [{'source': 'doc1'}, {'source': 'doc2'}],
         )
 
-        result = query_vector_db_and_prompt(
+        result, doc_names = query_vector_db_and_prompt(
             generated_object=generated_object,
             session_context=session_context,
             user_transcript=transcript,
@@ -168,7 +165,7 @@ class TestVectorDbContextService(unittest.TestCase):
         generated_object = 'objectives'
         mock_query_vector_db.return_value = (None, None)
 
-        result = query_vector_db_and_prompt(
+        result, doc_names = query_vector_db_and_prompt(
             generated_object=generated_object, session_context=None, user_transcript=None
         )
 
@@ -184,7 +181,7 @@ class TestVectorDbContextService(unittest.TestCase):
         generated_object = 'objectives'
         mock_query_vector_db.return_value = ('', [])
 
-        result = query_vector_db_and_prompt(
+        result, doc_names = query_vector_db_and_prompt(
             generated_object=generated_object, session_context=None, user_transcript=None
         )
 

@@ -5,24 +5,14 @@
     "greeting": "Hello, ",
     "cta": "New Training Session"
   },
-  "currentSession": {
-    "title": "Current Session",
-    "subtitle": "Continue your active training session",
-    "sessionCard": {
-      "title": "Giving Constructive Feedback",
-      "subtitle": "Practice giving feedback to a team member about missed deadlines",
-      "cta": "Continue"
-    }
-  },
   "userStats": {
-    "totalSessions": "Total Sessions",
     "trainingTime": "Training Time",
     "currentStreak": "Current Streak",
-    "avgScore": "Avg. Score"
+    "remainingSessionsToday": "Remaining sessions today"
   },
   "recentSessions": {
-    "title": "Recent Training History",
+    "title": "Recent Training Sessions",
     "subtitle": "Your last completed training sessions",
-    "cta": "Show Entire History"
+    "showEntireHistory": "Show Entire History"
   }
 }

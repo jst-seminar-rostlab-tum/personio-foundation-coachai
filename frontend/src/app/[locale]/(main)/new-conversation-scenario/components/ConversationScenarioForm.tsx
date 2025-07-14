@@ -2,71 +2,37 @@
 
 import { Button } from '@/components/ui/Button';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
-import Stepper from '@/components/common/Stepper';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import { ConversationCategory } from '@/interfaces/ConversationCategory';
-import { ConversationScenario } from '@/interfaces/ConversationScenario';
-import { conversationScenarioService } from '@/services/client/ConversationScenarioService';
-import { showErrorToast } from '@/lib/toast';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
+import { showErrorToast } from '@/lib/utils/toast';
+import { ConversationScenario } from '@/interfaces/models/ConversationScenario';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
+import { api } from '@/services/ApiClient';
+import Stepper from '@/components/common/Stepper';
 import { CategoryStep } from './CategoryStep';
-import { SituationStep } from './SituationStep';
 import { CustomizeStep } from './CustomizeStep';
+import ContextCardButtons from './ContextCardButtons';
 
 export default function ConversationScenarioForm() {
   const t = useTranslations('ConversationScenario');
+  const tCommon = useTranslations('Common');
   const router = useRouter();
   const { locale } = useParams();
 
-  const {
-    step: currentStep,
-    setStep,
-    formState,
-    updateForm,
-    reset,
-  } = useConversationScenarioStore();
+  const { step: currentStep, setStep, formState, reset } = useConversationScenarioStore();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [categories, setCategories] = useState<ConversationCategory[]>(
-    t.raw('categories') as ConversationCategory[]
-  );
-
-  const steps = [t('steps.category'), t('steps.situation'), t('steps.customize')];
-
-  useEffect(() => {
-    async function fetchCategories() {
-      const response = await conversationScenarioService.getConversationCategories();
-      setCategories((prev) =>
-        prev.map((cat) => {
-          const match = response.data.find((f: ConversationCategory) => f.id === cat.id);
-          return match ? { ...cat, defaultContext: match.defaultContext } : cat;
-        })
-      );
-    }
-    fetchCategories();
-  }, []);
-
-  const handleStepClick = (step: number) => {
-    if (step <= currentStep + 1) {
-      setStep(step);
-    }
-  };
 
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 0:
-        return !!formState.category;
+        return !!formState.contextMode;
       case 1:
-        return (
-          (!formState.isCustom || !!formState.customCategory) &&
-          !!formState.otherParty &&
-          !!formState.context &&
-          !!formState.goal
-        );
+        return !!formState.category && !!formState.situationalFacts;
       case 2:
-        return !!formState.difficulty && !!formState.emotionalTone && !!formState.complexity;
+        return !!formState.difficulty && !!formState.persona;
       default:
         return false;
     }
@@ -84,112 +50,58 @@ export default function ConversationScenarioForm() {
 
     const scenario: ConversationScenario = {
       categoryId: formState.category,
-      customCategoryLabel: formState.customCategory,
-      context: formState.context,
-      goal: formState.goal,
-      otherParty: formState.otherParty,
       difficultyLevel: formState.difficulty,
-      tone: formState.emotionalTone,
-      complexity: formState.complexity,
+      persona: formState.personaDescription,
+      situationalFacts: formState.situationalFacts,
       languageCode: locale as string,
+      personaName: formState.persona,
     };
 
     try {
-      const { data } = await conversationScenarioService.createConversationScenario(scenario);
+      const { data } = await conversationScenarioService.createConversationScenario(api, scenario);
       router.push(`/preparation/${data.scenarioId}`);
-      setTimeout(reset, 2000);
+      setTimeout(reset, 4000);
     } catch (error) {
       showErrorToast(error, t('errorMessage'));
       setIsSubmitting(false);
     }
   };
 
-  const getButtonText = () => {
-    if (isSubmitting && currentStep === 2) {
-      return t('navigation.creating');
-    }
-    if (currentStep === 2) {
-      return t('navigation.create');
-    }
-    return t('navigation.next');
-  };
-
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="text-2xl text-font-dark text-center w-full mb-8">{t('title')}</div>
+    <div className="pb-8">
+      <h1 className="text-2xl text-font-dark text-center w-full mb-8">{t('title')}</h1>
       <Stepper
-        steps={steps}
+        steps={[t('customizationTitle'), t('situationTitle'), t('chooseOtherParty')]}
         currentStep={currentStep}
-        showAllStepNumbers
-        showStepLabels
-        className="px-6 py-2 mb-16"
-        onStepClick={handleStepClick}
-        currentStepValid={isStepValid(currentStep)}
+        showAllStepNumbers={true}
+        showStepLabels={false}
+        className="mb-8 md:w-3/4 mx-auto"
       />
 
-      {currentStep === 0 && (
-        <CategoryStep
-          selectedCategory={formState.category}
-          onCategorySelect={(category) =>
-            updateForm({
-              category: category.id,
-              name: category.name,
-              context: category.defaultContext || '',
-              goal: category.defaultGoal || '',
-              otherParty: category.defaultOtherParty || '',
-              isCustom: category.isCustom || false,
-            })
-          }
-          categories={categories}
-        />
-      )}
+      {currentStep === 0 && <ContextCardButtons />}
 
-      {currentStep === 1 && (
-        <SituationStep
-          otherParty={formState.otherParty}
-          context={formState.context}
-          goal={formState.goal}
-          onPartyChange={(val) => updateForm({ otherParty: val })}
-          onContextChange={(val) => updateForm({ context: val })}
-          onGoalChange={(val) => updateForm({ goal: val })}
-          onCustomCategoryInput={(val) => updateForm({ customCategory: val })}
-          isCustom={formState.isCustom}
-          customCategory={formState.customCategory}
-        />
-      )}
+      {currentStep === 1 && <CategoryStep />}
 
-      {currentStep === 2 && (
-        <CustomizeStep
-          difficulty={formState.difficulty}
-          emotionalTone={formState.emotionalTone}
-          complexity={formState.complexity}
-          onDifficultyChange={(val) => updateForm({ difficulty: val })}
-          onEmotionalToneChange={(val) => updateForm({ emotionalTone: val })}
-          onComplexityChange={(val) => updateForm({ complexity: val })}
-        />
-      )}
+      {currentStep === 2 && <CustomizeStep />}
 
-      <div className="flex gap-4 w-full justify-center mt-8 max-w-4xl mx-auto">
-        {currentStep !== 0 && (
+      <div className="fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] py-6 flex gap-4 justify-center shadow-2xl">
+          {currentStep > 0 && (
+            <Button size="full" variant="outline" onClick={() => setStep(currentStep - 1)}>
+              <ArrowLeftIcon />
+              {tCommon('back')}
+            </Button>
+          )}
           <Button
             size="full"
-            variant="outline"
-            onClick={() => setStep(currentStep - 1)}
-            disabled={currentStep === 0}
+            onClick={currentStep < 2 ? () => setStep(currentStep + 1) : submitForm}
+            variant={isSubmitting || !isStepValid(currentStep) ? 'disabled' : 'default'}
+            disabled={isSubmitting || !isStepValid(currentStep)}
           >
-            <ArrowLeftIcon />
-            {t('navigation.back')}
+            {currentStep < 2 ? tCommon('next') : t('create')}
+            <ArrowRightIcon />
           </Button>
-        )}
-        <Button
-          size="full"
-          onClick={submitForm}
-          variant={isSubmitting || !isStepValid(currentStep) ? 'disabled' : 'default'}
-          disabled={isSubmitting || !isStepValid(currentStep)}
-        >
-          {getButtonText()}
-          <ArrowRightIcon />
-        </Button>
+        </div>
       </div>
     </div>
   );

@@ -1,83 +1,56 @@
-from typing import Annotated, Optional, Union
+import io
+import json
+import zipfile
+from typing import Annotated, Union
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
 from sqlmodel import Session as DBSession
-from sqlmodel import select
 
 from app.database import get_db_session
-from app.dependencies import require_user
-from app.models.user_confidence_score import UserConfidenceScore
-from app.models.user_goal import Goal, UserGoal
+from app.dependencies import require_admin, require_user
 from app.models.user_profile import UserProfile
-from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
+    PaginatedUserRead,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
+    UserStatistics,
 )
+from app.services.user_export_service import build_user_data_export
+from app.services.user_profile_service import UserService
 
-router = APIRouter(prefix='/user-profile', tags=['User Profiles'])
+router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
 
 
-@router.get('', response_model=Union[list[UserProfileRead], list[UserProfileExtendedRead]])
+def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserService:
+    return UserService(db)
+
+
+@router.get(
+    '',
+    response_model=PaginatedUserRead,
+    dependencies=[Depends(require_admin)],
+)
 def get_user_profiles(
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-    detailed: bool = False,
-) -> Union[list[UserProfileRead], list[UserProfileExtendedRead]]:
+    service: Annotated[UserService, Depends(get_user_service)],
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1),
+    email_substring: str | None = Query(
+        None,
+        description='Filter profiles by email substring',
+        min_length=1,
+        max_length=100,
+    ),
+) -> PaginatedUserRead:
     """
     Retrieve all user profiles.
-
-    - If `detailed` is False (default), returns simplified profiles.
-
-    - If `detailed` is True, returns extended profiles including goals and confidence scores.
     """
-    statement = select(UserProfile)
-    users = db_session.exec(statement).all()
-
-    if detailed:
-        return [
-            UserProfileExtendedRead(
-                user_id=user.id,
-                full_name=user.full_name,
-                email=user.email,
-                phone_number=user.phone_number,
-                preferred_language_code=user.preferred_language_code,
-                account_role=user.account_role,
-                professional_role=user.professional_role,
-                experience=user.experience,
-                preferred_learning_style=user.preferred_learning_style,
-                goals=[goal.goal for goal in user.user_goals],
-                confidence_scores=[
-                    ConfidenceScoreRead(
-                        confidence_area=cs.confidence_area,
-                        score=cs.score,
-                    )
-                    for cs in user.user_confidence_scores
-                ],
-                updated_at=user.updated_at,
-                store_conversations=user.store_conversations,
-            )
-            for user in users
-        ]
-    else:
-        return [
-            UserProfileRead(
-                user_id=user.id,
-                full_name=user.full_name,
-                email=user.email,
-                phone_number=user.phone_number,
-                preferred_language_code=user.preferred_language_code,
-                account_role=user.account_role,
-                professional_role=user.professional_role,
-                experience=user.experience,
-                preferred_learning_style=user.preferred_learning_style,
-                updated_at=user.updated_at,
-                store_conversations=user.store_conversations,
-            )
-            for user in users
-        ]
+    return service.get_user_profiles(
+        page=page, page_size=page_size, email_substring=email_substring
+    )
 
 
 @router.get(
@@ -86,7 +59,7 @@ def get_user_profiles(
 )
 def get_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
-    db_session: Annotated[DBSession, Depends(get_db_session)],
+    service: Annotated[UserService, Depends(get_user_service)],
     detailed: bool = Query(False, description='Return extended profile details'),
 ) -> Union[UserProfileRead, UserProfileExtendedRead]:
     """
@@ -96,123 +69,26 @@ def get_user_profile(
 
     - If `detailed` is True, returns extended profiles including goals and confidence scores.
     """
-    user_id = user_profile.id
-    statement = select(UserProfile).where(UserProfile.id == user_id)
-    user = db_session.exec(statement).first()
+    return service.get_user_profile_by_id(user_id=user_profile.id, detailed=detailed)
 
-    if not user:
-        raise HTTPException(status_code=404, detail='User not found')
 
-    if detailed:
-        return UserProfileExtendedRead(
-            user_id=user.id,
-            full_name=user.full_name,
-            email=user.email,
-            phone_number=user.phone_number,
-            preferred_language_code=user.preferred_language_code,
-            account_role=user.account_role,
-            professional_role=user.professional_role,
-            experience=user.experience,
-            preferred_learning_style=user.preferred_learning_style,
-            goals=[goal.goal for goal in user.user_goals],
-            confidence_scores=[
-                ConfidenceScoreRead(
-                    confidence_area=cs.confidence_area,
-                    score=cs.score,
-                )
-                for cs in user.user_confidence_scores
-            ],
-            updated_at=user.updated_at,
-            store_conversations=user.store_conversations,
-        )
-    else:
-        return UserProfileRead(
-            user_id=user.id,
-            full_name=user.full_name,
-            email=user.email,
-            phone_number=user.phone_number,
-            preferred_language_code=user.preferred_language_code,
-            account_role=user.account_role,
-            professional_role=user.professional_role,
-            experience=user.experience,
-            preferred_learning_style=user.preferred_learning_style,
-            updated_at=user.updated_at,
-            store_conversations=user.store_conversations,
-        )
+@router.get('/stats', response_model=UserStatistics)
+def get_user_stats(
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    service: Annotated[UserService, Depends(get_user_service)],
+) -> UserStatistics:
+    return service.get_user_statistics(user_id=user_profile.id)
 
 
 @router.put('', response_model=UserProfileExtendedRead)
 def replace_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileReplace,
-    db_session: Annotated[DBSession, Depends(get_db_session)],
+    service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserProfileExtendedRead:
-    user_id = user_profile.id
-    user = db_session.get(UserProfile, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail='User not found')
-
-    # Update UserProfile fields
-    user.full_name = data.full_name
-    user.account_role = data.account_role
-    user.experience = data.experience
-    user.preferred_language_code = data.preferred_language_code
-    user.preferred_learning_style = data.preferred_learning_style
-    user.store_conversations = data.store_conversations
-    user.professional_role = data.professional_role
-
-    db_session.add(user)
-
-    # Update goals
-    statement = select(UserGoal).where(UserGoal.user_id == user_id)
-    user_goals = db_session.exec(statement)
-    for user_goal in user_goals:
-        db_session.delete(user_goal)
-    db_session.commit()  # Commit to remove old goals
-
-    for goal in data.goals:
-        user_goal = UserGoal(user_id=user.id, goal=Goal(goal))
-        db_session.add(user_goal)
-
-    # Update confidence scores
-    statement = select(UserConfidenceScore).where(UserConfidenceScore.user_id == user_id)
-    user_confidence_scores = db_session.exec(statement)
-    for user_confidence_score in user_confidence_scores:
-        db_session.delete(user_confidence_score)
-    db_session.commit()
-
-    for confidence_score in data.confidence_scores:
-        user_confidence_score = UserConfidenceScore(
-            user_id=user.id,
-            confidence_area=confidence_score.confidence_area,
-            score=confidence_score.score,
-        )
-        db_session.add(user_confidence_score)
-
-    db_session.add(user)
-    db_session.commit()
-    db_session.refresh(user)
-
-    return UserProfileExtendedRead(
-        user_id=user.id,
-        full_name=user.full_name,
-        email=user.email,
-        phone_number=user.phone_number,
-        preferred_language_code=user.preferred_language_code,
-        account_role=user.account_role,
-        professional_role=user.professional_role,
-        experience=user.experience,
-        preferred_learning_style=user.preferred_learning_style,
-        goals=[g.goal for g in user.user_goals],
-        confidence_scores=[
-            ConfidenceScoreRead(
-                confidence_area=cs.confidence_area,
-                score=cs.score,
-            )
-            for cs in user.user_confidence_scores
-        ],
-        updated_at=user.updated_at,
-        store_conversations=user.store_conversations,
+    return service.replace_user_profile(
+        user=user_profile,
+        data=data,
     )
 
 
@@ -220,104 +96,43 @@ def replace_user_profile(
 def update_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     data: UserProfileUpdate,
-    db_session: Annotated[DBSession, Depends(get_db_session)],
+    service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserProfileExtendedRead:
-    user_id = user_profile.id
-    user = db_session.get(UserProfile, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail='User not found')
-
-    update_data = data.dict(exclude_unset=True)
-
-    # Update simple fields if provided
-    if 'account_role' in update_data:
-        user.account_role = update_data['account_role']
-    if 'experience' in update_data:
-        user.experience = update_data['experience']
-    if 'preferred_language_code' in update_data:
-        user.preferred_language_code = update_data['preferred_language_code']
-    if 'preferred_learning_style' in update_data:
-        user.preferred_learning_style = update_data['preferred_learning_style']
-    if 'store_conversations' in update_data:
-        user.store_conversations = update_data['store_conversations']
-    if 'professional_role' in update_data:
-        user.professional_role = update_data['professional_role']
-
-    db_session.add(user)
-
-    # Update goals if provided
-    if 'goals' in update_data:
-        statement = select(UserGoal).where(UserGoal.user_id == user_id)
-        user_goals = db_session.exec(statement)
-        for user_goal in user_goals:
-            db_session.delete(user_goal)
-        db_session.commit()
-
-        for goal in update_data['goals']:
-            db_session.add(UserGoal(user_id=user.id, goal=Goal(goal)))
-
-    # Update confidence scores if provided
-    if 'confidence_scores' in update_data:
-        statement = select(UserConfidenceScore).where(UserConfidenceScore.user_id == user_id)
-        user_confidence_scores = db_session.exec(statement)
-        for cs in user_confidence_scores:
-            db_session.delete(cs)
-        db_session.commit()
-
-        for cs_data in data.confidence_scores:
-            db_session.add(
-                UserConfidenceScore(
-                    user_id=user.id,
-                    confidence_area=cs_data.confidence_area,
-                    score=cs_data.score,
-                )
-            )
-
-    db_session.commit()
-    db_session.refresh(user)
-
-    return UserProfileExtendedRead(
-        user_id=user.id,
-        full_name=user.full_name,
-        email=user.email,
-        phone_number=user.phone_number,
-        preferred_language_code=user.preferred_language_code,
-        account_role=user.account_role,
-        professional_role=user.professional_role,
-        experience=user.experience,
-        preferred_learning_style=user.preferred_learning_style,
-        goals=[g.goal for g in user.user_goals],
-        confidence_scores=[
-            ConfidenceScoreRead(
-                confidence_area=cs.confidence_area,
-                score=cs.score,
-            )
-            for cs in user.user_confidence_scores
-        ],
-        updated_at=user.updated_at,
-        store_conversations=user.store_conversations,
+    return service.update_user_profile(
+        user=user_profile,
+        data=data,
     )
 
 
 @router.delete('', response_model=dict)
 def delete_user_profile(
     user_profile: Annotated[UserProfile, Depends(require_user)],
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-    delete_user_id: Optional[UUID] = None,
+    service: Annotated[UserService, Depends(get_user_service)],
+    delete_user_id: UUID | None = None,
 ) -> dict:
     """
     Delete a user profile by its unique user ID.
     Cascades the deletion to related goals and confidence scores.
     """
-    user_id = user_profile.id
-    if delete_user_id and user_profile.account_role == 'admin':
-        user_id = delete_user_id
-    elif delete_user_id and delete_user_id != user_profile.id:
-        raise HTTPException(status_code=403, detail='Admin access required to delete other users')
+    return service.delete_user_profile(
+        user_profile=user_profile,
+        delete_user_id=delete_user_id,
+    )
 
-    user_profile = db_session.get(UserProfile, user_id)  # type: ignore
-    if not user_profile:
-        raise HTTPException(status_code=404, detail='User profile not found')
-    db_session.delete(user_profile)
-    db_session.commit()
-    return {'message': 'User profile deleted successfully'}
+
+@router.get('/export')
+def export_user_data(
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> StreamingResponse:
+    """
+    Export all user-related data (history) for the currently authenticated user as a zip file.
+    """
+    export_data = build_user_data_export(user_profile, db_session)
+    json_bytes = json.dumps(export_data.dict(), indent=2).encode('utf-8')
+    mem_zip = io.BytesIO()
+    with zipfile.ZipFile(mem_zip, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr('user_data_export.json', json_bytes)
+    mem_zip.seek(0)
+    headers = {'Content-Disposition': 'attachment; filename="user_data_export.zip"'}
+    return StreamingResponse(mem_zip, media_type='application/zip', headers=headers)

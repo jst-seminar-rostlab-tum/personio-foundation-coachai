@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - name: Check for backend changes
         id: changed-files
@@ -24,11 +24,14 @@ jobs:
 
       - name: Check if dev branch is merged
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: |          
-          MERGE_BASE=$(git merge-base HEAD origin/dev)   
-          DEV_HEAD=$(git rev-parse origin/dev)  
+        env:
+          PR_BRANCH: ${{ github.head_ref }}
+        run: |
+          git fetch origin dev
+          git fetch origin $PR_BRANCH
+          echo "Checking if origin/dev is merged into $PR_BRANCH"
 
-          if [[ "$MERGE_BASE" == "$DEV_HEAD" ]]; then
+          if git merge-base --is-ancestor origin/dev origin/$PR_BRANCH; then
             echo "✅ Dev branch is merged"
           else
             echo "❌ Dev branch is not fully merged into this branch"
@@ -43,7 +46,7 @@ jobs:
 
           # Get list of migration files that exist on dev branch
           DEV_MIGRATIONS=$(git ls-tree -r --name-only origin/dev -- backend/alembic/versions/ backend/alembic/data/ | grep -E '\.py$|\.sql$' || true)
-          
+
           if [[ -n "$DEV_MIGRATIONS" ]]; then
             echo "Migration files found on dev branch:"
             echo "$DEV_MIGRATIONS"
@@ -75,12 +78,11 @@ jobs:
           else
             echo "✅ No migration files found on dev branch"
           fi
-      
+
       - name: No relevant changes, skipping migration pre-checks
         if: steps.changed-files.outputs.any_changed != 'true'
         run: echo "No relevant changes, skipping migration pre-checks."
 
-  
   migrations:
     name: Check migrations
     runs-on: ubuntu-22.04
@@ -107,10 +109,6 @@ jobs:
         run: uv sync
         working-directory: ./backend
 
-      - name: Create network
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: docker network create app-network
-
       - name: Start database
         if: steps.changed-files.outputs.any_changed == 'true'
         run: docker compose -f docker-compose.yml -f .husky/docker-compose.ci.yml up -d --remove-orphans db
@@ -130,7 +128,30 @@ jobs:
             [[ $i -eq 60 ]] && { echo "❌- Database not healthy after 2 minutes"; exit 1; }
             sleep 2
           done
-      
+
+      - name: Ensure Supabase roles
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          docker compose \
+            -f docker-compose.yml \
+            -f .husky/docker-compose.ci.yml \
+            exec -T db psql -U postgres -d postgres -v ON_ERROR_STOP=1 -c "
+          DO \$\$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_roles WHERE rolname = 'supabase_admin'
+            ) THEN
+              CREATE ROLE supabase_admin SUPERUSER;
+            END IF;
+
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_roles WHERE rolname = 'supabase_auth_admin'
+            ) THEN
+              CREATE ROLE supabase_auth_admin;
+            END IF;
+          END
+          \$\$;"
+
       - name: Run migrations
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
@@ -143,7 +164,7 @@ jobs:
             echo "❌- Migration checks failed"
             exit 1
           fi
-      
+
       - name: No relevant changes, skipping migration checks
         if: steps.changed-files.outputs.any_changed != 'true'
         run: echo "No relevant changes, skipping migration checks."

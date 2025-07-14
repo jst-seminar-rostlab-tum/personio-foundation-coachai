@@ -16,10 +16,21 @@ class Settings(BaseSettings):
     postgres_port: str = '5432'
     database_url: str | None = None
 
-    SUPABASE_URL: str = ''
-    SUPABASE_ANON_KEY: str = ''
-    SUPABASE_SERVICE_ROLE_KEY: str = ''
-    SUPABASE_JWT_SECRET: str = ''
+    LOG_LEVEL: str = 'INFO'
+
+    SUPABASE_URL: str = 'http://127.0.0.1:54321'
+
+    SUPABASE_ANON_KEY: str = (
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+        'eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.'
+        'CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+    )
+    SUPABASE_SERVICE_ROLE_KEY: str = (
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+        'eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.'
+        'EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+    )
+    SUPABASE_JWT_SECRET: str = 'super-secret-jwt-token-with-at-least-32-characters-long'
 
     GEMINI_API_KEY: str = ''
     OPENAI_API_KEY: str = ''
@@ -37,15 +48,29 @@ class Settings(BaseSettings):
 
     ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
+    DEFAULT_CHEAP_MODEL: str = 'gemini-2.0-flash-lite-001'
+    DEFAULT_MODEL: str = 'gemini-2.5-pro'
 
-    DEV_MODE_SKIP_AUTH: bool = False
-    DEV_MODE_MOCK_USER_ID: UUID = MockUserIdsEnum.USER.value
+    DEV_MODE_SKIP_AUTH: bool = True
+    DEV_MODE_MOCK_ADMIN_ID: UUID = MockUserIdsEnum.ADMIN.value
 
     DEMO_USER_EMAIL: str = 'mockuser@example.com'
     DEMO_USER_PASSWORD: str = 'mockuserpassword'
 
     DEMO_ADMIN_EMAIL: str = 'mockadmin@example.com'
     DEMO_ADMIN_PASSWORD: str = 'mockadminpassword'
+
+    # GCP settings
+    GCP_PRIVATE_KEY_ID: str = ''
+    GCP_PRIVATE_KEY: str = ''
+    GCP_CLIENT_EMAIL: str = ''
+    GCP_CLIENT_ID: str = ''
+    GCP_BUCKET: str = 'coachai-dev'
+    GCP_PROJECT_ID: str = 'personio-foundation'
+
+    # Vertex AI credentials
+    VERTEXAI_PROJECT_ID: str = 'personio-foundation'
+    VERTEXAI_LOCATION: str = 'europe-west9'
 
     @property
     def mock_user_data(self) -> MockUser:

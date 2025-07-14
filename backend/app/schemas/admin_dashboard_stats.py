@@ -1,10 +1,12 @@
+from pydantic import Field
+
 from app.models.camel_case import CamelModel
 
 
 # Schema for reading admin dashboard stats
 class AdminDashboardStatsRead(CamelModel):
-    total_users: int  # number of users in the system
-    total_trainings: int
-    total_reviews: int  # number of reviews
-    average_score: int
-    daily_token_limit: int | None  # daily token limit retrieved from app_config table
+    total_users: int = Field(..., description='Number of users in the system')
+    total_trainings: int = Field(..., description='Total number of trainig sessions')
+    total_reviews: int = Field(..., description='Number of reviews')
+    score_sum: float = Field(..., description='Sum of all scores')
+    daily_session_limit: int  # daily session limit retrieved from app_config table

@@ -1,21 +1,23 @@
+from functools import lru_cache
+
 from app.rag.rag import build_vector_db_retriever
 from app.rag.vector_db import format_docs_with_metadata
-from app.schemas.scenario_preparation import ConversationScenarioBase
-from app.services.voice_analysis_service import analyze_voice_gemini_from_file
+from app.schemas.conversation_scenario import ConversationScenarioAIPromptRead
+from app.services.voice_analysis_service import analyze_voice
 
 
 def build_query_prep_feedback(
-    session_context: ConversationScenarioBase,
-    user_audio_analysis: str = None,
-    user_transcript: str = None,
+    session_context: ConversationScenarioAIPromptRead,
+    user_audio_analysis: str | None = None,
+    user_transcript: str | None = None,
 ) -> str:
     """
     Constructs a detailed query string based on the conversation scenario
     for preparation and feedback
 
     Args:
-        session_context (ConversationScenarioBase): The scenario for the current session,
-            including category, other party, context, and goal
+        session_context (ConversationScenarioAIPromptRead): The scenario for the current session,
+            including category, persona, and situational background facts
         user_audio_analysis (str, optional): Description of the tone, emotion, or delivery
             of the user
         user_transcript (str, optional): Transcript of what the user said
@@ -25,17 +27,14 @@ def build_query_prep_feedback(
     """
     parts = []
 
-    if session_context.category:
-        parts.append(f'This is a/an {session_context.category}.')
+    if session_context.category_name:
+        parts.append(f'This is a/an {session_context.category_name}.')
 
-    if session_context.other_party:
-        parts.append(f'The HR employee is speaking to {session_context.other_party}.')
+    if session_context.persona:
+        parts.append(f'The HR employee is speaking to {session_context.persona}.')
 
-    if session_context.context:
-        parts.append(f'The context is: {session_context.context}')
-
-    if session_context.goal:
-        parts.append(f'The goal is {session_context.goal}.')
+    if session_context.situational_facts:
+        parts.append(f'The context is: {session_context.situational_facts}')
 
     if user_transcript:
         parts.append(f'The HR employee said: {user_transcript}.')
@@ -47,7 +46,9 @@ def build_query_prep_feedback(
 
 
 def build_query_general(
-    other_context: [str] = None, user_audio_analysis: str = None, user_transcript: str = None
+    other_context: list[str] | None = None,
+    user_audio_analysis: str | None = None,
+    user_transcript: str | None = None,
 ) -> str:
     """
     Builds a query string for general purposes, i.e. usually OTHER than preparation and feedback
@@ -76,17 +77,17 @@ def build_query_general(
 
 
 def query_vector_db(
-    session_context: ConversationScenarioBase | list[str] = None,
-    user_audio_path: str = None,
-    user_transcript: str = None,
+    session_context: ConversationScenarioAIPromptRead | list[str] | None = None,
+    user_audio_path: str | None = None,
+    user_transcript: str | None = None,
 ) -> tuple[str, list[dict]]:
     """
     Retrieves relevant documents from the vector database based on the session context,
     user audio and text
 
     Args:
-        session_context (ConversationScenarioBase or list of str, optional):
-            Either a structured conversation scenario object or a list of context strings
+        session_context (ConversationScenarioAIPromptRead or list of str, optional):
+            Either a structured conversation scenario prompt object or a list of context strings
         user_audio_path (str, optional): File path to the user's audio recording for analysis
         user_transcript (str, optional): Transcript of what the user said
 
@@ -99,12 +100,12 @@ def query_vector_db(
     try:
         voice_analysis = None
         if user_audio_path:
-            voice_analysis = analyze_voice_gemini_from_file(user_audio_path)
+            voice_analysis = analyze_voice(user_audio_path)
 
         if all(x is None for x in [session_context, user_audio_path, user_transcript]):
             return '', []
 
-        if isinstance(session_context, ConversationScenarioBase):
+        if isinstance(session_context, ConversationScenarioAIPromptRead):
             query = build_query_prep_feedback(session_context, voice_analysis, user_transcript)
         else:
             query = build_query_general(session_context, voice_analysis, user_transcript)
@@ -120,10 +121,10 @@ def query_vector_db(
 
 def query_vector_db_and_prompt(
     generated_object: str,
-    session_context: ConversationScenarioBase | list[str] = None,
-    user_audio_path: str = None,
-    user_transcript: str = None,
-) -> str:
+    session_context: ConversationScenarioAIPromptRead | list[str] | None = None,
+    user_audio_path: str | None = None,
+    user_transcript: str | None = None,
+) -> tuple[str, list[str]]:
     """
     Creates a prompt extension for an object that's generated by an LLM, e.g. general output,
     objectives etc. It includes relevant documents from the vector database
@@ -131,13 +132,15 @@ def query_vector_db_and_prompt(
 
     Args:
         generated_object (str): The object, whose prompt we're extending (is being generated)
-        session_context (ConversationScenarioBase or list of str, optional):
+        session_context (ConversationScenarioAIPromptRead or list of str, optional):
             Either a structured conversation scenario object or a list of context strings
         user_audio_path (str, optional): File path to the user's audio recording for analysis
         user_transcript (str, optional): Transcript of what the user said
 
     Returns:
-        str: A prompt extension incorporating all documents, relevant to the query
+        tuple[str, list[str]]:
+        A tuple where the first element is a prompt extension incorporating all documents relevant
+        to the query, and the second element is a list of unique document titles from the metadata.
     """
     vector_db_docs, metadata = query_vector_db(
         session_context=session_context,
@@ -153,4 +156,16 @@ def query_vector_db_and_prompt(
     else:
         hr_docs_context = ''
 
-    return hr_docs_context
+    doc_names = [] if metadata is None else [meta.get('title', '') for meta in metadata]
+
+    return hr_docs_context, doc_names
+
+
+@lru_cache(maxsize=256)
+def get_hr_docs_context(
+    persona: str, situational_facts: str, category: str = ''
+) -> tuple[str, list[str]]:
+    return query_vector_db_and_prompt(
+        session_context=[category, persona, situational_facts],
+        generated_object='output',
+    )

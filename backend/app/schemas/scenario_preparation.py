@@ -1,45 +1,51 @@
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
 from sqlmodel import JSON, Column, Field
 
+from app.enums.difficulty_level import DifficultyLevel
+from app.enums.language import LanguageCode
+from app.enums.scenario_preparation_status import ScenarioPreparationStatus
 from app.models.camel_case import CamelModel
-from app.models.scenario_preparation import ScenarioPreparationStatus
 
-# Schemas for scenario preparation requests
-
-
-# The ConversationScenarioBase fields are used in various scenario preparation requests
-# and are extended with other necessary information according to the request type
-class ConversationScenarioBase(CamelModel):
-    category: str = Field(..., description='Training category')
-    goal: str = Field(..., description='Training goal')
-    context: str = Field(..., description='Training context')
-    other_party: str = Field(..., description='Persona to speak with')
+# Schemas for scenario preparation
 
 
 # Schema for genarating objectives / goals
-# --> extends ConversationScenarioBase
-class ObjectiveRequest(ConversationScenarioBase):
+class ObjectivesCreate(CamelModel):
+    category: str
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = Field(
+        default=LanguageCode.en, description='Language code for the scenario preparation'
+    )
     num_objectives: int = Field(..., gt=0, description='Number of objectives to generate')
 
 
 # Schema for generating key concepts
-# --> same fields as ConversationScenarioBase
-class KeyConceptRequest(ConversationScenarioBase):
-    pass
+class KeyConceptsCreate(CamelModel):
+    category: str
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = Field(
+        default=LanguageCode.en, description='Language code for the scenario preparation'
+    )
 
 
 # Schema for generating a checklist
-# --> extends ConversationScenarioBase
-class ChecklistRequest(ConversationScenarioBase):
+class ChecklistCreate(CamelModel):
+    category: str
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = Field(
+        default=LanguageCode.en, description='Language code for the scenario preparation'
+    )
     num_checkpoints: int = Field(..., gt=0, description='Number of checklist items to return')
 
 
-# Response schema for a list of strings
-class StringListResponse(CamelModel):
-    items: list[str] = Field(..., description='List of generated text items')
+# Response schema for a list of strings --> needed to return generated text in a given format
+class StringListRead(CamelModel):
+    items: list[str]
 
 
 # Response schema for key concepts
@@ -48,12 +54,18 @@ class KeyConcept(CamelModel):
     value: str
 
 
-class KeyConceptResponse(CamelModel):
+class KeyConceptsRead(CamelModel):
     items: list[KeyConcept]
 
 
-# Schema for creating a new ScenarioPreparation --> extends ConversationScenarioBase
-class ScenarioPreparationCreate(ConversationScenarioBase):
+# Schema for creating a new ScenarioPreparation
+class ScenarioPreparationCreate(CamelModel):
+    category: str
+    persona: str
+    situational_facts: str
+    language_code: LanguageCode = Field(
+        default=LanguageCode.en, description='Language code for the scenario preparation'
+    )
     num_objectives: int = Field(3, gt=0, description='Number of objectives to generate')
     num_checkpoints: int = Field(5, gt=0, description='Number of checklist items to generate')
 
@@ -63,12 +75,14 @@ class ScenarioPreparationRead(CamelModel):
     id: UUID
     scenario_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
+    document_names: list[str] = (Field(default_factory=list, sa_column=Column(JSON)),)
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: ScenarioPreparationStatus
-    category_name: Optional[str] = None
-    context: Optional[str] = None
-    goal: Optional[str] = None
-    other_party: Optional[str] = None
+    category_name: str | None = None
+    persona_name: str
+    persona: str
+    difficulty_level: DifficultyLevel
+    situational_facts: str
     created_at: datetime
     updated_at: datetime

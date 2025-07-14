@@ -9,8 +9,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Checkbox from '@/components/ui/Checkbox';
 import { useEffect, useState } from 'react';
-import { PasswordRequirement } from '@/interfaces/PasswordInput';
-import Image from 'next/image';
 import {
   Form,
   FormControl,
@@ -20,13 +18,19 @@ import {
   FormMessage,
 } from '@/components/ui/Form';
 import { VerificationPopup } from '@/app/[locale]/(auth)/login/components/VerificationPopup';
-import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordInput';
+import {
+  PasswordInput,
+  PasswordRequirement,
+} from '@/app/[locale]/(auth)/login/components/PasswordInput';
 import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
 import Link from 'next/link';
+import { UserProfileService } from '@/services/UserProfileService';
+import { api } from '@/services/ApiClient';
 
 export function SignUpForm() {
-  const t = useTranslations('Login.SignUpTab');
+  const tLogin = useTranslations('Login');
+  const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
@@ -39,9 +43,9 @@ export function SignUpForm() {
   }, [error]);
 
   const signUpFormSchema = z.object({
-    fullName: z.string().min(1, t('fullNameInputError')),
-    email: z.string().email(t('emailInputError')),
-    phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, t('phoneNumberInputError')),
+    fullName: z.string().min(1, tLogin('fullNameInputError')),
+    email: z.string().email(tCommon('emailInputError')),
+    phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
     password: z
       .string()
       .regex(/^.{8,}$/)
@@ -65,28 +69,49 @@ export function SignUpForm() {
   const passwordRequirements: PasswordRequirement[] = [
     {
       id: 'length',
-      label: t('passwordInputRequirementOneLabel'),
+      label: tLogin('SignUpTab.passwordInputRequirementOneLabel'),
       test: (password: string) => password.length >= 8,
     },
     {
       id: 'uppercase',
-      label: t('passwordInputRequirementTwoLabel'),
+      label: tLogin('SignUpTab.passwordInputRequirementTwoLabel'),
       test: (password: string) => /[A-Z]/.test(password),
     },
     {
       id: 'special',
-      label: t('passwordInputRequirementThreeLabel'),
+      label: tLogin('SignUpTab.passwordInputRequirementThreeLabel'),
       test: (password: string) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
     },
   ];
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
     setError(null);
     setIsLoading(true);
 
-    setShowVerification(true);
+    // Check uniqueness of email and phone
+    try {
+      const { emailExists, phoneExists } = await UserProfileService.checkUnique(
+        api,
+        values.email,
+        values.phone_number
+      );
+      if (emailExists) {
+        setError(tLogin('SignUpTab.emailAlreadyExistsError'));
+        setIsLoading(false);
+        return;
+      }
+      if (phoneExists) {
+        setError(tLogin('SignUpTab.phoneAlreadyExistsError'));
+        setIsLoading(false);
+        return;
+      }
+    } catch {
+      setError(tCommon('genericError'));
+      setIsLoading(false);
+      return;
+    }
 
+    setShowVerification(true);
     setIsLoading(false);
   };
 
@@ -101,13 +126,14 @@ export function SignUpForm() {
                 name="fullName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('fullNameInputLabel')}</FormLabel>
+                    <FormLabel>{tLogin('fullNameInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('fullNameInputPlaceholder')}
+                        placeholder={tLogin('fullNameInputPlaceholder')}
                         {...field}
                         className="w-full"
                         disabled={isLoading}
+                        autoComplete="section-signup name"
                       />
                     </FormControl>
                     <FormMessage />
@@ -120,14 +146,15 @@ export function SignUpForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('emailInputLabel')}</FormLabel>
+                    <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('emailInputPlaceholder')}
+                        placeholder={tCommon('emailInputPlaceholder')}
                         {...field}
                         className="w-full"
                         type="email"
                         disabled={isLoading}
+                        autoComplete="section-signup email"
                       />
                     </FormControl>
                     <FormMessage />
@@ -140,16 +167,18 @@ export function SignUpForm() {
                 name="phone_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('phoneNumberInputLabel')}</FormLabel>
+                    <FormLabel>{tLogin('phoneNumberInputLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('phoneNumberInputPlaceholder')}
+                        placeholder={tLogin('phoneNumberInputPlaceholder')}
                         {...field}
                         className="w-full"
                         type="tel"
                         disabled={isLoading}
+                        autoComplete="section-signup tel"
                       />
                     </FormControl>
+                    <p className="text-xs text-bw-50 mt-1">{tLogin('phoneNumberInputHelper')}</p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -160,13 +189,14 @@ export function SignUpForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('passwordInputLabel')}</FormLabel>
+                    <FormLabel>{tLogin('passwordInputLabel')}</FormLabel>
                     <FormControl>
                       <PasswordInput
-                        placeholder={t('passwordInputPlaceholder')}
+                        placeholder={tLogin('passwordInputPlaceholder')}
                         disabled={isLoading}
                         requirements={passwordRequirements}
                         {...field}
+                        autocomplete="section-signup new-password"
                       />
                     </FormControl>
                   </FormItem>
@@ -176,14 +206,14 @@ export function SignUpForm() {
               <Card className="shadow-none border border-bw-30 p-2">
                 <CardContent className="p-1">
                   <p className="text-base">
-                    {t('gdprAdherenceText')}
+                    {tLogin('SignUpTab.gdprAdherenceText')}
                     <Button
                       variant="link"
                       type="button"
                       className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
                       onClick={() => setShowPrivacyDialog(true)}
                     >
-                      {t('readMoreOnGdprLink')}
+                      {tLogin('SignUpTab.readMoreOnGdprLink')}
                     </Button>
                   </p>
                 </CardContent>
@@ -203,7 +233,7 @@ export function SignUpForm() {
                         />
                       </FormControl>
                       <FormLabel className="text-sm">
-                        {t.rich('agreeToTermsCheckboxLabel', {
+                        {tLogin.rich('SignUpTab.agreeToTermsCheckboxLabel', {
                           terms: (chunks) => (
                             <Link
                               href="/terms"
@@ -233,12 +263,7 @@ export function SignUpForm() {
             </CardContent>
             <CardFooter className="flex-col gap-6">
               <Button size="full" type="submit" disabled={isLoading}>
-                {t('signUpButtonLabel')}
-              </Button>
-              <div className="w-full border-t border-gray-300" />
-              <Button size="full" variant="secondary" disabled={isLoading}>
-                <Image src="/icons/google-icon.svg" alt="Google Icon" width={20} height={20} />
-                {t('signUpWithGoogleButtonLabel')}
+                {tLogin('signUp')}
               </Button>
             </CardFooter>
           </form>

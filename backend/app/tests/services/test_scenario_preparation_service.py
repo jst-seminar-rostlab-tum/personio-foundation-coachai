@@ -2,14 +2,14 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from app.schemas.scenario_preparation import (
-    ChecklistRequest,
+    ChecklistCreate,
     KeyConcept,
-    KeyConceptRequest,
-    KeyConceptResponse,
-    ObjectiveRequest,
-    StringListResponse,
+    KeyConceptsCreate,
+    KeyConceptsRead,
+    ObjectivesCreate,
+    StringListRead,
 )
-from app.services.scenario_preparation_service import (
+from app.services.scenario_preparation.scenario_preparation_service import (
     generate_checklist,
     generate_key_concept,
     generate_objectives,
@@ -17,16 +17,17 @@ from app.services.scenario_preparation_service import (
 
 
 class TestScenarioPreparationService(unittest.TestCase):
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_objectives_returns_correct_list(self, mock_llm: MagicMock) -> None:
         items = ['1. Prepare outline', '2. Rehearse responses', '3. Stay calm']
-        mock_llm.return_value = StringListResponse(items=items)
+        mock_llm.return_value = StringListRead(items=items)
 
-        req = ObjectiveRequest(
+        req = ObjectivesCreate(
             category='Performance Feedback',
-            goal='Give constructive criticism',
-            context='Quarterly review',
-            other_party='Junior engineer',
+            persona='**Name**: Andrew '
+            '**Training Focus**: Giving constructive criticism '
+            '**Company Positon**: Junior engineer',
+            situational_facts='Quarterly review',
             num_objectives=3,
         )
 
@@ -36,16 +37,17 @@ class TestScenarioPreparationService(unittest.TestCase):
         for i in range(len(result)):
             self.assertEqual(result[i], items[i])
 
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_checklist_returns_correct_list(self, mock_llm: MagicMock) -> None:
         items = ['1. Review past performance', '2. Prepare documents', '3. Set up private room']
-        mock_llm.return_value = StringListResponse(items=items)
+        mock_llm.return_value = StringListRead(items=items)
 
-        req = ChecklistRequest(
+        req = ChecklistCreate(
             category='Performance Review',
-            goal='Address underperformance',
-            context='1:1 review',
-            other_party='Backend engineer',
+            persona='**Name**: Sarah '
+            '**Training Focus**: Addressing underperformance '
+            '**Company Position**: Backend engineer',
+            situational_facts='1:1 review',
             num_checkpoints=3,
         )
 
@@ -54,7 +56,7 @@ class TestScenarioPreparationService(unittest.TestCase):
         for i in range(len(result)):
             self.assertEqual(result[i], items[i])
 
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_key_concept_parses_json(self, mock_llm: MagicMock) -> None:
         mock_key_concept_response = [
             KeyConcept(
@@ -71,31 +73,33 @@ class TestScenarioPreparationService(unittest.TestCase):
             ),
         ]
 
-        mock_llm.return_value = KeyConceptResponse(items=mock_key_concept_response)
+        mock_llm.return_value = KeyConceptsRead(items=mock_key_concept_response)
 
-        req = KeyConceptRequest(
+        req = KeyConceptsCreate(
             category='Feedback',
-            goal='Deliver effective criticism',
-            context='Post-project debrief',
-            other_party='Project manager',
+            persona='**Name**: Jenny'
+            '**Training Focus**: Deliver effective criticism'
+            '**Company Position**: Project manager',
+            situational_facts='Post-project debrief',
         )
 
         result = generate_key_concept(req)
         self.assertTrue(all(isinstance(x, KeyConcept) for x in result))
         self.assertEqual(result, mock_key_concept_response)
 
-    @patch('app.services.scenario_preparation_service.call_structured_llm')
+    @patch('app.services.scenario_preparation.scenario_preparation_service.call_structured_llm')
     def test_generate_objectives_with_hr_docs_context(self, mock_llm: MagicMock) -> None:
         # Analogically for checklist and concepts
 
         # Set up llm mock and vector db prompt extension
-        mock_llm.return_value = StringListResponse(items=['Objective 1', 'Objective 2'])
+        mock_llm.return_value = StringListRead(items=['Objective 1', 'Objective 2'])
 
-        req = ObjectiveRequest(
+        req = ObjectivesCreate(
             category='Feedback',
-            goal='Improve team dynamics',
-            context='Team meeting',
-            other_party='Team lead',
+            persona='**Name**: Glenda'
+            '**Training Focus**: Improve team dynamics '
+            '**Company Position**: Team lead',
+            situational_facts='Team meeting',
             num_objectives=2,
         )
 
@@ -119,3 +123,19 @@ class TestScenarioPreparationService(unittest.TestCase):
         request_prompt = kwargs['request_prompt']
         self.assertTrue(hr_docs_context_base not in request_prompt)
         self.assertTrue(len(request_prompt) > 0)
+
+    @patch(
+        'app.services.vector_db_context_service.query_vector_db_and_prompt',
+        return_value=('Some HR context', ['DocA', 'DocB']),
+    )
+    def test_query_vector_db_and_prompt_returns_document_names_list(
+        self, mock_query: MagicMock
+    ) -> None:
+        from app.services.vector_db_context_service import query_vector_db_and_prompt
+
+        hr_context, doc_names = query_vector_db_and_prompt(
+            generated_object='output',
+            session_context=['Feedback', 'Persona', 'Facts'],
+        )
+        self.assertIsInstance(doc_names, list)
+        self.assertEqual(doc_names, ['DocA', 'DocB'])

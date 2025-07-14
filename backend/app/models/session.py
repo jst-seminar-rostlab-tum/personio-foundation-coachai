@@ -1,13 +1,13 @@
 from datetime import UTC, datetime
-from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import event
 from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
-from sqlmodel import JSON, Column, Field, Relationship
+from sqlmodel import Field, Relationship
 
+from app.enums.session_status import SessionStatus
 from app.models.camel_case import CamelModel
 
 if TYPE_CHECKING:
@@ -17,20 +17,16 @@ if TYPE_CHECKING:
     from app.models.session_turn import SessionTurn
 
 
-class SessionStatus(str, Enum):
-    started = 'started'
-    completed = 'completed'
-    failed = 'failed'
-
-
 class Session(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     scenario_id: UUID = Field(foreign_key='conversationscenario.id', ondelete='CASCADE')
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
     ended_at: datetime | None = None
-    ai_persona: dict = Field(default_factory=dict, sa_column=Column(JSON))
     status: SessionStatus = Field(default=SessionStatus.started)
+    allow_admin_access: bool = Field(
+        default=False, description='If True, admin can view this session details'
+    )
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
@@ -41,7 +37,6 @@ class Session(CamelModel, table=True):
         back_populates='session', cascade_delete=True
     )
     session_review: Optional['Review'] = Relationship(back_populates='session', cascade_delete=True)
-    # Automatically update `updated_at` before an update
 
 
 @event.listens_for(Session, 'before_update')

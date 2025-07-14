@@ -8,7 +8,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import {
   Form,
   FormControl,
@@ -21,12 +20,16 @@ import { PasswordInput } from '@/app/[locale]/(auth)/login/components/PasswordIn
 import { createClient } from '@/lib/supabase/client';
 import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
-import { showErrorToast } from '@/lib/toast';
+import { showErrorToast } from '@/lib/utils/toast';
+import ConfirmationForm from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
 
 export function SignInForm() {
-  const t = useTranslations('Login.SignInTab');
+  const tLogin = useTranslations('Login');
+  const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -37,8 +40,8 @@ export function SignInForm() {
   }, [error]);
 
   const signInFormSchema = z.object({
-    email: z.string().email(t('emailInputError')),
-    password: z.string().min(1, t('passwordInputError')),
+    email: z.string().email(tCommon('emailInputError')),
+    password: z.string().min(1, tLogin('passwordInputError')),
   });
 
   const signInForm = useForm({
@@ -62,7 +65,26 @@ export function SignInForm() {
       password: formData.password,
     };
     const response = await supabase.auth.signInWithPassword(credentials);
+
     if (response.error) {
+      // Check for unconfirmed email error
+      if (
+        response.error.message.toLowerCase().includes('confirm') ||
+        response.error.message.toLowerCase().includes('verify')
+      ) {
+        setPendingEmail(formData.email);
+        setShowConfirmation(true);
+
+        // Resend confirmation email
+        await supabase.auth.resend({
+          email: formData.email,
+          type: 'signup',
+        });
+
+        setIsLoading(false);
+        return;
+      }
+
       setError(response.error.message);
       setIsLoading(false);
       return;
@@ -83,14 +105,15 @@ export function SignInForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('emailInputLabel')}</FormLabel>
+                  <FormLabel>{tCommon('emailInputLabel')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={t('emailInputPlaceholder')}
+                      placeholder={tCommon('emailInputPlaceholder')}
                       {...field}
                       className="w-full"
                       type="email"
                       disabled={isLoading}
+                      autoComplete="section-login username"
                     />
                   </FormControl>
                   <FormMessage />
@@ -103,13 +126,14 @@ export function SignInForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('passwordInputLabel')}</FormLabel>
+                  <FormLabel>{tLogin('passwordInputLabel')}</FormLabel>
                   <FormControl>
                     <PasswordInput
-                      placeholder={t('passwordInputPlaceholder')}
+                      placeholder={tLogin('passwordInputPlaceholder')}
                       {...field}
                       disabled={isLoading}
                       requirements={[]}
+                      autocomplete="section-login current-password"
                     />
                   </FormControl>
                   <FormMessage />
@@ -120,16 +144,23 @@ export function SignInForm() {
 
           <CardFooter className="flex-col gap-6">
             <Button type="submit" size="full" disabled={isLoading}>
-              {t('signInButtonLabel')}
+              {tLogin('signIn')}
             </Button>
-            <div className="w-full border-t border-gray-300" />
-            <Button size="full" variant="secondary" disabled={isLoading}>
-              <Image src="/icons/google-icon.svg" alt="Google Icon" width={20} height={20} />
-              {t('signInWithGoogleButtonLabel')}
+            <Button
+              type="button"
+              variant="link"
+              className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
+              disabled={isLoading}
+              onClick={() => router.push('?step=reset')}
+            >
+              {tLogin('forgotPassword')}
             </Button>
           </CardFooter>
         </form>
       </Form>
+      {showConfirmation && pendingEmail && (
+        <ConfirmationForm initialEmail={pendingEmail} onClose={() => setShowConfirmation(false)} />
+      )}
     </Card>
   );
 }
