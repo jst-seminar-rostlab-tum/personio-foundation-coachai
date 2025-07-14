@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     postgres_port: str = '5432'
     database_url: str | None = None
 
+    LOG_LEVEL: str = 'INFO'
+
     SUPABASE_URL: str = 'http://127.0.0.1:54321'
 
     SUPABASE_ANON_KEY: str = (
