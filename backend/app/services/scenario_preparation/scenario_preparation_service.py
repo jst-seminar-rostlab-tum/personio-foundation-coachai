@@ -230,6 +230,7 @@ def generate_scenario_preparation(
 
     session_gen = session_generator_func()
     db_session = next(session_gen)
+    has_error = False
 
     try:
         # 1. retrieve the preparation record
@@ -270,6 +271,7 @@ def generate_scenario_preparation(
         )
 
         has_error = False
+        preparation.document_names = doc_names
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_key_concepts = executor.submit(
