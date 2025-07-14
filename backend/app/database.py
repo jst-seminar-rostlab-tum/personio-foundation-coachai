@@ -25,10 +25,7 @@ if settings.database_url:
     else:
         SQLALCHEMY_DATABASE_URL = settings.database_url
 else:
-    # SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
-    SQLALCHEMY_DATABASE_URL = f'postgresql://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
-
-
+    SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 
@@ -46,5 +43,7 @@ def get_db_session() -> Generator[DBSession, Any, None]:
 
 def get_supabase_client() -> Client:
     if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_ROLE_KEY:
-        return create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+        client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+        client.rpc('grant_hr_info_permissions')
+        return client
     raise RuntimeError('Supabase client configuration is missing in environment variables.')
