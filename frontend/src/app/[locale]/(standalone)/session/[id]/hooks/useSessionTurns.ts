@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 type PartialSessionTurn = Partial<CreateSessionTurnRequest>;
 
 export function useSessionTurns() {
-  const t = useTranslations('Simulation');
+  const t = useTranslations('Session');
   const sessionTurnsMap = useRef<Map<string, PartialSessionTurn>>(new Map());
 
   const convertSessionTurnToFormData = useCallback((turn: CreateSessionTurnRequest): FormData => {

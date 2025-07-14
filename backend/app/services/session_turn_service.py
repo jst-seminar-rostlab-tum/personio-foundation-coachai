@@ -6,7 +6,7 @@ import tempfile
 from uuid import uuid4
 
 import puremagic
-from fastapi import BackgroundTasks, HTTPException, UploadFile
+from fastapi import BackgroundTasks, HTTPException, UploadFile, status
 from sqlalchemy import UUID
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
@@ -16,7 +16,12 @@ from app.connections.gcs_client import get_gcs_audio_manager
 from app.enums.speaker import SpeakerType
 from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn
-from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead
+from app.models.user_profile import UserProfile
+from app.schemas.session_turn import (
+    SessionTurnCreate,
+    SessionTurnRead,
+    SessionTurnStitchAudioSuccess,
+)
 from app.services.live_feedback_service import generate_and_store_live_feedback
 from app.services.vector_db_context_service import get_hr_docs_context
 
@@ -46,15 +51,42 @@ def get_audio_content_type(upload_file: UploadFile) -> str:
     matches = puremagic.magic_stream(upload_file.file)
     upload_file.file.seek(0)
     if not matches:
-        raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Only .webm, .mp3 or .wav files are allowed',
+        )
     mime = matches[0].mime_type
     if not is_valid_audio_mime_type(mime):
-        raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Only .webm, .mp3 or .wav files are allowed',
+        )
     return mime
 
 
+def get_file_extension_from_content_type(content_type: str) -> str:
+    mapping = {
+        'audio/webm': '.webm',
+        'video/webm': '.webm',
+        'audio/mpeg': '.mp3',
+        'video/mpeg': '.mp3',
+        'audio/wav': '.wav',
+        'audio/x-wav': '.wav',
+        'audio/wave': '.wav',
+    }
+    ext = mapping.get(content_type)
+    if not ext:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Only .webm, .mp3 or .wav files are allowed',
+        )
+    return ext
+
+
 def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
-    audio_name = f'{session_id}_{uuid4().hex}'
+    content_type = get_audio_content_type(audio_file)
+    file_extension = get_file_extension_from_content_type(content_type)
+    audio_name = f'{session_id}_{uuid4().hex}{file_extension}'
     gcs = get_gcs_audio_manager()
 
     try:
@@ -64,7 +96,9 @@ def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
             content_type=get_audio_content_type(audio_file),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail='Failed to upload audio file') from e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to upload audio file'
+        ) from e
 
     return audio_name
 
@@ -78,9 +112,15 @@ class SessionTurnService:
         self,
         turn: SessionTurnCreate,
         audio_file: UploadFile,
+        user_profile: UserProfile,
         background_tasks: BackgroundTasks,
     ) -> SessionTurnRead:
         session = self.db.get(SessionModel, turn.session_id)
+
+        if not session.scenario.user_id == user_profile.id:
+            raise HTTPException(
+                status.HTTP_401_UNAUTHORIZED, detail='User does not own this session'
+            )
         if not session:
             raise HTTPException(status_code=404, detail='Session not found')
         if not turn.text:
@@ -216,7 +256,9 @@ class SessionTurnService:
         # if we still failed:
         raise RuntimeError(f'Could not determine duration (ffprobe fmt={dur!r}, stream={dur2!r})')
 
-    def stitch_mp3s_from_gcs(self, session_id: UUID, output_blob_name: str) -> str | None:
+    def stitch_mp3s_from_gcs(
+        self, session_id: UUID, output_blob_name: str
+    ) -> SessionTurnStitchAudioSuccess | None:
         # Order by configured start_offset_ms to respect timeline
 
         if not settings.ENABLE_AI:
@@ -236,24 +278,30 @@ class SessionTurnService:
         # Download, compute durations, and determine offsets
         mp3_entries = []  # list of (buffer, duration, offset_ms)
         cumulative = 0.0
+        longest_end_ms = 0
         for turn in session_turns:
             buf = io.BytesIO()
             self.gcs_manager.bucket.blob(
                 f'{self.gcs_manager.prefix}{turn.audio_uri}'
             ).download_to_file(buf)
             buf.seek(0)
-            dur = self.get_audio_duration_seconds(buf)
+            dur = self.get_audio_duration_seconds(buf)  # seconds (float)
 
+            # decide the clip’s offset
             if STITCH_MODE == MODE_TIMELINE:
-                offset = turn.start_offset_ms or 0
-            else:
-                offset = int(cumulative * 1000)
+                offset_ms = turn.start_offset_ms or 0
+            else:  # MODE_CONCAT
+                offset_ms = int(cumulative * 1000)
                 cumulative += dur
 
-            # Update the stored offset
-            turn.full_audio_start_offset_ms = offset
+            # remember the clip’s absolute end position
+            end_ms = offset_ms + int(dur * 1000)
+            longest_end_ms = max(longest_end_ms, end_ms)
+
+            # store/update DB as before
+            turn.full_audio_start_offset_ms = offset_ms
             self.db.add(turn)
-            mp3_entries.append((buf, dur, offset))
+            mp3_entries.append((buf, dur, offset_ms))
 
         self.db.commit()
 
@@ -327,7 +375,13 @@ class SessionTurnService:
             )
             out_buf.close()
 
-        return output_blob_name
+        print(f'Stitched audio saved to {output_blob_name}')
+        stitched_duration_s = longest_end_ms / 1000.0  # convert back to seconds
+        print(f'Stitched audio duration: {stitched_duration_s} seconds')
+
+        return SessionTurnStitchAudioSuccess(
+            output_filename=output_blob_name, audio_duration_s=int(stitched_duration_s)
+        )
 
     def get_session_turns(self, session_id: UUID) -> list[SessionTurnRead]:
         turns = self.db.exec(

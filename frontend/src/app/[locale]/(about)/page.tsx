@@ -34,8 +34,8 @@ export default async function AboutPage() {
   const features = [
     {
       icon: MessageSquare,
-      title: t('features.items.simulations.title'),
-      description: t('features.items.simulations.description'),
+      title: t('features.items.sessions.title'),
+      description: t('features.items.sessions.description'),
     },
     {
       icon: Video,

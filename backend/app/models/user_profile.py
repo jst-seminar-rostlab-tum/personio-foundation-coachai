@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
@@ -55,6 +55,10 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     score_sum: float = Field(default=0)
     goals_achieved: int = Field(default=0)
     # TODO: Add performance_over_time and skills_performance
+
+    # Daily session tracking
+    sessions_created_today: int = Field(default=0)
+    last_session_date: date = Field(default_factory=lambda: datetime.now(UTC).date())
 
 
 @event.listens_for(UserProfile, 'before_update')

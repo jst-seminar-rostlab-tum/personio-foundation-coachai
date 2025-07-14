@@ -17,6 +17,7 @@ from app.schemas.conversation_scenario import (
 )
 from app.schemas.session_feedback import (
     FeedbackCreate,
+    GoalsAchievedCreate,
     GoalsAchievedRead,
     NegativeExample,
     PositiveExample,
@@ -24,7 +25,7 @@ from app.schemas.session_feedback import (
     RecommendationsRead,
     SessionExamplesRead,
 )
-from app.schemas.session_turn import SessionTurnRead
+from app.schemas.session_turn import SessionTurnRead, SessionTurnStitchAudioSuccess
 from app.services.session_feedback.session_feedback_llm import generate_recommendations
 from app.services.session_feedback.session_feedback_service import (
     generate_and_store_feedback,
@@ -164,7 +165,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
 
         example_request = FeedbackCreate(
             transcript='Sample transcript...',
@@ -276,8 +280,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
-
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
         feedback = generate_and_store_feedback(
             session_id=session_id,
             feedback_request=example_request,
@@ -389,8 +395,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
-
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
         session_id = uuid4()
         mock_get_conversation_data.return_value = self._mock_conversation_data()
 
@@ -413,6 +421,81 @@ class TestSessionFeedbackService(unittest.TestCase):
             feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4}
         )
         self.assertEqual(feedback.overall_score, 4.0)
+
+    def test_generate_training_examples_with_audio(self) -> None:
+        from app.schemas.session_feedback import FeedbackCreate, SessionExamplesRead
+        from app.services.session_feedback import session_feedback_llm
+
+        dummy_audio_uri = 'https://dummy-audio-uri'
+        dummy_examples = SessionExamplesRead(positive_examples=[], negative_examples=[])
+        req = FeedbackCreate(
+            transcript='User: Hello',
+            objectives=['Obj1'],
+            persona='P',
+            situational_facts='S',
+            category='C',
+            key_concepts='K',
+        )
+        with patch.object(
+            session_feedback_llm, 'call_structured_llm', return_value=dummy_examples
+        ) as mock_audio:
+            result = session_feedback_llm.generate_training_examples(
+                req, hr_docs_context='', audio_uri=dummy_audio_uri
+            )
+            mock_audio.assert_called_once()
+            self.assertEqual(mock_audio.call_args.kwargs['audio_uri'], dummy_audio_uri)
+            self.assertTrue(hasattr(result, 'positive_examples'))
+            self.assertTrue(hasattr(result, 'negative_examples'))
+
+    def test_generate_recommendations_with_audio(self) -> None:
+        from app.schemas.session_feedback import FeedbackCreate, Recommendation, RecommendationsRead
+        from app.services.session_feedback import session_feedback_llm
+
+        dummy_audio_uri = 'https://dummy-audio-uri'
+        dummy_recommendations = RecommendationsRead(
+            recommendations=[Recommendation(heading='h', recommendation='r')]
+        )
+        req = FeedbackCreate(
+            transcript='User: Hello',
+            objectives=['Obj1'],
+            persona='P',
+            situational_facts='S',
+            category='C',
+            key_concepts='K',
+        )
+        with patch.object(
+            session_feedback_llm, 'call_structured_llm', return_value=dummy_recommendations
+        ) as mock_audio:
+            result = session_feedback_llm.generate_recommendations(
+                req, hr_docs_context='', audio_uri=dummy_audio_uri
+            )
+            mock_audio.assert_called_once()
+            self.assertEqual(mock_audio.call_args.kwargs['audio_uri'], dummy_audio_uri)
+            self.assertTrue(hasattr(result, 'recommendations'))
+            self.assertEqual(result.recommendations[0].heading, 'h')
+            self.assertEqual(result.recommendations[0].recommendation, 'r')
+
+    def test_get_achieved_goals_with_audio(self) -> None:
+        from app.schemas.session_feedback import GoalsAchievedRead
+        from app.services.session_feedback import session_feedback_llm
+
+        dummy_audio_uri = 'https://dummy-audio-uri'
+        dummy_goals = GoalsAchievedRead(goals_achieved=['G1', 'G2'])
+        req = GoalsAchievedCreate(
+            transcript='User: Hello',
+            objectives=['Obj1'],
+            language_code=LanguageCode.en,
+        )
+        with patch.object(
+            session_feedback_llm, 'call_structured_llm', return_value=dummy_goals
+        ) as mock_audio:
+            result = session_feedback_llm.get_achieved_goals(
+                req, hr_docs_context='', audio_uri=dummy_audio_uri
+            )
+            mock_audio.assert_called_once()
+            self.assertEqual(mock_audio.call_args.kwargs['audio_uri'], dummy_audio_uri)
+            self.assertTrue(hasattr(result, 'goals_achieved'))
+            self.assertEqual(result.goals_achieved, ['G1', 'G2'])
 
 
 if __name__ == '__main__':
