@@ -4,8 +4,10 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.responses import Response
 
 from app.config import settings
 from app.database import create_db_and_tables, get_db_session
@@ -54,6 +56,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(title='CoachAI', debug=settings.stage == 'dev', lifespan=lifespan)
 
+
+class TimezoneAwareMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        timezone = request.headers.get('x-timezone')
+
+        request.state.timezone = timezone if timezone else 'UTC'
+        return await call_next(request)
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.CORS_ORIGIN],
@@ -61,6 +72,7 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+app.add_middleware(TimezoneAwareMiddleware)
 
 app.include_router(auth_route.router)
 app.include_router(conversation_category_route.router)
