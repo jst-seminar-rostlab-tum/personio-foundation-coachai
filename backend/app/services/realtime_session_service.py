@@ -1,3 +1,5 @@
+import json
+import os
 from uuid import UUID
 
 import httpx
@@ -25,18 +27,54 @@ class RealtimeSessionService:
         """
         Returns the voice to be used based on the persona name.
         """
-        if 'Alex' in persona_name:
+        persona_name = persona_name.lower()
+        if 'angry' in persona_name:
             return 'verse'
-        elif 'Pam' in persona_name:
+        elif 'positive' in persona_name:
             return 'shimmer'
-        elif 'Candice' in persona_name:
+        elif 'casual' in persona_name:
             return 'alloy'
-        elif 'Sandra' in persona_name:
+        elif 'shy' in persona_name:
             return 'sage'
-        elif 'Leo' in persona_name:
+        elif 'sad' in persona_name:
             return 'ash'
         else:
             return 'echo'
+
+    def get_persona_difficulty_modifier(self, persona_name: str, difficulty: str) -> str | None:
+        """
+        Returns the modifier string for a given persona name and difficulty.
+        """
+        modifiers_path = os.path.join(
+            os.path.dirname(__file__), '..', 'data', 'persona_difficulty_modifiers.json'
+        )
+
+        print(f'Loading persona difficulty modifiers from {modifiers_path}')
+        try:
+            with open(modifiers_path) as f:
+                modifiers = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return None
+        personas = modifiers.get('personas', {})
+        persona_data = personas.get(persona_name)
+        if not persona_data:
+            return None
+
+        difficulties = persona_data.get('difficulties', {})
+        difficulty_data = difficulties.get(difficulty)
+        if not difficulty_data:
+            return None
+
+        # Format the difficulty data as a nicely formatted string
+        formatted = []
+        for key, value in difficulty_data.items():
+            if isinstance(value, list):
+                formatted.append(
+                    f'{key.replace("_", " ").title()}:\n' + '\n'.join(f'- {item}' for item in value)
+                )
+            else:
+                formatted.append(f'{key.replace("_", " ").title()}:\n{value}')
+        return '\n\n'.join(formatted)
 
     async def get_realtime_session(self, session_id: UUID, user_profile: UserProfile) -> dict:
         """
@@ -79,9 +117,7 @@ class RealtimeSessionService:
 
         conversation_category_name = None
         if conversation_category:
-            conversation_category_name = conversation_category.name
-        elif conversation_scenario.custom_category_label:
-            conversation_category_name = conversation_scenario.custom_category_label
+            conversation_category_name = conversation_category.id
         else:
             conversation_category_name = 'Custom Conversation'
 
@@ -94,6 +130,17 @@ class RealtimeSessionService:
             f"'{conversation_category_name}' here are some more background informations:"
             f'{conversation_scenario.situational_facts}\n'
         )
+
+        persona_difficulty_modifier = self.get_persona_difficulty_modifier(
+            conversation_scenario.persona_name, conversation_scenario.difficulty_level
+        )
+        if persona_difficulty_modifier:
+            print(f'Using difficulty modifier for {conversation_scenario.persona_name}:')
+            instructions += (
+                f'\n\nThe following difficulty modifiers apply:\n'
+                f'{json.dumps(persona_difficulty_modifier, indent=2)}\n'
+            )
+
         if conversation_category and conversation_category.initial_prompt:
             instructions += (
                 f'Additional instructions before starting:\n'

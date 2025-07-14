@@ -15,6 +15,12 @@ import SimulationFooter from './SimulationFooter';
 import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
 import SimulationMessages from './SimulationMessages';
 
+type SimulationPageComponentProps = {
+  personaName: string;
+  categoryName: string;
+  sessionId: string;
+};
+
 const DISCONNECTED_STATES = [
   ConnectionStatus.Connecting,
   ConnectionStatus.Disconnected,
@@ -28,7 +34,11 @@ const TERMINAL_STATES = [
   ConnectionStatus.Failed,
 ];
 
-export default function SimulationPageComponent({ sessionId }: { sessionId: string }) {
+export default function SimulationPageComponent({
+  personaName,
+  categoryName,
+  sessionId,
+}: SimulationPageComponentProps) {
   const t = useTranslations('Simulation');
   const router = useRouter();
   const [hangupInProgress, setHangupInProgress] = useState(false);
@@ -73,7 +83,12 @@ export default function SimulationPageComponent({ sessionId }: { sessionId: stri
   return (
     <div className="flex flex-col h-screen">
       <div className="mb-2">
-        <SimulationHeader time={elapsedTimeS} connectionStatus={connectionStatus} />
+        <SimulationHeader
+          characterName={personaName}
+          sessionLabel={categoryName}
+          time={elapsedTimeS}
+          connectionStatus={connectionStatus}
+        />
       </div>
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">

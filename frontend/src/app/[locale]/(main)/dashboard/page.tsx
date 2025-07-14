@@ -8,6 +8,10 @@ import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { Button } from '@/components/ui/Button';
 import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
+import { SessionFromPagination } from '@/interfaces/models/Session';
+import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
+import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import { api } from '@/services/ApiServer';
 import ClickableTable from './DashboardTable';
 
@@ -21,7 +25,15 @@ export default async function DashboardPage() {
   const tCommon = await getTranslations('Common');
   const userProfilePromise = UserProfileService.getUserProfile(api);
   const userStatsPromise = UserProfileService.getUserStats(api);
-  const [userProfile, userStats] = await Promise.all([userProfilePromise, userStatsPromise]);
+  const sessionsPromise = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
+  const [userProfile, userStats, sessionsData] = await Promise.all([
+    userProfilePromise,
+    userStatsPromise,
+    sessionsPromise,
+  ]);
+  const { sessions } = sessionsData.data;
+  const locale = await getLocale();
+  const averageScore = calculateAverageScore(userStats.scoreSum, userStats.totalSessions);
 
   return (
     <div className="flex flex-col gap-16">
@@ -45,7 +57,7 @@ export default async function DashboardPage() {
           label={t('userStats.trainingTime')}
         />
         <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
-        <StatCard value={`${userStats.averageScore ?? 0}%`} label={tCommon('avgScore')} />
+        <StatCard value={`${averageScore}/5`} label={tCommon('avgScore')} />
       </div>
 
       <section className="flex flex-col gap-6">
