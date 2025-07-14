@@ -536,7 +536,7 @@ class SessionService:
             allow_admin_access=sess.allow_admin_access,
             session_length_s=feedback.session_length_s
             if feedback and feedback.session_length_s
-            else 0,
+            else -1,
         )
 
     def _validate_scenario_access(
