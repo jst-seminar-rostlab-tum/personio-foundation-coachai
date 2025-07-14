@@ -558,6 +558,9 @@ class SessionService:
             overall_score=feedback.overall_score if feedback else -1,
             skills=scores,
             allow_admin_access=sess.allow_admin_access,
+            session_length_s=feedback.session_length_s
+            if feedback and feedback.session_length_s
+            else -1,
         )
 
     def _validate_scenario_access(
