@@ -18,7 +18,13 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { ModalWrapper } from './ModelWrapper';
 
-export default function ConfirmationForm() {
+export default function ConfirmationForm({
+  initialEmail,
+  onClose,
+}: {
+  initialEmail?: string;
+  onClose?: () => void;
+}) {
   const t = useTranslations('Login');
   const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
@@ -26,8 +32,10 @@ export default function ConfirmationForm() {
   const [showResendButton, setShowResendButton] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const isConfirmedRef = useRef(false);
 
   useEffect(() => {
     if (error) {
@@ -45,8 +53,8 @@ export default function ConfirmationForm() {
     resolver: zodResolver(confirmationFormSchema),
     mode: 'onTouched',
     defaultValues: {
-      email: useSearchParams().get('email') ?? '',
-      code: useSearchParams().get('token') ?? '',
+      email: initialEmail ?? searchParams.get('email') ?? '',
+      code: searchParams.get('token') ?? '',
     },
   });
 
@@ -82,6 +90,8 @@ export default function ConfirmationForm() {
 
     try {
       await authService.confirmUser(api);
+      isConfirmedRef.current = true;
+      if (onClose) onClose(); // Close the modal on success
     } catch {
       setError(t('ConfirmationForm.genericError'));
       setIsLoading(false);
@@ -189,6 +199,9 @@ export default function ConfirmationForm() {
                   {t('resendCodeButtonLabel')}
                 </Button>
               )}
+              <Button size="full" variant="secondary" onClick={onClose} disabled={isLoading}>
+                {tCommon('cancel')}
+              </Button>
             </CardFooter>
           </form>
         </Form>

@@ -20,12 +20,12 @@ from app.routers import (
     live_feedback_route,
     realtime_session_route,
     review_route,
-    session_route,
     session_turn_route,
-    signed_url_route,
+    sessions_route,
+    signed_urls_route,
     user_profile_route,
 )
-from app.services.cleanup_service import cleanup_old_session_turns
+from app.services.data_retention_service import cleanup_old_session_turns
 
 logging.basicConfig(
     level=logging.INFO,
@@ -77,12 +77,12 @@ app.add_middleware(TimezoneAwareMiddleware)
 app.include_router(auth_route.router)
 app.include_router(conversation_category_route.router)
 app.include_router(conversation_scenario_route.router)
-app.include_router(session_route.router)
+app.include_router(sessions_route.router)
 app.include_router(session_turn_route.router)
 app.include_router(user_profile_route.router)
 app.include_router(app_config_route.router)
 app.include_router(admin_dashboard_stats_route.router)
 app.include_router(review_route.router)
 app.include_router(realtime_session_route.router)
-app.include_router(signed_url_route.router)
+app.include_router(signed_urls_route.router)
 app.include_router(live_feedback_route.router)

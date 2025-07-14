@@ -1,4 +1,4 @@
-import { Session } from '@/interfaces/models/Session';
+import { Session, SessionLiveFeedback } from '@/interfaces/models/Session';
 import { AxiosInstance } from 'axios';
 
 const getPaginatedSessions = async (api: AxiosInstance, page: number, pageSize: number) => {
@@ -68,6 +68,16 @@ const createSessionTurn = async (api: AxiosInstance, sessionTurn: FormData) => {
   }
 };
 
+const getSessionRealtime = async (api: AxiosInstance, sessionId: string) => {
+  try {
+    const response = await api.get(`/realtime-sessions/${sessionId}`);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 const getSdpResponseTextFromRealtimeApi = async (
   api: AxiosInstance,
   sessionId: string,
@@ -95,12 +105,26 @@ const getSdpResponseTextFromRealtimeApi = async (
   }
 };
 
+const getSessionLiveFeedback = async (api: AxiosInstance, sessionId: string) => {
+  try {
+    const response = await api.get<SessionLiveFeedback[]>(`/live-feedback/session/${sessionId}`, {
+      params: { limit: 5 },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 export const sessionService = {
   getPaginatedSessions,
   clearAllSessions,
   createSession,
   updateSession,
   getSessionFeedback,
+  getSessionLiveFeedback,
   createSessionTurn,
   getSdpResponseTextFromRealtimeApi,
+  getSessionRealtime,
 };
