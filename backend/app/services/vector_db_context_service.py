@@ -157,6 +157,7 @@ def query_vector_db_and_prompt(
         hr_docs_context = ''
 
     doc_names = [] if metadata is None else [meta.get('title', '') for meta in metadata]
+    doc_names = list(dict.fromkeys(name for name in doc_names if name.strip()))
 
     return hr_docs_context, doc_names
 
