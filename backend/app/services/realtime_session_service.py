@@ -8,10 +8,11 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.config import settings
+from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session, SessionStatus
-from app.models.user_profile import UserProfile
+from app.models.user_profile import AccountRole, UserProfile
 
 if settings.FORCE_CHEAP_MODEL:
     MODEL = 'gpt-4o-mini-realtime-preview-2024-12-17'
@@ -94,6 +95,36 @@ class RealtimeSessionService:
             raise HTTPException(
                 status.HTTP_429_TOO_MANY_REQUESTS, detail='Session is already completed'
             )
+
+        # Check daily session limit for non-admin users
+        if user_profile.account_role != AccountRole.admin:
+            # Get session limit from AppConfig
+            session_limit_config = self.db.exec(
+                select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
+            ).first()
+
+            # If session limit is not configured, assume limit is hit (safety feature)
+            if session_limit_config is None:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail='Daily session limit is not configured. Cannot start real-time session. '
+                    'Please contact an administrator.',
+                )
+
+            session_limit = int(session_limit_config)
+
+            # Check if the user has reached the daily session limit
+            if user_profile.sessions_created_today >= session_limit:
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail=f'You have reached the daily session limit of {session_limit}. '
+                    'Cannot start real-time session.',
+                )
+
+            # Increment session counter for non-admin users
+            user_profile.sessions_created_today += 1
+            self.db.add(user_profile)
+            self.db.commit()
 
         conversation_scenario = self.db.exec(
             select(ConversationScenario).where(ConversationScenario.id == session.scenario_id)
