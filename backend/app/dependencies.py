@@ -167,7 +167,7 @@ def _update_login_streak(db: DBSession, user_profile: UserProfile) -> None:
         db.refresh(user_profile)
 
 
-def require_session(
+def require_session_access(
     session_id: UUID,
     db_session: Annotated[DBSession, Depends(get_db_session)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
