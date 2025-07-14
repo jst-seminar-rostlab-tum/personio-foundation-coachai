@@ -346,3 +346,24 @@ class SessionTurnService:
             )
             for t in turns
         ]
+
+    def delete_session_turns(self, session_turns: list[SessionTurn]) -> list[str]:
+        if not session_turns:
+            return []
+
+        deleted_audios = []
+
+        for turn in session_turns:
+            if turn.audio_uri and self.gcs_manager:
+                try:
+                    self.gcs_manager.delete_document(turn.audio_uri)
+                    deleted_audios.append(turn.audio_uri)
+                except Exception as e:
+                    raise HTTPException(
+                        status_code=500, detail=f'Failed to delete audio file: {e}'
+                    ) from e
+
+            self.db.delete(turn)
+        self.db.commit()
+
+        return deleted_audios

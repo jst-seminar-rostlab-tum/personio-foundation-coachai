@@ -35,6 +35,10 @@ export default async function PreparationPage(props: PagesProps) {
 
         <CreateSessionButton scenarioId={id} />
       </div>
+
+      <div className="mt-4 text-center">
+        <p className="text-xs text-bw-40">{tCommon('aiDisclaimer')}</p>
+      </div>
     </div>
   );
 }

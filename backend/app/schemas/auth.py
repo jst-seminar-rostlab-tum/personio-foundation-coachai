@@ -16,3 +16,8 @@ class VerificationCodeCreate(CamelModel):
 class VerificationCodeConfirm(CamelModel):
     phone_number: str
     code: str
+
+
+class CheckUniqueRequest(CamelModel):
+    email: str
+    phone: str

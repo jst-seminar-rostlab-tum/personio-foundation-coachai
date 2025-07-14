@@ -1,77 +1,159 @@
 {
   "metaTitle": "New Training - Coach AI",
-  "metaDescription": "Start a new training session with personalized coaching",
+  "metaDescription": "Start a new training session with personal coaching",
   "title": "New Training Session",
-  "steps": {
-    "category": "Category",
-    "situation": "Situation",
-    "customize": "Customize"
-  },
-  "category": {
-    "title": "Choose a Conversation Category *",
-    "customPlaceholder": "E.g., Promotion discussion, Onboarding new team member...",
-    "customInput": "Define your own conversation topic *"
-  },
-  "situation": {
-    "title": "Describe your Situation",
-    "otherParty": {
-      "title": "Who is the other party? *",
-      "placeholder": "Enter name"
+  "customize": {
+    "title": "Customize Other Party",
+    "persona": {
+      "title": "Choose a Persona",
+      "about": {
+        "personality": "Personality",
+        "behavioralTraits": "Behavioral Traits",
+        "trainingFocus": "Training Focus"
+      },
+      "personas": {
+        "positive": {
+          "name": "Positive Pam",
+          "personality": ["Upbeat", "Eager to please", "Growth-oriented", "Avoids negativity"],
+          "traits": [
+            "Overly agreeable — avoids conflict or disagreement",
+            "Deflects criticism with enthusiasm (“I'll fix it!”)",
+            "Often hides stress or burnout behind optimism",
+            "Pushes for promotions or more responsibility before ready",
+            "Uses toxic positivity to dismiss serious concerns"
+          ],
+          "trainingFocus": [
+            "Delivering constructive feedback without sugarcoating",
+            "Encouraging honest reflection and accountability",
+            "Identifying signs of masked stress or burnout",
+            "Setting realistic growth expectations",
+            "Navigating emotionally complex conversations with high performers"
+          ],
+          "imageUri": "/images/personas/persona-positive.png"
+        },
+        "angry": {
+          "name": "Angry Alex",
+          "personality": [
+            "Volatile",
+            "Brutally confrontational",
+            "Aggressive to the point of being dangerous to team morale"
+          ],
+          "traits": [
+            "Immediately assumes betrayal, stupidity, or sabotage",
+            "Everything is personal — every issue feels like a direct insult",
+            "Talks over people, swears nonstop, slams tables, storms out of meetings",
+            "Demands control and obedience, or threatens immediate and dramatic consequences",
+            "Will publicly shame leadership, humiliate teammates, and escalate without hesitation",
+            "Threatens to walk out, quit, and blow the whole thing up"
+          ],
+          "trainingFocus": [
+            "De-escalation techniques",
+            "Delivering negative feedback calmly",
+            "Maintaining control in heated situations",
+            "Validating emotions without losing authority"
+          ],
+          "imageUri": "/images/personas/persona-angry.png"
+        },
+        "shy": {
+          "name": "Shy Sandra",
+          "personality": [
+            "Quiet",
+            "Reserved",
+            "Conflict-avoidant",
+            "Anxious about saying the wrong thing"
+          ],
+          "traits": [
+            "Speaks in a soft, hesitant voice with frequent pauses",
+            "Uses filler words ('um...', 'I guess...', 'maybe...') and trails off mid-sentence",
+            "Agrees verbally ('yeah... sure... okay') even when uncertain or uncomfortable",
+            "Avoids asserting opinions or asking questions",
+            "Long silences when asked direct or emotional questions",
+            "May apologize unnecessarily or downplay her own contributions"
+          ],
+          "trainingFocus": [
+            "Encouraging open and honest communication through tone and phrasing",
+            "Actively checking for true understanding and comfort (not just verbal agreement)",
+            "Using silence constructively without rushing to fill it",
+            "Creating psychological safety so Sandra feels safe to speak up",
+            "Practicing empathetic, patient listening",
+            "Learning to gently draw out insights from passive participants"
+          ],
+          "imageUri": "/images/personas/persona-shy.png"
+        },
+        "casual": {
+          "name": "Casual Candice",
+          "personality": ["Laid-back", "Informal", "Friendly but sometimes unfocused"],
+          "traits": [
+            "Uses humor or casual language",
+            "May not take feedback seriously",
+            "Tends to deflect or joke under pressure",
+            "Values flexibility over structure"
+          ],
+          "trainingFocus": [
+            "Redirecting conversations professionally",
+            "Setting boundaries and expectations",
+            "Addressing underperformance without being overly formal",
+            "Keeping focus during relaxed interactions"
+          ],
+          "imageUri": "/images/personas/persona-casual.png"
+        },
+        "sad": {
+          "name": "Low-Energy Leo",
+          "personality": ["Withdrawn", "Low energy", "Emotionally distant"],
+          "traits": [
+            "Flat tone, minimal expressions",
+            "Expresses hopelessness or dissatisfaction",
+            "May mention burnout or feeling undervalued",
+            "Appears disengaged or demotivated"
+          ],
+          "trainingFocus": [
+            "Recognizing signs of mental health struggles",
+            "Offering support without overstepping",
+            "Holding space for emotion while staying professional",
+            "Discussing performance or well-being with care"
+          ],
+          "imageUri": "/images/personas/persona-sad.png"
+        }
+      },
+      "aboutLabel": "About"
     },
     "context": {
-      "title": "What is the context? *",
-      "placeholder": "Please specify the context of the conversation here."
-    },
-    "goal": {
-      "title": "What is your goal? *",
-      "placeholder": "What outcome do you hope to achieve?"
-    }
-  },
-  "customize": {
-    "title": "Customize your Training",
-    "difficulty": {
-      "title": "Difficulty Level *"
-    },
-    "emotionalTone": {
-      "title": "Emotional Tone *"
-    },
-    "complexity": {
-      "title": "Response Complexity *"
+      "default": "Default Context",
+      "custom": "Custom Context",
+      "defaultSubtitle": "Choose from pre-set scenarios and personas",
+      "customSubtitle": "Customize the scenario and persona pre-sets to your liking."
     }
   },
   "categories": {
     "givingFeedback": {
       "name": "Giving Feedback",
-      "defaultContext": "One-on-one meeting with a team member.",
-      "defaultGoal": "Provide constructive feedback effectively.",
-      "defaultOtherParty": "Team member"
+      "defaultContext": "Missed Deadlines\n- Quarterly partner-impact report arrived 5 days late despite reminders.\n- Field-visit summary incomplete; colleague had to rewrite it under pressure.\nAttendance\n- In the last 2 months, the other party skipped 4 of 8 team check-ins without notice.\n- When present, often keeps camera off and engages minimally.\nPeer Feedback\n- Two colleagues needed multiple nudges for inputs.\n- One now avoids assigning shared tasks to the other party due to reliability concerns.\nPrior Support\n- Six weeks ago, the manager set clear expectations and a prioritization plan.\n- Calendar tips and admin help were offered; little improvement seen.\n\nSilver Lining\nThe other party shows real creativity in outreach planning and still has growth potential."
     },
     "performanceReviews": {
       "name": "Performance Reviews",
-      "defaultContext": "Formal performance review meeting.",
-      "defaultGoal": "Evaluate and discuss employee performance.",
-      "defaultOtherParty": "Employee"
+      "defaultContext": "Positive Performance\n- The other party developed two successful community outreach pilots.\n- Partners often compliment the other party's creativity and energy.\n\nAreas for Improvement\n- The other party sometimes misses internal deadlines for reports and data submissions.\n- Team members report the other party can be hard to reach on short notice.\n\nReview Outcome\n- Overall rating is 'Meets Expectations' — strong external impact but inconsistency in internal follow-through prevented 'Exceeds Expectations'.\n- A standard 3% merit raise will be applied, same as most peers.\n\nOrganizational Context\n- The NGO emphasizes reliability to secure renewed donor funding.\n- This review cycle is slightly stricter due to new funder accountability requirements.\n\nSilver Lining\nThe manager believes the other party can reach 'Exceeds Expectations' next year with more consistent internal coordination."
     },
     "conflictResolution": {
       "name": "Conflict Resolution",
-      "defaultContext": "Conflict resolution meeting between team members.",
-      "defaultGoal": "Resolve conflicts and improve team dynamics.",
-      "defaultOtherParty": "Team members"
+      "defaultContext": "Conflict Background\n- The other party and Jordan collaborated on a partner event that went off-track due to miscommunication.\n- The other party feels Jordan oversteps boundaries and takes credit for ideas.\n- Jordan has privately complained that the other party misses deadlines and ignores messages.\n\nPrior Attempts\n- Two team meetings were held to clarify roles; tension persists.\n- The other party agreed to share updates more frequently; Jordan promised to check before redoing the other party's work.\n\nCurrent Impact\n- Other teammates feel awkward and avoid putting the other party and Jordan on the same tasks.\n- The manager is under pressure to ensure team cohesion before a major donor site visit.\n\nSilver Lining\nBoth the other party and Jordan care deeply about partner success and have complementary skills when working well together."
     },
     "salaryDiscussions": {
       "name": "Salary Discussions",
-      "defaultContext": "Salary negotiation meeting.",
-      "defaultGoal": "Reach a mutually beneficial agreement on salary.",
-      "defaultOtherParty": "Employer"
+      "defaultContext": "Current Salary\n- The other party earns slightly below the midpoint for Program Officers in this NGO.\n- Last annual raise was 4%.\n\nPerformance Context\n- Solid on creative outreach and community partnerships.\n- Mixed record on deadlines and internal coordination.\n\nRecent Request\n- Last week, the other party emailed HR asking for a 10% raise, citing cost of living and workload growth.\n\nOrganizational Context\n- The NGO faces tight budgets due to a new funder's spending cap.\n- Managers can approve up to 3% merit raise without director sign-off.\n\nSilver Lining\nPeers respect the other party's community engagement; manager has praised initiative on outreach campaigns."
     }
   },
   "errorMessage": "An error occurred while creating the scenario. Please try again later.",
-  "easy": "Einfach",
-  "medium": "Mittel",
-  "hard": "Schwer",
-  "simple": "Einfach",
-  "complex": "Komplex",
-  "neutral": "Neutral",
+  "easy": "Easy",
+  "medium": "Medium",
+  "hard": "Hard",
   "creating": "Creating...",
-  "create": "Create"
+  "create": "Create",
+  "personaSelection": "Select Persona",
+  "difficultyTitle": "Difficulty",
+  "contextDefault": "Default Context",
+  "contextCustom": "Custom Context",
+  "selectContext": "Context",
+  "chooseOtherParty": "3. Other Party",
+  "customizationTitle": "1. Customization",
+  "situationTitle": "2. Situation"
 }

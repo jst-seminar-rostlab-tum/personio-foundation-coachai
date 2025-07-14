@@ -74,11 +74,6 @@ def generate_training_examples(
     audio_uri: Optional[str] = None,
     temperature: float = 0.0,
 ) -> SessionExamplesRead:
-    if not request.transcript or not any(
-        line.strip().startswith('User:') for line in request.transcript.splitlines()
-    ):
-        return SessionExamplesRead(positive_examples=[], negative_examples=[])
-
     lang = request.language_code
     settings = config.root[lang]
 
@@ -127,11 +122,6 @@ def get_achieved_goals(
     mock_response = settings.mocks.goals_achieved
     system_prompt = settings.system_prompts.goals_achieved
 
-    if not request.transcript or not any(
-        line.strip().startswith('User:') for line in request.transcript.splitlines()
-    ):
-        return GoalsAchievedRead(goals_achieved=[])
-
     user_prompt = build_goals_achieved_prompt(
         transcript=request.transcript,
         objectives=request.objectives,
@@ -157,10 +147,6 @@ def generate_recommendations(
     audio_uri: Optional[str] = None,
     temperature: float = 0.0,
 ) -> RecommendationsRead:
-    if not request.transcript or not any(
-        line.strip().startswith('User:') for line in request.transcript.splitlines()
-    ):
-        return RecommendationsRead(recommendations=[])
     lang = request.language_code
     settings = config.root[lang]
 

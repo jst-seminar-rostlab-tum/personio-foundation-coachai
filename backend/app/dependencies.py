@@ -1,6 +1,7 @@
 import logging
 from datetime import UTC, datetime
 from typing import Annotated, Any, NoReturn, TypedDict
+from uuid import UUID
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -91,9 +92,9 @@ def require_user(
     """
     user_id = token.get('sub') or _forbidden('Cannot find user', 'JWT payload missing "sub" claim')
 
-    user = db.exec(select(UserProfile).where(UserProfile.id == user_id)).first() or _forbidden(
-        'Cannot find user', 'User not found for ID %s', user_id
-    )
+    user = db.exec(
+        select(UserProfile).where(UserProfile.id == UUID(user_id))
+    ).first() or _forbidden('Cannot find user', 'User not found for ID %s', user_id)
 
     if user.account_role.value not in ALLOWED_ROLES:
         _forbidden(
@@ -117,9 +118,9 @@ def require_admin(
     """
     user_id = token.get('sub') or _forbidden('Cannot find user', 'JWT payload missing "sub" claim')
 
-    user = db.exec(select(UserProfile).where(UserProfile.id == user_id)).first() or _forbidden(
-        'Cannot find user', 'User not found for ID %s', user_id
-    )
+    user = db.exec(
+        select(UserProfile).where(UserProfile.id == UUID(user_id))
+    ).first() or _forbidden('Cannot find user', 'User not found for ID %s', user_id)
 
     if user.account_role is not AccountRole.admin:
         _forbidden('Admin access required', 'User role %s is not admin', user.account_role.value)
