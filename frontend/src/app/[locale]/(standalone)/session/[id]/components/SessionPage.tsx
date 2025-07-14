@@ -73,7 +73,7 @@ export default function SessionPageComponent({ sessionId }: { sessionId: string 
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="mb-2">
+      <div className="mb-2 sticky top-0 z-11 bg-white">
         <SessionHeader time={elapsedTimeS} connectionStatus={connectionStatus} />
       </div>
 
