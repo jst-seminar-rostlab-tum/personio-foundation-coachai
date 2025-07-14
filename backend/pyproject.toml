@@ -35,6 +35,7 @@ dependencies = [
     "ffmpeg-python>=0.2.0",
     "langchain-google-vertexai>=2.0.27",
     "apscheduler>=3.11.0",
+    "pytz>=2025.0", 
 ]
 
 [tool.setuptools]

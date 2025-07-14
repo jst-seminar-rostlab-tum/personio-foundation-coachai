@@ -3,7 +3,7 @@
 import { Phone, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
-interface SimulationFooterProps {
+interface SessionFooterProps {
   isMicActive: boolean;
   toggleMicrophone: () => void;
   isConnected: boolean;
@@ -11,14 +11,14 @@ interface SimulationFooterProps {
   isDisabled?: boolean;
 }
 
-export default function SimulationFooter({
+export default function SessionFooter({
   isMicActive,
   toggleMicrophone,
   onDisconnect,
   isDisabled = false,
-}: SimulationFooterProps) {
+}: SessionFooterProps) {
   return (
-    <div className="flex items-center justify-center gap-16 px-6 pt-4 pb-6 bg-white z-10">
+    <div className="flex items-center justify-center gap-16 px-6 pt-4 pb-2 bg-white z-10">
       <Button
         size="iconLarge"
         variant="outline"

@@ -54,6 +54,7 @@ export default function ConversationScenarioForm() {
       persona: formState.personaDescription,
       situationalFacts: formState.situationalFacts,
       languageCode: locale as string,
+      personaName: formState.persona,
     };
 
     try {

@@ -1,6 +1,7 @@
 import json
 import os
 from functools import lru_cache
+from typing import Optional
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
@@ -36,28 +37,48 @@ config = load_session_feedback_config()
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_training_examples(
-    request: FeedbackCreate, hr_docs_context: str = ''
+    request: FeedbackCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
 ) -> SessionExamplesRead:
-    return generate_training_examples(request, hr_docs_context)
+    return generate_training_examples(request, hr_docs_context, audio_uri, temperature)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_get_achieved_goals(
-    request: GoalsAchievedCreate, hr_docs_context: str = ''
+    request: GoalsAchievedCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
 ) -> GoalsAchievedRead:
-    return get_achieved_goals(request, hr_docs_context)
+    if audio_uri is not None:
+        return get_achieved_goals(request, hr_docs_context, audio_uri, temperature=temperature)
+    else:
+        return get_achieved_goals(request, hr_docs_context, temperature=temperature)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_recommendations(
-    request: FeedbackCreate, hr_docs_context: str = ''
+    request: FeedbackCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
 ) -> RecommendationsRead:
-    return generate_recommendations(request, hr_docs_context)
+    return generate_recommendations(request, hr_docs_context, audio_uri, temperature)
 
 
 def generate_training_examples(
-    request: FeedbackCreate, hr_docs_context: str = ''
+    request: FeedbackCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
 ) -> SessionExamplesRead:
+    if not request.transcript or all(
+        (line.strip() == '' or line.strip().startswith('Assistant:'))
+        for line in request.transcript.splitlines()
+    ):
+        return SessionExamplesRead(positive_examples=[], negative_examples=[])
     lang = request.language_code
     settings = config.root[lang]
 
@@ -78,8 +99,9 @@ def generate_training_examples(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         output_model=SessionExamplesRead,
-        temperature=0.0,
+        temperature=temperature,
         mock_response=mock_response,
+        audio_uri=audio_uri,
     )
 
     # Normalize all quote fields to ensure consistent output
@@ -94,7 +116,10 @@ def generate_training_examples(
 
 
 def get_achieved_goals(
-    request: GoalsAchievedCreate, hr_docs_context: str = ''
+    request: GoalsAchievedCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
 ) -> GoalsAchievedRead:
     lang = request.language_code
     settings = config.root[lang]
@@ -112,8 +137,9 @@ def get_achieved_goals(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         output_model=GoalsAchievedRead,
-        temperature=0.0,
+        temperature=temperature,
         mock_response=mock_response,
+        audio_uri=audio_uri,
     )
 
     response.goals_achieved = [goal for goal in response.goals_achieved if goal.strip()]
@@ -121,8 +147,16 @@ def get_achieved_goals(
 
 
 def generate_recommendations(
-    request: FeedbackCreate, hr_docs_context: str = ''
+    request: FeedbackCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
 ) -> RecommendationsRead:
+    if not request.transcript or all(
+        (line.strip() == '' or line.strip().startswith('Assistant:'))
+        for line in request.transcript.splitlines()
+    ):
+        return RecommendationsRead(recommendations=[])
     lang = request.language_code
     settings = config.root[lang]
 
@@ -143,8 +177,9 @@ def generate_recommendations(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
         output_model=RecommendationsRead,
-        temperature=0.0,
+        temperature=temperature,
         mock_response=mock_response,
+        audio_uri=audio_uri,
     )
 
     return response

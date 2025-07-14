@@ -1,7 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { sessionService } from '@/services/SessionService';
-import { MessageSender } from '@/interfaces/models/Session';
-import { ConnectionStatus } from '@/interfaces/models/Simulation';
+import { ConnectionStatus, MessageSender } from '@/interfaces/models/Session';
 import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/utils/toast';
 import { useTranslations } from 'next-intl';
@@ -11,9 +10,10 @@ import { useElapsedTime } from './useElapsedTime';
 import { useLocalAudioRecorder } from './useLocalAudioRecorder';
 import { useRemoteAudioRecorder } from './useRemoteAudioRecorder';
 import { useSessionTurns } from './useSessionTurns';
+import { useSessionLiveFeedback } from './useSessionLiveFeedback';
 
 export function useWebRTC(sessionId: string) {
-  const t = useTranslations('Simulation');
+  const t = useTranslations('Session');
 
   const { localStreamRef, startStream, stopStream, isMicActive, toggleMic } = useMediaStream();
 
@@ -28,6 +28,9 @@ export function useWebRTC(sessionId: string) {
 
   const { addAudioToTurn, addMetadataToTurn, addStartOffsetMsToTurn, addEndOffsetMsToTurn } =
     useSessionTurns();
+
+  const { stopGetLiveFeedbackInterval, startGetLiveFeedbackInterval, sessionLiveFeedbacks } =
+    useSessionLiveFeedback(sessionId);
 
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     ConnectionStatus.Connecting
@@ -54,7 +57,8 @@ export function useWebRTC(sessionId: string) {
     setConnectionStatus(ConnectionStatus.Disconnected);
     hasInitializedRef.current = false;
     stopTimer();
-  }, [stopStream, stopLocalRecording, stopRemoteRecording, stopTimer]);
+    stopGetLiveFeedbackInterval();
+  }, [stopStream, stopLocalRecording, stopRemoteRecording, stopTimer, stopGetLiveFeedbackInterval]);
 
   const initWebRTC = useCallback(async () => {
     if (hasInitializedRef.current) return;
@@ -164,6 +168,7 @@ export function useWebRTC(sessionId: string) {
               )
             );
             addEndOffsetMsToTurn(parsed.item_id, parsed.audio_end_ms);
+            startGetLiveFeedbackInterval();
             break;
 
           case 'response.content_part.added':
@@ -218,6 +223,7 @@ export function useWebRTC(sessionId: string) {
     localStreamRef,
     addEndOffsetMsToTurn,
     cleanup,
+    startGetLiveFeedbackInterval,
     t,
   ]);
 
@@ -230,5 +236,6 @@ export function useWebRTC(sessionId: string) {
     messages,
     elapsedTimeS,
     cleanup,
+    sessionLiveFeedbacks,
   };
 }

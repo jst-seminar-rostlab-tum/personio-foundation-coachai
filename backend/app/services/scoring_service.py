@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.connections.openai_client import call_structured_llm
+from app.connections.vertexai_client import call_structured_llm
 from app.schemas.conversation_scenario import ConversationScenarioRead
 from app.schemas.scoring_schema import ScoringRead
 from app.services.utils import normalize_quotes
@@ -35,6 +35,7 @@ class ScoringService:
             f'{json.dumps(self.rubric, indent=2)}'
             '\n\n'
             "You MUST act as if the Assistant's utterances do not exist at all. Only the User's utterances are relevant for scoring. If you mention or consider the Assistant in your justification, that is a mistake.\n"
+            "Please also take into account the user's vocal emotion, tone, and expressive style in your evaluation if audio is provided."
         )
         return system_prompt
 
@@ -66,6 +67,7 @@ class ScoringService:
         conversation: ConversationScenarioRead,
         model: str = 'o4-mini-2025-04-16',
         temperature: float = 0.0,
+        audio_uri: Optional[str] = None,
     ) -> ScoringRead:
         user_prompt = self._build_user_prompt(conversation)
         system_prompt = self._build_system_prompt()
@@ -75,7 +77,9 @@ class ScoringService:
             system_prompt=system_prompt,
             model=model,
             output_model=ScoringRead,
+            max_tokens=1000,
             temperature=temperature,
+            audio_uri=audio_uri,
         )
 
         # Recalculate the overall score based on the rubric
