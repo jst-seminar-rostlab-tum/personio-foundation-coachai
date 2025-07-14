@@ -230,7 +230,6 @@ def generate_scenario_preparation(
 
     session_gen = session_generator_func()
     db_session = next(session_gen)
-    has_error = False
 
     try:
         # 1. retrieve the preparation record
