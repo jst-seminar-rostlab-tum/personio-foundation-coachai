@@ -1,9 +1,9 @@
 from datetime import datetime
 from uuid import UUID
 
-from enums import DifficultyLevel
 from sqlmodel import JSON, Column, Field
 
+from app.enums.difficulty_level import DifficultyLevel
 from app.enums.language import LanguageCode
 from app.enums.scenario_preparation_status import ScenarioPreparationStatus
 from app.models.camel_case import CamelModel
