@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from uuid import UUID
 
 from app.enums.account_role import AccountRole
@@ -49,6 +49,9 @@ class UserProfileRead(CamelModel):
     preferred_learning_style: PreferredLearningStyle
     updated_at: datetime
     store_conversations: bool
+    sessions_created_today: int
+    last_session_date: date
+    num_remaining_daily_sessions: int
 
 
 class UserProfileExtendedRead(UserProfileRead):
@@ -81,3 +84,5 @@ class UserStatistics(CamelModel):
     goals_achieved: int  # summation of all goals achieved
     performance_over_time: list[int]
     skills_performance: dict[str, int]
+    daily_session_limit: int
+    num_remaining_daily_sessions: int

@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { ArrowRightIcon, Plus } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
-
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
@@ -34,6 +33,7 @@ export default async function DashboardPage() {
   ]);
   const { sessions } = sessionsData.data;
   const locale = await getLocale();
+  const isAdmin = userProfile.accountRole === 'admin';
   const averageScore = calculateAverageScore(userStats.scoreSum, userStats.totalSessions);
 
   return (
@@ -59,6 +59,14 @@ export default async function DashboardPage() {
         />
         <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
         <StatCard value={`${averageScore}/5`} label={tCommon('avgScore')} />
+        <StatCard
+          value={
+            isAdmin
+              ? `#/${userStats.dailySessionLimit}`
+              : `${userStats.numRemainingDailySessions}/${userStats.dailySessionLimit}`
+          }
+          label={t('userStats.remainingSessionsToday')}
+        />
       </div>
 
       <section className="flex flex-col gap-4">

@@ -20,6 +20,7 @@ class SessionItem(CamelModel):
     overall_score: float
     skills: SkillScores
     status: SessionStatus
+    session_length_s: int = 0
     allow_admin_access: bool = False
 
 

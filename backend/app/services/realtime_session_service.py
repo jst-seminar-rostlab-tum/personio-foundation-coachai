@@ -7,9 +7,12 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.config import settings
+from app.enums.account_role import AccountRole
+from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session
+from app.models.user_profile import UserProfile
 
 if settings.FORCE_CHEAP_MODEL:
     MODEL = 'gpt-4o-mini-realtime-preview-2024-12-17'
@@ -74,16 +77,41 @@ class RealtimeSessionService:
                 formatted.append(f'{key.replace("_", " ").title()}:\n{value}')
         return '\n\n'.join(formatted)
 
-    async def get_realtime_session(self, session: Session) -> dict:
+    async def get_realtime_session(self, session: Session, user_profile: UserProfile) -> dict:
         """
         Proxies a POST request to OpenAI's realtime sessions endpoint
         and returns the JSON response.
         """
         api_key = settings.OPENAI_API_KEY
-        if not api_key:
+        if not api_key or not settings.ENABLE_AI:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='OPENAI_API_KEY not set'
             )
+
+        # Check daily session limit for non-admin users
+        if user_profile.account_role != AccountRole.admin:
+            # Get session limit from AppConfig
+            session_limit_config = self.db.exec(
+                select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
+            ).first()
+
+            # If session limit is not configured, assume limit is hit (safety feature)
+            if session_limit_config is None:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail='Daily session limit is not configured. Cannot start real-time session. '
+                    'Please contact an administrator.',
+                )
+
+            session_limit = int(session_limit_config)
+
+            # Check if the user has reached the daily session limit
+            if user_profile.sessions_created_today >= session_limit:
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail=f'You have reached the daily session limit of {session_limit}. '
+                    'Cannot start real-time session.',
+                )
 
         conversation_scenario = self.db.exec(
             select(ConversationScenario).where(ConversationScenario.id == session.scenario_id)
@@ -168,6 +196,11 @@ class RealtimeSessionService:
                 response.raise_for_status()
             except httpx.HTTPStatusError as e:
                 raise HTTPException(status_code=response.status_code, detail=str(e)) from e
+
+            if user_profile.account_role != AccountRole.admin:
+                user_profile.sessions_created_today += 1
+                self.db.add(user_profile)
+                self.db.commit()
 
             data = response.json()
             data['persona_name'] = conversation_scenario.persona_name
