@@ -2,39 +2,42 @@ import React from 'react';
 
 export default function ConversationScenarioPageLoading() {
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Title */}
-      <div className="text-2xl text-font-dark text-center w-full mb-8">
-        <div className="h-8 w-64 bg-bw-10 rounded-lg mx-auto animate-pulse" />
-      </div>
+    <div className="mx-auto pb-8">
+      {/* New Training Session Title Skeleton */}
+      <div className="h-10 w-96 bg-bw-10 rounded-lg mx-auto mb-8 animate-pulse" />
 
-      {/* Stepper */}
-      <div className="flex justify-between items-center mb-16 w-full mx-auto max-w-md">
-        <div className="flex items-center w-full">
-          <div className="w-10 h-10 rounded-full bg-bw-20 flex-shrink-0 animate-pulse" />
-          <div className="flex-1 h-1 bg-bw-10 mx-2" />
-          <div className="w-10 h-10 rounded-full bg-bw-10 flex-shrink-0 animate-pulse" />
-          <div className="flex-1 h-1 bg-bw-10 mx-2" />
-          <div className="w-10 h-10 rounded-full bg-bw-10 flex-shrink-0 animate-pulse" />
+      {/* Stepper Skeleton - match real page width */}
+      <div className="flex justify-center items-center mb-8 md:w-3/4 mx-auto">
+        {/* Step 1 */}
+        <div className="flex flex-col items-center">
+          <div className="size-10 rounded-full bg-bw-10 animate-pulse flex items-center justify-center" />
+        </div>
+        <div className="h-1 w-32 bg-bw-10 mx-2" />
+        {/* Step 2 */}
+        <div className="flex flex-col items-center">
+          <div className="size-10 rounded-full bg-bw-10 animate-pulse flex items-center justify-center" />
+        </div>
+        <div className="h-1 w-32 bg-bw-10 mx-2" />
+        {/* Step 3 */}
+        <div className="flex flex-col items-center">
+          <div className="size-10 rounded-full bg-bw-10 animate-pulse flex items-center justify-center" />
         </div>
       </div>
 
-      {/* Category Step - 2x2 Grid */}
-      <div className="grid grid-cols-2 gap-4 w-full mx-auto mb-8 md:max-w-lg xl:max-w-xl">
-        {[1, 2, 3, 4].map((_, i) => (
-          <div
-            key={i}
-            className="aspect-square bg-bw-10 rounded-lg flex items-center justify-center animate-pulse"
-          >
-            <div className="w-2/3 h-2/3 bg-bw-20 rounded" />
-          </div>
-        ))}
+      {/* Title Skeleton */}
+      <div className="h-8 w-80 bg-bw-10 rounded-lg mx-auto mb-8 animate-pulse" />
+
+      {/* Context selection cards - wider */}
+      <div className="mb-10 w-full flex justify-center flex-col sm:flex-row gap-8">
+        <div className="w-full md:w-2/5 box-border rounded-2xl bg-bw-10 animate-pulse flex flex-col items-start justify-center p-8 gap-4 min-h-[120px]" />
+        <div className="w-full md:w-2/5 box-border rounded-2xl bg-bw-10 animate-pulse flex flex-col items-start justify-center p-8 gap-4 min-h-[120px]" />
       </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex gap-4 w-full md:max-w-lg xl:max-w-xl mx-auto">
-        <div className="flex-1 h-10 bg-bw-10 rounded animate-pulse" />
-        <div className="flex-1 h-10 bg-bw-20 rounded animate-pulse" />
+      {/* Next button bar - match real page width and padding */}
+      <div className="fixed bottom-0 left-0 w-full z-50 bg-transparent">
+        <div className="max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] py-6">
+          <div className="h-12 w-full bg-bw-10 rounded-lg animate-pulse" />
+        </div>
       </div>
     </div>
   );
