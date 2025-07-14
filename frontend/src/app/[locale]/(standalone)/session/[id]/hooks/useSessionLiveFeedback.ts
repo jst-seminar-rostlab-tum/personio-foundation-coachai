@@ -23,13 +23,19 @@ export function useSessionLiveFeedback(sessionId: string) {
 
       isFetchingRef.current = true;
       try {
-        const response = await sessionService.getSessionLiveFeedback(api, sessionId);
+        const newSessionLiveFeedbacks = await sessionService.getSessionLiveFeedback(api, sessionId);
 
         setSessionLiveFeedbacks((prev) => {
-          if (response.data.length > prev.length) {
+          if (
+            newSessionLiveFeedbacks.length > prev.length ||
+            (newSessionLiveFeedbacks.length > 0 &&
+              prev.length > 0 &&
+              newSessionLiveFeedbacks[0].id !== prev[0].id)
+          ) {
             stopGetLiveFeedbackInterval();
+            return newSessionLiveFeedbacks;
           }
-          return response.data;
+          return prev;
         });
       } catch {
         // silent catch — retry on next interval
