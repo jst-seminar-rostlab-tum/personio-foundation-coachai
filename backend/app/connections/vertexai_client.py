@@ -100,6 +100,8 @@ def call_llm_with_audio(
     if not ENABLE_AI or vertexai_client is None:
         return ''
     try:
+        if not audio_uri.startswith('gs'):
+            audio_uri = f'gs://{settings.GCP_BUCKET}/audio/{audio_uri}'
         part = Part.from_uri(file_uri=audio_uri)
         selected_model = (
             DEFAULT_CHEAP_MODEL if FORCE_CHEAP_MODEL else (model or DEFAULT_CHEAP_MODEL)

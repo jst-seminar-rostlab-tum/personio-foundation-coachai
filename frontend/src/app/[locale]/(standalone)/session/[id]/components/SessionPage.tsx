@@ -1,21 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useWebRTC } from '@/app/[locale]/(standalone)/simulation/[id]/hooks/useWebRTC';
 import { showErrorToast } from '@/lib/utils/toast';
 import { useTranslations } from 'next-intl';
 import { sessionService } from '@/services/SessionService';
 import { api } from '@/services/ApiClient';
-import { SessionStatus } from '@/interfaces/models/Session';
+import { ConnectionStatus, SessionStatus } from '@/interfaces/models/Session';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import { ConnectionStatus } from '@/interfaces/models/Simulation';
-import SimulationHeader from './SimulationHeader';
-import SimulationFooter from './SimulationFooter';
-import SimulationRealtimeSuggestions from './SimulationRealtimeSuggestions';
-import SimulationMessages from './SimulationMessages';
+import SessionHeader from './SessionHeader';
+import SessionMessages from './SessionMessages';
+import SessionLiveFeedback from './SessionLiveFeedback';
+import { useWebRTC } from '../hooks/useWebRTC';
+import SessionFooter from './SessionFooter';
 
-type SimulationPageComponentProps = {
+type SessionPageComponentProps = {
   personaName: string;
   categoryName: string;
   sessionId: string;
@@ -34,12 +33,14 @@ const TERMINAL_STATES = [
   ConnectionStatus.Failed,
 ];
 
-export default function SimulationPageComponent({
+export default function SessionPageComponent({
   personaName,
   categoryName,
   sessionId,
-}: SimulationPageComponentProps) {
-  const t = useTranslations('Simulation');
+}: SessionPageComponentProps) {
+  const t = useTranslations('Session');
+  const tCommon = useTranslations('Common');
+
   const router = useRouter();
   const [hangupInProgress, setHangupInProgress] = useState(false);
 
@@ -52,6 +53,7 @@ export default function SimulationPageComponent({
     elapsedTimeS,
     toggleMic,
     cleanup,
+    sessionLiveFeedbacks,
   } = useWebRTC(sessionId);
 
   useEffect(() => {
@@ -82,8 +84,8 @@ export default function SimulationPageComponent({
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="mb-2">
-        <SimulationHeader
+      <div className="sticky top-0 z-11 bg-white">
+        <SessionHeader
           characterName={personaName}
           sessionLabel={categoryName}
           time={elapsedTimeS}
@@ -92,15 +94,15 @@ export default function SimulationPageComponent({
       </div>
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-        <SimulationMessages messages={messages} />
+        <SessionMessages messages={messages} />
         {isDisconnected && (
           <div className="absolute inset-0 backdrop-blur-sm bg-background z-10"></div>
         )}
       </div>
 
-      <SimulationRealtimeSuggestions />
+      <SessionLiveFeedback liveFeedbacks={sessionLiveFeedbacks} />
 
-      <SimulationFooter
+      <SessionFooter
         isMicActive={isMicActive}
         toggleMicrophone={toggleMic}
         isConnected={isConnected}
@@ -120,6 +122,10 @@ export default function SimulationPageComponent({
       )}
 
       <audio ref={remoteAudioRef} autoPlay playsInline />
+
+      <div className="mt-4 mb-4 text-center">
+        <p className="text-xs text-bw-40">{tCommon('aiDisclaimer')}</p>
+      </div>
     </div>
   );
 }
