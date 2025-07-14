@@ -8,6 +8,7 @@ from pydantic import Field
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
+from app.connections.gcs_client import get_gcs_audio_manager
 from app.enums.feedback_status import FeedbackStatus
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.camel_case import CamelModel
@@ -92,6 +93,7 @@ class FeedbackGenerationResult(CamelModel):
     has_error: bool = False
     full_audio_filename: str = ''
     document_names: list[str] = Field(default_factory=list)
+    audio_url: str | None = None
     session_length_s: int = 0
 
 
@@ -113,20 +115,32 @@ def generate_feedback_components(
     scores_json: dict[str, float] = {}
     overall_score: float = 0.0
     has_error: bool = False
+    audio_signed_url: str | None = None
     stitch_result: SessionTurnStitchAudioSuccess | None = None
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        future_examples = executor.submit(
-            safe_generate_training_examples, feedback_request, hr_docs_context
-        )
-        future_goals = executor.submit(safe_get_achieved_goals, goals_request, hr_docs_context)
-        future_recommendations = executor.submit(
-            safe_generate_recommendations, feedback_request, hr_docs_context
-        )
+        if audio_signed_url is not None:
+            future_examples = executor.submit(
+                safe_generate_training_examples, feedback_request, hr_docs_context, audio_signed_url
+            )
+            future_goals = executor.submit(
+                safe_get_achieved_goals, goals_request, hr_docs_context, audio_signed_url
+            )
+            future_recommendations = executor.submit(
+                safe_generate_recommendations, feedback_request, hr_docs_context, audio_signed_url
+            )
+        else:
+            future_examples = executor.submit(
+                safe_generate_training_examples, feedback_request, hr_docs_context
+            )
+            future_goals = executor.submit(safe_get_achieved_goals, goals_request, hr_docs_context)
+            future_recommendations = executor.submit(
+                safe_generate_recommendations, feedback_request, hr_docs_context
+            )
         future_scoring = executor.submit(scoring_service.safe_score_conversation, conversation)
         future_audio_stitch = executor.submit(
             session_turn_service.stitch_mp3s_from_gcs,
-            session_id,
+            session_id,  # type: ignore
             f'{session_id}.mp3',
         )
 
@@ -163,6 +177,13 @@ def generate_feedback_components(
 
         try:
             stitch_result = future_audio_stitch.result()
+            if stitch_result and stitch_result.output_filename:
+                gcs = get_gcs_audio_manager()
+                if gcs:
+                    try:
+                        audio_signed_url = gcs.generate_signed_url(stitch_result.output_filename)
+                    except Exception as e:
+                        logging.warning(f'Failed to generate signed url for audio: {e}')
         except Exception as e:
             has_error = True
             logging.warning('Failed to call Audio Stitching: %s', e)
@@ -179,6 +200,7 @@ def generate_feedback_components(
         else '',
         document_names=document_names,
         has_error=has_error,
+        audio_url=audio_signed_url,
         session_length_s=stitch_result.audio_duration_s if stitch_result else -1,
     )
 
