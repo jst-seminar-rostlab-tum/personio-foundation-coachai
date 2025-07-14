@@ -26,7 +26,7 @@ from app.routers import (
 from app.services.data_retention_service import cleanup_old_session_turns
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
     stream=sys.stdout,
     format='%(message)s',
 )
