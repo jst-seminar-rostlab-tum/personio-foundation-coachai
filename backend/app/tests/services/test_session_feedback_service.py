@@ -25,7 +25,7 @@ from app.schemas.session_feedback import (
     RecommendationsRead,
     SessionExamplesRead,
 )
-from app.schemas.session_turn import SessionTurnRead
+from app.schemas.session_turn import SessionTurnRead, SessionTurnStitchAudioSuccess
 from app.services.session_feedback.session_feedback_llm import generate_recommendations
 from app.services.session_feedback.session_feedback_service import (
     generate_and_store_feedback,
@@ -165,7 +165,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
 
         example_request = FeedbackCreate(
             transcript='Sample transcript...',
@@ -277,8 +280,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
-
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
         feedback = generate_and_store_feedback(
             session_id=session_id,
             feedback_request=example_request,
@@ -390,8 +395,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
-
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
         session_id = uuid4()
         mock_get_conversation_data.return_value = self._mock_conversation_data()
 

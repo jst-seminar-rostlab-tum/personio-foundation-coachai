@@ -26,6 +26,7 @@ from app.schemas.session_feedback import (
     RecommendationsRead,
     SessionExamplesRead,
 )
+from app.schemas.session_turn import SessionTurnStitchAudioSuccess
 from app.services.session_feedback.session_feedback_service import (
     generate_and_store_feedback,
     get_conversation_data,
@@ -188,8 +189,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service.safe_score_conversation.return_value = MockScoringRead(with_data=True)
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
-
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
         example_request = FeedbackCreate(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
@@ -272,8 +275,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
-
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
         example_request = FeedbackCreate(
             transcript='Error case transcript...',
             objectives=['ObjX'],
@@ -324,8 +329,10 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_scoring_service.safe_score_conversation.return_value = MockScoringRead(with_data=True)
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
-
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
         data = self.insert_minimal_conversation()
 
         user_id = data['user_id']

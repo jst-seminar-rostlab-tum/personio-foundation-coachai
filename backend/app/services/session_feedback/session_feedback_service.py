@@ -30,7 +30,7 @@ from app.schemas.session_feedback import (
     RecommendationsRead,
     SessionExamplesRead,
 )
-from app.schemas.session_turn import SessionTurnRead
+from app.schemas.session_turn import SessionTurnRead, SessionTurnStitchAudioSuccess
 from app.services.data_retention_service import (
     delete_full_audio_for_feedback_by_session_id,
     delete_session_turns_by_session_id,
@@ -94,6 +94,7 @@ class FeedbackGenerationResult(CamelModel):
     full_audio_filename: str = ''
     document_names: list[str] = Field(default_factory=list)
     audio_url: str | None = None
+    session_length_s: int = 0
 
 
 def generate_feedback_components(
@@ -116,6 +117,7 @@ def generate_feedback_components(
     has_error: bool = False
     output_blob_name: str | None = ''
     audio_signed_url: str | None = None
+    stitch_result: SessionTurnStitchAudioSuccess | None = None
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         if audio_signed_url is not None:
@@ -183,6 +185,7 @@ def generate_feedback_components(
                         audio_signed_url = gcs.generate_signed_url(output_blob_name)
                     except Exception as e:
                         logging.warning(f'Failed to generate signed url for audio: {e}')
+            stitch_result = future_audio_stitch.result()
         except Exception as e:
             has_error = True
             logging.warning('Failed to call Audio Stitching: %s', e)
@@ -194,10 +197,13 @@ def generate_feedback_components(
         recommendations=recommendations,
         scores_json=scores_json,
         overall_score=overall_score,
-        full_audio_filename=output_blob_name or '',
+        full_audio_filename=stitch_result.output_filename
+        if stitch_result and stitch_result.output_filename
+        else '',
         document_names=document_names,
         has_error=has_error,
         audio_url=audio_signed_url,
+        session_length_s=stitch_result.audio_duration_s if stitch_result else -1,
     )
 
 
@@ -254,7 +260,7 @@ def save_session_feedback(
         document_names=feedback_generation_result.document_names,
         speak_time_percent=0,
         questions_asked=0,
-        session_length_s=0,
+        session_length_s=feedback_generation_result.session_length_s,
         goals_achieved=feedback_generation_result.goals.goals_achieved,
         example_positive=[ex.model_dump() for ex in feedback_generation_result.examples_positive],
         example_negative=[ex.model_dump() for ex in feedback_generation_result.examples_negative],
