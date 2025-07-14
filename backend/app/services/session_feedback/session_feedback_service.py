@@ -179,7 +179,7 @@ def generate_feedback_components(
         else '',
         document_names=document_names,
         has_error=has_error,
-        session_length_s=stitch_result.audio_duration_s if stitch_result else 0,
+        session_length_s=stitch_result.audio_duration_s if stitch_result else -1,
     )
 
 
