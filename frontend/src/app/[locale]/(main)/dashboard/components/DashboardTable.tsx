@@ -1,135 +1,129 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trash2 } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { ClickableTable, ClickableTableColumn } from '@/components/common/ClickableTable';
 import { DeleteConfirmButton } from '@/components/common/DeleteConfirmButton';
-import { Badge } from '@/components/ui/Badge';
+import { ConversationScenario } from '@/interfaces/models/ConversationScenario';
+import { useLocale, useTranslations } from 'next-intl';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
+import { api } from '@/services/ApiClient';
+import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
+import { Button } from '@/components/ui/Button';
+import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
+import { Categories } from '@/lib/constants/categories';
 import Image from 'next/image';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
 
-function formatDateTime(dateString: string) {
-  // Format as yyyy-MM-dd, HH:mm
-  const date = new Date(dateString);
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  const hh = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}, ${hh}:${min}`;
-}
+type DashboardTableProps = {
+  scenarios: ConversationScenario[];
+  totalScenarios: number;
+  limit: number;
+};
 
-const personaOptions = [
-  {
-    id: 'angry',
-    name: 'Angry Alex',
-    image: '/images/personas/persona-angry.png',
-  },
-  {
-    id: 'casual',
-    name: 'Casual Candice',
-    image: '/images/personas/persona-casual.png',
-  },
-  {
-    id: 'positive',
-    name: 'Positive Pam',
-    image: '/images/personas/persona-positive.png',
-  },
-  {
-    id: 'shy',
-    name: 'Shy Sandra',
-    image: '/images/personas/persona-shy.png',
-  },
-  {
-    id: 'sad',
-    name: 'Low-Energy Leo',
-    image: '/images/personas/persona-sad.png',
-  },
-];
-
-const initialRows = [
-  {
-    id: 1,
-    context: 'Giving Feedback',
-    persona: personaOptions[0],
-    difficulty: 'Hard',
-    lastSession: '2024-07-10T14:00:00',
-  },
-  {
-    id: 2,
-    context: 'Conflict Resolution',
-    persona: personaOptions[1],
-    difficulty: 'Medium',
-    lastSession: '2024-07-08T09:30:00',
-  },
-  {
-    id: 3,
-    context: 'Active Listening',
-    persona: personaOptions[2],
-    difficulty: 'Easy',
-    lastSession: '2024-07-05T16:15:00',
-  },
-];
-
-export default function DashboardTable() {
+export default function DashboardTable({ scenarios, totalScenarios, limit }: DashboardTableProps) {
   const router = useRouter();
-  const [rows, setRows] = useState(initialRows);
+  const locale = useLocale();
+  const tCommon = useTranslations('Common');
+  const tDashboard = useTranslations('Dashboard');
+  const tConversationScenario = useTranslations('ConversationScenario');
+  const tCategories = useTranslations('ConversationScenario.categories');
+  const [pageNumber, setPageNumber] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(limit);
+  const [isLoading, setIsLoading] = useState(false);
+  const [rows, setRows] = useState(scenarios);
+  const canLoadMore = visibleCount < totalScenarios;
+  const categories = Categories(tCategories);
 
-  const handleRowClick = () => router.push('/history/1');
-  const handleDelete = (id: number) => {
-    setRows((prev) => prev.filter((row) => row.id !== id));
+  const handleLoadMore = (newPage: number) => {
+    setPageNumber(newPage);
   };
 
-  const columns: ClickableTableColumn<(typeof initialRows)[number]>[] = [
+  const handleRowClick = (row: ConversationScenario) => router.push(`/history/${row.scenarioId}`);
+
+  const getScenarios = async () => {
+    try {
+      setIsLoading(true);
+      const response = await conversationScenarioService.getConversationScenarios(
+        api,
+        pageNumber,
+        limit
+      );
+      setRows((prev) => [...prev, ...response.data.scenarios]);
+      setVisibleCount((prev) => prev + limit);
+    } catch (e) {
+      showErrorToast(e, tCommon('error'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await conversationScenarioService.deleteConversationScenario(api, id);
+      setRows((prev) => prev.filter((row) => row.scenarioId !== id));
+      await getScenarios();
+      showSuccessToast(tDashboard('deleteConversationScenarioSuccess'));
+    } catch (error) {
+      showErrorToast(error, tDashboard('deleteConversationScenarioError'));
+    }
+  };
+
+  useEffect(() => {
+    if (canLoadMore && pageNumber > 1) {
+      getScenarios();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageNumber, canLoadMore, limit, tCommon]);
+
+  const columns: ClickableTableColumn<(typeof rows)[number]>[] = [
     {
       header: 'Situation',
-      accessor: 'context',
+      accessor: 'categoryId',
+      cell: (row) => categories[row.categoryId].name,
     },
     {
       header: 'Persona',
-      accessor: 'persona',
+      accessor: 'personaName',
       cell: (row) => (
         <div className="flex items-center gap-2">
           <Image
-            src={row.persona.image}
-            alt={row.persona.name}
+            src={tConversationScenario(`customize.persona.personas.${row.personaName}.imageUri`)}
+            alt={tConversationScenario(`customize.persona.personas.${row.personaName}.name`)}
             width={28}
             height={28}
             className="rounded-full bg-white"
           />
-          <span className="text-sm">{row.persona.name}</span>
+          <span className="text-sm">
+            {tConversationScenario(`customize.persona.personas.${row.personaName}.name`)}
+          </span>
         </div>
       ),
     },
     {
-      header: 'Difficulty',
-      accessor: 'difficulty',
-      cell: (row) => (
-        <Badge difficulty={row.difficulty.toLowerCase() as 'easy' | 'medium' | 'hard'}>
-          {row.difficulty}
-        </Badge>
-      ),
+      header: tConversationScenario('difficultyTitle'),
+      accessor: 'difficultyLevel',
+      cell: (row) => tConversationScenario(`${row.difficultyLevel}`),
     },
     {
-      header: 'Last Session',
-      accessor: 'lastSession',
-      cell: (row) => formatDateTime(row.lastSession),
+      header: tDashboard('lastSession'),
+      accessor: 'lastSessionAt',
+      cell: (row) => formatDateFlexible(row.lastSessionAt, locale, true),
     },
     {
       header: '',
       accessor: () => '',
       className: 'text-right',
       cell: (row) => (
-        <DeleteConfirmButton
-          onConfirm={() => handleDelete(row.id)}
-          namespace="Dashboard"
-          className="text-bw-40 hover:text-flame-50 transition-colors cursor-pointer"
-        >
-          <Trash2 className="w-5 h-5" />
-        </DeleteConfirmButton>
+        <DeleteConfirmButton onConfirm={() => handleDelete(row.scenarioId as string)} />
       ),
     },
   ];
+
+  if (!rows.length) {
+    return <EmptyListComponent itemType="conversationScenario" />;
+  }
 
   return (
     <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
@@ -137,8 +131,15 @@ export default function DashboardTable() {
         columns={columns}
         data={rows}
         onRowClick={handleRowClick}
-        rowKey={(row) => row.id}
+        rowKey={(row) => row.scenarioId as string}
       />
+      {canLoadMore && (
+        <div className="flex justify-center mt-4 mb-4">
+          <Button variant="ghost" onClick={() => handleLoadMore(pageNumber + 1)}>
+            {isLoading ? tCommon('loading') : tCommon('loadMore')} <ChevronDown />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

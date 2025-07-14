@@ -1,16 +1,16 @@
 import Link from 'next/link';
-import { ArrowRightIcon, Plus } from 'lucide-react';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { Plus } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { Button } from '@/components/ui/Button';
 import { UserProfileService } from '@/services/UserProfileService';
+import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import StatCard from '@/components/common/StatCard';
 import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import { api } from '@/services/ApiServer';
-import ClickableTable from './components/DashboardTable';
-import { sessionService } from '@/services/SessionService';
+import DashboardTable from './components/DashboardTable';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -22,17 +22,19 @@ export default async function DashboardPage() {
   const tCommon = await getTranslations('Common');
   const userProfilePromise = UserProfileService.getUserProfile(api);
   const userStatsPromise = UserProfileService.getUserStats(api);
-  const PAGE_SIZE = 10;
-  const sessionsPromise = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
-  const [userProfile, userStats, sessionsData] = await Promise.all([
+  const PAGE_SIZE = 1;
+  const conversationScenariosPromise = conversationScenarioService.getConversationScenarios(
+    api,
+    1,
+    PAGE_SIZE
+  );
+  const [userProfile, userStats, conversationScenarios] = await Promise.all([
     userProfilePromise,
     userStatsPromise,
-    sessionsPromise,
+    conversationScenariosPromise,
   ]);
-  const { sessions } = sessionsData.data;
-  const locale = await getLocale();
-  const isAdmin = userProfile.accountRole === 'admin';
   const averageScore = calculateAverageScore(userStats.scoreSum, userStats.totalSessions);
+  const isAdmin = userProfile.accountRole === 'admin';
 
   return (
     <div className="flex flex-col gap-16">
@@ -72,7 +74,11 @@ export default async function DashboardPage() {
           <h2 className="text-xl">{t('recentSessions.title')}</h2>
           <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
         </div>
-        <ClickableTable />
+        <DashboardTable
+          scenarios={conversationScenarios.data.scenarios}
+          totalScenarios={conversationScenarios.data.totalScenarios}
+          limit={PAGE_SIZE}
+        />
       </section>
     </div>
   );

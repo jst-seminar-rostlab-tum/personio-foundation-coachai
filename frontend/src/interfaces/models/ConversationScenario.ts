@@ -5,6 +5,11 @@ export interface ConversationScenario {
   situationalFacts: string;
   languageCode: string;
   personaName: string;
+  scenarioId?: string;
+  totalSessions?: number;
+  averageScore?: number;
+  categoryName?: string;
+  lastSessionAt?: string;
 }
 
 export interface ConversationCategory {

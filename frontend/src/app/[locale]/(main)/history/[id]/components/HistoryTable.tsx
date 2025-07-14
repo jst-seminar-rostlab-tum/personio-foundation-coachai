@@ -1,103 +1,129 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trash2 } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { ClickableTable, ClickableTableColumn } from '@/components/common/ClickableTable';
 import { DeleteConfirmButton } from '@/components/common/DeleteConfirmButton';
+import { Session } from '@/interfaces/models/Session';
+import { sessionService } from '@/services/SessionService';
+import { api } from '@/services/ApiClient';
+import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
+import { Button } from '@/components/ui/Button';
+import { useLocale, useTranslations } from 'next-intl';
+import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
+import EmptyListComponent from '@/components/common/EmptyListComponent';
 
-const initialRows = [
-  {
-    id: 1,
-    date: '2024-07-10T14:00:00',
-    duration: 3897, // 1:04:57 in seconds
-    performance: '92%',
-  },
-  {
-    id: 2,
-    date: '2024-07-08T09:30:00',
-    duration: 1845, // 0:30:45 in seconds
-    performance: '88%',
-  },
-  {
-    id: 3,
-    date: '2024-07-05T16:15:00',
-    duration: 3600, // 1:00:00 in seconds
-    performance: '-',
-  },
-];
-
-export default function HistoryTable() {
+export default function HistoryTable({
+  sessions,
+  limit,
+  totalSessions,
+  scenarioId,
+}: {
+  sessions: Session[];
+  limit: number;
+  totalSessions: number;
+  scenarioId: string;
+}) {
+  const tCommon = useTranslations('Common');
+  const tHistory = useTranslations('History');
+  const locale = useLocale();
   const router = useRouter();
-  const [rows, setRows] = useState(initialRows);
+  const [rows, setRows] = useState(sessions);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(limit);
+  const canLoadMore = visibleCount < totalSessions;
 
-  function formatDateTime(dateString: string) {
-    // Format as yyyy-MM-dd, HH:mm
-    const date = new Date(dateString);
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const hh = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}, ${hh}:${min}`;
-  }
-
-  function formatDuration(seconds: number) {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    if (h > 0) {
-      return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    }
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  }
-
-  const handleRowClick = () => router.push('/feedback/1');
-  const handleDelete = (id: number) => {
-    setRows((prev) => prev.filter((row) => row.id !== id));
+  const handleLoadMore = (newPage: number) => {
+    setPageNumber(newPage);
   };
 
-  const columns: ClickableTableColumn<(typeof initialRows)[number]>[] = [
+  const getSessions = async () => {
+    try {
+      setIsLoading(true);
+      const response = await sessionService.getPaginatedSessions(
+        api,
+        pageNumber,
+        limit,
+        scenarioId
+      );
+      setRows((prev) => [...prev, ...response.data.sessions]);
+      setVisibleCount((prev) => prev + limit);
+    } catch (e) {
+      showErrorToast(e, tCommon('error'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRowClick = (row: Session) => router.push(`/feedback/${row.sessionId}`);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await sessionService.deleteSession(api, id);
+      setRows((prev) => prev.filter((row) => row.sessionId !== id));
+      await getSessions();
+      showSuccessToast(tHistory('deleteSessionSuccess'));
+    } catch (error) {
+      showErrorToast(error, tHistory('deleteSessionError'));
+    }
+  };
+
+  useEffect(() => {
+    if (canLoadMore && pageNumber > 1) {
+      getSessions();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageNumber, canLoadMore, limit, tCommon]);
+
+  const columns: ClickableTableColumn<(typeof rows)[number]>[] = [
     {
-      header: 'Session Time',
+      header: tHistory('duration'),
+      accessor: 'sessionLengthS',
+      cell: (row) => {
+        const minutes = Math.floor(row.sessionLengthS / 60);
+        const seconds = row.sessionLengthS % 60;
+        return `${minutes}:${seconds.toString().padStart(2, '0')} min`;
+      },
+    },
+    {
+      header: tHistory('sessionTime'),
       accessor: 'date',
-      cell: (row) => formatDateTime(row.date),
+      cell: (row) => formatDateFlexible(row.date, locale, true),
     },
+
     {
-      header: 'Duration',
-      accessor: 'duration',
-      className: 'text-right min-w-0 w-24',
-      cell: (row) => formatDuration(row.duration),
-      align: 'right',
-    },
-    {
-      header: 'Performance',
-      accessor: 'performance',
-      className: 'text-right',
-      align: 'right',
+      header: tHistory('performance'),
+      accessor: 'overallScore',
     },
     {
       header: '',
       accessor: () => '',
       className: 'text-right',
-      cell: (row) => (
-        <DeleteConfirmButton
-          onConfirm={() => handleDelete(row.id)}
-          namespace="History"
-          className="text-bw-40 hover:text-flame-50 transition-colors cursor-pointer"
-        >
-          <Trash2 className="w-5 h-5" />
-        </DeleteConfirmButton>
-      ),
+      cell: (row) => <DeleteConfirmButton onConfirm={() => handleDelete(row.sessionId)} />,
     },
   ];
 
+  if (!rows.length) {
+    return <EmptyListComponent itemType="session" />;
+  }
+
   return (
-    <ClickableTable
-      columns={columns}
-      data={rows}
-      onRowClick={handleRowClick}
-      rowKey={(row) => row.id}
-    />
+    <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
+      <ClickableTable
+        columns={columns}
+        data={rows}
+        onRowClick={handleRowClick}
+        rowKey={(row) => row.sessionId}
+      />
+      {canLoadMore && (
+        <div className="flex justify-center mt-4 mb-4">
+          <Button variant="ghost" onClick={() => handleLoadMore(pageNumber + 1)}>
+            {isLoading ? tCommon('loading') : tCommon('loadMore')} <ChevronDown />
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

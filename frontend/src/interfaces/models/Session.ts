@@ -9,12 +9,15 @@ export enum SessionStatus {
 export interface Session {
   id: string;
   scenarioId: string;
+  sessionId: string;
   status: SessionStatus;
   title: string;
   summary: string;
   date: string;
   createdAt: string;
   updatedAt: string;
+  overallScore: number;
+  sessionLengthS: number;
 }
 
 export interface SessionPaginated {

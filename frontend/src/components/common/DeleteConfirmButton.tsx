@@ -1,4 +1,5 @@
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
+import { Trash2, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   AlertDialog,
@@ -13,54 +14,51 @@ import {
 } from '@/components/ui/AlertDialog';
 
 interface DeleteConfirmButtonProps {
-  onConfirm: () => void;
-  namespace: string;
-  ariaLabel?: string;
-  className?: string;
-  children: ReactNode;
+  onConfirm: () => Promise<void>;
 }
 
-export function DeleteConfirmButton({
-  onConfirm,
-  namespace,
-  ariaLabel,
-  className,
-  children,
-}: DeleteConfirmButtonProps) {
-  const t = useTranslations(namespace);
+export function DeleteConfirmButton({ onConfirm }: DeleteConfirmButtonProps) {
+  const t = useTranslations('Common');
   const [open, setOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <button
           type="button"
-          className={className}
-          aria-label={ariaLabel || t('deleteConfirmDelete')}
+          className="text-bw-40 hover:text-flame-50 transition-colors cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
             setOpen(true);
           }}
+          disabled={isDeleting}
         >
-          {children}
+          {isDeleting ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Trash2 className="w-5 h-5" />
+          )}
         </button>
       </AlertDialogTrigger>
       <AlertDialogContent onClick={(e) => e.stopPropagation()}>
         <AlertDialogHeader className="gap-4">
-          <AlertDialogTitle className="text-xl">{t('deleteConfirmTitle')}</AlertDialogTitle>
+          <AlertDialogTitle className="text-xl">{t('areYouSure')}</AlertDialogTitle>
           <AlertDialogDescription className="text-base leading-relaxed">
-            {t('deleteConfirmDescription')}
+            {t('deleteAccountConfirmDesc')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t('deleteConfirmCancel')}</AlertDialogCancel>
+          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => {
-              onConfirm();
+            onClick={async () => {
+              setIsDeleting(true);
+              await onConfirm();
+              setIsDeleting(false);
               setOpen(false);
             }}
           >
-            {t('deleteConfirmDelete')}
+            {t('confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

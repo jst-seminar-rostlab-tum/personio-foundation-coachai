@@ -21,7 +21,7 @@ export type ClickableTableProps<T> = {
   columns: ClickableTableColumn<T>[];
   data: T[];
   onRowClick?: (row: T) => void;
-  rowKey?: (row: T) => React.Key;
+  rowKey?: (row: T) => string;
   rowClassName?: (row: T) => string;
 };
 

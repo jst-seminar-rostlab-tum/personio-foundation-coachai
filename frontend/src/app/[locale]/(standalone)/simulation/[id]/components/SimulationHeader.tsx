@@ -49,7 +49,8 @@ export default function SimulationHeader({
 }: SimulationHeaderProps) {
   const t = useTranslations('Simulation');
   const tConversationScenario = useTranslations('ConversationScenario');
-  const categories = Categories();
+  const tCategories = useTranslations('ConversationScenario.categories');
+  const categories = Categories(tCategories);
 
   return (
     <div className="relative border-b border-bw-10 w-full">

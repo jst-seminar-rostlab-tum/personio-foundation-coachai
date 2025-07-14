@@ -15,8 +15,7 @@
     "subtitle": "An overview of all your past training configurations",
     "showEntireHistory": "Show Entire History"
   },
-  "deleteConfirmTitle": "Delete entry?",
-  "deleteConfirmDescription": "Are you sure you want to delete this item? This action can't be undone.",
-  "deleteConfirmCancel": "Cancel",
-  "deleteConfirmDelete": "Delete"
+  "deleteConversationScenarioSuccess": "Conversation scenario has been deleted successfully",
+  "deleteConversationScenarioError": "Error deleting conversation scenario",
+  "lastSession": "Last Session"
 }
