@@ -68,6 +68,16 @@ const createSessionTurn = async (api: AxiosInstance, sessionTurn: FormData) => {
   }
 };
 
+const getSessionRealtime = async (api: AxiosInstance, sessionId: string) => {
+  try {
+    const response = await api.get(`/realtime-sessions/${sessionId}`);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 const getSdpResponseTextFromRealtimeApi = async (
   api: AxiosInstance,
   sessionId: string,
@@ -103,4 +113,5 @@ export const sessionService = {
   getSessionFeedback,
   createSessionTurn,
   getSdpResponseTextFromRealtimeApi,
+  getSessionRealtime,
 };
