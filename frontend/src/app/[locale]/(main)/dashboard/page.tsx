@@ -35,7 +35,7 @@ export default async function DashboardPage() {
   const locale = await getLocale();
   const isAdmin = userProfile.accountRole === 'admin';
   const averageScore = calculateAverageScore(userStats.scoreSum, userStats.totalSessions);
-  
+
   return (
     <div className="flex flex-col gap-12">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
