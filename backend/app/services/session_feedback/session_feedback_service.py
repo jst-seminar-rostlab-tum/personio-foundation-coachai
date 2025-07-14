@@ -115,7 +115,6 @@ def generate_feedback_components(
     scores_json: dict[str, float] = {}
     overall_score: float = 0.0
     has_error: bool = False
-    output_blob_name: str | None = ''
     audio_signed_url: str | None = None
     stitch_result: SessionTurnStitchAudioSuccess | None = None
 
@@ -141,7 +140,7 @@ def generate_feedback_components(
         future_scoring = executor.submit(scoring_service.safe_score_conversation, conversation)
         future_audio_stitch = executor.submit(
             session_turn_service.stitch_mp3s_from_gcs,
-            session_id,
+            session_id,  # type: ignore
             f'{session_id}.mp3',
         )
 
@@ -177,15 +176,14 @@ def generate_feedback_components(
             overall_score = 0.0
 
         try:
-            output_blob_name = future_audio_stitch.result()
-            if output_blob_name:
+            stitch_result = future_audio_stitch.result()
+            if stitch_result and stitch_result.output_filename:
                 gcs = get_gcs_audio_manager()
                 if gcs:
                     try:
-                        audio_signed_url = gcs.generate_signed_url(output_blob_name)
+                        audio_signed_url = gcs.generate_signed_url(stitch_result.output_filename)
                     except Exception as e:
                         logging.warning(f'Failed to generate signed url for audio: {e}')
-            stitch_result = future_audio_stitch.result()
         except Exception as e:
             has_error = True
             logging.warning('Failed to call Audio Stitching: %s', e)

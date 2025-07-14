@@ -74,6 +74,11 @@ def generate_training_examples(
     audio_uri: Optional[str] = None,
     temperature: float = 0.0,
 ) -> SessionExamplesRead:
+    if not request.transcript or all(
+        (line.strip() == '' or line.strip().startswith('Assistant:'))
+        for line in request.transcript.splitlines()
+    ):
+        return SessionExamplesRead(positive_examples=[], negative_examples=[])
     lang = request.language_code
     settings = config.root[lang]
 
@@ -147,6 +152,11 @@ def generate_recommendations(
     audio_uri: Optional[str] = None,
     temperature: float = 0.0,
 ) -> RecommendationsRead:
+    if not request.transcript or all(
+        (line.strip() == '' or line.strip().startswith('Assistant:'))
+        for line in request.transcript.splitlines()
+    ):
+        return RecommendationsRead(recommendations=[])
     lang = request.language_code
     settings = config.root[lang]
 
