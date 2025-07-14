@@ -26,7 +26,7 @@ export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) =>
 
     try {
       const { data } = await sessionService.createSession(api, scenarioId);
-      router.push(`/simulation/${data.id}`);
+      router.push(`/session/${data.id}`);
     } catch (error) {
       showErrorToast(error, t('sessionCreationError'));
       setIsSubmitting(false);

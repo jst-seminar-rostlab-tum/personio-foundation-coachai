@@ -4,10 +4,10 @@ import { User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { useTranslations } from 'next-intl';
-import { ConnectionStatus } from '@/interfaces/models/Simulation';
+import { ConnectionStatus } from '@/interfaces/models/Session';
 import { Categories } from '@/lib/constants/categories';
 
-interface SimulationHeaderProps {
+interface SessionHeaderProps {
   characterName: string;
   sessionLabel: string;
   time: number;
@@ -46,8 +46,8 @@ export default function SimulationHeader({
   sessionLabel,
   time = 0,
   connectionStatus,
-}: SimulationHeaderProps) {
-  const t = useTranslations('Simulation');
+}: SessionHeaderProps) {
+  const t = useTranslations('Session');
   const tConversationScenario = useTranslations('ConversationScenario');
   const tCategories = useTranslations('ConversationScenario.categories');
   const categories = Categories(tCategories);
