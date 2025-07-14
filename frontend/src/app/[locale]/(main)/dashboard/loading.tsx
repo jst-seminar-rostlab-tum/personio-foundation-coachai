@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function DashboardLoading() {
   return (
     <div className="flex flex-col gap-12">

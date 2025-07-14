@@ -1,6 +1,4 @@
-import React from 'react';
-
-export default function SimulationPage() {
+export default function SessionPage() {
   return (
     <div className="flex flex-col h-[92vh] justify-between">
       {/* Custom Header */}

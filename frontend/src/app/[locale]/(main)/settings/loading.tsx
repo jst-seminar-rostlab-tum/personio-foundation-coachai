@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function SettingsLoadingPage() {
   return (
     <div className="mx-auto pt-8">

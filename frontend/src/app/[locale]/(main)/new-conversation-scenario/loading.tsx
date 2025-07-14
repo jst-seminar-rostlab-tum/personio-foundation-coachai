@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function ConversationScenarioPageLoading() {
   return (
     <div className="mx-auto pb-8">

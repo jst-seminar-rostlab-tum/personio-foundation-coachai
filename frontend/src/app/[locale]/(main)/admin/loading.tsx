@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function AdminLoadingPage() {
   return (
     <div className="max-w-full">
