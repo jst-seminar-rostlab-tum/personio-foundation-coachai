@@ -5,13 +5,11 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { useTranslations } from 'next-intl';
 import { ConnectionStatus } from '@/interfaces/models/Simulation';
+import { Categories } from '@/lib/constants/categories';
 
 interface SimulationHeaderProps {
-  characterName?: string;
-  characterRole?: string;
-  characterDescription?: string;
-  sessionLabel?: string;
-  avatarSrc?: string;
+  characterName: string;
+  sessionLabel: string;
   time: number;
   connectionStatus?: ConnectionStatus;
 }
@@ -44,22 +42,21 @@ function getConnectionStatusColor(status: ConnectionStatus) {
 }
 
 export default function SimulationHeader({
-  characterName = 'Alex',
-  characterRole = 'Team Member',
-  characterDescription = 'Defensive at first, but open to feedback',
-  sessionLabel = 'Performance Reviews',
-  avatarSrc,
+  characterName,
+  sessionLabel,
   time = 0,
   connectionStatus,
 }: SimulationHeaderProps) {
   const t = useTranslations('Simulation');
+  const tConversationScenario = useTranslations('ConversationScenario');
+  const categories = Categories();
 
   return (
     <div className="relative border-b border-bw-10 w-full">
       <div className="flex flex-col gap-6 p-6 max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)]">
         <div className="flex items-center justify-between">
           <Badge variant="default" className="bg-marigold-30/40 text-marigold-90">
-            {sessionLabel}
+            {categories[sessionLabel].name}
           </Badge>
           <div className="flex items-center gap-3">
             {connectionStatus && (
@@ -84,18 +81,23 @@ export default function SimulationHeader({
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Avatar>
-            <AvatarImage src={avatarSrc} alt={`${characterName} avatar`} />
+          <Avatar className="border-marigold-50 border-1">
+            <AvatarImage
+              src={tConversationScenario(`customize.persona.personas.${characterName}.imageUri`)}
+              alt={`${tConversationScenario(
+                `customize.persona.personas.${characterName}.name`
+              )} avatar`}
+            />
             <AvatarFallback>
               <User className="w-4 h-4" />
             </AvatarFallback>
           </Avatar>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-md text-bw-90">{characterName}</span>
-              <span className="text-md text-bw-70 font-normal">({characterRole})</span>
+              <span className="font-bold text-md text-bw-90">
+                {tConversationScenario(`customize.persona.personas.${characterName}.name`)}
+              </span>
             </div>
-            <div className="text-xs text-bw-40 leading-tight">{characterDescription}</div>
           </div>
         </div>
       </div>
