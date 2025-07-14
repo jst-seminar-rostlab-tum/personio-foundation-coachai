@@ -8,11 +8,17 @@ import { api } from '@/services/ApiClient';
 import { ConnectionStatus, SessionStatus } from '@/interfaces/models/Session';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import { useWebRTC } from '@/app/[locale]/(standalone)/session/[id]/hooks/useWebRTC';
 import SessionHeader from './SessionHeader';
-import SessionFooter from './SessionFooter';
-import SessionLiveFeedback from './SessionLiveFeedback';
 import SessionMessages from './SessionMessages';
+import SessionLiveFeedback from './SessionLiveFeedback';
+import { useWebRTC } from '../hooks/useWebRTC';
+import SessionFooter from './SessionFooter';
+
+type SessionPageComponentProps = {
+  personaName: string;
+  categoryName: string;
+  sessionId: string;
+};
 
 const DISCONNECTED_STATES = [
   ConnectionStatus.Connecting,
@@ -27,7 +33,11 @@ const TERMINAL_STATES = [
   ConnectionStatus.Failed,
 ];
 
-export default function SessionPageComponent({ sessionId }: { sessionId: string }) {
+export default function SessionPageComponent({
+  personaName,
+  categoryName,
+  sessionId,
+}: SessionPageComponentProps) {
   const t = useTranslations('Session');
   const router = useRouter();
   const [hangupInProgress, setHangupInProgress] = useState(false);
@@ -73,7 +83,12 @@ export default function SessionPageComponent({ sessionId }: { sessionId: string 
   return (
     <div className="flex flex-col h-screen">
       <div className="mb-2 sticky top-0 z-11 bg-white">
-        <SessionHeader time={elapsedTimeS} connectionStatus={connectionStatus} />
+        <SessionHeader
+          characterName={personaName}
+          sessionLabel={categoryName}
+          time={elapsedTimeS}
+          connectionStatus={connectionStatus}
+        />
       </div>
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">

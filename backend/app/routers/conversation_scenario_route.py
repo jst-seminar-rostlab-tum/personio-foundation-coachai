@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlmodel import Session as DBSession
 
 from app.database import get_db_session
@@ -10,7 +10,8 @@ from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenarioConfirm,
     ConversationScenarioCreate,
-    ConversationScenarioSummary,
+    ConversationScenarioReadDetail,
+    PaginatedConversationScenarioSummary,
 )
 from app.schemas.scenario_preparation import ScenarioPreparationRead
 from app.services.conversation_scenario_service import ConversationScenarioService
@@ -29,30 +30,32 @@ def get_conversation_scenario_service(
 
 @router.get(
     '',  # /conversation-scenarios
-    response_model=list[ConversationScenarioSummary],
+    response_model=PaginatedConversationScenarioSummary,
     dependencies=[Depends(require_user)],
 )
 def list_conversation_scenarios(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
-) -> list[ConversationScenarioSummary]:
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1),
+) -> PaginatedConversationScenarioSummary:
     """
     Retrieve **all** conversation scenarios for the current user with summary data.
     Admins receive every scenario in the system.
     """
-    return service.list_scenarios_summary(user_profile)
+    return service.list_scenarios_summary(user_profile, page, page_size)
 
 
 @router.get(
     '/{id}',
-    response_model=ConversationScenarioSummary,
+    response_model=ConversationScenarioReadDetail,
     dependencies=[Depends(require_user)],
 )
 def get_conversation_scenario_metadata(
     id: UUID,
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
-) -> ConversationScenarioSummary:
+) -> ConversationScenarioReadDetail:
     """
     Retrieve detailed metadata for a single conversation scenario.
     """

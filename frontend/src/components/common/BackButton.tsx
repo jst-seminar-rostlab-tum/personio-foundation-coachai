@@ -11,11 +11,7 @@ export default function BackButton() {
   const t = useTranslations('Common');
   const pathname = usePathname();
 
-  if (
-    pathname.includes('/dashboard') ||
-    pathname.includes('/admin') ||
-    pathname.includes('/preparation')
-  ) {
+  if (pathname.includes('/dashboard') || pathname.includes('/preparation')) {
     return null;
   }
   return (
