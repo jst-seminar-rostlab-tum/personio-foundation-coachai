@@ -11,7 +11,7 @@ export default function HistoryHeader() {
       <div className="flex flex-col items-center md:items-start text-center md:text-left">
         <div className="text-2xl font-bold text-bw-70">{tPersonalization('myScenario')}</div>
       </div>
-      <Link href="/preparation/1" passHref legacyBehavior>
+      <Link href="/preparation/1">
         <Button className="w-full md:w-auto md:!size-default">
           <RotateCcw />
           {t('tryAgain')}

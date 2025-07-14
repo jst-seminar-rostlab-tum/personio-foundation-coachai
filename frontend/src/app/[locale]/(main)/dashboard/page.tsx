@@ -8,12 +8,9 @@ import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { Button } from '@/components/ui/Button';
 import { UserProfileService } from '@/services/UserProfileService';
 import StatCard from '@/components/common/StatCard';
-import EmptyListComponent from '@/components/common/EmptyListComponent';
-import { SessionFromPagination } from '@/interfaces/models/Session';
-import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import { api } from '@/services/ApiServer';
-import ClickableTable from './DashboardTable';
+import ClickableTable from './components/DashboardTable';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -25,14 +22,7 @@ export default async function DashboardPage() {
   const tCommon = await getTranslations('Common');
   const userProfilePromise = UserProfileService.getUserProfile(api);
   const userStatsPromise = UserProfileService.getUserStats(api);
-  const sessionsPromise = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE);
-  const [userProfile, userStats, sessionsData] = await Promise.all([
-    userProfilePromise,
-    userStatsPromise,
-    sessionsPromise,
-  ]);
-  const { sessions } = sessionsData.data;
-  const locale = await getLocale();
+  const [userProfile, userStats] = await Promise.all([userProfilePromise, userStatsPromise]);
   const averageScore = calculateAverageScore(userStats.scoreSum, userStats.totalSessions);
 
   return (

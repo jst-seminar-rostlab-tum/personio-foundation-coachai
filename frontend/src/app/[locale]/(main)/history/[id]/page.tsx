@@ -4,12 +4,12 @@ import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { UserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiServer';
+import { getTranslations } from 'next-intl/server';
 import ScenarioBox from './components/ScenarioBox';
 import HistoryHeader from './components/HistoryHeader';
 import Loading from './loading';
 import HistoryTable from './components/HistoryTable';
 import HistoryStats from './components/HistoryStats';
-import { StatisticsLabel, PreviousSessionsLabel } from './components/HistoryLabels';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -17,6 +17,7 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function HistoryPage() {
+  const t = await getTranslations('History');
   const difficulty: 'easy' | 'medium' | 'hard' = 'hard';
   const userStatsData = await UserProfileService.getUserStats(api);
   return (
@@ -44,10 +45,10 @@ export default async function HistoryPage() {
             ]}
           />
         </div>
-        <StatisticsLabel />
+        <div className="text-xl font-bold text-bw-70">{t('scores')}</div>
         <HistoryStats stats={userStatsData} />
         <div className="flex flex-col gap-6">
-          <PreviousSessionsLabel />
+          <div className="text-xl font-bold text-bw-70">{t('previousSessions')}</div>
           <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
             <HistoryTable />
           </div>
