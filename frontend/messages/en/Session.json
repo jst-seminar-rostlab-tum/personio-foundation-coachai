@@ -9,5 +9,8 @@
   "disconnected": "Disconnected",
   "hangingUp": "Hanging up…",
   "connectingMessage": "Setting up connection…",
-  "disconnectedMessage": "Connection lost... Retrying connection..."
+  "disconnectedMessage": "Connection lost... Retrying connection...",
+  "LiveFeedback": {
+    "title": "Real-Time Suggestions"
+  }
 }

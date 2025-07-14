@@ -6,7 +6,7 @@ import tempfile
 from uuid import uuid4
 
 import puremagic
-from fastapi import BackgroundTasks, HTTPException, UploadFile
+from fastapi import BackgroundTasks, HTTPException, UploadFile, status
 from sqlalchemy import UUID
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
@@ -16,6 +16,7 @@ from app.connections.gcs_client import get_gcs_audio_manager
 from app.enums.speaker import SpeakerType
 from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn
+from app.models.user_profile import UserProfile
 from app.schemas.session_turn import (
     SessionTurnCreate,
     SessionTurnRead,
@@ -50,15 +51,42 @@ def get_audio_content_type(upload_file: UploadFile) -> str:
     matches = puremagic.magic_stream(upload_file.file)
     upload_file.file.seek(0)
     if not matches:
-        raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Only .webm, .mp3 or .wav files are allowed',
+        )
     mime = matches[0].mime_type
     if not is_valid_audio_mime_type(mime):
-        raise HTTPException(status_code=400, detail='Only .webm, .mp3 or .wav files are allowed')
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Only .webm, .mp3 or .wav files are allowed',
+        )
     return mime
 
 
+def get_file_extension_from_content_type(content_type: str) -> str:
+    mapping = {
+        'audio/webm': '.webm',
+        'video/webm': '.webm',
+        'audio/mpeg': '.mp3',
+        'video/mpeg': '.mp3',
+        'audio/wav': '.wav',
+        'audio/x-wav': '.wav',
+        'audio/wave': '.wav',
+    }
+    ext = mapping.get(content_type)
+    if not ext:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Only .webm, .mp3 or .wav files are allowed',
+        )
+    return ext
+
+
 def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
-    audio_name = f'{session_id}_{uuid4().hex}'
+    content_type = get_audio_content_type(audio_file)
+    file_extension = get_file_extension_from_content_type(content_type)
+    audio_name = f'{session_id}_{uuid4().hex}{file_extension}'
     gcs = get_gcs_audio_manager()
 
     try:
@@ -68,7 +96,9 @@ def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
             content_type=get_audio_content_type(audio_file),
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail='Failed to upload audio file') from e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to upload audio file'
+        ) from e
 
     return audio_name
 
@@ -82,9 +112,15 @@ class SessionTurnService:
         self,
         turn: SessionTurnCreate,
         audio_file: UploadFile,
+        user_profile: UserProfile,
         background_tasks: BackgroundTasks,
     ) -> SessionTurnRead:
         session = self.db.get(SessionModel, turn.session_id)
+
+        if not session.scenario.user_id == user_profile.id:
+            raise HTTPException(
+                status.HTTP_401_UNAUTHORIZED, detail='User does not own this session'
+            )
         if not session:
             raise HTTPException(status_code=404, detail='Session not found')
         if not turn.text:
