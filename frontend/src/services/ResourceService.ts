@@ -6,7 +6,7 @@ export const getDocsSignedUrl = async (
   filename: string
 ): Promise<SignedUrlResponse> => {
   try {
-    const response = await api.get(`/signed-url/docs?filename=${encodeURIComponent(filename)}`);
+    const response = await api.get(`/signed-urls/docs?filename=${encodeURIComponent(filename)}`);
     return response.data;
   } catch (error) {
     console.error('Error getting docs signed URL:', error);
