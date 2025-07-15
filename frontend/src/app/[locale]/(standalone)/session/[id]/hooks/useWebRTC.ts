@@ -1,7 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { sessionService } from '@/services/SessionService';
 import { ConnectionStatus, MessageSender } from '@/interfaces/models/Session';
-import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/utils/toast';
 import { useTranslations } from 'next-intl';
 import { useMessageReducer } from './useMessageReducer';
@@ -12,7 +11,7 @@ import { useRemoteAudioRecorder } from './useRemoteAudioRecorder';
 import { useSessionTurns } from './useSessionTurns';
 import { useSessionLiveFeedback } from './useSessionLiveFeedback';
 
-export function useWebRTC(sessionId: string) {
+export function useWebRTC(sessionId: string, ephemeralKey: string) {
   const t = useTranslations('Session');
 
   const { localStreamRef, startStream, stopStream, isMicActive, toggleMic } = useMediaStream();
@@ -198,8 +197,7 @@ export function useWebRTC(sessionId: string) {
 
     try {
       const sdpText = await sessionService.getSdpResponseTextFromRealtimeApi(
-        api,
-        sessionId,
+        ephemeralKey,
         offer.sdp
       );
       await pc.setRemoteDescription({ type: 'answer', sdp: sdpText });
@@ -225,6 +223,7 @@ export function useWebRTC(sessionId: string) {
     cleanup,
     startGetLiveFeedbackInterval,
     t,
+    ephemeralKey,
   ]);
 
   return {

@@ -11,8 +11,11 @@
     "remainingSessionsToday": "Verbleibende Sitzungen heute"
   },
   "recentSessions": {
-    "title": "Letzte Trainingssitzungen",
-    "subtitle": "Ihre letzten abgeschlossenen Trainingssitzungen im Überblick",
+    "title": "Ihre Szenarien",
+    "subtitle": "Eine Übersicht all Ihrer bisherigen Trainings-Konfigurationen",
     "showEntireHistory": "Gesamten Verlauf anzeigen"
-  }
+  },
+  "deleteConversationScenarioSuccess": "Szenario erfolgreich gelöscht",
+  "deleteConversationScenarioError": "Fehler beim Löschen des Szenarios",
+  "lastSession": "Letzte Sitzung"
 }

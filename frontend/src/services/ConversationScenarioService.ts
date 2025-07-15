@@ -4,9 +4,14 @@ import {
 } from '@/interfaces/models/ConversationScenario';
 import { AxiosInstance } from 'axios';
 
-const getConversationScenarios = async (api: AxiosInstance) => {
+const getConversationScenarios = async (api: AxiosInstance, page: number, pageSize: number) => {
   try {
-    const response = await api.get('/conversation-scenarios');
+    const response = await api.get('/conversation-scenarios', {
+      params: {
+        page_size: pageSize,
+        page,
+      },
+    });
     return response;
   } catch (error) {
     console.error('Error fetching conversation scenarios:', error);
@@ -47,9 +52,20 @@ const getPreparation = async (api: AxiosInstance, id: string) => {
   }
 };
 
+const deleteConversationScenario = async (api: AxiosInstance, id: string) => {
+  try {
+    const response = await api.delete(`/conversation-scenarios/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error deleting conversation scenario:', error);
+    throw error;
+  }
+};
+
 export const conversationScenarioService = {
   getPreparation,
   createConversationScenario,
   getConversationScenarios,
   getConversationScenario,
+  deleteConversationScenario,
 };

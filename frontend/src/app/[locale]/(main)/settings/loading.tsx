@@ -1,93 +1,49 @@
 export default function SettingsLoadingPage() {
   return (
-    <div>
-      <div className="flex items-center justify-between">
-        <div className="text-xl font-bold text-gray-700">Settings</div>
-      </div>
+    <div className="mx-auto pt-8">
+      {/* Title */}
+      <div className="h-10 w-56 bg-bw-10 rounded-lg mb-10 animate-pulse" />
 
-      {/* Accordion Sections */}
-      <div className="mt-6 space-y-4">
-        <div className="">
-          <button className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-t-lg">
-            <span className="font-medium text-gray-700">Data Storage Preferences</span>
-            <svg
-              className="w-5 h-5 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-          <div className="p-4 bg-white rounded-b-lg">
-            <div className="space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+      {/* Privacy Controls Section */}
+      <div className="mb-12">
+        <div className="h-6 w-40 bg-bw-10 rounded mb-6 animate-pulse" /> {/* Section Title */}
+        <div className="flex flex-col gap-10 pl-2">
+          {/* Store Conversation Audio and Transcripts */}
+          <div className="flex items-center justify-between w-full">
+            <div>
+              <div className="h-5 w-64 bg-bw-10 rounded mb-2 animate-pulse" />
+              <div className="h-4 w-96 bg-bw-10 rounded animate-pulse" />
             </div>
+            <div className="h-6 w-12 bg-bw-10 rounded-full animate-pulse" />
           </div>
-        </div>
-
-        <div className="">
-          <button className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-t-lg">
-            <span className="font-medium text-gray-700">Privacy Controls</span>
-            <svg
-              className="w-5 h-5 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-          <div className="p-4 bg-white rounded-b-lg">
-            <div className="space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-            </div>
+          {/* Export Personal Data */}
+          <div className="flex items-center justify-between w-full">
+            <div className="h-5 w-48 bg-bw-10 rounded animate-pulse" />
+            <div className="h-10 w-24 bg-bw-10 rounded animate-pulse" />
           </div>
-        </div>
-
-        <div className="">
-          <button className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-t-lg">
-            <span className="font-medium text-gray-700">Personalization Settings</span>
-            <svg
-              className="w-5 h-5 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-          <div className="p-4 bg-white rounded-b-lg">
-            <div className="space-y-4">
-              <div className="h-24 bg-gray-200 rounded w-5/6 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-            </div>
+          {/* Delete Account */}
+          <div className="flex items-center justify-between w-full">
+            <div className="h-5 w-40 bg-bw-10 rounded animate-pulse" />
+            <div className="h-10 w-40 bg-bw-10 rounded animate-pulse" />
           </div>
         </div>
       </div>
 
-      <div className="mt-8 w-full sm:w-auto sm:flex sm:justify-end">
-        <button className="w-full sm:w-auto px-6 py-2 bg-gray-200 rounded animate-pulse text-gray-700">
-          Save Settings
-        </button>
+      {/* Personalization Settings Section */}
+      <div className="mb-12">
+        <div className="h-6 w-64 bg-bw-10 rounded mb-6 animate-pulse" /> {/* Section Title */}
+        <div className="flex flex-col gap-8 pl-2">
+          {/* Current Role */}
+          <div className="flex flex-col gap-2">
+            <div className="h-5 w-32 bg-bw-10 rounded mb-2 animate-pulse" />
+            <div className="h-10 w-80 bg-bw-10 rounded animate-pulse" />
+          </div>
+          {/* Primary Goals */}
+          <div className="flex flex-col gap-2">
+            <div className="h-5 w-32 bg-bw-10 rounded mb-2 animate-pulse" />
+            <div className="h-10 w-80 bg-bw-10 rounded animate-pulse" />
+          </div>
+        </div>
       </div>
     </div>
   );

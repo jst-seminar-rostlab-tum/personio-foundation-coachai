@@ -3,12 +3,14 @@
   "metaDescription": "View your past training sessions and track your progress",
   "title": "Training History",
   "subtitle": "View & analyse your training sessions",
-  "skillsPerformance": "Skills Performance",
-  "activity": "Activity",
+  "statistics": "Statistics",
   "previousSessions": "Previous Sessions",
-  "deleteAllSessions": "Delete All Sessions",
-  "deleteAllSessionsConfirmation": "Are you sure you want to delete all sessions? This action cannot be undone.",
-  "deleteSuccess": "Deleted successfully.",
-  "deleteError": "Error deleting. Please try again later.",
-  "clearAll": "Clear All"
+  "clearAll": "Clear All",
+  "scores": "Scores",
+  "difficulty": "Difficulty",
+  "deleteSessionSuccess": "Session deleted successfully",
+  "deleteSessionError": "Error deleting session",
+  "duration": "Duration",
+  "sessionTime": "Session Time",
+  "performance": "Performance"
 }
