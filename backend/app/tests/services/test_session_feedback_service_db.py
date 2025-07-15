@@ -68,6 +68,13 @@ class TestSessionFeedbackService(unittest.TestCase):
 
     def setUp(self) -> None:
         self.session = self.SessionLocal
+        self.mock_advisor_service = MagicMock()
+        self.mock_background_tasks = MagicMock()
+        self.mock_user_profile = UserProfile(
+            full_name='Mock User',
+            email='mock@example.com',
+            phone_number='1234567890',
+        )
 
     def tearDown(self) -> None:
         self.session.rollback()
@@ -206,8 +213,11 @@ class TestSessionFeedbackService(unittest.TestCase):
             session_id=session_id,
             feedback_request=example_request,
             db_session=self.session,
+            background_tasks=self.mock_background_tasks,
+            user_profile=self.mock_user_profile,
             scoring_service=mock_scoring_service,
             session_turn_service=mock_session_turn_service,
+            advisor_service=self.mock_advisor_service,
         )
 
         self.assertEqual(feedback.session_id, session_id)
@@ -292,8 +302,11 @@ class TestSessionFeedbackService(unittest.TestCase):
             session_id=session_id,
             feedback_request=example_request,
             db_session=self.session,
+            background_tasks=self.mock_background_tasks,
+            user_profile=self.mock_user_profile,
             scoring_service=mock_scoring_service,
             session_turn_service=mock_session_turn_service,
+            advisor_service=self.mock_advisor_service,
         )
 
         self.assertEqual(feedback.status, FeedbackStatus.failed)
@@ -353,8 +366,11 @@ class TestSessionFeedbackService(unittest.TestCase):
             session_id=session_id,
             feedback_request=example_request,
             db_session=self.session,
+            background_tasks=self.mock_background_tasks,
+            user_profile=self.mock_user_profile,
             scoring_service=mock_scoring_service,
             session_turn_service=mock_session_turn_service,
+            advisor_service=self.mock_advisor_service,
         )
         # Check feedback score structure
         self.assertDictEqual(
