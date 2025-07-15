@@ -5,8 +5,6 @@ import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { adminService } from '@/services/AdminService';
 import { reviewService } from '@/services/ReviewService';
 import { UserProfileService } from '@/services/UserProfileService';
-import { AccountRole } from '@/interfaces/models/UserProfile';
-import { redirect } from 'next/navigation';
 import StatCard from '@/components/common/StatCard';
 import { getTranslations } from 'next-intl/server';
 import { api } from '@/services/ApiServer';
@@ -22,11 +20,6 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function AdminPage() {
-  const userProfile = await UserProfileService.getUserProfile(api);
-  if (userProfile.accountRole !== AccountRole.admin) {
-    return redirect('/dashboard');
-  }
-
   const PAGE_SIZE = 4;
   const statsData = adminService.getAdminStats(api);
   const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
