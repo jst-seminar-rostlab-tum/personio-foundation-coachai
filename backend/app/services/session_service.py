@@ -173,6 +173,14 @@ class SessionService:
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
+        if (
+            session.status == SessionStatus.completed
+            and updated_data.status != SessionStatus.completed
+        ):
+            raise HTTPException(
+                status_code=400, detail='Cannot update status of a completed session.'
+            )
+
         for key, value in updated_data.model_dump(exclude_unset=True).items():
             setattr(session, key, value)
 
