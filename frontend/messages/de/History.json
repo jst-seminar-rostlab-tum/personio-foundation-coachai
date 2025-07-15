@@ -3,12 +3,13 @@
   "metaDescription": "Überblick über Ihre Trainingssitzungen",
   "title": "Trainingsverlauf",
   "subtitle": "Übersicht und Analyse Ihrer Trainingssitzungen",
-  "skillsPerformance": "Kompetenzbewertung",
-  "activity": "Aktivitätsübersicht",
-  "previousSessions": "Vorherige Sitzungen",
-  "deleteAllSessions": "Alle Sitzungen löschen",
-  "deleteAllSessionsConfirmation": "Sind Sie sicher, dass Sie alle Sitzungen löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-  "deleteSuccess": "Erfolgreich gelöscht.",
-  "deleteError": "Fehler beim Löschen. Bitte versuchen Sie es erneut.",
-  "clearAll": "Alle löschen"
+  "statistics": "Statistiken",
+  "clearAll": "Alle löschen",
+  "scores": "Wertungen",
+  "difficulty": "Schwierigkeit",
+  "deleteSessionSuccess": "Sitzung erfolgreich gelöscht",
+  "deleteSessionError": "Fehler beim Löschen der Sitzung",
+  "duration": "Dauer",
+  "sessionTime": "Sitzungszeit",
+  "performance": "Leistung"
 }

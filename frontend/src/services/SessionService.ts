@@ -1,12 +1,18 @@
 import { Session, SessionLiveFeedback } from '@/interfaces/models/Session';
 import { AxiosInstance } from 'axios';
 
-const getPaginatedSessions = async (api: AxiosInstance, page: number, pageSize: number) => {
+const getPaginatedSessions = async (
+  api: AxiosInstance,
+  page: number,
+  pageSize: number,
+  scenarioId: string
+) => {
   try {
     const response = await api.get(`/sessions`, {
       params: {
         page,
         page_size: pageSize,
+        scenario_id: scenarioId,
       },
     });
     return response;
@@ -44,6 +50,16 @@ const createSession = async (api: AxiosInstance, scenarioId: string) => {
     return response;
   } catch (error) {
     console.error('Error creating conversation scenario:', error);
+    throw error;
+  }
+};
+
+const deleteSession = async (api: AxiosInstance, sessionId: string) => {
+  try {
+    const response = await api.delete(`/sessions/${sessionId}`);
+    return response;
+  } catch (error) {
+    console.error('Error deleting session:', error);
     throw error;
   }
 };
@@ -123,4 +139,5 @@ export const sessionService = {
   createSessionTurn,
   getSdpResponseTextFromRealtimeApi,
   getSessionRealtime,
+  deleteSession,
 };

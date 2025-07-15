@@ -9,7 +9,8 @@ import { PersonaButton } from './PersonaButton';
 
 export function CategoryStep() {
   const t = useTranslations('ConversationScenario');
-  const categories = Categories();
+  const tCategories = useTranslations('ConversationScenario.categories');
+  const categories = Categories(tCategories);
   const { formState, updateForm } = useConversationScenarioStore();
   const isCustomContextMode = formState.contextMode === ContextModeEnums.CUSTOM;
 
