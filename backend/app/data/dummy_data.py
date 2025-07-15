@@ -58,7 +58,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             total_sessions=32,
             training_time=4.5,
             current_streak_days=5,
-            score_sum=32 * 82,
+            score_sum=32 * 12,
             goals_achieved=4,  # Summation of all goals achieved
         ),
         UserProfile(
@@ -76,7 +76,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             total_sessions=5,
             training_time=4.2,
             current_streak_days=2,
-            score_sum=5 * 87,
+            score_sum=5 * 12,
             goals_achieved=2,  # Summation of all goals achieved
         ),
     ]
@@ -888,7 +888,7 @@ def get_dummy_session_feedback(
             session_id=sessions[0].id,  # Link to the first session
             scores={'structure': 4, 'empathy': 5, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=4.3,
+            overall_score=17,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Teamwork: An Open Access Practical Guide',
@@ -965,7 +965,7 @@ def get_dummy_session_feedback(
             session_id=sessions[1].id,  # Link to the second session
             scores={'structure': 3, 'empathy': 4, 'focus': 5, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=4.0,
+            overall_score=16,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1042,7 +1042,7 @@ def get_dummy_session_feedback(
             session_id=sessions[2].id,  # Link to the third session
             scores={'structure': 5, 'empathy': 4, 'focus': 3, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=4.0,
+            overall_score=16,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1119,7 +1119,7 @@ def get_dummy_session_feedback(
             session_id=sessions[3].id,  # Link to the fourth session
             scores={'structure': 4, 'empathy': 3, 'focus': 5, 'clarity': 4},
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
-            overall_score=4.0,
+            overall_score=16,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1196,7 +1196,7 @@ def get_dummy_session_feedback(
             session_id=sessions[4].id,  # Link to the fifth session
             scores={'structure': 5, 'empathy': 5, 'focus': 4, 'clarity': 5},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=4.8,
+            overall_score=19,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1273,7 +1273,7 @@ def get_dummy_session_feedback(
             session_id=sessions[5].id,  # Link to the first session
             scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=3.8,
+            overall_score=15,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1351,7 +1351,7 @@ def get_dummy_session_feedback(
             session_id=sessions[6].id,  # Link to the first session
             scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=3.8,
+            overall_score=15,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Communication at Work',
@@ -1425,7 +1425,7 @@ def get_dummy_session_feedback(
             session_id=sessions[7].id,  # Link to the first session
             scores={'structure': 4, 'empathy': 3, 'focus': 4, 'clarity': 4},
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
-            overall_score=3.8,
+            overall_score=15,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             document_names=[
                 'Psychology of Human Relations',
@@ -1639,8 +1639,8 @@ def get_dummy_admin_stats() -> list[AdminDashboardStats]:
     return [
         AdminDashboardStats(
             id=uuid4(),
-            total_trainings=34533,
-            score_sum=34533 * 3.5,
+            total_trainings=345,
+            score_sum=345 * 12,
         )
     ]
 
