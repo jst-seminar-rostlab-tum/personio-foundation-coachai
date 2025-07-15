@@ -1,4 +1,8 @@
-import { ContextModeEnums, PersonaEnums } from '@/interfaces/models/ConversationScenario';
+import {
+  ContextModeEnums,
+  DifficultyLevelEnums,
+  PersonaEnums,
+} from '@/interfaces/models/ConversationScenario';
 import {
   ConversationScenarioFormState,
   ConversationScenarioState,
@@ -10,7 +14,7 @@ const initialFormState: ConversationScenarioFormState = {
   category: '',
   situationalFacts: '',
   name: '',
-  difficulty: '',
+  difficulty: DifficultyLevelEnums.MEDIUM,
   persona: PersonaEnums.POSITIVE,
   personaDescription: '',
   contextMode: ContextModeEnums.DEFAULT,

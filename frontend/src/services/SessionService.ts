@@ -1,12 +1,18 @@
 import { Session, SessionLiveFeedback } from '@/interfaces/models/Session';
 import { AxiosInstance } from 'axios';
 
-const getPaginatedSessions = async (api: AxiosInstance, page: number, pageSize: number) => {
+const getPaginatedSessions = async (
+  api: AxiosInstance,
+  page: number,
+  pageSize: number,
+  scenarioId: string
+) => {
   try {
     const response = await api.get(`/sessions`, {
       params: {
         page,
         page_size: pageSize,
+        scenario_id: scenarioId,
       },
     });
     return response;
@@ -48,6 +54,16 @@ const createSession = async (api: AxiosInstance, scenarioId: string) => {
   }
 };
 
+const deleteSession = async (api: AxiosInstance, sessionId: string) => {
+  try {
+    const response = await api.delete(`/sessions/${sessionId}`);
+    return response;
+  } catch (error) {
+    console.error('Error deleting session:', error);
+    throw error;
+  }
+};
+
 const updateSession = async (api: AxiosInstance, sessionId: string, session: Partial<Session>) => {
   try {
     const response = await api.put<Session>(`/sessions/${sessionId}`, session);
@@ -79,14 +95,10 @@ const getSessionRealtime = async (api: AxiosInstance, sessionId: string) => {
 };
 
 const getSdpResponseTextFromRealtimeApi = async (
-  api: AxiosInstance,
-  sessionId: string,
+  ephemeralKey: string,
   offerSdp: string | undefined
 ) => {
   try {
-    const realtimeSessionResponse = await api.get(`/realtime-sessions/${sessionId}`);
-    const ephemeralKey = realtimeSessionResponse.data.client_secret.value;
-
     const baseUrl = 'https://api.openai.com/v1/realtime';
     const modelId = 'gpt-4o-realtime-preview-2025-06-03';
 
@@ -127,4 +139,5 @@ export const sessionService = {
   createSessionTurn,
   getSdpResponseTextFromRealtimeApi,
   getSessionRealtime,
+  deleteSession,
 };

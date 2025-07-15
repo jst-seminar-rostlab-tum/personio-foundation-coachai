@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { PersonaEnums } from '@/interfaces/models/ConversationScenario';
+import { DifficultyLevelEnums, PersonaEnums } from '@/interfaces/models/ConversationScenario';
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { PersonaButton } from './PersonaButton';
 import { PersonaInfo } from './PersonaInfo';
@@ -24,9 +24,13 @@ export function CustomizeStep() {
   }));
 
   const difficultyOptions = [
-    { value: 'easy', icon: '/images/difficulty/easy.svg', label: t('easy') },
-    { value: 'medium', icon: '/images/difficulty/medium.svg', label: t('medium') },
-    { value: 'hard', icon: '/images/difficulty/hard.svg', label: t('hard') },
+    { value: DifficultyLevelEnums.EASY, icon: '/images/difficulty/easy.svg', label: t('easy') },
+    {
+      value: DifficultyLevelEnums.MEDIUM,
+      icon: '/images/difficulty/medium.svg',
+      label: t('medium'),
+    },
+    { value: DifficultyLevelEnums.HARD, icon: '/images/difficulty/hard.svg', label: t('hard') },
   ];
 
   return (
