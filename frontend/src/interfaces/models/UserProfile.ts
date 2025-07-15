@@ -15,7 +15,7 @@ export interface UserProfile {
 
 export type UserProfileUpdate = Omit<
   UserProfile,
-  'userId' | 'email' | 'phoneNumber' | 'accountRole'
+  'userId' | 'email' | 'phoneNumber' | 'accountRole' | 'scenarioAdvice'
 >;
 
 export interface ConfidenceScore {
