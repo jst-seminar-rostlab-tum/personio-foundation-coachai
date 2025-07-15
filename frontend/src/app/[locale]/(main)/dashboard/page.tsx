@@ -22,7 +22,7 @@ export default async function DashboardPage() {
   const tCommon = await getTranslations('Common');
   const userProfilePromise = UserProfileService.getUserProfile(api);
   const userStatsPromise = UserProfileService.getUserStats(api);
-  const PAGE_SIZE = 1;
+  const PAGE_SIZE = 3;
   const conversationScenariosPromise = conversationScenarioService.getConversationScenarios(
     api,
     1,
@@ -62,7 +62,7 @@ export default async function DashboardPage() {
         <StatCard
           value={
             isAdmin
-              ? `#/${userStats.dailySessionLimit}`
+              ? `-/${userStats.dailySessionLimit}`
               : `${userStats.numRemainingDailySessions}/${userStats.dailySessionLimit}`
           }
           label={t('userStats.remainingSessionsToday')}

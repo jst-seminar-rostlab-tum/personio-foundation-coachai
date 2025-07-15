@@ -23,22 +23,15 @@ const badgeVariants = cva(
   }
 );
 
-type Difficulty = 'easy' | 'medium' | 'hard';
-
 interface BadgeProps extends React.ComponentProps<'span'>, VariantProps<typeof badgeVariants> {
   asChild?: boolean;
-  difficulty?: Difficulty;
 }
 
-function Badge({ className, variant, asChild = false, difficulty, ...props }: BadgeProps) {
+function Badge({ className, variant, asChild = false, ...props }: BadgeProps) {
   const Comp = asChild ? Slot : 'span';
-  const badgeVariant = difficulty || variant;
+
   return (
-    <Comp
-      data-slot="badge"
-      className={cn(badgeVariants({ variant: badgeVariant }), className)}
-      {...props}
-    />
+    <Comp data-slot="badge" className={cn(badgeVariants({ variant }), className)} {...props} />
   );
 }
 

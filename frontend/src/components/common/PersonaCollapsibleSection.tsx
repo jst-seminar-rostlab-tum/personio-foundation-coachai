@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/Accordion';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarImage } from '@/components/ui/Avatar';
+import { DifficultyLevelEnums } from '@/interfaces/models/ConversationScenario';
 
 interface PersonaCollapsibleSectionProps {
   situationalFacts?: string;
@@ -14,6 +15,7 @@ interface PersonaCollapsibleSectionProps {
   categoryName?: string;
   difficultyLevel?: string;
   personaName?: string;
+  difficultyLevelBadge?: DifficultyLevelEnums;
   imgSrc?: string;
 }
 
@@ -22,6 +24,7 @@ export default function PersonaCollapsibleSection({
   persona,
   categoryName,
   difficultyLevel,
+  difficultyLevelBadge,
   personaName,
   imgSrc,
 }: PersonaCollapsibleSectionProps) {
@@ -33,7 +36,7 @@ export default function PersonaCollapsibleSection({
         <h2 className="text-xl font-semibold">{categoryName}</h2>
 
         {difficultyLevel && (
-          <Badge variant="outline" className="whitespace-nowrap mt-1 sm:mt-0">
+          <Badge variant={difficultyLevelBadge} className="whitespace-nowrap mt-1 sm:mt-0">
             {difficultyLevel}
           </Badge>
         )}

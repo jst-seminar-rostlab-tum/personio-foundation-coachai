@@ -1,10 +1,10 @@
-import { ContextMode } from '../models/ConversationScenario';
+import { ContextMode, DifficultyLevelEnums } from '../models/ConversationScenario';
 
 export interface ConversationScenarioFormState {
   category: string;
   situationalFacts: string;
   name: string;
-  difficulty: string;
+  difficulty: DifficultyLevelEnums;
   persona: string;
   personaDescription: string;
   contextMode: ContextMode;

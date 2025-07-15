@@ -4,7 +4,6 @@ import type { Metadata } from 'next';
 import PersonaCollapsibleSection from '@/components/common/PersonaCollapsibleSection';
 import { PagesProps } from '@/interfaces/props/PagesProps';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
-import { UserProfileService } from '@/services/UserProfileService';
 import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { api } from '@/services/ApiServer';
 import { getTranslations } from 'next-intl/server';
@@ -13,7 +12,6 @@ import { sessionService } from '@/services/SessionService';
 import HistoryHeader from './components/HistoryHeader';
 import Loading from './loading';
 import HistoryTable from './components/HistoryTable';
-import HistoryStats from './components/HistoryStats';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -22,26 +20,26 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 
 export default async function HistoryPage(props: PagesProps) {
   const { id } = await props.params;
+  const PAGE_SIZE = 3;
   const conversationScenarioPromise = conversationScenarioService.getConversationScenario(api, id);
-  const userStatsPromise = UserProfileService.getUserStats(api);
-  const sessionsPromise = sessionService.getPaginatedSessions(api, 1, 10, id);
-  const [conversationScenario, userStats, sessions] = await Promise.all([
+  const sessionsPromise = sessionService.getPaginatedSessions(api, 1, PAGE_SIZE, id);
+  const [conversationScenario, sessions] = await Promise.all([
     conversationScenarioPromise,
-    userStatsPromise,
     sessionsPromise,
   ]);
-
   const tConversationScenario = await getTranslations('ConversationScenario');
   const tCategories = await getTranslations('ConversationScenario.categories');
   const categories = Categories(tCategories);
-  const categoryName = categories[conversationScenario.data.categoryId].name;
-  const personaName = tConversationScenario(
-    `customize.persona.personas.${conversationScenario.data.personaName}.name`
-  );
-  const personaImgSrc = tConversationScenario(
-    `customize.persona.personas.${conversationScenario.data.personaName}.imageUri`
-  );
-  const difficultyLevel = tConversationScenario(`${conversationScenario.data.difficultyLevel}`);
+  const {
+    categoryId,
+    personaName,
+    difficultyLevel: difficultyLevelKey,
+  } = conversationScenario.data ?? {};
+  const categoryName = categories?.[categoryId]?.name ?? '';
+  const personaKey = personaName ? `customize.persona.personas.${personaName}` : null;
+  const personaDisplayName = personaKey ? tConversationScenario(`${personaKey}.name`) : '';
+  const personaImgSrc = personaKey ? tConversationScenario(`${personaKey}.imageUri`) : '';
+  const difficultyLevel = difficultyLevelKey ? tConversationScenario(difficultyLevelKey) : '';
 
   return (
     <Suspense fallback={<Loading />}>
@@ -52,10 +50,10 @@ export default async function HistoryPage(props: PagesProps) {
           persona={conversationScenario.data.persona}
           categoryName={categoryName}
           difficultyLevel={difficultyLevel}
-          personaName={personaName}
+          personaName={personaDisplayName}
           imgSrc={personaImgSrc}
+          difficultyLevelBadge={difficultyLevelKey}
         />
-        <HistoryStats stats={userStats} />
         <HistoryTable
           sessions={sessions.data.sessions}
           limit={sessions.data.limit}

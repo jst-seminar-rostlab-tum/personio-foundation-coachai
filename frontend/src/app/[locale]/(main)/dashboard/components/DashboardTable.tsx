@@ -15,6 +15,7 @@ import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { Categories } from '@/lib/constants/categories';
 import Image from 'next/image';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
+import { Badge } from '@/components/ui/Badge';
 
 type DashboardTableProps = {
   scenarios: ConversationScenario[];
@@ -104,7 +105,11 @@ export default function DashboardTable({ scenarios, totalScenarios, limit }: Das
     {
       header: tConversationScenario('difficultyTitle'),
       accessor: 'difficultyLevel',
-      cell: (row) => tConversationScenario(`${row.difficultyLevel}`),
+      cell: (row) => (
+        <Badge variant={row.difficultyLevel}>
+          {tConversationScenario(`${row.difficultyLevel}`)}
+        </Badge>
+      ),
     },
     {
       header: tDashboard('lastSession'),

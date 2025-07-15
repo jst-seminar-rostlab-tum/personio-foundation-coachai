@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
+import { Categories } from '@/lib/constants/categories';
 import PersonaCollapsibleSection from '@/components/common/PersonaCollapsibleSection';
 import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/utils/toast';
@@ -17,6 +18,9 @@ import PreparationKeyConcepts from './PreparationKeyConcepts';
 export default function PreparationContent() {
   const t = useTranslations('Preparation');
   const tCommon = useTranslations('Common');
+  const tConversationScenario = useTranslations('ConversationScenario');
+  const tCategories = useTranslations('ConversationScenario.categories');
+  const categories = Categories(tCategories);
   const [preparationData, setPreparationData] = useState<ConversationScenarioPreparation | null>(
     null
   );
@@ -67,13 +71,25 @@ export default function PreparationContent() {
     );
   }
 
+  const { categoryId, personaName, difficultyLevel } = preparationData || {};
+
+  const categoryName = categories?.[categoryId as string]?.name;
+  const personaKey = `customize.persona.personas.${personaName}`;
+  const personaNameText = tConversationScenario(`${personaKey}.name`);
+  const personaImgSrc = tConversationScenario(`${personaKey}.imageUri`);
+  const difficultyLevelText = tConversationScenario(difficultyLevel ?? '');
+
   return (
     <>
       {preparationData && (
         <PersonaCollapsibleSection
           situationalFacts={preparationData?.situationalFacts}
           persona={preparationData?.persona}
-          categoryName={preparationData?.categoryName}
+          categoryName={categoryName}
+          difficultyLevel={difficultyLevelText}
+          personaName={personaNameText}
+          imgSrc={personaImgSrc}
+          difficultyLevelBadge={difficultyLevel}
         />
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
