@@ -15,13 +15,14 @@ export default function SessionPage() {
       </div>
       {/* Main Content Placeholder */}
       <div className="flex-1 flex items-center justify-center">
-        <div className="w-full  h-full mb-10 bg-gray-100 rounded-lg animate-pulse" />
+        <div className="w-full h-full mb-10 bg-gray-100 rounded-lg animate-pulse" />
       </div>
       {/* Bottom Circle Buttons */}
       <div className="w-full flex justify-between items-center gap-4 px-4 pb-6 max-w-md mx-auto">
         {[1, 2, 3].map((_, i) => (
-          <button key={i} className="w-14 h-14 bg-gray-200 rounded-full animate-pulse" />
+          <div key={i} className="w-14 h-14 bg-gray-200 rounded-full animate-pulse" />
         ))}
+        <div className="w-14 h-14 bg-gray-200 rounded-full animate-pulse" />
       </div>
     </div>
   );

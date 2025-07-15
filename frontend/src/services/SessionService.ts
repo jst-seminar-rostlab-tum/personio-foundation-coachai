@@ -95,14 +95,10 @@ const getSessionRealtime = async (api: AxiosInstance, sessionId: string) => {
 };
 
 const getSdpResponseTextFromRealtimeApi = async (
-  api: AxiosInstance,
-  sessionId: string,
+  ephemeralKey: string,
   offerSdp: string | undefined
 ) => {
   try {
-    const realtimeSessionResponse = await api.get(`/realtime-sessions/${sessionId}`);
-    const ephemeralKey = realtimeSessionResponse.data.client_secret.value;
-
     const baseUrl = 'https://api.openai.com/v1/realtime';
     const modelId = 'gpt-4o-realtime-preview-2025-06-03';
 

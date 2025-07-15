@@ -41,7 +41,7 @@ function getConnectionStatusColor(status: ConnectionStatus) {
   }
 }
 
-export default function SimulationHeader({
+export default function SessionHeader({
   characterName,
   sessionLabel,
   time = 0,
