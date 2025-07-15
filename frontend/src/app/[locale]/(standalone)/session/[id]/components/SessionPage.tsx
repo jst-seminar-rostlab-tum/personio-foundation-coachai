@@ -18,6 +18,7 @@ type SessionPageComponentProps = {
   personaName: string;
   categoryName: string;
   sessionId: string;
+  ephemeralKey: string;
 };
 
 const DISCONNECTED_STATES = [
@@ -37,6 +38,7 @@ export default function SessionPageComponent({
   personaName,
   categoryName,
   sessionId,
+  ephemeralKey,
 }: SessionPageComponentProps) {
   const t = useTranslations('Session');
   const tCommon = useTranslations('Common');
@@ -54,14 +56,14 @@ export default function SessionPageComponent({
     toggleMic,
     cleanup,
     sessionLiveFeedbacks,
-  } = useWebRTC(sessionId);
+  } = useWebRTC(sessionId, ephemeralKey);
 
   useEffect(() => {
     initWebRTC();
     return () => {
       cleanup();
     };
-  }, [initWebRTC, sessionId, cleanup]);
+  }, [initWebRTC, cleanup]);
 
   const onDisconnect = async () => {
     try {
