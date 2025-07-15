@@ -166,7 +166,7 @@ class AdvisorService:
             return
         user_profile.scenario_advice = {
             'scenario': scenario_advice.model_dump(),
-            'mascot_speech': mascot_speech,
+            'mascotSpeech': mascot_speech,
         }
         self.db.add(user_profile)
         self.db.commit()
