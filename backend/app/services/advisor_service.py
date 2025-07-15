@@ -59,6 +59,7 @@ def get_mock_advisor_response() -> AdvisorResponse:
     return AdvisorResponse(
         custom_category_label='Performance Reviews',
         persona=mock_persona,
+        persona_name='positive',
         situational_facts=mock_situational_facts,
         difficulty_level=DifficultyLevel.medium,
         mascot_speech='Hi! How about you try training for a Performance Review?',
@@ -72,7 +73,6 @@ def get_mock_session_feedback() -> SessionFeedback:
         scores={'structure': 4, 'empathy': 5, 'focus': 4, 'clarity': 4},
         tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
         overall_score=4.3,
-        transcript_uri='https://example.com/transcripts/session1.txt',
         full_audio_filename='full_audio_123.mp3',
         document_names=[
             'Teamwork: An Open Access Practical Guide',
@@ -222,10 +222,12 @@ class AdvisorService:
                 - Navigating emotionally complex conversations with high performers
 
                 **Company Position**: Development Coordinator (5 years experience)
-        3. situational_facts: Context of the training scenario:
-        4. difficulty_level: How difficult the conversation should be. 
+        3. persona_name: Name of the AI persona, who the user will train with.
+        Example: Positive Pam, Casual Candice, etc.
+        4. situational_facts: Context of the training scenario:
+        5. difficulty_level: How difficult the conversation should be. 
         Choose one of those options: 'easy', 'medium', 'hard'
-        5. mascot_speech: 1-2 sentences that encourage the user to try training with the scenario 
+        6. mascot_speech: 1-2 sentences that encourage the user to try training with the scenario 
         you generate. Try to keep the sentences short
         Example for mascot_speech if previous scenario level was 'Conflict Resolution' on 'easy': 
         I saw you did good with easy Conflict Resolution, how about you try medium 
@@ -249,6 +251,7 @@ class AdvisorService:
         new_conversation_scenario = ConversationScenarioCreate(
             category_id=None,
             custom_category_label=advisor_response.custom_category_label,
+            persona_name=advisor_response.persona_name,
             persona=advisor_response.persona,
             situational_facts=advisor_response.situational_facts,
             difficulty_level=DifficultyLevel(advisor_response.difficulty_level),

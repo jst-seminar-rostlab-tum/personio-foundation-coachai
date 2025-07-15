@@ -19,8 +19,10 @@ export const setupAuthInterceptor = (api: AxiosInstance, getSupabaseClient: any)
         return Promise.reject(error || new Error('No session found'));
       }
 
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const accessToken = data.session.access_token;
       config.headers.set('Authorization', `Bearer ${accessToken}`);
+      config.headers.set('X-Timezone', timezone);
 
       return config;
     },

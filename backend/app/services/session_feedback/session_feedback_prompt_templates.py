@@ -38,6 +38,10 @@ def build_training_examples_prompt(
     Transcript:
     {transcript}
 
+    If an audio file is provided (audio_uri), you may use both the transcript and the audio content 
+    to inform your analysis. The audio may contain additional context or nuances 
+    not captured in the transcript.
+
     Training Guidelines:
     - Objectives: {objectives}
     - Persona incl. Training focus: {persona}
@@ -104,6 +108,10 @@ def build_goals_achieved_prompt(
     Transcript:
     {transcript_text}
 
+    If an audio file is provided (audio_uri), you may use both the transcript and the audio content 
+    to inform your analysis. The audio may contain additional context or nuances 
+    not captured in the transcript.
+
     Goals:
     {objectives_text}
         
@@ -166,6 +174,10 @@ def build_recommendations_prompt(
 
     Transcript:
     {transcript_text}
+
+    If an audio file is provided (audio_uri), you may use both the transcript and the audio content 
+    to inform your analysis. The audio may contain additional context or nuances 
+    not captured in the transcript.
 
     Persona (other party) including Training Focus:
     {persona}

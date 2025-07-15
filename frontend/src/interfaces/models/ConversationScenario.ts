@@ -4,6 +4,7 @@ export interface ConversationScenario {
   persona: string;
   situationalFacts: string;
   languageCode: string;
+  personaName: string;
 }
 
 export interface ConversationCategory {
@@ -57,4 +58,5 @@ export type ConversationScenarioPreparation = {
   updatedAt: string;
   categoryName: string;
   situationalFacts: string;
+  persona: string;
 };

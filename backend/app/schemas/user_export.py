@@ -20,6 +20,7 @@ class ExportUserProfile(BaseModel):
     current_streak_days: int
     score_sum: float
     goals_achieved: int
+    num_remaining_daily_sessions: int
 
 
 class ExportUserGoal(BaseModel):
@@ -38,6 +39,7 @@ class ExportConversationScenario(BaseModel):
     category_id: Optional[str]
     custom_category_label: Optional[str]
     language_code: str
+    persona_name: str
     persona: str
     situational_facts: str
     difficulty_level: str
@@ -86,7 +88,6 @@ class ExportSessionFeedback(BaseModel):
     scores: dict[str, Any]
     tone_analysis: dict[str, Any]
     overall_score: float
-    transcript_uri: str
     speak_time_percent: float
     questions_asked: int
     session_length_s: int
