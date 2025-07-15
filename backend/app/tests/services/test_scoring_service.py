@@ -74,7 +74,7 @@ class TestScoringService(unittest.TestCase):
             conversation_summary='The User initiated the conversation clearly'
             + 'and maintained a professional tone.',
             scoring=ConversationScore(
-                overall_score=4.25,
+                overall_score=17,
                 scores=[
                     MetricScore(metric='structure', score=5, justification='Perfect.'),
                     MetricScore(metric='empathy', score=4, justification='Good.'),
@@ -90,7 +90,7 @@ class TestScoringService(unittest.TestCase):
         self.assertIn('request_prompt', kwargs)
         self.assertEqual(kwargs['output_model'], ScoringRead)
         self.assertEqual(result, mock_result)
-        self.assertEqual(result.scoring.overall_score, 4.25)
+        self.assertEqual(result.scoring.overall_score, 17)
         self.assertEqual(len(result.scoring.scores), 4)
 
     def test_build_prompt(self) -> None:
