@@ -59,12 +59,10 @@ class SessionService:
             updated_at=session.updated_at,
             title=title,
             has_reviewed=user_has_reviewed,
-            summary='The person giving feedback was rude but the person '
-            'receiving feedback took it well.',
             goals_total=goals,
         )
 
-        session_response.feedback = self._get_session_feedback(session_id)
+        session_response.feedback = self._get_session_feedback(session_id, user_profile)
 
         return session_response
 
@@ -172,6 +170,14 @@ class SessionService:
         conversation_scenario = self.db.get(ConversationScenario, scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
+
+        if (
+            session.status == SessionStatus.completed
+            and updated_data.status != SessionStatus.completed
+        ):
+            raise HTTPException(
+                status_code=400, detail='Cannot update status of a completed session.'
+            )
 
         for key, value in updated_data.model_dump(exclude_unset=True).items():
             setattr(session, key, value)
@@ -456,7 +462,9 @@ class SessionService:
             return scenario.custom_category_label
         return 'No Title available'
 
-    def _get_session_feedback(self, session_id: UUID) -> SessionFeedbackRead | None:
+    def _get_session_feedback(
+        self, session_id: UUID, user_profile: UserProfile
+    ) -> SessionFeedbackRead | None:
         feedback = self.db.exec(
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
         ).first()
@@ -471,7 +479,12 @@ class SessionService:
             audio_file_exists = self.gcs_audio_manager.document_exists(
                 filename=feedback.full_audio_filename
             )
-        if audio_file_exists:
+
+        store_conversations = (
+            getattr(user_profile, 'store_conversations', False) if user_profile else False
+        )
+
+        if audio_file_exists and store_conversations:
             full_audio_url = self.gcs_audio_manager.generate_signed_url(
                 filename=feedback.full_audio_filename,
             )

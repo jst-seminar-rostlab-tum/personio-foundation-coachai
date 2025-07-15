@@ -163,7 +163,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                         MockScore('focus', 3),
                         MockScore('clarity', 4),
                     ]
-                    self.overall_score = 4.0
+                    self.overall_score = 16.0
 
             def __init__(self) -> None:
                 self.scoring = self.Scoring()
@@ -399,7 +399,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                         MockScore('focus', 3),
                         MockScore('clarity', 4),
                     ]
-                    self.overall_score = 4.0
+                    self.overall_score = 16.0
 
             def __init__(self) -> None:
                 self.scoring = self.Scoring()
@@ -436,7 +436,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertDictEqual(
             feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4}
         )
-        self.assertEqual(feedback.overall_score, 4.0)
+        self.assertEqual(feedback.overall_score, 16.0)
 
     def test_generate_training_examples_with_audio(self) -> None:
         from app.schemas.session_feedback import FeedbackCreate, SessionExamplesRead

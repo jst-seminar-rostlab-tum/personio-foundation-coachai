@@ -50,7 +50,7 @@ class MockScoringRead:
                     MockScore('focus', 3),
                     MockScore('clarity', 4),
                 ]
-                self.overall_score = 4.0
+                self.overall_score = 16.0
             else:
                 self.scores = []
                 self.overall_score = 0
@@ -376,18 +376,20 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertDictEqual(
             feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4}
         )
-        self.assertEqual(feedback.overall_score, 4.0)
+        self.assertEqual(feedback.overall_score, 16.0)
         # Check user_profile statistics
         user = self.session.get(UserProfile, user_id)
-        self.assertEqual(user.score_sum, 4.0)
+        self.assertIsNotNone(user)
+        self.assertEqual(user.score_sum, 16.0)
         self.assertEqual(user.total_sessions, 1)
         # Check admin_dashboard_stats statistics
         stats = self.session.exec(select(AdminDashboardStats)).first()
-        self.assertEqual(stats.score_sum, 4.0)
+        self.assertIsNotNone(stats)
+        self.assertEqual(stats.score_sum, 16.0)
         self.assertEqual(stats.total_trainings, 1)
         # Check average score
-        self.assertAlmostEqual(user.score_sum / user.total_sessions, 4.0)
-        self.assertAlmostEqual(stats.score_sum / stats.total_trainings, 4.0)
+        self.assertAlmostEqual(user.score_sum / user.total_sessions, 16.0)
+        self.assertAlmostEqual(stats.score_sum / stats.total_trainings, 16.0)
 
 
 if __name__ == '__main__':

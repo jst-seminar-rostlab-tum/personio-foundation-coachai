@@ -212,6 +212,7 @@ def update_statistics(
     goals: GoalsAchievedRead,
     overall_score: float,
     has_error: bool,
+    session_length_s: int,
 ) -> FeedbackStatus:
     """Update user profile and admin dashboard stats, handle commit/rollback."""
     if conversation and conversation.scenario and conversation.scenario.user_id:
@@ -227,6 +228,7 @@ def update_statistics(
             user.score_sum += overall_score
             user.total_sessions += 1
             user.goals_achieved += len(goals.goals_achieved)
+            user.training_time = ((user.training_time * 60) + session_length_s) / 60
             db_session.add(user)
         if admin_stats:
             admin_stats.score_sum += overall_score
@@ -348,6 +350,7 @@ def generate_and_store_feedback(
         feedback_generation_result.goals,
         feedback_generation_result.overall_score,
         feedback_generation_result.has_error,
+        feedback_generation_result.session_length_s,
     )
 
     feedback: SessionFeedback = save_session_feedback(
