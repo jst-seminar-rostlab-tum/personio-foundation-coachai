@@ -59,7 +59,7 @@ export default function ResetPasswordForm() {
     try {
       const supabase = await createClient();
       const { error: supabaseError } = await supabase.auth.resetPasswordForEmail(values.email, {
-        redirectTo: `${window.location.origin}/update-password`,
+        redirectTo: `${window.location.origin}/login?step=update-password`,
       });
       if (supabaseError) {
         setError(supabaseError.message || tCommon('unknownError'));
