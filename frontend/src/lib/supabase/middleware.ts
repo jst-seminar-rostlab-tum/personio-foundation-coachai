@@ -37,12 +37,13 @@ export async function authMiddleware(
 
   const supabase = await createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const user = session?.user;
+
   if (!user) {
-    if (isAuthRoute) {
-      return response;
-    }
+    if (isAuthRoute) return response;
     return NextResponse.redirect(new URL('/login', request.nextUrl));
   }
 
@@ -51,17 +52,19 @@ export async function authMiddleware(
   }
 
   if (isAdminRoute) {
-    const token = request.cookies.get('sb-access-token')?.value;
+    const accessToken = session?.access_token;
 
-    if (!token) {
+    if (!accessToken) {
+      console.warn('Missing access token for admin route');
       return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
     }
 
     try {
-      const decoded = jwtDecode<{ account_role?: string }>(token);
+      const decoded = jwtDecode<{ account_role?: string }>(accessToken);
       const role = decoded.account_role;
 
-      if (role !== AccountRole.admin) {
+      if (!role || role !== AccountRole.admin) {
+        console.warn(`User is not admin: role=${role}`);
         return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
       }
     } catch (err) {
