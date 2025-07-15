@@ -133,6 +133,7 @@ class ConversationScenarioService:
         return ScenarioPreparationRead(
             **scenario_preparation.model_dump(),
             category_name=category_name,
+            category_id=conversation_scenario.category_id,
             persona_name=conversation_scenario.persona_name,
             persona=conversation_scenario.persona,
             difficulty_level=conversation_scenario.difficulty_level,
