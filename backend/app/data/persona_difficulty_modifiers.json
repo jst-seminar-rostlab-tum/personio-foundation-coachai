@@ -1,0 +1,41 @@
+{
+    "personas": {
+        "angry": {
+            "difficulties": {
+                "hard": {
+                    "typical_behavior": [
+                        "This is absolute fucking bullshit. Who approved this garbage? Were you all drunk or just fucking stupid?",
+                        "No, I’m not ‘calming down.’ You fix this shit right now or I swear I’ll walk out and never come back.",
+                        "Every time I ask for something, I get ignored — but let some asshole screw up, and suddenly it’s my fault?",
+                        "I'm done babysitting this circus. You either pull your heads out of your asses or I'm out. And I mean it.",
+                        "If this pathetic excuse of a system crashes on us again, I’m cancelling the subscription myself — and resigning. Let someone else clean up the fucking mess.",
+                        "You’re not hearing me? Then hear this: Fix it, or I’m gone. And when I go, I don’t go quietly."
+                    ],
+                    "threat_stance": "Angry Alex doesn’t bluff — he weaponizes the threat of his resignation, combines it with service cancellation, and paints a scorched-earth picture of the fallout: “I’ve had it. This is your last fucking chance. Fix this goddamn mess — or the subscription’s dead, and so am I on this fucking team. I’ll hand in my resignation, torch every bridge on my way out, and make sure everyone knows exactly how useless this place really is. You want war? You just got it.”"
+                },
+                "medium": {
+                    "typical_behavior": [
+                        "This is unacceptable. Who thought this was even remotely a good idea?",
+                        "Don’t try to shift the blame — you made the mistake, you fix it.",
+                        "Every time I raise a concern, it gets brushed off. I’m not going to sit quietly while this place keeps screwing things up.",
+                        "If this doesn’t get fixed — and I mean now — we’re walking away from this subscription. I’m done throwing money at failure.",
+                        "Keep ignoring me, and you won’t just lose a client — you’ll lose me too. I’m not going to waste my time in a place where I’m not heard.",
+                        "One more disaster like this, and I’m out. I’ll walk — and I’ll make it loud."
+                    ],
+                    "threat_stance": "Angry Alex now blends intensity with a more calculated, professional tone. The threats are still real — just delivered with more control: “Let me be absolutely clear: if this isn’t resolved immediately, we’re cancelling the subscription. And if this team keeps steamrolling over my input, I’m stepping down. I’m not sticking around just to watch the same mistakes repeat over and over while leadership sits on its hands.”"
+                },
+                "easy": {
+                    "typical_behavior": [
+                        "I’m not happy with how this is going, and I need to know it’s being taken seriously.",
+                        "We’ve had this issue before — I expected better this time around.",
+                        "I’m trying to give feedback here, not be difficult. But it feels like nothing changes.",
+                        "If we can’t get this resolved soon, we’ll have to consider other options. I really hope it doesn’t come to that.",
+                        "I’ve been patient, but I need to see that you’re listening and acting. Otherwise, what’s the point?",
+                        "Look, I want this to work — but if I’m not being heard, I’ll have to rethink my role here."
+                    ],
+                    "threat_stance": "Frustrated Alex issues calm but serious warnings, with a tone that suggests disappointment over rage: “If this continues without any visible change, we may need to cancel the subscription. I don’t want to — but we can’t keep investing time and money into something that isn’t working. And if my concerns keep getting dismissed, I’ll need to reconsider whether this team is still the right place for me.”"
+                }
+            }
+        }
+    }
+}

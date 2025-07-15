@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -8,8 +7,10 @@ from sqlalchemy.engine.base import Connection
 from sqlalchemy.orm.mapper import Mapper
 from sqlmodel import Field, Relationship
 
+from app.enums.conversation_scenario_status import ConversationScenarioStatus
+from app.enums.difficulty_level import DifficultyLevel
+from app.enums.language import LanguageCode
 from app.models.camel_case import CamelModel
-from app.models.language import LanguageCode
 
 if TYPE_CHECKING:
     from app.models.conversation_category import ConversationCategory
@@ -18,20 +19,7 @@ if TYPE_CHECKING:
     from app.models.user_profile import UserProfile
 
 
-# Enum for status
-class ConversationScenarioStatus(str, Enum):
-    draft = 'draft'
-    ready = 'ready'
-    archived = 'archived'
-
-
-class DifficultyLevel(str, Enum):
-    easy = 'easy'
-    medium = 'medium'
-    hard = 'hard'
-
-
-class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a database table
+class ConversationScenario(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', nullable=False, ondelete='CASCADE')
     category_id: str | None = Field(
@@ -39,6 +27,7 @@ class ConversationScenario(CamelModel, table=True):  # `table=True` makes it a d
     )
     custom_category_label: str | None = None
     language_code: LanguageCode = Field(default=LanguageCode.en)
+    persona_name: str
     persona: str
     situational_facts: str
     difficulty_level: DifficultyLevel = Field(default=DifficultyLevel.easy)

@@ -5,15 +5,14 @@ import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { adminService } from '@/services/AdminService';
 import { reviewService } from '@/services/ReviewService';
 import { UserProfileService } from '@/services/UserProfileService';
-import { AccountRole } from '@/interfaces/models/UserProfile';
-import { redirect } from 'next/navigation';
 import StatCard from '@/components/common/StatCard';
 import { getTranslations } from 'next-intl/server';
 import { api } from '@/services/ApiServer';
+import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import AdminLoadingPage from './loading';
-import TokenSetter from './components/TokenSetter';
+import SessionSetter from './components/SessionSetter';
 import Reviews from './components/Reviews';
-import UserManagement from './components/UserManagement';
+import UsersList from './components/UsersList';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -21,11 +20,6 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function AdminPage() {
-  const userProfile = await UserProfileService.getUserProfile(api);
-  if (userProfile.accountRole !== AccountRole.admin) {
-    return redirect('/dashboard');
-  }
-
   const PAGE_SIZE = 4;
   const statsData = adminService.getAdminStats(api);
   const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
@@ -33,11 +27,14 @@ export default async function AdminPage() {
   const [stats, reviews, users] = await Promise.all([statsData, reviewsData, usersData]);
   const t = await getTranslations('Admin');
   const tCommon = await getTranslations('Common');
+
+  const averageScore = calculateAverageScore(stats.scoreSum, stats.totalTrainings);
+
   const statsArray = [
     { value: stats.totalUsers, label: t('statActiveUsers') },
     { value: stats.totalTrainings, label: tCommon('totalSessions') },
     { value: stats.totalReviews, label: tCommon('reviews') },
-    { value: `${stats.averageScore ?? 0}%`, label: tCommon('avgScore') },
+    { value: `${averageScore}/5`, label: tCommon('avgScore') },
   ];
 
   return (
@@ -50,9 +47,9 @@ export default async function AdminPage() {
             <StatCard key={i} value={stat.value} label={stat.label} />
           ))}
         </div>
-        <TokenSetter dailyTokenLimit={stats.dailyTokenLimit} />
+        <SessionSetter dailySessionLimit={stats.dailySessionLimit} />
         <Reviews {...reviews} />
-        <UserManagement usersPaginationData={users} />
+        <UsersList {...users} />
       </div>
     </Suspense>
   );

@@ -1,9 +1,10 @@
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
-import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { api } from '@/services/ApiServer';
+import { UserProfileService } from '@/services/UserProfileService';
 import ConversationScenarioForm from './components/ConversationScenarioForm';
+import SessionLimitReached from './components/SessionLimitReached';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -11,6 +12,9 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function ConversationScenarioPage() {
-  const categories = await conversationScenarioService.getConversationCategories(api);
-  return <ConversationScenarioForm categoriesData={categories.data} />;
+  const userStats = await UserProfileService.getUserStats(api);
+  if (userStats.numRemainingDailySessions === 0) {
+    return <SessionLimitReached />;
+  }
+  return <ConversationScenarioForm />;
 }

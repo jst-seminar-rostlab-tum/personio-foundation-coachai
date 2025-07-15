@@ -11,8 +11,9 @@ from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.vertexai_client import call_structured_llm
-from app.models.language import LanguageCode
-from app.models.scenario_preparation import ScenarioPreparation, ScenarioPreparationStatus
+from app.enums.language import LanguageCode
+from app.enums.scenario_preparation_status import ScenarioPreparationStatus
+from app.models.scenario_preparation import ScenarioPreparation
 from app.schemas.scenario_prep_config import ScenarioPrepConfigRead
 from app.schemas.scenario_preparation import (
     ChecklistCreate,
@@ -269,6 +270,7 @@ def generate_scenario_preparation(
         )
 
         has_error = False
+        preparation.document_names = doc_names
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_key_concepts = executor.submit(

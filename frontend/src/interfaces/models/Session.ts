@@ -9,12 +9,15 @@ export enum SessionStatus {
 export interface Session {
   id: string;
   scenarioId: string;
+  sessionId: string;
   status: SessionStatus;
   title: string;
   summary: string;
   date: string;
   createdAt: string;
   updatedAt: string;
+  overallScore: number;
+  sessionLengthS: number;
 }
 
 export interface SessionPaginated {
@@ -53,4 +56,19 @@ export interface Message {
 export enum MessageSender {
   USER = 'user',
   ASSISTANT = 'assistant',
+}
+
+export interface SessionLiveFeedback {
+  id: string;
+  heading: string;
+  feedbackText: string;
+}
+
+export enum ConnectionStatus {
+  Connecting = 'connecting',
+  Connected = 'connected',
+  Disconnected = 'disconnected',
+  Failed = 'failed',
+  Closed = 'closed',
+  New = 'new',
 }

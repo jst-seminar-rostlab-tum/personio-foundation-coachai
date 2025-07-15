@@ -19,6 +19,7 @@ export default async function PreparationPage(props: PagesProps) {
   const tCommon = await getTranslations('Common');
 
   const { id } = await props.params;
+
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-2xl text-center">{t('title')}</h1>
@@ -34,6 +35,10 @@ export default async function PreparationPage(props: PagesProps) {
         </Link>
 
         <CreateSessionButton scenarioId={id} />
+      </div>
+
+      <div className="mt-4 text-center">
+        <p className="text-xs text-bw-40">{tCommon('aiDisclaimer')}</p>
       </div>
     </div>
   );

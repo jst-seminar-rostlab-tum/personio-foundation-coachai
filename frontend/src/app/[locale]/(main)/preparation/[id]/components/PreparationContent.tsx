@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
+import { Categories } from '@/lib/constants/categories';
+import PersonaCollapsibleSection from '@/components/common/PersonaCollapsibleSection';
 import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/utils/toast';
 import { ConversationScenarioPreparation } from '@/interfaces/models/ConversationScenario';
@@ -16,6 +18,9 @@ import PreparationKeyConcepts from './PreparationKeyConcepts';
 export default function PreparationContent() {
   const t = useTranslations('Preparation');
   const tCommon = useTranslations('Common');
+  const tConversationScenario = useTranslations('ConversationScenario');
+  const tCategories = useTranslations('ConversationScenario.categories');
+  const categories = Categories(tCategories);
   const [preparationData, setPreparationData] = useState<ConversationScenarioPreparation | null>(
     null
   );
@@ -66,13 +71,26 @@ export default function PreparationContent() {
     );
   }
 
+  const { categoryId, personaName, difficultyLevel } = preparationData || {};
+
+  const categoryName = categories?.[categoryId as string]?.name;
+  const personaKey = `customize.persona.personas.${personaName}`;
+  const personaNameText = tConversationScenario(`${personaKey}.name`);
+  const personaImgSrc = tConversationScenario(`${personaKey}.imageUri`);
+  const difficultyLevelText = tConversationScenario(difficultyLevel ?? '');
+
   return (
     <>
       {preparationData && (
-        <section className="flex flex-col gap-4 bg-marigold-5 border border-marigold-30 rounded-lg p-8 text-marigold-95">
-          <h2 className="text-xl">{preparationData.categoryName}</h2>
-          <div className="text-base italic leading-loose">{preparationData.context}</div>
-        </section>
+        <PersonaCollapsibleSection
+          situationalFacts={preparationData?.situationalFacts}
+          persona={preparationData?.persona}
+          categoryName={categoryName}
+          difficultyLevel={difficultyLevelText}
+          personaName={personaNameText}
+          imgSrc={personaImgSrc}
+          difficultyLevelBadge={difficultyLevel}
+        />
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">

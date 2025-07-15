@@ -1,4 +1,9 @@
 import {
+  ContextModeEnums,
+  DifficultyLevelEnums,
+  PersonaEnums,
+} from '@/interfaces/models/ConversationScenario';
+import {
   ConversationScenarioFormState,
   ConversationScenarioState,
 } from '@/interfaces/store/ConversationScenarioState';
@@ -7,15 +12,12 @@ import { persist } from 'zustand/middleware';
 
 const initialFormState: ConversationScenarioFormState = {
   category: '',
-  customCategory: '',
+  situationalFacts: '',
   name: '',
-  otherParty: '',
-  context: '',
-  goal: '',
-  difficulty: '',
-  emotionalTone: '',
-  complexity: '',
-  isCustom: false,
+  difficulty: DifficultyLevelEnums.MEDIUM,
+  persona: PersonaEnums.POSITIVE,
+  personaDescription: '',
+  contextMode: ContextModeEnums.DEFAULT,
 };
 
 export const useConversationScenarioStore = create<ConversationScenarioState>()(
@@ -28,7 +30,11 @@ export const useConversationScenarioStore = create<ConversationScenarioState>()(
         set((state) => ({
           formState: { ...state.formState, ...newState },
         })),
-      reset: () => set({ step: 0, formState: initialFormState }),
+      reset: () =>
+        set({
+          step: 0,
+          formState: initialFormState,
+        }),
     }),
     {
       name: 'conversation-scenario-form',

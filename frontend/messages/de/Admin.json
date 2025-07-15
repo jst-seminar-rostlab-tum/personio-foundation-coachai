@@ -4,14 +4,8 @@
   "dashboardTitle": "Admin-Dashboard",
   "dashboardSubtitle": "Nutzer analysieren und verwalten",
   "statActiveUsers": "Aktive Nutzer",
-  "tokensPerUserLabel": "Sitzungen pro Benutzer und Tag",
   "userManagement": "Benutzerverwaltung",
-  "trainingCategories": "Trainingskategorien",
-  "trainingScenarios": "Trainingsszenarien",
   "deleteUser": "Benutzer löschen",
-  "tokenSuccess": "Token-Limit wurde erfolgreich gespeichert",
-  "tokenFailed": "Fehler beim Speichern des Token-Limits",
-  "tokenNumberFailed": "Bitte geben Sie eine gültige Zahl zwischen 1 und 1.000.000 ein",
   "search": "Suchen...",
   "email": "E-Mail",
   "actions": "Aktionen",
@@ -20,5 +14,9 @@
   "sortNewest": "Neueste",
   "sortOldest": "Älteste",
   "sortHighest": "Höchste",
-  "sortLowest": "Niedrigste"
+  "sortLowest": "Niedrigste",
+  "sessionsPerUserLabel": "Sitzungen pro Benutzer und Tag",
+  "sessionSuccess": "Sitzungslimit erfolgreich gespeichert",
+  "sessionFailed": "Fehler beim Speichern des Sitzungslimits",
+  "sessionNumberFailed": "Bitte geben Sie eine gültige Zahl zwischen 1 und 1.000 ein"
 }

@@ -60,7 +60,11 @@ export function ExportUserHandler() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
-          <AlertDialogAction onClick={handleExportUser} disabled={loading}>
+          <AlertDialogAction
+            onClick={handleExportUser}
+            disabled={loading}
+            className="bg-bw-70 text-background hover:bg-bw-50"
+          >
             {loading ? tSettings('exporting') : tSettings('export')}
           </AlertDialogAction>
         </AlertDialogFooter>

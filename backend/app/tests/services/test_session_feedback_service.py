@@ -1,29 +1,31 @@
 import unittest
 from datetime import datetime
 from unittest.mock import MagicMock, patch
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from sqlmodel import Session as DBSession
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import SQLModel, create_engine, select
 
-from app.models import FeedbackStatusEnum
+from app.enums import FeedbackStatus
+from app.enums.language import LanguageCode
+from app.enums.speaker import SpeakerType
 from app.models.conversation_scenario import ConversationScenarioStatus
-from app.models.language import LanguageCode
-from app.models.session_turn import SpeakerEnum
+from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenario,
     ConversationScenarioRead,
 )
 from app.schemas.session_feedback import (
-    FeedbackRequest,
-    GoalsAchievedCollection,
+    FeedbackCreate,
+    GoalsAchievedCreate,
+    GoalsAchievedRead,
     NegativeExample,
     PositiveExample,
     Recommendation,
-    RecommendationsCollection,
-    SessionExamplesCollection,
+    RecommendationsRead,
+    SessionExamplesRead,
 )
-from app.schemas.session_turn import SessionTurnRead
+from app.schemas.session_turn import SessionTurnRead, SessionTurnStitchAudioSuccess
 from app.services.session_feedback.session_feedback_llm import generate_recommendations
 from app.services.session_feedback.session_feedback_service import (
     generate_and_store_feedback,
@@ -43,14 +45,29 @@ class TestSessionFeedbackService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    def _mock_conversation_data(self, user_id: UUID | None = None) -> ConversationScenarioRead:
-        if user_id is None:
-            user_id = uuid4()
+    def _mock_conversation_data(self) -> ConversationScenarioRead:
+        user = self.session.exec(select(UserProfile)).first()
+        # delete user if exists --> email+phone have to be unique
+        if user:
+            self.session.delete(user)
+            self.session.commit()
+        user_id = uuid4()
+        self.session.add(
+            UserProfile(
+                id=user_id,
+                full_name='Test',
+                email='a@b.com',
+                phone_number='123',
+                preferred_language_code=LanguageCode.en,
+            )
+        )
+        self.session.commit()
         scenario = ConversationScenario(
             id=uuid4(),
             user_id=user_id,
             category_id='feedback',
             custom_category_label=None,
+            persona_name='Test Persona',
             persona='',
             situational_facts='',
             language_code=LanguageCode.en,
@@ -61,7 +78,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         transcript = [
             SessionTurnRead(
                 id=uuid4(),
-                speaker=SpeakerEnum.user,
+                speaker=SpeakerType.user,
                 full_audio_start_offset_ms=0,
                 text='Hello, Sam!',
                 ai_emotion='neutral',
@@ -84,7 +101,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_get_hr_docs_context: MagicMock,
     ) -> None:
         mock_get_conversation_data.return_value = self._mock_conversation_data()
-        mock_examples.return_value = SessionExamplesCollection(
+        mock_examples.return_value = SessionExamplesRead(
             positive_examples=[
                 PositiveExample(
                     heading='Clear Objective Addressed',
@@ -101,8 +118,8 @@ class TestSessionFeedbackService(unittest.TestCase):
                 )
             ],
         )
-        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=['G1', 'G2'])
-        mock_recommendations.return_value = RecommendationsCollection(
+        mock_goals.return_value = GoalsAchievedRead(goals_achieved=['G1', 'G2'])
+        mock_recommendations.return_value = RecommendationsRead(
             recommendations=[
                 Recommendation(
                     heading='Practice the STAR method',
@@ -130,7 +147,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.metric = metric
                 self.score = score
 
-        class MockScoringResult:
+        class MockScoringRead:
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = [
@@ -145,12 +162,15 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
             persona='**Name**: Someone\n**Training Focus**: Goal\n'
@@ -207,7 +227,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             'End feedback conversations with agreed-upon action'
             ' items, timelines, and follow-up plans.',
         )
-        self.assertEqual(feedback.status, FeedbackStatusEnum.completed)
+        self.assertEqual(feedback.status, FeedbackStatus.completed)
         self.assertIsNotNone(feedback.created_at)
         self.assertIsNotNone(feedback.updated_at)
 
@@ -225,8 +245,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_get_conversation_data.return_value = self._mock_conversation_data()
         mock_examples.side_effect = Exception('Failed to generate examples')
 
-        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=['G1'])
-        mock_recommendations.return_value = RecommendationsCollection(
+        mock_goals.return_value = GoalsAchievedRead(goals_achieved=['G1'])
+        mock_recommendations.return_value = RecommendationsRead(
             recommendations=[
                 Recommendation(
                     heading='Some heading',
@@ -235,7 +255,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             ]
         )
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Error case transcript...',
             objectives=['ObjX'],
             persona='**Name**: Example User\n**Training Focus**: Goal\n'
@@ -247,7 +267,7 @@ class TestSessionFeedbackService(unittest.TestCase):
 
         session_id = uuid4()
 
-        class MockScoringResult:
+        class MockScoringRead:
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = []
@@ -257,11 +277,13 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
-
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
         feedback = generate_and_store_feedback(
             session_id=session_id,
             feedback_request=example_request,
@@ -270,7 +292,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             session_turn_service=mock_session_turn_service,
         )
 
-        self.assertEqual(feedback.status, FeedbackStatusEnum.failed)
+        self.assertEqual(feedback.status, FeedbackStatus.failed)
         self.assertEqual(feedback.goals_achieved, ['G1'])
         self.assertEqual(len(feedback.example_positive), 0)
         self.assertEqual(len(feedback.recommendations), 1)
@@ -284,7 +306,6 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertIsNotNone(feedback.updated_at)
 
         self.assertEqual(feedback.overall_score, 1)
-        self.assertEqual(feedback.transcript_uri, '')
 
     @patch('app.services.session_feedback.session_feedback_llm.call_structured_llm')
     def test_generate_recommendation_with_hr_docs_context(self, mock_llm: MagicMock) -> None:
@@ -295,7 +316,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         category = 'Project Management'
 
         # Set up llm mock and vector db prompt extension
-        mock_llm.return_value = RecommendationsCollection(
+        mock_llm.return_value = RecommendationsRead(
             recommendations=[
                 Recommendation(
                     heading='Practice the STAR method',
@@ -305,7 +326,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             ]
         )
 
-        req = FeedbackRequest(
+        req = FeedbackCreate(
             category=category,
             transcript=transcript,
             objectives=objectives,
@@ -347,18 +368,16 @@ class TestSessionFeedbackService(unittest.TestCase):
         mock_examples: MagicMock,
         mock_get_conversation_data: MagicMock,
     ) -> None:
-        mock_examples.return_value = SessionExamplesCollection(
-            positive_examples=[], negative_examples=[]
-        )
-        mock_goals.return_value = GoalsAchievedCollection(goals_achieved=[])
-        mock_recommendations.return_value = RecommendationsCollection(recommendations=[])
+        mock_examples.return_value = SessionExamplesRead(positive_examples=[], negative_examples=[])
+        mock_goals.return_value = GoalsAchievedRead(goals_achieved=[])
+        mock_recommendations.return_value = RecommendationsRead(recommendations=[])
 
         class MockScore:
             def __init__(self, metric: str, score: float) -> None:
                 self.metric = metric
                 self.score = score
 
-        class MockScoringResult:
+        class MockScoringRead:
             class Scoring:
                 def __init__(self) -> None:
                     self.scores = [
@@ -373,16 +392,17 @@ class TestSessionFeedbackService(unittest.TestCase):
                 self.scoring = self.Scoring()
 
         mock_scoring_service = MagicMock()
-        mock_scoring_service.safe_score_conversation.return_value = MockScoringResult()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
 
         mock_session_turn_service = MagicMock()
-        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = 'mock_audio_uri.mp3'
-
-        user_id = uuid4()
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=120,
+        )
         session_id = uuid4()
-        mock_get_conversation_data.return_value = self._mock_conversation_data(user_id=user_id)
+        mock_get_conversation_data.return_value = self._mock_conversation_data()
 
-        example_request = FeedbackRequest(
+        example_request = FeedbackCreate(
             transcript='Sample transcript...',
             objectives=['Obj1', 'Obj2'],
             persona='**Name**: Someone\n**Training Focus**: Goal',
@@ -401,6 +421,81 @@ class TestSessionFeedbackService(unittest.TestCase):
             feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4}
         )
         self.assertEqual(feedback.overall_score, 4.0)
+
+    def test_generate_training_examples_with_audio(self) -> None:
+        from app.schemas.session_feedback import FeedbackCreate, SessionExamplesRead
+        from app.services.session_feedback import session_feedback_llm
+
+        dummy_audio_uri = 'https://dummy-audio-uri'
+        dummy_examples = SessionExamplesRead(positive_examples=[], negative_examples=[])
+        req = FeedbackCreate(
+            transcript='User: Hello',
+            objectives=['Obj1'],
+            persona='P',
+            situational_facts='S',
+            category='C',
+            key_concepts='K',
+        )
+        with patch.object(
+            session_feedback_llm, 'call_structured_llm', return_value=dummy_examples
+        ) as mock_audio:
+            result = session_feedback_llm.generate_training_examples(
+                req, hr_docs_context='', audio_uri=dummy_audio_uri
+            )
+            mock_audio.assert_called_once()
+            self.assertEqual(mock_audio.call_args.kwargs['audio_uri'], dummy_audio_uri)
+            self.assertTrue(hasattr(result, 'positive_examples'))
+            self.assertTrue(hasattr(result, 'negative_examples'))
+
+    def test_generate_recommendations_with_audio(self) -> None:
+        from app.schemas.session_feedback import FeedbackCreate, Recommendation, RecommendationsRead
+        from app.services.session_feedback import session_feedback_llm
+
+        dummy_audio_uri = 'https://dummy-audio-uri'
+        dummy_recommendations = RecommendationsRead(
+            recommendations=[Recommendation(heading='h', recommendation='r')]
+        )
+        req = FeedbackCreate(
+            transcript='User: Hello',
+            objectives=['Obj1'],
+            persona='P',
+            situational_facts='S',
+            category='C',
+            key_concepts='K',
+        )
+        with patch.object(
+            session_feedback_llm, 'call_structured_llm', return_value=dummy_recommendations
+        ) as mock_audio:
+            result = session_feedback_llm.generate_recommendations(
+                req, hr_docs_context='', audio_uri=dummy_audio_uri
+            )
+            mock_audio.assert_called_once()
+            self.assertEqual(mock_audio.call_args.kwargs['audio_uri'], dummy_audio_uri)
+            self.assertTrue(hasattr(result, 'recommendations'))
+            self.assertEqual(result.recommendations[0].heading, 'h')
+            self.assertEqual(result.recommendations[0].recommendation, 'r')
+
+    def test_get_achieved_goals_with_audio(self) -> None:
+        from app.schemas.session_feedback import GoalsAchievedRead
+        from app.services.session_feedback import session_feedback_llm
+
+        dummy_audio_uri = 'https://dummy-audio-uri'
+        dummy_goals = GoalsAchievedRead(goals_achieved=['G1', 'G2'])
+        req = GoalsAchievedCreate(
+            transcript='User: Hello',
+            objectives=['Obj1'],
+            language_code=LanguageCode.en,
+        )
+        with patch.object(
+            session_feedback_llm, 'call_structured_llm', return_value=dummy_goals
+        ) as mock_audio:
+            result = session_feedback_llm.get_achieved_goals(
+                req, hr_docs_context='', audio_uri=dummy_audio_uri
+            )
+            mock_audio.assert_called_once()
+            self.assertEqual(mock_audio.call_args.kwargs['audio_uri'], dummy_audio_uri)
+            self.assertTrue(hasattr(result, 'goals_achieved'))
+            self.assertEqual(result.goals_achieved, ['G1', 'G2'])
 
 
 if __name__ == '__main__':

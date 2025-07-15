@@ -1,19 +1,20 @@
 import json
 import os
 from functools import lru_cache
+from typing import Optional
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.vertexai_client import call_structured_llm
-from app.models.language import LanguageCode
+from app.enums.language import LanguageCode
 from app.schemas.session_feedback import (
-    FeedbackRequest,
-    GoalsAchievedCollection,
-    GoalsAchievementRequest,
-    RecommendationsCollection,
-    SessionExamplesCollection,
+    FeedbackCreate,
+    GoalsAchievedCreate,
+    GoalsAchievedRead,
+    RecommendationsRead,
+    SessionExamplesRead,
 )
-from app.schemas.session_feedback_config import SessionFeedbackConfig
+from app.schemas.session_feedback_config import SessionFeedbackConfigRead
 from app.services.session_feedback.session_feedback_prompt_templates import (
     build_goals_achieved_prompt,
     build_recommendations_prompt,
@@ -23,11 +24,11 @@ from app.services.utils import normalize_quotes
 
 
 @lru_cache
-def load_session_feedback_config() -> SessionFeedbackConfig:
+def load_session_feedback_config() -> SessionFeedbackConfigRead:
     config_path = os.path.join(os.path.dirname(__file__), 'session_feedback_config.json')
     with open(config_path, encoding='utf-8') as f:
         data = json.load(f)  # Python dict
-    return SessionFeedbackConfig.model_validate(data)
+    return SessionFeedbackConfigRead.model_validate(data)
 
 
 CONFIG_PATH = os.path.join('app', 'config', 'session_feedback_config.json')
@@ -36,33 +37,48 @@ config = load_session_feedback_config()
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_training_examples(
-    request: FeedbackRequest, hr_docs_context: str = ''
-) -> SessionExamplesCollection:
-    return generate_training_examples(request, hr_docs_context)
+    request: FeedbackCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
+) -> SessionExamplesRead:
+    return generate_training_examples(request, hr_docs_context, audio_uri, temperature)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_get_achieved_goals(
-    request: GoalsAchievementRequest, hr_docs_context: str = ''
-) -> GoalsAchievedCollection:
-    return get_achieved_goals(request, hr_docs_context)
+    request: GoalsAchievedCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
+) -> GoalsAchievedRead:
+    if audio_uri is not None:
+        return get_achieved_goals(request, hr_docs_context, audio_uri, temperature=temperature)
+    else:
+        return get_achieved_goals(request, hr_docs_context, temperature=temperature)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_recommendations(
-    request: FeedbackRequest, hr_docs_context: str = ''
-) -> RecommendationsCollection:
-    return generate_recommendations(request, hr_docs_context)
+    request: FeedbackCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
+) -> RecommendationsRead:
+    return generate_recommendations(request, hr_docs_context, audio_uri, temperature)
 
 
 def generate_training_examples(
-    request: FeedbackRequest, hr_docs_context: str = ''
-) -> SessionExamplesCollection:
-    if not request.transcript or not any(
-        line.strip().startswith('User:') for line in request.transcript.splitlines()
+    request: FeedbackCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
+) -> SessionExamplesRead:
+    if not request.transcript or all(
+        (line.strip() == '' or line.strip().startswith('Assistant:'))
+        for line in request.transcript.splitlines()
     ):
-        return SessionExamplesCollection(positive_examples=[], negative_examples=[])
-
+        return SessionExamplesRead(positive_examples=[], negative_examples=[])
     lang = request.language_code
     settings = config.root[lang]
 
@@ -82,9 +98,10 @@ def generate_training_examples(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        output_model=SessionExamplesCollection,
-        temperature=0.0,
+        output_model=SessionExamplesRead,
+        temperature=temperature,
         mock_response=mock_response,
+        audio_uri=audio_uri,
     )
 
     # Normalize all quote fields to ensure consistent output
@@ -99,18 +116,16 @@ def generate_training_examples(
 
 
 def get_achieved_goals(
-    request: GoalsAchievementRequest, hr_docs_context: str = ''
-) -> GoalsAchievedCollection:
+    request: GoalsAchievedCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
+) -> GoalsAchievedRead:
     lang = request.language_code
     settings = config.root[lang]
 
     mock_response = settings.mocks.goals_achieved
     system_prompt = settings.system_prompts.goals_achieved
-
-    if not request.transcript or not any(
-        line.strip().startswith('User:') for line in request.transcript.splitlines()
-    ):
-        return GoalsAchievedCollection(goals_achieved=[])
 
     user_prompt = build_goals_achieved_prompt(
         transcript=request.transcript,
@@ -121,9 +136,10 @@ def get_achieved_goals(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        output_model=GoalsAchievedCollection,
-        temperature=0.0,
+        output_model=GoalsAchievedRead,
+        temperature=temperature,
         mock_response=mock_response,
+        audio_uri=audio_uri,
     )
 
     response.goals_achieved = [goal for goal in response.goals_achieved if goal.strip()]
@@ -131,12 +147,16 @@ def get_achieved_goals(
 
 
 def generate_recommendations(
-    request: FeedbackRequest, hr_docs_context: str = ''
-) -> RecommendationsCollection:
-    if not request.transcript or not any(
-        line.strip().startswith('User:') for line in request.transcript.splitlines()
+    request: FeedbackCreate,
+    hr_docs_context: str = '',
+    audio_uri: Optional[str] = None,
+    temperature: float = 0.0,
+) -> RecommendationsRead:
+    if not request.transcript or all(
+        (line.strip() == '' or line.strip().startswith('Assistant:'))
+        for line in request.transcript.splitlines()
     ):
-        return RecommendationsCollection(recommendations=[])
+        return RecommendationsRead(recommendations=[])
     lang = request.language_code
     settings = config.root[lang]
 
@@ -156,9 +176,10 @@ def generate_recommendations(
     response = call_structured_llm(
         request_prompt=user_prompt,
         system_prompt=system_prompt,
-        output_model=RecommendationsCollection,
-        temperature=0.0,
+        output_model=RecommendationsRead,
+        temperature=temperature,
         mock_response=mock_response,
+        audio_uri=audio_uri,
     )
 
     return response
@@ -166,7 +187,7 @@ def generate_recommendations(
 
 if __name__ == '__main__':
     # Example usage of the service functions
-    example_request = FeedbackRequest(
+    example_request = FeedbackCreate(
         category='Termination',
         persona=(
             '**Name**: Julian '
@@ -221,7 +242,7 @@ if __name__ == '__main__':
 
     print('Training examples generated successfully.')
 
-    goals_achievement_request = GoalsAchievementRequest(
+    goals_achievement_request = GoalsAchievedCreate(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
         language_code=example_request.language_code,
@@ -232,7 +253,7 @@ if __name__ == '__main__':
         + f'{len(goals_achieved.goals_achieved)} / {len(example_request.objectives)}'
     )
 
-    recommendation_request = FeedbackRequest(
+    recommendation_request = FeedbackCreate(
         category=example_request.category,
         persona=example_request.persona,
         situational_facts=example_request.situational_facts,

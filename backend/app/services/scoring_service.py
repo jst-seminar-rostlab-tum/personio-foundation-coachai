@@ -5,9 +5,9 @@ from typing import Any, Optional
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.connections.openai_client import call_structured_llm
+from app.connections.vertexai_client import call_structured_llm
 from app.schemas.conversation_scenario import ConversationScenarioRead
-from app.schemas.scoring_schema import ScoringResult
+from app.schemas.scoring_schema import ScoringRead
 from app.services.utils import normalize_quotes
 
 
@@ -35,6 +35,7 @@ class ScoringService:
             f'{json.dumps(self.rubric, indent=2)}'
             '\n\n'
             "You MUST act as if the Assistant's utterances do not exist at all. Only the User's utterances are relevant for scoring. If you mention or consider the Assistant in your justification, that is a mistake.\n"
+            "Please also take into account the user's vocal emotion, tone, and expressive style in your evaluation if audio is provided."
         )
         return system_prompt
 
@@ -56,7 +57,7 @@ class ScoringService:
             'and give a justification for each score.\n'
             'You MUST provide a score and justification for all four metrics, '
             'and also give an overall summary of the "User"\'s performance.\n'
-            'Format the output as a JSON object matching the ScoringResult schema.\n'
+            'Format the output as a JSON object matching the ScoringRead schema.\n'
             'Do not include markdown, explanation, or code formatting.\n'
         )
         return prompt
@@ -66,7 +67,8 @@ class ScoringService:
         conversation: ConversationScenarioRead,
         model: str = 'o4-mini-2025-04-16',
         temperature: float = 0.0,
-    ) -> ScoringResult:
+        audio_uri: Optional[str] = None,
+    ) -> ScoringRead:
         user_prompt = self._build_user_prompt(conversation)
         system_prompt = self._build_system_prompt()
 
@@ -74,8 +76,10 @@ class ScoringService:
             request_prompt=user_prompt,
             system_prompt=system_prompt,
             model=model,
-            output_model=ScoringResult,
+            output_model=ScoringRead,
+            max_tokens=1000,
             temperature=temperature,
+            audio_uri=audio_uri,
         )
 
         # Recalculate the overall score based on the rubric
@@ -117,7 +121,7 @@ class ScoringService:
         return md
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-    def safe_score_conversation(self, conversation: ConversationScenarioRead) -> ScoringResult:
+    def safe_score_conversation(self, conversation: ConversationScenarioRead) -> ScoringRead:
         return self.score_conversation(conversation)
 
 

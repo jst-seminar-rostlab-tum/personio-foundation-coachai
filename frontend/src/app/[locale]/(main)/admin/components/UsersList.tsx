@@ -1,7 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Search, ChevronDown, Trash2 } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/Table';
+
+import { Search, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -65,7 +74,8 @@ export default function UsersList({
 
   return (
     <>
-      <div className="mb-4">
+      <div className=" mt-4 mb-4">
+        <div className="text-lg mb-4 font-semibold text-bw-70">{t('users')}</div>
         <div className="relative">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-bw-40">
             <Search className="w-4 h-4" />
@@ -89,43 +99,34 @@ export default function UsersList({
       ) : (
         <>
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm table-fixed">
-              <colgroup>
-                <col style={{ width: '70%' }} />
-                <col style={{ width: '30%' }} />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('email')}</th>
-                  <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="min-w-full text-sm table-fixed">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-left font-semibold text-bw-70 py-2 px-2">
+                    {t('email')}
+                  </TableHead>
+                  <TableHead className="text-left font-semibold text-bw-70 py-2 px-2">
+                    {t('actions')}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {userList.map((user) => (
-                  <tr key={user.email} className="border-t border-bw-10">
-                    <td className="py-2 px-2 truncate">{user.email}</td>
-                    <td className="py-2 px-2">
+                  <TableRow key={user.email} className="border-t border-bw-10">
+                    <TableCell className="py-2 px-2 truncate">{user.email}</TableCell>
+                    <TableCell className="py-2 px-2">
                       <DeleteUserHandler
                         id={user.userId}
                         onDeleteSuccess={() => {
                           setCurrentPage(1);
                           fetchUsers(1, search);
                         }}
-                      >
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={t('deleteUser')}
-                          className="group"
-                        >
-                          <Trash2 className="w-4 h-4 text-bw-40 group-hover:text-flame-50" />
-                        </Button>
-                      </DeleteUserHandler>
-                    </td>
-                  </tr>
+                      />
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
           {hasMore && (
             <div className="flex justify-center mt-4">

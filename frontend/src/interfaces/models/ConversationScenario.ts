@@ -1,14 +1,15 @@
 export interface ConversationScenario {
   categoryId: string;
-  customCategoryLabel: string;
-  context: string;
-  goal: string;
-  otherParty: string;
-  difficultyLevel: string;
-  tone: string;
-  complexity: string;
-  status?: string;
+  difficultyLevel: DifficultyLevelEnums;
+  persona: string;
+  situationalFacts: string;
   languageCode: string;
+  personaName: string;
+  scenarioId?: string;
+  totalSessions?: number;
+  averageScore?: number;
+  categoryName?: string;
+  lastSessionAt?: string;
 }
 
 export interface ConversationCategory {
@@ -16,9 +17,7 @@ export interface ConversationCategory {
   name: string;
   iconUri: string;
   defaultContext?: string;
-  defaultGoal?: string;
-  defaultOtherParty?: string;
-  isCustom?: boolean;
+  description?: string;
 }
 
 export interface ConversationScenarioResponse {
@@ -26,10 +25,37 @@ export interface ConversationScenarioResponse {
   scenarioId: string;
 }
 
+export interface Persona {
+  id: string;
+  name: string;
+  imageUri: string;
+}
+
 export type KeyConcept = {
   header: string;
   value: string;
 };
+
+export enum PersonaEnums {
+  POSITIVE = 'positive',
+  ANGRY = 'angry',
+  SHY = 'shy',
+  CASUAL = 'casual',
+  SAD = 'sad',
+}
+
+export enum ContextModeEnums {
+  DEFAULT = 'default',
+  CUSTOM = 'custom',
+}
+
+export enum DifficultyLevelEnums {
+  EASY = 'easy',
+  MEDIUM = 'medium',
+  HARD = 'hard',
+}
+
+export type ContextMode = ContextModeEnums.CUSTOM | ContextModeEnums.DEFAULT;
 
 export type ConversationScenarioPreparation = {
   id: string;
@@ -42,5 +68,9 @@ export type ConversationScenarioPreparation = {
   createdAt: string;
   updatedAt: string;
   categoryName: string;
-  context: string;
+  situationalFacts: string;
+  persona: string;
+  personaName: string;
+  difficultyLevel: DifficultyLevelEnums;
+  categoryId: string;
 };

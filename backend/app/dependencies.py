@@ -1,15 +1,20 @@
 import logging
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Annotated, Any, NoReturn, TypedDict
+from uuid import UUID
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlmodel import Session, select
+from pytz import UTC
+from pytz import timezone as pytz_timezone
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 
 from app.config import Settings
 from app.database import get_db_session
-from app.models import UserProfile
+from app.enums.session_status import SessionStatus
+from app.models import Session, UserProfile
 from app.models.user_profile import AccountRole
 
 settings = Settings()
@@ -83,7 +88,8 @@ def verify_jwt(
 
 def require_user(
     token: Annotated[JWTPayload, Depends(verify_jwt)],
-    db: Annotated[Session, Depends(get_db_session)],
+    db: Annotated[DBSession, Depends(get_db_session)],
+    request: Request,
 ) -> UserProfile:
     """
     Checks that the JWT has a 'sub', that a UserProfile exists for it,
@@ -91,9 +97,9 @@ def require_user(
     """
     user_id = token.get('sub') or _forbidden('Cannot find user', 'JWT payload missing "sub" claim')
 
-    user = db.exec(select(UserProfile).where(UserProfile.id == user_id)).first() or _forbidden(
-        'Cannot find user', 'User not found for ID %s', user_id
-    )
+    user = db.exec(
+        select(UserProfile).where(UserProfile.id == UUID(user_id))
+    ).first() or _forbidden('Cannot find user', 'User not found for ID %s', user_id)
 
     if user.account_role.value not in ALLOWED_ROLES:
         _forbidden(
@@ -102,54 +108,108 @@ def require_user(
             user.account_role,
             *ALLOWED_ROLES,
         )
+    timezone = request.state.timezone
 
-    _update_login_streak(db, user)
+    _update_login_streak(db, user, timezone)
 
     return user
 
 
 def require_admin(
     token: Annotated[JWTPayload, Depends(verify_jwt)],
-    db: Annotated[Session, Depends(get_db_session)],
+    db: Annotated[DBSession, Depends(get_db_session)],
+    request: Request,
 ) -> UserProfile:
     """
     Ensures the JWT has a 'sub' claim, the user exists, and is an admin.
     """
     user_id = token.get('sub') or _forbidden('Cannot find user', 'JWT payload missing "sub" claim')
 
-    user = db.exec(select(UserProfile).where(UserProfile.id == user_id)).first() or _forbidden(
-        'Cannot find user', 'User not found for ID %s', user_id
-    )
+    user = db.exec(
+        select(UserProfile).where(UserProfile.id == UUID(user_id))
+    ).first() or _forbidden('Cannot find user', 'User not found for ID %s', user_id)
 
     if user.account_role is not AccountRole.admin:
         _forbidden('Admin access required', 'User role %s is not admin', user.account_role.value)
-
-    _update_login_streak(db, user)
+    timezone = request.state.timezone
+    _update_login_streak(db, user, timezone)
 
     return user
 
 
-def _update_login_streak(db: Session, user_profile: UserProfile) -> None:
+def _update_login_streak(db: DBSession, user_profile: UserProfile, timezone: str) -> None:
+    """
+    Updates the login streak for a user based on their last login time and the current time in the
+    specified timezone.
+
+    The function checks the difference in days between the user's last login time and the current
+      time in the provided timezone.
+    If the difference is exactly 1 day, the user's streak is incremented. If the difference is
+      greater than 1 day, the streak is reset.
+    The last login time is updated only if the streak is incremented or reset.
+
+    Args:
+        db (Session): The database session used to commit changes to the user profile.
+        user_profile (UserProfile): The user profile object containing login streak information.
+        timezone (str): The timezone string (e.g., "America/New_York") used to calculate the current
+          time.
+
+    Returns:
+        None: This function does not return anything. It updates the user profile in the database.
+
+    Notes:
+        - The last login time is stored in UTC for consistency across the database.
+        - The streak is calculated based on calendar days in the user's timezone.
+    """
     # Check if the last_logged_in date is available
     if user_profile.last_logged_in:
-        now = datetime.now(UTC)
-        last_logged_in = user_profile.last_logged_in.replace(tzinfo=UTC)
+        user_timezone = pytz_timezone(timezone)
+        now = datetime.now(user_timezone)
 
-        # Calculate the difference in days
-        days_difference = (now - last_logged_in).days
+        last_logged_in = user_profile.last_logged_in.astimezone(user_timezone)
+        days_difference = (now.date() - last_logged_in.date()).days
 
         if days_difference == 1:
-            # Increment streak if it's a new day
             user_profile.current_streak_days += 1
         elif days_difference > 1:
-            # Reset streak if it's 2+ days later
             user_profile.current_streak_days = 0
 
         if days_difference != 0:
-            # Update last_logged_in to the current time only if there is a streak increment or reset
-            user_profile.last_logged_in = datetime.now(UTC)
+            user_profile.last_logged_in = datetime.now(UTC)  # Store in UTC for consistency
 
             # Commit changes to the database
             db.add(user_profile)
             db.commit()
             db.refresh(user_profile)
+
+    # Reset daily session counter if it's a new day
+    today = datetime.now(UTC).date()
+    if user_profile.last_session_date != today:
+        user_profile.sessions_created_today = 0
+        user_profile.last_session_date = today
+        db.add(user_profile)
+        db.commit()
+        db.refresh(user_profile)
+
+
+def require_session_access(
+    session_id: UUID,
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+    user_profile: Annotated[UserProfile, Depends(require_user)],
+) -> Session:
+    session = db_session.exec(select(Session).where(Session.id == session_id)).first()
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Session not found',
+        )
+    if not session.scenario.user_id == user_profile.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='User is not the owner of the scenario',
+        )
+    if session.status is SessionStatus.completed:
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS, detail='Session is already completed'
+        )
+    return session

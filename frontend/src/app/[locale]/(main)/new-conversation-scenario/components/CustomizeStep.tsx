@@ -1,103 +1,68 @@
-import Image from 'next/image';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { useTranslations } from 'next-intl';
+import { DifficultyLevelEnums, PersonaEnums } from '@/interfaces/models/ConversationScenario';
+import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
+import { PersonaButton } from './PersonaButton';
+import { PersonaInfo } from './PersonaInfo';
 
-interface CustomizeStepProps {
-  difficulty: string;
-  emotionalTone: string;
-  complexity: string;
-  onDifficultyChange: (difficulty: string) => void;
-  onEmotionalToneChange: (emotionalTone: string) => void;
-  onComplexityChange: (complexity: string) => void;
-}
-
-export function CustomizeStep({
-  difficulty,
-  emotionalTone,
-  complexity,
-  onDifficultyChange,
-  onEmotionalToneChange,
-  onComplexityChange,
-}: CustomizeStepProps) {
+export function CustomizeStep() {
   const t = useTranslations('ConversationScenario');
-  const tCommon = useTranslations('Common');
+
+  const personaKeys = [
+    PersonaEnums.POSITIVE,
+    PersonaEnums.ANGRY,
+    PersonaEnums.SHY,
+    PersonaEnums.CASUAL,
+    PersonaEnums.SAD,
+  ];
+
+  const { formState, updateForm } = useConversationScenarioStore();
+
+  const personas = personaKeys.map((key) => ({
+    id: key,
+    name: t(`customize.persona.personas.${key}.name`),
+    imageUri: t.raw(`customize.persona.personas.${key}.imageUri`),
+  }));
+
+  const difficultyOptions = [
+    { value: DifficultyLevelEnums.EASY, icon: '/images/difficulty/easy.svg', label: t('easy') },
+    {
+      value: DifficultyLevelEnums.MEDIUM,
+      icon: '/images/difficulty/medium.svg',
+      label: t('medium'),
+    },
+    { value: DifficultyLevelEnums.HARD, icon: '/images/difficulty/hard.svg', label: t('hard') },
+  ];
+
   return (
     <div>
-      <div className="text-xl text-font-dark text-center w-full mb-8">{t('customize.title')}</div>
-      <div className="text-lg text-font-dark text-center mb-2">
-        {t('customize.difficulty.title')}
+      <h2 className="text-xl font-semibold text-center w-full mb-8">{t('chooseOtherParty')}</h2>
+      <div className="mb-4 font-medium text-xl">{t('personaSelection')}</div>
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-5 w-full mx-auto mb-12">
+        {personas.map((persona) => (
+          <PersonaButton
+            key={persona.id}
+            onClick={() => updateForm({ persona: persona.id })}
+            selected={formState.persona === persona.id}
+            image={persona.imageUri}
+            label={persona.name}
+          />
+        ))}
       </div>
-      <RadioGroup
-        value={difficulty}
-        onValueChange={onDifficultyChange}
-        className="mb-8 flex flex-row justify-between gap-4"
-      >
-        <label htmlFor="d1" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/difficulty/easy.svg" alt={t('easy')} width={56} height={56} />
-          <span className="text-sm">{t('easy')}</span>
-          <RadioGroupItem value="easy" id="d1" />
-        </label>
-        <label htmlFor="d2" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/difficulty/medium.svg" alt={t('medium')} width={56} height={56} />
-          <span className="text-sm">{t('medium')}</span>
-          <RadioGroupItem value="medium" id="d2" />
-        </label>
-        <label htmlFor="d3" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/difficulty/hard.svg" alt={t('hard')} width={56} height={56} />
-          <span className="text-sm">{t('hard')}</span>
-          <RadioGroupItem value="hard" id="d3" />
-        </label>
-      </RadioGroup>
 
-      <div className="text-lg text-font-dark text-center mb-2">
-        {t('customize.emotionalTone.title')}
-      </div>
-      <RadioGroup
-        value={emotionalTone}
-        onValueChange={onEmotionalToneChange}
-        className="mb-8 flex flex-row justify-between gap-4"
-      >
-        <label htmlFor="e1" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/mood/positive.svg" alt={tCommon('positive')} width={56} height={56} />
-          <span className="text-sm">{tCommon('positive')}</span>
-          <RadioGroupItem value="positive" id="e1" />
-        </label>
-        <label htmlFor="e2" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/mood/neutral.svg" alt={t('neutral')} width={56} height={56} />
-          <span className="text-sm">{t('neutral')}</span>
-          <RadioGroupItem value="neutral" id="e2" />
-        </label>
-        <label htmlFor="e3" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/mood/negative.svg" alt={tCommon('negative')} width={56} height={56} />
-          <span className="text-sm">{tCommon('negative')}</span>
-          <RadioGroupItem value="negative" id="e3" />
-        </label>
-      </RadioGroup>
+      <PersonaInfo />
 
-      <div className="text-lg text-font-dark text-center mb-2">
-        {t('customize.complexity.title')}
+      <div className="mb-4 font-medium text-xl">{t('difficultyTitle')}</div>
+      <div className="mb-16 grid grid-cols-3 gap-4 w-full mx-auto">
+        {difficultyOptions.map((diff) => (
+          <PersonaButton
+            key={diff.value}
+            onClick={() => updateForm({ difficulty: diff.value })}
+            selected={formState.difficulty === diff.value}
+            image={diff.icon}
+            label={diff.label}
+          />
+        ))}
       </div>
-      <RadioGroup
-        value={complexity}
-        onValueChange={onComplexityChange}
-        className="mb-8 flex flex-row justify-between gap-4"
-      >
-        <label htmlFor="c1" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/complexity/simple.svg" alt={t('simple')} width={56} height={56} />
-          <span className="text-sm">{t('simple')}</span>
-          <RadioGroupItem value="simple" id="c1" />
-        </label>
-        <label htmlFor="c2" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/complexity/medium.svg" alt={t('medium')} width={56} height={56} />
-          <span className="text-sm">{t('medium')}</span>
-          <RadioGroupItem value="medium" id="c2" />
-        </label>
-        <label htmlFor="c3" className="flex flex-col items-center space-y-2 cursor-pointer">
-          <Image src="/images/complexity/complex.svg" alt={t('complex')} width={56} height={56} />
-          <span className="text-sm">{t('complex')}</span>
-          <RadioGroupItem value="complex" id="c3" />
-        </label>
-      </RadioGroup>
     </div>
   );
 }
