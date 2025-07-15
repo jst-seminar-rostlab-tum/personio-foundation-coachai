@@ -3,7 +3,7 @@ import logging
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
-from fastapi import HTTPException
+from fastapi import BackgroundTasks, HTTPException
 from pydantic import Field
 from sqlmodel import Session as DBSession
 from sqlmodel import select
@@ -31,6 +31,7 @@ from app.schemas.session_feedback import (
     SessionExamplesRead,
 )
 from app.schemas.session_turn import SessionTurnRead, SessionTurnStitchAudioSuccess
+from app.services.advisor_service import AdvisorService
 from app.services.data_retention_service import (
     delete_full_audio_for_feedback_by_session_id,
     delete_session_turns_by_session_id,
@@ -300,8 +301,11 @@ def generate_and_store_feedback(
     session_id: UUID,
     feedback_request: FeedbackCreate,
     db_session: DBSession,
+    user_profile: UserProfile,
+    background_tasks: BackgroundTasks,
     scoring_service: ScoringService | None = None,
     session_turn_service: SessionTurnService | None = None,
+    advisor_service: AdvisorService | None = None,
 ) -> SessionFeedback:
     """
     Generates feedback for a given session, stores it in the database, and returns the resulting
@@ -315,6 +319,9 @@ def generate_and_store_feedback(
 
     if session_turn_service is None:
         session_turn_service = SessionTurnService(db_session)
+
+    if advisor_service is None:
+        advisor_service = AdvisorService(db_session)
 
     goals_request, recommendations_request = prepare_feedback_requests(feedback_request)
     hr_docs_context, document_names = get_hr_docs_context(recommendations_request)
@@ -348,6 +355,14 @@ def generate_and_store_feedback(
         session_id,
         feedback_generation_result,
         status,
+    )
+
+    logging.info('Feedback generated and stored successfully.')
+
+    background_tasks.add_task(
+        advisor_service.generate_and_store_advice,
+        session_feedback=feedback,
+        user_profile=user_profile,
     )
 
     # If user doesn't want to store the conversation data (audio + transcript) delete it
