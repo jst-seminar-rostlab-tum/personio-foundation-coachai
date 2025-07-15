@@ -58,7 +58,7 @@ export default async function DashboardPage() {
           label={t('userStats.trainingTime')}
         />
         <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
-        <StatCard value={`${averageScore}/5`} label={tCommon('avgScore')} />
+        <StatCard value={`${averageScore}/20`} label={tCommon('avgScore')} />
         <StatCard
           value={
             isAdmin
