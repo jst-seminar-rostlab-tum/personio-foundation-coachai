@@ -87,10 +87,7 @@ class ScoringService:
             s.model_copy(update={'metric': s.metric.lower()}) for s in response.scoring.scores
         ]
         scores = {s.metric: s.score for s in response.scoring.scores}
-        overall = (
-            scores['structure'] + scores['empathy'] + scores['focus'] + scores['clarity']
-        ) / 4
-        response.scoring.overall_score = overall
+        response.scoring.overall_score = sum(scores.values())
 
         # Normalize all quotes in the response
         response.conversation_summary = normalize_quotes(response.conversation_summary)
