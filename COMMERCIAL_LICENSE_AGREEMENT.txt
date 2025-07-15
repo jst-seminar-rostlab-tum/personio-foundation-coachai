@@ -6,7 +6,7 @@ Copyright: © 2025 Center for Software Engineering Excellence (CSEE)
 Authors:
 
 -	Technical Project Lead
-		Tim Alexander Meyerhoff (ta.meyerhoff@tum.de)
+		Tim Alexander Meyerhoff (timalexander.meyerhoff@gmail.com)
 
 -	Team Leads (in alphabetical order)
     Ron Autenrieb (Backend)
