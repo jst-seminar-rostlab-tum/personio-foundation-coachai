@@ -41,8 +41,8 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-16">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         <p className="text-2xl text-center md:text-left">
-          {t('header.greeting')}
-          {userProfile.fullName}!
+          <span className="font-normal">{t('header.greeting')}</span>
+          <span>{userProfile.fullName}!</span>
         </p>
         <Link href="/new-conversation-scenario" className="w-full md:w-auto">
           <Button size="full" className="md:!size-default">
