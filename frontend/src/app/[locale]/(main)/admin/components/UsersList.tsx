@@ -74,9 +74,8 @@ export default function UsersList({
 
   return (
     <>
-      <div className="mt-4 mb-4 flex items-end justify-between">
-        <div className="text-xl mb-4 font-medium text-bw-70">{t('users')}</div>
-        <div className="relative min-w-[200px] max-w-md w-full">
+      <div className="mt-4 mb-4 flex flex-row gap-4 items-end">
+        <div className="relative w-full sm:max-w-md">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-bw-40">
             <Search className="w-4 h-4" />
           </span>
@@ -85,7 +84,7 @@ export default function UsersList({
             placeholder={t('search')}
             value={search}
             onChange={handleSearch}
-            className="w-full max-w-md pl-10 pr-3 py-2 border border-bw-20 rounded text-sm text-bw-70 placeholder-bw-40 focus:border-bw-20 focus-visible:outline-none focus-visible:ring-0"
+            className="w-full pl-10 pr-3 py-2 border border-bw-20 rounded text-sm text-bw-70 placeholder-bw-40 focus:border-bw-20 focus-visible:outline-none focus-visible:ring-0"
           />
         </div>
       </div>

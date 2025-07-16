@@ -128,7 +128,6 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
       ) : (
         <div className="w-full mb-8 text-left">
           <div className="flex items-center justify-between mb-4">
-            <div className="text-lg font-semibold text-bw-70">{tCommon('reviews')}</div>
             <Select value={sortBy} onValueChange={handleSortChange}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder={tAdmin('sortBy')} />
@@ -146,26 +145,28 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
               <div
                 onClick={() => review.allowAdminAccess && handleReviewClick(review.sessionId)}
                 key={review.id}
-                className={`border border-bw-20 rounded-lg bg-transparent p-4 flex flex-col items-start ${
+                className={`border border-bw-20 rounded-lg bg-transparent p-6 gap-4 flex flex-col items-start ${
                   review.sessionId && review.allowAdminAccess
                     ? 'cursor-pointer'
                     : 'cursor-not-allowed'
                 } transition-all duration-300 hover:shadow-md`}
               >
-                <div className="flex items-center mb-2">
+                <div className="flex items-center">
                   <span className="text-sm font-semibold text-bw-70">{review.userEmail}</span>
                 </div>
-                <div className="flex items-center mb-2">
+                <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-5 h-5 mr-1 ${i < review.rating ? 'fill-marigold-30' : 'fill-bw-20'}`}
+                      className={`w-6 h-6 mr-0.5 ${i < review.rating ? 'fill-marigold-30' : 'fill-bw-20'}`}
                       strokeWidth={0}
                     />
                   ))}
                 </div>
-                <div className="text-sm text-bw-70 mb-2">{review.comment}</div>
-                <div className="text-sm text-bw-40">{formatDateFlexible(review.date, locale)}</div>
+                <div className="text-base text-bw-70 leading-relaxed">{review.comment}</div>
+                <div className="text-base text-bw-40">
+                  {formatDateFlexible(review.date, locale)}
+                </div>
               </div>
             ))}
           </div>

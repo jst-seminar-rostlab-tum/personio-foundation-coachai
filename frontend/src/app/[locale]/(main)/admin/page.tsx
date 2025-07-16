@@ -47,7 +47,9 @@ export default async function AdminPage() {
             <StatCard key={i} value={stat.value} label={stat.label} />
           ))}
         </div>
+        <div className="text-xl mt-16 font-medium text-bw-70">{tCommon('reviews')}</div>
         <Reviews {...reviews} />
+        <div className="text-xl mb-6 mt-12 font-medium text-bw-70">{t('users')}</div>
         <SessionSetter dailySessionLimit={stats.dailySessionLimit} />
         <UsersList {...users} />
       </div>
