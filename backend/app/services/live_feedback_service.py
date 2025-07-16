@@ -42,6 +42,7 @@ def safe_generate_live_feedback_item(
     session_turn_context: SessionTurn,
     previous_feedback: str = '',
     hr_docs_context: str = '',
+    language: str = 'en',
 ) -> LiveFeedbackLlmOutput:
     if previous_feedback is None:
         previous_feedback = []
@@ -50,6 +51,7 @@ def safe_generate_live_feedback_item(
         session_turn_context.text,
         previous_feedback,
         hr_docs_context,
+        language,
     )
 
 
@@ -58,6 +60,7 @@ def generate_live_feedback_item(
     transcript: str = 'No transcript available',
     previous_feedback: str = 'No previous feedback available',
     hr_docs_context: str = 'No hr document context available',
+    language: str = 'en',
 ) -> LiveFeedbackLlmOutput:
     voice_analysis = ''
     if user_audio_path:
@@ -116,7 +119,7 @@ def generate_live_feedback_item(
         request_prompt=user_prompt,
         system_prompt=(
             'You are an expert communication coach analyzing a single speaking turn.'
-            'Always respond in the language of the transcript.'
+            f'Always respond in {language} language.'
         ),
         output_model=LiveFeedbackLlmOutput,
         mock_response=LiveFeedbackLlmOutput(heading='Tone', feedback_text='Speak more calmly.'),
@@ -132,6 +135,7 @@ def generate_and_store_live_feedback(
     feedback_items = fetch_live_feedback_for_session(db_session, session_id, None)
     formatted_lines = format_feedback_lines(feedback_items)
     previous_feedback = '\n'.join(formatted_lines)
+    language = session_turn_context.session.scenario.language_code.name
 
     if not any(
         [
@@ -149,6 +153,7 @@ def generate_and_store_live_feedback(
                 session_turn_context,
                 previous_feedback,
                 hr_docs_context,
+                language,
             )
 
             try:
