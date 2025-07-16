@@ -246,6 +246,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
                 category_id='feedback',
                 custom_category_label=None,
                 language_code=LanguageCode.en,
+                persona_name='',
                 persona='',
                 situational_facts='',
                 difficulty_level=DifficultyLevel.medium,
