@@ -74,7 +74,8 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
       setVerificationSent(true);
       setResendCooldown(30);
     } catch (err) {
-      setError(t(`sendCodeError${err}`));
+      console.error(err);
+      setError(t(`error`));
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +131,8 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
       });
       setResendCooldown(30);
     } catch (err) {
-      setError(t(`sendCodeError${err}`));
+      console.error(err);
+      setError(t(`errorResend`));
     } finally {
       setIsLoading(false);
     }
