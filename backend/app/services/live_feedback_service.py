@@ -119,7 +119,7 @@ def generate_live_feedback_item(
         request_prompt=user_prompt,
         system_prompt=(
             'You are an expert communication coach analyzing a single speaking turn.'
-            f'Always respond in {language} language.'
+            f'Always respond in the language represented by the ISO code "{language}"'
         ),
         output_model=LiveFeedbackLlmOutput,
         mock_response=LiveFeedbackLlmOutput(heading='Tone', feedback_text='Speak more calmly.'),
@@ -131,11 +131,14 @@ def generate_and_store_live_feedback(
     session_id: UUID,
     session_turn_context: SessionTurn,
     hr_docs_context: str = '',
-) -> LiveFeedbackLlmOutput | None:
+) -> LiveFeedback | None:
     feedback_items = fetch_live_feedback_for_session(db_session, session_id, None)
     formatted_lines = format_feedback_lines(feedback_items)
     previous_feedback = '\n'.join(formatted_lines)
-    language = session_turn_context.session.scenario.language_code.name
+    try:
+        language = session_turn_context.session.scenario.language_code.name
+    except AttributeError:
+        language = 'en'
 
     if not any(
         [
