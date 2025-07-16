@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     ENABLE_AI: bool = False
     FORCE_CHEAP_MODEL: bool = True
     DEFAULT_CHEAP_MODEL: str = 'gemini-2.0-flash-lite-001'
-    DEFAULT_MODEL: str = 'gemini-2.5-pro'
+    DEFAULT_MODEL: str = 'gemini-2.0-flash'
 
     DEV_MODE_SKIP_AUTH: bool = True
     DEV_MODE_MOCK_ADMIN_ID: UUID = MockUserIdsEnum.ADMIN.value
