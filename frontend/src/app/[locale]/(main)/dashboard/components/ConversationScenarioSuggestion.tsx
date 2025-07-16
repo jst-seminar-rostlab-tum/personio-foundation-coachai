@@ -25,7 +25,11 @@ export default function ConversationScenarioSuggestion({
 
   const onClickStartSuggestedScenario = async () => {
     try {
-      const { data } = await conversationScenarioService.createConversationScenario(api, scenario);
+      const { data } = await conversationScenarioService.createConversationScenario(
+        api,
+        scenario,
+        true
+      );
       router.push(`/preparation/${data.scenarioId}`);
     } catch (err) {
       showErrorToast(err, 'Failed to create suggested scenario');
