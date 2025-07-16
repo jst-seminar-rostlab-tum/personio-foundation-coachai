@@ -29,6 +29,7 @@ from app.schemas.session_turn import SessionTurnRead, SessionTurnStitchAudioSucc
 from app.services.session_feedback.session_feedback_llm import generate_recommendations
 from app.services.session_feedback.session_feedback_service import (
     generate_and_store_feedback,
+    generate_feedback_components,
 )
 
 
@@ -512,6 +513,88 @@ class TestSessionFeedbackService(unittest.TestCase):
             self.assertEqual(mock_audio.call_args.kwargs['audio_uri'], dummy_audio_uri)
             self.assertTrue(hasattr(result, 'goals_achieved'))
             self.assertEqual(result.goals_achieved, ['G1', 'G2'])
+
+    @patch('app.services.session_feedback.session_feedback_service.get_conversation_data')
+    @patch('app.services.session_feedback.session_feedback_llm.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')
+    @patch('app.services.session_feedback.session_feedback_llm.generate_recommendations')
+    def test_generate_feedback_no_audio_url_when_store_audio_fails(
+        self,
+        mock_recommendations: MagicMock,
+        mock_goals: MagicMock,
+        mock_examples: MagicMock,
+        mock_get_conversation_data: MagicMock,
+    ) -> None:
+        mock_get_conversation_data.return_value = self._mock_conversation_data()
+        mock_examples.return_value = SessionExamplesRead(positive_examples=[], negative_examples=[])
+        mock_goals.return_value = GoalsAchievedRead(goals_achieved=['G1'])
+        mock_recommendations.return_value = RecommendationsRead(
+            recommendations=[Recommendation(heading='h', recommendation='r')]
+        )
+
+        # Setup mock scoring
+        class MockScoringRead:
+            class Scoring:
+                def __init__(self) -> None:
+                    self.scores = []
+                    self.overall_score = 10.0
+
+            def __init__(self) -> None:
+                self.scoring = self.Scoring()
+
+        mock_scoring_service = MagicMock()
+        mock_scoring_service.safe_score_conversation.return_value = MockScoringRead()
+
+        # simulate session_turn_service successfully stitching audio
+        mock_session_turn_service = MagicMock()
+        mock_session_turn_service.stitch_mp3s_from_gcs.return_value = SessionTurnStitchAudioSuccess(
+            output_filename='mock_audio_uri.mp3',
+            audio_duration_s=100,
+        )
+
+        # simulate generating signed URL for audio failure
+        with patch(
+            'app.services.session_feedback.session_feedback_service.get_gcs_audio_manager'
+        ) as mock_gcs_manager:
+            mock_gcs = MagicMock()
+            mock_gcs.generate_signed_url.side_effect = Exception(
+                'Signed URL should not be generated'
+            )
+            mock_gcs_manager.return_value = mock_gcs
+
+            conversation = self._mock_conversation_data()
+
+            feedback = generate_feedback_components(
+                feedback_request=FeedbackCreate(
+                    transcript='Mock transcript',
+                    objectives=['O1'],
+                    persona='P',
+                    situational_facts='S',
+                    category='Feedback',
+                    key_concepts='K',
+                ),
+                goals_request=GoalsAchievedCreate(
+                    transcript='Mock transcript',
+                    objectives=['O1'],
+                    language_code=LanguageCode.en,
+                ),
+                hr_docs_context='',
+                document_names=['Doc1', 'Doc2'],
+                conversation=conversation,
+                scoring_service=mock_scoring_service,
+                session_turn_service=mock_session_turn_service,
+                session_id=uuid4(),
+            )
+
+            self.assertTrue(feedback.audio_url is None)
+            self.assertEqual(feedback.goals, GoalsAchievedRead(goals_achieved=['G1']))
+
+            self.assertEqual(feedback.document_names, ['Doc1', 'Doc2'])
+            self.assertEqual(feedback.full_audio_filename, 'mock_audio_uri.mp3')
+            self.assertEqual(feedback.session_length_s, 100)
+
+            self.assertEqual(feedback.overall_score, 10.0)
+            self.assertEqual(feedback.has_error, True)
 
 
 if __name__ == '__main__':
