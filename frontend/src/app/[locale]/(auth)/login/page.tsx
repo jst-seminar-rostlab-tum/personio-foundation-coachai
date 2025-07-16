@@ -2,7 +2,6 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadat
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import LoginPageComponent from './components/LoginPage';
-import ConfirmationForm from './components/ConfirmationForm';
 import UpdatePasswordForm from './components/UpdatePasswordForm';
 import ResetPasswordForm from './components/ResetPasswordForm';
 
@@ -23,8 +22,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <div className="min-h-screen flex items-center justify-center py-4">
       <div className="w-full max-w-md">
         <LoginPageComponent />
-
-        {currentStep === 'confirm' && <ConfirmationForm />}
 
         {currentStep === 'reset' && <ResetPasswordForm />}
 
