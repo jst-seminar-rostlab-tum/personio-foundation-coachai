@@ -1,5 +1,6 @@
 import concurrent.futures
 import logging
+from collections.abc import Callable, Generator
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
@@ -9,6 +10,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.database import get_db_session
 from app.enums.feedback_status import FeedbackStatus
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.camel_case import CamelModel
@@ -272,6 +274,7 @@ def save_session_feedback(
     )
     db_session.add(feedback)
     db_session.commit()
+
     return feedback
 
 
@@ -302,8 +305,8 @@ def get_conversation_data(db_session: DBSession, session_id: UUID) -> Conversati
 def generate_and_store_feedback(
     session_id: UUID,
     feedback_request: FeedbackCreate,
-    db_session: DBSession,
-    user_profile: UserProfile,
+    session_generator_func: Callable[[], Generator[DBSession, None, None]],
+    user_profile_id: UUID,
     background_tasks: BackgroundTasks,
     scoring_service: ScoringService | None = None,
     session_turn_service: SessionTurnService | None = None,
@@ -316,6 +319,10 @@ def generate_and_store_feedback(
     service to generate feedback components. It then updates session statistics,
     saves the generated feedback to the database, and returns the saved feedback.
     """
+
+    session_gen = session_generator_func()
+    db_session: DBSession = next(session_gen)
+
     if scoring_service is None:
         scoring_service = get_scoring_service()
 
@@ -323,7 +330,7 @@ def generate_and_store_feedback(
         session_turn_service = SessionTurnService(db_session)
 
     if advisor_service is None:
-        advisor_service = AdvisorService(db_session)
+        advisor_service = AdvisorService()
 
     goals_request, recommendations_request = prepare_feedback_requests(feedback_request)
     hr_docs_context, document_names = get_hr_docs_context(recommendations_request)
@@ -364,8 +371,9 @@ def generate_and_store_feedback(
 
     background_tasks.add_task(
         advisor_service.generate_and_store_advice,
-        session_feedback=feedback,
-        user_profile=user_profile,
+        session_feedback_id=feedback.id,
+        user_profile_id=user_profile_id,
+        session_generator_func=get_db_session,
     )
 
     # If user doesn't want to store the conversation data (audio + transcript) delete it
