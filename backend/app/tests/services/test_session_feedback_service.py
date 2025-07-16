@@ -250,15 +250,21 @@ class TestSessionFeedbackService(unittest.TestCase):
 
     @patch('app.services.session_feedback.session_feedback_service.get_conversation_data')
     @patch('app.services.session_feedback.session_feedback_llm.generate_training_examples')
+    @patch('app.services.session_feedback.session_feedback_service.get_gcs_audio_manager')
     @patch('app.services.session_feedback.session_feedback_llm.get_achieved_goals')
     @patch('app.services.session_feedback.session_feedback_llm.generate_recommendations')
     def test_generate_and_store_feedback_with_errors(
         self,
         mock_recommendations: MagicMock,
         mock_goals: MagicMock,
+        mock_get_gcs_audio_manager: MagicMock,
         mock_examples: MagicMock,
         mock_get_conversation_data: MagicMock,
     ) -> None:
+        mock_gcs = MagicMock()
+        mock_gcs.generate_signed_url.return_value = 'https://mock.audio/signed_url.mp3'
+        mock_get_gcs_audio_manager.return_value = mock_gcs
+
         mock_get_conversation_data.return_value = self._mock_conversation_data()
         mock_examples.side_effect = Exception('Failed to generate examples')
 
