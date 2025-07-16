@@ -65,7 +65,7 @@ mock_situational_facts = """
 
 def get_mock_advisor_response() -> AdvisorResponse:
     return AdvisorResponse(
-        custom_category_label='Performance Reviews',
+        category_id='giving_feedback',
         persona=mock_persona,
         persona_name='positive',
         situational_facts=mock_situational_facts,
@@ -276,8 +276,7 @@ class AdvisorService:
         )
 
         new_conversation_scenario = ConversationScenarioCreate(
-            category_id=None,
-            custom_category_label=advisor_response.custom_category_label,
+            category_id=advisor_response.category_id,
             persona_name=advisor_response.persona_name,
             persona=advisor_response.persona,
             situational_facts=advisor_response.situational_facts,
