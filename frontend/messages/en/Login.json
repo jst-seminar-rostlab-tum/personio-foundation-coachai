@@ -22,7 +22,9 @@
     "descriptionPartOne": "We've sent a verification code to ",
     "descriptionPartTwo": ". Please enter it below.",
     "codeInputPlaceholder": "Enter 6-digit code",
-    "resendButtonLabel": "Resend code"
+    "resendButtonLabel": "Resend code",
+    "error": "Error verifying account",
+    "errorResend": "Error resending code"
   },
   "PasswordInput": {
     "showPasswordSpan": "Show Password",

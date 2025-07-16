@@ -26,7 +26,7 @@ if settings.database_url:
         SQLALCHEMY_DATABASE_URL = settings.database_url
 else:
     SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
-engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_size=20, max_overflow=180)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_size=10, max_overflow=30, pool_pre_ping=True)
 
 
 def create_db_and_tables() -> None:
