@@ -65,7 +65,6 @@ class ScoringService:
     def score_conversation(
         self,
         conversation: ConversationScenarioRead,
-        model: str = 'o4-mini-2025-04-16',
         temperature: float = 0.0,
         audio_uri: Optional[str] = None,
     ) -> ScoringRead:
@@ -75,7 +74,6 @@ class ScoringService:
         response = call_structured_llm(
             request_prompt=user_prompt,
             system_prompt=system_prompt,
-            model=model,
             output_model=ScoringRead,
             max_tokens=1000,
             temperature=temperature,
