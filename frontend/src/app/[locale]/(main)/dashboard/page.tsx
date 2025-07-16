@@ -58,7 +58,7 @@ export default async function DashboardPage() {
         action points."
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <StatCard value={userStats.totalSessions} label={tCommon('totalSessions')} />
         <StatCard
           value={`${userStats.trainingTime.toFixed(2)}h`}

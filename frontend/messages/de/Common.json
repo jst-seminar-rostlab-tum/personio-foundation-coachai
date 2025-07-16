@@ -25,7 +25,7 @@
   "logout": "Abmelden",
   "admin": "Admin",
   "totalSessions": "Sitzungen",
-  "avgScore": "Durchschnittliche Bewertung",
+  "avgScore": "∅ Bewertung",
   "reviews": "Bewertungen",
   "delete": "Löschen",
   "genericError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
