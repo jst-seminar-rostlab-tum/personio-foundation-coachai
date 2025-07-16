@@ -7,7 +7,7 @@ import { api } from '@/services/ApiClient';
 import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface ConversationScenarioSuggestionProps {
   suggestion: string;
@@ -19,13 +19,14 @@ export default function ConversationScenarioSuggestion({
   scenario,
 }: ConversationScenarioSuggestionProps) {
   const t = useTranslations('Dashboard.suggestion');
+  const router = useRouter();
 
   if (!suggestion || !scenario) return null;
 
   const onClickStartSuggestedScenario = async () => {
     try {
       const { data } = await conversationScenarioService.createConversationScenario(api, scenario);
-      redirect(`/preparation/${data.scenarioId}`);
+      router.push(`/preparation/${data.scenarioId}`);
     } catch (err) {
       showErrorToast(err, 'Failed to create suggested scenario');
     }
