@@ -20,6 +20,8 @@ import { api } from '@/services/ApiClient';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import type { UserProfile as User, UserPaginationResponse } from '@/interfaces/models/UserProfile';
 import { showErrorToast } from '@/lib/utils/toast';
+import { adminService } from '@/services/AdminService';
+import { useAdminStatsStore } from '@/store/AdminStatsStore';
 
 export default function UsersList({
   users,
@@ -33,6 +35,7 @@ export default function UsersList({
   const [search, setSearch] = useState('');
   const [totalUsers, setTotalUsers] = useState(initialTotalUsers);
   const [hasMore, setHasMore] = useState(users.length < initialTotalUsers);
+  const { setStats } = useAdminStatsStore();
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
 
@@ -66,6 +69,17 @@ export default function UsersList({
     const nextPage = currentPage + 1;
     setCurrentPage(nextPage);
     fetchUsers(nextPage, search);
+  };
+
+  const onDeleteSuccess = async () => {
+    try {
+      setCurrentPage(1);
+      fetchUsers(1, search);
+      const data = await adminService.getAdminStats(api);
+      setStats(data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
   };
 
   useEffect(() => {
@@ -115,13 +129,7 @@ export default function UsersList({
                   <TableRow key={user.email} className="border-t border-bw-10">
                     <TableCell className="py-2 px-2 truncate">{user.email}</TableCell>
                     <TableCell className="py-2 px-2">
-                      <DeleteUserHandler
-                        id={user.userId}
-                        onDeleteSuccess={() => {
-                          setCurrentPage(1);
-                          fetchUsers(1, search);
-                        }}
-                      />
+                      <DeleteUserHandler id={user.userId} onDeleteSuccess={onDeleteSuccess} />
                     </TableCell>
                   </TableRow>
                 ))}
