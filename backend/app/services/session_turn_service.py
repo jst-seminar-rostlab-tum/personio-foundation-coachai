@@ -303,6 +303,8 @@ class SessionTurnService:
             self.db.add(turn)
             mp3_entries.append((buf, dur, offset_ms))
 
+            print(mp3_entries)
+
         self.db.commit()
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -339,41 +341,61 @@ class SessionTurnService:
                     'pipe:1',
                 ]
             else:
-                cmd = ['ffmpeg', '-hide_banner', '-loglevel', 'error']
+                total_s = longest_end_ms / 1000.0  # ≈ 279.353
+
+                cmd = ['ffmpeg', '-hide_banner', '-loglevel', 'info', '-stats']
                 for p in inputs:
                     cmd += ['-i', p]
-                # build delay filters
-                delays, labels = [], []
+
+                filters = []
+
+                # 0) a silent guide track that defines the final length
+                filters.append(f'aevalsrc=0:d={total_s}[base]')
+
+                # 1) one chain per real clip, all resampled to 48 kHz and
+                #    delayed on *every* channel
                 for i, (_, _, off) in enumerate(mp3_entries):
-                    delays.append(f'[{i}:a]adelay={off}|{off}[d{i}]')
-                    labels.append(f'[d{i}]')
-                mix = ''.join(labels) + f'amix=inputs={len(mp3_entries)}:duration=longest[mixout]'
-                filter_complex = ';'.join(delays + [mix])
+                    filters.append(f'[{i}:a]aresample=48000,adelay={off}|{off}:all=1[d{i}]')
+
+                mix_inputs = '[base]' + ''.join(f'[d{i}]' for i in range(len(mp3_entries)))
+                filters.append(
+                    f'{mix_inputs}'
+                    f'amix=inputs={len(mp3_entries) + 1}:duration=first:normalize=0[mix]'
+                )
+
                 cmd += [
                     '-filter_complex',
-                    filter_complex,
+                    ';'.join(filters),
                     '-map',
-                    '[mixout]',
+                    '[mix]',
                     '-c:a',
                     'libmp3lame',
-                    '-q:a',
-                    '2',
-                    '-f',
-                    'mp3',
-                    'pipe:1',
+                    '-b:a',
+                    '192k',
+                    '-compression_level',
+                    '0',
+                    '-write_xing',
+                    '0',
+                    '-loglevel',
+                    'info',
+                    '-stats',  # <‑‑ progress!
                 ]
 
-            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            if proc.returncode != 0:
-                raise RuntimeError(f'ffmpeg error: {err.decode()}')
+            out_path = os.path.join(tmpdir, 'stitched.mp3')
+            print('Running FFmpeg …')  # sanity ping
 
-            out_buf = io.BytesIO(out)
-            out_buf.seek(0)
-            self.gcs_manager.upload_from_fileobj(
-                out_buf, output_blob_name, content_type='audio/mpeg'
-            )
-            out_buf.close()
+            proc = subprocess.run(cmd + [out_path], check=True)
+            if proc.returncode:
+                raise RuntimeError(proc.stderr.decode())
+
+            with open(out_path, 'rb') as f:
+                self.gcs_manager.upload_from_fileobj(f, output_blob_name, content_type='audio/mpeg')
+
+            # self.gcs_manager.delete_document(output_blob_name)
+            # self.gcs_manager.upload_from_fileobj(
+            #     out_buf, output_blob_name, content_type='audio/mpeg'
+            # )
+            # out_buf.close()
 
         print(f'Stitched audio saved to {output_blob_name}')
         stitched_duration_s = longest_end_ms / 1000.0  # convert back to seconds
