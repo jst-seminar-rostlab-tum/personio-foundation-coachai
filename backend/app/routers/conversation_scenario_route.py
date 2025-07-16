@@ -69,12 +69,13 @@ def create_conversation_scenario_with_preparation(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
     custom_scenario: bool = False,
+    advised_scenario: bool = False,
 ) -> ConversationScenarioConfirm:
     """
     Create a new conversation scenario and start the preparation process in the background.
     """
     return service.create_conversation_scenario_with_preparation(
-        conversation_scenario, user_profile, background_tasks, custom_scenario
+        conversation_scenario, user_profile, background_tasks, custom_scenario, advised_scenario
     )
 
 
