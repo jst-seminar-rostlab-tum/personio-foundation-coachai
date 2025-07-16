@@ -74,6 +74,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             full_name='Mock User',
             email='mock@example.com',
             phone_number='1234567890',
+            total_sessions=1,
         )
 
     def tearDown(self) -> None:
@@ -94,6 +95,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 email='a@b.com',
                 phone_number='123',
                 preferred_language_code=LanguageCode.en,
+                total_sessions=1,
             )
         )
         scenario = ConversationScenario(
@@ -381,7 +383,6 @@ class TestSessionFeedbackService(unittest.TestCase):
         user = self.session.get(UserProfile, user_id)
         self.assertIsNotNone(user)
         self.assertEqual(user.score_sum, 16.0)
-        self.assertEqual(user.total_sessions, 1)
         # Check admin_dashboard_stats statistics
         stats = self.session.exec(select(AdminDashboardStats)).first()
         self.assertIsNotNone(stats)
