@@ -99,7 +99,7 @@ def call_llm_with_audio(
     audio_uri: str,
     system_prompt: str | None = None,
     model: str = DEFAULT_MODEL,
-    max_tokens: int = 500,
+    max_tokens: int = 10000,
     temperature: float = 1.0,
 ) -> str:
     if not ENABLE_AI or vertexai_client is None:
