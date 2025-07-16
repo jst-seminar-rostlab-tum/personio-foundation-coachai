@@ -22,7 +22,9 @@
     "descriptionPartOne": "Wir haben einen Bestätigungscode an ",
     "descriptionPartTwo": " gesendet. Bitte geben Sie ihn unten ein.",
     "codeInputPlaceholder": "6-stelligen Code eingeben",
-    "resendButtonLabel": "Code erneut senden"
+    "resendButtonLabel": "Code erneut senden",
+    "error": "Fehler beim Bestätigen des Kontos",
+    "errorResend": "Fehler beim Erneuten Senden des Codes"
   },
   "PasswordInput": {
     "showPasswordSpan": "Passwort anzeigen",
