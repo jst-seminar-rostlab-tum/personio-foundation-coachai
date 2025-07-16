@@ -395,6 +395,7 @@ class SessionService:
             feedback_request=request,
             db_session=self.db,
             user_profile=user_profile,
+            background_tasks=background_tasks,
         )
 
         # Calculate session length
