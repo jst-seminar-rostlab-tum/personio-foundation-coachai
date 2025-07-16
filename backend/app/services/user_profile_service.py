@@ -18,6 +18,7 @@ from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
     PaginatedUserRead,
+    ScenarioAdvice,
     UserEmailRead,
     UserProfileExtendedRead,
     UserProfileRead,
@@ -66,7 +67,7 @@ class UserService:
             sessions_created_today=user.sessions_created_today,
             last_session_date=user.last_session_date,
             num_remaining_daily_sessions=num_remaining_daily_sessions,
-            scenario_advice=user.scenario_advice,
+            scenario_advice=ScenarioAdvice.model_validate(user.scenario_advice),
         )
 
     def _get_user_profile_response(self, user: UserProfile) -> UserProfileRead:
@@ -95,7 +96,7 @@ class UserService:
             sessions_created_today=user.sessions_created_today,
             last_session_date=user.last_session_date,
             num_remaining_daily_sessions=num_remaining_daily_sessions,
-            scenario_advice=user.scenario_advice,
+            scenario_advice=ScenarioAdvice.model_validate(user.scenario_advice),
         )
 
     def get_user_profiles(

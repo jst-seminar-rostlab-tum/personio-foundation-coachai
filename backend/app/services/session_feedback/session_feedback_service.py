@@ -365,7 +365,7 @@ def generate_and_store_feedback(
     background_tasks.add_task(
         advisor_service.generate_and_store_advice,
         session_feedback=feedback,
-        user_profile=user_profile.id,
+        user_profile_id=user_profile.id,
     )
 
     # If user doesn't want to store the conversation data (audio + transcript) delete it

@@ -8,7 +8,13 @@ from app.enums.preferred_learning_style import PreferredLearningStyle
 from app.enums.professional_role import ProfessionalRole
 from app.models.camel_case import CamelModel
 from app.models.user_goal import Goal
+from app.schemas.conversation_scenario import ConversationScenarioCreate
 from app.schemas.user_confidence_score import ConfidenceScoreRead
+
+
+class ScenarioAdvice(CamelModel):
+    mascot_speech: str
+    scenario: ConversationScenarioCreate
 
 
 # Schema for updating UserProfile data
@@ -52,7 +58,7 @@ class UserProfileRead(CamelModel):
     sessions_created_today: int
     last_session_date: date
     num_remaining_daily_sessions: int
-    scenario_advice: dict
+    scenario_advice: ScenarioAdvice
 
 
 class UserProfileExtendedRead(UserProfileRead):

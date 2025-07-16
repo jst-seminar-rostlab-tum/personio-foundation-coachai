@@ -13,6 +13,7 @@ from app.models.session_feedback import SessionFeedback
 from app.models.user_profile import UserProfile
 from app.schemas import ConversationScenarioCreate
 from app.schemas.advisor_response import AdvisorResponse
+from app.schemas.user_profile import ScenarioAdvice
 
 mock_persona = """
                 **Name**: Positive Pam
@@ -158,23 +159,18 @@ class AdvisorService:
         self, session_feedback: SessionFeedback, user_profile_id: UUID
     ) -> None:
         logging.info(f'Generating advice for session feedback ID: {session_feedback.id}')
-        [scenario_advice, mascot_speech] = self._generate_advice(session_feedback=session_feedback)
+        scenario_advice = self._generate_advice(session_feedback=session_feedback)
         statement = select(UserProfile).where(UserProfile.id == user_profile_id)
         user_profile = self.db.exec(statement).one_or_none()
         if user_profile is None:
-            logging.error(f'User profile with ID {user_profile.id} not found.')
+            logging.error(f'User profile with ID {user_profile_id} not found.')
             return
-        user_profile.scenario_advice = {
-            'scenario': scenario_advice.model_dump(),
-            'mascotSpeech': mascot_speech,
-        }
+        user_profile.scenario_advice = scenario_advice.model_dump()
         self.db.add(user_profile)
         self.db.commit()
         logging.info(f'Advice generated and stored for user profile ID: {user_profile.id}')
 
-    def _generate_advice(
-        self, session_feedback: SessionFeedback
-    ) -> tuple[ConversationScenarioCreate, str]:
+    def _generate_advice(self, session_feedback: SessionFeedback) -> ScenarioAdvice:
         language_code = LanguageCode.en
         try:
             previous_scenario = session_feedback.session.scenario
@@ -276,7 +272,9 @@ class AdvisorService:
             language_code=language_code,
         )
 
-        return new_conversation_scenario, advisor_response.mascot_speech
+        return ScenarioAdvice(
+            mascot_speech=advisor_response.mascot_speech, scenario=new_conversation_scenario
+        )
 
 
 if __name__ == '__main__':
