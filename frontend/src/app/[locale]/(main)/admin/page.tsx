@@ -25,6 +25,7 @@ export default async function AdminPage() {
   const usersData = UserProfileService.getPaginatedUsers(api, 1, PAGE_SIZE);
   const [stats, reviews, users] = await Promise.all([statsData, reviewsData, usersData]);
   const t = await getTranslations('Admin');
+  const tCommon = await getTranslations('Common');
 
   return (
     <Suspense fallback={<AdminLoadingPage />}>
@@ -32,6 +33,7 @@ export default async function AdminPage() {
         <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
         <div className="text-sm text-bw-40 text-center mb-8">{t('dashboardSubtitle')}</div>
         <AdminStatCards />
+        <div className="text-xl mt-16 font-medium text-bw-70">{tCommon('reviews')}</div>
         <Reviews {...reviews} />
         <div className="text-xl mb-6 mt-12 font-medium text-bw-70">{t('users')}</div>
         <SessionSetter dailySessionLimit={stats.dailySessionLimit} />

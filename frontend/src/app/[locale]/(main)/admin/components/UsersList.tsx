@@ -122,9 +122,6 @@ export default function UsersList({
                     <TableCell className="px-6 py-4 truncate text-bw-70">{user.email}</TableCell>
                     <TableCell className="px-6 py-4 text-right">
                       <DeleteUserHandler id={user.userId} onDeleteSuccess={onDeleteSuccess} />
-                    <TableCell className="py-2 px-2 truncate">{user.email}</TableCell>
-                    <TableCell className="py-2 px-2">
-                      <DeleteUserHandler id={user.userId} onDeleteSuccess={onDeleteSuccess} />
                     </TableCell>
                   </TableRow>
                 ))}
