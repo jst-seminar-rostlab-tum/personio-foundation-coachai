@@ -2,7 +2,7 @@
 
 import { ChevronDown, Star } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
 import { Review, ReviewsPaginated } from '@/interfaces/models/Review';
@@ -32,6 +32,50 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
   const [sortBy, setSortBy] = useState('newest');
   const canLoadMore = visibleCount < pagination?.totalCount;
   const [reviewsStorage, setReviewsStorage] = useState<Review[]>(reviews);
+
+  const progressTargets = [
+    ratingStatistics?.numFiveStar,
+    ratingStatistics?.numFourStar,
+    ratingStatistics?.numThreeStar,
+    ratingStatistics?.numTwoStar,
+    ratingStatistics?.numOneStar,
+  ].map((count) => (count / (pagination?.totalCount ?? 0)) * 100 || 0);
+
+  const [animatedProgress, setAnimatedProgress] = useState([0, 0, 0, 0, 0]);
+  const animationRefs = useRef<(number | null)[]>([null, null, null, null, null]);
+  const startTimes = useRef<number[]>([0, 0, 0, 0, 0]);
+  const lastValues = useRef<number[]>([0, 0, 0, 0, 0]);
+
+  const [animatedAverage, setAnimatedAverage] = useState(0);
+  const averageRef = useRef<number | null>(null);
+
+  function easeInOutCubic(t: number) {
+    return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+  }
+
+  useEffect(() => {
+    if (!ratingStatistics?.average) {
+      setAnimatedAverage(0.1);
+      return;
+    }
+    if (averageRef.current) {
+      cancelAnimationFrame(averageRef.current);
+    }
+    const duration = 1000;
+    const start = performance.now();
+    const target = ratingStatistics.average;
+    const startValue = 0.1;
+    function animate(now: number) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const value = startValue + (target - startValue) * progress;
+      setAnimatedAverage(progress < 1 ? Math.max(value, 0.1) : target);
+      if (progress < 1) {
+        averageRef.current = requestAnimationFrame(animate);
+      }
+    }
+    averageRef.current = requestAnimationFrame(animate);
+  }, [ratingStatistics?.average]);
 
   const handleReviewClick = (sessionId: string | null) => {
     if (sessionId) {
@@ -76,13 +120,56 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
     }
   }, [pageNumber, canLoadMore, limit, tCommon, sortBy]);
 
+  useEffect(() => {
+    setAnimatedProgress([0, 0, 0, 0, 0]);
+    const refsAtStart = [...animationRefs.current];
+    refsAtStart.forEach((ref) => ref && cancelAnimationFrame(ref));
+    startTimes.current = [0, 0, 0, 0, 0];
+    lastValues.current = [0, 0, 0, 0, 0];
+
+    const duration = 500;
+
+    progressTargets.forEach((target, idx) => {
+      function animate(now: number) {
+        if (!startTimes.current[idx]) {
+          startTimes.current[idx] = now;
+        }
+        const elapsed = now - startTimes.current[idx];
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeInOutCubic(progress);
+        const value = target * eased;
+        if (Math.abs(value - lastValues.current[idx]) > 0.5 || progress === 1) {
+          setAnimatedProgress((prev) => {
+            const next = [...prev];
+            next[idx] = value;
+            return next;
+          });
+          lastValues.current[idx] = value;
+        }
+        if (progress < 1) {
+          animationRefs.current[idx] = requestAnimationFrame(animate);
+        } else {
+          setAnimatedProgress((prev) => {
+            const next = [...prev];
+            next[idx] = target;
+            return next;
+          });
+        }
+      }
+      animationRefs.current[idx] = requestAnimationFrame(animate);
+    });
+    return () => {
+      refsAtStart.forEach((ref) => ref && cancelAnimationFrame(ref));
+    };
+  }, [ratingStatistics, pagination?.totalCount, progressTargets]);
+
   return (
     <div>
       <div className="w-full max-w-5xl mx-auto my-16 px-4 md:px-16">
         <div className="flex flex-col md:flex-row items-center gap-9 md:gap-20">
           <div className="flex flex-col items-center justify-center w-max mx-auto gap-1">
             <div className="flex items-end text-7xl whitespace-nowrap mb-2 font-medium text-bw-70 leading-none">
-              {ratingStatistics?.average?.toFixed(1) ?? 'N/A'}
+              {animatedAverage.toFixed(1) ?? 'N/A'}
               <span className="text-5xl font-normal text-bw-40 leading-none ml-2">/</span>
               <span className="text-5xl font-normal text-bw-40 leading-none ml-2">5</span>
             </div>
@@ -96,7 +183,9 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
               ))}
             </div>
             <div className="text-md font-normal text-bw-40 text-center w-full">
-              {pagination?.totalCount ?? 'N/A'} Bewertungen
+              {pagination?.totalCount
+                ? `${pagination.totalCount} ${tCommon('reviews')}`
+                : `N/A ${tCommon('reviews')}`}
             </div>
           </div>
           <div className="flex flex-col space-y-6 w-full max-w-full min-w-0">
@@ -108,14 +197,13 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                 ratingStatistics?.numTwoStar,
                 ratingStatistics?.numOneStar,
               ][idx];
-              const percentage = (count / (pagination?.totalCount ?? 0)) * 100;
               return (
                 <div key={num} className="flex items-center w-full justify-end">
                   <span className="mr-4 flex items-center justify-end gap-x-1 text-sm text-bw-70 font-semibold text-right items-center w-10">
                     {num}
                     <Star className="w-6 h-6 fill-marigold-40" strokeWidth={0} />
                   </span>
-                  <Progress className="h-2.5 flex-1 min-w-0" value={percentage} />
+                  <Progress className="h-2.5 flex-1 min-w-0" value={animatedProgress[idx]} />
                   <span className="text-sm text-bw-40 w-6 text-right">{count ?? 'N/A'}</span>
                 </div>
               );
