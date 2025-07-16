@@ -1,11 +1,16 @@
+import logging
 from datetime import UTC, datetime
 from uuid import uuid4
+
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 
 from app.connections.vertexai_client import call_structured_llm
 from app.enums.feedback_status import FeedbackStatus
 from app.enums.language import LanguageCode
 from app.models.conversation_scenario import DifficultyLevel
 from app.models.session_feedback import SessionFeedback
+from app.models.user_profile import UserProfile
 from app.schemas import ConversationScenarioCreate
 from app.schemas.advisor_response import AdvisorResponse
 
@@ -146,15 +151,28 @@ def get_mock_session_feedback() -> SessionFeedback:
 
 
 class AdvisorService:
-    # TODO: Uncomment for saving the scenarioAdvice in userProfile
-    def __init__(
-        self,
-        # db: DBSession
-    ) -> None:
-        # self.db = db
-        pass
+    def __init__(self, db: DBSession) -> None:
+        self.db = db
 
-    def generate_advice(
+    def generate_and_store_advice(
+        self, session_feedback: SessionFeedback, user_profile: UserProfile
+    ) -> None:
+        logging.info(f'Generating advice for session feedback ID: {session_feedback.id}')
+        [scenario_advice, mascot_speech] = self._generate_advice(session_feedback=session_feedback)
+        statement = select(UserProfile).where(UserProfile.user_id == user_profile.id)
+        user_profile = self.db.exec(statement).one_or_none()
+        if user_profile is None:
+            logging.error(f'User profile with ID {user_profile.id} not found.')
+            return
+        user_profile.scenario_advice = {
+            'scenario': scenario_advice.model_dump(),
+            'mascotSpeech': mascot_speech,
+        }
+        self.db.add(user_profile)
+        self.db.commit()
+        logging.info(f'Advice generated and stored for user profile ID: {user_profile.id}')
+
+    def _generate_advice(
         self, session_feedback: SessionFeedback
     ) -> tuple[ConversationScenarioCreate, str]:
         language_code = LanguageCode.en
