@@ -2,6 +2,9 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadat
 import type { Metadata } from 'next';
 import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
+import { api } from '@/services/ApiServer';
+import { UserProfileService } from '@/services/UserProfileService';
+import SessionLimitReached from '@/components/common/SessionLimitReached';
 import { Button } from '@/components/ui/Button';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { PagesProps } from '@/interfaces/props/PagesProps';
@@ -15,10 +18,16 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function PreparationPage(props: PagesProps) {
+  const { id } = await props.params;
+
   const t = await getTranslations('Preparation');
   const tCommon = await getTranslations('Common');
 
-  const { id } = await props.params;
+  const userStats = await UserProfileService.getUserStats(api);
+
+  if (userStats.numRemainingDailySessions === 0) {
+    return <SessionLimitReached />;
+  }
 
   return (
     <div className="flex flex-col gap-8">
