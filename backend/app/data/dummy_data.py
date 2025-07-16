@@ -60,6 +60,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             current_streak_days=5,
             score_sum=32 * 12,
             goals_achieved=4,  # Summation of all goals achieved
+            scenario_advice={},
         ),
         UserProfile(
             id=MockUserIdsEnum.ADMIN.value,
@@ -78,6 +79,7 @@ def get_dummy_user_profiles() -> list[UserProfile]:
             current_streak_days=2,
             score_sum=5 * 12,
             goals_achieved=2,  # Summation of all goals achieved
+            scenario_advice={},
         ),
     ]
 

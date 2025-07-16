@@ -15,6 +15,9 @@
     "subtitle": "An overview of all your past training configurations",
     "showEntireHistory": "Show Entire History"
   },
+  "suggestion": {
+    "startButton": "Start now"
+  },
   "deleteConversationScenarioSuccess": "Conversation scenario has been deleted successfully",
   "deleteConversationScenarioError": "Error deleting conversation scenario",
   "lastSession": "Last Session"
