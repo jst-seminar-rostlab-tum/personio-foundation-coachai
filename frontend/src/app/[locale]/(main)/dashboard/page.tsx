@@ -10,6 +10,7 @@ import { conversationScenarioService } from '@/services/ConversationScenarioServ
 import StatCard from '@/components/common/StatCard';
 import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import { api } from '@/services/ApiServer';
+import ConversationScenarioSuggestion from './components/ConversationScenarioSuggestion';
 import DashboardTable from './components/DashboardTable';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -50,6 +51,12 @@ export default async function DashboardPage() {
           </Button>
         </Link>
       </section>
+
+      <ConversationScenarioSuggestion
+        suggestion="I see that you had a performance feedback talk recently, where you could have
+        given more concrete action points. I would suggest you to train giving concrete
+        action points."
+      />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard value={userStats.totalSessions} label={tCommon('totalSessions')} />

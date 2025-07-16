@@ -15,6 +15,9 @@
     "subtitle": "Eine Übersicht all Ihrer bisherigen Trainings-Konfigurationen",
     "showEntireHistory": "Gesamten Verlauf anzeigen"
   },
+  "suggestion": {
+    "startButton": "Starte jetzt"
+  },
   "deleteConversationScenarioSuccess": "Szenario erfolgreich gelöscht",
   "deleteConversationScenarioError": "Fehler beim Löschen des Szenarios",
   "lastSession": "Letzte Sitzung"
