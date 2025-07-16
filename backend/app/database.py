@@ -25,7 +25,7 @@ if settings.database_url:
     else:
         SQLALCHEMY_DATABASE_URL = settings.database_url
 else:
-    SQLALCHEMY_DATABASE_URL = 'postgresql+psycopg://postgres:postgres@127.0.0.1:54322/postgres'
+    SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
 engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_size=10, max_overflow=190, pool_pre_ping=True)
 
 
