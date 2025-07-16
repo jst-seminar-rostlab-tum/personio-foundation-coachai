@@ -47,8 +47,8 @@ export default async function AdminPage() {
             <StatCard key={i} value={stat.value} label={stat.label} />
           ))}
         </div>
-        <SessionSetter dailySessionLimit={stats.dailySessionLimit} />
         <Reviews {...reviews} />
+        <SessionSetter dailySessionLimit={stats.dailySessionLimit} />
         <UsersList {...users} />
       </div>
     </Suspense>
