@@ -48,7 +48,13 @@ export default function HistoryTable({
         limit,
         scenarioId
       );
-      setRows((prev) => [...prev, ...response.data.sessions]);
+      setRows((prev) => {
+        const existingIds = new Set(prev.map((row) => row.sessionId));
+        const filtered = response.data.sessions.filter(
+          (s: Session) => !existingIds.has(s.sessionId)
+        );
+        return [...prev, ...filtered];
+      });
       setVisibleCount((prev) => prev + limit);
     } catch (e) {
       showErrorToast(e, tCommon('error'));

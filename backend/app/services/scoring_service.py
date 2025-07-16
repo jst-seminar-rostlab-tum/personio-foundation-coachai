@@ -75,7 +75,6 @@ class ScoringService:
             request_prompt=user_prompt,
             system_prompt=system_prompt,
             output_model=ScoringRead,
-            max_tokens=1000,
             temperature=temperature,
             audio_uri=audio_uri,
         )

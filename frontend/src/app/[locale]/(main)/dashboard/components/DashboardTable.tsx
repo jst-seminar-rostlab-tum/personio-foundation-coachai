@@ -51,7 +51,13 @@ export default function DashboardTable({ scenarios, totalScenarios, limit }: Das
         pageNumber,
         limit
       );
-      setRows((prev) => [...prev, ...response.data.scenarios]);
+      setRows((prev) => {
+        const existingIds = new Set(prev.map((row) => row.scenarioId));
+        const filtered = response.data.scenarios.filter(
+          (s: ConversationScenario) => !existingIds.has(s.scenarioId)
+        );
+        return [...prev, ...filtered];
+      });
       setVisibleCount((prev) => prev + limit);
     } catch (e) {
       showErrorToast(e, tCommon('error'));

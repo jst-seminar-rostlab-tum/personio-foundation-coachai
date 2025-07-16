@@ -1,6 +1,6 @@
 import logging
 from datetime import UTC, datetime
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from sqlmodel import Session as DBSession
 from sqlmodel import select
@@ -155,11 +155,11 @@ class AdvisorService:
         self.db = db
 
     def generate_and_store_advice(
-        self, session_feedback: SessionFeedback, user_profile: UserProfile
+        self, session_feedback: SessionFeedback, user_profile_id: UUID
     ) -> None:
         logging.info(f'Generating advice for session feedback ID: {session_feedback.id}')
         [scenario_advice, mascot_speech] = self._generate_advice(session_feedback=session_feedback)
-        statement = select(UserProfile).where(UserProfile.user_id == user_profile.id)
+        statement = select(UserProfile).where(UserProfile.id == user_profile_id)
         user_profile = self.db.exec(statement).one_or_none()
         if user_profile is None:
             logging.error(f'User profile with ID {user_profile.id} not found.')
