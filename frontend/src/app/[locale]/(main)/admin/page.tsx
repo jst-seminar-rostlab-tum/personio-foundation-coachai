@@ -5,14 +5,13 @@ import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { adminService } from '@/services/AdminService';
 import { reviewService } from '@/services/ReviewService';
 import { UserProfileService } from '@/services/UserProfileService';
-import StatCard from '@/components/common/StatCard';
 import { getTranslations } from 'next-intl/server';
 import { api } from '@/services/ApiServer';
-import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import AdminLoadingPage from './loading';
 import SessionSetter from './components/SessionSetter';
 import Reviews from './components/Reviews';
 import UsersList from './components/UsersList';
+import AdminStatCards from './components/AdminStatCards';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -26,27 +25,13 @@ export default async function AdminPage() {
   const usersData = UserProfileService.getPaginatedUsers(api, 1, PAGE_SIZE);
   const [stats, reviews, users] = await Promise.all([statsData, reviewsData, usersData]);
   const t = await getTranslations('Admin');
-  const tCommon = await getTranslations('Common');
-
-  const averageScore = calculateAverageScore(stats.scoreSum, stats.totalTrainings);
-
-  const statsArray = [
-    { value: stats.totalUsers, label: t('statActiveUsers') },
-    { value: stats.totalTrainings, label: tCommon('totalSessions') },
-    { value: stats.totalReviews, label: tCommon('reviews') },
-    { value: `${averageScore}/5`, label: tCommon('avgScore') },
-  ];
 
   return (
     <Suspense fallback={<AdminLoadingPage />}>
       <div className="max-w-full">
         <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
         <div className="text-sm text-bw-40 text-center mb-8">{t('dashboardSubtitle')}</div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {statsArray.map((stat, i) => (
-            <StatCard key={i} value={stat.value} label={stat.label} />
-          ))}
-        </div>
+        <AdminStatCards />
         <SessionSetter dailySessionLimit={stats.dailySessionLimit} />
         <Reviews {...reviews} />
         <UsersList {...users} />
