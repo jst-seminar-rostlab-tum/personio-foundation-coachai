@@ -1,7 +1,9 @@
 import logging
+from collections.abc import Callable, Generator
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
+from fastapi import HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
@@ -151,25 +153,35 @@ def get_mock_session_feedback() -> SessionFeedback:
 
 
 class AdvisorService:
-    def __init__(self, db: DBSession) -> None:
-        self.db = db
-
     def generate_and_store_advice(
-        self, session_feedback: SessionFeedback, user_profile_id: UUID
+        self,
+        session_feedback_id: UUID,
+        user_profile_id: UUID,
+        session_generator_func: Callable[[], Generator[DBSession, None, None]],
     ) -> None:
+        session_gen = session_generator_func()
+        db_session: DBSession = next(session_gen)
+
+        statement = select(SessionFeedback).where(SessionFeedback.id == session_feedback_id)
+        session_feedback = db_session.exec(statement).one_or_none()
+
+        if session_feedback is None:
+            logging.error(f'Session feedback with ID {session_feedback_id} not found.')
+            raise HTTPException(status_code=404, detail='Session feedback not found.')
+
         logging.info(f'Generating advice for session feedback ID: {session_feedback.id}')
         [scenario_advice, mascot_speech] = self._generate_advice(session_feedback=session_feedback)
         statement = select(UserProfile).where(UserProfile.id == user_profile_id)
-        user_profile = self.db.exec(statement).one_or_none()
+        user_profile = db_session.exec(statement).one_or_none()
         if user_profile is None:
-            logging.error(f'User profile with ID {user_profile.id} not found.')
+            logging.error(f'User profile with ID {user_profile_id} not found.')
             return
         user_profile.scenario_advice = {
             'scenario': scenario_advice.model_dump(),
             'mascotSpeech': mascot_speech,
         }
-        self.db.add(user_profile)
-        self.db.commit()
+        db_session.add(user_profile)
+        db_session.commit()
         logging.info(f'Advice generated and stored for user profile ID: {user_profile.id}')
 
     def _generate_advice(
