@@ -275,14 +275,12 @@ export function SignUpForm() {
         </Form>
       </Card>
 
-      {/* Show VerificationPopup only if step is not 'confirm' */}
       <VerificationPopup
-        isOpen={step !== 'confirm' && showVerification}
+        isOpen={showVerification}
         onClose={() => setShowVerification(false)}
         signUpFormData={signUpForm.getValues()}
       />
 
-      {/* Show ConfirmationForm as a popup if step is 'confirm' */}
       {step === 'confirm' && (
         <ConfirmationForm
           initialEmail={searchParams.get('email') || signUpForm.getValues().email}
