@@ -304,8 +304,6 @@ class SessionTurnService:
             self.db.add(turn)
             mp3_entries.append((buf, dur, offset_ms))
 
-            print(mp3_entries)
-
         self.db.commit()
 
         with tempfile.TemporaryDirectory() as tmpdir:
