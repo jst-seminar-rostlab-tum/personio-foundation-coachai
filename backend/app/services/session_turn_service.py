@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 import re
 import subprocess
@@ -341,9 +342,9 @@ class SessionTurnService:
                     'pipe:1',
                 ]
             else:
-                total_s = longest_end_ms / 1000.0  # ≈ 279.353
+                cmd = ['ffmpeg', '-hide_banner', '-loglevel', 'error']
+                total_s = longest_end_ms / 1000.0
 
-                cmd = ['ffmpeg', '-hide_banner', '-loglevel', 'info', '-stats']
                 for p in inputs:
                     cmd += ['-i', p]
 
@@ -371,35 +372,24 @@ class SessionTurnService:
                     '-c:a',
                     'libmp3lame',
                     '-b:a',
-                    '192k',
+                    '192k',  # use CBR so duration is correct
                     '-compression_level',
                     '0',
                     '-write_xing',
-                    '0',
-                    '-loglevel',
-                    'info',
-                    '-stats',  # <‑‑ progress!
+                    '0',  # no VBR header on a pipe
+                    '-f',
+                    'mp3',
+                    'pipe:1',  # <-- single *pipe* output
                 ]
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, check=True)
+            data = proc.stdout  # bytes
+            self.gcs_manager.delete_document(output_blob_name)
+            self.gcs_manager.upload_from_fileobj(
+                io.BytesIO(data), output_blob_name, content_type='audio/mpeg'
+            )
 
-            out_path = os.path.join(tmpdir, 'stitched.mp3')
-            print('Running FFmpeg …')  # sanity ping
-
-            proc = subprocess.run(cmd + [out_path], check=True)
-            if proc.returncode:
-                raise RuntimeError(proc.stderr.decode())
-
-            with open(out_path, 'rb') as f:
-                self.gcs_manager.upload_from_fileobj(f, output_blob_name, content_type='audio/mpeg')
-
-            # self.gcs_manager.delete_document(output_blob_name)
-            # self.gcs_manager.upload_from_fileobj(
-            #     out_buf, output_blob_name, content_type='audio/mpeg'
-            # )
-            # out_buf.close()
-
-        print(f'Stitched audio saved to {output_blob_name}')
+        logging.info(f'Stitched audio saved to {output_blob_name}')
         stitched_duration_s = longest_end_ms / 1000.0  # convert back to seconds
-        print(f'Stitched audio duration: {stitched_duration_s} seconds')
 
         return SessionTurnStitchAudioSuccess(
             output_filename=output_blob_name, audio_duration_s=int(stitched_duration_s)
