@@ -8,7 +8,7 @@
   "userStats": {
     "trainingTime": "Training Time",
     "currentStreak": "Current Streak",
-    "remainingSessionsToday": "Remaining sessions today"
+    "remainingSessionsToday": "Sessions left today"
   },
   "recentSessions": {
     "title": "Your Scenarios",

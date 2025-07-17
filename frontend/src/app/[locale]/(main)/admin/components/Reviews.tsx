@@ -60,6 +60,10 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
   const [animatedAverage, setAnimatedAverage] = useState(0);
   const averageRef = useRef<number | null>(null);
 
+  const [animatedCounts, setAnimatedCounts] = useState([0, 0, 0, 0, 0]);
+  const countAnimationRef = useRef<number | null>(null);
+  const countStartTime = useRef<number>(0);
+
   function easeInOutCubic(t: number) {
     return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
   }
@@ -87,6 +91,41 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
     }
     averageRef.current = requestAnimationFrame(animate);
   }, [ratingStatistics?.average]);
+
+  useEffect(() => {
+    setAnimatedCounts([0, 0, 0, 0, 0]);
+    if (countAnimationRef.current) cancelAnimationFrame(countAnimationRef.current);
+    countStartTime.current = 0;
+    const duration = 1000;
+    const counts = [
+      ratingStatistics?.numFiveStar || 0,
+      ratingStatistics?.numFourStar || 0,
+      ratingStatistics?.numThreeStar || 0,
+      ratingStatistics?.numTwoStar || 0,
+      ratingStatistics?.numOneStar || 0,
+    ];
+    const maxCount = Math.max(...counts);
+    function animate(now: number) {
+      if (!countStartTime.current) countStartTime.current = now;
+      const elapsed = now - countStartTime.current;
+      const progress = Math.min(elapsed / duration, 1);
+      const currentStep = Math.max(1, Math.round(1 + (maxCount - 1) * progress));
+      setAnimatedCounts(counts.map((target) => (target === 0 ? 0 : Math.min(target, currentStep))));
+      if (progress < 1 && currentStep < maxCount) {
+        countAnimationRef.current = requestAnimationFrame(animate);
+      } else {
+        setAnimatedCounts(counts);
+      }
+    }
+    if (maxCount > 0) {
+      countAnimationRef.current = requestAnimationFrame(animate);
+    } else {
+      setAnimatedCounts(counts);
+    }
+    return () => {
+      if (countAnimationRef.current) cancelAnimationFrame(countAnimationRef.current);
+    };
+  }, [ratingStatistics]);
 
   const handleReviewClick = (sessionId: string | null) => {
     if (sessionId) {
@@ -179,21 +218,25 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
       <div className="w-full max-w-5xl mx-auto my-16 px-4 md:px-16">
         <div className="flex flex-col md:flex-row items-center gap-9 md:gap-20">
           <div className="flex flex-col items-center justify-center w-max mx-auto gap-1">
-            <div className="flex items-end text-7xl whitespace-nowrap mb-2 font-medium text-bw-70 leading-none">
+            <div className="flex items-end text-6xl md:text-7xl whitespace-nowrap mb-2 font-medium text-bw-70 leading-none">
               {animatedAverage.toFixed(1) ?? 'N/A'}
-              <span className="text-5xl font-normal text-bw-40 leading-none ml-2">/</span>
-              <span className="text-5xl font-normal text-bw-40 leading-none ml-2">5</span>
+              <span className="text-4xl md:text-5xl font-normal text-bw-40 leading-none ml-2">
+                /
+              </span>
+              <span className="text-4xl md:text-5xl font-normal text-bw-40 leading-none ml-2">
+                5
+              </span>
             </div>
             <div className="flex gap-1 mb-2">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`w-8 h-8 ${i < Math.round(ratingStatistics?.average ?? 0) ? 'fill-marigold-40' : 'fill-bw-20'}`}
+                  className={`w-6 h-6 md:w-8 md:h-8 ${i < Math.round(ratingStatistics?.average ?? 0) ? 'fill-marigold-40' : 'fill-bw-20'}`}
                   strokeWidth={0}
                 />
               ))}
             </div>
-            <div className="text-md font-normal text-bw-40 text-center w-full">
+            <div className="text-sm md:text-md font-normal text-bw-40 text-center w-full">
               {pagination?.totalCount
                 ? `${pagination.totalCount} ${tCommon('reviews')}`
                 : `N/A ${tCommon('reviews')}`}
@@ -201,13 +244,6 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
           </div>
           <div className="flex flex-col space-y-6 w-full max-w-full min-w-0">
             {[5, 4, 3, 2, 1].map((num, idx) => {
-              const count = [
-                ratingStatistics?.numFiveStar,
-                ratingStatistics?.numFourStar,
-                ratingStatistics?.numThreeStar,
-                ratingStatistics?.numTwoStar,
-                ratingStatistics?.numOneStar,
-              ][idx];
               return (
                 <div key={num} className="flex items-center w-full justify-end">
                   <span className="mr-4 flex items-center justify-end gap-x-1 text-sm text-bw-70 font-semibold text-right items-center w-10">
@@ -215,7 +251,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                     <Star className="w-6 h-6 fill-marigold-40" strokeWidth={0} />
                   </span>
                   <Progress className="h-2.5 flex-1 min-w-0" value={animatedProgress[idx]} />
-                  <span className="text-sm text-bw-40 w-6 text-right">{count ?? 'N/A'}</span>
+                  <span className="text-sm text-bw-40 w-8 text-right">{animatedCounts[idx]}</span>
                 </div>
               );
             })}
