@@ -379,12 +379,23 @@ class SessionTurnService:
                     'mp3',
                     'pipe:1',
                 ]
-            proc = subprocess.run(cmd, stdout=subprocess.PIPE, check=True)
-            data = proc.stdout  # bytes
+
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = proc.communicate()
+            if proc.returncode != 0:
+                raise RuntimeError(f'ffmpeg error: {err.decode()}')
+
+            out_buf = io.BytesIO(out)
+            out_buf.seek(0)
+
+            # proc = subprocess.run(cmd, stdout=subprocess.PIPE, check=True)
+            # data = proc.stdout  # bytes
             self.gcs_manager.delete_document(output_blob_name)
             self.gcs_manager.upload_from_fileobj(
-                io.BytesIO(data), output_blob_name, content_type='audio/mpeg'
+                out_buf, output_blob_name, content_type='audio/mpeg'
             )
+
+            out_buf.close()
 
         logging.info(f'Stitched audio saved to {output_blob_name}')
         stitched_duration_s = longest_end_ms / 1000.0  # convert back to seconds
