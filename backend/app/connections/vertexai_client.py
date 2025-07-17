@@ -135,7 +135,7 @@ def call_structured_llm(
     system_prompt: str | None = None,
     model: str = DEFAULT_MODEL,
     temperature: float = 1,
-    max_tokens: int = 10000,
+    max_tokens: int = 8192,
     audio_uri: Optional[str] = None,
     mock_response: T | None = None,
 ) -> T:

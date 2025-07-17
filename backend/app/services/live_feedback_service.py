@@ -97,12 +97,14 @@ def generate_live_feedback_item(
     Do not include markdown, explanation, or code formatting.
 
     2. Generate EXACTLY 1 feedback item, which should be concise (1-10 words).
-    3. For the heading, use categories like: Tone, Clarity, Engagement, Next Step, or Content.
+    3. For the heading, use categories like: Tone, Clarity, Engagement, Next Step, or Content. 
+    Always translate those in the target language.
     4. Each new feedback item should have a different heading from the previous 4 feedback items.
     5. Feedback must be consistent with prior suggestions.
     6. Avoid rephrasing or repeating previous feedback items when possible.
     7. Use active voice and no hedging, be specific if possible.
     e.g."Speak more calmly" instead of "Use a calmer tone" 
+    8. Always refer to the user as informal "you" (2nd person singular) regardless of the language
 
     ### Examples
     Feedback items in order of generating:
@@ -119,7 +121,8 @@ def generate_live_feedback_item(
         request_prompt=user_prompt,
         system_prompt=(
             'You are an expert communication coach analyzing a single speaking turn.'
-            f'Always respond in the language represented by the ISO code "{language}"'
+            f'Your response should always be in the language represented '
+            f'by the ISO code "{language}"'
         ),
         output_model=LiveFeedbackLlmOutput,
         mock_response=LiveFeedbackLlmOutput(heading='Tone', feedback_text='Speak more calmly.'),
@@ -186,6 +189,7 @@ if __name__ == '__main__':
         user_audio_path='example_audio.wav',
         transcript=user_transcript,
         previous_feedback=user_previous_feedback,
+        language='de',
     )
     print('heading:', live_feedback_item.heading)
     print('feedback_text:', live_feedback_item.feedback_text)
