@@ -74,7 +74,6 @@ class ScoringService:
             output_model=ScoringRead,
             temperature=temperature,
             audio_uri=audio_uri,
-            max_tokens=8192,
         )
 
         # Recalculate the overall score based on the rubric
