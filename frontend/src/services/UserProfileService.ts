@@ -3,7 +3,7 @@ import { AxiosInstance } from 'axios';
 
 const getUserProfile = async (api: AxiosInstance) => {
   try {
-    const { data } = await api.get(`/user-profiles/profile`, {
+    const { data } = await api.get<UserProfile>(`/user-profiles/profile`, {
       params: { detailed: true },
     });
     return data;
