@@ -79,7 +79,7 @@ class ConversationScenarioService:
         self.db.refresh(new_conversation_scenario)
 
         if advised_scenario:
-            user_profile.scenario_advice = {}
+            user_profile.scenario_advice = None
             self.db.commit()
 
         # Initialize preparation

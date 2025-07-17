@@ -58,7 +58,7 @@ class UserProfileRead(CamelModel):
     sessions_created_today: int
     last_session_date: date
     num_remaining_daily_sessions: int
-    scenario_advice: ScenarioAdvice
+    scenario_advice: ScenarioAdvice | dict
 
 
 class UserProfileExtendedRead(UserProfileRead):
