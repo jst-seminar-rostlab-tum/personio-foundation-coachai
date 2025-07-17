@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { api } from '@/services/ApiServer';
 import { UserProfileService } from '@/services/UserProfileService';
+import SessionLimitReached from '@/components/common/SessionLimitReached';
 import ConversationScenarioForm from './components/ConversationScenarioForm';
-import SessionLimitReached from './components/SessionLimitReached';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;

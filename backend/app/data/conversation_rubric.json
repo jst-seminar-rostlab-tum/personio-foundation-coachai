@@ -7,8 +7,8 @@
       "name": "Structure",
       "description": "Evaluates the organization and logical flow of the conversation.",
       "levels": {
-        "5": "Very good: The overall structure is clear, with a recognizable opening, well-organized body, and conclusive closing. Information is presented in a logical order with smooth transitions. Minor lapses or imperfections are acceptable as long as the overall impression is very good.",
-        "4": "Good: Obvious opening, body, and closing. Mostly logical and clear, with only minor lapses in order or transitions.",
+        "5": "Very good: The overall structure is clear, with a recognizable opening, well-organized body, and conclusive closing. Information is presented in a logical order with smooth transitions. Minor lapses (e.g., a single awkward transition, a brief moment where the order is slightly off, or a slightly abrupt ending) are acceptable as long as the overall impression is very good.",
+        "4": "Good: Obvious opening, body, and closing. Mostly logical and clear, but may have a few minor lapses, such as occasional awkward transitions, a brief off-topic comment, or a slightly abrupt ending.",
         "3": "Adequate: Basic structure present, but some parts are out of order, missing, or abrupt. The flow is sometimes choppy or confusing.",
         "2": "Poor: Lacks clear structure. Information is scattered, topics jump frequently, and it is hard to identify the beginning, middle, or end.",
         "1": "Very Poor: No structure at all. Utterances are random, fragmented, or unrelated. No clear beginning, middle, or end. The listener cannot understand the main topic or purpose."
@@ -19,11 +19,11 @@
       "name": "Empathy",
       "description": "Evaluates the ability to understand, acknowledge, and validate the other person's feelings and perspective.",
       "levels": {
-        "5": "Very good: The user consistently identifies and addresses the other person's emotions and viewpoint, and expresses understanding, support, or comfort with specific language. Minor lapses or less detailed moments are acceptable as long as the overall impression is very good.",
-        "4": "Good: Most responses show attention to the other person's feelings. Occasional lapses or less detailed empathy, but overall supportive.",
-        "3": "Adequate: Sometimes acknowledges feelings, but often in a generic or formulaic way. Lacks depth or specific follow-up.",
-        "2": "Poor: Rarely shows empathy. May be dismissive or ignore the other person's emotions.",
-        "1": "Very Poor: Ignores or denies the other person's feelings, or is cold or impatient."
+        "5": "Very good: The user consistently identifies and addresses the other person's emotions and viewpoint, and expresses understanding, support, or comfort with specific language. Minor lapses (e.g., a single missed opportunity to show empathy, a less detailed response, or a brief moment of generic wording) are acceptable as long as the overall impression is very good.",
+        "4": "Good: Most responses show attention to the other person's feelings. Occasional lapses or less detailed empathy, such as a generic or formulaic response, a short missed opportunity to acknowledge emotion, or a brief moment of distraction, but overall supportive.",
+        "3": "Adequate: Sometimes acknowledges feelings, but often in a generic or formulaic way. Lacks depth or specific follow-up. For example, only saying 'I understand' without further support or detail.",
+        "2": "Poor: Rarely shows empathy. May be dismissive or ignore the other person's emotions. For example, changing the topic when emotion is expressed, or giving a cold reply.",
+        "1": "Very Poor: Ignores or denies the other person's feelings, or is cold or impatient. For example, directly telling the other person their feelings are wrong or irrelevant."
       }
     },
     {
@@ -31,27 +31,32 @@
       "name": "Focus",
       "description": "Evaluates the ability to stay on topic and maintain relevance to the conversation's goals.",
       "levels": {
-        "5": "Very good: The user stays on topic and nearly all statements are directly relevant to the conversation's main goal. Brief or minor digressions are acceptable as long as the overall focus is clear.",
-        "4": "Good: Mostly focused, with only brief, minor digressions that do not disrupt the flow.",
-        "3": "Adequate: Several noticeable or lengthy digressions, but the main topic is still addressed.",
-        "2": "Poor: Frequently off-topic, making it hard to follow the main thread. The original purpose is often obscured.",
-        "1": "Very Poor: Almost always off-topic. The original purpose is completely lost or ignored."
+        "5": "Very good: The user stays on topic and nearly all statements are directly relevant to the conversation's main goal. Brief or minor digressions (e.g., a single off-topic comment that does not disrupt the flow, or a quick unrelated remark) are acceptable as long as the overall focus is clear.",
+        "4": "Good: Mostly focused, with only brief, minor digressions that do not disrupt the flow, such as a short unrelated remark, a momentary loss of focus, or a quick change of subject that is quickly brought back.",
+        "3": "Adequate: Several noticeable or lengthy digressions, but the main topic is still addressed. For example, the user talks about unrelated matters for a while but eventually returns to the main point.",
+        "2": "Poor: Frequently off-topic, making it hard to follow the main thread. The original purpose is often obscured. For example, the user repeatedly brings up unrelated issues or stories.",
+        "1": "Very Poor: Almost always off-topic. The original purpose is completely lost or ignored. For example, the user never addresses the main topic at all."
       }
     },
     {
       "id": "clarity",
       "name": "Clarity",
-      "description": "Evaluates the clarity, precision, and understandability of the language used.",
+      "description": "Evaluates the clarity, precision, and understandability of the language used. Also considers the clarity of pronunciation and articulation if audio is provided.",
       "levels": {
-        "5": "Very good: Language is clear, concise, and unambiguous. Complex ideas are explained in an organized way. Minor unclear words or rare ambiguous expressions are acceptable as long as the overall clarity is very good.",
-        "4": "Good: Mostly clear and understandable, with only minor ambiguity or imprecise wording.",
-        "3": "Adequate: Generally understandable, but several vague, convoluted, or poorly chosen words. Listener must make an effort to understand.",
-        "2": "Poor: Often unclear, ambiguous, or confusing, leading to misunderstandings.",
-        "1": "Very Poor: Most of the content is incomprehensible, muddled, or nonsensical."
+        "5": "Very good: Language is clear, concise, and unambiguous. Pronunciation and articulation are clear and easy to understand if audio is provided. Complex ideas are explained in an organized way. Minor lapses (e.g., a single unclear word, a rare ambiguous expression, a slightly confusing sentence, or a brief moment of unclear pronunciation) are acceptable as long as the overall clarity is very good.",
+        "4": "Good: Mostly clear and understandable, with only minor ambiguity or imprecise wording, such as a vague phrase, a slightly confusing sentence, or a brief moment where the listener must guess the meaning. Pronunciation is generally clear, with only occasional minor slurring, mumbling, or unclear articulation.",
+        "3": "Adequate: Generally understandable, but several vague, convoluted, or poorly chosen words. Listener must make an effort to understand. Pronunciation may be inconsistent, with some words spoken unclearly or with occasional mumbling.",
+        "2": "Poor: Often unclear, ambiguous, or confusing, leading to misunderstandings. Pronunciation is frequently unclear, with frequent mumbling, slurring, or mispronunciations that make understanding difficult.",
+        "1": "Very Poor: Most of the content is incomprehensible, muddled, or nonsensical. Pronunciation and articulation are so unclear that the listener cannot understand the main points."
       }
     }
   ],
   "common_levels": {
     "0": "Complete failure to demonstrate the skill. The response is irrelevant, incomprehensible, or shows no attempt to engage with the metric."
+  },
+  "notes": {
+    "minor_lapse": "A minor lapse is a small, infrequent issue that does not significantly affect the overall quality. Examples: a single awkward transition, a brief off-topic comment, a slightly abrupt ending, a minor ambiguity in wording, a single missed opportunity to show empathy, a short moment of generic or unclear language, or a brief instance of unclear pronunciation. Multiple such lapses or more noticeable issues may lower the score to 4 or below.",
+    "occasional_lapse": "An occasional lapse is a brief, non-disruptive issue that happens once or twice in the conversation, such as a short missed opportunity to show empathy, a quick unrelated remark, a vague phrase, or a brief unclear pronunciation. If such lapses are frequent or disrupt the flow, the score should be lower.",
+    "brief_digression": "A brief digression is a short, off-topic comment or story that does not disrupt the main flow and is quickly brought back to the topic. Multiple or lengthy digressions may lower the score."
   }
 }

@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 import re
 import subprocess
@@ -13,6 +14,7 @@ from sqlmodel import col, select
 
 from app.config import Settings
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.database import get_db_session
 from app.enums.speaker import SpeakerType
 from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn
@@ -148,10 +150,10 @@ class SessionTurnService:
             # Generate live feedback item in the background
             background_tasks.add_task(
                 generate_and_store_live_feedback,
-                db_session=self.db,
                 session_id=turn.session_id,
                 session_turn_context=new_turn,
                 hr_docs_context=hr_docs_context,
+                session_generator_func=get_db_session,
             )
 
         return SessionTurnRead(
@@ -340,24 +342,40 @@ class SessionTurnService:
                 ]
             else:
                 cmd = ['ffmpeg', '-hide_banner', '-loglevel', 'error']
+                total_s = longest_end_ms / 1000.0
+
                 for p in inputs:
                     cmd += ['-i', p]
-                # build delay filters
-                delays, labels = [], []
+
+                filters = []
+
+                # 0) a silent guide track that defines the final length
+                filters.append(f'aevalsrc=0:d={total_s}[base]')
+
+                # 1) one chain per real clip, all resampled to 48 kHz and
+                #    delayed on *every* channel
                 for i, (_, _, off) in enumerate(mp3_entries):
-                    delays.append(f'[{i}:a]adelay={off}|{off}[d{i}]')
-                    labels.append(f'[d{i}]')
-                mix = ''.join(labels) + f'amix=inputs={len(mp3_entries)}:duration=longest[mixout]'
-                filter_complex = ';'.join(delays + [mix])
+                    filters.append(f'[{i}:a]aresample=48000,adelay={off}|{off}:all=1[d{i}]')
+
+                mix_inputs = '[base]' + ''.join(f'[d{i}]' for i in range(len(mp3_entries)))
+                filters.append(
+                    f'{mix_inputs}'
+                    f'amix=inputs={len(mp3_entries) + 1}:duration=first:normalize=0[mix]'
+                )
+
                 cmd += [
                     '-filter_complex',
-                    filter_complex,
+                    ';'.join(filters),
                     '-map',
-                    '[mixout]',
+                    '[mix]',
                     '-c:a',
                     'libmp3lame',
-                    '-q:a',
-                    '2',
+                    '-b:a',
+                    '192k',  # use CBR so duration is correct
+                    '-compression_level',
+                    '0',
+                    '-write_xing',
+                    '0',  # no VBR header on a pipe
                     '-f',
                     'mp3',
                     'pipe:1',
@@ -370,14 +388,18 @@ class SessionTurnService:
 
             out_buf = io.BytesIO(out)
             out_buf.seek(0)
+
+            # proc = subprocess.run(cmd, stdout=subprocess.PIPE, check=True)
+            # data = proc.stdout  # bytes
+            self.gcs_manager.delete_document(output_blob_name)
             self.gcs_manager.upload_from_fileobj(
                 out_buf, output_blob_name, content_type='audio/mpeg'
             )
+
             out_buf.close()
 
-        print(f'Stitched audio saved to {output_blob_name}')
+        logging.info(f'Stitched audio saved to {output_blob_name}')
         stitched_duration_s = longest_end_ms / 1000.0  # convert back to seconds
-        print(f'Stitched audio duration: {stitched_duration_s} seconds')
 
         return SessionTurnStitchAudioSuccess(
             output_filename=output_blob_name, audio_duration_s=int(stitched_duration_s)

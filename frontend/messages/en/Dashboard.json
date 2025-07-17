@@ -8,12 +8,15 @@
   "userStats": {
     "trainingTime": "Training Time",
     "currentStreak": "Current Streak",
-    "remainingSessionsToday": "Remaining sessions today"
+    "remainingSessionsToday": "Sessions left today"
   },
   "recentSessions": {
     "title": "Your Scenarios",
     "subtitle": "An overview of all your past training configurations",
     "showEntireHistory": "Show Entire History"
+  },
+  "suggestion": {
+    "startButton": "Start now"
   },
   "deleteConversationScenarioSuccess": "Conversation scenario has been deleted successfully",
   "deleteConversationScenarioError": "Error deleting conversation scenario",

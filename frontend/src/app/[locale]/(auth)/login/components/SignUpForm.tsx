@@ -27,6 +27,8 @@ import { showErrorToast } from '@/lib/utils/toast';
 import Link from 'next/link';
 import { UserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiClient';
+import ConfirmationForm from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
+import { useSearchParams } from 'next/navigation';
 
 export function SignUpForm() {
   const tLogin = useTranslations('Login');
@@ -35,6 +37,9 @@ export function SignUpForm() {
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+  const step = searchParams.get('step');
 
   useEffect(() => {
     if (error) {
@@ -275,6 +280,12 @@ export function SignUpForm() {
         onClose={() => setShowVerification(false)}
         signUpFormData={signUpForm.getValues()}
       />
+
+      {step === 'confirm' && (
+        <ConfirmationForm
+          initialEmail={searchParams.get('email') || signUpForm.getValues().email}
+        />
+      )}
 
       <PrivacyDialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}></PrivacyDialog>
     </>

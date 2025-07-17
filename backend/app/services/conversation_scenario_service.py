@@ -41,6 +41,7 @@ class ConversationScenarioService:
         user_profile: UserProfile,
         background_tasks: BackgroundTasks,
         custom_scenario: bool = False,
+        advised_scenario: bool = False,
     ) -> ConversationScenarioConfirm:
         """
         Create a new conversation scenario and start the preparation process in the background.
@@ -76,6 +77,10 @@ class ConversationScenarioService:
         self.db.add(new_conversation_scenario)
         self.db.commit()
         self.db.refresh(new_conversation_scenario)
+
+        if advised_scenario:
+            user_profile.scenario_advice = {}
+            self.db.commit()
 
         # Initialize preparation
         prep = create_pending_preparation(new_conversation_scenario.id, self.db)
@@ -178,30 +183,24 @@ class ConversationScenarioService:
                 func.max(Session.started_at).label('last_session_at'),
             )
             # scenario → category (may be NULL)
-            .outerjoin(
+            .join(
                 ConversationCategory,
                 ConversationScenario.category_id == ConversationCategory.id,
             )
             # scenario → session  (may be zero)
-            .outerjoin(Session, Session.scenario_id == ConversationScenario.id)
+            .join(Session, Session.scenario_id == ConversationScenario.id, isouter=True)
             # session  → feedback (may be zero)
-            .outerjoin(SessionFeedback, SessionFeedback.session_id == Session.id)
-            .where(
-                SessionFeedback.status == FeedbackStatus.completed,
-            )
+            .join(SessionFeedback, SessionFeedback.session_id == Session.id, isouter=True)
             .group_by(
                 ConversationScenario.id,
                 ConversationScenario.language_code,
                 ConversationCategory.name,
                 ConversationScenario.custom_category_label,
             )
-            .order_by(func.max(Session.started_at).desc())  # Order by latest session start date
+            .order_by(func.max(Session.started_at).desc())
         )
 
-        if user_profile.account_role != AccountRole.admin:
-            stmt = stmt.where(ConversationScenario.user_id == user_profile.id)
-
-        # stmt = stmt.offset((page - 1) * page_size).limit(page_size)
+        stmt = stmt.where(ConversationScenario.user_id == user_profile.id)
 
         rows = self.db.exec(stmt).all()
         scenario_count = len(rows)

@@ -10,6 +10,7 @@ import { conversationScenarioService } from '@/services/ConversationScenarioServ
 import StatCard from '@/components/common/StatCard';
 import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import { api } from '@/services/ApiServer';
+import ConversationScenarioSuggestion from './components/ConversationScenarioSuggestion';
 import DashboardTable from './components/DashboardTable';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
@@ -40,8 +41,8 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-16">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         <p className="text-2xl text-center md:text-left">
-          {t('header.greeting')}
-          {userProfile.fullName}!
+          <span className="font-normal">{t('header.greeting')}</span>
+          <span>{userProfile.fullName}!</span>
         </p>
         <Link href="/new-conversation-scenario" className="w-full md:w-auto">
           <Button size="full" className="md:!size-default">
@@ -51,14 +52,19 @@ export default async function DashboardPage() {
         </Link>
       </section>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <ConversationScenarioSuggestion
+        suggestion={userProfile.scenarioAdvice.mascotSpeech}
+        scenario={userProfile.scenarioAdvice.scenario}
+      />
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <StatCard value={userStats.totalSessions} label={tCommon('totalSessions')} />
         <StatCard
           value={`${userStats.trainingTime.toFixed(2)}h`}
           label={t('userStats.trainingTime')}
         />
         <StatCard value={`${userStats.currentStreakDays}d`} label={t('userStats.currentStreak')} />
-        <StatCard value={`${averageScore}/5`} label={tCommon('avgScore')} />
+        <StatCard value={`${averageScore}/20`} label={tCommon('avgScore')} />
         <StatCard
           value={
             isAdmin

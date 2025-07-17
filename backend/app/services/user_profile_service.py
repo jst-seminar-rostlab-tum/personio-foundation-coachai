@@ -4,6 +4,7 @@ from typing import Union
 from uuid import UUID
 
 from fastapi import HTTPException, status
+from pydantic import ValidationError
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 from supabase import AuthError
@@ -18,6 +19,7 @@ from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
     PaginatedUserRead,
+    ScenarioAdvice,
     UserEmailRead,
     UserProfileExtendedRead,
     UserProfileRead,
@@ -43,6 +45,12 @@ class UserService:
             num_remaining_daily_sessions = 0
         else:
             num_remaining_daily_sessions = max(0, daily_session_limit - user.sessions_created_today)
+
+        try:
+            scenario_advice = ScenarioAdvice.model_validate(user.scenario_advice)
+        except ValidationError:
+            scenario_advice = {}
+
         return UserProfileExtendedRead(
             user_id=user.id,
             full_name=user.full_name,
@@ -66,6 +74,7 @@ class UserService:
             sessions_created_today=user.sessions_created_today,
             last_session_date=user.last_session_date,
             num_remaining_daily_sessions=num_remaining_daily_sessions,
+            scenario_advice=scenario_advice,
         )
 
     def _get_user_profile_response(self, user: UserProfile) -> UserProfileRead:
@@ -79,6 +88,12 @@ class UserService:
             num_remaining_daily_sessions = 0
         else:
             num_remaining_daily_sessions = max(0, daily_session_limit - user.sessions_created_today)
+
+        try:
+            scenario_advice = ScenarioAdvice.model_validate(user.scenario_advice)
+        except ValidationError:
+            scenario_advice = {}
+
         return UserProfileRead(
             user_id=user.id,
             full_name=user.full_name,
@@ -94,6 +109,7 @@ class UserService:
             sessions_created_today=user.sessions_created_today,
             last_session_date=user.last_session_date,
             num_remaining_daily_sessions=num_remaining_daily_sessions,
+            scenario_advice=scenario_advice,
         )
 
     def get_user_profiles(

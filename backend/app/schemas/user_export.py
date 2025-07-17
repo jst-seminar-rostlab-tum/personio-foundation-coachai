@@ -78,7 +78,7 @@ class ExportSessionTurn(BaseModel):
     end_offset_ms: int
     text: str
     audio_uri: str
-    ai_emotion: str
+    ai_emotion: Optional[str] = None
     created_at: Optional[str]
 
 
