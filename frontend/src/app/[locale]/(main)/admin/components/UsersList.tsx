@@ -106,21 +106,21 @@ export default function UsersList({
         <EmptyListComponent itemType={t('users')} />
       ) : (
         <>
-          <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
-            <Table className="min-w-full text-sm table-fixed">
+          <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 w-full">
+            <Table className="min-w-[320px] text-sm table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-left font-semibold text-bw-70 px-6 py-4">
+                  <TableHead className="text-left font-semibold text-bw-70 px-6 py-4 w-[280px]">
                     {t('email')}
                   </TableHead>
-                  <TableHead className="text-right font-semibold text-bw-70 px-6 py-4"></TableHead>
+                  <TableHead className="text-right font-semibold text-bw-70 pl-0 pr-6 py-4"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {userList.map((user) => (
                   <TableRow key={user.email} className="border-t border-bw-10">
-                    <TableCell className="px-6 py-4 truncate text-bw-70">{user.email}</TableCell>
-                    <TableCell className="px-6 py-4 text-right">
+                    <TableCell className="px-6 py-4 text-bw-70 w-[280px]">{user.email}</TableCell>
+                    <TableCell className="pl-0 pr-6 py-4 text-right">
                       <DeleteUserHandler id={user.userId} onDeleteSuccess={onDeleteSuccess} />
                     </TableCell>
                   </TableRow>
