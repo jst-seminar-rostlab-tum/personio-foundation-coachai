@@ -53,9 +53,8 @@ export default async function DashboardPage() {
       </section>
 
       <ConversationScenarioSuggestion
-        suggestion="I see that you had a performance feedback talk recently, where you could have
-        given more concrete action points. I would suggest you to train giving concrete
-        action points."
+        suggestion={userProfile.scenarioAdvice.mascotSpeech}
+        scenario={userProfile.scenarioAdvice.scenario}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

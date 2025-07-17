@@ -29,11 +29,18 @@ const getConversationScenario = async (api: AxiosInstance, id: string) => {
   }
 };
 
-const createConversationScenario = async (api: AxiosInstance, scenario: ConversationScenario) => {
+const createConversationScenario = async (
+  api: AxiosInstance,
+  scenario: ConversationScenario,
+  isAdvisedScenario: boolean = false
+) => {
   try {
     const response = await api.post<ConversationScenarioResponse>(
       '/conversation-scenarios',
-      scenario
+      scenario,
+      {
+        params: { advised_scenario: isAdvisedScenario },
+      }
     );
     return response;
   } catch (error) {
