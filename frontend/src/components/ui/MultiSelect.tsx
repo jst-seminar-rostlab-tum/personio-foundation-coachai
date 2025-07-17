@@ -54,7 +54,7 @@ export function MultiSelect({
 
   const handleUnselect = (optionId: string) => {
     onChange(value.filter((s) => s !== optionId));
-    setTimeout(() => inputRef.current?.focus(), 100);
+    // Removed inputRef.current?.focus() to prevent dropdown from opening on badge removal
   };
 
   const handleKeyDown = React.useCallback(
@@ -96,21 +96,6 @@ export function MultiSelect({
         onClick={handleWrapperClick}
         onBlur={handleBlur}
       >
-        {value.map((optionId) => (
-          <Badge key={optionId}>
-            {options.find((option) => option.id === optionId)?.label || ''}
-            <div
-              className="ml-1 cursor-pointer"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleUnselect(optionId);
-              }}
-            >
-              <X className="h-3 w-3 text-muted-foreground hover:text-flame-50" />
-            </div>
-          </Badge>
-        ))}
         {value.length < (maxSelected ?? Infinity) ? (
           <CommandPrimitive.Input
             ref={inputRef}
@@ -123,6 +108,25 @@ export function MultiSelect({
           <span className="text-sm text-bw-40">{maxSelectedDisclaimer}</span>
         )}
       </div>
+      {value.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-4">
+          {value.map((optionId) => (
+            <Badge key={optionId}>
+              {options.find((option) => option.id === optionId)?.label || ''}
+              <div
+                className="ml-1 cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleUnselect(optionId);
+                }}
+              >
+                <X className="h-3 w-3 text-muted-foreground hover:text-flame-50" />
+              </div>
+            </Badge>
+          ))}
+        </div>
+      )}
 
       <div className="relative mt-2">
         <CommandList>
