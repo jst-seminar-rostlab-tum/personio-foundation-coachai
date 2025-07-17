@@ -4,7 +4,10 @@ export const formatDateFlexible = (
   showTime: boolean = false
 ) => {
   if (!date) return '';
+
   const effectiveLocale = locale === 'en' ? 'en-GB' : locale;
+  const { timeZone } = Intl.DateTimeFormat().resolvedOptions();
+
   const options: Intl.DateTimeFormatOptions = showTime
     ? {
         day: '2-digit',
@@ -13,11 +16,16 @@ export const formatDateFlexible = (
         hour: '2-digit',
         minute: '2-digit',
         hour12: false,
+        timeZone,
       }
     : {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
+        timeZone,
       };
-  return new Date(date).toLocaleString(effectiveLocale, options);
+
+  const parsedDate = new Date(date.endsWith('Z') ? date : `${date}Z`);
+
+  return parsedDate.toLocaleString(effectiveLocale, options);
 };
