@@ -41,8 +41,8 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-16">
       <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         <p className="text-2xl text-center md:text-left">
-          {t('header.greeting')}
-          {userProfile.fullName}!
+          <span className="font-normal">{t('header.greeting')}</span>
+          <span>{userProfile.fullName}!</span>
         </p>
         <Link href="/new-conversation-scenario" className="w-full md:w-auto">
           <Button size="full" className="md:!size-default">
@@ -53,12 +53,11 @@ export default async function DashboardPage() {
       </section>
 
       <ConversationScenarioSuggestion
-        suggestion="I see that you had a performance feedback talk recently, where you could have
-        given more concrete action points. I would suggest you to train giving concrete
-        action points."
+        suggestion={userProfile.scenarioAdvice.mascotSpeech}
+        scenario={userProfile.scenarioAdvice.scenario}
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <StatCard value={userStats.totalSessions} label={tCommon('totalSessions')} />
         <StatCard
           value={`${userStats.trainingTime.toFixed(2)}h`}

@@ -5,7 +5,6 @@ from sqlmodel import SQLModel, text
 
 from app.data import (
     get_dummy_admin_stats,
-    get_dummy_app_configs,
     get_dummy_conversation_categories,
     get_dummy_conversation_scenarios,
     get_dummy_live_feedback_data,
@@ -94,9 +93,6 @@ def populate_data() -> None:
         # Populate User Confidence Scores
         user_confidence_scores = get_dummy_user_confidence_scores(user_profiles)
         db_session.add_all(user_confidence_scores)
-
-        app_configs = get_dummy_app_configs()
-        db_session.add_all(app_configs)
 
         # Populate live feedback
         live_feedback = get_dummy_live_feedback_data(session_turns)
