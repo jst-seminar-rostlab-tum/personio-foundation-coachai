@@ -71,6 +71,7 @@ class Settings(BaseSettings):
     # Vertex AI credentials
     VERTEXAI_PROJECT_ID: str = 'personio-foundation'
     VERTEXAI_LOCATION: str = 'europe-west9'
+    VERTEXAI_MAX_TOKENS: int = 8192  # Max tokens for VertexAI in dev mode
 
     @property
     def mock_user_data(self) -> MockUser:

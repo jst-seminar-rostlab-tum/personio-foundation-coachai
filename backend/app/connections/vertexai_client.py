@@ -14,6 +14,7 @@ DEFAULT_MODEL = settings.DEFAULT_MODEL
 FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
 VERTEXAI_PROJECT_ID = settings.VERTEXAI_PROJECT_ID
 VERTEXAI_LOCATION = settings.VERTEXAI_LOCATION
+VERTEXAI_MAX_TOKENS = settings.VERTEXAI_MAX_TOKENS
 
 required = [
     settings.GCP_PRIVATE_KEY_ID,
@@ -99,7 +100,7 @@ def call_llm_with_audio(
     audio_uri: str,
     system_prompt: str | None = None,
     model: str = DEFAULT_MODEL,
-    max_tokens: int = 8192,
+    max_tokens: int = VERTEXAI_MAX_TOKENS,
     temperature: float = 1.0,
 ) -> str:
     if not ENABLE_AI or vertexai_client is None:
@@ -135,7 +136,7 @@ def call_structured_llm(
     system_prompt: str | None = None,
     model: str = DEFAULT_MODEL,
     temperature: float = 1,
-    max_tokens: int = 8192,
+    max_tokens: int = VERTEXAI_MAX_TOKENS,
     audio_uri: Optional[str] = None,
     mock_response: T | None = None,
 ) -> T:
