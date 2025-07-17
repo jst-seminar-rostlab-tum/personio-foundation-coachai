@@ -27,6 +27,8 @@ import { showErrorToast } from '@/lib/utils/toast';
 import Link from 'next/link';
 import { UserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiClient';
+import ConfirmationForm from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export function SignUpForm() {
   const tLogin = useTranslations('Login');
@@ -35,6 +37,10 @@ export function SignUpForm() {
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const step = searchParams.get('step');
 
   useEffect(() => {
     if (error) {
@@ -270,11 +276,23 @@ export function SignUpForm() {
         </Form>
       </Card>
 
+      {/* Show VerificationPopup only if step is not 'confirm' */}
       <VerificationPopup
-        isOpen={showVerification}
+        isOpen={step !== 'confirm' && showVerification}
         onClose={() => setShowVerification(false)}
         signUpFormData={signUpForm.getValues()}
       />
+
+      {/* Show ConfirmationForm as a popup if step is 'confirm' */}
+      {step === 'confirm' && (
+        <ConfirmationForm
+          initialEmail={searchParams.get('email') || signUpForm.getValues().email}
+          onClose={() => {
+            // Optionally, you can close the popup and reset the step param
+            router.push('/login');
+          }}
+        />
+      )}
 
       <PrivacyDialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}></PrivacyDialog>
     </>
