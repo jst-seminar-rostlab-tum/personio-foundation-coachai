@@ -19,6 +19,7 @@ export default function ConversationScenarioSuggestion({
   scenario,
 }: ConversationScenarioSuggestionProps) {
   const t = useTranslations('Dashboard.suggestion');
+  const tConversationScenario = useTranslations('ConversationScenario');
   const router = useRouter();
 
   if (!suggestion || !scenario) return null;
@@ -32,7 +33,7 @@ export default function ConversationScenarioSuggestion({
       );
       router.push(`/preparation/${data.scenarioId}`);
     } catch (err) {
-      showErrorToast(err, 'Failed to create suggested scenario');
+      showErrorToast(err, tConversationScenario('errorMessage'));
     }
   };
 
