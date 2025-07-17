@@ -1,6 +1,7 @@
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
+from app.connections.gcs_client import get_gcs_audio_manager
 from app.models.app_config import AppConfig
 from app.models.conversation_scenario import ConversationScenario
 from app.models.review import Review
@@ -266,6 +267,33 @@ def _build_export_reviews(reviews: list[Review]) -> list[ExportReview]:
         )
         for r in reviews
     ]
+
+
+def _collect_audio_files_for_export(sessions: list) -> dict[str, list[tuple[str, str]]]:
+    """
+    Collect all audio files for the user's sessions, organized by session ID.
+    Returns a dict mapping session_id to list of (audio_uri, filename) tuples.
+    """
+    gcs_manager = get_gcs_audio_manager()
+    if not gcs_manager:
+        return {}
+
+    audio_files_by_session = {}
+
+    for session in sessions:
+        session_id = str(session.id)
+        audio_files_by_session[session_id] = []
+
+        for turn in session.session_turns:
+            if turn.audio_uri and turn.audio_uri.strip():
+                # Generate a descriptive filename
+                speaker = str(turn.speaker).lower()
+                turn_id = str(turn.id)[:8]  # Short version of turn ID
+                filename = f'{speaker}_turn_{turn_id}.mp3'
+
+                audio_files_by_session[session_id].append((turn.audio_uri, filename))
+
+    return audio_files_by_session
 
 
 def build_user_data_export(user_profile: UserProfile, db_session: DBSession) -> UserDataExport:
