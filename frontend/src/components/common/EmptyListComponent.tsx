@@ -5,12 +5,20 @@ import { useTranslations } from 'next-intl';
 
 interface EmptyListComponentProps {
   itemType: string;
+  showBorder?: boolean;
 }
 
-export default function EmptyListComponent({ itemType }: EmptyListComponentProps) {
+export default function EmptyListComponent({
+  itemType,
+  showBorder = true,
+}: EmptyListComponentProps) {
   const t = useTranslations('Common.emptyList');
   return (
-    <div className="flex flex-col items-center justify-center w-full border border-bw-20 rounded-lg bg-transparent gap-1 p-8 text-center">
+    <div
+      className={`flex flex-col items-center justify-center w-full rounded-lg bg-transparent gap-1 p-8 text-center ${
+        showBorder ? 'border border-bw-20' : ''
+      }`}
+    >
       <Image
         src="/images/common/empty-list.png"
         alt="Empty list illustration"
