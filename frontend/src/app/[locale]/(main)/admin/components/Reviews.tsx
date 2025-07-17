@@ -2,7 +2,7 @@
 
 import { ChevronDown, Star } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
 import Progress from '@/components/ui/Progress';
 import { Review, ReviewsPaginated } from '@/interfaces/models/Review';
@@ -33,13 +33,24 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
   const canLoadMore = visibleCount < pagination?.totalCount;
   const [reviewsStorage, setReviewsStorage] = useState<Review[]>(reviews);
 
-  const progressTargets = [
-    ratingStatistics?.numFiveStar,
-    ratingStatistics?.numFourStar,
-    ratingStatistics?.numThreeStar,
-    ratingStatistics?.numTwoStar,
-    ratingStatistics?.numOneStar,
-  ].map((count) => (count / (pagination?.totalCount ?? 0)) * 100 || 0);
+  const progressTargets = useMemo(
+    () =>
+      [
+        ratingStatistics?.numFiveStar,
+        ratingStatistics?.numFourStar,
+        ratingStatistics?.numThreeStar,
+        ratingStatistics?.numTwoStar,
+        ratingStatistics?.numOneStar,
+      ].map((count) => (count / (pagination?.totalCount ?? 0)) * 100 || 0),
+    [
+      ratingStatistics?.numFiveStar,
+      ratingStatistics?.numFourStar,
+      ratingStatistics?.numThreeStar,
+      ratingStatistics?.numTwoStar,
+      ratingStatistics?.numOneStar,
+      pagination?.totalCount,
+    ]
+  );
 
   const [animatedProgress, setAnimatedProgress] = useState([0, 0, 0, 0, 0]);
   const animationRefs = useRef<(number | null)[]>([null, null, null, null, null]);
