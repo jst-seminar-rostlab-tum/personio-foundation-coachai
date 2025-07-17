@@ -158,11 +158,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         expected = 1
-        tolerance = 1
-        self.assertTrue(
-            abs(scores_dict['structure'] - expected) <= tolerance,
-            f'Structure score {scores_dict["structure"]} not within ±{tolerance} of expected {expected}',
-        )
+        self.assertEqual(scores_dict['structure'], expected)
 
     def test_score_conversation_structure_2(self) -> None:
         structure_2_path = self.base_path / 'dummy_conversation_structure_2.json'
@@ -175,11 +171,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         expected = 2
-        tolerance = 1
-        self.assertTrue(
-            abs(scores_dict['structure'] - expected) <= tolerance,
-            f'Structure score {scores_dict["structure"]} not within ±{tolerance} of expected {expected}',
-        )
+        self.assertEqual(scores_dict['structure'], expected)
 
     def test_score_conversation_structure_3(self) -> None:
         structure_3_path = self.base_path / 'dummy_conversation_structure_3.json'
@@ -192,11 +184,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         expected = 3
-        tolerance = 1
-        self.assertTrue(
-            abs(scores_dict['structure'] - expected) <= tolerance,
-            f'Structure score {scores_dict["structure"]} not within ±{tolerance} of expected {expected}',
-        )
+        self.assertEqual(scores_dict['structure'], expected)
 
     def test_score_conversation_structure_4(self) -> None:
         structure_4_path = self.base_path / 'dummy_conversation_structure_4.json'
@@ -209,11 +197,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         expected = 4
-        tolerance = 1
-        self.assertTrue(
-            abs(scores_dict['structure'] - expected) <= tolerance,
-            f'Structure score {scores_dict["structure"]} not within ±{tolerance} of expected {expected}',
-        )
+        self.assertEqual(scores_dict['structure'], expected)
 
     def test_score_conversation_structure_5(self) -> None:
         structure_5_path = self.base_path / 'dummy_conversation_structure_5.json'
@@ -227,11 +211,7 @@ class TestScoringServiceIntegration(unittest.TestCase):
         self.assertIsInstance(result, ScoringRead)
         scores_dict = {s.metric.lower(): s.score for s in result.scoring.scores}
         expected = 5
-        tolerance = 1
-        self.assertTrue(
-            abs(scores_dict['structure'] - expected) <= tolerance,
-            f'Structure score {scores_dict["structure"]} not within ±{tolerance} of expected {expected}',
-        )
+        self.assertEqual(scores_dict['structure'], expected)
 
     def test_score_conversation_with_various_audios(self) -> None:
         """
