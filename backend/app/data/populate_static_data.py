@@ -5,15 +5,19 @@ from datetime import UTC, datetime
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 
-from app.data import create_mock_users, delete_mock_users, get_dummy_user_profiles
+from app.data import (
+    create_mock_users,
+    delete_mock_users,
+    get_dummy_app_configs,
+    get_dummy_user_profiles,
+)
 from app.database import engine
 from app.enums.language import LanguageCode
-from app.models import ConversationCategory, UserProfile
+from app.models import AppConfig, ConversationCategory, UserProfile
 
 base_dir = os.path.dirname(__file__)
 with open(os.path.join(base_dir, 'initial_prompts.json'), encoding='utf-8') as f:
     initial_prompt_data = json.load(f)
-
 
 STATIC_CATEGORIES = [
     ConversationCategory(
@@ -98,14 +102,21 @@ def populate_static_categories() -> None:
         session.commit()
 
 
-def populate_static_personas() -> None:
+def populate_app_config() -> None:
     """
-    Populate the database with static personas.
+    Populate the database with app configs.
     """
-    pass
+    print('Populating app configs...')
+    with DBSession(engine) as session:
+        app_configs = get_dummy_app_configs()
+        for config in app_configs:
+            existing = session.exec(select(AppConfig).where(AppConfig.key == config.key)).first()
+            if not existing:
+                session.add(config)
+        session.commit()
 
 
 if __name__ == '__main__':
-    populate_demo_users()
     populate_static_categories()
-    populate_static_personas()
+    populate_app_config()
+    populate_demo_users()
