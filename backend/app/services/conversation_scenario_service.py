@@ -41,6 +41,7 @@ class ConversationScenarioService:
         user_profile: UserProfile,
         background_tasks: BackgroundTasks,
         custom_scenario: bool = False,
+        advised_scenario: bool = False,
     ) -> ConversationScenarioConfirm:
         """
         Create a new conversation scenario and start the preparation process in the background.
@@ -76,6 +77,10 @@ class ConversationScenarioService:
         self.db.add(new_conversation_scenario)
         self.db.commit()
         self.db.refresh(new_conversation_scenario)
+
+        if advised_scenario:
+            user_profile.scenario_advice = {}
+            self.db.commit()
 
         # Initialize preparation
         prep = create_pending_preparation(new_conversation_scenario.id, self.db)

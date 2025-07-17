@@ -15,6 +15,7 @@ from app.models.session_feedback import SessionFeedback
 from app.models.user_profile import UserProfile
 from app.schemas import ConversationScenarioCreate
 from app.schemas.advisor_response import AdvisorResponse
+from app.schemas.user_profile import ScenarioAdvice
 
 mock_persona = """
                 **Name**: Positive Pam
@@ -64,7 +65,7 @@ mock_situational_facts = """
 
 def get_mock_advisor_response() -> AdvisorResponse:
     return AdvisorResponse(
-        custom_category_label='Performance Reviews',
+        category_id='giving_feedback',
         persona=mock_persona,
         persona_name='positive',
         situational_facts=mock_situational_facts,
@@ -170,23 +171,19 @@ class AdvisorService:
             raise HTTPException(status_code=404, detail='Session feedback not found.')
 
         logging.info(f'Generating advice for session feedback ID: {session_feedback.id}')
-        [scenario_advice, mascot_speech] = self._generate_advice(session_feedback=session_feedback)
+        scenario_advice = self._generate_advice(session_feedback=session_feedback)
         statement = select(UserProfile).where(UserProfile.id == user_profile_id)
         user_profile = db_session.exec(statement).one_or_none()
         if user_profile is None:
             logging.error(f'User profile with ID {user_profile_id} not found.')
             return
-        user_profile.scenario_advice = {
-            'scenario': scenario_advice.model_dump(),
-            'mascotSpeech': mascot_speech,
-        }
+
+        user_profile.scenario_advice = scenario_advice.model_dump()
         db_session.add(user_profile)
         db_session.commit()
         logging.info(f'Advice generated and stored for user profile ID: {user_profile.id}')
 
-    def _generate_advice(
-        self, session_feedback: SessionFeedback
-    ) -> tuple[ConversationScenarioCreate, str]:
+    def _generate_advice(self, session_feedback: SessionFeedback) -> ScenarioAdvice:
         language_code = LanguageCode.en
         try:
             previous_scenario = session_feedback.session.scenario
@@ -279,8 +276,7 @@ class AdvisorService:
         )
 
         new_conversation_scenario = ConversationScenarioCreate(
-            category_id=None,
-            custom_category_label=advisor_response.custom_category_label,
+            category_id=advisor_response.category_id,
             persona_name=advisor_response.persona_name,
             persona=advisor_response.persona,
             situational_facts=advisor_response.situational_facts,
@@ -288,7 +284,9 @@ class AdvisorService:
             language_code=language_code,
         )
 
-        return new_conversation_scenario, advisor_response.mascot_speech
+        return ScenarioAdvice(
+            mascot_speech=advisor_response.mascot_speech, scenario=new_conversation_scenario
+        )
 
 
 if __name__ == '__main__':
@@ -297,10 +295,10 @@ if __name__ == '__main__':
 
     advice_service = AdvisorService()
 
-    scenario, mascot_speech = advice_service.generate_advice(session_feedback=test_session_feedback)
-    print('Mascot speech:', mascot_speech)
-    print('scenario.category_id:', scenario.category_id)
-    print('scenario.custom_category_label:', scenario.custom_category_label)
-    print('scenario.persona:', scenario.persona)
-    print('scenario.difficulty_level:', scenario.difficulty_level)
-    print('scenario.language_code:', scenario.language_code)
+    scenario_advice = advice_service._generate_advice(session_feedback=test_session_feedback)
+    print('Mascot speech:', scenario_advice.mascot_speech)
+    print('scenario.category_id:', scenario_advice.scenario.category_id)
+    print('scenario.custom_category_label:', scenario_advice.scenario.custom_category_label)
+    print('scenario.persona:', scenario_advice.scenario.persona)
+    print('scenario.difficulty_level:', scenario_advice.scenario.difficulty_level)
+    print('scenario.language_code:', scenario_advice.scenario.language_code)
