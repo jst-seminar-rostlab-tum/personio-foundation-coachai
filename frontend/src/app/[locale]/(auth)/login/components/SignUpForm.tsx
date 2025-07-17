@@ -28,7 +28,7 @@ import Link from 'next/link';
 import { UserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiClient';
 import ConfirmationForm from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export function SignUpForm() {
   const tLogin = useTranslations('Login');
@@ -39,7 +39,6 @@ export function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
-  const router = useRouter();
   const step = searchParams.get('step');
 
   useEffect(() => {
@@ -287,10 +286,6 @@ export function SignUpForm() {
       {step === 'confirm' && (
         <ConfirmationForm
           initialEmail={searchParams.get('email') || signUpForm.getValues().email}
-          onClose={() => {
-            // Optionally, you can close the popup and reset the step param
-            router.push('/login');
-          }}
         />
       )}
 
