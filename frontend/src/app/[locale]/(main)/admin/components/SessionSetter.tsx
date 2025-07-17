@@ -39,25 +39,28 @@ export default function SessionSetter({ dailySessionLimit }: SessionSetterProps)
   };
 
   return (
-    <div className="w-full max-w-md mb-8 text-left">
-      <label className="block text-bw-70 font-semibold text-sm mb-1">
-        {t('sessionsPerUserLabel')}
-      </label>
-      <div className="flex gap-2 items-center">
-        <Input
-          type="number"
-          min={1}
-          value={sessionLimit}
-          onChange={(e) => setSessionLimit(Number(e.target.value))}
-          disabled={saving}
-        />
-        <Button
-          onClick={handleSaveSessionLimit}
-          disabled={saving || !hasSessionLimitChanged}
-          variant={saving || !hasSessionLimitChanged ? 'disabled' : 'default'}
-        >
-          {saving ? tCommon('saving') : tCommon('save')}
-        </Button>
+    <div className="w-full mb-16">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-4">
+        <label className="text-bw-70 font-normal text-sm whitespace-nowrap">
+          {t('sessionsPerUserLabel')}
+        </label>
+        <div className="flex gap-2 items-center w-full sm:w-auto">
+          <Input
+            type="number"
+            min={1}
+            value={sessionLimit}
+            onChange={(e) => setSessionLimit(Number(e.target.value))}
+            disabled={saving}
+            className="w-full sm:max-w-32 sm:w-auto"
+          />
+          <Button
+            onClick={handleSaveSessionLimit}
+            disabled={saving || !hasSessionLimitChanged}
+            variant={saving || !hasSessionLimitChanged ? 'disabled' : 'default'}
+          >
+            {saving ? tCommon('saving') : tCommon('save')}
+          </Button>
+        </div>
       </div>
     </div>
   );
