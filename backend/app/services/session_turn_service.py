@@ -379,7 +379,7 @@ class SessionTurnService:
                     '0',  # no VBR header on a pipe
                     '-f',
                     'mp3',
-                    'pipe:1',  # <-- single *pipe* output
+                    'pipe:1',
                 ]
             proc = subprocess.run(cmd, stdout=subprocess.PIPE, check=True)
             data = proc.stdout  # bytes
