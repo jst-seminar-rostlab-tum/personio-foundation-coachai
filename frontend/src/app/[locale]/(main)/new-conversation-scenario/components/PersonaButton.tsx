@@ -18,7 +18,7 @@ export function PersonaButton({ selected, onClick, className, image, label }: Pe
       className={`${personaButtonStyles}${selected ? ' outline-none bg-marigold-30' : ''}${className ? ` ${className}` : ''}`}
       onClick={onClick}
     >
-      <div className="relative w-20 h-20 rounded-full overflow-hidden bg-white mb-3 flex-shrink-0 mx-auto">
+      <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-white mb-3 flex-shrink-0 mx-auto">
         <Image src={image} alt={label} fill className="object-contain p-2 " />
       </div>
       <span className="text-md text-center">{label}</span>

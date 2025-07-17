@@ -2,7 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { Button } from '@/components/ui/Button';
+import { ArrowLeftIcon } from 'lucide-react';
 import { Categories } from '@/lib/constants/categories';
 import PersonaCollapsibleSection from '@/components/common/PersonaCollapsibleSection';
 import { api } from '@/services/ApiClient';
@@ -14,6 +17,7 @@ import EmptyListComponent from '@/components/common/EmptyListComponent';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
+import { CreateSessionButton } from './CreateSessionButton';
 
 export default function PreparationContent() {
   const t = useTranslations('Preparation');
@@ -93,13 +97,13 @@ export default function PreparationContent() {
         />
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
+        <section className="flex flex-col gap-6 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
             <h2 className="text-xl">{t('objectives')}</h2>
           </div>
           {preparationData && <ObjectivesList objectives={preparationData.objectives} />}
         </section>
-        <section className="flex flex-col gap-8 w-full border border-bw-20 rounded-lg p-8">
+        <section className="flex flex-col gap-6 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
             <h2 className="text-xl">{t('keyConcepts')}</h2>
           </div>
@@ -107,13 +111,13 @@ export default function PreparationContent() {
         </section>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
+        <section className="flex flex-col gap-6 w-full border border-bw-20 rounded-lg p-8">
           <div className="flex items-center gap-2">
             <h2 className="text-xl">{t('preparation')}</h2>
           </div>
           {preparationData && <PreparationChecklist checklist={preparationData.prepChecklist} />}
         </section>
-        <section className="flex flex-col gap-4 w-full border border-bw-20 rounded-lg p-8">
+        <section className="flex flex-col gap-6 w-full border border-bw-20 rounded-lg p-8">
           <div>
             <h2 className="text-xl">{tCommon('resources.title')}</h2>
             <p className="text-base text-bw-40">{tCommon('resources.subtitle')}</p>
@@ -121,9 +125,19 @@ export default function PreparationContent() {
           {preparationData?.documentNames && preparationData.documentNames.length > 0 ? (
             <ResourcesList resources={preparationData.documentNames} />
           ) : (
-            <EmptyListComponent itemType={tCommon('resources.title')} />
+            <EmptyListComponent itemType={tCommon('resources.title')} showBorder={false} />
           )}
         </section>
+      </div>
+      <div className="flex gap-4">
+        <Link href="/new-conversation-scenario" className="flex-1">
+          <Button size="full" variant="outline">
+            <ArrowLeftIcon />
+            {tCommon('back')}
+          </Button>
+        </Link>
+
+        <CreateSessionButton scenarioId={conversationScenarioId} />
       </div>
     </>
   );

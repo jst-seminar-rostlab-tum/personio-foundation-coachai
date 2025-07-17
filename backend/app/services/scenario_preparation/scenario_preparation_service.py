@@ -4,6 +4,7 @@ import concurrent.futures
 import json
 import os
 from collections.abc import Callable, Generator
+from contextlib import suppress
 from functools import lru_cache
 from uuid import UUID
 
@@ -229,9 +230,9 @@ def generate_scenario_preparation(
     """
 
     session_gen = session_generator_func()
-    db_session = next(session_gen)
 
     try:
+        db_session = next(session_gen)
         # 1. retrieve the preparation record
         preparation = db_session.get(ScenarioPreparation, preparation_id)
 
@@ -313,10 +314,8 @@ def generate_scenario_preparation(
         return preparation
 
     finally:
-        try:
-            session_gen.close()
-        except Exception as e:
-            print(f'[WARN] Failed to close session generator: {e}')
+        with suppress(StopIteration):
+            next(session_gen)
 
 
 if __name__ == '__main__':
