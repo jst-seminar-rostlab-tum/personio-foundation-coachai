@@ -103,6 +103,7 @@ def query_vector_db(
             voice_analysis = analyze_voice(user_audio_path)
 
         if all(x is None for x in [session_context, user_audio_path, user_transcript]):
+            print('Session context, audio and transcript are all empty in vector db query.')
             return '', []
 
         if isinstance(session_context, ConversationScenarioAIPromptRead):
@@ -113,6 +114,7 @@ def query_vector_db(
         if retriever:
             return format_docs_with_metadata(retriever.invoke(query))
         else:
+            print('Vector db retriever is not available.')
             return '', []
     except Exception as e:
         print(f'Failed to query vector db: {e}')
@@ -154,6 +156,7 @@ def query_vector_db_and_prompt(
             f'{vector_db_docs}\n'
         )
     else:
+        print('No documents fetched from vector db.')
         hr_docs_context = ''
 
     doc_names = [] if metadata is None else [meta.get('title', '') for meta in metadata]
