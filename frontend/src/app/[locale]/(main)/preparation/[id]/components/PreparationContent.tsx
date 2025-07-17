@@ -2,7 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { Button } from '@/components/ui/Button';
+import { ArrowLeftIcon } from 'lucide-react';
 import { Categories } from '@/lib/constants/categories';
 import PersonaCollapsibleSection from '@/components/common/PersonaCollapsibleSection';
 import { api } from '@/services/ApiClient';
@@ -14,6 +17,7 @@ import EmptyListComponent from '@/components/common/EmptyListComponent';
 import PreparationChecklist from './PreparationChecklist';
 import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
+import { CreateSessionButton } from './CreateSessionButton';
 
 export default function PreparationContent() {
   const t = useTranslations('Preparation');
@@ -124,6 +128,16 @@ export default function PreparationContent() {
             <EmptyListComponent itemType={tCommon('resources.title')} />
           )}
         </section>
+      </div>
+      <div className="flex gap-4">
+        <Link href="/new-conversation-scenario" className="flex-1">
+          <Button size="full" variant="outline">
+            <ArrowLeftIcon />
+            {tCommon('back')}
+          </Button>
+        </Link>
+
+        <CreateSessionButton scenarioId={conversationScenarioId} />
       </div>
     </>
   );
