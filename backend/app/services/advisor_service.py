@@ -1,5 +1,6 @@
 import logging
 from collections.abc import Callable, Generator
+from contextlib import suppress
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
@@ -161,27 +162,31 @@ class AdvisorService:
         session_generator_func: Callable[[], Generator[DBSession, None, None]],
     ) -> None:
         session_gen = session_generator_func()
-        db_session: DBSession = next(session_gen)
+        try:
+            db_session: DBSession = next(session_gen)
 
-        statement = select(SessionFeedback).where(SessionFeedback.id == session_feedback_id)
-        session_feedback = db_session.exec(statement).one_or_none()
+            statement = select(SessionFeedback).where(SessionFeedback.id == session_feedback_id)
+            session_feedback = db_session.exec(statement).one_or_none()
 
-        if session_feedback is None:
-            logging.error(f'Session feedback with ID {session_feedback_id} not found.')
-            raise HTTPException(status_code=404, detail='Session feedback not found.')
+            if session_feedback is None:
+                logging.error(f'Session feedback with ID {session_feedback_id} not found.')
+                raise HTTPException(status_code=404, detail='Session feedback not found.')
 
-        logging.info(f'Generating advice for session feedback ID: {session_feedback.id}')
-        scenario_advice = self._generate_advice(session_feedback=session_feedback)
-        statement = select(UserProfile).where(UserProfile.id == user_profile_id)
-        user_profile = db_session.exec(statement).one_or_none()
-        if user_profile is None:
-            logging.error(f'User profile with ID {user_profile_id} not found.')
-            return
+            logging.info(f'Generating advice for session feedback ID: {session_feedback.id}')
+            scenario_advice = self._generate_advice(session_feedback=session_feedback)
+            statement = select(UserProfile).where(UserProfile.id == user_profile_id)
+            user_profile = db_session.exec(statement).one_or_none()
+            if user_profile is None:
+                logging.error(f'User profile with ID {user_profile_id} not found.')
+                return
 
-        user_profile.scenario_advice = scenario_advice.model_dump()
-        db_session.add(user_profile)
-        db_session.commit()
-        logging.info(f'Advice generated and stored for user profile ID: {user_profile.id}')
+            user_profile.scenario_advice = scenario_advice.model_dump()
+            db_session.add(user_profile)
+            db_session.commit()
+            logging.info(f'Advice generated and stored for user profile ID: {user_profile.id}')
+        finally:
+            with suppress(StopIteration):
+                next(session_gen)
 
     def _generate_advice(self, session_feedback: SessionFeedback) -> ScenarioAdvice:
         language_code = LanguageCode.en
