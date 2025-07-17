@@ -104,7 +104,7 @@ export default function SessionLiveFeedback({ liveFeedbacks }: SessionLiveFeedba
               ))}
             </ul>
             <div className="mt-4 text-center">
-              <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
+              <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer2')}</p>
             </div>
           </div>
         </div>
