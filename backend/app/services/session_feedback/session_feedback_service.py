@@ -1,6 +1,7 @@
 import concurrent.futures
 import logging
 from collections.abc import Callable, Generator
+from contextlib import suppress
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
@@ -318,64 +319,68 @@ def generate_and_store_feedback(
     """
 
     session_gen = session_generator_func()
-    db_session: DBSession = next(session_gen)
 
-    if scoring_service is None:
-        scoring_service = get_scoring_service()
+    try:
+        db_session: DBSession = next(session_gen)
+        if scoring_service is None:
+            scoring_service = get_scoring_service()
 
-    if session_turn_service is None:
-        session_turn_service = SessionTurnService(db_session)
+        if session_turn_service is None:
+            session_turn_service = SessionTurnService(db_session)
 
-    if advisor_service is None:
-        advisor_service = AdvisorService()
+        if advisor_service is None:
+            advisor_service = AdvisorService()
 
-    goals_request, recommendations_request = prepare_feedback_requests(feedback_request)
-    hr_docs_context, document_names = get_hr_docs_context(recommendations_request)
+        goals_request, recommendations_request = prepare_feedback_requests(feedback_request)
+        hr_docs_context, document_names = get_hr_docs_context(recommendations_request)
 
-    conversation = get_conversation_data(db_session, session_id)
+        conversation = get_conversation_data(db_session, session_id)
 
-    if feedback_request.transcript is None:
-        feedback_generation_result = FeedbackGenerationResult()
-    else:
-        feedback_generation_result = generate_feedback_components(
-            feedback_request=feedback_request,
-            goals_request=goals_request,
-            hr_docs_context=hr_docs_context,
-            document_names=document_names,
-            conversation=conversation,
-            scoring_service=scoring_service,
-            session_turn_service=session_turn_service,
-            session_id=session_id,
+        if feedback_request.transcript is None:
+            feedback_generation_result = FeedbackGenerationResult()
+        else:
+            feedback_generation_result = generate_feedback_components(
+                feedback_request=feedback_request,
+                goals_request=goals_request,
+                hr_docs_context=hr_docs_context,
+                document_names=document_names,
+                conversation=conversation,
+                scoring_service=scoring_service,
+                session_turn_service=session_turn_service,
+                session_id=session_id,
+            )
+
+        status: FeedbackStatus = update_statistics(
+            db_session,
+            conversation,
+            feedback_generation_result.goals,
+            feedback_generation_result.overall_score,
+            feedback_generation_result.has_error,
         )
 
-    status: FeedbackStatus = update_statistics(
-        db_session,
-        conversation,
-        feedback_generation_result.goals,
-        feedback_generation_result.overall_score,
-        feedback_generation_result.has_error,
-    )
+        feedback: SessionFeedback = save_session_feedback(
+            db_session,
+            session_id,
+            feedback_generation_result,
+            status,
+        )
 
-    feedback: SessionFeedback = save_session_feedback(
-        db_session,
-        session_id,
-        feedback_generation_result,
-        status,
-    )
+        logging.info('Feedback generated and stored successfully.')
 
-    logging.info('Feedback generated and stored successfully.')
+        background_tasks.add_task(
+            advisor_service.generate_and_store_advice,
+            session_feedback_id=feedback.id,
+            user_profile_id=user_profile_id,
+            session_generator_func=get_db_session,
+        )
 
-    background_tasks.add_task(
-        advisor_service.generate_and_store_advice,
-        session_feedback_id=feedback.id,
-        user_profile_id=user_profile_id,
-        session_generator_func=get_db_session,
-    )
+        # If user doesn't want to store the conversation data (audio + transcript) delete it
+        check_data_retention(db_session, session_id, conversation.scenario)
 
-    # If user doesn't want to store the conversation data (audio + transcript) delete it
-    check_data_retention(db_session, session_id, conversation.scenario)
-
-    return feedback
+        return feedback
+    finally:
+        with suppress(StopIteration):
+            next(session_gen)
 
 
 def check_data_retention(
