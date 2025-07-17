@@ -14,6 +14,7 @@ from sqlmodel import col, select
 
 from app.config import Settings
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.database import get_db_session
 from app.enums.speaker import SpeakerType
 from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn
@@ -149,10 +150,10 @@ class SessionTurnService:
             # Generate live feedback item in the background
             background_tasks.add_task(
                 generate_and_store_live_feedback,
-                db_session=self.db,
                 session_id=turn.session_id,
                 session_turn_context=new_turn,
                 hr_docs_context=hr_docs_context,
+                session_generator_func=get_db_session,
             )
 
         return SessionTurnRead(

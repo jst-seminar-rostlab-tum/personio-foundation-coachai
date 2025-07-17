@@ -20,7 +20,7 @@
       "start_offset_ms": 0,
       "end_offset_ms": 2000,
       "full_audio_start_offset_ms": 0,
-      "text": "Hi Sam, thanks for meeting. I want to discuss your communication on the Phoenix project. I'll share my thoughts and then we can talk about solutions.",
+      "text": "Hi Sam, thanks for meeting. I want to discuss your communication on the Phoenix project. Before that, did you see the slides from last week's meeting? Anyway, I'll share my thoughts and then we can talk about solutions.",
       "audio_uri": "",
       "ai_emotion": "neutral",
       "created_at": "2024-06-28T10:00:01Z"
@@ -68,7 +68,7 @@
       "start_offset_ms": 8000,
       "end_offset_ms": 10000,
       "full_audio_start_offset_ms": 8000,
-      "text": "To help you stay in the loop, would a different reminder system help, or is there something I can do to support you? Thank you for taking responsibility.",
+      "text": "To help you stay in the loop, would a different reminder system help, or is there something I can do to support you? Oh, and about the slides, let me know if you need them. Thank you for taking responsibility.",
       "audio_uri": "",
       "ai_emotion": "neutral",
       "created_at": "2024-06-28T10:00:09Z"

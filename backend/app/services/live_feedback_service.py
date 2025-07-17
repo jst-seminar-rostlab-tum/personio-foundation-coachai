@@ -1,5 +1,8 @@
 import concurrent.futures
 import json
+import logging
+from collections.abc import Callable, Generator
+from contextlib import suppress
 from typing import Optional
 from uuid import UUID
 
@@ -124,48 +127,61 @@ def generate_live_feedback_item(
 
 
 def generate_and_store_live_feedback(
-    db_session: DBSession,
+    session_generator_func: Callable[[], Generator[DBSession, None, None]],
     session_id: UUID,
     session_turn_context: SessionTurn,
     hr_docs_context: str = '',
 ) -> LiveFeedbackLlmOutput | None:
-    feedback_items = fetch_live_feedback_for_session(db_session, session_id, None)
-    formatted_lines = format_feedback_lines(feedback_items)
-    previous_feedback = '\n'.join(formatted_lines)
+    session_gen = session_generator_func()
 
-    if not any(
-        [
-            session_turn_context.audio_uri,
-            session_turn_context.text,
-            hr_docs_context,
-            previous_feedback,
-        ]
-    ):
-        return None
-    else:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_live_feedback = executor.submit(
-                safe_generate_live_feedback_item,
-                session_turn_context,
-                previous_feedback,
-                hr_docs_context,
-            )
+    try:
+        db_session: DBSession = next(session_gen)
 
-            try:
-                live_feedback_item = future_live_feedback.result()
-            except Exception as e:
-                print('[ERROR] Failed to generate live feedback:', e)
-                return None
-
-        live_feedback_item_db = LiveFeedback(
-            session_id=session_id,
-            heading=live_feedback_item.heading,
-            feedback_text=live_feedback_item.feedback_text,
-        )
-        db_session.add(live_feedback_item_db)
+        feedback_items = fetch_live_feedback_for_session(db_session, session_id, None)
         db_session.commit()
-        db_session.refresh(live_feedback_item_db)
-        return live_feedback_item_db
+        formatted_lines = format_feedback_lines(feedback_items)
+        previous_feedback = '\n'.join(formatted_lines)
+
+        if not any(
+            [
+                session_turn_context.audio_uri,
+                session_turn_context.text,
+                hr_docs_context,
+                previous_feedback,
+            ]
+        ):
+            return None
+        else:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future_live_feedback = executor.submit(
+                    safe_generate_live_feedback_item,
+                    session_turn_context,
+                    previous_feedback,
+                    hr_docs_context,
+                )
+
+                try:
+                    live_feedback_item = future_live_feedback.result()
+                except Exception as e:
+                    print('[ERROR] Failed to generate live feedback:', e)
+                    return None
+            try:
+                live_feedback_item_db = LiveFeedback(
+                    session_id=session_id,
+                    heading=live_feedback_item.heading,
+                    feedback_text=live_feedback_item.feedback_text,
+                )
+                db_session.add(live_feedback_item_db)
+                db_session.commit()
+                db_session.refresh(live_feedback_item_db)
+                return live_feedback_item_db
+            except Exception as e:
+                logging.info('[ERROR] Failed to store live feedback:', e)
+                db_session.rollback()
+                return None
+    finally:
+        with suppress(StopIteration):
+            next(session_gen)
 
 
 if __name__ == '__main__':

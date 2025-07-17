@@ -80,7 +80,7 @@ def get_hr_docs_context(
             recommendations_request.persona,
             recommendations_request.situational_facts,
             recommendations_request.transcript or '',
-            recommendations_request.objectives,  # type: ignore
+            ''.join(recommendations_request.objectives),
             recommendations_request.key_concepts,
         ],
         generated_object='output',

@@ -5,6 +5,7 @@ from sqlmodel import SQLModel, text
 
 from app.data import (
     get_dummy_admin_stats,
+    get_dummy_app_configs,
     get_dummy_conversation_categories,
     get_dummy_conversation_scenarios,
     get_dummy_live_feedback_data,
@@ -82,6 +83,10 @@ def populate_data() -> None:
         # Populate Admin Dashboard Stats
         admin_stats = get_dummy_admin_stats()
         db_session.add_all(admin_stats)
+
+        # Add app configs
+        app_configs = get_dummy_app_configs()
+        db_session.add_all(app_configs)
 
         # Populate Reviews
         reviews = get_dummy_reviews(user_profiles, sessions)
