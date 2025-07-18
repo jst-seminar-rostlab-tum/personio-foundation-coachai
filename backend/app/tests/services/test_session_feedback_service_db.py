@@ -61,6 +61,18 @@ class MockScoringRead:
         self.scoring = self.Scoring(with_data)
 
 
+class FakeGCS:
+    def __init__(self) -> None:
+        pass
+
+    def generate_signed_url(self, filename: str) -> str:
+        return f'https://example.com/{filename}'
+
+    def document_exists(self, filename: str) -> bool:
+        # Simulate that the document exists for testing purposes
+        return True
+
+
 class TestSessionFeedbackService(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -78,9 +90,14 @@ class TestSessionFeedbackService(unittest.TestCase):
             phone_number='1234567890',
             total_sessions=1,
         )
+        self.gcs_audio_global_patcher = patch(
+            'app.connections.gcs_client._gcs_audio_manager', new=FakeGCS()
+        )
+        self.gcs_audio_global_patcher.start()
 
     def tearDown(self) -> None:
         self.session.rollback()
+        self.gcs_audio_global_patcher.stop()
 
     def insert_minimal_conversation(self) -> dict:
         scenario_id = uuid4()
