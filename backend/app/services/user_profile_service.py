@@ -189,12 +189,6 @@ class UserService:
             current_streak_days=user.current_streak_days,
             score_sum=user.score_sum,
             goals_achieved=user.goals_achieved,
-            # TODO: Uncomment and implement these fields when ready
-            # performance_over_time=user.performance_over_time,
-            # skills_performance=user.skills_performance
-            # Mockked data for now
-            performance_over_time=[72, 65, 70, 68, 74, 71, 78, 80, 69, 82],
-            skills_performance={'structure': 85, 'empathy': 70, 'focus': 75, 'clarity': 75},
             daily_session_limit=daily_session_limit,
             num_remaining_daily_sessions=num_remaining_daily_sessions,
         )
