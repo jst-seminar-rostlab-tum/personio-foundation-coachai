@@ -20,5 +20,18 @@
   "saveSettingsSuccess": "Your settings have been saved successfully.",
   "saveSettingsError": "There was an error saving your settings. Please try again later.",
   "exportSuccess": "Your data has been exported successfully.",
-  "exportError": "There was an error exporting your data. Please try again later."
+  "exportError": "There was an error exporting your data. Please try again later.",
+  "updateEmail": "Update Email",
+  "updateEmailError": "There was an error updating the email",
+  "emailExistsError": "An account with this email already exists. Please use a different email address.",
+  "updateEmailSuccess": "Confirmation link sent to your new email address. Please check your inbox to verify the change.",
+  "overEmailSendRateLimitError": "You have reached the email update limit. Please try again later.",
+  "accountSettings": "Account Settings",
+  "updatePassword": "Update Password",
+  "updatePasswordError": "There was an error updating the password.",
+  "updatePasswordSuccess": "Password updated successfully.",
+  "updateEmailTitle": "Update Email",
+  "updateEmailDescription": "Please enter your new email address below. A confirmation link will be sent to your new email address to verify the change.",
+  "updateEmailButtonLabel": "Update Email",
+  "emailUpdatedSuccess": "Email updated successfully"
 }
