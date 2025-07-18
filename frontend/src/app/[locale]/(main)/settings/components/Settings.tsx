@@ -188,6 +188,19 @@ export default function Settings({ userProfile }: SettingsProps) {
                     <ExportUserHandler />
                   </div>
                 </div>
+                <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{t('updateEmail')}</div>
+                  </div>
+                  <div className="flex items-center">
+                    <UpdateEmailHandler>
+                      <Button variant="outline" className="w-full">
+                        <Mail className="w-4 h-4" />
+                        <span className="hidden sm:inline">{t('updateEmail')}</span>
+                      </Button>
+                    </UpdateEmailHandler>
+                  </div>
+                </div>
                 {/* Delete Account */}
                 <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
                   <div className="flex flex-col">
@@ -215,26 +228,6 @@ export default function Settings({ userProfile }: SettingsProps) {
                   className="flex flex-col gap-8 px-2"
                   {...confidenceFieldsProps}
                 />
-              </AccordionContent>
-            </AccordionItem>
-            {/* Account Settings */}
-            <AccordionItem value="item-3">
-              <AccordionTrigger>{t('accountSettings')}</AccordionTrigger>
-              <AccordionContent>
-                {/* Update email */}
-                <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
-                  <div className="flex flex-col">
-                    <div className="text-bw-70">{t('updateEmail')}</div>
-                  </div>
-                  <div className="flex items-center">
-                    <UpdateEmailHandler>
-                      <Button variant="outline" className="w-full">
-                        <Mail className="w-4 h-4" />
-                        <span className="hidden sm:inline">{t('updateEmail')}</span>
-                      </Button>
-                    </UpdateEmailHandler>
-                  </div>
-                </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
