@@ -172,7 +172,7 @@ def _update_login_streak(db: DBSession, user_profile: UserProfile, timezone: str
         if days_difference == 1:
             user_profile.current_streak_days += 1
         elif days_difference > 1:
-            user_profile.current_streak_days = 0
+            user_profile.current_streak_days = 1
 
         if days_difference != 0:
             user_profile.last_logged_in = datetime.now(UTC)  # Store in UTC for consistency
