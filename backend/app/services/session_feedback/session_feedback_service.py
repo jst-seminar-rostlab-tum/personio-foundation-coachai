@@ -179,6 +179,7 @@ def generate_feedback_components(
             scores_json = {}
             overall_score = 0.0
 
+        audio_signed_url = None
         try:
             stitch_result = future_audio_stitch.result()
             if stitch_result and stitch_result.output_filename:
@@ -187,6 +188,7 @@ def generate_feedback_components(
                     try:
                         audio_signed_url = gcs.generate_signed_url(stitch_result.output_filename)
                     except Exception as e:
+                        has_error = True
                         logging.warning(f'Failed to generate signed url for audio: {e}')
         except Exception as e:
             has_error = True
