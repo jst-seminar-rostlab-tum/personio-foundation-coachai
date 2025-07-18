@@ -84,6 +84,10 @@ def populate_data() -> None:
         admin_stats = get_dummy_admin_stats()
         db_session.add_all(admin_stats)
 
+        # Add app configs
+        app_configs = get_dummy_app_configs()
+        db_session.add_all(app_configs)
+
         # Populate Reviews
         reviews = get_dummy_reviews(user_profiles, sessions)
         db_session.add_all(reviews)
@@ -94,9 +98,6 @@ def populate_data() -> None:
         # Populate User Confidence Scores
         user_confidence_scores = get_dummy_user_confidence_scores(user_profiles)
         db_session.add_all(user_confidence_scores)
-
-        app_configs = get_dummy_app_configs()
-        db_session.add_all(app_configs)
 
         # Populate live feedback
         live_feedback = get_dummy_live_feedback_data(session_turns)

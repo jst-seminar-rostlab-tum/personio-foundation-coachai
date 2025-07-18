@@ -5,16 +5,13 @@ import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { adminService } from '@/services/AdminService';
 import { reviewService } from '@/services/ReviewService';
 import { UserProfileService } from '@/services/UserProfileService';
-import { AccountRole } from '@/interfaces/models/UserProfile';
-import { redirect } from 'next/navigation';
-import StatCard from '@/components/common/StatCard';
 import { getTranslations } from 'next-intl/server';
 import { api } from '@/services/ApiServer';
-import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import AdminLoadingPage from './loading';
 import SessionSetter from './components/SessionSetter';
 import Reviews from './components/Reviews';
 import UsersList from './components/UsersList';
+import AdminStatCards from './components/AdminStatCards';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -22,11 +19,6 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function AdminPage() {
-  const userProfile = await UserProfileService.getUserProfile(api);
-  if (userProfile.accountRole !== AccountRole.admin) {
-    return redirect('/dashboard');
-  }
-
   const PAGE_SIZE = 4;
   const statsData = adminService.getAdminStats(api);
   const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
@@ -35,27 +27,16 @@ export default async function AdminPage() {
   const t = await getTranslations('Admin');
   const tCommon = await getTranslations('Common');
 
-  const averageScore = calculateAverageScore(stats.scoreSum, stats.totalTrainings);
-
-  const statsArray = [
-    { value: stats.totalUsers, label: t('statActiveUsers') },
-    { value: stats.totalTrainings, label: tCommon('totalSessions') },
-    { value: stats.totalReviews, label: tCommon('reviews') },
-    { value: `${averageScore}/5`, label: tCommon('avgScore') },
-  ];
-
   return (
     <Suspense fallback={<AdminLoadingPage />}>
       <div className="max-w-full">
         <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
         <div className="text-sm text-bw-40 text-center mb-8">{t('dashboardSubtitle')}</div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {statsArray.map((stat, i) => (
-            <StatCard key={i} value={stat.value} label={stat.label} />
-          ))}
-        </div>
-        <SessionSetter dailySessionLimit={stats.dailySessionLimit} />
+        <AdminStatCards />
+        <div className="text-xl mt-16 font-medium text-bw-70">{tCommon('reviews')}</div>
         <Reviews {...reviews} />
+        <div className="text-xl mb-6 mt-12 font-medium text-bw-70">{t('users')}</div>
+        <SessionSetter dailySessionLimit={stats.dailySessionLimit} />
         <UsersList {...users} />
       </div>
     </Suspense>

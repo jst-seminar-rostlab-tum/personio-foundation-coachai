@@ -182,9 +182,7 @@ export default function Settings({ userProfile }: SettingsProps) {
                     onDeleteSuccess={() => {
                       router.push('/');
                     }}
-                  >
-                    <Button variant="destructive">{tCommon('deleteAccount')}</Button>
-                  </DeleteUserHandler>
+                  />
                 </div>
               </AccordionContent>
             </AccordionItem>

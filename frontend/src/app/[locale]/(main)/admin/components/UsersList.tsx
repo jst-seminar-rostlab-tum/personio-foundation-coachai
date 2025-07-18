@@ -1,7 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Search, ChevronDown, Trash2 } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/Table';
+
+import { Search, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -11,6 +20,8 @@ import { api } from '@/services/ApiClient';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import type { UserProfile as User, UserPaginationResponse } from '@/interfaces/models/UserProfile';
 import { showErrorToast } from '@/lib/utils/toast';
+import { adminService } from '@/services/AdminService';
+import { useAdminStatsStore } from '@/store/AdminStatsStore';
 
 export default function UsersList({
   users,
@@ -24,6 +35,7 @@ export default function UsersList({
   const [search, setSearch] = useState('');
   const [totalUsers, setTotalUsers] = useState(initialTotalUsers);
   const [hasMore, setHasMore] = useState(users.length < initialTotalUsers);
+  const { setStats } = useAdminStatsStore();
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
 
@@ -59,15 +71,25 @@ export default function UsersList({
     fetchUsers(nextPage, search);
   };
 
+  const onDeleteSuccess = async () => {
+    try {
+      setCurrentPage(1);
+      fetchUsers(1, search);
+      const data = await adminService.getAdminStats(api);
+      setStats(data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
   useEffect(() => {
     setHasMore((currentPage - 1) * limit + userList.length < totalUsers);
   }, [userList, totalUsers, currentPage, limit]);
 
   return (
     <>
-      <div className=" mt-4 mb-4">
-        <div className="text-lg mb-4 font-semibold text-bw-70">{t('users')}</div>
-        <div className="relative">
+      <div className="mt-4 mb-4 flex flex-row gap-4 items-end">
+        <div className="relative w-full sm:max-w-sm">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-bw-40">
             <Search className="w-4 h-4" />
           </span>
@@ -78,55 +100,33 @@ export default function UsersList({
             onChange={handleSearch}
             className="w-full pl-10 pr-3 py-2 border border-bw-20 rounded text-sm text-bw-70 placeholder-bw-40 focus:border-bw-20 focus-visible:outline-none focus-visible:ring-0"
           />
-          {loading && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="h-5 w-16 bg-bw-10 rounded animate-pulse" />
-            </div>
-          )}
         </div>
       </div>
       {userList.length === 0 && !loading ? (
         <EmptyListComponent itemType={t('users')} />
       ) : (
         <>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm table-fixed">
-              <colgroup>
-                <col style={{ width: '70%' }} />
-                <col style={{ width: '30%' }} />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('email')}</th>
-                  <th className="text-left font-semibold text-bw-70 py-2 px-2">{t('actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
+          <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 w-full">
+            <Table className="min-w-[320px] text-sm table-fixed">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-left font-semibold text-bw-70 px-6 py-4 w-[280px]">
+                    {t('email')}
+                  </TableHead>
+                  <TableHead className="text-right font-semibold text-bw-70 pl-0 pr-6 py-4"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {userList.map((user) => (
-                  <tr key={user.email} className="border-t border-bw-10">
-                    <td className="py-2 px-2 truncate">{user.email}</td>
-                    <td className="py-2 px-2">
-                      <DeleteUserHandler
-                        id={user.userId}
-                        onDeleteSuccess={() => {
-                          setCurrentPage(1);
-                          fetchUsers(1, search);
-                        }}
-                      >
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={t('deleteUser')}
-                          className="group"
-                        >
-                          <Trash2 className="w-4 h-4 text-bw-40 group-hover:text-flame-50" />
-                        </Button>
-                      </DeleteUserHandler>
-                    </td>
-                  </tr>
+                  <TableRow key={user.email} className="border-t border-bw-10">
+                    <TableCell className="px-6 py-4 text-bw-70 w-[280px]">{user.email}</TableCell>
+                    <TableCell className="pl-0 pr-6 py-4 text-right">
+                      <DeleteUserHandler id={user.userId} onDeleteSuccess={onDeleteSuccess} />
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
           {hasMore && (
             <div className="flex justify-center mt-4">

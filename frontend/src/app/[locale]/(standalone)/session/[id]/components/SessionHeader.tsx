@@ -41,7 +41,7 @@ function getConnectionStatusColor(status: ConnectionStatus) {
   }
 }
 
-export default function SimulationHeader({
+export default function SessionHeader({
   characterName,
   sessionLabel,
   time = 0,
@@ -49,7 +49,8 @@ export default function SimulationHeader({
 }: SessionHeaderProps) {
   const t = useTranslations('Session');
   const tConversationScenario = useTranslations('ConversationScenario');
-  const categories = Categories();
+  const tCategories = useTranslations('ConversationScenario.categories');
+  const categories = Categories(tCategories);
 
   return (
     <div className="relative border-b border-bw-10 w-full">

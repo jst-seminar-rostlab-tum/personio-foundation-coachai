@@ -1,5 +1,7 @@
 import unittest
+from collections.abc import Generator
 from datetime import datetime
+from typing import Any
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
@@ -50,7 +52,7 @@ class MockScoringRead:
                     MockScore('focus', 3),
                     MockScore('clarity', 4),
                 ]
-                self.overall_score = 4.0
+                self.overall_score = 16.0
             else:
                 self.scores = []
                 self.overall_score = 0
@@ -68,6 +70,14 @@ class TestSessionFeedbackService(unittest.TestCase):
 
     def setUp(self) -> None:
         self.session = self.SessionLocal
+        self.mock_advisor_service = MagicMock()
+        self.mock_background_tasks = MagicMock()
+        self.mock_user_profile = UserProfile(
+            full_name='Mock User',
+            email='mock@example.com',
+            phone_number='1234567890',
+            total_sessions=1,
+        )
 
     def tearDown(self) -> None:
         self.session.rollback()
@@ -87,6 +97,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 email='a@b.com',
                 phone_number='123',
                 preferred_language_code=LanguageCode.en,
+                total_sessions=1,
             )
         )
         scenario = ConversationScenario(
@@ -201,13 +212,20 @@ class TestSessionFeedbackService(unittest.TestCase):
             category='Feedback',
             key_concepts='KC1',
         )
+        # mock_session_generator_func = MagicMock()
+
+        def mock_session_generator_func() -> Generator[Any, None, None]:
+            yield self.session
 
         feedback = generate_and_store_feedback(
             session_id=session_id,
             feedback_request=example_request,
-            db_session=self.session,
+            background_tasks=self.mock_background_tasks,
+            user_profile_id=uuid4(),
             scoring_service=mock_scoring_service,
             session_turn_service=mock_session_turn_service,
+            advisor_service=self.mock_advisor_service,
+            session_generator_func=mock_session_generator_func,
         )
 
         self.assertEqual(feedback.session_id, session_id)
@@ -288,12 +306,18 @@ class TestSessionFeedbackService(unittest.TestCase):
             key_concepts='KeyConcept',
         )
 
+        def mock_session_generator_func() -> Generator[Any, None, None]:
+            yield self.session
+
         feedback = generate_and_store_feedback(
             session_id=session_id,
             feedback_request=example_request,
-            db_session=self.session,
+            background_tasks=self.mock_background_tasks,
+            user_profile_id=uuid4(),
             scoring_service=mock_scoring_service,
             session_turn_service=mock_session_turn_service,
+            advisor_service=self.mock_advisor_service,
+            session_generator_func=mock_session_generator_func,
         )
 
         self.assertEqual(feedback.status, FeedbackStatus.failed)
@@ -349,29 +373,37 @@ class TestSessionFeedbackService(unittest.TestCase):
             category='Feedback',
             key_concepts='KC1',
         )
+
+        def mock_session_generator_func() -> Generator[Any, None, None]:
+            yield self.session
+
         feedback = generate_and_store_feedback(
             session_id=session_id,
             feedback_request=example_request,
-            db_session=self.session,
+            background_tasks=self.mock_background_tasks,
+            user_profile_id=uuid4(),
             scoring_service=mock_scoring_service,
             session_turn_service=mock_session_turn_service,
+            advisor_service=self.mock_advisor_service,
+            session_generator_func=mock_session_generator_func,
         )
         # Check feedback score structure
         self.assertDictEqual(
             feedback.scores, {'structure': 4, 'empathy': 5, 'focus': 3, 'clarity': 4}
         )
-        self.assertEqual(feedback.overall_score, 4.0)
+        self.assertEqual(feedback.overall_score, 16.0)
         # Check user_profile statistics
         user = self.session.get(UserProfile, user_id)
-        self.assertEqual(user.score_sum, 4.0)
-        self.assertEqual(user.total_sessions, 1)
+        self.assertIsNotNone(user)
+        self.assertEqual(user.score_sum, 16.0)
         # Check admin_dashboard_stats statistics
         stats = self.session.exec(select(AdminDashboardStats)).first()
-        self.assertEqual(stats.score_sum, 4.0)
+        self.assertIsNotNone(stats)
+        self.assertEqual(stats.score_sum, 16.0)
         self.assertEqual(stats.total_trainings, 1)
         # Check average score
-        self.assertAlmostEqual(user.score_sum / user.total_sessions, 4.0)
-        self.assertAlmostEqual(stats.score_sum / stats.total_trainings, 4.0)
+        self.assertAlmostEqual(user.score_sum / user.total_sessions, 16.0)
+        self.assertAlmostEqual(stats.score_sum / stats.total_trainings, 16.0)
 
 
 if __name__ == '__main__':

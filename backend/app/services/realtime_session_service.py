@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 import httpx
@@ -133,7 +134,6 @@ class RealtimeSessionService:
                     status_code=404, detail='No conversation category found for this scenario'
                 )
 
-        conversation_category_name = None
         if conversation_category:
             conversation_category_name = conversation_category.id
         else:
@@ -145,29 +145,46 @@ class RealtimeSessionService:
             f'Therefore adopt the following persona:\n {conversation_scenario.persona}\n\n'
             f'Stay in that character, respond naturally, and encourage realistic dialogue.'
             f'To have a better understanding of the background of the conversation about'
-            f"'{conversation_category_name}' here are some more background informations:"
-            f'{conversation_scenario.situational_facts}\n'
+            f"'{conversation_category_name}' here are some more background informations:\n"
+            f'{conversation_scenario.situational_facts}\n\n'
         )
 
         persona_difficulty_modifier = self.get_persona_difficulty_modifier(
             conversation_scenario.persona_name, conversation_scenario.difficulty_level
         )
         if persona_difficulty_modifier:
-            print(f'Using difficulty modifier for {conversation_scenario.persona_name}:')
+            logging.info(
+                f'Using difficulty modifier for {conversation_scenario.persona_name}:'
+                f' {persona_difficulty_modifier}'
+            )
             instructions += (
-                f'\n\nThe following difficulty modifiers apply:\n'
-                f'{json.dumps(persona_difficulty_modifier, indent=2)}\n'
+                f'The following difficulty modifiers apply:\n'
+                f'{json.dumps(persona_difficulty_modifier, indent=2)}\n\n'
+            )
+        else:
+            logging.warning(
+                'No persona difficulty modifier found for'
+                f' persona {conversation_scenario.persona_name}'
+                f' and difficulty {conversation_scenario.difficulty_level}'
             )
 
         if conversation_category and conversation_category.initial_prompt:
+            logging.info(
+                f'Using conversation category, {conversation_category_name},'
+                f' with initial prompt: {conversation_category.initial_prompt}'
+            )
             instructions += (
                 f'Additional instructions before starting:\n'
-                f'{conversation_category.initial_prompt}\n'
+                f'{conversation_category.initial_prompt}\n\n'
             )
+        else:
+            logging.warning('No initial prompt for category available')
 
         ai_voice = self._get_voice(conversation_scenario.persona_name)
+        logging.info(f'Using AI voice: {ai_voice}')
         language = conversation_scenario.language_code.value
 
+        logging.info(f'Final prompt:\n{instructions}')
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 'https://api.openai.com/v1/realtime/sessions',
