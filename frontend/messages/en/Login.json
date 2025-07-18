@@ -11,14 +11,20 @@
     "gdprAdherenceText": "We strictly adhere to GDPR by collecting only essential data, storing nothing unnecessary, and deleting data as soon as possible. ",
     "readMoreOnGdprLink": "read more",
     "agreeToTermsCheckboxLabel": "I agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>",
-    "signUpWithGoogleButtonLabel": "Or Sign Up With Google"
+    "signUpButtonLabel": "Sign Up",
+    "signUpWithGoogleButtonLabel": "Or Sign Up With Google",
+    "genericError": "An error occurred during sign up",
+    "phoneAlreadyExistsError": "Phone number is already registered.",
+    "emailAlreadyExistsError": "Email is already registered."
   },
   "VerificationPopup": {
     "title": "Verify Your Phone Number",
     "descriptionPartOne": "We've sent a verification code to ",
     "descriptionPartTwo": ". Please enter it below.",
     "codeInputPlaceholder": "Enter 6-digit code",
-    "resendButtonLabel": "Resend code"
+    "resendButtonLabel": "Resend code",
+    "error": "Error verifying account",
+    "errorResend": "Error resending code"
   },
   "PasswordInput": {
     "showPasswordSpan": "Show Password",
@@ -30,6 +36,7 @@
   "phoneNumberInputLabel": "Phone Number",
   "phoneNumberInputPlaceholder": "Enter your phone number",
   "phoneNumberInputError": "Please enter a valid phone number",
+  "phoneNumberInputHelper": "Include country code (e.g., +49 for Germany)",
   "passwordInputLabel": "Password",
   "passwordInputPlaceholder": "Enter your password",
   "passwordInputError": "Please enter a valid password",

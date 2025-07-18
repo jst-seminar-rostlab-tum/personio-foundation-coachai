@@ -1,4 +1,4 @@
-from typing import Any, TypeVar
+from typing import Any, Optional, TypeVar
 
 from google import genai
 from google.genai.types import GenerateContentConfig, Part
@@ -14,6 +14,7 @@ DEFAULT_MODEL = settings.DEFAULT_MODEL
 FORCE_CHEAP_MODEL = settings.FORCE_CHEAP_MODEL
 VERTEXAI_PROJECT_ID = settings.VERTEXAI_PROJECT_ID
 VERTEXAI_LOCATION = settings.VERTEXAI_LOCATION
+VERTEXAI_MAX_TOKENS = settings.VERTEXAI_MAX_TOKENS
 
 required = [
     settings.GCP_PRIVATE_KEY_ID,
@@ -64,7 +65,7 @@ else:
     )
 
 
-def generate_content_vertexai(contents: [Any], model: str = DEFAULT_CHEAP_MODEL) -> str:
+def generate_content_vertexai(contents: list[Any], model: str = DEFAULT_CHEAP_MODEL) -> str:
     if not ENABLE_AI or vertexai_client is None:
         print('Cannot upload files to Gemini on VertexAI, AI is disabled')
         return ''
@@ -73,19 +74,22 @@ def generate_content_vertexai(contents: [Any], model: str = DEFAULT_CHEAP_MODEL)
         return ''
     try:
         response = vertexai_client.models.generate_content(model=model, contents=contents)
-        return response.text
+        return response.text or ''
     except Exception as e:
         print(f'Gemini on VertexAI content generation failed: {e}')
+        return ''
 
 
-def upload_audio_vertexai(audio_uri: str) -> Part:
+def upload_audio_vertexai(audio_uri: str) -> Part | None:
     if not ENABLE_AI or vertexai_client is None:
         print('Cannot upload files to Gemini on VertexAI, AI is disabled')
+        return None
     try:
         part = Part.from_uri(file_uri=audio_uri)
         return part
     except Exception as e:
         print(f"Error uploading audio file '{audio_uri}': {e}")
+        return None
 
 
 T = TypeVar('T', bound=BaseModel)
@@ -96,10 +100,14 @@ def call_llm_with_audio(
     audio_uri: str,
     system_prompt: str | None = None,
     model: str = DEFAULT_MODEL,
+    max_tokens: int = VERTEXAI_MAX_TOKENS,
+    temperature: float = 1.0,
 ) -> str:
     if not ENABLE_AI or vertexai_client is None:
         return ''
     try:
+        if not audio_uri.startswith('gs'):
+            audio_uri = f'gs://{settings.GCP_BUCKET}/audio/{audio_uri}'
         part = Part.from_uri(file_uri=audio_uri)
         selected_model = (
             DEFAULT_CHEAP_MODEL if FORCE_CHEAP_MODEL else (model or DEFAULT_CHEAP_MODEL)
@@ -107,7 +115,11 @@ def call_llm_with_audio(
         response = vertexai_client.models.generate_content(
             model=selected_model,
             contents=[request_prompt, part],
-            config=GenerateContentConfig(system_instruction=system_prompt),
+            config=GenerateContentConfig(
+                system_instruction=system_prompt,
+                temperature=temperature,
+                max_output_tokens=max_tokens,
+            ),
         )
 
         if not response.text:
@@ -124,7 +136,8 @@ def call_structured_llm(
     system_prompt: str | None = None,
     model: str = DEFAULT_MODEL,
     temperature: float = 1,
-    max_tokens: int = 500,
+    max_tokens: int = VERTEXAI_MAX_TOKENS,
+    audio_uri: Optional[str] = None,
     mock_response: T | None = None,
 ) -> T:
     if not ENABLE_AI or vertexai_client is None:
@@ -133,9 +146,13 @@ def call_structured_llm(
         return mock_response
 
     selected_model = DEFAULT_CHEAP_MODEL if FORCE_CHEAP_MODEL else (model or DEFAULT_CHEAP_MODEL)
+    if audio_uri:
+        contents = [request_prompt, Part.from_uri(file_uri=audio_uri)]
+    else:
+        contents = [request_prompt]
     response = vertexai_client.models.generate_content(
         model=selected_model,
-        contents=request_prompt,
+        contents=contents,
         config=GenerateContentConfig(
             system_instruction=system_prompt,
             temperature=temperature,
@@ -149,4 +166,7 @@ def call_structured_llm(
         raise ValueError('Gemini on VertexAI did not return a valid response')
 
     json_response = response.text
-    return output_model.model_validate_json(json_response)
+    try:
+        return output_model.model_validate_json(json_response)
+    except Exception:
+        raise

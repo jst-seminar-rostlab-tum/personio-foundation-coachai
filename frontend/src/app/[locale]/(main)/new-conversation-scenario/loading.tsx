@@ -1,51 +1,41 @@
 export default function ConversationScenarioPageLoading() {
   return (
-    <div>
-      {/* Header */}
-      <div className="flex items-center mb-6">
-        <div className="text-xl font-bold text-gray-400 text-center w-full sm:text-left">
-          New Training Session
+    <div className="mx-auto pb-8">
+      {/* New Training Session Title Skeleton */}
+      <div className="h-10 w-96 bg-bw-10 rounded-lg mx-auto mb-8 animate-pulse" />
+
+      {/* Stepper Skeleton - match real page width */}
+      <div className="flex justify-center items-center mb-8 md:w-3/4 mx-auto">
+        {/* Step 1 */}
+        <div className="flex flex-col items-center">
+          <div className="size-10 rounded-full bg-bw-10 animate-pulse flex items-center justify-center" />
+        </div>
+        <div className="h-1 w-32 bg-bw-10 mx-2" />
+        {/* Step 2 */}
+        <div className="flex flex-col items-center">
+          <div className="size-10 rounded-full bg-bw-10 animate-pulse flex items-center justify-center" />
+        </div>
+        <div className="h-1 w-32 bg-bw-10 mx-2" />
+        {/* Step 3 */}
+        <div className="flex flex-col items-center">
+          <div className="size-10 rounded-full bg-bw-10 animate-pulse flex items-center justify-center" />
         </div>
       </div>
-      {/* Stepper */}
-      <div className="flex justify-between items-center mb-8 w-full mx-auto max-w-md">
-        <div className="flex items-center w-full">
-          <div className="w-10 h-10 rounded-full bg-gray-400 flex-shrink-0" />
-          <div className="flex-1 h-1 bg-gray-300 mx-2" />
-          <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0" />
-          <div className="flex-1 h-1 bg-gray-300 mx-2" />
-          <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0" />
+
+      {/* Title Skeleton */}
+      <div className="h-8 w-80 bg-bw-10 rounded-lg mx-auto mb-8 animate-pulse" />
+
+      {/* Context selection cards - wider */}
+      <div className="mb-10 w-full flex justify-center flex-col sm:flex-row gap-8">
+        <div className="w-full md:w-2/5 box-border rounded-2xl bg-bw-10 animate-pulse flex flex-col items-start justify-center p-8 gap-4 min-h-[120px]" />
+        <div className="w-full md:w-2/5 box-border rounded-2xl bg-bw-10 animate-pulse flex flex-col items-start justify-center p-8 gap-4 min-h-[120px]" />
+      </div>
+
+      {/* Next button bar - match real page width and padding */}
+      <div className="fixed bottom-0 left-0 w-full z-50 bg-transparent">
+        <div className="max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] py-6">
+          <div className="h-12 w-full bg-bw-10 rounded-lg animate-pulse" />
         </div>
-      </div>
-      {/* 2-column grid with 4 square items */}
-      <div className="grid grid-cols-2 gap-4 w-full mx-auto mb-8 md:max-w-lg xl:max-w-xl">
-        {[1, 2, 3, 4].map((_, i) => (
-          <div
-            key={i}
-            className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center animate-pulse"
-          >
-            <div className="w-2/3 h-2/3 bg-gray-200 rounded" />
-          </div>
-        ))}
-      </div>
-      {/* Two full-width buttons on the same line */}
-      <div className="flex gap-4 w-full md:max-w-lg xl:max-w-xl mx-auto">
-        <button className="h-10 w-full bg-gray-100 rounded text-gray-500 font-semibold">
-          Back
-        </button>
-        <button className="h-10 w-full bg-gray-300 text-gray-500 rounded font-semibold">
-          Create Training{' '}
-          <svg
-            className="w-4 h-4 mb-0.5 inline-block ml-1"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
     </div>
   );

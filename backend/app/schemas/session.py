@@ -44,7 +44,6 @@ class SessionRead(CamelModel):
 # session metrics, and feedback insights
 class SessionDetailsRead(SessionRead):
     title: str | None = None
-    summary: str | None = None
     goals_total: list[str] | None = None
     has_reviewed: bool = False
     feedback: Optional['SessionFeedbackRead'] = None

@@ -7,11 +7,18 @@
   },
   "userStats": {
     "trainingTime": "Training Time",
-    "currentStreak": "Current Streak"
+    "currentStreak": "Current Streak",
+    "remainingSessionsToday": "Sessions left today"
   },
   "recentSessions": {
-    "title": "Recent Training Sessions",
-    "subtitle": "Your last completed training sessions",
+    "title": "Your Scenarios",
+    "subtitle": "An overview of all your past training configurations",
     "showEntireHistory": "Show Entire History"
-  }
+  },
+  "suggestion": {
+    "startButton": "Start now"
+  },
+  "deleteConversationScenarioSuccess": "Conversation scenario has been deleted successfully",
+  "deleteConversationScenarioError": "Error deleting conversation scenario",
+  "lastSession": "Last Session"
 }

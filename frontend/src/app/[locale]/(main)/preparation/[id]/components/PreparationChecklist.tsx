@@ -1,10 +1,13 @@
 import Checkbox from '@/components/ui/Checkbox';
+import { useTranslations } from 'next-intl';
 
 interface PreparationChecklistProps {
   checklist: string[];
 }
 
 export default function PreparationChecklist({ checklist }: PreparationChecklistProps) {
+  const tCommon = useTranslations('Common');
+
   return (
     <div className="space-y-4">
       {checklist.map((label, index) => (
@@ -18,6 +21,9 @@ export default function PreparationChecklist({ checklist }: PreparationChecklist
           </label>
         </div>
       ))}
+      <div className="mt-3">
+        <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
+      </div>
     </div>
   );
 }

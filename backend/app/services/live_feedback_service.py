@@ -1,5 +1,9 @@
 import concurrent.futures
 import json
+import logging
+from collections.abc import Callable, Generator
+from contextlib import suppress
+from typing import Optional
 from uuid import UUID
 
 from sqlmodel import Session as DBSession
@@ -8,25 +12,28 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.vertexai_client import call_structured_llm
 from app.models import SessionTurn
-from app.models.live_feedback_model import LiveFeedback as LiveFeedbackDB
-from app.schemas.live_feedback_schema import LiveFeedback
+from app.models.live_feedback_model import LiveFeedback
+from app.schemas.live_feedback_schema import LiveFeedbackLlmOutput, LiveFeedbackRead
 from app.services.voice_analysis_service import analyze_voice
 
 
-def fetch_all_for_session(db_session: DBSession, session_id: UUID) -> list[LiveFeedback]:
+def fetch_live_feedback_for_session(
+    db_session: DBSession, session_id: UUID, limit: Optional[int]
+) -> list[LiveFeedbackRead]:
     statement = (
-        select(LiveFeedbackDB)
-        .where(LiveFeedbackDB.session_id == session_id)
-        .order_by(LiveFeedbackDB.created_at)
+        select(LiveFeedback)
+        .where(LiveFeedback.session_id == session_id)
+        .order_by(LiveFeedback.created_at.desc())
+        .limit(limit)
     )
     feedback_items = db_session.exec(statement).all()
     return [
-        LiveFeedback(heading=item.heading, feedback_text=item.feedback_text)
+        LiveFeedbackRead(id=item.id, heading=item.heading, feedback_text=item.feedback_text)
         for item in feedback_items
     ]
 
 
-def format_feedback_lines(feedback_items: list[LiveFeedback]) -> list[str]:
+def format_feedback_lines(feedback_items: list[LiveFeedbackRead]) -> list[str]:
     return [
         json.dumps({'heading': item.heading, 'feedback_text': item.feedback_text})
         for item in feedback_items
@@ -38,7 +45,7 @@ def safe_generate_live_feedback_item(
     session_turn_context: SessionTurn,
     previous_feedback: str = '',
     hr_docs_context: str = '',
-) -> LiveFeedback:
+) -> LiveFeedbackLlmOutput:
     if previous_feedback is None:
         previous_feedback = []
     return generate_live_feedback_item(
@@ -54,7 +61,7 @@ def generate_live_feedback_item(
     transcript: str = 'No transcript available',
     previous_feedback: str = 'No previous feedback available',
     hr_docs_context: str = 'No hr document context available',
-) -> LiveFeedback:
+) -> LiveFeedbackLlmOutput:
     voice_analysis = ''
     if user_audio_path:
         voice_analysis = analyze_voice(user_audio_path)
@@ -105,7 +112,7 @@ def generate_live_feedback_item(
     4. {{"heading": "Clarity", "feedback_text": "Replace vague phrases with specific outcomes." }}
     5. {{"heading": "Next Step", "feedback_text": "Ask them to complete any paperwork necessary."}}
     6. {{"heading": "Tone", "feedback_text": "Great tone – keep it up!" }}
-
+    
     """
 
     return call_structured_llm(
@@ -114,54 +121,67 @@ def generate_live_feedback_item(
             'You are an expert communication coach analyzing a single speaking turn.'
             'Always respond in the language of the transcript.'
         ),
-        output_model=LiveFeedback,
-        mock_response=LiveFeedback(heading='Tone', feedback_text='Speak more calmly.'),
+        output_model=LiveFeedbackLlmOutput,
+        mock_response=LiveFeedbackLlmOutput(heading='Tone', feedback_text='Speak more calmly.'),
     )
 
 
 def generate_and_store_live_feedback(
-    db_session: DBSession,
+    session_generator_func: Callable[[], Generator[DBSession, None, None]],
     session_id: UUID,
     session_turn_context: SessionTurn,
     hr_docs_context: str = '',
-) -> LiveFeedback | None:
-    feedback_items = fetch_all_for_session(db_session, session_id)
-    formatted_lines = format_feedback_lines(feedback_items)
-    previous_feedback = '\n'.join(formatted_lines)
+) -> LiveFeedbackLlmOutput | None:
+    session_gen = session_generator_func()
 
-    if not any(
-        [
-            session_turn_context.audio_uri,
-            session_turn_context.text,
-            hr_docs_context,
-            previous_feedback,
-        ]
-    ):
-        return None
-    else:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_live_feedback = executor.submit(
-                safe_generate_live_feedback_item,
-                session_turn_context,
-                previous_feedback,
-                hr_docs_context,
-            )
+    try:
+        db_session: DBSession = next(session_gen)
 
-            try:
-                live_feedback_item = future_live_feedback.result()
-            except Exception as e:
-                print('[ERROR] Failed to generate live feedback:', e)
-                return None
-
-        live_feedback_item_db = LiveFeedbackDB(
-            session_id=session_id,
-            heading=live_feedback_item.heading,
-            feedback_text=live_feedback_item.feedback_text,
-        )
-        db_session.add(live_feedback_item_db)
+        feedback_items = fetch_live_feedback_for_session(db_session, session_id, None)
         db_session.commit()
-        db_session.refresh(live_feedback_item_db)
-        return live_feedback_item_db
+        formatted_lines = format_feedback_lines(feedback_items)
+        previous_feedback = '\n'.join(formatted_lines)
+
+        if not any(
+            [
+                session_turn_context.audio_uri,
+                session_turn_context.text,
+                hr_docs_context,
+                previous_feedback,
+            ]
+        ):
+            return None
+        else:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future_live_feedback = executor.submit(
+                    safe_generate_live_feedback_item,
+                    session_turn_context,
+                    previous_feedback,
+                    hr_docs_context,
+                )
+
+                try:
+                    live_feedback_item = future_live_feedback.result()
+                except Exception as e:
+                    print('[ERROR] Failed to generate live feedback:', e)
+                    return None
+            try:
+                live_feedback_item_db = LiveFeedback(
+                    session_id=session_id,
+                    heading=live_feedback_item.heading,
+                    feedback_text=live_feedback_item.feedback_text,
+                )
+                db_session.add(live_feedback_item_db)
+                db_session.commit()
+                db_session.refresh(live_feedback_item_db)
+                return live_feedback_item_db
+            except Exception as e:
+                logging.info('[ERROR] Failed to store live feedback:', e)
+                db_session.rollback()
+                return None
+    finally:
+        with suppress(StopIteration):
+            next(session_gen)
 
 
 if __name__ == '__main__':

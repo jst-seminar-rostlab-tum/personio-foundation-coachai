@@ -55,5 +55,8 @@
   "deleting": "Deleting...",
   "emailInputLabel": "Email Address",
   "emailInputPlaceholder": "Enter your email address",
-  "emailInputError": "Please enter a valid email address"
+  "emailInputError": "Please enter a valid email address",
+  "aiDisclaimer": "AI systems might unintentionally produce harmful or offensive content",
+  "aiGeneratedDisclaimer": "This text was AI-generated using sources provided in the resources section below",
+  "aiGeneratedDisclaimer2": "This text was AI-generated using sources provided in the resources section from the preparation page"
 }

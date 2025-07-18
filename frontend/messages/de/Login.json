@@ -11,14 +11,20 @@
     "gdprAdherenceText": "Wir halten uns strikt an die DSGVO, indem wir nur erforderliche Daten erheben, nichts Unnötiges speichern und Daten so schnell wie möglich löschen. ",
     "readMoreOnGdprLink": "Mehr erfahren",
     "agreeToTermsCheckboxLabel": "Ich stimme den <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu",
-    "signUpWithGoogleButtonLabel": "Oder mit Google registrieren"
+    "signUpButtonLabel": "Registrieren",
+    "signUpWithGoogleButtonLabel": "Oder mit Google registrieren",
+    "genericError": "Ein Fehler ist während der Registrierung aufgetreten",
+    "phoneAlreadyExistsError": "Telefonnummer ist bereits registriert.",
+    "emailAlreadyExistsError": "E-Mail ist bereits registriert."
   },
   "VerificationPopup": {
     "title": "Bestätigen Sie Ihre Telefonnummer",
     "descriptionPartOne": "Wir haben einen Bestätigungscode an ",
     "descriptionPartTwo": " gesendet. Bitte geben Sie ihn unten ein.",
     "codeInputPlaceholder": "6-stelligen Code eingeben",
-    "resendButtonLabel": "Code erneut senden"
+    "resendButtonLabel": "Code erneut senden",
+    "error": "Fehler beim Bestätigen des Kontos",
+    "errorResend": "Fehler beim Erneuten Senden des Codes"
   },
   "PasswordInput": {
     "showPasswordSpan": "Passwort anzeigen",
@@ -30,6 +36,7 @@
   "phoneNumberInputLabel": "Telefonnummer",
   "phoneNumberInputPlaceholder": "Geben Sie Ihre Telefonnummer ein",
   "phoneNumberInputError": "Bitte geben Sie eine gültige Telefonnummer ein",
+  "phoneNumberInputHelper": "Ländercode erforderlich (z.B. +49 für Deutschland)",
   "passwordInputLabel": "Passwort",
   "passwordInputPlaceholder": "Geben Sie Ihr Passwort ein",
   "passwordInputError": "Bitte geben Sie ein gültiges Passwort ein",

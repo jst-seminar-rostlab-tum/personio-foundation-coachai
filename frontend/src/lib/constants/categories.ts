@@ -1,8 +1,6 @@
 import { ConversationCategory } from '@/interfaces/models/ConversationScenario';
-import { useTranslations } from 'next-intl';
 
-export function Categories(): Record<string, ConversationCategory> {
-  const t = useTranslations('ConversationScenario.categories');
+export function Categories(t: (key: string) => string): Record<string, ConversationCategory> {
   return {
     giving_feedback: {
       id: 'giving_feedback',

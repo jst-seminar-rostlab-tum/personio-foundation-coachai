@@ -1,9 +1,15 @@
 export interface ConversationScenario {
   categoryId: string;
-  difficultyLevel: string;
+  difficultyLevel: DifficultyLevelEnums;
   persona: string;
   situationalFacts: string;
   languageCode: string;
+  personaName: string;
+  scenarioId?: string;
+  totalSessions?: number;
+  averageScore?: number;
+  categoryName?: string;
+  lastSessionAt?: string;
 }
 
 export interface ConversationCategory {
@@ -43,6 +49,12 @@ export enum ContextModeEnums {
   CUSTOM = 'custom',
 }
 
+export enum DifficultyLevelEnums {
+  EASY = 'easy',
+  MEDIUM = 'medium',
+  HARD = 'hard',
+}
+
 export type ContextMode = ContextModeEnums.CUSTOM | ContextModeEnums.DEFAULT;
 
 export type ConversationScenarioPreparation = {
@@ -57,4 +69,8 @@ export type ConversationScenarioPreparation = {
   updatedAt: string;
   categoryName: string;
   situationalFacts: string;
+  persona: string;
+  personaName: string;
+  difficultyLevel: DifficultyLevelEnums;
+  categoryId: string;
 };

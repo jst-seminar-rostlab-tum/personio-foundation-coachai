@@ -10,6 +10,10 @@
   "preparation": "Vorbereitungscheckliste",
   "resources": "Ressourcen",
   "keyConcepts": "Wichtige Begriffe",
+  "situationalFacts": "Situationsbeschreibung",
+  "persona": "Persona",
+  "otherPartyLabel": "Persona",
+  "difficultyLabel": "Schwierigkeit",
   "loadingText": "Ziele und Checkliste werden vorbereitet...",
   "sessionCreationError": "Fehler beim Erstellen der Trainingssitzung. Bitte versuchen Sie es später noch einmal.",
   "getPreparationError": "Fehler beim Abrufen der Vorbereitungsdaten. Bitte versuchen Sie es später noch einmal."

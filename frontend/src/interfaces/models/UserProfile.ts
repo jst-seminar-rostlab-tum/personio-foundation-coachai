@@ -1,3 +1,5 @@
+import { ConversationScenario } from './ConversationScenario';
+
 export interface UserProfile {
   userId: string;
   fullName: string;
@@ -8,11 +10,12 @@ export interface UserProfile {
   accountRole: AccountRole;
   storeConversations?: boolean;
   confidenceScores?: ConfidenceScore[];
+  scenarioAdvice: ScenarioAdvice;
 }
 
 export type UserProfileUpdate = Omit<
   UserProfile,
-  'userId' | 'email' | 'phoneNumber' | 'accountRole'
+  'userId' | 'email' | 'phoneNumber' | 'accountRole' | 'scenarioAdvice'
 >;
 
 export interface ConfidenceScore {
@@ -31,4 +34,9 @@ export interface UserPaginationResponse {
   totalPages: number;
   totalUsers: number;
   users: UserProfile[];
+}
+
+export interface ScenarioAdvice {
+  scenario: ConversationScenario;
+  mascotSpeech: string;
 }

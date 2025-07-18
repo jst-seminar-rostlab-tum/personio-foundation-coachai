@@ -10,6 +10,10 @@
   "preparation": "Preparation Checklist",
   "resources": "Resources",
   "keyConcepts": "Key Concepts",
+  "situationalFacts": "Situational Facts",
+  "persona": "Persona",
+  "otherPartyLabel": "Persona",
+  "difficultyLabel": "Difficulty",
   "loadingText": "Preparing Objectives and Checklist...",
   "sessionCreationError": "Error creating training session. Please try again later.",
   "getPreparationError": "Error fetching preparation data. Please try again later."

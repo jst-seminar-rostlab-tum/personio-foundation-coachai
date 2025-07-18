@@ -1,12 +1,18 @@
-import { Session } from '@/interfaces/models/Session';
+import { Session, SessionLiveFeedback } from '@/interfaces/models/Session';
 import { AxiosInstance } from 'axios';
 
-const getPaginatedSessions = async (api: AxiosInstance, page: number, pageSize: number) => {
+const getPaginatedSessions = async (
+  api: AxiosInstance,
+  page: number,
+  pageSize: number,
+  scenarioId: string
+) => {
   try {
     const response = await api.get(`/sessions`, {
       params: {
         page,
         page_size: pageSize,
+        scenario_id: scenarioId,
       },
     });
     return response;
@@ -48,6 +54,16 @@ const createSession = async (api: AxiosInstance, scenarioId: string) => {
   }
 };
 
+const deleteSession = async (api: AxiosInstance, sessionId: string) => {
+  try {
+    const response = await api.delete(`/sessions/${sessionId}`);
+    return response;
+  } catch (error) {
+    console.error('Error deleting session:', error);
+    throw error;
+  }
+};
+
 const updateSession = async (api: AxiosInstance, sessionId: string, session: Partial<Session>) => {
   try {
     const response = await api.put<Session>(`/sessions/${sessionId}`, session);
@@ -68,15 +84,21 @@ const createSessionTurn = async (api: AxiosInstance, sessionTurn: FormData) => {
   }
 };
 
+const getSessionRealtime = async (api: AxiosInstance, sessionId: string) => {
+  try {
+    const response = await api.get(`/realtime-sessions/${sessionId}`);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 const getSdpResponseTextFromRealtimeApi = async (
-  api: AxiosInstance,
-  sessionId: string,
+  ephemeralKey: string,
   offerSdp: string | undefined
 ) => {
   try {
-    const realtimeSessionResponse = await api.get(`/realtime-sessions/${sessionId}`);
-    const ephemeralKey = realtimeSessionResponse.data.client_secret.value;
-
     const baseUrl = 'https://api.openai.com/v1/realtime';
     const modelId = 'gpt-4o-realtime-preview-2025-06-03';
 
@@ -95,12 +117,27 @@ const getSdpResponseTextFromRealtimeApi = async (
   }
 };
 
+const getSessionLiveFeedback = async (api: AxiosInstance, sessionId: string) => {
+  try {
+    const response = await api.get<SessionLiveFeedback[]>(`/live-feedback/session/${sessionId}`, {
+      params: { limit: 5 },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 export const sessionService = {
   getPaginatedSessions,
   clearAllSessions,
   createSession,
   updateSession,
   getSessionFeedback,
+  getSessionLiveFeedback,
   createSessionTurn,
   getSdpResponseTextFromRealtimeApi,
+  getSessionRealtime,
+  deleteSession,
 };

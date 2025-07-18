@@ -1,13 +1,22 @@
+import logging
+from collections.abc import Callable, Generator
+from contextlib import suppress
 from datetime import UTC, datetime
-from uuid import uuid4
+from uuid import UUID, uuid4
+
+from fastapi import HTTPException
+from sqlmodel import Session as DBSession
+from sqlmodel import select
 
 from app.connections.vertexai_client import call_structured_llm
 from app.enums.feedback_status import FeedbackStatus
 from app.enums.language import LanguageCode
 from app.models.conversation_scenario import DifficultyLevel
 from app.models.session_feedback import SessionFeedback
+from app.models.user_profile import UserProfile
 from app.schemas import ConversationScenarioCreate
 from app.schemas.advisor_response import AdvisorResponse
+from app.schemas.user_profile import ScenarioAdvice
 
 mock_persona = """
                 **Name**: Positive Pam
@@ -57,8 +66,9 @@ mock_situational_facts = """
 
 def get_mock_advisor_response() -> AdvisorResponse:
     return AdvisorResponse(
-        custom_category_label='Performance Reviews',
+        category_id='giving_feedback',
         persona=mock_persona,
+        persona_name='positive',
         situational_facts=mock_situational_facts,
         difficulty_level=DifficultyLevel.medium,
         mascot_speech='Hi! How about you try training for a Performance Review?',
@@ -72,7 +82,6 @@ def get_mock_session_feedback() -> SessionFeedback:
         scores={'structure': 4, 'empathy': 5, 'focus': 4, 'clarity': 4},
         tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
         overall_score=4.3,
-        transcript_uri='https://example.com/transcripts/session1.txt',
         full_audio_filename='full_audio_123.mp3',
         document_names=[
             'Teamwork: An Open Access Practical Guide',
@@ -146,17 +155,40 @@ def get_mock_session_feedback() -> SessionFeedback:
 
 
 class AdvisorService:
-    # TODO: Uncomment for saving the scenarioAdvice in userProfile
-    def __init__(
+    def generate_and_store_advice(
         self,
-        # db: DBSession
+        session_feedback_id: UUID,
+        user_profile_id: UUID,
+        session_generator_func: Callable[[], Generator[DBSession, None, None]],
     ) -> None:
-        # self.db = db
-        pass
+        session_gen = session_generator_func()
+        try:
+            db_session: DBSession = next(session_gen)
 
-    def generate_advice(
-        self, session_feedback: SessionFeedback
-    ) -> tuple[ConversationScenarioCreate, str]:
+            statement = select(SessionFeedback).where(SessionFeedback.id == session_feedback_id)
+            session_feedback = db_session.exec(statement).one_or_none()
+
+            if session_feedback is None:
+                logging.error(f'Session feedback with ID {session_feedback_id} not found.')
+                raise HTTPException(status_code=404, detail='Session feedback not found.')
+
+            logging.info(f'Generating advice for session feedback ID: {session_feedback.id}')
+            scenario_advice = self._generate_advice(session_feedback=session_feedback)
+            statement = select(UserProfile).where(UserProfile.id == user_profile_id)
+            user_profile = db_session.exec(statement).one_or_none()
+            if user_profile is None:
+                logging.error(f'User profile with ID {user_profile_id} not found.')
+                return
+
+            user_profile.scenario_advice = scenario_advice.model_dump()
+            db_session.add(user_profile)
+            db_session.commit()
+            logging.info(f'Advice generated and stored for user profile ID: {user_profile.id}')
+        finally:
+            with suppress(StopIteration):
+                next(session_gen)
+
+    def _generate_advice(self, session_feedback: SessionFeedback) -> ScenarioAdvice:
         language_code = LanguageCode.en
         try:
             previous_scenario = session_feedback.session.scenario
@@ -222,10 +254,12 @@ class AdvisorService:
                 - Navigating emotionally complex conversations with high performers
 
                 **Company Position**: Development Coordinator (5 years experience)
-        3. situational_facts: Context of the training scenario:
-        4. difficulty_level: How difficult the conversation should be. 
+        3. persona_name: Name of the AI persona, who the user will train with.
+        Example: Positive Pam, Casual Candice, etc.
+        4. situational_facts: Context of the training scenario:
+        5. difficulty_level: How difficult the conversation should be. 
         Choose one of those options: 'easy', 'medium', 'hard'
-        5. mascot_speech: 1-2 sentences that encourage the user to try training with the scenario 
+        6. mascot_speech: 1-2 sentences that encourage the user to try training with the scenario 
         you generate. Try to keep the sentences short
         Example for mascot_speech if previous scenario level was 'Conflict Resolution' on 'easy': 
         I saw you did good with easy Conflict Resolution, how about you try medium 
@@ -247,15 +281,17 @@ class AdvisorService:
         )
 
         new_conversation_scenario = ConversationScenarioCreate(
-            category_id=None,
-            custom_category_label=advisor_response.custom_category_label,
+            category_id=advisor_response.category_id,
+            persona_name=advisor_response.persona_name,
             persona=advisor_response.persona,
             situational_facts=advisor_response.situational_facts,
             difficulty_level=DifficultyLevel(advisor_response.difficulty_level),
             language_code=language_code,
         )
 
-        return new_conversation_scenario, advisor_response.mascot_speech
+        return ScenarioAdvice(
+            mascot_speech=advisor_response.mascot_speech, scenario=new_conversation_scenario
+        )
 
 
 if __name__ == '__main__':
@@ -264,10 +300,10 @@ if __name__ == '__main__':
 
     advice_service = AdvisorService()
 
-    scenario, mascot_speech = advice_service.generate_advice(session_feedback=test_session_feedback)
-    print('Mascot speech:', mascot_speech)
-    print('scenario.category_id:', scenario.category_id)
-    print('scenario.custom_category_label:', scenario.custom_category_label)
-    print('scenario.persona:', scenario.persona)
-    print('scenario.difficulty_level:', scenario.difficulty_level)
-    print('scenario.language_code:', scenario.language_code)
+    scenario_advice = advice_service._generate_advice(session_feedback=test_session_feedback)
+    print('Mascot speech:', scenario_advice.mascot_speech)
+    print('scenario.category_id:', scenario_advice.scenario.category_id)
+    print('scenario.custom_category_label:', scenario_advice.scenario.custom_category_label)
+    print('scenario.persona:', scenario_advice.scenario.persona)
+    print('scenario.difficulty_level:', scenario_advice.scenario.difficulty_level)
+    print('scenario.language_code:', scenario_advice.scenario.language_code)

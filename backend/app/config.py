@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     postgres_port: str = '5432'
     database_url: str | None = None
 
+    LOG_LEVEL: str = 'INFO'
+
     SUPABASE_URL: str = 'http://127.0.0.1:54321'
 
     SUPABASE_ANON_KEY: str = (
@@ -69,6 +71,7 @@ class Settings(BaseSettings):
     # Vertex AI credentials
     VERTEXAI_PROJECT_ID: str = 'personio-foundation'
     VERTEXAI_LOCATION: str = 'europe-west9'
+    VERTEXAI_MAX_TOKENS: int = 8192  # Max tokens for VertexAI in dev mode
 
     @property
     def mock_user_data(self) -> MockUser:

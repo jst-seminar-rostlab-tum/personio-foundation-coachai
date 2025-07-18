@@ -1,11 +1,11 @@
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapper
-from sqlmodel import Field, Relationship
+from sqlmodel import JSON, Column, Field, Relationship
 
 from app.enums.account_role import AccountRole
 from app.enums.experience import Experience
@@ -55,6 +55,12 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     score_sum: float = Field(default=0)
     goals_achieved: int = Field(default=0)
     # TODO: Add performance_over_time and skills_performance
+
+    scenario_advice: dict = Field(default_factory=dict, sa_column=Column(JSON))
+
+    # Daily session tracking
+    sessions_created_today: int = Field(default=0)
+    last_session_date: date = Field(default_factory=lambda: datetime.now(UTC).date())
 
 
 @event.listens_for(UserProfile, 'before_update')

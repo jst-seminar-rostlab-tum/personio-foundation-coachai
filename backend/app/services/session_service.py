@@ -7,11 +7,13 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, func, select
 
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.database import get_db_session
 from app.enums.account_role import AccountRole
 from app.enums.feedback_status import FeedbackStatus
 from app.enums.scenario_preparation_status import ScenarioPreparationStatus
 from app.enums.session_status import SessionStatus
 from app.models.admin_dashboard_stats import AdminDashboardStats
+from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import ScenarioPreparation
@@ -58,12 +60,10 @@ class SessionService:
             updated_at=session.updated_at,
             title=title,
             has_reviewed=user_has_reviewed,
-            summary='The person giving feedback was rude but the person '
-            'receiving feedback took it well.',
             goals_total=goals,
         )
 
-        session_response.feedback = self._get_session_feedback(session_id)
+        session_response.feedback = self._get_session_feedback(session_id, user_profile)
 
         return session_response
 
@@ -105,6 +105,29 @@ class SessionService:
     def create_new_session(
         self, session_data: SessionCreate, user_profile: UserProfile
     ) -> SessionRead:
+        # Enforce daily session limit for non-admin users
+        if user_profile.account_role != AccountRole.admin:
+            # Get session limit from AppConfig
+            session_limit_config = self.db.exec(
+                select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
+            ).first()
+
+            # If session limit is not configured, assume limit is hit (safety feature)
+            if session_limit_config is None:
+                raise HTTPException(
+                    status_code=403,
+                    detail='Daily session limit is not configured. '
+                    'Please contact an administrator.',
+                )
+
+            session_limit = int(session_limit_config)
+
+            # Check if the user has reached the daily session limit
+            if user_profile.sessions_created_today >= session_limit:
+                raise HTTPException(
+                    status_code=429,
+                    detail=f'You have reached the daily session limit of {session_limit}.',
+                )
         conversation_scenario = self.db.get(ConversationScenario, session_data.scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
@@ -149,6 +172,14 @@ class SessionService:
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
 
+        if (
+            session.status == SessionStatus.completed
+            and updated_data.status != SessionStatus.completed
+        ):
+            raise HTTPException(
+                status_code=400, detail='Cannot update status of a completed session.'
+            )
+
         for key, value in updated_data.model_dump(exclude_unset=True).items():
             setattr(session, key, value)
 
@@ -170,24 +201,31 @@ class SessionService:
                 'audios': [],
             }
 
-        total_deleted_sessions = 0
-        audio_uris = []
+        to_be_deleted_session_turns = []
+        session_ids = []
         for scenario in conversation_scenarios:
             for session in scenario.sessions:
+                session_ids.append(session.id)
                 for turn in session.session_turns:
                     if turn.audio_uri:
-                        audio_uris.append(turn.audio_uri)
-                        total_deleted_sessions += 1
+                        to_be_deleted_session_turns.append(turn)
+
         # Let the database handle cascade deletes by just deleting the scenarios
         for scenario in conversation_scenarios:
             self.db.delete(scenario)
         self.db.commit()
 
-        # TODO: Delete audio File self._delete_audio_files(audio_uris)
-        self._delete_audio_files(audio_uris=audio_uris)  # Dummy function to delete audios
+        session_turn_service = SessionTurnService(self.db)
+        deleted_audios = session_turn_service.delete_session_turns(to_be_deleted_session_turns)
+
+        for session_id in session_ids:
+            deleted_full_audio = self.delete_full_audio_from_session_feedback(session_id)
+            if deleted_full_audio:
+                deleted_audios.append(deleted_full_audio)
+
         return {
-            'message': f'Deleted {total_deleted_sessions} sessions for user ID {user_id}',
-            'audios': audio_uris,
+            'message': f'Deleted {len(session_ids)} sessions for user ID {user_id}',
+            'audios': deleted_audios,
         }
 
     def delete_session_by_id(self, session_id: UUID, user_profile: UserProfile) -> dict:
@@ -201,22 +239,51 @@ class SessionService:
             raise HTTPException(
                 status_code=403, detail='You do not have permission to delete this session'
             )
-        # TODO: Delete audio File self._delete_audio_files(session.audio_uris)
-        total_deleted_sessions = 0
-        audio_uris = []
+
+        to_be_deleted_session_turns = []
+        # Collect all session turns with audio URIs to delete
         for turn in session.session_turns:
             if turn.audio_uri:
-                audio_uris.append(turn.audio_uri)
-                total_deleted_sessions += 1
-        # TODO: Delete audio File self._delete_audio_files(audio_uris)
-        self._delete_audio_files(audio_uris=audio_uris)  # Dummy function to delete audios
+                to_be_deleted_session_turns.append(turn)
+
+        # Delete session turns with audio URIs
+        session_turn_service = SessionTurnService(self.db)
+        deleted_audios = session_turn_service.delete_session_turns(to_be_deleted_session_turns)
+
+        # Delete the full audio from session feedback if it exists
+        deleted_full_audio = self.delete_full_audio_from_session_feedback(session_id)
+        if deleted_full_audio:
+            deleted_audios.append(deleted_full_audio)
 
         self.db.delete(session)
         self.db.commit()
         return {
             'message': 'Session deleted successfully',
-            'audios': audio_uris,
+            'audios': deleted_audios,
         }
+
+    def delete_full_audio_from_session_feedback(self, session_id: UUID) -> str | None:
+        feedback = self.db.exec(
+            select(SessionFeedback).where(SessionFeedback.session_id == session_id)
+        ).first()
+        # Check if the feedback has a full audio filename
+        stitched_audio = feedback.full_audio_filename if feedback else None
+        if stitched_audio:
+            gcs_manager = get_gcs_audio_manager()
+            try:
+                gcs_manager.delete_document(stitched_audio)
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f'Failed to delete audio file: {e}'
+                ) from e
+
+            # Clear the filename in the feedback
+            feedback.full_audio_filename = ''
+
+            # Currently, we are not deleting the feedback from the database
+            # self.db.add(feedback)
+            # self.db.commit()
+        return stitched_audio
 
     def _is_session_being_completed(
         self,
@@ -327,7 +394,9 @@ class SessionService:
             generate_and_store_feedback,
             session_id=session.id,
             feedback_request=request,
-            db_session=self.db,
+            user_profile_id=user_profile.id,
+            background_tasks=background_tasks,
+            session_generator_func=get_db_session,
         )
 
         # Calculate session length
@@ -395,7 +464,9 @@ class SessionService:
             return scenario.custom_category_label
         return 'No Title available'
 
-    def _get_session_feedback(self, session_id: UUID) -> SessionFeedbackRead | None:
+    def _get_session_feedback(
+        self, session_id: UUID, user_profile: UserProfile
+    ) -> SessionFeedbackRead | None:
         feedback = self.db.exec(
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
         ).first()
@@ -410,7 +481,12 @@ class SessionService:
             audio_file_exists = self.gcs_audio_manager.document_exists(
                 filename=feedback.full_audio_filename
             )
-        if audio_file_exists:
+
+        store_conversations = (
+            getattr(user_profile, 'store_conversations', False) if user_profile else False
+        )
+
+        if audio_file_exists and store_conversations:
             full_audio_url = self.gcs_audio_manager.generate_signed_url(
                 filename=feedback.full_audio_filename,
             )
@@ -424,7 +500,6 @@ class SessionService:
             scores=feedback.scores,
             tone_analysis=feedback.tone_analysis,
             overall_score=feedback.overall_score,
-            transcript_uri=feedback.transcript_uri,
             speak_time_percent=feedback.speak_time_percent,
             questions_asked=feedback.questions_asked,
             session_length_s=feedback.session_length_s,
@@ -499,13 +574,10 @@ class SessionService:
             overall_score=feedback.overall_score if feedback else -1,
             skills=scores,
             allow_admin_access=sess.allow_admin_access,
+            session_length_s=feedback.session_length_s
+            if feedback and feedback.session_length_s
+            else -1,
         )
-
-    def _delete_audio_files(self, audio_uris: list[str]) -> None:
-        """Mock function to delete audio files from object storage.
-        Replace this with your actual object storage client logic."""
-        for uri in audio_uris:  # TODO: delete audios on object storage.  # noqa: B007
-            pass
 
     def _validate_scenario_access(
         self, scenario_id: UUID, user_profile: UserProfile

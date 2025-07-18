@@ -14,7 +14,7 @@ class MetricScore(CamelModel):
 
 
 class ConversationScore(CamelModel):
-    overall_score: float = Field(..., description='The average score across all metrics.')
+    overall_score: float = Field(..., description='The sum of all scores across all metrics.')
     scores: list[MetricScore] = Field(
         ..., description='A list of scores for each individual metric.'
     )
