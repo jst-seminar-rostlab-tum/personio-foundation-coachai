@@ -20,5 +20,19 @@
   "saveSettingsSuccess": "Ihre Einstellungen wurden erfolgreich gespeichert.",
   "saveSettingsError": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.",
   "exportSuccess": "Ihre Daten wurden erfolgreich exportiert.",
-  "exportError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+  "exportError": "Beim Exportieren Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+  "updateEmail": "E-Mail aktualisieren",
+  "updateEmailError": "Beim Aktualisieren der E-Mail ist ein Fehler aufgetreten",
+  "emailExistsError": "Ein Konto mit dieser E-Mail-Adresse existiert bereits. Bitte verwenden Sie eine andere E-Mail-Adresse.",
+  "overEmailSendRateLimitError": "Sie haben das E-Mail-Aktualisierungslimit erreicht. Bitte versuchen Sie es später erneut.",
+  "updateEmailSuccess": "Bestätigungslink an Ihre neue E-Mail-Adresse gesendet. Bitte überprüfen Sie Ihren Posteingang, um die Änderung zu bestätigen.",
+  "accountSettings": "Kontoeinstellungen",
+  "updatePassword": "Passwort aktualisieren",
+  "updatePasswordError": "Beim Aktualisieren des Passworts ist ein Fehler aufgetreten.",
+  "updatePasswordSuccess": "Passwort erfolgreich aktualisiert.",
+  "updateEmailTitle": "E-Mail aktualisieren",
+  "updateEmailDescription": "Bitte geben Sie unten Ihre neue E-Mail-Adresse ein. Ein Bestätigungslink wird an Ihre neue E-Mail-Adresse gesendet, um die Änderung zu überprüfen.",
+  "updateEmailButtonLabel": "E-Mail aktualisieren",
+  "saveSettingsEror": "Beim Speichern Ihrer Einstellungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal.",
+  "emailUpdatedSuccess": "E-Mail erfolgreich aktualisiert"
 }

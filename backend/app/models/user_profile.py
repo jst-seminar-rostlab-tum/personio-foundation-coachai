@@ -53,7 +53,6 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     training_time: float = Field(default=0)  # in hours
     score_sum: float = Field(default=0)
     goals_achieved: int = Field(default=0)
-    # TODO: Add performance_over_time and skills_performance
 
     scenario_advice: dict = Field(default_factory=dict, sa_column=Column(JSON))
 

@@ -89,7 +89,5 @@ class UserStatistics(CamelModel):
     current_streak_days: int
     score_sum: float
     goals_achieved: int  # summation of all goals achieved
-    performance_over_time: list[int]
-    skills_performance: dict[str, int]
     daily_session_limit: int
     num_remaining_daily_sessions: int
