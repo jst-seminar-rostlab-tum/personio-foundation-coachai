@@ -126,3 +126,20 @@ class GCSManager:
             blob.delete()
         else:
             logging.warning(f'Blob does not exist: {blob_name}')
+
+    def download_to_bytesio(self, filename: str) -> BinaryIO:
+        """
+        Download a single file to a BytesIO object.
+        """
+        import io
+
+        blob_name = f'{self.prefix}{filename}'
+        blob = self.bucket.blob(blob_name)
+
+        if not blob.exists(self.client):
+            raise FileNotFoundError(f'Blob does not exist: {blob_name}')
+
+        buffer = io.BytesIO()
+        blob.download_to_file(buffer)
+        buffer.seek(0)
+        return buffer

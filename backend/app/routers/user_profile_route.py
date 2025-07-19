@@ -7,9 +7,12 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 from sqlmodel import Session as DBSession
+from sqlmodel import select
 
+from app.connections.gcs_client import get_gcs_audio_manager
 from app.database import get_db_session
 from app.dependencies import require_admin, require_user
+from app.models.conversation_scenario import ConversationScenario
 from app.models.user_profile import UserProfile
 from app.schemas.user_profile import (
     PaginatedUserRead,
@@ -19,7 +22,7 @@ from app.schemas.user_profile import (
     UserProfileUpdate,
     UserStatistics,
 )
-from app.services.user_export_service import build_user_data_export
+from app.services.user_export_service import _collect_audio_files_for_export, build_user_data_export
 from app.services.user_profile_service import UserService
 
 router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
@@ -128,11 +131,52 @@ def export_user_data(
     """
     Export all user-related data (history) for the currently authenticated user as a zip file.
     """
+
+    # Build the export data
     export_data = build_user_data_export(user_profile, db_session)
     json_bytes = json.dumps(export_data.dict(), indent=2).encode('utf-8')
+
+    # Get sessions to collect audio files
+    scenarios = db_session.exec(
+        select(ConversationScenario).where(ConversationScenario.user_id == user_profile.id)
+    ).all()
+
+    sessions = []
+    for scenario in scenarios:
+        for sess in scenario.sessions:
+            sessions.append(sess)
+
+    # Collect audio files organized by session
+    audio_files_by_session = _collect_audio_files_for_export(sessions)
+
+    # Create the zip file
     mem_zip = io.BytesIO()
     with zipfile.ZipFile(mem_zip, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+        # Add the JSON data
         zf.writestr('user_data_export.json', json_bytes)
+
+        # Add audio files organized by session
+        gcs_manager = get_gcs_audio_manager()
+        if gcs_manager and audio_files_by_session:
+            for session_id, audio_files in audio_files_by_session.items():
+                for audio_uri, filename in audio_files:
+                    try:
+                        # Download audio file from GCS
+                        audio_buffer = gcs_manager.download_to_bytesio(audio_uri)
+
+                        # Add to zip in session folder
+                        zip_path = f'audio/session_{session_id}/{filename}'
+                        zf.writestr(zip_path, audio_buffer.getvalue())
+                        audio_buffer.close()
+                        print(f'Added audio file to export: {zip_path}')
+                    except FileNotFoundError:
+                        print(f'Audio file not found in GCS: {audio_uri}')
+                    except Exception as e:
+                        # Log error but continue with other files
+                        print(f'Failed to download audio file {audio_uri}: {e}')
+        else:
+            print('No GCS manager available or no audio files found')
+
     mem_zip.seek(0)
     headers = {'Content-Disposition': 'attachment; filename="user_data_export.zip"'}
     return StreamingResponse(mem_zip, media_type='application/zip', headers=headers)
