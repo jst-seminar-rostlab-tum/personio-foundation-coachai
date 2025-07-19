@@ -6,6 +6,7 @@ def build_training_examples_prompt(
     situational_facts: str,
     key_concepts: str,
     hr_docs_context: str = '',
+    language_name: str = 'English',
 ) -> str:
     """
     Builds a user prompt for extracting positive and negative examples
@@ -19,11 +20,13 @@ def build_training_examples_prompt(
         situational_facts (str): Key situational facts of the session.
         key_concepts (str): Key concepts relevant to the session.
         hr_docs_context (str, optional): Additional HR document context.
+        language_name (str, optional): The name of the language for the prompt. Defaults 'English'.
 
     Returns:
         str: The constructed prompt string.
     """
     return f"""
+    Please write the following response in {language_name}.\n\n
     The following is a training session transcript in which you are practicing 
     communication skills in the context of {category}. 
     You are expected to follow the training guidelines provided below.
@@ -85,6 +88,7 @@ def build_goals_achieved_prompt(
     transcript: str | None,
     objectives: list[str],
     hr_docs_context: str = '',
+    language_name: str = 'English',
 ) -> str:
     """
     Builds a user prompt for evaluating which goals were achieved by the user in a session.
@@ -93,6 +97,7 @@ def build_goals_achieved_prompt(
         transcript (str, optional): The session transcript. Defaults to empty string if None.
         objectives (list, optional): List of goals/objectives.
         hr_docs_context (str, optional): Additional HR document context.
+        language_name (str, optional): The name of the language for the prompt. Defaults 'English'.
 
     Returns:
         str: The constructed prompt string.
@@ -101,6 +106,7 @@ def build_goals_achieved_prompt(
     objectives_text = objectives if objectives is not None else []
 
     return f"""
+    Please write the following response in {language_name}.\n\n
     The following is a transcript of a training session.
     Please evaluate which of the listed goals were clearly achieved by the user 
     in this conversation.
@@ -144,6 +150,7 @@ def build_recommendations_prompt(
     situational_facts: str = '',
     category: str = '',
     hr_docs_context: str = '',
+    language_name: str = 'English',
 ) -> str:
     """
     Builds a user prompt for generating actionable communication improvement recommendations.
@@ -156,6 +163,7 @@ def build_recommendations_prompt(
         situational_facts (str, optional): Relevant situational facts.
         category (str, optional): Conversation/training category.
         hr_docs_context (str, optional): Additional HR document context.
+        language_name (str, optional): The name of the language for the prompt. Defaults 'English'.
 
     Returns:
         str: The constructed prompt string.
@@ -164,6 +172,7 @@ def build_recommendations_prompt(
     objectives_text = objectives if objectives is not None else []
 
     return f"""
+    Please write the following response in {language_name}.\n\n
     Analyze the following transcript from a training session.
     Based on the goal, objectives, and key concepts, suggest 3 to 5 specific, actionable 
     communication improvement recommendations for the user.
