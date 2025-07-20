@@ -6,7 +6,7 @@ from typing import Optional
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.vertexai_client import call_structured_llm
-from app.enums.language import LanguageCode
+from app.enums.language import LANGUAGE_NAME, LanguageCode
 from app.schemas.session_feedback import (
     FeedbackCreate,
     GoalsAchievedCreate,
@@ -85,6 +85,7 @@ def generate_training_examples(
     mock_response = settings.mocks.session_examples
     system_prompt = settings.system_prompts.session_examples
 
+    lang_name = LANGUAGE_NAME.get(lang, 'English')
     user_prompt = build_training_examples_prompt(
         category=request.category,
         transcript=request.transcript,
@@ -93,6 +94,7 @@ def generate_training_examples(
         situational_facts=request.situational_facts,
         key_concepts=request.key_concepts,
         hr_docs_context=hr_docs_context,
+        language_name=lang_name,
     )
 
     response = call_structured_llm(
@@ -127,10 +129,12 @@ def get_achieved_goals(
     mock_response = settings.mocks.goals_achieved
     system_prompt = settings.system_prompts.goals_achieved
 
+    lang_name = LANGUAGE_NAME.get(lang, 'English')
     user_prompt = build_goals_achieved_prompt(
         transcript=request.transcript,
         objectives=request.objectives,
         hr_docs_context=hr_docs_context,
+        language_name=lang_name,
     )
 
     response = call_structured_llm(
@@ -163,6 +167,7 @@ def generate_recommendations(
     mock_response = settings.mocks.recommendations
     system_prompt = settings.system_prompts.recommendations
 
+    lang_name = LANGUAGE_NAME.get(lang, 'English')
     user_prompt = build_recommendations_prompt(
         transcript=request.transcript,
         persona=request.persona,
@@ -171,6 +176,7 @@ def generate_recommendations(
         situational_facts=request.situational_facts,
         category=request.category,
         hr_docs_context=hr_docs_context,
+        language_name=lang_name,
     )
 
     response = call_structured_llm(

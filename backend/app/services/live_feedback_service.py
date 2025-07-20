@@ -103,6 +103,7 @@ def generate_live_feedback_item(
     6. Avoid rephrasing or repeating previous feedback items when possible.
     7. Use active voice and no hedging, be specific if possible.
     e.g."Speak more calmly" instead of "Use a calmer tone" 
+    9. Always respond in the language of the "Transcript" above.
 
     ### Examples
     Feedback items in order of generating:
