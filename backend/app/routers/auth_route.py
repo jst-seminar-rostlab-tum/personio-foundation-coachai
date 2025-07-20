@@ -25,18 +25,12 @@ settings = Settings()
 
 @router.post('/send-verification', response_model=None)
 def send_verification(req: VerificationCodeCreate) -> None:
-    try:
-        verification_status = send_verification_code(req.phone_number)
-        if verification_status == 'failed':
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Failed to send verification code',
-            )
-    except Exception as e:
+    verification_status = send_verification_code(req.phone_number)
+    if verification_status == 'failed':
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        ) from e
+            detail='Failed to send verification code',
+        )
 
 
 @router.post('/verify-code', response_model=None)
