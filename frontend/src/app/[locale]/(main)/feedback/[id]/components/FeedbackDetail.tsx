@@ -19,7 +19,6 @@ import { api } from '@/services/ApiClient';
 import AudioPlayer from './AudioPlayer';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
-import FeedbackDetailLoadingPage from '../loading';
 import DonutChart from './DonutChart';
 import ProgressBars from './ProgressBars';
 
@@ -100,7 +99,14 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   const maxScore = Object.values(feedbackDetail?.feedback?.scores ?? {}).length * 5;
 
   if (isLoading) {
-    return <FeedbackDetailLoadingPage />;
+    return (
+      <div className="flex items-center justify-center w-full min-h-[400px]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <p className="text-lg">{t('loadingText')}</p>
+        </div>
+      </div>
+    );
   }
 
   return (

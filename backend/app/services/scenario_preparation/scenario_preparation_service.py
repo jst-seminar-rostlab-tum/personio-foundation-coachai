@@ -12,7 +12,7 @@ from sqlmodel import Session as DBSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from app.connections.vertexai_client import call_structured_llm
-from app.enums.language import LanguageCode
+from app.enums.language import LANGUAGE_NAME, LanguageCode
 from app.enums.scenario_preparation_status import ScenarioPreparationStatus
 from app.models.scenario_preparation import ScenarioPreparation
 from app.schemas.scenario_prep_config import ScenarioPrepConfigRead
@@ -70,7 +70,9 @@ def generate_objectives(request: ObjectivesCreate, hr_docs_context: str = '') ->
 
     example_items = '\n'.join(mock_response.items)
 
+    lang_name = LANGUAGE_NAME.get(lang, 'English')
     user_prompt = (
+        f'Please write the following response in {lang_name}.\n\n'
         f'Generate {request.num_objectives} clear, specific training objectives based on '
         f'the following case:\n'
         f'Each item should be a single, concise sentence,'
@@ -110,7 +112,9 @@ def generate_checklist(request: ChecklistCreate, hr_docs_context: str = '') -> l
 
     example_items = '\n'.join(mock_response.items)
 
+    lang_name = LANGUAGE_NAME.get(lang, 'English')
     user_prompt = (
+        f'Please write the following response in {lang_name}.\n\n'
         f'Generate {request.num_checkpoints} checklist items for'
         f' the following conversation scenario:\n'
         f'Each item should be a single, concise sentence,'
@@ -137,9 +141,13 @@ def generate_checklist(request: ChecklistCreate, hr_docs_context: str = '') -> l
 
 
 def build_key_concept_prompt(
-    request: KeyConceptsCreate, example: str, hr_docs_context: str = ''
+    request: KeyConceptsCreate,
+    example: str,
+    hr_docs_context: str = '',
+    language_name: str = 'English',
 ) -> str:
     return f"""
+Please write the following response in {language_name}.\n\n
 Based on the HR professionals conversation scenario below, 
 generate 3-4 key concepts for the conversation.
 
@@ -190,8 +198,9 @@ def generate_key_concept(request: KeyConceptsCreate, hr_docs_context: str = '') 
     mock_response = settings.mocks.key_concepts
     system_prompt = settings.system_prompts.key_concepts
 
+    lang_name = LANGUAGE_NAME.get(lang, 'English')
     prompt = build_key_concept_prompt(
-        request, mock_response.model_dump_json(indent=4), hr_docs_context
+        request, mock_response.model_dump_json(indent=4), hr_docs_context, lang_name
     )
 
     result = call_structured_llm(
