@@ -16,7 +16,7 @@ client = Client(account_sid, auth_token) if twilio_configured else None
 def send_verification_code(phone_number: str) -> str:
     if not twilio_configured:
         print('Twilio not configured - skipping verification code send')
-        return 'pending'  # Return pending to simulate successful send
+        return 'failed'  # Return pending to simulate successful send
 
     try:
         verification = client.verify.v2.services(verify_sid).verifications.create(
@@ -25,7 +25,7 @@ def send_verification_code(phone_number: str) -> str:
         return verification.status
     except Exception as e:
         print(f'Error sending verification code: {e}')
-        return 'pending'  # Return failed as fallback
+        return 'failed'  # Return failed as fallback
 
 
 def check_verification_code(phone_number: str, code: str) -> bool:
