@@ -35,18 +35,12 @@ def send_verification(req: VerificationCodeCreate) -> None:
 
 @router.post('/verify-code', response_model=None)
 def verify_code(req: VerificationCodeConfirm) -> None:
-    try:
-        verification_status = check_verification_code(req.phone_number, req.code)
-        if verification_status != 'approved':
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Invalid verification code',
-            )
-    except Exception as e:
+    verification_status = check_verification_code(req.phone_number, req.code)
+    if verification_status != 'approved':
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        ) from e
+            detail='Invalid verification code',
+        )
 
 
 @router.post('', response_model=None, status_code=status.HTTP_201_CREATED)
