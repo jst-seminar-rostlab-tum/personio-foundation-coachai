@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Download, Trash2, Server, Lock } from 'lucide-react';
+import { Download, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
@@ -17,7 +17,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
   const tCommon = useTranslations('Common');
   const dataProcessingTopics = t.raw('dataProcessing.topics') as DataProcessingTopic[];
 
-  const externalServices = t.raw('security.externalServices.services') as string[];
+  const externalServices = t.raw('externalServices.services') as string[];
 
   const DataProcessingCard = ({ item }: { item: DataProcessingTopic }) => (
     <div className="border rounded-lg p-4" key={item.key}>
@@ -118,59 +118,20 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
             </Card>
           </section>
 
-          <section aria-labelledby="security-title">
+          <section aria-labelledby="external-services-title">
             <Card>
               <CardHeader>
-                <CardTitle id="security-title">
-                  <div className="flex items-center justify-center gap-2">
-                    {t('security.title')}
-                  </div>
+                <CardTitle id="external-services-title">
+                  <span>{t('externalServices.title')}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  <div className="flex items-start gap-3">
-                    <Server
-                      className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mt-0.5 flex-shrink-0"
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <h4 className="font-semibold text-base sm:text-base">
-                        {t('security.euServers.title')}
-                      </h4>
-                      <p className="text-base sm:text-base text-gray-600 mt-1">
-                        {t('security.euServers.description')}
-                      </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {externalServices.map((service, idx) => (
+                    <div key={idx} className="flex items-center gap-3 border rounded-lg px-4 py-3">
+                      <span className="font-medium text-base text-gray-800">{service}</span>
                     </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Lock
-                      className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 mt-0.5 flex-shrink-0"
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <h4 className="font-semibold text-base sm:text-base">
-                        {t('security.encryption.title')}
-                      </h4>
-                      <p className="text-base sm:text-base text-gray-600 mt-1">
-                        {t('security.encryption.description')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-4 border-t">
-                  <h4 className="font-semibold mb-3 text-base sm:text-base">
-                    {t('security.externalServices.title')}
-                  </h4>
-                  <div className="text-base sm:text-base text-gray-600 space-y-2">
-                    {externalServices.map((service, idx) => (
-                      <p key={idx}>
-                        • <strong>{service}</strong>
-                      </p>
-                    ))}
-                  </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
