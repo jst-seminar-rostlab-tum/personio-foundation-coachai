@@ -206,13 +206,15 @@ class RealtimeSessionService:
         language = conversation_scenario.language_code.value
 
         logging.info(f'Final prompt:\n{instructions}')
-        # Write the instructions to a text file for debugging/auditing
-        instructions_path = os.path.join(
-            os.path.dirname(__file__), '..', 'logs', f'instructions_{session.id}.txt'
-        )
-        os.makedirs(os.path.dirname(instructions_path), exist_ok=True)
-        with open(instructions_path, 'w', encoding='utf-8') as f:
-            f.write(instructions)
+
+        if settings.STORE_PROMPTS:
+            # Write the instructions to a text file for debugging/auditing
+            instructions_path = os.path.join(
+                os.path.dirname(__file__), '..', 'logs', f'instructions_{session.id}.txt'
+            )
+            os.makedirs(os.path.dirname(instructions_path), exist_ok=True)
+            with open(instructions_path, 'w', encoding='utf-8') as f:
+                f.write(instructions)
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 'https://api.openai.com/v1/realtime/sessions',

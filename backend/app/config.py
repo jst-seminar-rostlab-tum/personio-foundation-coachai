@@ -54,6 +54,8 @@ class Settings(BaseSettings):
     DEV_MODE_SKIP_AUTH: bool = True
     DEV_MODE_MOCK_ADMIN_ID: UUID = MockUserIdsEnum.ADMIN.value
 
+    STORE_PROMPTS: bool = False
+
     DEMO_USER_EMAIL: str = 'mockuser@example.com'
     DEMO_USER_PASSWORD: str = 'mockuserpassword'
 
