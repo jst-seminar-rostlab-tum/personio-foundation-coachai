@@ -21,7 +21,6 @@ export function useRemoteAudioRecorder() {
     return new Promise((resolve) => {
       const recorder = mediaRecorderRef.current;
       if (!recorder) {
-        console.warn('No active remote recording to stop');
         resolve(new Blob());
         return;
       }
