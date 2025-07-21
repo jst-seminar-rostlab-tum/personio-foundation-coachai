@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Download, Trash2, Server, Lock } from 'lucide-react';
+import { Download, Trash2, Lock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
@@ -17,15 +17,15 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
   const tCommon = useTranslations('Common');
   const dataProcessingTopics = t.raw('dataProcessing.topics') as DataProcessingTopic[];
 
-  const externalServices = t.raw('security.externalServices.services') as string[];
+  const externalServices = t.raw('externalServices.services') as string[];
 
   const DataProcessingCard = ({ item }: { item: DataProcessingTopic }) => (
     <div className="border rounded-lg p-4" key={item.key}>
-      <div className="font-semibold text-base sm:text-base mb-2">{item.title}</div>
-      <div className="text-base sm:text-base text-gray-600 mb-3">{item.description}</div>
+      <div className="text-lg mb-2">{item.title}</div>
+      <div className="text-base text-bw-60 mb-3">{item.description}</div>
       <div className="space-y-2">
         <div>
-          <div className="font-medium text-base mb-1">{t('dataProcessing.headers.purpose')}:</div>
+          <div className="text-lg mb-1">{t('dataProcessing.headers.purpose')}:</div>
           <div className="text-base space-y-1">
             {item.purposes.map((purpose, idx) => (
               <div key={idx}>• {purpose}</div>
@@ -33,9 +33,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
           </div>
         </div>
         <div>
-          <div className="font-medium text-base mb-1">
-            {t('dataProcessing.headers.storageDuration')}:
-          </div>
+          <div className="text-lg mb-1">{t('dataProcessing.headers.storageDuration')}:</div>
           <div className="text-base space-y-1">
             {item.storage.map((storage, idx) => (
               <div key={idx}>• {storage}</div>
@@ -51,13 +49,13 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
       <table className="w-full border-collapse" role="table">
         <thead>
           <tr className="border-b">
-            <th className="text-left py-3 pr-4 font-semibold text-base sm:text-base" scope="col">
+            <th className="text-left py-3 pr-4 text-lg" scope="col">
               {t('dataProcessing.headers.personalData')}
             </th>
-            <th className="text-left py-3 pr-4 font-semibold text-base sm:text-base" scope="col">
+            <th className="text-left py-3 pr-4 text-lg" scope="col">
               {t('dataProcessing.headers.purpose')}
             </th>
-            <th className="text-left py-3 font-semibold text-base sm:text-base" scope="col">
+            <th className="text-left py-3 text-lg" scope="col">
               {t('dataProcessing.headers.storageDuration')}
             </th>
           </tr>
@@ -66,18 +64,18 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
           {items.map((item) => (
             <tr key={item.key}>
               <td className="py-4 pr-4 align-top">
-                <div className="font-medium text-base sm:text-base">{item.title}</div>
-                <div className="text-base sm:text-base text-gray-600 mt-1">{item.description}</div>
+                <div className="text-lg">{item.title}</div>
+                <div className="text-base text-bw-60 mt-1">{item.description}</div>
               </td>
               <td className="py-4 pr-4 align-top">
-                <ul className="text-base sm:text-base space-y-1" role="list">
+                <ul className="text-base space-y-1" role="list">
                   {item.purposes.map((purpose, idx) => (
                     <li key={idx}>• {purpose}</li>
                   ))}
                 </ul>
               </td>
               <td className="py-4 align-top">
-                <ul className="text-base sm:text-base space-y-1" role="list">
+                <ul className="text-base space-y-1" role="list">
                   {item.storage.map((storage, idx) => (
                     <li key={idx}>• {storage}</li>
                   ))}
@@ -118,58 +116,33 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
             </Card>
           </section>
 
-          <section aria-labelledby="security-title">
+          <section aria-labelledby="external-services-title">
             <Card>
               <CardHeader>
-                <CardTitle id="security-title">
-                  <div className="flex items-center justify-center gap-2">
-                    {t('security.title')}
-                  </div>
+                <CardTitle id="external-services-title">
+                  <span>
+                    {t('externalServices.title')} & {t('encryption.title')}
+                  </span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  <div className="flex items-start gap-3">
-                    <Server
-                      className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mt-0.5 flex-shrink-0"
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <h4 className="font-semibold text-base sm:text-base">
-                        {t('security.euServers.title')}
-                      </h4>
-                      <p className="text-base sm:text-base text-gray-600 mt-1">
-                        {t('security.euServers.description')}
-                      </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-b pb-6">
+                  {externalServices.map((service, idx) => (
+                    <div key={idx} className="flex items-center gap-3 border rounded-lg px-4 py-3">
+                      <span className="text-base">{service}</span>
                     </div>
-                  </div>
-
+                  ))}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-6">
                   <div className="flex items-start gap-3">
                     <Lock
-                      className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 mt-0.5 flex-shrink-0"
+                      className="h-4 w-4 sm:h-5 sm:w-5 text-forest-50 mt-0.5 flex-shrink-0"
                       aria-hidden="true"
                     />
                     <div>
-                      <h4 className="font-semibold text-base sm:text-base">
-                        {t('security.encryption.title')}
-                      </h4>
-                      <p className="text-base sm:text-base text-gray-600 mt-1">
-                        {t('security.encryption.description')}
-                      </p>
+                      <h4 className="text-lg">{t('encryption.title')}</h4>
+                      <p className="text-base text-bw-60 mt-1">{t('encryption.description')}</p>
                     </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-4 border-t">
-                  <h4 className="font-semibold mb-3 text-base sm:text-base">
-                    {t('security.externalServices.title')}
-                  </h4>
-                  <div className="text-base sm:text-base text-gray-600 space-y-2">
-                    {externalServices.map((service, idx) => (
-                      <p key={idx}>
-                        • <strong>{service}</strong>
-                      </p>
-                    ))}
                   </div>
                 </div>
               </CardContent>
@@ -183,33 +156,27 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
               </CardHeader>
               <CardContent className="p-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-start gap-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className="flex items-start gap-3 p-4 border rounded-lg hover:bg-bw-60 transition-colors">
                     <Trash2
-                      className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 mt-0.5 flex-shrink-0"
+                      className="h-4 w-4 sm:h-5 sm:w-5 text-flame-50 mt-0.5 flex-shrink-0"
                       aria-hidden="true"
                     />
                     <div>
-                      <h4 className="font-semibold text-base sm:text-base">
-                        {t('userRights.accountDeletion.title')}
-                      </h4>
-                      <p className="text-base sm:text-base text-gray-600 mt-1">
+                      <h4 className="text-lg">{t('userRights.accountDeletion.title')}</h4>
+                      <p className="text-base mt-1">
                         {t('userRights.accountDeletion.description')}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className="flex items-start gap-3 p-4 border rounded-lg hover:bg-bw-60 transition-colors">
                     <Download
                       className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mt-0.5 flex-shrink-0"
                       aria-hidden="true"
                     />
                     <div>
-                      <h4 className="font-semibold text-base sm:text-base">
-                        {t('userRights.dataExport.title')}
-                      </h4>
-                      <p className="text-base sm:text-base text-gray-600 mt-1">
-                        {t('userRights.dataExport.description')}
-                      </p>
+                      <h4 className="text-lg">{t('userRights.dataExport.title')}</h4>
+                      <p className="text-base mt-1">{t('userRights.dataExport.description')}</p>
                     </div>
                   </div>
                 </div>

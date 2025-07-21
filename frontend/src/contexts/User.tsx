@@ -13,6 +13,18 @@ const UserContext = createContext<UserProfile | undefined>(undefined);
 export function UserContextProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | undefined>(undefined);
   const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      router.refresh();
+    });
+
+    return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router]);
 
   useEffect(() => {
     const fetchUser = async () => {

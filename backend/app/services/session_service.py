@@ -7,6 +7,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, func, select
 
 from app.connections.gcs_client import get_gcs_audio_manager
+from app.database import get_db_session
 from app.enums.account_role import AccountRole
 from app.enums.feedback_status import FeedbackStatus
 from app.enums.scenario_preparation_status import ScenarioPreparationStatus
@@ -393,9 +394,9 @@ class SessionService:
             generate_and_store_feedback,
             session_id=session.id,
             feedback_request=request,
-            db_session=self.db,
-            user_profile=user_profile,
+            user_profile_id=user_profile.id,
             background_tasks=background_tasks,
+            session_generator_func=get_db_session,
         )
 
         # Calculate session length

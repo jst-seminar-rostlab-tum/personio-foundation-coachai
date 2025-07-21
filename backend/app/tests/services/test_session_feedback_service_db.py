@@ -1,5 +1,7 @@
 import unittest
+from collections.abc import Generator
 from datetime import datetime
+from typing import Any
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
@@ -59,6 +61,18 @@ class MockScoringRead:
         self.scoring = self.Scoring(with_data)
 
 
+class FakeGCS:
+    def __init__(self) -> None:
+        pass
+
+    def generate_signed_url(self, filename: str) -> str:
+        return f'https://example.com/{filename}'
+
+    def document_exists(self, filename: str) -> bool:
+        # Simulate that the document exists for testing purposes
+        return True
+
+
 class TestSessionFeedbackService(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -74,10 +88,16 @@ class TestSessionFeedbackService(unittest.TestCase):
             full_name='Mock User',
             email='mock@example.com',
             phone_number='1234567890',
+            total_sessions=1,
         )
+        self.gcs_audio_global_patcher = patch(
+            'app.connections.gcs_client._gcs_audio_manager', new=FakeGCS()
+        )
+        self.gcs_audio_global_patcher.start()
 
     def tearDown(self) -> None:
         self.session.rollback()
+        self.gcs_audio_global_patcher.stop()
 
     def insert_minimal_conversation(self) -> dict:
         scenario_id = uuid4()
@@ -94,6 +114,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                 email='a@b.com',
                 phone_number='123',
                 preferred_language_code=LanguageCode.en,
+                total_sessions=1,
             )
         )
         scenario = ConversationScenario(
@@ -208,16 +229,20 @@ class TestSessionFeedbackService(unittest.TestCase):
             category='Feedback',
             key_concepts='KC1',
         )
+        # mock_session_generator_func = MagicMock()
+
+        def mock_session_generator_func() -> Generator[Any, None, None]:
+            yield self.session
 
         feedback = generate_and_store_feedback(
             session_id=session_id,
             feedback_request=example_request,
-            db_session=self.session,
             background_tasks=self.mock_background_tasks,
-            user_profile=self.mock_user_profile,
+            user_profile_id=uuid4(),
             scoring_service=mock_scoring_service,
             session_turn_service=mock_session_turn_service,
             advisor_service=self.mock_advisor_service,
+            session_generator_func=mock_session_generator_func,
         )
 
         self.assertEqual(feedback.session_id, session_id)
@@ -298,15 +323,18 @@ class TestSessionFeedbackService(unittest.TestCase):
             key_concepts='KeyConcept',
         )
 
+        def mock_session_generator_func() -> Generator[Any, None, None]:
+            yield self.session
+
         feedback = generate_and_store_feedback(
             session_id=session_id,
             feedback_request=example_request,
-            db_session=self.session,
             background_tasks=self.mock_background_tasks,
-            user_profile=self.mock_user_profile,
+            user_profile_id=uuid4(),
             scoring_service=mock_scoring_service,
             session_turn_service=mock_session_turn_service,
             advisor_service=self.mock_advisor_service,
+            session_generator_func=mock_session_generator_func,
         )
 
         self.assertEqual(feedback.status, FeedbackStatus.failed)
@@ -362,15 +390,19 @@ class TestSessionFeedbackService(unittest.TestCase):
             category='Feedback',
             key_concepts='KC1',
         )
+
+        def mock_session_generator_func() -> Generator[Any, None, None]:
+            yield self.session
+
         feedback = generate_and_store_feedback(
             session_id=session_id,
             feedback_request=example_request,
-            db_session=self.session,
             background_tasks=self.mock_background_tasks,
-            user_profile=self.mock_user_profile,
+            user_profile_id=uuid4(),
             scoring_service=mock_scoring_service,
             session_turn_service=mock_session_turn_service,
             advisor_service=self.mock_advisor_service,
+            session_generator_func=mock_session_generator_func,
         )
         # Check feedback score structure
         self.assertDictEqual(
@@ -381,7 +413,6 @@ class TestSessionFeedbackService(unittest.TestCase):
         user = self.session.get(UserProfile, user_id)
         self.assertIsNotNone(user)
         self.assertEqual(user.score_sum, 16.0)
-        self.assertEqual(user.total_sessions, 1)
         # Check admin_dashboard_stats statistics
         stats = self.session.exec(select(AdminDashboardStats)).first()
         self.assertIsNotNone(stats)

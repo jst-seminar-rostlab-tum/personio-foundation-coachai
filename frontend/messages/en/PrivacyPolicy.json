@@ -19,8 +19,9 @@
         {
           "key": "accountInfo",
           "title": "Account Information",
-          "description": "E-mail, phone number, preferred language",
+          "description": "Name, e-mail, phone number, preferred language",
           "purposes": [
+            "Displaying welcome message after logging in",
             "Sign in and account management",
             "Phone number verification",
             "Set language for UI and AI"
@@ -30,12 +31,8 @@
         {
           "key": "aiPersonalization",
           "title": "AI Personalization",
-          "description": "Role, leadership experience, goals, confidence levels",
-          "purposes": [
-            "Provide tips before sessions",
-            "Personalize responses during sessions",
-            "Provide feedback after sessions"
-          ],
+          "description": "Current role, primary goals, confidence levels",
+          "purposes": ["Context for AI systems to generate personalized scenarios"],
           "storage": ["Collected at sign-up", "Retained until account deletion"]
         },
         {
@@ -43,7 +40,10 @@
           "title": "Voice Recordings",
           "description": "Audio recordings during training sessions",
           "purposes": [
-            "Allows users to review past training sessions by listening to the audio recording"
+            "Allows users to review past training sessions by listening to the audio recording",
+            "Can optionally be shared with admins when submitting a review",
+            "This is the only data that is processed in the US",
+            "Aside from CoachAI-internal storage, audio data is also stored by OpenAI for a limited time for abuse detection and similar operational needs"
           ],
           "storage": [
             "Collected at recording time",
@@ -54,8 +54,12 @@
         {
           "key": "usageMetrics",
           "title": "Usage Metrics",
-          "description": "Days logged in, training sessions, AI tokens used, ...",
-          "purposes": ["Track user progress", "Mark achievements", "Provide app usage metrics"],
+          "description": "Total number of sessions, total training time, average score, current login streak",
+          "purposes": [
+            "Track user progress",
+            "Mark achievements",
+            "Provide app usage metrics as a whole for administrators"
+          ],
           "storage": [
             "Collected at various points as the user interacts with the app",
             "Retained until account deletion"
@@ -63,35 +67,29 @@
         }
       ]
     },
-    "security": {
-      "title": "Security & Data Protection",
-      "euServers": {
-        "title": "EU-Based Servers",
-        "description": "All data is stored and processed on servers located in the European Union"
-      },
-      "encryption": {
-        "title": "Encryption",
-        "description": "Data is encrypted both in-transit and at-rest for maximum security"
-      },
-      "externalServices": {
-        "title": "External Service Providers",
-        "services": [
-          "Vercel - EU servers and global CDN",
-          "Supabase - EU servers",
-          "Fly.io - EU servers",
-          "GCP - EU servers"
-        ]
-      }
+    "encryption": {
+      "title": "Encryption",
+      "description": "Data is encrypted both in-transit and at-rest for maximum security"
+    },
+    "externalServices": {
+      "title": "Data Processors",
+      "services": [
+        "Vercel - EU servers",
+        "Supabase - EU servers",
+        "Fly.io - EU servers",
+        "GCP - EU servers",
+        "OpenAI - US servers"
+      ]
     },
     "userRights": {
       "title": "Your Rights",
       "accountDeletion": {
         "title": "Account Deletion",
-        "description": "Request permanent deletion of your account and all related data"
+        "description": "Delete your account and all related data permanently"
       },
       "dataExport": {
         "title": "Data Export",
-        "description": "Request an export of all data we have stored about you"
+        "description": "Export all data we have stored about you from the settings page"
       }
     }
   }

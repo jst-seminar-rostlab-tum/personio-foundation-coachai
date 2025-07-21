@@ -20,5 +20,6 @@
   },
   "submitError": "Error while submitting. Please try again later.",
   "submitSuccess": "Submitted successfully. Thank you!",
-  "fetchError": "Error while fetching data. Please try again later."
+  "fetchError": "Error while fetching data. Please try again later.",
+  "loadingText": "Loading feedback..."
 }

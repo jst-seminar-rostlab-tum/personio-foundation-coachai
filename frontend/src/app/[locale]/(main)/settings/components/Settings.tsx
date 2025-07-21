@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import React, { use, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { use, useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import {
@@ -20,6 +20,8 @@ import { PrimaryGoals } from '@/lib/constants/primaryGoals';
 import { UserProfile } from '@/interfaces/models/UserProfile';
 import { showErrorToast, showSuccessToast } from '@/lib/utils/toast';
 import { api } from '@/services/ApiClient';
+import { UpdateEmailHandler } from '@/components/common/UpdateEmailHandler';
+import { Mail } from 'lucide-react';
 import UserPreferences from './UserPreferences';
 import { ExportUserHandler } from './ExportUserHandler';
 
@@ -69,6 +71,19 @@ export default function Settings({ userProfile }: SettingsProps) {
   const [savedConversation, setSavedConversation] = useState(
     getConfidenceScores(userProfileData, 'leading_challenging_conversations')[0]
   );
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const updateEmailError = searchParams.get('updateEmailError');
+    if (updateEmailError) {
+      showErrorToast(updateEmailError, `${t('updateEmailError')}: ${updateEmailError}`);
+    }
+    const emailUpdatedSuccess = searchParams.get('emailUpdatedSuccess');
+    if (emailUpdatedSuccess) {
+      showSuccessToast(t('emailUpdatedSuccess'));
+    }
+    // eslint-disable-next-line
+  }, [searchParams, t]);
 
   const hasFormChanged = () => {
     return (
@@ -171,6 +186,19 @@ export default function Settings({ userProfile }: SettingsProps) {
                   </div>
                   <div className="flex items-center">
                     <ExportUserHandler />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between w-full mt-4 px-2 gap-8">
+                  <div className="flex flex-col">
+                    <div className="text-bw-70">{t('updateEmail')}</div>
+                  </div>
+                  <div className="flex items-center">
+                    <UpdateEmailHandler>
+                      <Button variant="outline" className="w-full">
+                        <Mail className="w-4 h-4" />
+                        <span className="hidden sm:inline">{t('updateEmail')}</span>
+                      </Button>
+                    </UpdateEmailHandler>
                   </div>
                 </div>
                 {/* Delete Account */}

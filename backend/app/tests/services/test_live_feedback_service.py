@@ -1,10 +1,13 @@
 import json
 import unittest
+from collections.abc import Generator
 from datetime import datetime, timedelta
+from typing import Any
 from unittest.mock import MagicMock, patch
 from uuid import UUID, uuid4
 
 from sqlmodel import Session, SQLModel, create_engine, select
+from sqlmodel import Session as DBSession
 
 from app.enums.speaker import SpeakerType
 from app.models.live_feedback_model import LiveFeedback
@@ -22,9 +25,10 @@ class TestLiveFeedbackService(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.engine = create_engine('sqlite:///:memory:')
         SQLModel.metadata.create_all(cls.engine)
+        cls.SessionLocal = DBSession(cls.engine)
 
     def setUp(self) -> None:
-        self.session: Session = Session(self.engine)
+        self.session: Session = self.SessionLocal
 
     def tearDown(self) -> None:
         self.session.rollback()
@@ -132,7 +136,12 @@ class TestLiveFeedbackService(unittest.TestCase):
         mock_analyze_voice.return_value = mock_return_value_audio
         mock_call_structured_llm.return_value = mock_feedback
 
-        result = generate_and_store_live_feedback(self.session, session_id, session_turn_context)
+        def mock_session_generator_func() -> Generator[Any, None, None]:
+            yield self.session
+
+        result = generate_and_store_live_feedback(
+            mock_session_generator_func, session_id, session_turn_context
+        )
         stored_items = self.session.exec(
             select(LiveFeedback).where(LiveFeedback.session_id == session_id)
         ).all()
@@ -160,6 +169,11 @@ class TestLiveFeedbackService(unittest.TestCase):
         session_id = uuid4()
         session_turn_context = self.get_session_turn(session_id, make_empty=True)
 
-        result = generate_and_store_live_feedback(self.session, session_id, session_turn_context)
+        def mock_session_generator_func() -> Generator[Any, None, None]:
+            yield self.session
+
+        result = generate_and_store_live_feedback(
+            mock_session_generator_func, session_id, session_turn_context
+        )
 
         self.assertIsNone(result)

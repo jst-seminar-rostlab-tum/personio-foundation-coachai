@@ -25,7 +25,7 @@
   "logout": "Abmelden",
   "admin": "Admin",
   "totalSessions": "Sitzungen",
-  "avgScore": "Durchschnittliche Bewertung",
+  "avgScore": "∅ Bewertung",
   "reviews": "Bewertungen",
   "delete": "Löschen",
   "genericError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
@@ -57,5 +57,6 @@
   "emailInputPlaceholder": "Bitte geben Sie Ihre E-Mail-Adresse ein",
   "emailInputError": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
   "aiDisclaimer": "KI-Systeme können unbeabsichtigt schädliche oder anstößige Inhalte produzieren",
-  "aiGeneratedDisclaimer": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich unten bereitgestellten Quellen generiert"
+  "aiGeneratedDisclaimer": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich unten bereitgestellten Quellen generiert",
+  "aiGeneratedDisclaimer2": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich auf der Vorbereitungsseite bereitgestellten Quellen generiert"
 }

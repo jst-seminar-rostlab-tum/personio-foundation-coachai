@@ -19,8 +19,9 @@
         {
           "key": "accountInfo",
           "title": "Kontoinformationen",
-          "description": "E-Mail, Telefonnummer, bevorzugte Sprache",
+          "description": "Name, E-Mail, Telefonnummer, bevorzugte Sprache",
           "purposes": [
+            "Anzeigen von Willkommensnachricht nach Login",
             "Anmeldung und Kontoverwaltung",
             "Telefonnummernverifizierung",
             "Sprache für Benutzeroberfläche und KI festlegen"
@@ -30,19 +31,20 @@
         {
           "key": "aiPersonalization",
           "title": "KI-Personalisierung",
-          "description": "Rolle, Führungserfahrung, Ziele, Selbstvertrauen",
-          "purposes": [
-            "Tipps vor Sitzungen bereitstellen",
-            "Antworten während Sitzungen personalisieren",
-            "Feedback nach Sitzungen geben"
-          ],
+          "description": "Aktuelle Rolle, Primäre Ziele, Selbstvertrauen",
+          "purposes": ["Kontext für KI-Systeme zur Erstellung personalisierter Szenarien"],
           "storage": ["Erhoben bei der Anmeldung", "Gespeichert bis zur Kontolöschung"]
         },
         {
           "key": "voiceRecordings",
           "title": "Sprachaufzeichnungen",
           "description": "Audioaufnahmen während Trainingssitzungen",
-          "purposes": ["Ermöglicht das Anhören vergangener Trainingssitzungen"],
+          "purposes": [
+            "Ermöglicht es den Nutzern, vergangene Sessions durch Anhören der Audioaufzeichnung zu überprüfen",
+            "Kann optional mit Admins geteilt werden, wenn eine Bewertung eingereicht wird",
+            "Dies sind die einzigen Daten, die in den USA verarbeitet werden",
+            "Abgesehen von der CoachAI-internen Speicherung werden Audiodaten auch von OpenAI für eine begrenzte Zeit zur Missbrauchserkennung und für ähnliche betriebliche Zwecke gespeichert"
+          ],
           "storage": [
             "Erhoben zum Zeitpunkt der Aufnahme",
             "Für 90 Tage gespeichert, wenn Zustimmung erteilt wurde",
@@ -52,7 +54,7 @@
         {
           "key": "usageMetrics",
           "title": "Nutzungsmetriken",
-          "description": "Nutzungstage, Trainingssitzungen, verwendete KI-Tokens, ...",
+          "description": "Gesamtanzahl an Sessions, gesamte Trainingszeit, Durchschnittsscore, aktuelle Login Streak",
           "purposes": [
             "Benutzerfortschritt verfolgen",
             "Erfolge kennzeichnen",
@@ -62,35 +64,29 @@
         }
       ]
     },
-    "security": {
-      "title": "Sicherheit & Datenschutz",
-      "euServers": {
-        "title": "EU-basierte Server",
-        "description": "Alle Daten werden auf Servern innerhalb der Europäischen Union gespeichert und verarbeitet"
-      },
-      "encryption": {
-        "title": "Verschlüsselung",
-        "description": "Daten werden sowohl während der Übertragung als auch im Ruhezustand verschlüsselt"
-      },
-      "externalServices": {
-        "title": "Externe Dienstleister",
-        "services": [
-          "Vercel – EU-Server und globales CDN",
-          "Supabase – EU-Server",
-          "Fly.io – EU-Server",
-          "GCP – EU-Server"
-        ]
-      }
+    "encryption": {
+      "title": "Verschlüsselung",
+      "description": "Daten werden sowohl während der Übertragung als auch im Ruhezustand verschlüsselt"
+    },
+    "externalServices": {
+      "title": "Auftragsverarbeiter",
+      "services": [
+        "Vercel – EU-Server",
+        "Supabase – EU-Server",
+        "Fly.io – EU-Server",
+        "GCP – EU-Server",
+        "OpenAI - US-Server"
+      ]
     },
     "userRights": {
       "title": "Ihre Rechte",
       "accountDeletion": {
         "title": "Kontolöschung",
-        "description": "Fordern Sie die dauerhafte Löschung Ihres Kontos und aller zugehörigen Daten an"
+        "description": "Löschen Sie Ihr Konto und aller zugehörigen Daten dauerhaft"
       },
       "dataExport": {
         "title": "Datenexport",
-        "description": "Fordern Sie einen Export aller über Sie gespeicherten Daten an"
+        "description": "Exportieren Sie alle zu Ihnen gespeicherten Daten über die Einstellungen"
       }
     }
   }

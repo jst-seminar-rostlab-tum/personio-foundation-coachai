@@ -9,6 +9,7 @@ from sqlmodel import select
 
 from app.config import settings
 from app.enums.account_role import AccountRole
+from app.enums.language import LANGUAGE_NAME
 from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
@@ -140,15 +141,23 @@ class RealtimeSessionService:
             conversation_category_name = 'Custom Conversation'
 
         instructions = (
-            f"Your user wants to practice conversations about '{conversation_category_name}'. "
-            f'Your job is to simulate the other party in that conversation.\n'
-            f'Therefore adopt the following persona:\n {conversation_scenario.persona}\n\n'
-            f'Stay in that character, respond naturally, and encourage realistic dialogue.'
-            f'To have a better understanding of the background of the conversation about'
-            f"'{conversation_category_name}' here are some more background informations:\n"
-            f'{conversation_scenario.situational_facts}\n\n'
+            # 1) System‑level framing: who you are, what your role is
+            f'Always respond in {LANGUAGE_NAME.get(conversation_scenario.language_code)}! '
+            'Never respond in any other language.\n'
+            f'You are an employee named {conversation_scenario.persona_name} '
+            'dedicated to helping people practice real‑time HR conversations.\n'
+            'You (the assistant) are playing the role of the employee or candidate '
+            'in the scenario.\n\n'
+            # 3) Persona and scenario
+            f'Your persona for this exercise:\n{conversation_scenario.persona}\n\n'
+            f'Situational context:\n{conversation_scenario.situational_facts}\n\n'
+            # 4) Instructions for behavior
+            '— Stay fully in character as the employee/candidate; do not switch roles.\n'
+            '— Respond naturally and challenge the user with realistic questions or objections.\n'
+            # 5) Goal reminder
+            'Your goal is to help the user practice conversations about '
+            f'“{conversation_category_name}.”\n'
         )
-
         persona_difficulty_modifier = self.get_persona_difficulty_modifier(
             conversation_scenario.persona_name, conversation_scenario.difficulty_level
         )
@@ -158,14 +167,26 @@ class RealtimeSessionService:
                 f' {persona_difficulty_modifier}'
             )
             instructions += (
-                f'The following difficulty modifiers apply:\n'
-                f'{json.dumps(persona_difficulty_modifier, indent=2)}\n\n'
+                'The following section defines your expected behavioral patterns and '
+                'tone — please ensure you adhere to these guidelines and '
+                'language style throughout the interaction:'
+                f'\n{json.dumps(persona_difficulty_modifier, indent=2)}\n\n'
             )
         else:
             logging.warning(
                 'No persona difficulty modifier found for'
                 f' persona {conversation_scenario.persona_name}'
                 f' and difficulty {conversation_scenario.difficulty_level}'
+            )
+
+        if conversation_scenario.difficulty_level:
+            difficulty_map = {'easy': 'mild', 'medium': 'normal', 'hard': 'strong'}
+            emotional_intensity = difficulty_map.get(
+                conversation_scenario.difficulty_level, conversation_scenario.difficulty_level
+            )
+            instructions += (
+                f'Make your emotional responses {emotional_intensity}. '
+                'Please adjust your responses accordingly.\n\n'
             )
 
         if conversation_category and conversation_category.initial_prompt:
@@ -185,6 +206,15 @@ class RealtimeSessionService:
         language = conversation_scenario.language_code.value
 
         logging.info(f'Final prompt:\n{instructions}')
+
+        if settings.STORE_PROMPTS:
+            # Write the instructions to a text file for debugging/auditing
+            instructions_path = os.path.join(
+                os.path.dirname(__file__), '..', 'logs', f'instructions_{session.id}.txt'
+            )
+            os.makedirs(os.path.dirname(instructions_path), exist_ok=True)
+            with open(instructions_path, 'w', encoding='utf-8') as f:
+                f.write(instructions)
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 'https://api.openai.com/v1/realtime/sessions',

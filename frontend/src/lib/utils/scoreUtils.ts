@@ -7,7 +7,7 @@ export const calculateAverageScore = (scoreSum: number, totalSessions: number): 
   )
     return '-';
 
-  const averageScorePercentage = Math.round(scoreSum / totalSessions);
+  const averageScorePercentage = Math.round((scoreSum / totalSessions) * 10) / 10;
   const averageScore = averageScorePercentage.toFixed(1);
 
   return averageScore;
