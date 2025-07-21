@@ -101,7 +101,8 @@ def generate_live_feedback_item(
 
     2. Generate EXACTLY 1 feedback item, which should be concise (1-10 words).
     3. For the heading, use categories like: Tone, Clarity, Engagement, Next Step, or Content. 
-    Always translate those in the target language.
+    Always translate those in the target language. For example in 'de' (German): 
+    Ton, Klarheit, Engagement, Nächster Schritt, Inhalt.
     4. Each new feedback item should have a different heading from the previous 4 feedback items.
     5. Feedback must be consistent with prior suggestions.
     6. Avoid rephrasing or repeating previous feedback items when possible.
@@ -138,6 +139,7 @@ def generate_and_store_live_feedback(
     session_id: UUID,
     session_turn_context: SessionTurn,
     hr_docs_context: str = '',
+    language: str = 'en',
 ) -> LiveFeedback | None:
     session_gen = session_generator_func()
     try:
@@ -147,10 +149,6 @@ def generate_and_store_live_feedback(
         db_session.commit()
         formatted_lines = format_feedback_lines(feedback_items)
         previous_feedback = '\n'.join(formatted_lines)
-        try:
-            language = session_turn_context.session.scenario.language_code.name
-        except Exception:
-            language = 'en'
 
         if not any(
             [
