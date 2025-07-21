@@ -19,9 +19,11 @@ from app.schemas.advisor_response import AdvisorResponse
 from app.schemas.user_profile import ScenarioAdvice
 
 mock_persona = """
-                **Name**: Positive Pam
-                **Personality**: Upbeat, eager to please, growth-oriented, avoids negativity
-                **Behavioral Traits**:
+                Personality:
+                - Upbeat
+                - Eager to please
+                - growth-oriented, avoids negativity
+                Behavioral Traits:
                 - Overly agreeable 
                 — avoids conflict or disagreement
                 - Deflects criticism with enthusiasm ("I'll fix it!")
@@ -29,36 +31,36 @@ mock_persona = """
                 - Pushes for promotions or more responsibility before ready
                 - Uses toxic positivity to dismiss serious concerns
                 
-                **Training Focus**:
+                Training Focus:
                 - Delivering constructive feedback without sugarcoating
                 - Encouraging honest reflection and accountability
                 - Identifying signs of masked stress or burnout
                 - Setting realistic growth expectations
                 - Navigating emotionally complex conversations with high performers
                 
-                **Company Position**: Development Coordinator (5 years experience)
+                Company Position: Development Coordinator (5 years experience)
 """
 
 mock_situational_facts = """
-                **Positive Performance**
+                Positive Performance
                 - Pam developed two successful community outreach pilots.
                 - Partners often compliment Pam's creativity and energy.
 
-                **Areas for Improvement**
+                Areas for Improvement
                 - Pam sometimes misses internal deadlines for reports and data submissions.
                 - Team members report Pam can be hard to reach on short notice.
 
-                **Review Outcome**
+                Review Outcome
                 - Overall rating is "Meets Expectations" — strong external impact but inconsistency 
                 in internal follow-through prevented "Exceeds Expectations".
                 - A standard 3% merit raise will be applied, same as most peers.
 
-                **Organizational Context**
+                Organizational Context
                 - The NGO emphasizes reliability to secure renewed donor funding.
                 - This review cycle is slightly stricter due to new funder accountability 
                 requirements.
 
-                **Silver Lining**
+                Silver Lining
                 - The manager believes Pam can reach "Exceeds Expectations" next year with more 
                 consistent internal coordination.
 """
@@ -235,66 +237,61 @@ class AdvisorService:
         1. category_id: Category of a training scenario. Choose ONE of the following: 
         performance_reviews, giving_feedback, salary_discussions and conflict_resolution. 
         Formatting is always in snake case.
-        2. persona: A description of the AI persona, who the user will train with. The description 
-        always has the bullet points: Name, Persona, Behavioral Traits, Training Focus and Company 
-        Position. Try to choose personas in even distributions, do NOT prefer one over the others.
-        The **Name** is ALWAYS one of these: 'Positive Pam', 'Angry Alex', 'Shy Sandra', 
-        'Casual Candace' and 'Low-Energy Leo'.
-        The **Personality** and **Behavioral Traits** should always be fitting to the name, 
-        e.g. **Name** Shy Sandra then **Personality** Quiet, reserved, conflict-avoidant, anxious
-         about saying the wrong thing
-        Format it like this:
-                **Name**: Positive Pam
-                **Personality**: Upbeat, eager to please, growth-oriented, avoids negativity
-                **Behavioral Traits**:
+        2. persona_name: Emotion type of the AI persona, who the user will train with.
+        Always choose one of these: 'angry', 'positive', 'casual', 'shy', 'sad'
+        3. persona: A description of the AI persona, who the user will train with. The description 
+        always has the bullet point groups: Persona, Behavioral Traits and Training Focus. 
+        The 'persona' should be generated based on the 'persona_name'. 
+        Always generate this in {language_code} language.
+        e.g. if 'persona_name' is 'positive' then generate and format 'persona' like this:
+                Personality:
+                - Upbeat
+                - Eager to please
+                - Growth-oriented
+                - Avoids negativity
+                Behavioral Traits:
                 - Overly agreeable 
                 — avoids conflict or disagreement
                 - Deflects criticism with enthusiasm ("I'll fix it!")
                 - Often hides stress or burnout behind optimism
                 - Pushes for promotions or more responsibility before ready
                 - Uses toxic positivity to dismiss serious concerns
-
-                **Training Focus**:
+                Training Focus:
                 - Delivering constructive feedback without sugarcoating
                 - Encouraging honest reflection and accountability
                 - Identifying signs of masked stress or burnout
                 - Setting realistic growth expectations
                 - Navigating emotionally complex conversations with high performers
-
-                **Company Position**: Development Coordinator (5 years experience)
-        3. persona_name: Name of the AI persona, who the user will train with. It depends on the 
-        attribute **Name** of 'persona'. Here is the mapping of the attributes 
-        'persona' -> 'persona_name'
-        'Positive Pam' -> 'positive',
-        'Angry Alex' -> 'angry',
-        'Shy Sandra' -> 'shy',
-        'Casual Candace' -> 'casual',
-        'Low-Energy Leo' -> 'sad'
-        Always choose one of those options.
-        4. situational_facts: Context of the training scenario and category_id. 
+        4. situational_facts: Context of the training scenario with a given persona and category_id
         Make sure the situational facts fit the category_id, e.g. for a category_id 
-        'salary_discussions', the situational_facts should be about giving feedback
+        'Giving Feedback', the situational_facts should be about giving feedback.
+        Never use "you". Always generate this in {language_code} language.
+        If you need to use a name for referencing the AI persona, 
+        use the following mapping from 'persona_name' to a name:
+        'angry'-> Alex,
+        'positive' -> Pam, 
+        'casual' -> Candace,
+        'shy' -> Sandra,
+        'sad' -> Leo
         They should be formatted as follows:
         
-                **Current Salary**
-                - Sandra earns slightly below the midpoint for Program Officers in this NGO.
-                - Last annual raise was 4%.
-
-                **Performance Context**
-                - Solid on creative outreach and community partnerships.
-                - Mixed record on deadlines and internal coordination.
-
-                **Recent Request**
-                - Last week, Sandra emailed HR asking for a 10% raise, citing cost of living and 
-                workload growth.
-
-                **Organizational Context**
-                - The NGO faces tight budgets due to a new funder's spending cap.
-                - Managers can approve up to 3% merit raise without director sign-off.
-
-                **Silver Lining**
-                - Peers respect Sandra's community engagement; manager has praised initiative on 
-                outreach campaigns.
+                Missed Deadlines
+                - Quarterly partner-impact report arrived 5 days late despite reminders.
+                - Field-visit summary incomplete; colleague had to rewrite it under pressure.
+                Attendance
+                - In the last 2 months, the other party skipped 4 of 8 team check-ins without 
+                notice.
+                - When present, often keeps camera off and engages minimally.
+                Peer Feedback
+                - Two colleagues needed multiple nudges for inputs.
+                - One now avoids assigning shared tasks to the other party due to reliability 
+                concerns.
+                Prior Support
+                - Six weeks ago, the manager set clear expectations and a prioritization plan.
+                - Calendar tips and admin help were offered; little improvement seen.
+                Silver Lining
+                - The other party shows real creativity in outreach planning and still has growth 
+                potential.
             
         5. difficulty_level: How difficult the conversation should be. 
         Choose one of those options: 'easy', 'medium', 'hard'
@@ -344,8 +341,8 @@ if __name__ == '__main__':
     print('Mascot speech:', scenario_advice.mascot_speech)
     print('scenario.category_id:', scenario_advice.scenario.category_id)
     print('scenario.custom_category_label:', scenario_advice.scenario.custom_category_label)
-    print('scenario.persona:', scenario_advice.scenario.persona)
     print('scenario.persona_name:', scenario_advice.scenario.persona_name)
+    print('scenario.persona:', scenario_advice.scenario.persona)
     print('scenario.situational_facts:', scenario_advice.scenario.situational_facts)
     print('scenario.difficulty_level:', scenario_advice.scenario.difficulty_level)
     print('scenario.language_code:', scenario_advice.scenario.language_code)
