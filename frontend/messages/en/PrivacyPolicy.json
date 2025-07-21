@@ -67,10 +67,14 @@
         }
       ]
     },
+    "encryption": {
+      "title": "Encryption",
+      "description": "Data is encrypted both in-transit and at-rest for maximum security"
+    },
     "externalServices": {
-      "title": "External Service Providers",
+      "title": "Data Processors",
       "services": [
-        "Vercel - EU servers and global CDN",
+        "Vercel - EU servers",
         "Supabase - EU servers",
         "Fly.io - EU servers",
         "GCP - EU servers",
@@ -81,7 +85,7 @@
       "title": "Your Rights",
       "accountDeletion": {
         "title": "Account Deletion",
-        "description": "Request permanent deletion of your account and all related data"
+        "description": "Delete your account and all related data permanently"
       },
       "dataExport": {
         "title": "Data Export",

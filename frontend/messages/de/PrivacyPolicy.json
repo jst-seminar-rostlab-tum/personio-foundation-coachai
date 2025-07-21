@@ -64,10 +64,14 @@
         }
       ]
     },
+    "encryption": {
+      "title": "Verschlüsselung",
+      "description": "Daten werden sowohl während der Übertragung als auch im Ruhezustand verschlüsselt"
+    },
     "externalServices": {
-      "title": "Externe Dienstleister",
+      "title": "Auftragsverarbeiter",
       "services": [
-        "Vercel – EU-Server und globales CDN",
+        "Vercel – EU-Server",
         "Supabase – EU-Server",
         "Fly.io – EU-Server",
         "GCP – EU-Server",
@@ -78,7 +82,7 @@
       "title": "Ihre Rechte",
       "accountDeletion": {
         "title": "Kontolöschung",
-        "description": "Fordern Sie die dauerhafte Löschung Ihres Kontos und aller zugehörigen Daten an"
+        "description": "Löschen Sie Ihr Konto und aller zugehörigen Daten dauerhaft"
       },
       "dataExport": {
         "title": "Datenexport",
