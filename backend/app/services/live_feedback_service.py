@@ -138,7 +138,7 @@ def generate_and_store_live_feedback(
     session_id: UUID,
     session_turn_context: SessionTurn,
     hr_docs_context: str = '',
-) -> LiveFeedbackLlmOutput | None:
+) -> LiveFeedback | None:
     session_gen = session_generator_func()
     try:
         db_session: DBSession = next(session_gen)
@@ -185,7 +185,7 @@ def generate_and_store_live_feedback(
                 db_session.add(live_feedback_item_db)
                 db_session.commit()
                 db_session.refresh(live_feedback_item_db)
-                return live_feedback_item
+                return live_feedback_item_db
             except Exception as e:
                 logging.info('[ERROR] Failed to store live feedback:', e)
                 db_session.rollback()
