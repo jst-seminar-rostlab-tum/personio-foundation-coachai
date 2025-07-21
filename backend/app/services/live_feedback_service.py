@@ -149,7 +149,7 @@ def generate_and_store_live_feedback(
         previous_feedback = '\n'.join(formatted_lines)
         try:
             language = session_turn_context.session.scenario.language_code.name
-        except AttributeError:
+        except Exception:
             language = 'en'
 
         if not any(
