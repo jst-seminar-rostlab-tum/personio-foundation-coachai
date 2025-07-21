@@ -148,9 +148,9 @@ def generate_and_store_live_feedback(
         formatted_lines = format_feedback_lines(feedback_items)
         previous_feedback = '\n'.join(formatted_lines)
         try:
-          language = session_turn_context.session.scenario.language_code.name
+            language = session_turn_context.session.scenario.language_code.name
         except AttributeError:
-          language = 'en'
+            language = 'en'
 
         if not any(
             [
@@ -168,6 +168,7 @@ def generate_and_store_live_feedback(
                     session_turn_context,
                     previous_feedback,
                     hr_docs_context,
+                    language,
                 )
 
                 try:
@@ -184,7 +185,7 @@ def generate_and_store_live_feedback(
                 db_session.add(live_feedback_item_db)
                 db_session.commit()
                 db_session.refresh(live_feedback_item_db)
-                return live_feedback_item_db
+                return live_feedback_item
             except Exception as e:
                 logging.info('[ERROR] Failed to store live feedback:', e)
                 db_session.rollback()
