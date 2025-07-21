@@ -15,10 +15,11 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 export default async function PreparationPage() {
   const t = await getTranslations('Preparation');
   const tCommon = await getTranslations('Common');
-
-  const userStats = await UserProfileService.getUserStats(api);
-
-  if (userStats.numRemainingDailySessions === 0) {
+  const userProfilePromise = UserProfileService.getUserProfile(api);
+  const userStatsPromise = UserProfileService.getUserStats(api);
+  const [userProfile, userStats] = await Promise.all([userProfilePromise, userStatsPromise]);
+  const isAdmin = userProfile.accountRole === 'admin';
+  if (userStats.numRemainingDailySessions === 0 && !isAdmin) {
     return <SessionLimitReached />;
   }
 
