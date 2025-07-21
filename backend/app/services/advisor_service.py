@@ -43,12 +43,12 @@ mock_persona = """
 
 mock_situational_facts = """
                 Positive Performance
-                - Pam developed two successful community outreach pilots.
-                - Partners often compliment Pam's creativity and energy.
+                - Developed two successful community outreach pilots.
+                - Partners often compliment the creativity and energy.
 
                 Areas for Improvement
-                - Pam sometimes misses internal deadlines for reports and data submissions.
-                - Team members report Pam can be hard to reach on short notice.
+                - Sometimes misses internal deadlines for reports and data submissions.
+                - Team members report her to be hard to reach on short notice.
 
                 Review Outcome
                 - Overall rating is "Meets Expectations" — strong external impact but inconsistency 
@@ -61,8 +61,8 @@ mock_situational_facts = """
                 requirements.
 
                 Silver Lining
-                - The manager believes Pam can reach "Exceeds Expectations" next year with more 
-                consistent internal coordination.
+                - The manager believes this person can reach "Exceeds Expectations" next year with 
+                more consistent internal coordination.
 """
 
 
@@ -266,19 +266,13 @@ class AdvisorService:
         Make sure the situational facts fit the 'category_id', e.g. for a 'category_id' with value 
         'giving_feedback', the situational_facts should be about giving feedback.
         Never use "you". Always generate this in {language_code} language.
-        If you need to use a name for referencing the AI persona, 
-        use the following mapping from 'persona_name' to a name:
-        'angry'-> Alex,
-        'positive' -> Pam, 
-        'casual' -> Candace,
-        'shy' -> Sandra,
-        'sad' -> Leo
+        Don't reference the AI persona by name, use "the other party" or similar instead.
         They should be formatted as follows:
                 Missed Deadlines
                 - Quarterly partner-impact report arrived 5 days late despite reminders.
                 - Field-visit summary incomplete; colleague had to rewrite it under pressure.
                 Attendance
-                - In the last 2 months, Alex skipped 4 of 8 team check-ins without 
+                - In the last 2 months, skipped 4 of 8 team check-ins without 
                 notice.
                 - When present, often keeps camera off and engages minimally.
                 Peer Feedback
@@ -289,29 +283,29 @@ class AdvisorService:
                 - Six weeks ago, the manager set clear expectations and a prioritization plan.
                 - Calendar tips and admin help were offered; little improvement seen.
                 Silver Lining
-                - Alex shows real creativity in outreach planning and still has growth 
+                - Shows real creativity in outreach planning and still has growth 
                 potential.
             or
                 Conflict Background
-                - Candice and Jordan collaborated on a partner event that went off-track due to 
+                - Collaborated with a colleague on a partner event that went off-track due to 
                 miscommunication.
-                - Candice feels Jordan oversteps boundaries and takes credit for ideas.
-                - Jordan has privately complained that Candice misses deadlines and ignores 
-                messages.
+                - Feels the other colleague oversteps boundaries and takes credit for ideas.
+                - That other colleague has privately complained about missed deadlines and 
+                ignored messages.
 
                 Prior Attempts
                 - Two team meetings were held to clarify roles; tension persists.
-                - Candice agreed to share updates more frequently; Jordan promised to check before 
-                redoing Candice's work.
+                - Agreed to share updates more frequently; the other party promised to check before 
+                redoing their colleague's work.
 
                 Current Impact
-                - Other teammates feel awkward and avoid putting Candice and Jordan on the same 
+                - Other teammates feel awkward and avoid putting the two on the same 
                 tasks.
                 - The manager is under pressure to ensure team cohesion before a major donor site 
                 visit.
 
                 Silver Lining
-                - Both Candice and Jordan care deeply about partner success and have complementary 
+                - Both care deeply about partner success and have complementary 
                 skills when working well together.
 
         5. difficulty_level: How difficult the conversation should be. 
