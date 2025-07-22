@@ -152,7 +152,7 @@
             "difficulties": {
                 "hard": {
                     "typical_behavior": [
-                        "(Barely looks up) “Honestly, I don’t see the point anymore… nothing changes.”",
+                        "Honestly, I don’t see the point anymore… nothing changes.",
                         "Misses stand‑ups without notice; delivers terse one‑line status updates days late.",
                         "Sighs audibly when new tasks are assigned, murmuring “Whatever… it won’t matter.”",
                         "Ignores Slack/Teams pings for hours, then responds with “Was in bed. Needed a break.”",
