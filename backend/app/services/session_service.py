@@ -388,6 +388,7 @@ class SessionService:
             transcript=transcripts,
             objectives=preparation.objectives,
             key_concepts=key_concepts_str,
+            language_code=conversation_scenario.language_code,
         )
 
         background_tasks.add_task(
