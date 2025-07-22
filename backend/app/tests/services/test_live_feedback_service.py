@@ -118,6 +118,14 @@ class TestLiveFeedbackService(unittest.TestCase):
         session_id = uuid4()
 
         session_turn_context = self.get_session_turn(session_id)
+        mock_language_code = MagicMock()
+        mock_language_code.name = 'de'
+        mock_scenario = MagicMock()
+        mock_scenario.language_code = mock_language_code
+        mock_session = MagicMock()
+        mock_session.id = session_id
+        mock_session.scenario = mock_scenario
+        session_turn_context.session = mock_session
 
         mock_feedback = LiveFeedbackLlmOutput(
             heading='Tone',
@@ -146,9 +154,11 @@ class TestLiveFeedbackService(unittest.TestCase):
 
         # Check the prompt passed to LLM
         args, kwargs = mock_call_structured_llm.call_args
-        prompt_arg = kwargs.get('request_prompt') or args[0]
+        prompt_arg = kwargs.get('request_prompt')
+        sys_prompt_arg = kwargs.get('system_prompt')
         self.assertIn(session_turn_context.text, prompt_arg)
         self.assertIn(mock_return_value_audio, prompt_arg)
+        self.assertIn('de', sys_prompt_arg)
 
         # Check DB
         self.assertEqual(len(stored_items), 1)
@@ -157,7 +167,6 @@ class TestLiveFeedbackService(unittest.TestCase):
 
     def test_generate_and_store_live_feedback_empty_turn_context(self) -> None:
         session_id = uuid4()
-
         session_turn_context = self.get_session_turn(session_id, make_empty=True)
 
         def mock_session_generator_func() -> Generator[Any, None, None]:

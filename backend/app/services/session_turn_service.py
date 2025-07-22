@@ -147,6 +147,7 @@ class SessionTurnService:
                 category=category,
             )
 
+            language = session.scenario.language_code if session.scenario else 'en'
             # Generate live feedback item in the background
             background_tasks.add_task(
                 generate_and_store_live_feedback,
@@ -154,6 +155,7 @@ class SessionTurnService:
                 session_turn_context=new_turn,
                 hr_docs_context=hr_docs_context,
                 session_generator_func=get_db_session,
+                language=language,
             )
 
         return SessionTurnRead(
