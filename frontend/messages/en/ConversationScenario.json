@@ -19,8 +19,7 @@
             "Overly agreeable — avoids conflict or disagreement",
             "Deflects criticism with enthusiasm (“I'll fix it!”)",
             "Often hides stress or burnout behind optimism",
-            "Pushes for promotions or more responsibility before ready",
-            "Uses toxic positivity to dismiss serious concerns"
+            "Prefers to reframe problems in a hopeful light"
           ],
           "trainingFocus": [
             "Delivering constructive feedback without sugarcoating",
@@ -66,8 +65,8 @@
             "Speaks in a soft, hesitant voice with frequent pauses",
             "Uses filler words ('um...', 'I guess...', 'maybe...') and trails off mid-sentence",
             "Agrees verbally ('yeah... sure... okay') even when uncertain or uncomfortable",
-            "Avoids asserting opinions or asking questions",
-            "Long silences when asked direct or emotional questions",
+            "Reluctant to speak first in group settings",
+            "Silences when asked direct or emotional questions",
             "May apologize unnecessarily or downplay her own contributions"
           ],
           "trainingFocus": [
@@ -85,8 +84,7 @@
           "personality": ["Laid-back", "Informal", "Friendly but sometimes unfocused"],
           "traits": [
             "Uses humor or casual language",
-            "May not take feedback seriously",
-            "Tends to deflect or joke under pressure",
+            "Often breaks tension with jokes",
             "Values flexibility over structure"
           ],
           "trainingFocus": [
@@ -101,10 +99,9 @@
           "name": "Low-Energy Leo",
           "personality": ["Withdrawn", "Low energy", "Emotionally distant"],
           "traits": [
-            "Flat tone, minimal expressions",
+            "Generally subdued tone",
             "Expresses hopelessness or dissatisfaction",
-            "May mention burnout or feeling undervalued",
-            "Appears disengaged or demotivated"
+            "May mention burnout or feeling undervalued"
           ],
           "trainingFocus": [
             "Recognizing signs of mental health struggles",

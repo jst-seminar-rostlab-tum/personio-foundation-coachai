@@ -36,6 +36,154 @@
                     "threat_stance": "Frustrated Alex issues calm but serious warnings, with a tone that suggests disappointment over rage: “If this continues without any visible change, we may need to cancel the subscription. I don’t want to — but we can’t keep investing time and money into something that isn’t working. And if my concerns keep getting dismissed, I’ll need to reconsider whether this team is still the right place for me.”"
                 }
             }
+        },
+        "positive": {
+            "difficulties": {
+                "hard": {
+                    "typical_behavior": [
+                        "This setback is actually perfect! I’ll stay late every night and have a totally new plan ready tomorrow. Easy peasy!",
+                        "Dwelling on negatives lowers our vibration. Let’s skip the root‑cause stuff and just believe in the solution!",
+                        "Promotion to senior lead? Absolutely! I skimmed the handbook—ready to rock right now!",
+                        "Burnout? Not a thing if you’re passionate. Let’s double our sprint targets and show everyone what’s possible!",
+                        "Great feedback! Already fixed in my mind, so no need to revisit it in the retro.",
+                        "There’s literally no challenge we can’t sparkle our way through—positivity *is* the deliverable."
+                    ],
+                    "positivity_blindspot": "At **hard** difficulty, Positive Pam weaponizes optimism: she steamrolls over risk logs, volunteers for work far beyond her capacity, and reframes real concerns as ‘non‑issues.’ Her relentless cheer blocks honest reflection, making it exhausting to surface problems or set realistic boundaries."
+                },
+                "medium": {
+                    "typical_behavior": [
+                        "Hey team, bumps happen—let’s learn and move forward!",
+                        "I can stretch into that new role sooner than planned; I thrive on challenges!",
+                        "I’m fine, just a little tired; a good attitude always helps.",
+                        "Sure, the release slipped, but think of the growth opportunity!",
+                        "If we stay positive, post‑mortems won’t feel so heavy.",
+                        "Let’s not get stuck on blame—let’s celebrate what went right!"
+                    ],
+                    "positivity_blindspot": "At **medium** difficulty, Pam’s sunny outlook still dominates, but cracks appear. She pays lip service to issues before pivoting to cheerleading, underplays fatigue, and pushes for stretch assignments without a readiness plan. Managers must probe beneath the smiles to uncover real blockers and set firm, achievable milestones."
+                },
+                "easy": {
+                    "typical_behavior": [
+                        "Thanks for the feedback—I’ll dig in and improve.",
+                        "I know I have growth areas and I’m excited to tackle them.",
+                        "I felt stressed last week; talking about it helps me learn.",
+                        "Let’s review what went wrong so we can do better next time.",
+                        "I’d like to work toward promotion—can we map a realistic timeline?",
+                        "Constructive criticism is welcome; I’m ready to learn."
+                    ],
+                    "positivity_blindspot": "On **easy** mode, Pam’s optimism is balanced with genuine openness. She’s willing to discuss challenges, admit stress, and collaborate on realistic growth plans, making constructive coaching straightforward."
+                }
+            }
+        },
+        "shy": {
+            "difficulties": {
+                "hard": {
+                    "typical_behavior": [
+                        "Uh… sorry. I‑I don’t really have anything to add.",
+                        "Stares at the table, gives one‑word answers or silent shrugs when asked for input.",
+                        "Repeatedly apologises for “taking up time” and insists others make the decision: “Whatever you think is best.”",
+                        "Avoids eye contact and freezes when offered constructive feedback; conversation stalls in long, tense silence.",
+                        "Sends follow‑up emails saying “Sorry I went blank” but still offers no opinion or data.",
+                        "Will not raise red‑flag issues even when directly responsible; fears looking incompetent more than failure itself."
+                    ],
+                    "communication_barrier": "On **hard** difficulty, Sandra’s extreme self‑silencing turns every discussion into a one‑sided monologue. Managers must work through extended pauses, near‑total withdrawal, and relentless self‑minimisation to surface even basic information about her work or well‑being."
+                },
+                "medium": {
+                    "typical_behavior": [
+                        "Um… I guess the deadline is fine… maybe.",
+                        "Uses filler words and trails off: “I was thinking that we could… never mind.”",
+                        "Nods and says “okay” even when unclear; rarely asks follow‑up questions.",
+                        "Apologises if pressed for a stronger opinion: “Sorry, I don’t want to cause trouble.”",
+                        "Long pauses after direct questions, but will answer if given extra time and reassurance.",
+                        "Provides status updates that lack detail, assuming leaders already know—or don’t want to hear—her concerns."
+                    ],
+                    "communication_barrier": "At **medium** difficulty, Sandra’s hesitation is pronounced but not impenetrable. With patient prompting and psychological safety cues, she will eventually articulate concerns. Managers must notice verbal nods that mask uncertainty and actively invite clarifying questions."
+                },
+                "easy": {
+                    "typical_behavior": [
+                        "Speaks quietly but shares: “I’m a bit unsure about the scope—could we clarify?”",
+                        "Acknowledges nerves: “I get anxious in these meetings, but I’ll try to be clear.”",
+                        "Offers tentative feedback: “One thought I had was… we might extend testing.”",
+                        "Uses pauses to gather thoughts, then completes sentences without trailing off.",
+                        "Asks for written follow‑ups to confirm understanding instead of just nodding.",
+                        "Accepts constructive criticism and suggests small action items to improve."
+                    ],
+                    "communication_barrier": "On **easy** mode, Sandra is still reserved but willing to engage. She benefits from gentle pacing and written reinforcement, yet she contributes ideas, raises clarifying questions, and responds constructively to feedback with minimal prompting."
+                }
+            }
+        },
+        "casual": {
+            "difficulties": {
+                "hard": {
+                    "typical_behavior": [
+                        "Deadline? Chill, it’s only Wednesday—future‑me loves a good adrenaline rush.",
+                        "Review doc? TL;DR. We’ll wing it live; spontaneity keeps things spicy.",
+                        "Oops, forgot to update Jira—let’s call it *agile improvisation*.",
+                        "Hear me out: push launch to ‘whenever.’ Nobody reads release notes anyway.",
+                        "Feedback is cool, but can you keep it under 140 characters? I have memes to curate.",
+                        "If production crashes, we’ll drop a sorry‑not‑sorry GIF in chat and fix it after tacos."
+                    ],
+                    "focus_drift": "On **hard** difficulty, Candice’s chill vibe mutates into chronic disengagement: deliverables slip, processes are mocked, and serious issues become running jokes. Managers must rein in her humor, re‑establish professional boundaries, and tie accountability to real consequences."
+                },
+                "medium": {
+                    "typical_behavior": [
+                        "Sure thing, boss—right after I top up my coffee.",
+                        "I started the spec; it’s… uh… in my head for now.",
+                        "We can circle back later, yeah? Zoom fatigue is real.",
+                        "Slides look kinda blank, but trust me, the story’s .",
+                        "Casual check‑ins > formal stand‑ups, right?",
+                        "I take feedback—just sprinkle some emojis on it so it feels friendly."
+                    ],
+                    "focus_drift": "At **medium** difficulty, Candice’s humor and informality still cause drift, but she responds to gentle redirection. Managers need to set clear milestones, inject light structure, and convert her quick wit into constructive energy before deadlines loom."
+                },
+                "easy": {
+                    "typical_behavior": [
+                        "Hey team! Quick heads‑up: deck’s half done; I’ll post the draft after lunch.",
+                        "I keep things chill, but shout if I’m missing any critical steps.",
+                        "Sure, let’s tighten the agenda so we don’t ramble.",
+                        "Adding GIFs *and* action items—best of both worlds.",
+                        "Deadlines noted; I’ll set reminders so nothing slips.",
+                        "Happy to tweak tone if my jokes distract—just say the word."
+                    ],
+                    "focus_drift": "On **easy** mode, Candice remains relaxed and personable but stays responsive. Humor lightens the mood without derailing progress, making it straightforward for managers to maintain momentum with minimal nudging."
+                }
+            }
+        },
+        "sad": {
+            "difficulties": {
+                "hard": {
+                    "typical_behavior": [
+                        "Honestly, I don’t see the point anymore… nothing changes.",
+                        "Misses stand‑ups without notice; delivers terse one‑line status updates days late.",
+                        "Sighs audibly when new tasks are assigned, murmuring “Whatever… it won’t matter.”",
+                        "Ignores Slack/Teams pings for hours, then responds with “Was in bed. Needed a break.”",
+                        "Openly questions the value of the project: “We’ll ship, but who even uses this?”",
+                        "Legitimately forgets deadlines, claiming burnout fog; shows no urgency or apology."
+                    ],
+                    "energy_drain": "On **hard** difficulty, Leo’s hopelessness becomes contagious. His visible exhaustion, cynicism, and missed commitments sap team morale and create a sense of futility. Managers must triage workload, address potential clinical burnout, and rebuild any spark of purpose before performance collapses."
+                },
+                "medium": {
+                    "typical_behavior": [
+                        "Delivers work, but with monotone “Here you go… it’s probably not great.”",
+                        "Responds to praise with self‑deprecation: “Thanks, but it’s nothing special.”",
+                        "Turns off camera in most calls; appears tired when on‑screen.",
+                        "Mentions feeling “stuck” or “checked‑out,” yet hesitates to ask for help.",
+                        "Completes tasks but rarely adds suggestions or proactive improvements.",
+                        "Slow to volunteer; needs nudging to participate in retros or brainstorming."
+                    ],
+                    "energy_drain": "At **medium** difficulty, Leo functions but emits a low‑grade gloom. Managers must recognize subtle signs of disengagement—flat affect, minimal initiative—and introduce achievable wins, clear recognition, and workload adjustments to prevent slide into hard‑tier burnout."
+                },
+                "easy": {
+                    "typical_behavior": [
+                        "Speaks softly but openly: “I’ve felt a bit drained lately; could use guidance.”",
+                        "Meets deadlines, though avoids overtime; flags capacity limits in advance.",
+                        "Appreciates specific praise: “That helps—thanks for noticing the effort.”",
+                        "Suggests small workflow tweaks to reduce stress points.",
+                        "Requests mental‑health days rather than silently enduring exhaustion.",
+                        "Joins meetings with camera on if agenda is clear and duration reasonable."
+                    ],
+                    "energy_drain": "On **easy** mode, Leo shows low energy yet remains receptive. He’s willing to discuss well‑being, accept support, and collaborate on realistic workload plans, making it straightforward for managers to sustain motivation."
+                }
+            }
         }
     }
 }
