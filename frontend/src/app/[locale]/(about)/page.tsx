@@ -97,7 +97,7 @@ export default async function AboutPage() {
         </section>
         <section className="py-8 md:py-20 bg-white border-b border-t border-black/10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <p className="text-md md:text-xl font-medium">{t('builtBy')}</p>
+            <p className="text-md md:text-xl font-medium">{t('developedBy')}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <a href="https://www.csee.tech/" target="_blank" rel="noopener noreferrer">
