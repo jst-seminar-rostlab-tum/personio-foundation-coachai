@@ -6,10 +6,10 @@ import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
+import { HighlightedAppName } from '../common/HighlightedAppName';
 
 export default function AboutHeader() {
   const t = useTranslations('HomePage');
-  const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const isLoginPath = pathname.includes('/login');
 
@@ -18,7 +18,9 @@ export default function AboutHeader() {
       <div className="flex h-16 items-center justify-between mx-auto px-[clamp(1.25rem,4vw,4rem)] max-w-7xl">
         <div className="flex  flex-col">
           <Link href="/" className="flex items-center">
-            <span className="text-xl font-semibold text-black">{tCommon('appName')}</span>
+            <span className="text-xl font-semibold text-black">
+              <HighlightedAppName />
+            </span>
           </Link>
           <span className="text-xs text-bw-40">{t('developedBy')}</span>
         </div>
