@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/client';
 import { logoutUser } from '@/lib/supabase/logout';
 import { Button } from '../ui/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
+import { HighlightedAppName } from '../common/HighlightedAppName';
 
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -52,7 +53,7 @@ export function AppHeader() {
             className="text-bw-70 text-xl font-semibold"
             onClick={() => setIsMenuOpen(false)}
           >
-            {tCommon('appName')}
+            <HighlightedAppName />
           </Link>
           <div className="flex items-center gap-6">
             {/* Navigation Elements */}
@@ -104,7 +105,9 @@ export function AppHeader() {
         }`}
       >
         <div className="flex items-center justify-between px-2 py-2 xl:px-16 bg-background min-h-[56px]">
-          <div className="text-bw-70 text-lg font-semibold">{tCommon('appName')}</div>
+          <div className="text-bw-70 text-lg font-semibold">
+            <HighlightedAppName />
+          </div>
           <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
             <X className="!w-4 !h-4" />
           </Button>

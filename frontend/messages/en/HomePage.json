@@ -1,6 +1,7 @@
 {
   "metaTitle": "Coach AI",
   "metaDescription": "Practice difficult workplace conversations and receive real-time feedback to improve your communication and leadership skills.",
+  "developedBy": "Developed by CSEE for Personio Foundation",
   "hero": {
     "badge": "AI-Powered Leadership Training",
     "title": "Develop exceptional leadership skills with AI coaching",
@@ -10,7 +11,7 @@
     }
   },
   "howItWorks": {
-    "title": "How AI Leadership Coach Works",
+    "title": "How CoachAI Works",
     "description": "Our platform uses AI to create realistic conversation scenarios, allowing you to practice and improve your leadership skills in a safe environment.",
     "steps": {
       "1": {
@@ -33,12 +34,8 @@
     "description": "Everything you need to master difficult workplace conversations and become a more effective leader.",
     "items": {
       "sessions": {
-        "title": "Realistic Simulations",
-        "description": "Practice with AI that responds naturally to your communication style and approach."
-      },
-      "voice": {
-        "title": "Voice-Based Training",
-        "description": "Engage in actual conversations that mimic real workplace interactions."
+        "title": "Realistic Voice-Based AI",
+        "description": "Practice with AI that reacts naturally to your communication style to simulate real workplace interactions."
       },
       "feedback": {
         "title": "AI-Powered Feedback",
@@ -48,10 +45,7 @@
         "title": "Progress Tracking",
         "description": "Monitor your improvement over time with detailed metrics and insights."
       },
-      "gamification": {
-        "title": "Gamification",
-        "description": "Stay motivated with badges, achievements, and progress milestones."
-      },
+
       "personalized": {
         "title": "Personalized Learning",
         "description": "Focus on the specific skills and scenarios most relevant to your role."
@@ -62,7 +56,8 @@
     "title": "Ready to transform your leadership skills?",
     "description": "Join thousands of professionals who are using AI to become more effective leaders."
   },
+  "aboutPersonioFoundation": "About Personio Foundation",
+  "aboutCSEE": "About CSEE",
   "getStarted": "Get Started",
-  "cookies": "Cookie Policy",
-  "copyright": "© 2025 AI Leadership Coach. All rights reserved."
+  "copyright": "© 2025 CSEE. All rights reserved."
 }

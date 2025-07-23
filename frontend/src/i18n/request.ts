@@ -21,6 +21,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     Settings: (await import(`../../messages/${locale}/Settings.json`)).default,
     PrivacyPolicy: (await import(`../../messages/${locale}/PrivacyPolicy.json`)).default,
     TermsOfService: (await import(`../../messages/${locale}/TermsOfService.json`)).default,
+    Contributors: (await import(`../../messages/${locale}/Contributors.json`)).default,
     PersonalizationOptions: (await import(`../../messages/${locale}/PersonalizationOptions.json`))
       .default,
     NotFound: (await import(`../../messages/${locale}/NotFound.json`)).default,
