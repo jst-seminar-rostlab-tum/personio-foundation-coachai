@@ -18,7 +18,7 @@ const stripLocaleFromPath = (path: string): string => {
   return path;
 };
 
-const publicRoutes = ['/', '/terms', '/privacy'];
+const publicRoutes = ['/', '/terms', '/privacy', '/contributors'];
 const authRoutes = ['/login'];
 const adminRoutes = ['/admin'];
 

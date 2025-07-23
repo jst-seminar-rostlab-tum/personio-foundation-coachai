@@ -15,15 +15,39 @@ export default async function AboutFooter() {
               <span className="text-xl font-semibold text-black">{tCommon('appName')}</span>
             </div>
           </div>
-          <div className="md:col-span-3 flex flex-wrap justify-between md:justify-end gap-4 md:gap-8 text-sm">
+          <div className="md:col-span-3 flex flex-wrap md:justify-end gap-4 md:gap-8 text-sm">
+            <a
+              href="https://www.csee.tech/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-stone-500 hover:text-stone-900"
+            >
+              {t('aboutCSEE')}
+            </a>
+            <a
+              href="https://www.personio.foundation/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-stone-500 hover:text-stone-900"
+            >
+              {t('aboutPersonioFoundation')}
+            </a>
+            <a
+              href="https://github.com/jst-seminar-rostlab-tum/personio-foundation-coachai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-stone-500 hover:text-stone-900"
+            >
+              GitHub
+            </a>
+            <Link href="/contributors" className="text-stone-500 hover:text-stone-900">
+              {tCommon('contributors')}
+            </Link>
             <Link href="/privacy" className="text-stone-500 hover:text-stone-900">
               {tCommon('privacyPolicy')}
             </Link>
             <Link href="/terms" className="text-stone-500 hover:text-stone-900">
               {tCommon('termsOfService')}
-            </Link>
-            <Link href="/cookies" className="text-stone-500 hover:text-stone-900">
-              {t('cookies')}
             </Link>
           </div>
         </div>

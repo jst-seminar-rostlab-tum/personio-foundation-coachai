@@ -1,6 +1,8 @@
 {
   "metaTitle": "Coach AI",
   "metaDescription": "Entwickeln Sie Ihre Führungskompetenzen durch KI-gestütztes Coaching.",
+  "developedBy": "Entwickelt von CSEE für Personio Foundation",
+  "builtBy": "Entwickelt von CSEE für Personio Foundation",
   "hero": {
     "badge": "KI-gestütztes Führungstraining",
     "title": "Starke Führungspersönlichkeit durch KI-Coaching",
@@ -10,7 +12,7 @@
     }
   },
   "howItWorks": {
-    "title": "So funktioniert Ihr KI-Führungscoach",
+    "title": "So funktioniert CoachAI",
     "description": "Mit unserer KI-Plattform üben Sie realistische Gesprächsszenarien und entwickeln Ihre Führungskompetenz in einer geschützten Umgebung.",
     "steps": {
       "1": {
@@ -33,12 +35,8 @@
     "description": "Alles, was Sie für Ihre erfolgreiche Führungskräfteentwicklung benötigen.",
     "items": {
       "sessions": {
-        "title": "Realistische Übungsszenarien",
-        "description": "Trainieren Sie mit einer KI, die sich Ihrem Kommunikationsstil anpasst."
-      },
-      "voice": {
-        "title": "Sprachbasiertes Training",
-        "description": "Üben Sie in authentischen Gesprächssituationen wie im echten Berufsalltag."
+        "title": "Realistische Voice-Based AI",
+        "description": "Trainieren Sie mit AI, die sich Ihrem Kommunikationsstil anpasst."
       },
       "feedback": {
         "title": "Individuelles Feedback",
@@ -47,10 +45,6 @@
       "progress": {
         "title": "Fortschrittsverfolgung",
         "description": "Verfolgen Sie Ihre Entwicklung mit aussagekräftigen Kennzahlen und Einblicken."
-      },
-      "gamification": {
-        "title": "Motivierendes Training",
-        "description": "Steigern Sie Ihre Motivation durch Erfolge, Auszeichnungen und persönliche Meilensteine."
       },
       "personalized": {
         "title": "Individuelles Lernen",
@@ -62,7 +56,8 @@
     "title": "Bereit für den nächsten Karriereschritt?",
     "description": "Werden Sie Teil unserer Community erfolgreicher Führungskräfte, die KI für ihre persönliche Entwicklung nutzen."
   },
+  "aboutPersonioFoundation": "Über Personio Foundation",
+  "aboutCSEE": "Über CSEE",
   "getStarted": "Jetzt starten",
-  "cookies": "Cookie-Einstellungen",
-  "copyright": "© 2025 AI Leadership Coach. Alle Rechte vorbehalten."
+  "copyright": "© 2025 CSEE. Alle Rechte vorbehalten."
 }

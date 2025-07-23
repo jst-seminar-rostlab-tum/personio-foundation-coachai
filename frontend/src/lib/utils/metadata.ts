@@ -25,6 +25,7 @@ function getNamespaceFromPath(path: string): string {
     session: 'Session',
     settings: 'Settings',
     terms: 'TermsOfService',
+    contributors: 'Contributors',
   };
 
   return pathMap[pathSegment] || 'HomePage';
