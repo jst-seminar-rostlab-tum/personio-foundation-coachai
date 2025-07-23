@@ -156,7 +156,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
               </CardHeader>
               <CardContent className="p-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-start gap-3 p-4 border rounded-lg hover:bg-bw-60 transition-colors">
+                  <div className="flex items-start gap-3 p-4 border rounded-lg">
                     <Trash2
                       className="h-4 w-4 sm:h-5 sm:w-5 text-flame-50 mt-0.5 flex-shrink-0"
                       aria-hidden="true"
@@ -169,7 +169,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-4 border rounded-lg hover:bg-bw-60 transition-colors">
+                  <div className="flex items-start gap-3 p-4 border rounded-lg">
                     <Download
                       className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mt-0.5 flex-shrink-0"
                       aria-hidden="true"
