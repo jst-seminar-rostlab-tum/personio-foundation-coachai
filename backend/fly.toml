@@ -17,6 +17,10 @@ auto_stop_machines = 'stop'
 auto_start_machines = true
 min_machines_running = 1
 processes = ['app']
+[http_service.concurrency]
+    type = "requests"
+    hard_limit = 100
+    soft_limit = 9
 
 [[vm]]
 memory = '1gb'
