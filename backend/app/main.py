@@ -32,6 +32,7 @@ logging.basicConfig(
     stream=sys.stdout,
     format='%(message)s',
 )
+logging.info(f'DEFAULT_MODEL: {settings.DEFAULT_MODEL}')
 
 scheduler = BackgroundScheduler()
 
