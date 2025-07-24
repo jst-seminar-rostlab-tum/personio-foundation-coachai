@@ -16,6 +16,8 @@ import { getSessionFeedback } from '@/services/SessionService';
 import { showErrorToast } from '@/lib/utils/toast';
 import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
+import { BackButtonComponent } from '@/components/common/BackButton';
+import Link from 'next/link';
 import AudioPlayer from './AudioPlayer';
 import FeedbackQuote from './FeedbackQuote';
 import FeedbackDialog from './FeedbackDialog';
@@ -110,89 +112,94 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-12">
-      <div className="flex flex-col gap-8 w-full">
-        <div className="text-2xl font-bold text-bw-90 text-left w-full">{t('title')}</div>
+    <>
+      <Link href={`/history/${feedbackDetail?.scenarioId}`} className="block w-fit">
+        <BackButtonComponent label={tCommon('back')} />
+      </Link>
+      <div className="flex flex-col items-center gap-12">
+        <div className="flex flex-col gap-8 w-full">
+          <div className="text-2xl font-bold text-bw-90 text-left w-full">{t('title')}</div>
 
-        {feedbackDetail?.title && (
-          <div className="bg-marigold-10 p-8 flex flex-col gap-1 rounded-lg text-center w-full">
-            <div className="font-semibold text-2xl text-marigold-90">{feedbackDetail.title}</div>
-            <div className="text-marigold-90">
-              {formatDateFlexible(feedbackDetail?.createdAt, locale, true)}
+          {feedbackDetail?.title && (
+            <div className="bg-marigold-10 p-8 flex flex-col gap-1 rounded-lg text-center w-full">
+              <div className="font-semibold text-2xl text-marigold-90">{feedbackDetail.title}</div>
+              <div className="text-marigold-90">
+                {formatDateFlexible(feedbackDetail?.createdAt, locale, true)}
+              </div>
             </div>
-          </div>
+          )}
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-12 max-w-5xl items-center w-full justify-between">
+          <DonutChart totalScore={totalScore} maxScore={maxScore} />
+          <ProgressBars data={progressBarData} />
+        </div>
+
+        <AudioPlayer
+          currentTime={currentTime}
+          setCurrentTime={setCurrentTime}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          fullAudioUrl={feedbackDetail?.feedback?.fullAudioUrl || null}
+          formatTime={formatTime}
+          t={t}
+        />
+
+        {!feedbackDetail?.hasReviewed && (
+          <FeedbackDialog setFeedbackDetail={setFeedbackDetail} sessionId={sessionId} />
         )}
+
+        <Accordion type="multiple">
+          <AccordionItem value="feedback">
+            <AccordionTrigger>{t('accordion.feedback')}</AccordionTrigger>
+            <AccordionContent>
+              <div className="flex items-center gap-2 mt-3">
+                <CheckCircle size={24} className="text-forest-50" />
+                <span className="text-xl">{tCommon('positive')}</span>
+              </div>
+              <div className="flex flex-col gap-4 mt-5 pl-4">
+                {examplePositive.map((example, index) => (
+                  <FeedbackQuote key={index} {...example} icon="Check" />
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 mt-10">
+                <CircleX size={24} className="text-flame-50" />
+                <span className="text-xl">{tCommon('negative')}</span>
+              </div>
+              <div className="flex flex-col gap-4 mt-5 pl-4">
+                {exampleNegative.map((negative, index) => (
+                  <FeedbackQuote key={index} {...negative} icon="Cross" />
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 mt-10">
+                <ChartNoAxesColumnIncreasingIcon size={24} className="text-marigold-50" />
+                <span className="text-xl">{t('detailedFeedback.recommendations')}</span>
+              </div>
+              <div className="flex flex-col gap-4 mt-5 pl-4">
+                {recommendations.map((recommendation, index) => (
+                  <FeedbackQuote key={index} {...recommendation} icon="Info" />
+                ))}
+              </div>
+              <div className="mt-6">
+                <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="suggestion">
+            <AccordionTrigger>{t('accordion.suggestion')}</AccordionTrigger>
+            <AccordionContent>
+              {feedbackDetail?.feedback?.documentNames &&
+              feedbackDetail.feedback.documentNames.length > 0 ? (
+                <ResourcesList resources={feedbackDetail.feedback.documentNames} columns={2} />
+              ) : (
+                <EmptyListComponent itemType={tCommon('resources.title')} />
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
-
-      <div className="flex flex-col md:flex-row gap-12 max-w-5xl items-center w-full justify-between">
-        <DonutChart totalScore={totalScore} maxScore={maxScore} />
-        <ProgressBars data={progressBarData} />
-      </div>
-
-      <AudioPlayer
-        currentTime={currentTime}
-        setCurrentTime={setCurrentTime}
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-        fullAudioUrl={feedbackDetail?.feedback?.fullAudioUrl || null}
-        formatTime={formatTime}
-        t={t}
-      />
-
-      {!feedbackDetail?.hasReviewed && (
-        <FeedbackDialog setFeedbackDetail={setFeedbackDetail} sessionId={sessionId} />
-      )}
-
-      <Accordion type="multiple">
-        <AccordionItem value="feedback">
-          <AccordionTrigger>{t('accordion.feedback')}</AccordionTrigger>
-          <AccordionContent>
-            <div className="flex items-center gap-2 mt-3">
-              <CheckCircle size={24} className="text-forest-50" />
-              <span className="text-xl">{tCommon('positive')}</span>
-            </div>
-            <div className="flex flex-col gap-4 mt-5 pl-4">
-              {examplePositive.map((example, index) => (
-                <FeedbackQuote key={index} {...example} icon="Check" />
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2 mt-10">
-              <CircleX size={24} className="text-flame-50" />
-              <span className="text-xl">{tCommon('negative')}</span>
-            </div>
-            <div className="flex flex-col gap-4 mt-5 pl-4">
-              {exampleNegative.map((negative, index) => (
-                <FeedbackQuote key={index} {...negative} icon="Cross" />
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2 mt-10">
-              <ChartNoAxesColumnIncreasingIcon size={24} className="text-marigold-50" />
-              <span className="text-xl">{t('detailedFeedback.recommendations')}</span>
-            </div>
-            <div className="flex flex-col gap-4 mt-5 pl-4">
-              {recommendations.map((recommendation, index) => (
-                <FeedbackQuote key={index} {...recommendation} icon="Info" />
-              ))}
-            </div>
-            <div className="mt-6">
-              <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="suggestion">
-          <AccordionTrigger>{t('accordion.suggestion')}</AccordionTrigger>
-          <AccordionContent>
-            {feedbackDetail?.feedback?.documentNames &&
-            feedbackDetail.feedback.documentNames.length > 0 ? (
-              <ResourcesList resources={feedbackDetail.feedback.documentNames} columns={2} />
-            ) : (
-              <EmptyListComponent itemType={tCommon('resources.title')} />
-            )}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
+    </>
   );
 }
