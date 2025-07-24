@@ -10,7 +10,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.responses import Response
 
 from app.config import settings
-from app.database import create_db_and_tables, get_db_session
+from app.database import get_db_session
 from app.routers import (
     admin_dashboard_stats_route,
     app_config_route,
@@ -48,7 +48,6 @@ def scheduled_cleanup() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    create_db_and_tables()
     scheduler.add_job(scheduled_cleanup, 'cron', hour=3, minute=0)
     scheduler.start()
     yield
