@@ -25,7 +25,14 @@ export const formatDateFlexible = (
         timeZone,
       };
 
-  const parsedDate = new Date(date.endsWith('Z') ? date : `${date}Z`);
+  let parsedDate: Date;
+
+  if (!showTime) {
+    const [year, month, day] = date.split('-').map(Number);
+    parsedDate = new Date(year, month - 1, day);
+  } else {
+    parsedDate = new Date(date.endsWith('Z') ? date : `${date}Z`);
+  }
 
   return parsedDate.toLocaleString(effectiveLocale, options);
 };
