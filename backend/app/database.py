@@ -4,7 +4,7 @@ from collections.abc import Generator
 from typing import Any
 
 from sqlmodel import Session as DBSession
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import create_engine
 from supabase import Client, create_client
 
 from app.config import Settings
@@ -27,10 +27,6 @@ if settings.database_url:
 else:
     SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
 engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_size=5, max_overflow=4, pool_pre_ping=True)
-
-
-def create_db_and_tables() -> None:
-    SQLModel.metadata.create_all(engine)
 
 
 def get_db_session() -> Generator[DBSession, Any, None]:
