@@ -4,19 +4,19 @@
   "developedBy": "Entwickelt von CSEE für Personio Foundation",
   "hero": {
     "badge": "KI-gestütztes Führungstraining",
-    "title": "Starke Führungspersönlichkeit durch KI-Coaching",
+    "title": "Entwickle Starke Führungsqualitäten durch KI-Coaching",
     "description": "Trainieren Sie anspruchsvolle Gesprächssituationen und erhalten Sie direktes Feedback für Ihre persönliche Weiterentwicklung als Führungskraft.",
     "cta": {
       "secondary": "Mehr erfahren"
     }
   },
   "howItWorks": {
-    "title": "So funktioniert CoachAI",
+    "title": "So funktioniert <appName></appName>",
     "description": "Mit unserer KI-Plattform üben Sie realistische Gesprächsszenarien und entwickeln Ihre Führungskompetenz in einer geschützten Umgebung.",
     "steps": {
       "1": {
         "title": "Szenario auswählen",
-        "description": "Wählen Sie aus bewährten Szenarien oder erstellen Sie Ihr individuelles Training für Ihre spezifischen Herausforderungen."
+        "description": "Wählen Sie aus vordefinierten Szenarien oder erstellen Sie Ihr individuelles Training für Ihre spezifischen Herausforderungen."
       },
       "2": {
         "title": "Mit KI trainieren",
@@ -34,8 +34,8 @@
     "description": "Alles, was Sie für Ihre erfolgreiche Führungskräfteentwicklung benötigen.",
     "items": {
       "sessions": {
-        "title": "Realistische Voice-Based AI",
-        "description": "Trainieren Sie mit AI, die sich Ihrem Kommunikationsstil anpasst."
+        "title": "Realistische Voice-Based KI",
+        "description": "Trainieren Sie mit KI, die sich Ihrem Kommunikationsstil anpasst."
       },
       "feedback": {
         "title": "Individuelles Feedback",

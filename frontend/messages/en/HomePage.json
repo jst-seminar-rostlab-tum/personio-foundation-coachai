@@ -11,7 +11,7 @@
     }
   },
   "howItWorks": {
-    "title": "How CoachAI Works",
+    "title": "How <appName></appName> Works",
     "description": "Our platform uses AI to create realistic conversation scenarios, allowing you to practice and improve your leadership skills in a safe environment.",
     "steps": {
       "1": {
@@ -45,7 +45,6 @@
         "title": "Progress Tracking",
         "description": "Monitor your improvement over time with detailed metrics and insights."
       },
-
       "personalized": {
         "title": "Personalized Learning",
         "description": "Focus on the specific skills and scenarios most relevant to your role."

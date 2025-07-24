@@ -149,7 +149,7 @@ export function SignInForm() {
             <Button
               type="button"
               variant="link"
-              className="h-auto p-0 text-blue-600 hover:text-blue-800 underline"
+              className="h-auto p-0 text-bw-50 hover:text-marigold-50 underline"
               disabled={isLoading}
               onClick={() => router.push('?step=reset')}
             >

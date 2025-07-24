@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server';
 import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadata';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import type { Metadata } from 'next';
+import { HighlightedAppName } from '@/components/common/HighlightedAppName';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -125,7 +126,7 @@ export default async function AboutPage() {
           <div className="container">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">
-                {t('howItWorks.title')}
+                {t.rich('howItWorks.title', { appName: () => <HighlightedAppName /> })}
               </h2>
               <p className="text-md md:text-xl text-black/60 font-medium">
                 {t('howItWorks.description')}
@@ -163,7 +164,7 @@ export default async function AboutPage() {
                 {t('features.description')}
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2  gap-8">
               {features.map((feature) => (
                 <div
                   key={feature.title}
