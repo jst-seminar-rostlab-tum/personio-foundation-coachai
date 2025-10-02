@@ -36,6 +36,7 @@ dependencies = [
     "langchain-google-vertexai>=2.0.27",
     "apscheduler>=3.11.0",
     "pytz>=2025.0",
+    "gotrue>=2.12.4",
 ]
 
 [tool.setuptools]
@@ -60,6 +61,8 @@ dev = [
     "httpx",
     "respx",
     "deptry>=0.23.0",
+    "pip-audit>=2.9.0",
+    "pytest-mock>=3.15.1",
 ]
 
 lint = ["ruff"]
