@@ -1,8 +1,4 @@
-* @JCaesar20 @rautenrieb @SimonPaul02 @ta-mey
-/frontend/ @JCaesar20 @ta-mey
-/backend/ @rautenrieb @ta-mey
-/.github/ @SimonPaul02 @ta-mey
-/.husky/ @SimonPaul02 @ta-mey
-/COMMERCIAL_LICENSE_AGREEMENT.txt @marinovl7 @ta-mey
-/LICENSE @marinovl7 @ta-mey
-/.github/CODEOWNERS @marinovl7 @ta-mey
+* @alextopalova
+/COMMERCIAL_LICENSE_AGREEMENT.txt @aminbensaad
+/LICENSE @aminbensaad
+/.github/CODEOWNERS @aminbensaad
