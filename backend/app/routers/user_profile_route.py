@@ -40,7 +40,7 @@ def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserS
 def get_user_profiles(
     service: Annotated[UserService, Depends(get_user_service)],
     page: int = Query(1, ge=1),
-    page_size: int = Query(10, ge=1),
+    limit: int = Query(10, ge=1),
     email_substring: str | None = Query(
         None,
         description='Filter profiles by email substring',
@@ -51,9 +51,7 @@ def get_user_profiles(
     """
     Retrieve all user profiles.
     """
-    return service.get_user_profiles(
-        page=page, page_size=page_size, email_substring=email_substring
-    )
+    return service.get_user_profiles(page=page, limit=limit, email_substring=email_substring)
 
 
 @router.get(

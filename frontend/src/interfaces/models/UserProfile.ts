@@ -30,7 +30,6 @@ export enum AccountRole {
 
 export interface UserPaginationResponse {
   page: number;
-  limit: number;
   totalPages: number;
   totalUsers: number;
   users: UserProfile[];

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -22,69 +22,65 @@ import type { UserProfile as User, UserPaginationResponse } from '@/interfaces/m
 import { showErrorToast } from '@/lib/utils/toast';
 import { adminService } from '@/services/AdminService';
 import { useAdminStatsStore } from '@/store/AdminStatsStore';
+import { USER_LIST_INITIAL_PAGE, USER_LIST_LIMIT } from '../constants/UsersList';
 
 export default function UsersList({
   users,
   totalUsers: initialTotalUsers,
-  page,
-  limit,
 }: UserPaginationResponse) {
   const [userList, setUserList] = useState<User[]>(users);
-  const [currentPage, setCurrentPage] = useState(page);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [totalUsers, setTotalUsers] = useState(initialTotalUsers);
-  const [hasMore, setHasMore] = useState(users.length < initialTotalUsers);
+  const [page, setPage] = useState(USER_LIST_INITIAL_PAGE);
   const { setStats } = useAdminStatsStore();
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
 
-  const fetchUsers = async (pageNum: number, searchStr: string) => {
+  const fetchUsers = async (nextPage: number, searchStr: string) => {
     setLoading(true);
     try {
       const data = await ClientUserProfileService.getPaginatedUsers(
         api,
-        pageNum,
-        limit,
+        nextPage,
+        USER_LIST_LIMIT,
         searchStr || undefined
       );
-      setUserList(data.users);
       setTotalUsers(data.totalUsers);
-      setHasMore((pageNum - 1) * limit + data.users.length < data.totalUsers);
+      return data.users;
     } catch (e) {
       showErrorToast(e, 'Error loading users');
+      return [];
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearch(value);
-    setCurrentPage(1);
-    fetchUsers(1, value);
+    setPage(USER_LIST_INITIAL_PAGE);
+    setUserList(await fetchUsers(USER_LIST_INITIAL_PAGE, value));
   };
 
-  const handleLoadMore = () => {
-    const nextPage = currentPage + 1;
-    setCurrentPage(nextPage);
-    fetchUsers(nextPage, search);
+  const handleLoadMore = async () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    const moreUsers = await fetchUsers(nextPage, search);
+    setUserList((prev) => [...prev, ...moreUsers]);
   };
+
+  const showLoadMoreUsersButton = () => userList.length < totalUsers;
 
   const onDeleteSuccess = async () => {
     try {
-      setCurrentPage(1);
-      fetchUsers(1, search);
+      fetchUsers(page, search);
       const data = await adminService.getAdminStats(api);
       setStats(data);
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
   };
-
-  useEffect(() => {
-    setHasMore((currentPage - 1) * limit + userList.length < totalUsers);
-  }, [userList, totalUsers, currentPage, limit]);
 
   return (
     <>
@@ -128,7 +124,7 @@ export default function UsersList({
               </TableBody>
             </Table>
           </div>
-          {hasMore && (
+          {showLoadMoreUsersButton() && (
             <div className="flex justify-center mt-4">
               <Button onClick={handleLoadMore} disabled={loading} variant="ghost">
                 {loading ? tCommon('loading') : tCommon('loadMore')}

@@ -113,7 +113,7 @@ class UserService:
         )
 
     def get_user_profiles(
-        self, page: int = 1, page_size: int = 10, email_substring: str | None = None
+        self, page: int = 1, limit: int = 10, email_substring: str | None = None
     ) -> PaginatedUserRead:
         statement = select(UserProfile)
         if email_substring:
@@ -126,25 +126,25 @@ class UserService:
         if total_users == 0:
             return PaginatedUserRead(
                 page=page,
-                limit=page_size,
+                limit=limit,
                 total_pages=1,
                 total_users=0,
                 users=[],
             )
 
-        total_pages = ceil(total_users / page_size)
+        total_pages = ceil(total_users / limit)
         if page < 1 or page > total_pages:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Invalid page number.',
             )
 
-        users = all_users[(page - 1) * page_size : (page) * page_size]
+        users = all_users[(page - 1) * limit : page * limit]
         user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
 
         return PaginatedUserRead(
             page=page,
-            limit=page_size,
+            limit=limit,
             total_pages=total_pages,
             total_users=total_users,
             users=user_list,
