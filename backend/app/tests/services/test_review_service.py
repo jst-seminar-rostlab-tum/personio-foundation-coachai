@@ -13,7 +13,7 @@ from sqlmodel import SQLModel, create_engine, select
 from app.data import (
     get_dummy_conversation_categories,
     get_dummy_conversation_scenarios,
-    get_dummy_user_profiles,
+    get_dummy_user_data,
 )
 from app.dependencies import JWTPayload, get_db_session, verify_jwt
 from app.enums.session_status import SessionStatus
@@ -58,7 +58,7 @@ class TestReviewService(unittest.TestCase):
         self.db = self.SessionLocal()
 
         # Mock the authenticated user
-        self.test_users = get_dummy_user_profiles()  # Use the first dummy user
+        self.test_users = [u.user_profile for u in get_dummy_user_data()[:2]]
         self.db.add_all(self.test_users)
         self.db.commit()
 

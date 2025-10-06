@@ -5,7 +5,6 @@ from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 from gotrue import AdminUserAttributes
-from interfaces.dummy_user_wrapper import DummyUserWrapper
 
 from app.config import settings
 from app.enums.account_role import AccountRole
@@ -23,6 +22,7 @@ from app.enums.scenario_preparation_status import ScenarioPreparationStatus
 from app.enums.session_status import SessionStatus
 from app.enums.speaker import SpeakerType
 from app.interfaces import MockUserIdsEnum
+from app.interfaces.dummy_user_wrapper import DummyUserWrapper
 from app.models import LiveFeedback
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.app_config import AppConfig

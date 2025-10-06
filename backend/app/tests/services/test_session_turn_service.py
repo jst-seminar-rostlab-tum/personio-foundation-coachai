@@ -14,7 +14,7 @@ from sqlmodel import SQLModel, create_engine
 from app.data import (
     get_dummy_conversation_categories,
     get_dummy_conversation_scenarios,
-    get_dummy_user_profiles,
+    get_dummy_user_data,
 )
 from app.dependencies import get_db_session
 from app.enums import SessionStatus, SpeakerType
@@ -70,7 +70,7 @@ class TestSessionService(unittest.TestCase):
 
         self.db = self.SessionLocal()
 
-        self.users = get_dummy_user_profiles()
+        self.users = [u.user_profile for u in get_dummy_user_data()[:2]]
         self.db.add_all(self.users)
         self.db.commit()
         self.user = self.users[0]

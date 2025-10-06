@@ -9,7 +9,7 @@ from sqlalchemy.pool.impl import StaticPool
 from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine, select
 
-from app.data.dummy_data import get_dummy_conversation_categories, get_dummy_user_profiles
+from app.data.dummy_data import get_dummy_conversation_categories, get_dummy_user_data
 from app.dependencies import get_db_session, require_user
 from app.models.conversation_category import ConversationCategory
 from app.schemas.conversation_category import ConversationCategoryRead
@@ -54,7 +54,7 @@ class TestConversationCategoryService(unittest.TestCase):
         # Create a new database session
         self.db = self.SessionLocal()
         # Mock the authenticated user
-        self.test_user = get_dummy_user_profiles()[0]  # Use the first dummy user
+        self.test_user = get_dummy_user_data()[0].user_profile  # Use the first dummy user
         self.db.add(self.test_user)
         self.db.commit()
 
