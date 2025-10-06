@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
 from gotrue import AdminUserAttributes
-from models import UserProfile
+
+from app.models import UserProfile
 
 
 @dataclass
