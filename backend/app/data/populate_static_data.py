@@ -2,7 +2,6 @@ import json
 import os
 from datetime import UTC, datetime
 
-from database import get_supabase_client
 from sqlmodel import Session as DBSession
 from sqlmodel import delete, select
 
@@ -10,7 +9,7 @@ from app.data import (
     get_dummy_app_configs,
 )
 from app.data.dummy_data import get_dummy_user_data
-from app.database import engine
+from app.database import engine, get_supabase_client
 from app.enums.language import LanguageCode
 from app.models import AppConfig, ConversationCategory, UserProfile
 
