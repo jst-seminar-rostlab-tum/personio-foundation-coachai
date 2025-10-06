@@ -1,13 +1,13 @@
 import json
 import os
+import uuid
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 from gotrue import AdminUserAttributes
-from supabase import AuthError
+from interfaces.dummy_user_wrapper import DummyUserWrapper
 
 from app.config import settings
-from app.database import get_supabase_client
 from app.enums.account_role import AccountRole
 from app.enums.confidence_area import ConfidenceArea
 from app.enums.config_type import ConfigType
@@ -38,44 +38,188 @@ from app.models.user_goal import UserGoal
 from app.models.user_profile import UserProfile
 
 
-def get_dummy_user_profiles() -> list[UserProfile]:
-    """
-    Generate dummy UserProfile data.
-    """
+def get_dummy_user_data() -> list[DummyUserWrapper]:
     return [
-        UserProfile(
-            id=MockUserIdsEnum.USER.value,
-            full_name=settings.mock_user_data.full_name,
-            email=settings.mock_user_data.email,
-            phone_number=settings.mock_user_data.phone,
-            preferred_language_code=LanguageCode.en,
-            account_role=AccountRole.user,
-            professional_role=ProfessionalRole.hr_professional,
-            experience=Experience.beginner,
-            preferred_learning_style=PreferredLearningStyle.visual,
-            store_conversations=False,
-            total_sessions=32,
-            training_time=4.5,
-            score_sum=32 * 12,
-            goals_achieved=4,  # Summation of all goals achieved
-            scenario_advice={},
+        DummyUserWrapper(
+            user_profile=UserProfile(
+                id=MockUserIdsEnum.USER.value,
+                full_name=settings.mock_user_data.full_name,
+                email=settings.mock_user_data.email,
+                phone_number=settings.mock_user_data.phone,
+                preferred_language_code=LanguageCode.en,
+                account_role=AccountRole.user,
+                professional_role=ProfessionalRole.hr_professional,
+                experience=Experience.beginner,
+                preferred_learning_style=PreferredLearningStyle.visual,
+                store_conversations=False,
+                total_sessions=32,
+                training_time=4.5,
+                score_sum=32 * 12,
+                goals_achieved=4,
+                scenario_advice={},
+            ),
+            supabase_profile=AdminUserAttributes(
+                id=MockUserIdsEnum.USER.value.__str__(),
+                email=settings.mock_user_data.email,
+                password=settings.mock_user_data.password,
+                phone=settings.mock_user_data.phone,
+                email_confirm=True,
+                phone_confirm=True,
+                user_metadata={
+                    'full_name': settings.mock_user_data.full_name,
+                },
+            ),
         ),
-        UserProfile(
-            id=MockUserIdsEnum.ADMIN.value,
-            full_name=settings.mock_admin_data.full_name,
-            email=settings.mock_admin_data.email,
-            phone_number=settings.mock_admin_data.phone,
-            preferred_language_code=LanguageCode.en,
-            account_role=AccountRole.admin,
-            professional_role=ProfessionalRole.executive,
-            experience=Experience.expert,
-            preferred_learning_style=PreferredLearningStyle.kinesthetic,
-            store_conversations=True,
-            total_sessions=5,
-            training_time=4.2,
-            score_sum=5 * 12,
-            goals_achieved=2,  # Summation of all goals achieved
-            scenario_advice={},
+        DummyUserWrapper(
+            user_profile=UserProfile(
+                id=MockUserIdsEnum.ADMIN.value,
+                full_name=settings.mock_admin_data.full_name,
+                email=settings.mock_admin_data.email,
+                phone_number=settings.mock_admin_data.phone,
+                preferred_language_code=LanguageCode.en,
+                account_role=AccountRole.admin,
+                professional_role=ProfessionalRole.executive,
+                experience=Experience.expert,
+                preferred_learning_style=PreferredLearningStyle.kinesthetic,
+                store_conversations=True,
+                total_sessions=5,
+                training_time=4.2,
+                score_sum=5 * 12,
+                goals_achieved=2,  # Summation of all goals achieved
+                scenario_advice={},
+            ),
+            supabase_profile=AdminUserAttributes(
+                id=MockUserIdsEnum.ADMIN.value.__str__(),
+                email=settings.mock_admin_data.email,
+                password=settings.mock_admin_data.password,
+                phone=settings.mock_admin_data.phone,
+                email_confirm=True,
+                phone_confirm=True,
+                user_metadata={
+                    'full_name': settings.mock_admin_data.full_name,
+                },
+            ),
+        ),
+        DummyUserWrapper(
+            user_profile=UserProfile(
+                id=uuid.UUID('00000000-0000-0000-0000-000000000003'),
+                full_name='Sarah Schmidt',
+                email='sarah.schmidt@test.com',
+                phone_number='+491701234567',
+                preferred_language_code=LanguageCode.de,
+                account_role=AccountRole.user,
+                professional_role=ProfessionalRole.team_leader,
+                experience=Experience.intermediate,
+                preferred_learning_style=PreferredLearningStyle.auditory,
+                store_conversations=True,
+                total_sessions=18,
+                training_time=6.3,
+                score_sum=18 * 12,
+                goals_achieved=7,
+                scenario_advice={},
+            ),
+            supabase_profile=AdminUserAttributes(
+                id='00000000-0000-0000-0000-000000000003',
+                email='sarah.schmidt@test.com',
+                password='TestPassword123!',
+                phone='+491701234567',
+                email_confirm=True,
+                phone_confirm=True,
+                user_metadata={
+                    'full_name': 'Sarah Schmidt',
+                },
+            ),
+        ),
+        # Neuer User ohne Sessions (Onboarding-Test)
+        DummyUserWrapper(
+            user_profile=UserProfile(
+                id=uuid.UUID('00000000-0000-0000-0000-000000000004'),
+                full_name='Michael Weber',
+                email='michael.weber@test.com',
+                phone_number='+491702345678',
+                preferred_language_code=LanguageCode.en,
+                account_role=AccountRole.user,
+                professional_role=ProfessionalRole.hr_professional,
+                experience=Experience.beginner,
+                preferred_learning_style=PreferredLearningStyle.auditory,
+                store_conversations=False,
+                total_sessions=0,
+                training_time=0.0,
+                score_sum=0,
+                goals_achieved=0,
+                scenario_advice={},
+            ),
+            supabase_profile=AdminUserAttributes(
+                id='00000000-0000-0000-0000-000000000004',
+                email='michael.weber@test.com',
+                password='TestPassword123!',
+                phone='+491702345678',
+                email_confirm=True,
+                phone_confirm=True,
+                user_metadata={
+                    'full_name': 'Michael Weber',
+                },
+            ),
+        ),
+        DummyUserWrapper(
+            user_profile=UserProfile(
+                id=uuid.UUID('00000000-0000-0000-0000-000000000005'),
+                full_name='Lisa Müller',
+                email='lisa.mueller@test.com',
+                phone_number='+491703456789',
+                preferred_language_code=LanguageCode.de,
+                account_role=AccountRole.user,
+                professional_role=ProfessionalRole.other,
+                experience=Experience.expert,
+                preferred_learning_style=PreferredLearningStyle.kinesthetic,
+                store_conversations=True,
+                total_sessions=85,
+                training_time=12.7,
+                score_sum=85 * 12,
+                goals_achieved=15,
+                scenario_advice={},
+            ),
+            supabase_profile=AdminUserAttributes(
+                id='00000000-0000-0000-0000-000000000005',
+                email='lisa.mueller@test.com',
+                password='TestPassword123!',
+                phone='+491703456789',
+                email_confirm=True,
+                phone_confirm=True,
+                user_metadata={
+                    'full_name': 'Lisa Müller',
+                },
+            ),
+        ),
+        DummyUserWrapper(
+            user_profile=UserProfile(
+                id=uuid.UUID('00000000-0000-0000-0000-000000000006'),
+                full_name='Tom Fischer',
+                email='tom.fischer@test.com',
+                phone_number='+491704567890',
+                preferred_language_code=LanguageCode.en,
+                account_role=AccountRole.user,
+                professional_role=ProfessionalRole.hr_professional,
+                experience=Experience.intermediate,
+                preferred_learning_style=PreferredLearningStyle.visual,
+                store_conversations=False,
+                total_sessions=3,
+                training_time=1.2,
+                score_sum=3 * 12,
+                goals_achieved=1,
+                scenario_advice={},
+            ),
+            supabase_profile=AdminUserAttributes(
+                id='00000000-0000-0000-0000-000000000006',
+                email='tom.fischer@test.com',
+                password='TestPassword123!',
+                phone='+491704567890',
+                email_confirm=False,
+                phone_confirm=True,
+                user_metadata={
+                    'full_name': 'Tom Fischer',
+                },
+            ),
         ),
     ]
 
@@ -1643,36 +1787,6 @@ def get_dummy_admin_stats() -> list[AdminDashboardStats]:
     ]
 
 
-def get_mock_user_data() -> tuple[AdminUserAttributes, AdminUserAttributes]:
-    """
-    Generate mock user data for testing purposes.
-    """
-    return (
-        {
-            'id': MockUserIdsEnum.USER.value.__str__(),
-            'email': settings.mock_user_data.email,
-            'password': settings.mock_user_data.password,
-            'phone': settings.mock_user_data.phone,
-            'email_confirm': True,
-            'phone_confirm': True,
-            'user_metadata': {
-                'full_name': settings.mock_user_data.full_name,
-            },
-        },
-        {
-            'id': MockUserIdsEnum.ADMIN.value.__str__(),
-            'email': settings.mock_admin_data.email,
-            'password': settings.mock_admin_data.password,
-            'phone': settings.mock_admin_data.phone,
-            'email_confirm': True,
-            'phone_confirm': True,
-            'user_metadata': {
-                'full_name': settings.mock_admin_data.full_name,
-            },
-        },
-    )
-
-
 def get_dummy_live_feedback_data(session_turns: list[SessionTurn]) -> list[LiveFeedback]:
     return [
         LiveFeedback(
@@ -1690,34 +1804,3 @@ def get_dummy_live_feedback_data(session_turns: list[SessionTurn]) -> list[LiveF
             created_at=datetime.now(UTC),
         ),
     ]
-
-
-def create_mock_users() -> None:
-    attributes, admin_attributes = get_mock_user_data()
-
-    supabase = get_supabase_client()
-
-    # Create mock user
-    try:
-        supabase.auth.admin.create_user(attributes)
-    except Exception as e:
-        raise Exception(f'Error creating mock user {MockUserIdsEnum.USER.value}: {e}') from e
-
-    # Create mock admin user
-    try:
-        supabase.auth.admin.create_user(admin_attributes)
-    except Exception as e:
-        raise Exception(f'Error creating mock admin user {MockUserIdsEnum.ADMIN.value}: {e}') from e
-
-
-def delete_mock_users() -> None:
-    supabase = get_supabase_client()
-
-    for user_id in [MockUserIdsEnum.USER.value, MockUserIdsEnum.ADMIN.value]:
-        try:
-            supabase.auth.admin.delete_user(user_id.__str__())
-        except AuthError as e:
-            if e.code != 'user_not_found':
-                raise e
-        except Exception as e:
-            raise e
