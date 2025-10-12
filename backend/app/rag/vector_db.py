@@ -66,6 +66,7 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
         return []
 
     license_map = load_license_mapping()
+    author_map = load_author_mapping()
     for file in os.listdir(doc_folder):
         if file.endswith('.pdf'):
             file_path = os.path.join(doc_folder, file)
@@ -79,6 +80,7 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
 
                 doc_name = os.path.basename(file)
                 license_name = license_map.get(doc_name, 'Unknown')
+                author = author_map.get(doc_name, 'Unknown')
 
                 if license_name == 'Unknown':
                     print(f"⚠️ No license found for '{doc_name}', defaulting to 'Unknown'.")
@@ -89,6 +91,7 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
                     # Replacing null bytes as they lead to errors
                     doc.page_content = doc.page_content.replace('\u0000', '')
                     doc.metadata['licenseName'] = license_name
+                    doc.metadata['author'] = author
                     doc.metadata['chapter'] = page_chapter_map.get(doc.metadata.get('page', 0))
                     doc.metadata.pop('source', None)
 
@@ -130,7 +133,13 @@ def format_docs_with_metadata(docs: list[Document]) -> tuple[str, list[dict]]:
              separated by double newlines
         2) The documents' metadata in an array of dicts
     """
-    return '\n\n'.join([doc.page_content for doc in docs]), [doc.metadata for doc in docs]
+    return '\n\n'.join([doc.page_content for doc in docs]), [
+        {
+            'quote': doc.page_content,
+            **doc.metadata,
+        }
+        for doc in docs
+    ]
 
 
 def load_vector_db(
@@ -161,6 +170,16 @@ def load_license_mapping(
 ) -> dict:
     """
     Loads a mapping from document filename to license name from a JSON file.
+    """
+    with open(file_path) as f:
+        return json.load(f)
+
+
+def load_author_mapping(
+    file_path: Path = Path(__file__).parent / 'document-authors.json',
+) -> dict:
+    """
+    Loads a mapping from document filename to author name from a JSON file.
     """
     with open(file_path) as f:
         return json.load(f)
