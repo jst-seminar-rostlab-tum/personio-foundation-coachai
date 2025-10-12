@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 
+import pymupdf
 from langchain.embeddings.base import Embeddings
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -12,6 +13,32 @@ from app.config import Settings
 from app.database import get_supabase_client
 
 settings = Settings()
+
+
+def extract_toc(file_path: str) -> tuple[list, int]:
+    """
+    Extracts the Table of Contents of a file
+    """
+    with pymupdf.open(file_path) as doc:
+        toc = doc.get_toc(simple=True)
+        total_pages = len(doc)
+    return toc, total_pages
+
+
+def build_page_chapter_map(toc: list, total_pages: int) -> dict:
+    """
+    Makes a dictionary that maps each page to its chapter number
+    """
+    if not toc:
+        return {}
+    page_to_chapter = {}
+    chapter_pages = [(entry[2], entry[1]) for entry in toc if entry[0] == 1]
+    chapter_pages.sort(key=lambda x: x[0])
+    for i, (start_page, title) in enumerate(chapter_pages):
+        end_page = chapter_pages[i + 1][0] - 1 if i + 1 < len(chapter_pages) else total_pages
+        for page in range(start_page, end_page + 1):
+            page_to_chapter[page] = title
+    return page_to_chapter
 
 
 def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
@@ -47,6 +74,9 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
                 loader = PyPDFLoader(file_path)
                 loaded_docs = loader.load()
 
+                toc, total_pages = extract_toc(file_path)
+                page_chapter_map = build_page_chapter_map(toc, total_pages)
+
                 doc_name = os.path.basename(file)
                 license_name = license_map.get(doc_name, 'Unknown')
 
@@ -59,6 +89,7 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
                     # Replacing null bytes as they lead to errors
                     doc.page_content = doc.page_content.replace('\u0000', '')
                     doc.metadata['licenseName'] = license_name
+                    doc.metadata['chapter'] = page_chapter_map.get(doc.metadata.get('page', 0))
                     doc.metadata.pop('source', None)
 
                 splits = text_splitter.split_documents(loaded_docs)
