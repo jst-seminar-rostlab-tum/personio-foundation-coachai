@@ -58,7 +58,7 @@ class TestSessionService(unittest.TestCase):
 
         cls.app = FastAPI()
 
-        def override_get_db() -> Generator[DBSession, None, None]:
+        def override_get_db() -> Generator[DBSession]:
             with cls.SessionLocal() as session:
                 yield session
 

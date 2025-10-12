@@ -1,7 +1,6 @@
 import json
 import os
 from functools import lru_cache
-from typing import Optional
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
@@ -39,7 +38,7 @@ config = load_session_feedback_config()
 def safe_generate_training_examples(
     request: FeedbackCreate,
     hr_docs_context: str = '',
-    audio_uri: Optional[str] = None,
+    audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> SessionExamplesRead:
     return generate_training_examples(request, hr_docs_context, audio_uri, temperature)
@@ -49,7 +48,7 @@ def safe_generate_training_examples(
 def safe_get_achieved_goals(
     request: GoalsAchievedCreate,
     hr_docs_context: str = '',
-    audio_uri: Optional[str] = None,
+    audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> GoalsAchievedRead:
     if audio_uri is not None:
@@ -62,7 +61,7 @@ def safe_get_achieved_goals(
 def safe_generate_recommendations(
     request: FeedbackCreate,
     hr_docs_context: str = '',
-    audio_uri: Optional[str] = None,
+    audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> RecommendationsRead:
     return generate_recommendations(request, hr_docs_context, audio_uri, temperature)
@@ -71,7 +70,7 @@ def safe_generate_recommendations(
 def generate_training_examples(
     request: FeedbackCreate,
     hr_docs_context: str = '',
-    audio_uri: Optional[str] = None,
+    audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> SessionExamplesRead:
     if not request.transcript or all(
@@ -120,7 +119,7 @@ def generate_training_examples(
 def get_achieved_goals(
     request: GoalsAchievedCreate,
     hr_docs_context: str = '',
-    audio_uri: Optional[str] = None,
+    audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> GoalsAchievedRead:
     lang = request.language_code
@@ -153,7 +152,7 @@ def get_achieved_goals(
 def generate_recommendations(
     request: FeedbackCreate,
     hr_docs_context: str = '',
-    audio_uri: Optional[str] = None,
+    audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> RecommendationsRead:
     if not request.transcript or all(

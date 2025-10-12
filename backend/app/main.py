@@ -47,7 +47,7 @@ def scheduled_cleanup() -> None:
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     scheduler.add_job(scheduled_cleanup, 'cron', hour=3, minute=0)
     scheduler.start()
     yield

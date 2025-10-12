@@ -31,7 +31,7 @@ class TestScenarioPreparationService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    def fake_session_gen(self) -> Generator[DBSession, None, None]:
+    def fake_session_gen(self) -> Generator[DBSession]:
         yield self.session
 
     def test_create_pending_preparation(self) -> None:

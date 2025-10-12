@@ -136,7 +136,7 @@ class TestLiveFeedbackService(unittest.TestCase):
         mock_analyze_voice.return_value = mock_return_value_audio
         mock_call_structured_llm.return_value = mock_feedback
 
-        def mock_session_generator_func() -> Generator[Any, None, None]:
+        def mock_session_generator_func() -> Generator[Any]:
             yield self.session
 
         result = generate_and_store_live_feedback(
@@ -169,7 +169,7 @@ class TestLiveFeedbackService(unittest.TestCase):
         session_id = uuid4()
         session_turn_context = self.get_session_turn(session_id, make_empty=True)
 
-        def mock_session_generator_func() -> Generator[Any, None, None]:
+        def mock_session_generator_func() -> Generator[Any]:
             yield self.session
 
         result = generate_and_store_live_feedback(
