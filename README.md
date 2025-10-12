@@ -4,7 +4,7 @@ A simple full-stack application built with Next.js, FastAPI, and PostgreSQL.
 
 
 ### Frontend
-- Next.js 15.3.2 with App Router
+- Next.js 15.5.4 with App Router
 - TypeScript
 - TailwindCSS v4
 - Axios for HTTP requests with client/server separation
@@ -23,8 +23,8 @@ A simple full-stack application built with Next.js, FastAPI, and PostgreSQL.
 ## Prerequisites
 
 - Docker and Docker Compose
-- Node.js 18+ (for local frontend development)
-- Python 3.11+ (for local backend development)
+- Node.js 24 (for local frontend development)
+- Python 3.13 (for local backend development)
 
 ## Getting Started
 
