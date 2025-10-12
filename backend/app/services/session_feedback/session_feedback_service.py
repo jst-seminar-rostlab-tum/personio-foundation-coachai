@@ -72,7 +72,7 @@ def prepare_feedback_requests(
 
 def get_hr_docs_context(
     recommendations_request: FeedbackCreate,
-) -> tuple[str, list[str]]:
+) -> tuple[str, list[str], list[dict]]:
     """Generate HR docs context using the vector DB."""
     return query_vector_db_and_prompt(
         session_context=[
@@ -96,7 +96,7 @@ class FeedbackGenerationResult(CamelModel):
     overall_score: float = 0.0
     has_error: bool = False
     full_audio_filename: str = ''
-    document_names: list[str] = Field(default_factory=list)
+    document_names: list[dict] = Field(default_factory=list)
     audio_url: str | None = None
     session_length_s: int = 0
 
@@ -105,7 +105,7 @@ def generate_feedback_components(
     feedback_request: FeedbackCreate,
     goals_request: GoalsAchievedCreate,
     hr_docs_context: str,
-    document_names: list[str],
+    document_names: list[dict],
     conversation: ConversationScenarioRead,
     scoring_service: ScoringService,
     session_turn_service: SessionTurnService,
@@ -334,7 +334,7 @@ def generate_and_store_feedback(
             advisor_service = AdvisorService()
 
         goals_request, recommendations_request = prepare_feedback_requests(feedback_request)
-        hr_docs_context, document_names = get_hr_docs_context(recommendations_request)
+        hr_docs_context, document_names, metadata = get_hr_docs_context(recommendations_request)
 
         conversation = get_conversation_data(db_session, session_id)
 
@@ -345,7 +345,7 @@ def generate_and_store_feedback(
                 feedback_request=feedback_request,
                 goals_request=goals_request,
                 hr_docs_context=hr_docs_context,
-                document_names=document_names,
+                document_names=metadata,
                 conversation=conversation,
                 scoring_service=scoring_service,
                 session_turn_service=session_turn_service,

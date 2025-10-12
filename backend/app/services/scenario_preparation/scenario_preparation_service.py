@@ -273,14 +273,14 @@ def generate_scenario_preparation(
         )
 
         # hr_docs_context is used for LLM prompt; doc_names is available for future use
-        hr_docs_context, doc_names = get_hr_docs_context(
+        hr_docs_context, doc_names, metadata = get_hr_docs_context(
             persona=new_preparation.persona,
             situational_facts=new_preparation.situational_facts,
             category=new_preparation.category,
         )
 
         has_error = False
-        preparation.document_names = doc_names
+        preparation.document_names = metadata
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_key_concepts = executor.submit(
