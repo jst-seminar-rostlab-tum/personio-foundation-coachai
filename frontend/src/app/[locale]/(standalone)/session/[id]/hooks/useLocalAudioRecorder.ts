@@ -193,7 +193,7 @@ export function useLocalAudioRecorder(localStreamRef: React.RefObject<MediaStrea
       const endSample = Math.floor((clampedEndOffsetMs / 1000) * sampleRate);
       const length = endSample - startSample;
 
-      const channelData: Float32Array[] = [];
+      const channelData: Float32Array<ArrayBuffer>[] = [];
       for (let ch = 0; ch < audioBuffer.numberOfChannels; ch += 1) {
         channelData.push(audioBuffer.getChannelData(ch).slice(startSample, endSample));
       }

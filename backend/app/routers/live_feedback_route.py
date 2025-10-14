@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session as DBSession
@@ -20,6 +20,6 @@ router = APIRouter(
 def get_live_feedback_for_session(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     session: Annotated[Session, Depends(require_session_access)],
-    limit: Optional[int] = Query(None, gt=0),
+    limit: int | None = Query(None, gt=0),
 ) -> list[LiveFeedbackRead]:
     return fetch_live_feedback_for_session(db_session, session.id, limit)
