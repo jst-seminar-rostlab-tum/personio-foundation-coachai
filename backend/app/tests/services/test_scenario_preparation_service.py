@@ -139,5 +139,5 @@ class TestScenarioPreparationService(unittest.TestCase):
         )
         self.assertIsInstance(doc_names, list)
         self.assertEqual(doc_names, ['DocA', 'DocB'])
-        self.assertIsInstance(metadata, dict)
+        self.assertIsInstance(metadata, list)
         self.assertEqual(metadata, [{}, {}])

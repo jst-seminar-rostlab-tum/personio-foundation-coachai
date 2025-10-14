@@ -66,7 +66,13 @@ class TestVectorDbContextService(unittest.TestCase):
         # Prepare retriever and docs
         fake_retriever = MagicMock()
         doc_content = 'Set goals'
-        doc_metadata = {'quote': doc_content, 'source': 'https://example.com'}
+        doc_metadata = {
+            'quote': doc_content,
+            'page': None,
+            'title': None,
+            'author': None,
+            'chapter': None,
+        }
         document = Document(page_content=doc_content, metadata=doc_metadata)
         fake_docs = [document]
         fake_retriever.invoke.return_value = fake_docs
@@ -104,10 +110,22 @@ class TestVectorDbContextService(unittest.TestCase):
         # Prepare retriever and docs
         fake_retriever = MagicMock()
         doc_content_1 = 'Prepare team for adapting.'
-        doc_metadata_1 = {'quote': doc_content_1, 'source': 'doc1'}
+        doc_metadata_1 = {
+            'quote': doc_content_1,
+            'page': None,
+            'title': None,
+            'author': None,
+            'chapter': None,
+        }
         document_1 = Document(page_content=doc_content_1, metadata=doc_metadata_1)
         doc_content_2 = 'Bring up the topic soon.'
-        doc_metadata_2 = {'quote': doc_content_2, 'source': 'doc2'}
+        doc_metadata_2 = {
+            'quote': doc_content_2,
+            'page': None,
+            'title': None,
+            'author': None,
+            'chapter': None,
+        }
         document_2 = Document(page_content=doc_content_2, metadata=doc_metadata_2)
         fake_docs = [document_1, document_2]
         fake_retriever.invoke.return_value = fake_docs
