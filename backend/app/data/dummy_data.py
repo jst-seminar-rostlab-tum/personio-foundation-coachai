@@ -888,7 +888,7 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=17,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -975,7 +975,7 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=16,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -1061,7 +1061,7 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=16,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -1147,7 +1147,7 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=16,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -1235,7 +1235,7 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=19,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -1321,7 +1321,7 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=15,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -1409,7 +1409,7 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=15,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -1492,7 +1492,7 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=15,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -1586,7 +1586,7 @@ def get_dummy_scenario_preparations(
                 'Foster mutual understanding',
                 'End on a positive note',
             ],
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -1622,7 +1622,7 @@ def get_dummy_scenario_preparations(
                 'Set expectations for communication',
                 'Identify potential risks',
             ],
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -1658,7 +1658,7 @@ def get_dummy_scenario_preparations(
                 'Align on team roles',
                 'Set expectations for communication',
             ],
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',
@@ -1687,7 +1687,7 @@ def get_dummy_scenario_preparations(
         ScenarioPreparation(
             id=uuid4(),
             scenario_id=conversation_scenarios[3].id,
-            document_names=[
+            documents=[
                 {
                     'page': 64,
                     'title': 'Psychology of Human Relations',

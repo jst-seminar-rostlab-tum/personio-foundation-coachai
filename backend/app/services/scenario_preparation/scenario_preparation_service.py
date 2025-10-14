@@ -280,7 +280,7 @@ def generate_scenario_preparation(
         )
 
         has_error = False
-        preparation.document_names = metadata
+        preparation.documents = metadata
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_key_concepts = executor.submit(

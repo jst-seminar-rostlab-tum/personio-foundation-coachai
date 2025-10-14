@@ -136,7 +136,10 @@ def format_docs_with_metadata(docs: list[Document]) -> tuple[str, list[dict]]:
     return '\n\n'.join([doc.page_content for doc in docs]), [
         {
             'quote': doc.page_content,
-            **doc.metadata,
+            'page': doc.metadata.get('page'),
+            'title': doc.metadata.get('title'),
+            'author': doc.metadata.get('author'),
+            'chapter': doc.metadata.get('chapter'),
         }
         for doc in docs
     ]

@@ -85,9 +85,9 @@ def get_mock_session_feedback() -> SessionFeedback:
         tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
         overall_score=4.3,
         full_audio_filename='full_audio_123.mp3',
-        document_names=[
-            'Teamwork: An Open Access Practical Guide',
-            'Psychology of Human Relations',
+        documents=[
+            {'quote': '', 'title': 'Teamwork: An Open Access Practical Guide'},
+            {'quote': '', 'title': 'Psychology of Human Relations'},
         ],
         speak_time_percent=60.5,
         questions_asked=5,

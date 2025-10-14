@@ -215,8 +215,8 @@ class TestSessionFeedbackService(unittest.TestCase):
         self.assertEqual(feedback.session_id, session_id)
         self.assertEqual(feedback.goals_achieved, ['G1', 'G2'])
 
-        self.assertIsInstance(feedback.document_names, list)
-        self.assertEqual(feedback.document_names, [{}, {}])
+        self.assertIsInstance(feedback.documents, list)
+        self.assertEqual(feedback.documents, [{}, {}])
 
         self.assertEqual(len(feedback.example_positive), 1)
         self.assertEqual(feedback.example_positive[0]['heading'], 'Clear Objective Addressed')
@@ -604,7 +604,7 @@ class TestSessionFeedbackService(unittest.TestCase):
                     language_code=LanguageCode.en,
                 ),
                 hr_docs_context='',
-                document_names=[{}, {}],
+                documents=[{}, {}],
                 conversation=conversation,
                 scoring_service=mock_scoring_service,
                 session_turn_service=mock_session_turn_service,
@@ -614,7 +614,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             self.assertTrue(feedback.audio_url is None)
             self.assertEqual(feedback.goals, GoalsAchievedRead(goals_achieved=['G1']))
 
-            self.assertEqual(feedback.document_names, [{}, {}])
+            self.assertEqual(feedback.documents, [{}, {}])
             self.assertEqual(feedback.full_audio_filename, 'mock_audio_uri.mp3')
             self.assertEqual(feedback.session_length_s, 100)
 

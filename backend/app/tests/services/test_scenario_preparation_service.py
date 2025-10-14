@@ -126,16 +126,18 @@ class TestScenarioPreparationService(unittest.TestCase):
 
     @patch(
         'app.services.vector_db_context_service.query_vector_db_and_prompt',
-        return_value=('Some HR context', ['DocA', 'DocB']),
+        return_value=('Some HR context', ['DocA', 'DocB'], [{}, {}]),
     )
     def test_query_vector_db_and_prompt_returns_document_names_list(
         self, mock_query: MagicMock
     ) -> None:
         from app.services.vector_db_context_service import query_vector_db_and_prompt
 
-        hr_context, doc_names = query_vector_db_and_prompt(
+        hr_context, doc_names, metadata = query_vector_db_and_prompt(
             generated_object='output',
             session_context=['Feedback', 'Persona', 'Facts'],
         )
         self.assertIsInstance(doc_names, list)
         self.assertEqual(doc_names, ['DocA', 'DocB'])
+        self.assertIsInstance(metadata, dict)
+        self.assertEqual(metadata, [{}, {}])

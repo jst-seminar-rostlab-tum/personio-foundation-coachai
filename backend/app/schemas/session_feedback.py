@@ -78,7 +78,7 @@ class SessionFeedbackRead(CamelModel):
     full_audio_url: str | None = Field(
         default=None, description='Signed URL to the stitched audio file of the session'
     )
-    document_names: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
+    documents: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     speak_time_percent: float
     questions_asked: int
     session_length_s: int
