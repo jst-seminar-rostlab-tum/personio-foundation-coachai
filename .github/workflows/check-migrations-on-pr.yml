@@ -100,6 +100,12 @@ jobs:
             backend/alembic/data/**
             backend/app/data/**
 
+      - name: Set up Python
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
       - name: Install uv
         if: steps.changed-files.outputs.any_changed == 'true'
         run: pipx install uv

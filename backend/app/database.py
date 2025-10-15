@@ -29,7 +29,7 @@ else:
 engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_size=5, max_overflow=4, pool_pre_ping=True)
 
 
-def get_db_session() -> Generator[DBSession, Any, None]:
+def get_db_session() -> Generator[DBSession, Any]:
     with DBSession(engine) as db_session:
         try:
             yield db_session

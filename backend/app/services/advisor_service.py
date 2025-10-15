@@ -161,7 +161,7 @@ class AdvisorService:
         self,
         session_feedback_id: UUID,
         user_profile_id: UUID,
-        session_generator_func: Callable[[], Generator[DBSession, None, None]],
+        session_generator_func: Callable[[], Generator[DBSession]],
     ) -> None:
         session_gen = session_generator_func()
         try:

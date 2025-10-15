@@ -305,7 +305,7 @@ def get_conversation_data(db_session: DBSession, session_id: UUID) -> Conversati
 def generate_and_store_feedback(
     session_id: UUID,
     feedback_request: FeedbackCreate,
-    session_generator_func: Callable[[], Generator[DBSession, None, None]],
+    session_generator_func: Callable[[], Generator[DBSession]],
     user_profile_id: UUID,
     background_tasks: BackgroundTasks,
     scoring_service: ScoringService | None = None,

@@ -42,7 +42,7 @@ class TestConversationCategoryRoute(unittest.TestCase):
         """
         self.db = self.SessionLocal()
 
-        def override_get_db() -> Generator[DBSession, None, None]:
+        def override_get_db() -> Generator[DBSession]:
             yield self.db
 
         # Override the get_db_session dependency

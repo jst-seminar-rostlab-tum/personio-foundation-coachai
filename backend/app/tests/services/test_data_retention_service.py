@@ -38,7 +38,7 @@ def gcs_manager() -> GCSManager:
 
 
 @pytest.fixture
-def db() -> Generator[DBSession, None, None]:
+def db() -> Generator[DBSession]:
     engine = create_engine('sqlite:///:memory:')
     SQLModel.metadata.create_all(engine)
     with DBSession(engine) as session:

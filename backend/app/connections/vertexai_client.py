@@ -1,4 +1,4 @@
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 
 from google import genai
 from google.genai.types import GenerateContentConfig, Part
@@ -137,7 +137,7 @@ def call_structured_llm(
     model: str = DEFAULT_MODEL,
     temperature: float = 1,
     max_tokens: int = VERTEXAI_MAX_TOKENS,
-    audio_uri: Optional[str] = None,
+    audio_uri: str | None = None,
     mock_response: T | None = None,
 ) -> T:
     if not ENABLE_AI or vertexai_client is None:
