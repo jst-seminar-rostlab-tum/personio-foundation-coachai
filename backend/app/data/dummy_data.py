@@ -890,16 +890,11 @@ def get_dummy_session_feedback(
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             speak_time_percent=60.5,
@@ -977,16 +972,11 @@ def get_dummy_session_feedback(
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             speak_time_percent=55.0,
@@ -1063,16 +1053,11 @@ def get_dummy_session_feedback(
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             speak_time_percent=55.0,
@@ -1149,16 +1134,11 @@ def get_dummy_session_feedback(
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             speak_time_percent=55.0,
@@ -1237,16 +1217,11 @@ def get_dummy_session_feedback(
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             speak_time_percent=60.5,
@@ -1323,16 +1298,11 @@ def get_dummy_session_feedback(
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             speak_time_percent=60.5,
@@ -1411,16 +1381,11 @@ def get_dummy_session_feedback(
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             speak_time_percent=60.5,
@@ -1494,16 +1459,11 @@ def get_dummy_session_feedback(
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             speak_time_percent=60.5,
@@ -1588,16 +1548,11 @@ def get_dummy_scenario_preparations(
             ],
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             key_concepts=[
@@ -1624,16 +1579,11 @@ def get_dummy_scenario_preparations(
             ],
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             key_concepts=[
@@ -1660,16 +1610,11 @@ def get_dummy_scenario_preparations(
             ],
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             key_concepts=[
@@ -1689,16 +1634,11 @@ def get_dummy_scenario_preparations(
             scenario_id=conversation_scenarios[3].id,
             documents=[
                 {
+                    'quote': 'Example quote text goes here.',
                     'page': 64,
                     'title': 'Psychology of Human Relations',
                     'author': 'Stevy Scarbrough',
                     'chapter': 'Chapter 1: Self-Concept',
-                    'creator': 'Pressbooks 6.15.0',
-                    'producer': 'Prince 14.3 (www.princexml.com)',
-                    'page_label': '65',
-                    'licenseName': 'CC BY-NC-SA',
-                    'total_pages': 662,
-                    'creationdate': '',
                 }
             ],
             objectives=[
