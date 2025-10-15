@@ -15,7 +15,7 @@ from app.dependencies import require_admin, require_user
 from app.models.conversation_scenario import ConversationScenario
 from app.models.user_profile import UserProfile
 from app.schemas.user_profile import (
-    PaginatedUserRead,
+    UserListPaginatedRead,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
@@ -34,10 +34,11 @@ def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserS
 
 @router.get(
     '',
-    response_model=PaginatedUserRead,
+    response_model=UserListPaginatedRead,
     dependencies=[Depends(require_admin)],
 )
 def get_user_profiles(
+    requesting_user: Annotated[UserProfile, Depends(require_admin)],
     service: Annotated[UserService, Depends(get_user_service)],
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1),
@@ -47,11 +48,16 @@ def get_user_profiles(
         min_length=1,
         max_length=100,
     ),
-) -> PaginatedUserRead:
+) -> UserListPaginatedRead:
     """
     Retrieve all user profiles.
     """
-    return service.get_user_profiles(page=page, limit=limit, email_substring=email_substring)
+    return service.get_user_profiles(
+        requesting_user_id=requesting_user.id,
+        page=page,
+        limit=limit,
+        email_substring=email_substring,
+    )
 
 
 @router.get(

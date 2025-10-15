@@ -16,8 +16,8 @@ from app.data import (
     get_dummy_sessions,
     get_dummy_user_confidence_scores,
     get_dummy_user_goals,
-    get_dummy_user_profiles,
 )
+from app.data.dummy_data import get_dummy_user_data
 from app.database import engine
 from app.models.hr_information import HrInformation
 
@@ -40,7 +40,7 @@ def populate_data() -> None:
         db_session.commit()
 
         # Populate User Profiles
-        user_profiles = get_dummy_user_profiles()
+        user_profiles = [wrapper.user_profile for wrapper in get_dummy_user_data()]
         db_session.add_all(user_profiles)
 
         # Commit user profiles to get their IDs

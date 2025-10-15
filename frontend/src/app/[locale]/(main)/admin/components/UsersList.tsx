@@ -22,7 +22,7 @@ import type { UserProfile as User, UserPaginationResponse } from '@/interfaces/m
 import { showErrorToast } from '@/lib/utils/toast';
 import { adminService } from '@/services/AdminService';
 import { useAdminStatsStore } from '@/store/AdminStatsStore';
-import { USER_LIST_INITIAL_PAGE, USER_LIST_LIMIT } from '../constants/UsersList';
+import { USER_LIST_PAGE, USER_LIST_LIMIT } from '../constants/UsersList';
 
 export default function UsersList({
   users,
@@ -32,25 +32,24 @@ export default function UsersList({
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [totalUsers, setTotalUsers] = useState(initialTotalUsers);
-  const [page, setPage] = useState(USER_LIST_INITIAL_PAGE);
+  const [limit, setLimit] = useState(USER_LIST_LIMIT);
   const { setStats } = useAdminStatsStore();
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
 
-  const fetchUsers = async (nextPage: number, searchStr: string) => {
+  const fetchUsers = async (newLimit: number, searchStr: string) => {
     setLoading(true);
     try {
       const data = await ClientUserProfileService.getPaginatedUsers(
         api,
-        nextPage,
-        USER_LIST_LIMIT,
+        USER_LIST_PAGE,
+        newLimit,
         searchStr || undefined
       );
       setTotalUsers(data.totalUsers);
-      return data.users;
+      setUserList(data.users);
     } catch (e) {
       showErrorToast(e, 'Error loading users');
-      return [];
     } finally {
       setLoading(false);
     }
@@ -59,22 +58,20 @@ export default function UsersList({
   const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearch(value);
-    setPage(USER_LIST_INITIAL_PAGE);
-    setUserList(await fetchUsers(USER_LIST_INITIAL_PAGE, value));
+    fetchUsers(USER_LIST_LIMIT, value);
   };
 
   const handleLoadMore = async () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    const moreUsers = await fetchUsers(nextPage, search);
-    setUserList((prev) => [...prev, ...moreUsers]);
+    const nextLimit = limit + USER_LIST_LIMIT;
+    setLimit(nextLimit);
+    fetchUsers(nextLimit, search);
   };
 
   const showLoadMoreUsersButton = () => userList.length < totalUsers;
 
   const onDeleteSuccess = async () => {
     try {
-      fetchUsers(page, search);
+      fetchUsers(limit, search);
       const data = await adminService.getAdminStats(api);
       setStats(data);
     } catch (error) {

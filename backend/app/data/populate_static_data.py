@@ -3,7 +3,7 @@ import os
 from datetime import UTC, datetime
 
 from sqlmodel import Session as DBSession
-from sqlmodel import delete, select
+from sqlmodel import select
 
 from app.data import (
     get_dummy_app_configs,
@@ -11,7 +11,7 @@ from app.data import (
 from app.data.dummy_data import get_dummy_user_data
 from app.database import engine, get_supabase_client
 from app.enums.language import LanguageCode
-from app.models import AppConfig, ConversationCategory, UserProfile
+from app.models import AppConfig, ConversationCategory
 
 base_dir = os.path.dirname(__file__)
 with open(os.path.join(base_dir, 'initial_prompts.json'), encoding='utf-8') as f:
@@ -64,19 +64,11 @@ def populate_demo_users() -> None:
     dummy_users = get_dummy_user_data()
     supabase = get_supabase_client()
 
-    with DBSession(engine) as db_session:
-        db_session.exec(delete(UserProfile))
-        db_session.commit()
-
     for user in supabase.auth.admin.list_users():
         supabase.auth.admin.delete_user(user.id)
 
     for user in dummy_users:
         supabase.auth.admin.create_user(user.supabase_profile)
-
-        with DBSession(engine) as db_session:
-            db_session.add(user.user_profile)
-            db_session.commit()
 
 
 def populate_static_categories() -> None:

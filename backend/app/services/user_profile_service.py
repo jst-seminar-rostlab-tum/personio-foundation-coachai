@@ -18,10 +18,10 @@ from app.models.user_goal import UserGoal
 from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
-    PaginatedUserRead,
     ScenarioAdvice,
-    UserEmailRead,
+    UserListPaginatedRead,
     UserProfileExtendedRead,
+    UserProfilePaginatedRead,
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
@@ -113,18 +113,24 @@ class UserService:
         )
 
     def get_user_profiles(
-        self, page: int = 1, limit: int = 10, email_substring: str | None = None
-    ) -> PaginatedUserRead:
+        self,
+        requesting_user_id: UUID,
+        page: int = 1,
+        limit: int = 10,
+        email_substring: str | None = None,
+    ) -> UserListPaginatedRead:
         statement = select(UserProfile)
         if email_substring:
             statement = statement.where(col(UserProfile.email).like(f'%{email_substring}%'))
+
+        statement = statement.where(col(UserProfile.id) != requesting_user_id)
 
         statement = statement.order_by(col(UserProfile.updated_at).desc())
 
         all_users = self.db.exec(statement).all()
         total_users = len(all_users)
         if total_users == 0:
-            return PaginatedUserRead(
+            return UserListPaginatedRead(
                 page=page,
                 limit=limit,
                 total_pages=1,
@@ -140,9 +146,14 @@ class UserService:
             )
 
         users = all_users[(page - 1) * limit : page * limit]
-        user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
+        user_list = [
+            UserProfilePaginatedRead(
+                user_id=user.id, email=user.email, account_role=user.account_role
+            )
+            for user in users
+        ]
 
-        return PaginatedUserRead(
+        return UserListPaginatedRead(
             page=page,
             limit=limit,
             total_pages=total_pages,

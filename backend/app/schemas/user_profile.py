@@ -69,17 +69,18 @@ class UserProfileExtendedRead(UserProfileRead):
 UserProfileExtendedRead.model_rebuild()
 
 
-class UserEmailRead(CamelModel):
+class UserProfilePaginatedRead(CamelModel):
     user_id: UUID
     email: str
+    account_role: AccountRole
 
 
-class PaginatedUserRead(CamelModel):
+class UserListPaginatedRead(CamelModel):
     page: int
     limit: int
     total_pages: int
     total_users: int
-    users: list[UserProfileRead] | list[UserProfileExtendedRead] | list[UserEmailRead]
+    users: list[UserProfilePaginatedRead]
 
 
 # Schema for reading User Statistics

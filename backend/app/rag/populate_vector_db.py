@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from app.config import Settings
+from config import Settings
+
 from app.connections.gemini_client import is_valid_api_key
 from app.rag.embeddings import get_embedding_model
 from app.rag.rag import load_and_index_documents
