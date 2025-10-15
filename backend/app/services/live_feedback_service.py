@@ -3,7 +3,6 @@ import json
 import logging
 from collections.abc import Callable, Generator
 from contextlib import suppress
-from typing import Optional
 from uuid import UUID
 
 from sqlmodel import Session as DBSession
@@ -18,7 +17,7 @@ from app.services.voice_analysis_service import analyze_voice
 
 
 def fetch_live_feedback_for_session(
-    db_session: DBSession, session_id: UUID, limit: Optional[int]
+    db_session: DBSession, session_id: UUID, limit: int | None
 ) -> list[LiveFeedbackRead]:
     statement = (
         select(LiveFeedback)
@@ -135,7 +134,7 @@ def generate_live_feedback_item(
 
 
 def generate_and_store_live_feedback(
-    session_generator_func: Callable[[], Generator[DBSession, None, None]],
+    session_generator_func: Callable[[], Generator[DBSession]],
     session_id: UUID,
     session_turn_context: SessionTurn,
     hr_docs_context: str = '',

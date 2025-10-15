@@ -1,7 +1,7 @@
 # ruff: noqa: E501
 import json
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
@@ -12,7 +12,7 @@ from app.services.utils import normalize_quotes
 
 
 class ScoringService:
-    def __init__(self, rubric_path: Optional[Path] = None) -> None:
+    def __init__(self, rubric_path: Path | None = None) -> None:
         if rubric_path is None:
             rubric_path = Path(__file__).parent.parent / 'data' / 'conversation_rubric.json'
         self.rubric = self._load_json(rubric_path)
@@ -63,7 +63,7 @@ class ScoringService:
         self,
         conversation: ConversationScenarioRead,
         temperature: float = 0.0,
-        audio_uri: Optional[str] = None,
+        audio_uri: str | None = None,
     ) -> ScoringRead:
         user_prompt = self._build_user_prompt(conversation)
         system_prompt = self._build_system_prompt()

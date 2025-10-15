@@ -231,7 +231,7 @@ def create_pending_preparation(scenario_id: UUID, db_session: DBSession) -> Scen
 def generate_scenario_preparation(
     preparation_id: UUID,
     new_preparation: ScenarioPreparationCreate,
-    session_generator_func: Callable[[], Generator[DBSession, None, None]],
+    session_generator_func: Callable[[], Generator[DBSession]],
 ) -> ScenarioPreparation:
     """
     Generate scenario preparation data including objectives, checklist, and key concepts.

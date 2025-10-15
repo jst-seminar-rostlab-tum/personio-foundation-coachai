@@ -231,7 +231,7 @@ class TestSessionFeedbackService(unittest.TestCase):
         )
         # mock_session_generator_func = MagicMock()
 
-        def mock_session_generator_func() -> Generator[Any, None, None]:
+        def mock_session_generator_func() -> Generator[Any]:
             yield self.session
 
         feedback = generate_and_store_feedback(
@@ -323,7 +323,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             key_concepts='KeyConcept',
         )
 
-        def mock_session_generator_func() -> Generator[Any, None, None]:
+        def mock_session_generator_func() -> Generator[Any]:
             yield self.session
 
         feedback = generate_and_store_feedback(
@@ -391,7 +391,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             key_concepts='KC1',
         )
 
-        def mock_session_generator_func() -> Generator[Any, None, None]:
+        def mock_session_generator_func() -> Generator[Any]:
             yield self.session
 
         feedback = generate_and_store_feedback(

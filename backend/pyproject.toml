@@ -3,7 +3,7 @@ name = "coachAI-backend"
 version = "0.1.0"
 description = "A smart, voice-based training app for HR professionals to master difficult conversations through guided preparation, realistic simulations, and actionable feedback"
 readme = "README.md"
-requires-python = ">=3.12.7"
+requires-python = ">=3.13.0"
 dependencies = [
     "fastapi[standard]>=0.112.1",
     "sqlalchemy>=2.0.22",
@@ -36,6 +36,7 @@ dependencies = [
     "langchain-google-vertexai>=2.0.27",
     "apscheduler>=3.11.0",
     "pytz>=2025.0",
+    "gotrue>=2.12.4",
 ]
 
 [tool.setuptools]
@@ -60,6 +61,8 @@ dev = [
     "httpx",
     "respx",
     "deptry>=0.23.0",
+    "pip-audit>=2.9.0",
+    "pytest-mock>=3.15.1",
 ]
 
 lint = ["ruff"]

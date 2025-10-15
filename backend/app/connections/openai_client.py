@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -62,7 +62,7 @@ def call_structured_llm(
     max_tokens: int = 500,
     system_prompt: str | None = None,
     mock_response: T | None = None,
-    audio_uri: Optional[str] = None,
+    audio_uri: str | None = None,
 ) -> T:
     """
     Call the LLM with a structured output request and parse the response.
