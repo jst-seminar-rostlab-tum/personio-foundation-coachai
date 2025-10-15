@@ -190,9 +190,9 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
           <AccordionItem value="suggestion">
             <AccordionTrigger>{t('accordion.suggestion')}</AccordionTrigger>
             <AccordionContent>
-              {feedbackDetail?.feedback?.documentNames &&
-              feedbackDetail.feedback.documentNames.length > 0 ? (
-                <ResourcesList resources={feedbackDetail.feedback.documentNames} columns={2} />
+              {feedbackDetail?.feedback?.documents &&
+              feedbackDetail.feedback.documents.length > 0 ? (
+                <ResourcesList resources={feedbackDetail.feedback.documents} columns={2} />
               ) : (
                 <EmptyListComponent itemType={tCommon('resources.title')} />
               )}
