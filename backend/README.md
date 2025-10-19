@@ -114,7 +114,7 @@ docker compose up supabase -d
 4. Populate local PostgreSQL with dummy data. From the backend folder, run the following:
 
 ```bash
-uv run -m app.data.populate_dummy_data
+uv run -m app.data.populate_dummy_data && uv run -m app.data.populate_static_data
 ```
 
 5. Start the FastAPI development server:

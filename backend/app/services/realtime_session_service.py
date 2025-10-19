@@ -8,13 +8,12 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.config import settings
-from app.enums.account_role import AccountRole
 from app.enums.language import LANGUAGE_NAME
-from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session
 from app.models.user_profile import UserProfile
+from app.services.app_config_service import AppConfigService
 
 if settings.FORCE_CHEAP_MODEL:
     MODEL = 'gpt-4o-mini-realtime-preview-2024-12-17'
@@ -25,6 +24,7 @@ else:
 class RealtimeSessionService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
+        self.app_config_service = AppConfigService(db)
 
     def _get_voice(self, persona_name: str) -> str:
         """
@@ -52,7 +52,6 @@ class RealtimeSessionService:
             os.path.dirname(__file__), '..', 'data', 'persona_difficulty_modifiers.json'
         )
 
-        print(f'Loading persona difficulty modifiers from {modifiers_path}')
         try:
             with open(modifiers_path, encoding='utf-8') as f:
                 modifiers = json.load(f)
@@ -90,30 +89,18 @@ class RealtimeSessionService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='OPENAI_API_KEY not set'
             )
 
-        # Check daily session limit for non-admin users
-        if user_profile.account_role != AccountRole.admin:
-            # Get session limit from AppConfig
-            session_limit_config = self.db.exec(
-                select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
-            ).first()
+        daily_session_limit = user_profile.daily_session_limit
+        if daily_session_limit is None:
+            daily_session_limit = self.app_config_service.get_default_daily_session_limit()
 
-            # If session limit is not configured, assume limit is hit (safety feature)
-            if session_limit_config is None:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail='Daily session limit is not configured. Cannot start real-time session. '
-                    'Please contact an administrator.',
-                )
-
-            session_limit = int(session_limit_config)
-
-            # Check if the user has reached the daily session limit
-            if user_profile.sessions_created_today >= session_limit:
-                raise HTTPException(
-                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    detail=f'You have reached the daily session limit of {session_limit}. '
-                    'Cannot start real-time session.',
-                )
+        if (
+            daily_session_limit is None
+            or user_profile.sessions_created_today >= daily_session_limit
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail='You have reached the daily session limit. Cannot start real-time session.',
+            )
 
         conversation_scenario = self.db.exec(
             select(ConversationScenario).where(ConversationScenario.id == session.scenario_id)
@@ -162,10 +149,6 @@ class RealtimeSessionService:
             conversation_scenario.persona_name, conversation_scenario.difficulty_level
         )
         if persona_difficulty_modifier:
-            logging.info(
-                f'Using difficulty modifier for {conversation_scenario.persona_name}:'
-                f' {persona_difficulty_modifier}'
-            )
             instructions += (
                 'The following section defines your expected behavioral patterns and '
                 'tone — please ensure you adhere to these guidelines and '
@@ -190,10 +173,6 @@ class RealtimeSessionService:
             )
 
         if conversation_category and conversation_category.initial_prompt:
-            logging.info(
-                f'Using conversation category, {conversation_category_name},'
-                f' with initial prompt: {conversation_category.initial_prompt}'
-            )
             instructions += (
                 f'Additional instructions before starting:\n'
                 f'{conversation_category.initial_prompt}\n\n'
@@ -202,10 +181,7 @@ class RealtimeSessionService:
             logging.warning('No initial prompt for category available')
 
         ai_voice = self._get_voice(conversation_scenario.persona_name)
-        logging.info(f'Using AI voice: {ai_voice}')
         language = conversation_scenario.language_code.value
-
-        logging.info(f'Final prompt:\n{instructions}')
 
         if settings.STORE_PROMPTS:
             # Write the instructions to a text file for debugging/auditing
@@ -244,10 +220,9 @@ class RealtimeSessionService:
             except httpx.HTTPStatusError as e:
                 raise HTTPException(status_code=response.status_code, detail=str(e)) from e
 
-            if user_profile.account_role != AccountRole.admin:
-                user_profile.sessions_created_today += 1
-                self.db.add(user_profile)
-                self.db.commit()
+            user_profile.sessions_created_today += 1
+            self.db.add(user_profile)
+            self.db.commit()
 
             data = response.json()
             data['persona_name'] = conversation_scenario.persona_name

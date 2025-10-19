@@ -1770,7 +1770,7 @@ def get_dummy_app_configs() -> list[AppConfig]:
     Generate dummy data for AppConfig.
     """
     return [
-        AppConfig(key='dailyUserSessionLimit', value='10', type=ConfigType.int),
+        AppConfig(key='defaultDailyUserSessionLimit', value='10', type=ConfigType.int),
     ]
 
 

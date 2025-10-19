@@ -15,6 +15,7 @@ from app.dependencies import require_admin, require_user
 from app.models.conversation_scenario import ConversationScenario
 from app.models.user_profile import UserProfile
 from app.schemas.user_profile import (
+    UserDailySessionLimitUpdate,
     UserListPaginatedRead,
     UserProfileExtendedRead,
     UserProfileRead,
@@ -184,3 +185,18 @@ def export_user_data(
     mem_zip.seek(0)
     headers = {'Content-Disposition': 'attachment; filename="user_data_export.zip"'}
     return StreamingResponse(mem_zip, media_type='application/zip', headers=headers)
+
+
+@router.patch(
+    '/{user_id}/daily-session-limit',
+    response_model=UserProfileRead,
+    dependencies=[Depends(require_admin)],
+)
+def update_daily_session_limit(
+    user_id: UUID,
+    data: UserDailySessionLimitUpdate,
+    service: Annotated[UserService, Depends(get_user_service)],
+) -> UserProfileRead:
+    return service.update_daily_session_limit(
+        user_id=user_id, daily_session_limit=data.daily_session_limit
+    )

@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlmodel import Session as DBsession
 from sqlmodel import select
 
@@ -121,3 +121,20 @@ class AppConfigService:
                 status_code=422,
                 detail=f"Value '{value}' cannot be typecasted to {config_type}",
             ) from None
+
+    def get_value(self, key: str) -> str | None:
+        statement = select(AppConfig.value).where(AppConfig.key == key)
+        return self.db.scalar(statement)
+
+    def get_default_daily_session_limit(self) -> int:
+        value = self.get_value('defaultDailyUserSessionLimit')
+
+        if value is None:
+            return 0
+
+        try:
+            return int(value)
+        except (TypeError, ValueError) as err:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            ) from err
