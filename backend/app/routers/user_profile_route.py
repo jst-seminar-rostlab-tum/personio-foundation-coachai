@@ -200,3 +200,11 @@ def update_daily_session_limit(
     return service.update_daily_session_limit(
         user_id=user_id, daily_session_limit=data.daily_session_limit
     )
+
+
+@router.get('/{user_id}', response_model=UserProfileRead, dependencies=[Depends(require_admin)])
+def get_user_profile_by_id(
+    user_id: UUID,
+    service: Annotated[UserService, Depends(get_user_service)],
+) -> UserProfileRead:
+    return service.get_user_profile_by_id(user_id=user_id, detailed=False)
