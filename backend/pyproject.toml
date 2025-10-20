@@ -24,7 +24,7 @@ dependencies = [
     "langchain-community>0.3.20",
     "langchain-google-genai>=2.0.10",
     "google-generativeai>=0.8.5",
-    "supabase>=2.15.2",
+    "supabase~=2.18.0",
     "pypdf>=5.4.0",
     "pgvector>=0.2.5,<0.4",
     "langchain-openai>=0.3.21",
