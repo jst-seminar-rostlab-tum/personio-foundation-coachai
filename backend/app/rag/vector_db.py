@@ -65,8 +65,7 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
         print(f"Warning: Document folder '{doc_folder}' does not exist.")
         return []
 
-    license_map = load_license_mapping()
-    author_map = load_author_mapping()
+    author_license_map = load_authors_licenses_mapping()
     for file in os.listdir(doc_folder):
         if file.endswith('.pdf'):
             file_path = os.path.join(doc_folder, file)
@@ -79,8 +78,7 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
                 page_chapter_map = build_page_chapter_map(toc, total_pages)
 
                 doc_name = os.path.basename(file)
-                license_name = license_map.get(doc_name, 'Unknown')
-                author = author_map.get(doc_name, 'Unknown')
+                license_name, author = author_license_map.get(doc_name, ['Unknown', 'Unknown'])
 
                 if license_name == 'Unknown':
                     print(f"⚠️ No license found for '{doc_name}', defaulting to 'Unknown'.")
@@ -168,21 +166,11 @@ def load_vector_db(
     )
 
 
-def load_license_mapping(
-    file_path: Path = Path(__file__).parent / 'document-licenses.json',
+def load_authors_licenses_mapping(
+    file_path: Path = Path(__file__).parent / 'document-authors-licenses.json',
 ) -> dict:
     """
-    Loads a mapping from document filename to license name from a JSON file.
-    """
-    with open(file_path) as f:
-        return json.load(f)
-
-
-def load_author_mapping(
-    file_path: Path = Path(__file__).parent / 'document-authors.json',
-) -> dict:
-    """
-    Loads a mapping from document filename to author name from a JSON file.
+    Loads a mapping from document filename to author name and license from a JSON file.
     """
     with open(file_path) as f:
         return json.load(f)
