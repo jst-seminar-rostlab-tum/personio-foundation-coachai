@@ -86,8 +86,20 @@ def get_mock_session_feedback() -> SessionFeedback:
         overall_score=4.3,
         full_audio_filename='full_audio_123.mp3',
         documents=[
-            {'quote': '', 'title': 'Teamwork: An Open Access Practical Guide'},
-            {'quote': '', 'title': 'Psychology of Human Relations'},
+            {
+                'quote': 'Example quote 1',
+                'title': 'Teamwork: An Open Access Practical Guide',
+                'page': 5,
+                'author': 'Andrew M. Clark',
+                'chapter': 'Chapter 10',
+            },
+            {
+                'quote': 'Example quote 2',
+                'title': 'Psychology of Human Relations',
+                'page': 10,
+                'author': 'Stevy Scarbrough',
+                'chapter': 'Chapter 5',
+            },
         ],
         speak_time_percent=60.5,
         questions_asked=5,
