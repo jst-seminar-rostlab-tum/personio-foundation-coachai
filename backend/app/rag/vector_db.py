@@ -85,6 +85,11 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
                 else:
                     print(f"📄 '{doc_name}' assigned license: {license_name}")
 
+                if author == 'Unknown':
+                    print(f"⚠️ No author found for '{doc_name}', defaulting to 'Unknown'.")
+                else:
+                    print(f"📄 '{doc_name}' author: {author}")
+
                 for doc in loaded_docs:
                     # Replacing null bytes as they lead to errors
                     doc.page_content = doc.page_content.replace('\u0000', '')
@@ -133,9 +138,9 @@ def format_docs_with_metadata(docs: list[Document]) -> tuple[str, list[dict]]:
     """
     return '\n\n'.join([doc.page_content for doc in docs]), [
         {
-            'quote': doc.page_content,
+            'quote': doc.page_content or '',
             'page': doc.metadata.get('page'),
-            'title': doc.metadata.get('title'),
+            'title': doc.metadata.get('title', 'Unknown'),
             'author': doc.metadata.get('author'),
             'chapter': doc.metadata.get('chapter'),
         }
