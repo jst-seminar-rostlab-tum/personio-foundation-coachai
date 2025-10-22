@@ -334,7 +334,7 @@ def generate_and_store_feedback(
             advisor_service = AdvisorService()
 
         goals_request, recommendations_request = prepare_feedback_requests(feedback_request)
-        hr_docs_context, _, metadata = get_hr_docs_context(recommendations_request)
+        hr_docs_context, _, documents = get_hr_docs_context(recommendations_request)
 
         conversation = get_conversation_data(db_session, session_id)
 
@@ -345,7 +345,7 @@ def generate_and_store_feedback(
                 feedback_request=feedback_request,
                 goals_request=goals_request,
                 hr_docs_context=hr_docs_context,
-                documents=metadata,
+                documents=documents,
                 conversation=conversation,
                 scoring_service=scoring_service,
                 session_turn_service=session_turn_service,
