@@ -23,6 +23,7 @@ import { showErrorToast } from '@/lib/utils/toast';
 import { adminService } from '@/services/AdminService';
 import { useAdminStatsStore } from '@/store/AdminStatsStore';
 import { USER_LIST_PAGE, USER_LIST_LIMIT } from '../constants/UsersList';
+import UserDialog from './UserDialog';
 
 export default function UsersList({
   users,
@@ -33,6 +34,8 @@ export default function UsersList({
   const [search, setSearch] = useState('');
   const [totalUsers, setTotalUsers] = useState(initialTotalUsers);
   const [limit, setLimit] = useState(USER_LIST_LIMIT);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { setStats } = useAdminStatsStore();
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
@@ -79,6 +82,16 @@ export default function UsersList({
     }
   };
 
+  const handleUserClick = (userId: string) => {
+    setSelectedUserId(userId);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedUserId(null);
+  };
+
   return (
     <>
       <div className="mt-4 mb-4 flex flex-row gap-4 items-end">
@@ -111,7 +124,11 @@ export default function UsersList({
               </TableHeader>
               <TableBody>
                 {userList.map((user) => (
-                  <TableRow key={user.email} className="border-t border-bw-10">
+                  <TableRow
+                    key={user.email}
+                    className="border-t border-bw-10 hover:bg-bw-5 cursor-pointer"
+                    onClick={() => handleUserClick(user.userId)}
+                  >
                     <TableCell className="px-6 py-4 text-bw-70 w-[280px]">{user.email}</TableCell>
                     <TableCell className="pl-0 pr-6 py-4 text-right">
                       <DeleteUserHandler id={user.userId} onDeleteSuccess={onDeleteSuccess} />
@@ -131,6 +148,7 @@ export default function UsersList({
           )}
         </>
       )}
+      <UserDialog userId={selectedUserId} isOpen={isDialogOpen} onClose={handleDialogClose} />
     </>
   );
 }

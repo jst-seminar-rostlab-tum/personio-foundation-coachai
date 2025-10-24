@@ -11,6 +11,8 @@ export interface UserProfile {
   storeConversations?: boolean;
   confidenceScores?: ConfidenceScore[];
   scenarioAdvice: ScenarioAdvice;
+  sessionsCreatedToday?: number;
+  dailySessionLimit?: number;
 }
 
 export type UserProfileUpdate = Omit<

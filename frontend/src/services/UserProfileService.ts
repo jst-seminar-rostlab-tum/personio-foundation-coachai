@@ -98,6 +98,32 @@ const getPaginatedUsers = async (
   }
 };
 
+const getUserProfileById = async (api: AxiosInstance, userId: string) => {
+  try {
+    const { data } = await api.get<UserProfile>(`/user-profiles/${userId}`);
+    return data;
+  } catch (error) {
+    console.error('Error fetching user profile by ID:', error);
+    throw error;
+  }
+};
+
+const updateDailySessionLimit = async (
+  api: AxiosInstance,
+  userId: string,
+  dailySessionLimit: number
+) => {
+  try {
+    const { data } = await api.patch(`/user-profiles/${userId}/daily-session-limit`, {
+      daily_session_limit: dailySessionLimit,
+    });
+    return data;
+  } catch (error) {
+    console.error('Error updating daily session limit:', error);
+    throw error;
+  }
+};
+
 export const UserProfileService = {
   getUserProfile,
   getUserStats,
@@ -107,4 +133,6 @@ export const UserProfileService = {
   deleteUnconfirmedUser,
   checkUnique,
   getPaginatedUsers,
+  getUserProfileById,
+  updateDailySessionLimit,
 };
