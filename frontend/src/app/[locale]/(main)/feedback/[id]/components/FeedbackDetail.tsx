@@ -183,7 +183,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
                 ))}
               </div>
               <div className="mt-6">
-                <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
+                <p className="text-xs text-bw-50">{tCommon('aiGeneratedDisclaimer')}</p>
               </div>
             </AccordionContent>
           </AccordionItem>

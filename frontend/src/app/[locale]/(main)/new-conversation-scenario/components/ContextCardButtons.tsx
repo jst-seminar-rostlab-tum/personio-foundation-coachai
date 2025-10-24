@@ -29,7 +29,7 @@ export default function ContextCardButtons() {
             return (
               <button
                 type="button"
-                className={`box-border rounded-2xl flex flex-col items-start justify-start text-lg outline outline-2 outline-bw-20 cursor-pointer hover:bg-marigold-30/80 active:outline-none active:bg-marigold-30 disabled:pointer-events-none p-6 group ${isSelected ? 'outline-none bg-marigold-30' : ''} flex-1`}
+                className={`box-border rounded-2xl flex flex-col items-start justify-start text-lg outline outline-2 outline-bw-40 cursor-pointer hover:bg-marigold-30/80 active:outline-none active:bg-marigold-30 disabled:pointer-events-none p-6 group ${isSelected ? 'outline-none bg-marigold-30' : ''} flex-1`}
                 onClick={() => updateForm({ contextMode: contextMode.value as ContextMode })}
                 key={contextMode.value}
               >
@@ -37,7 +37,7 @@ export default function ContextCardButtons() {
                   {contextMode.label}
                 </span>
                 <span
-                  className={`text-base leading-relaxed text-bw-40 group-hover:text-bw-70 ${isSelected ? 'text-bw-70' : ''} text-left`}
+                  className={`text-base leading-relaxed text-bw-70 group-hover:text-bw-70 ${isSelected ? 'text-bw-70' : ''} text-left`}
                 >
                   {contextMode.subtitle}
                 </span>

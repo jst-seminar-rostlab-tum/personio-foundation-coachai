@@ -14,7 +14,7 @@ export function CategoryStep() {
   const { formState, updateForm } = useConversationScenarioStore();
   const isCustomContextMode = formState.contextMode === ContextModeEnums.CUSTOM;
 
-  const contextClass = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md bg-white px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${isCustomContextMode ? '' : 'text-bw-60 cursor-not-allowed'} resize-none overflow-auto`;
+  const contextClass = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${isCustomContextMode ? '' : 'text-bw-70 cursor-not-allowed'} resize-none overflow-auto`;
 
   return (
     <div className="space-y-8">

@@ -39,10 +39,10 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ name }) => {
   return (
     <div
       onClick={handleDownload}
-      className="w-full flex items-center justify-between py-2 px-4 rounded-lg border border-bw-20 hover:border-bw-30 hover:bg-bw-10/50 transition-all duration-200 ease-in-out cursor-pointer group"
+      className="w-full flex items-center justify-between py-2 px-4 rounded-lg border border-bw-40 hover:border-bw-30 hover:bg-white/50 transition-all duration-200 ease-in-out cursor-pointer group"
     >
       <div className="flex items-center gap-3 flex-1">
-        <FileText className="w-4 h-4 text-bw-50 group-hover:text-bw-60 transition-colors duration-200" />
+        <FileText className="w-4 h-4 text-bw-50 group-hover:text-bw-70 transition-colors duration-200" />
         <span className="text-sm font-medium group-hover:underline transition-all duration-200">
           {name}
         </span>

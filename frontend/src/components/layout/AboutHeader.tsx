@@ -22,7 +22,7 @@ export default function AboutHeader() {
               <HighlightedAppName />
             </span>
           </Link>
-          <span className="text-xs text-bw-40">{t('developedBy')}</span>
+          <span className="text-xs text-bw-50">{t('developedBy')}</span>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
           <LanguageSwitcher />

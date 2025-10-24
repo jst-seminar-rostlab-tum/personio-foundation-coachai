@@ -45,7 +45,7 @@ export default function DonutChart({ totalScore, maxScore }: DonutChartProps) {
             r={radius}
             fill="none"
             strokeWidth={stroke}
-            className="stroke-bw-20"
+            className="stroke-bw-40"
           />
           <circle
             cx="80"
@@ -65,8 +65,8 @@ export default function DonutChart({ totalScore, maxScore }: DonutChartProps) {
           style={{ transform: 'translate(-50%, -50%)' }}
         >
           <span>
-            <span className="font-medium text-7xl fill-bw-60 text-bw-60">{animatedNumber}</span>
-            <span className="font-regular text-5xl text-bw-40">/{maxScore}</span>
+            <span className="font-medium text-7xl fill-bw-60 text-bw-70">{animatedNumber}</span>
+            <span className="font-regular text-5xl text-bw-70">/{maxScore}</span>
           </span>
         </div>
       </div>

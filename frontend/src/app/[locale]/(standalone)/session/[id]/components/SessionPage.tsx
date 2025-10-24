@@ -86,7 +86,7 @@ export default function SessionPageComponent({
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="sticky top-0 z-11 bg-white">
+      <div className="sticky top-0 z-11">
         <SessionHeader
           characterName={personaName}
           sessionLabel={categoryName}
@@ -126,7 +126,7 @@ export default function SessionPageComponent({
       <audio ref={remoteAudioRef} autoPlay playsInline />
 
       <div className="mt-4 mb-4 text-center">
-        <p className="text-xs text-bw-40">{tCommon('aiDisclaimer')}</p>
+        <p className="text-xs text-bw-50">{tCommon('aiDisclaimer')}</p>
       </div>
     </div>
   );

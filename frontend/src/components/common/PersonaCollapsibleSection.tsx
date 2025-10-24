@@ -49,7 +49,7 @@ export default function PersonaCollapsibleSection({
                   width={52}
                   height={52}
                   alt={personaName || 'Persona'}
-                  className="rounded-full bg-white border border-bw-20"
+                  className="rounded-full bg-white border border-bw-40"
                 />
               )}
               {personaName && <span className="text-xl font-normal">{personaName}</span>}

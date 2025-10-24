@@ -92,7 +92,7 @@ export function MultiSelect({
       <div
         ref={wrapperRef}
         tabIndex={-1}
-        className="group rounded-md border border-bw-20 bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-bw-40 focus-within:ring-offset-2 flex items-center flex-wrap gap-1 cursor-pointer"
+        className="group rounded-md border border-bw-40 bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-bw-40 focus-within:ring-offset-2 flex items-center flex-wrap gap-1 cursor-pointer"
         onClick={handleWrapperClick}
         onBlur={handleBlur}
       >
@@ -105,7 +105,7 @@ export function MultiSelect({
             className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
           />
         ) : (
-          <span className="text-sm text-bw-40">{maxSelectedDisclaimer}</span>
+          <span className="text-sm text-bw-70">{maxSelectedDisclaimer}</span>
         )}
       </div>
       {value.length > 0 && (
@@ -146,7 +146,7 @@ export function MultiSelect({
                         value.length < (maxSelected ?? Infinity) ? [...value, option.id] : value
                       );
                     }}
-                    className="cursor-pointer hover:bg-bw-10"
+                    className="cursor-pointer hover:bg-bw-40"
                   >
                     {option.label}
                   </CommandItem>

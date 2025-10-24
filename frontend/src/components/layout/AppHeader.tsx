@@ -62,14 +62,14 @@ export function AppHeader() {
                 <Link
                   key={key}
                   href={href}
-                  className="relative group text-bw-60 font-medium text-lg transition-colors cursor-pointer"
+                  className="relative group text-bw-70 font-medium text-lg transition-colors cursor-pointer"
                 >
                   {tCommon(key)}
                   <span
                     className={`block h-0.5 absolute left-1/2 -translate-x-1/2 -bottom-1 transition-transform duration-300 ease-in-out origin-left w-[90%] ${
                       pathname.includes(href)
                         ? 'scale-x-100 bg-marigold-50'
-                        : 'scale-x-0 group-hover:scale-x-100 bg-bw-60'
+                        : 'scale-x-0 group-hover:scale-x-100 bg-bw-70'
                     }`}
                   />
                 </Link>
@@ -86,7 +86,6 @@ export function AppHeader() {
               {isMenuOpen ? <X className="!w-4 !h-4" /> : <Menu className="!w-4 !h-4" />}
             </Button>
             <Button
-              variant="secondary"
               className="hidden lg:flex h-8"
               onClick={async () => {
                 await logoutUser(createClient);
@@ -126,7 +125,7 @@ export function AppHeader() {
                   className={`block h-1 sm:h-1.5 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left w-[95%] ${
                     pathname.includes(href)
                       ? 'scale-x-100 bg-marigold-50'
-                      : 'scale-x-0 group-hover:scale-x-100 bg-bw-60'
+                      : 'scale-x-0 group-hover:scale-x-100 bg-bw-70'
                   }`}
                 />
               </Link>
@@ -139,7 +138,7 @@ export function AppHeader() {
               }}
             >
               {tCommon('logout')}
-              <span className="block h-1 sm:h-1.5 bg-bw-60 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left scale-x-0 group-hover:scale-x-100 w-[95%]" />
+              <span className="block h-1 sm:h-1.5 bg-bw-70 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left scale-x-0 group-hover:scale-x-100 w-[95%]" />
             </span>
           </nav>
         </div>

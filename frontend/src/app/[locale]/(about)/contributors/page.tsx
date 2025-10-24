@@ -67,10 +67,7 @@ export default async function ContributorsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {teams.map((team) => (
-              <div
-                key={team.title}
-                className="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
-              >
+              <div key={team.title} className="p-6 rounded-xl shadow-sm border border-gray-100">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-lg bg-marigold-30/50 flex items-center justify-center text-marigold-90">
                     <team.icon className="h-5 w-5" />

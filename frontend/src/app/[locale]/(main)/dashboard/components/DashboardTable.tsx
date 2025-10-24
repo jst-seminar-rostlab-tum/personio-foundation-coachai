@@ -137,7 +137,7 @@ export default function DashboardTable({ scenarios, totalScenarios, limit }: Das
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
+    <div className="overflow-x-auto rounded-lg border border-bw-40 mb-4 max-w-full">
       <ClickableTable
         columns={columns}
         data={rows}

@@ -8,7 +8,7 @@
   --flame-50: #ff3700;
   --flame-90: #4D0F00;
   --bw-10: #f4f4f5;
-  --bw-20: #e4e4e7;
+  --bw-40: #e4e4e7;
   --bw-30: #d4d4d8;
   --bw-40: #a1a1aa;
   --bw-50: #71717a;
@@ -26,6 +26,7 @@
   --forest-60: #21ab63;
   --forest-90: #0F3D24;
   --font-dark: #262626;
+  --custom-beige: #f0dfd5;
   --radius-md: 8px;
 }
 
@@ -40,7 +41,7 @@
   --color-flame-50: var(--flame-50);
   --color-flame-90: var(--flame-90);
   --color-bw-10: var(--bw-10);
-  --color-bw-20: var(--bw-20);
+  --color-bw-40: var(--bw-40);
   --color-bw-30: var(--bw-30);
   --color-bw-40: var(--bw-40);
   --color-bw-50: var(--bw-50);
@@ -58,6 +59,7 @@
   --color-forest-60: var(--forest-60);
   --color-forest-90: var(--forest-90);
   --color-font-dark: var(--font-dark);
+  --color-custom-beige: var(--custom-beige);
   /* typography */
   --text-2xl: 24px;
   --text-2xl--font-weight: 700;
@@ -97,7 +99,7 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--marigold-5);
   color: var(--font-dark);
   font-family: Arial, Helvetica, sans-serif;
 }

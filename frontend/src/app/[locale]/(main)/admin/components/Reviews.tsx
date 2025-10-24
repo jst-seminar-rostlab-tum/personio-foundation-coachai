@@ -220,10 +220,10 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
           <div className="flex flex-col items-center justify-center w-max mx-auto gap-1">
             <div className="flex items-end text-6xl md:text-7xl whitespace-nowrap mb-2 font-medium text-bw-70 leading-none">
               {animatedAverage.toFixed(1) ?? 'N/A'}
-              <span className="text-4xl md:text-5xl font-normal text-bw-40 leading-none ml-2">
+              <span className="text-4xl md:text-5xl font-normal text-bw-70 leading-none ml-2">
                 /
               </span>
-              <span className="text-4xl md:text-5xl font-normal text-bw-40 leading-none ml-2">
+              <span className="text-4xl md:text-5xl font-normal text-bw-70 leading-none ml-2">
                 5
               </span>
             </div>
@@ -231,12 +231,12 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`w-6 h-6 md:w-8 md:h-8 ${i < Math.round(ratingStatistics?.average ?? 0) ? 'fill-marigold-40' : 'fill-bw-20'}`}
+                  className={`w-6 h-6 md:w-8 md:h-8 ${i < Math.round(ratingStatistics?.average ?? 0) ? 'fill-marigold-40' : 'fill-bw-40'}`}
                   strokeWidth={0}
                 />
               ))}
             </div>
-            <div className="text-sm md:text-md font-normal text-bw-40 text-center w-full">
+            <div className="text-sm md:text-md font-normal text-bw-70 text-center w-full">
               {pagination?.totalCount
                 ? `${pagination.totalCount} ${tCommon('reviews')}`
                 : `N/A ${tCommon('reviews')}`}
@@ -251,7 +251,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                     <Star className="w-6 h-6 fill-marigold-40" strokeWidth={0} />
                   </span>
                   <Progress className="h-2.5 flex-1 min-w-0" value={animatedProgress[idx]} />
-                  <span className="text-sm text-bw-40 w-8 text-right">{animatedCounts[idx]}</span>
+                  <span className="text-sm text-bw-70 w-8 text-right">{animatedCounts[idx]}</span>
                 </div>
               );
             })}
@@ -280,7 +280,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
               <div
                 onClick={() => review.allowAdminAccess && handleReviewClick(review.sessionId)}
                 key={review.id}
-                className={`border border-bw-20 rounded-lg bg-transparent p-6 gap-4 flex flex-col items-start ${
+                className={`border border-bw-40 rounded-lg bg-transparent p-6 gap-4 flex flex-col items-start ${
                   review.sessionId && review.allowAdminAccess
                     ? 'cursor-pointer'
                     : 'cursor-not-allowed'
@@ -293,13 +293,13 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-6 h-6 mr-0.5 ${i < review.rating ? 'fill-marigold-30' : 'fill-bw-20'}`}
+                      className={`w-6 h-6 mr-0.5 ${i < review.rating ? 'fill-marigold-30' : 'fill-bw-40'}`}
                       strokeWidth={0}
                     />
                   ))}
                 </div>
                 <div className="text-base text-bw-70 leading-relaxed">{review.comment}</div>
-                <div className="text-base text-bw-40">
+                <div className="text-base text-bw-70">
                   {formatDateFlexible(review.date, locale)}
                 </div>
               </div>

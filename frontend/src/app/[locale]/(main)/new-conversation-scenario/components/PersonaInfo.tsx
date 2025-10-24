@@ -80,7 +80,7 @@ export function PersonaInfo() {
   }
 
   return (
-    <div className="mb-12 border border-bw-20 rounded-2xl p-6">
+    <div className="mb-12 border border-bw-40 rounded-2xl p-6">
       <div className="text-xl text-font-dark text-left mb-8">
         {t('aboutLabel')}: {personaName}
       </div>
