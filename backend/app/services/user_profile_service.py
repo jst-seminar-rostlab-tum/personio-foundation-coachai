@@ -93,6 +93,8 @@ class UserService:
 
         statement = statement.where(col(UserProfile.id) != requesting_user_id)
 
+        statement = statement.where(col(UserProfile.account_role) != AccountRole.admin)
+
         statement = statement.order_by(col(UserProfile.updated_at).desc())
 
         all_users = self.db.exec(statement).all()
