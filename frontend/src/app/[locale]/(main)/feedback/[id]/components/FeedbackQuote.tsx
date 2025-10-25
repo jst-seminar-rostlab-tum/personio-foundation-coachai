@@ -27,7 +27,7 @@ export default function FeedbackQuote({
       case 'Cross':
         return <CircleX size={20} className="text-flame-50" />;
       case 'Info':
-        return <ChartNoAxesColumnIncreasingIcon size={20} className="text-marigold-50" />;
+        return <ChartNoAxesColumnIncreasingIcon size={20} className="text-forest-90" />;
       default:
         return null;
     }

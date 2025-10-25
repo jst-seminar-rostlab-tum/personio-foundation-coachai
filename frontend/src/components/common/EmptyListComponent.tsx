@@ -15,7 +15,7 @@ export default function EmptyListComponent({
   const t = useTranslations('Common.emptyList');
   return (
     <div
-      className={`flex flex-col items-center justify-center w-full rounded-lg bg-transparent gap-1 p-8 text-center ${
+      className={`flex flex-col items-center justify-center w-full rounded-lg bg-custom-beige gap-1 p-8 text-center ${
         showBorder ? 'border border-bw-40' : ''
       }`}
     >

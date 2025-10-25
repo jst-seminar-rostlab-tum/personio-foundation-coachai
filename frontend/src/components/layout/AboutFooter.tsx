@@ -23,7 +23,7 @@ export default async function AboutFooter() {
               href="https://www.csee.tech/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-stone-500 hover:text-stone-900"
+              className="text-black hover:text-forest-90"
             >
               {t('aboutCSEE')}
             </a>
@@ -31,7 +31,7 @@ export default async function AboutFooter() {
               href="https://www.personio.foundation/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-stone-500 hover:text-stone-900"
+              className="text-black hover:text-forest-90"
             >
               {t('aboutPersonioFoundation')}
             </a>
@@ -39,22 +39,22 @@ export default async function AboutFooter() {
               href="https://github.com/jst-seminar-rostlab-tum/personio-foundation-coachai"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-stone-500 hover:text-stone-900"
+              className="text-black hover:text-forest-90"
             >
               GitHub
             </a>
-            <Link href="/contributors" className="text-stone-500 hover:text-stone-900">
+            <Link href="/contributors" className="text-black hover:text-forest-90">
               {tCommon('contributors')}
             </Link>
-            <Link href="/privacy" className="text-stone-500 hover:text-stone-900">
+            <Link href="/privacy" className="text-black hover:text-forest-90">
               {tCommon('privacyPolicy')}
             </Link>
-            <Link href="/terms" className="text-stone-500 hover:text-stone-900">
+            <Link href="/terms" className="text-black hover:text-forest-90">
               {tCommon('termsOfService')}
             </Link>
           </div>
         </div>
-        <div className="pt-8 text-center text-stone-500 text-sm">
+        <div className="pt-8 text-center text-black text-sm">
           <p>{t('copyright')}</p>
         </div>
       </div>

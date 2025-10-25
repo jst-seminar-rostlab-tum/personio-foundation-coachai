@@ -21,7 +21,9 @@
   --marigold-50: #ff9500;
   --marigold-90: #4d2d00;
   --marigold-95: #291800;
+  --forest-5: #effbf4;
   --forest-10: #D6F5E4;
+  --forest-40: #5cd695;
   --forest-50: #33cc7b;
   --forest-60: #21ab63;
   --forest-90: #0F3D24;
@@ -55,6 +57,7 @@
   --color-marigold-90: var(--marigold-90);
   --color-marigold-95: var(--marigold-95);
   --color-forest-10: var(--forest-10);
+  --color-forest-40: var(--forest-40);
   --color-forest-50: var(--forest-50);
   --color-forest-60: var(--forest-60);
   --color-forest-90: var(--forest-90);

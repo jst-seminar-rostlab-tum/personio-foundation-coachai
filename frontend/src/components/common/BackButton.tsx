@@ -12,7 +12,7 @@ export const BackButtonComponent = ({ label }: { label: string }) => {
     <Button
       variant="ghost"
       className={cn(
-        'group relative flex items-center gap-2 bg-transparent mb-8 p-0 text-xl text-bw-70 transition-colors duration-200 hover:text-bw-70 hover:bg-transparent'
+        'group relative flex items-center gap-2 mb-8 p-0 text-xl text-bw-70 transition-colors duration-200 hover:text-bw-70 hover:bg-transparent'
       )}
     >
       <ArrowLeftIcon className="h-4 w-4" strokeWidth={3} />

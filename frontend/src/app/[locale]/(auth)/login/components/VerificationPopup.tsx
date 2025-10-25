@@ -204,13 +204,13 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                   className={`text-base p-0 h-auto font-normal transition-colors flex items-center gap-1 ${
                     resendCooldown > 0 || isLoading
                       ? 'text-bw-70 cursor-not-allowed'
-                      : 'text-marigold-50 cursor-pointer'
+                      : 'text-forest-90 cursor-pointer'
                   }`}
                 >
                   <RotateCcw
                     size={14}
                     className={`${resendCooldown > 0 ? 'animate-spin' : ''} ${
-                      resendCooldown > 0 || isLoading ? 'text-gray-bw-40' : 'text-marigold-50'
+                      resendCooldown > 0 || isLoading ? 'text-gray-bw-40' : 'text-forest-90'
                     }`}
                   />
                   {`${t('resendButtonLabel')}${resendCooldown > 0 ? ` (${resendCooldown}s)` : ''}`}

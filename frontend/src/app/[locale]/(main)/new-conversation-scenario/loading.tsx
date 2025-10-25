@@ -32,7 +32,7 @@ export default function ConversationScenarioPageLoading() {
       </div>
 
       {/* Next button bar - match real page width and padding */}
-      <div className="fixed bottom-0 left-0 w-full z-50 bg-transparent">
+      <div className="fixed bottom-0 left-0 w-full z-50 bg-custom-beige">
         <div className="max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] py-6">
           <div className="h-12 w-full bg-bw-40 rounded-lg animate-pulse" />
         </div>

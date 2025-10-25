@@ -53,7 +53,7 @@ export default function DonutChart({ totalScore, maxScore }: DonutChartProps) {
             r={radius}
             fill="none"
             strokeWidth={stroke}
-            className="stroke-marigold-50"
+            className="stroke-forest-90"
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             strokeLinecap="round"

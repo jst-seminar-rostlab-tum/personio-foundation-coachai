@@ -100,7 +100,7 @@ export default function DashboardTable({ scenarios, totalScenarios, limit }: Das
             alt={tConversationScenario(`customize.persona.personas.${row.personaName}.name`)}
             width={28}
             height={28}
-            className="rounded-full bg-white"
+            className="rounded-full bg-custom-beige"
           />
           <span className="text-sm">
             {tConversationScenario(`customize.persona.personas.${row.personaName}.name`)}

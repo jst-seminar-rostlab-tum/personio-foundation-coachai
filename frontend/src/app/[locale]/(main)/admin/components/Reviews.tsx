@@ -231,7 +231,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`w-6 h-6 md:w-8 md:h-8 ${i < Math.round(ratingStatistics?.average ?? 0) ? 'fill-marigold-40' : 'fill-bw-40'}`}
+                  className={`w-6 h-6 md:w-8 md:h-8 ${i < Math.round(ratingStatistics?.average ?? 0) ? 'fill-forest-90' : 'fill-bw-40'}`}
                   strokeWidth={0}
                 />
               ))}
@@ -248,7 +248,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                 <div key={num} className="flex items-center w-full justify-end">
                   <span className="mr-4 flex items-center justify-end gap-x-1 text-sm text-bw-70 font-semibold text-right items-center w-10">
                     {num}
-                    <Star className="w-6 h-6 fill-marigold-40" strokeWidth={0} />
+                    <Star className="w-6 h-6 fill-forest-90" strokeWidth={0} />
                   </span>
                   <Progress className="h-2.5 flex-1 min-w-0" value={animatedProgress[idx]} />
                   <span className="text-sm text-bw-70 w-8 text-right">{animatedCounts[idx]}</span>
@@ -280,7 +280,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
               <div
                 onClick={() => review.allowAdminAccess && handleReviewClick(review.sessionId)}
                 key={review.id}
-                className={`border border-bw-40 rounded-lg bg-transparent p-6 gap-4 flex flex-col items-start ${
+                className={`border border-bw-40 rounded-lg bg-custom-beige p-6 gap-4 flex flex-col items-start ${
                   review.sessionId && review.allowAdminAccess
                     ? 'cursor-pointer'
                     : 'cursor-not-allowed'
@@ -293,7 +293,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-6 h-6 mr-0.5 ${i < review.rating ? 'fill-marigold-30' : 'fill-bw-40'}`}
+                      className={`w-6 h-6 mr-0.5 ${i < review.rating ? 'fill-forest-90' : 'fill-bw-40'}`}
                       strokeWidth={0}
                     />
                   ))}

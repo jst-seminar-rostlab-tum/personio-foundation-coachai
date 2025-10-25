@@ -148,7 +148,7 @@ export default function AudioPlayer({
                 <RotateCcwIcon className="w-6 h-6 stroke-bw-40" strokeWidth={2} />
               </button>
               <button
-                className="w-12 h-12 rounded-full bg-marigold-40 flex items-center justify-center cursor-pointer transition-colors duration-300 hover:bg-marigold-50"
+                className="w-12 h-12 rounded-full bg-forest-90 flex items-center justify-center cursor-pointer transition-colors duration-300 hover:bg-forest-90"
                 onClick={() => setIsPlaying(!isPlaying)}
                 aria-label={isPlaying ? 'Pause' : 'Play'}
                 type="button"

@@ -31,7 +31,7 @@ export default function PersonaCollapsibleSection({
   const t = useTranslations('Preparation');
 
   return (
-    <section className="flex flex-col gap-12 w-full border border-marigold-30 rounded-lg p-8 text-bw-70">
+    <section className="flex flex-col gap-12 w-full border border-forest-90 rounded-lg p-8 text-bw-70">
       <div className="flex items-center justify-between w-full">
         <div className="text-xl font-bold text-center w-full">{categoryName}</div>
       </div>
@@ -49,7 +49,7 @@ export default function PersonaCollapsibleSection({
                   width={52}
                   height={52}
                   alt={personaName || 'Persona'}
-                  className="rounded-full bg-white border border-bw-40"
+                  className="rounded-full bg-custom-beige border border-bw-40"
                 />
               )}
               {personaName && <span className="text-xl font-normal">{personaName}</span>}

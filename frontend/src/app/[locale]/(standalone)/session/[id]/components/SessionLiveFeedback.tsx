@@ -92,8 +92,8 @@ export default function SessionLiveFeedback({ liveFeedbacks }: SessionLiveFeedba
                   key={liveFeedback.id}
                   className={`rounded-lg border p-4 transition-colors duration-300 ${
                     newLiveFeedbackIds.includes(liveFeedback.id)
-                      ? 'border-marigold-30 bg-marigold-5'
-                      : 'border-bw-40 bg-background-light'
+                      ? 'border-forest-90 bg-forest-90'
+                      : 'border-bw-40 bg-custom-beige'
                   }`}
                 >
                   <div className="font-semibold text-font-dark mb-1">{liveFeedback.heading}</div>

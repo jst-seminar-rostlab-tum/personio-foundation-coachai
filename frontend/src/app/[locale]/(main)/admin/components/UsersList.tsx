@@ -98,7 +98,7 @@ export default function UsersList({
             placeholder={t('search')}
             value={search}
             onChange={handleSearch}
-            className="w-full pl-10 pr-3 py-2 border border-bw-40 rounded text-sm text-bw-70 placeholder-bw-40 focus:border-bw-40 focus-visible:outline-none focus-visible:ring-0"
+            className="w-full pl-10 pr-3 py-2 border border-bw-40 rounded text-sm text-bw-70 placeholder-bw-50 focus:border-bw-40 focus-visible:outline-none focus-visible:ring-0"
           />
         </div>
       </div>
