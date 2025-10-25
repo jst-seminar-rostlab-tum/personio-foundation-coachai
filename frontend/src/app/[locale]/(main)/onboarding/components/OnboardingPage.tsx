@@ -20,6 +20,7 @@ import { showErrorToast } from '@/lib/utils/toast';
 import { useUser } from '@/contexts/User';
 import { useOnboardingStore } from '@/store/OnboardingStore';
 import { api } from '@/services/ApiClient';
+import { VideoModal } from '@/components/common/VideoModal';
 import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
@@ -27,6 +28,7 @@ export default function OnboardingPageComponent() {
   const tCommon = useTranslations('Common');
   const router = useRouter();
   const userProfile = useUser();
+  const [showVideoModal, setShowVideoModal] = React.useState(false);
 
   const onboardingSteps = ['Step1', 'Step2', 'Step3'];
   const roleQuestion: UserOption[] = UserRoles();
@@ -73,11 +75,16 @@ export default function OnboardingPageComponent() {
           { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
         ],
       });
-      router.push('/dashboard');
-      setTimeout(reset, 2000);
+      setShowVideoModal(true);
     } catch (error) {
       showErrorToast(error, t('updateProfileError'));
     }
+  };
+
+  const handleVideoModalClose = () => {
+    setShowVideoModal(false);
+    router.push('/dashboard');
+    setTimeout(reset, 2000);
   };
 
   return (
@@ -186,6 +193,12 @@ export default function OnboardingPageComponent() {
           {tCommon('skip')}
         </Link>
       </div>
+
+      <VideoModal
+        isOpen={showVideoModal}
+        onClose={handleVideoModalClose}
+        videoSrc="/CoachAIDemo.mp4"
+      />
     </div>
   );
 }

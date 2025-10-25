@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, X } from 'lucide-react';
+import { Menu, X, HelpCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -12,9 +12,11 @@ import { logoutUser } from '@/lib/supabase/logout';
 import { Button } from '../ui/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 import { HighlightedAppName } from '../common/HighlightedAppName';
+import { VideoModal } from '../common/VideoModal';
 
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const user = useUser();
@@ -76,6 +78,15 @@ export function AppHeader() {
               ))}
             </div>
             <LanguageSwitcher />
+            {/* Help Button */}
+            <Button
+              className="hidden lg:flex h-8"
+              variant="outline"
+              onClick={() => setIsVideoModalOpen(true)}
+            >
+              <HelpCircle className="w-4 h-4 mr-2" />
+              <span className="text-xs font-medium">{tCommon('help')}</span>
+            </Button>
             {/* Burger Menu Item */}
             <Button
               className="lg:hidden p-0"
@@ -133,6 +144,16 @@ export function AppHeader() {
             ))}
             <span
               className="bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 transition-colors relative group cursor-pointer"
+              onClick={() => {
+                setIsVideoModalOpen(true);
+                setIsMenuOpen(false);
+              }}
+            >
+              {tCommon('help')}
+              <span className="block h-1 sm:h-1.5 bg-bw-70 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left scale-x-0 group-hover:scale-x-100 w-[95%]" />
+            </span>
+            <span
+              className="bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 transition-colors relative group cursor-pointer"
               onClick={async () => {
                 await logoutUser(createClient);
                 setIsMenuOpen(false);
@@ -144,6 +165,13 @@ export function AppHeader() {
           </nav>
         </div>
       </div>
+
+      {/* Video Modal */}
+      <VideoModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        videoSrc="/CoachAIDemo.mp4"
+      />
     </>
   );
 }
