@@ -53,12 +53,10 @@ export default function SessionHeader({
   const categories = Categories(tCategories);
 
   return (
-    <div className="relative border-b border-bw-10 w-full">
+    <div className="relative border-b border-bw-50 w-full">
       <div className="flex flex-col gap-6 p-6 max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)]">
         <div className="flex items-center justify-between">
-          <Badge variant="default" className="bg-forest-90/40 text-forest-90">
-            {categories[sessionLabel].name}
-          </Badge>
+          <Badge variant="default">{categories[sessionLabel].name}</Badge>
           <div className="flex items-center gap-3">
             {connectionStatus && (
               <Badge variant="outline" className="flex items-center gap-1.5">

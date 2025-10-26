@@ -58,7 +58,7 @@ export default function SessionLiveFeedback({ liveFeedbacks }: SessionLiveFeedba
   return (
     <>
       <div
-        className="flex items-center justify-start gap-2 py-4 border-y border-bw-10 hover:cursor-pointer group relative z-20"
+        className="flex items-center justify-start gap-2 py-4 border-y border-bw-50 hover:cursor-pointer group relative z-20"
         onClick={() => setShowSuggestions((prev) => !prev)}
       >
         <div className="w-full max-w-7xl mx-auto flex items-center gap-2 px-[clamp(1.25rem,4vw,4rem)]">

@@ -118,7 +118,7 @@ export default function UsersList({
               </TableHeader>
               <TableBody>
                 {userList.map((user) => (
-                  <TableRow key={user.email} className="border-t border-bw-10">
+                  <TableRow key={user.email} className="border-t border-bw-50">
                     <TableCell className="px-6 py-4 text-bw-70 w-[280px]">{user.email}</TableCell>
                     <TableCell className="pl-0 pr-6 py-4 text-right">
                       <DeleteUserHandler id={user.userId} onDeleteSuccess={onDeleteSuccess} />
