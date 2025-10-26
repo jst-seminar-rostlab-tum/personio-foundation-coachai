@@ -60,5 +60,9 @@
   "aiDisclaimer": "KI-Systeme können unbeabsichtigt schädliche oder anstößige Inhalte produzieren",
   "aiGeneratedDisclaimer": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich unten bereitgestellten Quellen generiert",
   "aiGeneratedDisclaimer2": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich auf der Vorbereitungsseite bereitgestellten Quellen generiert",
-  "help": "Hilfe"
+  "help": "Hilfe",
+  "videoModal": {
+    "title": "Wie man CoachAI verwendet",
+    "description": "Schauen Sie sich dieses Tutorial an, um zu lernen, wie Sie das Beste aus Ihren Trainingssitzungen herausholen."
+  }
 }
