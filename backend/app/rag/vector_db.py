@@ -59,7 +59,12 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
         - Errors during loading or splitting are caught and printed.
         - Returns an empty list if the folder does not exist.
     """
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=50,
+        keep_separator='end',
+        separators=['. ', '? ', '! ', '\n\n', '\n'],
+    )
     docs = []
     if not os.path.isdir(doc_folder):
         print(f"Warning: Document folder '{doc_folder}' does not exist.")
