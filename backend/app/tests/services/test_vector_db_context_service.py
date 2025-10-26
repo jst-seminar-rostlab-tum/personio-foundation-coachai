@@ -66,7 +66,13 @@ class TestVectorDbContextService(unittest.TestCase):
         # Prepare retriever and docs
         fake_retriever = MagicMock()
         doc_content = 'Set goals'
-        doc_metadata = {'source': 'https://example.com'}
+        doc_metadata = {
+            'quote': doc_content,
+            'page': None,
+            'title': None,
+            'author': None,
+            'chapter': None,
+        }
         document = Document(page_content=doc_content, metadata=doc_metadata)
         fake_docs = [document]
         fake_retriever.invoke.return_value = fake_docs
@@ -104,10 +110,22 @@ class TestVectorDbContextService(unittest.TestCase):
         # Prepare retriever and docs
         fake_retriever = MagicMock()
         doc_content_1 = 'Prepare team for adapting.'
-        doc_metadata_1 = {'source': 'doc1'}
+        doc_metadata_1 = {
+            'quote': doc_content_1,
+            'page': None,
+            'title': None,
+            'author': None,
+            'chapter': None,
+        }
         document_1 = Document(page_content=doc_content_1, metadata=doc_metadata_1)
         doc_content_2 = 'Bring up the topic soon.'
-        doc_metadata_2 = {'source': 'doc2'}
+        doc_metadata_2 = {
+            'quote': doc_content_2,
+            'page': None,
+            'title': None,
+            'author': None,
+            'chapter': None,
+        }
         document_2 = Document(page_content=doc_content_2, metadata=doc_metadata_2)
         fake_docs = [document_1, document_2]
         fake_retriever.invoke.return_value = fake_docs
@@ -141,10 +159,10 @@ class TestVectorDbContextService(unittest.TestCase):
         combined_docs = f'{doc1}\n\n{doc2}'
         mock_query_vector_db.return_value = (
             combined_docs,
-            [{'source': 'doc1'}, {'source': 'doc2'}],
+            [{'quote': doc1, 'source': 'doc1'}, {'quote': doc2, 'source': 'doc2'}],
         )
 
-        result, doc_names = query_vector_db_and_prompt(
+        result, doc_names, metadata = query_vector_db_and_prompt(
             generated_object=generated_object,
             session_context=session_context,
             user_transcript=transcript,
@@ -165,7 +183,7 @@ class TestVectorDbContextService(unittest.TestCase):
         generated_object = 'objectives'
         mock_query_vector_db.return_value = (None, None)
 
-        result, doc_names = query_vector_db_and_prompt(
+        result, doc_names, metadata = query_vector_db_and_prompt(
             generated_object=generated_object, session_context=None, user_transcript=None
         )
 
@@ -181,7 +199,7 @@ class TestVectorDbContextService(unittest.TestCase):
         generated_object = 'objectives'
         mock_query_vector_db.return_value = ('', [])
 
-        result, doc_names = query_vector_db_and_prompt(
+        result, doc_names, metadata = query_vector_db_and_prompt(
             generated_object=generated_object, session_context=None, user_transcript=None
         )
 
