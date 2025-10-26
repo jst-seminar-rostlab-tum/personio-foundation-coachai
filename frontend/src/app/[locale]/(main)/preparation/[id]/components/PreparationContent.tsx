@@ -97,13 +97,13 @@ export default function PreparationContent() {
         />
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <section className="flex flex-col gap-6 w-full border border-bw-20 rounded-lg p-8">
+        <section className="flex flex-col gap-6 w-full border border-bw-40 rounded-lg p-8">
           <div className="flex items-center gap-2">
             <h2 className="text-xl">{t('objectives')}</h2>
           </div>
           {preparationData && <ObjectivesList objectives={preparationData.objectives} />}
         </section>
-        <section className="flex flex-col gap-6 w-full border border-bw-20 rounded-lg p-8">
+        <section className="flex flex-col gap-6 w-full border border-bw-40 rounded-lg p-8">
           <div className="flex items-center gap-2">
             <h2 className="text-xl">{t('keyConcepts')}</h2>
           </div>
@@ -111,19 +111,19 @@ export default function PreparationContent() {
         </section>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <section className="flex flex-col gap-6 w-full border border-bw-20 rounded-lg p-8">
+        <section className="flex flex-col gap-6 w-full border border-bw-40 rounded-lg p-8">
           <div className="flex items-center gap-2">
             <h2 className="text-xl">{t('preparation')}</h2>
           </div>
           {preparationData && <PreparationChecklist checklist={preparationData.prepChecklist} />}
         </section>
-        <section className="flex flex-col gap-6 w-full border border-bw-20 rounded-lg p-8">
+        <section className="flex flex-col gap-6 w-full border border-bw-40 rounded-lg p-8">
           <div>
             <h2 className="text-xl">{tCommon('resources.title')}</h2>
-            <p className="text-base text-bw-40">{tCommon('resources.subtitle')}</p>
+            <p className="text-base text-bw-70">{tCommon('resources.subtitle')}</p>
           </div>
-          {preparationData?.documentNames && preparationData.documentNames.length > 0 ? (
-            <ResourcesList resources={preparationData.documentNames} />
+          {preparationData?.documents && preparationData.documents.length > 0 ? (
+            <ResourcesList resources={preparationData.documents} enableScroll={true} />
           ) : (
             <EmptyListComponent itemType={tCommon('resources.title')} showBorder={false} />
           )}

@@ -27,7 +27,7 @@ export default function FeedbackQuote({
       case 'Cross':
         return <CircleX size={20} className="text-flame-50" />;
       case 'Info':
-        return <ChartNoAxesColumnIncreasingIcon size={20} className="text-marigold-50" />;
+        return <ChartNoAxesColumnIncreasingIcon size={20} className="text-forest-90" />;
       default:
         return null;
     }
@@ -43,7 +43,7 @@ export default function FeedbackQuote({
       <div className="flex flex-col gap-2 mt-2 px-7">
         {feedback && <div className="text-base">{feedback}</div>}
         {(quote || improvedQuote) && (
-          <div className="flex flex-col gap-1 bg-bw-10 border-1 border-bw-20 p-2 text-base rounded-sm">
+          <div className="flex flex-col gap-1 bg-custom-beige border-1 border-bw-40 p-2 text-base rounded-sm">
             {quote && <div className="italic">&quot;{quote}&quot;</div>}
             {improvedQuote && (
               <>

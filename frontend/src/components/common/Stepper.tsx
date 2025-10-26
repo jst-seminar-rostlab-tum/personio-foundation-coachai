@@ -33,8 +33,8 @@ const Stepper: React.FC<StepperProps> = ({
               className={cn(
                 'size-10 rounded-full transition-colors duration-200 flex items-center justify-center text-white p-0',
                 {
-                  'bg-marigold-50': index <= currentStep,
-                  'border-1 border-solid border-bw-20 bg-bw-10 hover:bg-bw-30 text-bw-40':
+                  'bg-forest-90': index <= currentStep,
+                  'border-1 border-solid border-bw-40 bg-bw-40 hover:bg-bw-30 text-bw-70':
                     index > currentStep,
                 }
               )}
@@ -52,9 +52,9 @@ const Stepper: React.FC<StepperProps> = ({
             {showStepLabels && (
               <span
                 className={cn(
-                  'text-base text-bw-40 absolute left-1/2 -translate-x-1/2 top-full mt-4 whitespace-nowrap',
+                  'text-base text-bw-70 absolute left-1/2 -translate-x-1/2 top-full mt-4 whitespace-nowrap',
                   {
-                    'text-marigold-50': index <= currentStep,
+                    'text-forest-90': index <= currentStep,
                   }
                 )}
               >
@@ -64,8 +64,8 @@ const Stepper: React.FC<StepperProps> = ({
           </div>
           {index < steps.length - 1 && (
             <div
-              className={cn('h-1 bg-bw-20 transition-colors duration-200 flex-1 min-w-4 mt-4.5', {
-                'bg-marigold-50': index < currentStep,
+              className={cn('h-1 bg-bw-40 transition-colors duration-200 flex-1 min-w-4 mt-4.5', {
+                'bg-forest-90': index < currentStep,
               })}
             />
           )}

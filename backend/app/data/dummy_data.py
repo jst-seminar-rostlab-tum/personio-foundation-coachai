@@ -888,9 +888,14 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=17,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
-                'Teamwork: An Open Access Practical Guide',
-                'Psychology of Human Relations',
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
             ],
             speak_time_percent=60.5,
             questions_asked=5,
@@ -965,10 +970,14 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=16,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
-                'Communication at Work',
-                'Teamwork: An Open Access Practical Guide',
-                'Psychology of Human Relations',
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
             ],
             speak_time_percent=55.0,
             questions_asked=7,
@@ -1042,10 +1051,14 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=16,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
-                'Communication at Work',
-                'Teamwork: An Open Access Practical Guide',
-                'Psychology of Human Relations',
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
             ],
             speak_time_percent=55.0,
             questions_asked=7,
@@ -1119,8 +1132,14 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 80, 'neutral': 15, 'negative': 5},
             overall_score=16,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
-                'Communication at Work',
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
             ],
             speak_time_percent=55.0,
             questions_asked=7,
@@ -1196,10 +1215,14 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=19,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
-                'Communication at Work',
-                'Teamwork: An Open Access Practical Guide',
-                'Psychology of Human Relations',
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
             ],
             speak_time_percent=60.5,
             questions_asked=5,
@@ -1273,9 +1296,14 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=15,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
-                'Communication at Work',
-                'Psychology of Human Relations',
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
             ],
             speak_time_percent=60.5,
             questions_asked=5,
@@ -1351,10 +1379,14 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=15,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
-                'Communication at Work',
-                'Teamwork: An Open Access Practical Guide',
-                'Psychology of Human Relations',
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
             ],
             speak_time_percent=60.5,
             questions_asked=5,
@@ -1425,8 +1457,14 @@ def get_dummy_session_feedback(
             tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
             overall_score=15,
             full_audio_filename='8eda3a5b-0d87-4435-a7a3-d274f11febfa.mp3',
-            document_names=[
-                'Psychology of Human Relations',
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
             ],
             speak_time_percent=60.5,
             questions_asked=5,
@@ -1508,10 +1546,14 @@ def get_dummy_scenario_preparations(
                 'Foster mutual understanding',
                 'End on a positive note',
             ],
-            document_names=[
-                'Communication at Work',
-                'Teamwork: An Open Access Practical Guide',
-                'Psychology of Human Relations',
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
             ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
@@ -1535,7 +1577,15 @@ def get_dummy_scenario_preparations(
                 'Set expectations for communication',
                 'Identify potential risks',
             ],
-            document_names=['Communication at Work', 'Giving Feedback'],
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
+            ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
                 {'header': 'Collaboration', 'value': 'Collaboration'},
@@ -1558,9 +1608,14 @@ def get_dummy_scenario_preparations(
                 'Align on team roles',
                 'Set expectations for communication',
             ],
-            document_names=[
-                'Psychology of Human Relations',
-                'Teamwork: An Open Access Practical Guide',
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
             ],
             key_concepts=[
                 {'header': 'Time management', 'value': 'Time management'},
@@ -1577,7 +1632,15 @@ def get_dummy_scenario_preparations(
         ScenarioPreparation(
             id=uuid4(),
             scenario_id=conversation_scenarios[3].id,
-            document_names=['Communication at Work', 'A Guide to Effective Negotiations'],
+            documents=[
+                {
+                    'quote': 'Example quote text goes here.',
+                    'page': 64,
+                    'title': 'Psychology of Human Relations',
+                    'author': 'Stevy Scarbrough',
+                    'chapter': 'Chapter 1: Self-Concept',
+                }
+            ],
             objectives=[
                 'Bring clarity to the situation',
                 'Encourage open dialogue',

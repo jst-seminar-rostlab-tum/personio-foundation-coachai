@@ -15,7 +15,12 @@
     "title": "Ressourcen",
     "subtitle": "Hilfreiche Materialien zum Herunterladen, um Ihr Wissen zu vertiefen.",
     "noResources": "Keine Ressourcen für dieses Szenario verfügbar.",
-    "downloadError": "Fehler beim Herunterladen der Ressource. Bitte versuchen Sie es erneut."
+    "downloadError": "Fehler beim Herunterladen der Ressource. Bitte versuchen Sie es erneut.",
+    "viewSource": "Quelle anzeigen",
+    "by": "von",
+    "page": "Seite",
+    "copyQuote": "Zitat kopieren",
+    "copyError": "Fehler beim Kopieren des Zitats"
   },
   "saving": "Speichern...",
   "save": "Speichern",

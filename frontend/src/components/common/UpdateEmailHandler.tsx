@@ -81,7 +81,7 @@ export function UpdateEmailHandler({ children }: UpdateEmailHandlerProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl">{t('updateEmailTitle')}</DialogTitle>
-          <DialogDescription className="text-bw-40 text-base">
+          <DialogDescription className="text-bw-70 text-base">
             {t('updateEmailDescription')}
           </DialogDescription>
         </DialogHeader>

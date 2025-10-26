@@ -20,10 +20,10 @@ function SegmentedProgress({ className, value, max = 5 }: SegmentedProgressProps
           fill = value >= i + 1 ? 100 : (value - i) * 100;
         }
         return (
-          <div key={i} className={cn('flex-1 bg-bw-20 relative overflow-hidden', rounded)}>
+          <div key={i} className={cn('flex-1 bg-bw-40 relative overflow-hidden', rounded)}>
             <div
               className={cn(
-                'absolute left-0 top-0 h-full bg-marigold-50 transition-all duration-500',
+                'absolute left-0 top-0 h-full bg-forest-90 transition-all duration-500',
                 rounded
               )}
               style={{ width: `${fill}%` }}
