@@ -123,7 +123,7 @@ export default function PreparationContent() {
             <p className="text-base text-bw-40">{tCommon('resources.subtitle')}</p>
           </div>
           {preparationData?.documents && preparationData.documents.length > 0 ? (
-            <ResourcesList resources={preparationData.documents} />
+            <ResourcesList resources={preparationData.documents} enableScroll={true} />
           ) : (
             <EmptyListComponent itemType={tCommon('resources.title')} showBorder={false} />
           )}
