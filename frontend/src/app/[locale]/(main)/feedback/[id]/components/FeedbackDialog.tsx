@@ -74,7 +74,7 @@ export default function FeedbackDialog({ sessionId, setFeedbackDetail }: Feedbac
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl">{tCommon('reviews')}</DialogTitle>
-          <DialogDescription className="text-marigold-90">
+          <DialogDescription className="text-forest-90">
             {t('reviewDialog.description')}
           </DialogDescription>
         </DialogHeader>
@@ -86,7 +86,7 @@ export default function FeedbackDialog({ sessionId, setFeedbackDetail }: Feedbac
           onValueChange={(value) => setRating(value)}
         >
           {Array.from({ length: 5 }).map((_, index) => (
-            <RatingButton className="text-marigold-50" size={30} key={index} />
+            <RatingButton className="text-forest-90" size={30} key={index} />
           ))}
         </Rating>
         <Textarea

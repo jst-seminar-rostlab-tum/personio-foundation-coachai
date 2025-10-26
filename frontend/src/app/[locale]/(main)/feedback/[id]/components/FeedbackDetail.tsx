@@ -121,9 +121,9 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
           <div className="text-2xl font-bold text-bw-90 text-left w-full">{t('title')}</div>
 
           {feedbackDetail?.title && (
-            <div className="bg-marigold-10 p-8 flex flex-col gap-1 rounded-lg text-center w-full">
-              <div className="font-semibold text-2xl text-marigold-90">{feedbackDetail.title}</div>
-              <div className="text-marigold-90">
+            <div className="bg-forest-90 p-8 flex flex-col gap-1 rounded-lg text-center w-full">
+              <div className="font-semibold text-2xl text-white">{feedbackDetail.title}</div>
+              <div className="text-white">
                 {formatDateFlexible(feedbackDetail?.createdAt, locale, true)}
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
               </div>
 
               <div className="flex items-center gap-2 mt-10">
-                <ChartNoAxesColumnIncreasingIcon size={24} className="text-marigold-50" />
+                <ChartNoAxesColumnIncreasingIcon size={24} className="text-forest-90" />
                 <span className="text-xl">{t('detailedFeedback.recommendations')}</span>
               </div>
               <div className="flex flex-col gap-4 mt-5 pl-4">
@@ -183,7 +183,7 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
                 ))}
               </div>
               <div className="mt-6">
-                <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
+                <p className="text-xs text-bw-50">{tCommon('aiGeneratedDisclaimer')}</p>
               </div>
             </AccordionContent>
           </AccordionItem>

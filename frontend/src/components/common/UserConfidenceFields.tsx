@@ -72,7 +72,7 @@ export default function UserConfidenceFields({
               }
             }}
           />
-          <div className="flex justify-between text-base text-bw-40">
+          <div className="flex justify-between text-base text-bw-70">
             <span>{field.minLabel}</span>
             <span>{field.maxLabel}</span>
           </div>

@@ -58,7 +58,7 @@ export default function SessionLiveFeedback({ liveFeedbacks }: SessionLiveFeedba
   return (
     <>
       <div
-        className="flex items-center justify-start gap-2 py-4 bg-white border-y border-bw-10 hover:cursor-pointer group relative z-20"
+        className="flex items-center justify-start gap-2 py-4 border-y border-bw-50 hover:cursor-pointer group relative z-20"
         onClick={() => setShowSuggestions((prev) => !prev)}
       >
         <div className="w-full max-w-7xl mx-auto flex items-center gap-2 px-[clamp(1.25rem,4vw,4rem)]">
@@ -92,19 +92,17 @@ export default function SessionLiveFeedback({ liveFeedbacks }: SessionLiveFeedba
                   key={liveFeedback.id}
                   className={`rounded-lg border p-4 transition-colors duration-300 ${
                     newLiveFeedbackIds.includes(liveFeedback.id)
-                      ? 'border-marigold-30 bg-marigold-5'
-                      : 'border-bw-20 bg-background-light'
+                      ? 'border-forest-90 bg-black text-white'
+                      : 'border-bw-40 bg-custom-beige'
                   }`}
                 >
-                  <div className="font-semibold text-font-dark mb-1">{liveFeedback.heading}</div>
-                  <div className="text-sm text-font-dark leading-snug">
-                    {liveFeedback.feedbackText}
-                  </div>
+                  <div className="font-semibold mb-1">{liveFeedback.heading}</div>
+                  <div className="text-sm leading-snug">{liveFeedback.feedbackText}</div>
                 </li>
               ))}
             </ul>
             <div className="mt-4 text-center">
-              <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer2')}</p>
+              <p className="text-xs text-bw-50">{tCommon('aiGeneratedDisclaimer2')}</p>
             </div>
           </div>
         </div>

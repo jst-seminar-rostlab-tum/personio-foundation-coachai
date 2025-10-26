@@ -143,7 +143,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <Card className="relative w-[90%] max-w-sm border-0 bg-white animate-in fade-in zoom-in duration-200">
+      <Card className="relative w-[90%] max-w-sm border-0 animate-in fade-in zoom-in duration-200">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <CardContent className="space-y-4 p-4">
@@ -203,14 +203,14 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                   disabled={resendCooldown > 0 || isLoading}
                   className={`text-base p-0 h-auto font-normal transition-colors flex items-center gap-1 ${
                     resendCooldown > 0 || isLoading
-                      ? 'text-bw-40 cursor-not-allowed'
-                      : 'text-marigold-50 cursor-pointer'
+                      ? 'text-bw-70 cursor-not-allowed'
+                      : 'text-forest-90 cursor-pointer'
                   }`}
                 >
                   <RotateCcw
                     size={14}
                     className={`${resendCooldown > 0 ? 'animate-spin' : ''} ${
-                      resendCooldown > 0 || isLoading ? 'text-gray-bw-40' : 'text-marigold-50'
+                      resendCooldown > 0 || isLoading ? 'text-gray-bw-40' : 'text-forest-90'
                     }`}
                   />
                   {`${t('resendButtonLabel')}${resendCooldown > 0 ? ` (${resendCooldown}s)` : ''}`}
@@ -230,7 +230,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
               >
                 {isLoading ? tLogin('verifying') : tLogin('verify')}
               </Button>
-              <Button size="full" variant="secondary" onClick={onClose} disabled={isLoading}>
+              <Button size="full" onClick={onClose} disabled={isLoading}>
                 {tCommon('cancel')}
               </Button>
             </CardFooter>

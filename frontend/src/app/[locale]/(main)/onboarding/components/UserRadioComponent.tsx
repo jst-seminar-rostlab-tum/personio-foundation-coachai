@@ -30,7 +30,7 @@ export const UserRadioComponent: React.FC<UserRadioQuestion> = ({
               >
                 {option.label}
                 {option.labelHint && (
-                  <span className="text-base text-bw-40">{option.labelHint}</span>
+                  <span className="text-base text-bw-70">{option.labelHint}</span>
                 )}
               </Label>
             </div>

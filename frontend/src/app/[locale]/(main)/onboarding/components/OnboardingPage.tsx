@@ -84,7 +84,7 @@ export default function OnboardingPageComponent() {
     <div className="flex flex-col max-w-2xl py-5 gap-5 mr-auto ml-auto">
       <div className="flex flex-col gap-2 text-center">
         <span className="text-2xl">{t('title')}</span>
-        <span className="text-base text-bw-40">{t('subtitle')}</span>
+        <span className="text-base text-bw-70">{t('subtitle')}</span>
       </div>
 
       <Stepper
@@ -110,7 +110,7 @@ export default function OnboardingPageComponent() {
         <>
           <div className="text-center flex flex-col justify-around min-h-20">
             <div className="text-xl">{t('steps.step2')}</div>
-            <div className="text-base text-bw-40">{t('steps.step2Subtitle')}</div>
+            <div className="text-base text-bw-70">{t('steps.step2Subtitle')}</div>
           </div>
           <div className="h-63 overflow-y-auto">
             <div className="flex flex-col gap-5">
@@ -182,7 +182,7 @@ export default function OnboardingPageComponent() {
             </Button>
           )}
         </div>
-        <Link href="/dashboard" className="text-base text-bw-40 hover:underline hover:text-bw-60">
+        <Link href="/dashboard" className="text-base text-bw-70 hover:underline hover:text-bw-70">
           {tCommon('skip')}
         </Link>
       </div>

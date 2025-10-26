@@ -15,8 +15,8 @@ export default function EmptyListComponent({
   const t = useTranslations('Common.emptyList');
   return (
     <div
-      className={`flex flex-col items-center justify-center w-full rounded-lg bg-transparent gap-1 p-8 text-center ${
-        showBorder ? 'border border-bw-20' : ''
+      className={`flex flex-col items-center justify-center w-full rounded-lg bg-custom-beige gap-1 p-8 text-center ${
+        showBorder ? 'border border-bw-40' : ''
       }`}
     >
       <Image
@@ -27,7 +27,7 @@ export default function EmptyListComponent({
         className="mb-4"
       />
       <h3 className="text-xl font-semibold text-bw-90 capitalize">{t('title', { itemType })}</h3>
-      <p className="text-base text-bw-40">{t('description', { itemType })}</p>
+      <p className="text-base text-bw-70">{t('description', { itemType })}</p>
     </div>
   );
 }

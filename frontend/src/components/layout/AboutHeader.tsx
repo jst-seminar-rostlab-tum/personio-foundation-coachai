@@ -14,15 +14,17 @@ export default function AboutHeader() {
   const isLoginPath = pathname.includes('/login');
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white mb-1 shadow">
+    <header className="sticky top-0 z-50 w-full bg-custom-beige mb-1 shadow">
       <div className="flex h-16 items-center justify-between mx-auto px-[clamp(1.25rem,4vw,4rem)] max-w-7xl">
-        <div className="flex  flex-col">
-          <Link href="/" className="flex items-center">
-            <span className="text-xl font-semibold text-black">
-              <HighlightedAppName />
-            </span>
-          </Link>
-          <span className="text-xs text-bw-40">{t('developedBy')}</span>
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col">
+            <Link href="/" className="flex items-center">
+              <span className="text-xl font-semibold text-black">
+                <HighlightedAppName />
+              </span>
+            </Link>
+            <span className="text-xs text-black">{t('developedBy')}</span>
+          </div>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
           <LanguageSwitcher />
