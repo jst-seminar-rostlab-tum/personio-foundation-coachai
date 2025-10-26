@@ -5,6 +5,7 @@ import { Home, RefreshCw, ServerCrash } from 'lucide-react';
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import * as Sentry from '@sentry/nextjs';
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
@@ -17,6 +18,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
 
   useEffect(() => {
     console.error(error);
+    Sentry.captureException(error);
   }, [error]);
 
   const handleTryAgain = () => {
