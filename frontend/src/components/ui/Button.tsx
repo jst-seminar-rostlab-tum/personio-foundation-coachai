@@ -11,7 +11,7 @@ const buttonVariants = cva(
         default: 'bg-black text-white hover:bg-black/80',
         outline:
           'bg-custom-beige outline-1 outline-solid outline-black text-bw-70 hover:outline-2 hover:outline-bw-70',
-        disabled: 'bg-bw-30 text-bw-70',
+        disabled: 'bg-disabled-beige text-black cursor-not-allowed',
         destructive: 'bg-flame-50 text-white shadow-xs hover:bg-flame-50/80',
         ghost: 'hover:bg-bw-40',
         link: 'text-blue-600 underline hover:text-blue-800',

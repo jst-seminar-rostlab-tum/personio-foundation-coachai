@@ -43,7 +43,7 @@ export default function FeedbackQuote({
       <div className="flex flex-col gap-2 mt-2 px-7">
         {feedback && <div className="text-base">{feedback}</div>}
         {(quote || improvedQuote) && (
-          <div className="flex flex-col gap-1 bg-bw-40 border-1 border-bw-40 p-2 text-base rounded-sm">
+          <div className="flex flex-col gap-1 bg-custom-beige border-1 border-bw-40 p-2 text-base rounded-sm">
             {quote && <div className="italic">&quot;{quote}&quot;</div>}
             {improvedQuote && (
               <>

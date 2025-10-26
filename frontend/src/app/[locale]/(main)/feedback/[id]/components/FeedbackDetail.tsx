@@ -122,8 +122,8 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
 
           {feedbackDetail?.title && (
             <div className="bg-forest-90 p-8 flex flex-col gap-1 rounded-lg text-center w-full">
-              <div className="font-semibold text-2xl text-forest-90">{feedbackDetail.title}</div>
-              <div className="text-forest-90">
+              <div className="font-semibold text-2xl text-white">{feedbackDetail.title}</div>
+              <div className="text-white">
                 {formatDateFlexible(feedbackDetail?.createdAt, locale, true)}
               </div>
             </div>

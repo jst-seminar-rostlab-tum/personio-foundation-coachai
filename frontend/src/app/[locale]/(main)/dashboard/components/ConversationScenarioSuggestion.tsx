@@ -51,7 +51,7 @@ export default function ConversationScenarioSuggestion({
     <section className="flex flex-col items-center justify-center w-full">
       <div className="flex flex-col md:flex-row md:items-center gap-6 mb-4 justify-center w-full max-w-2xl">
         <div
-          className={`relative p-8 max-w-lg break-words border rounded-lg border-bw-50 bg-bw-40 mx-auto transition-all duration-1000 ease-out ${
+          className={`relative p-8 max-w-lg break-words border rounded-lg border-bw-50 bg-custom-beige mx-auto transition-all duration-1000 ease-out ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >

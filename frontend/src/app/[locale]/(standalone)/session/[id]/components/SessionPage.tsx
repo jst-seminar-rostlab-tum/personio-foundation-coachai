@@ -97,9 +97,7 @@ export default function SessionPageComponent({
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         <SessionMessages messages={messages} />
-        {isDisconnected && (
-          <div className="absolute inset-0 backdrop-blur-sm bg-custom-beige z-10"></div>
-        )}
+        {isDisconnected && <div className="absolute inset-0 backdrop-blur-sm z-10"></div>}
       </div>
 
       <SessionLiveFeedback liveFeedbacks={sessionLiveFeedbacks} />

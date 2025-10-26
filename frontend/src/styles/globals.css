@@ -8,7 +8,7 @@
   --flame-50: #ff3700;
   --flame-90: #4D0F00;
   --bw-10: #f4f4f5;
-  --bw-40: #e4e4e7;
+  --bw-20: #e4e4e7;
   --bw-30: #d4d4d8;
   --bw-40: #a1a1aa;
   --bw-50: #71717a;
@@ -29,6 +29,7 @@
   --forest-90: #0F3D24;
   --font-dark: #262626;
   --custom-beige: #f0dfd5;
+  --disabled-beige: #E5E1D8;
   --radius-md: 8px;
 }
 
@@ -63,6 +64,7 @@
   --color-forest-90: var(--forest-90);
   --color-font-dark: var(--font-dark);
   --color-custom-beige: var(--custom-beige);
+  --color-disabled-beige: var(--disabled-beige);
   /* typography */
   --text-2xl: 24px;
   --text-2xl--font-weight: 700;

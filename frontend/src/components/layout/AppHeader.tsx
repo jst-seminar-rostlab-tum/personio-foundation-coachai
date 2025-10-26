@@ -143,7 +143,7 @@ export function AppHeader() {
                 <span
                   className={`block h-1 sm:h-1.5 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left w-[95%] ${
                     pathname.includes(href)
-                      ? 'scale-x-100 bg-forest-50'
+                      ? 'scale-x-100 bg-forest-70'
                       : 'scale-x-0 group-hover:scale-x-100 bg-bw-70'
                   }`}
                 />

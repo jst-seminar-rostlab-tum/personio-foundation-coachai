@@ -56,9 +56,9 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ name }) => {
         aria-label={`Download ${name}`}
       >
         {isLoading ? (
-          <Loader2 className="w-5 h-5 animate-spin text-forest-90" />
+          <Loader2 className="w-5 h-5 animate-spin text-white" />
         ) : (
-          <Download className="w-5 h-5 text-forest-90" />
+          <Download className="w-5 h-5 text-white" />
         )}
       </Button>
     </div>
