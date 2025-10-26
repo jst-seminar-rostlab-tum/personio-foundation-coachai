@@ -509,7 +509,7 @@ class SessionService:
             example_negative=feedback.example_negative,  # type: ignore
             recommendations=feedback.recommendations,  # type: ignore
             full_audio_url=full_audio_url,
-            document_names=feedback.document_names,
+            documents=feedback.documents,
             session_turn_transcripts=session_turn_transcripts,
         )
 

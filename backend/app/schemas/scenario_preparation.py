@@ -75,7 +75,7 @@ class ScenarioPreparationRead(CamelModel):
     id: UUID
     scenario_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    document_names: list[str] = Field(default_factory=list, sa_column=Column(JSON))
+    documents: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     key_concepts: list[KeyConcept] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: ScenarioPreparationStatus

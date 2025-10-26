@@ -122,8 +122,8 @@ export default function PreparationContent() {
             <h2 className="text-xl">{tCommon('resources.title')}</h2>
             <p className="text-base text-bw-70">{tCommon('resources.subtitle')}</p>
           </div>
-          {preparationData?.documentNames && preparationData.documentNames.length > 0 ? (
-            <ResourcesList resources={preparationData.documentNames} />
+          {preparationData?.documents && preparationData.documents.length > 0 ? (
+            <ResourcesList resources={preparationData.documents} enableScroll={true} />
           ) : (
             <EmptyListComponent itemType={tCommon('resources.title')} showBorder={false} />
           )}

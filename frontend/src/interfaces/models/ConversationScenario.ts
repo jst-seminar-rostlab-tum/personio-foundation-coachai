@@ -1,3 +1,5 @@
+import { Document } from './Document';
+
 export interface ConversationScenario {
   categoryId: string;
   difficultyLevel: DifficultyLevelEnums;
@@ -61,7 +63,7 @@ export type ConversationScenarioPreparation = {
   id: string;
   caseId: string;
   objectives: string[];
-  documentNames: string[];
+  documents: Document[];
   keyConcepts: KeyConcept[];
   prepChecklist: string[];
   status: string;

@@ -1,4 +1,5 @@
 import { SessionScores } from './Common';
+import { Document } from './Document';
 
 export interface FeedbackResponse {
   id: string;
@@ -15,7 +16,7 @@ export interface SessionFeedback {
   overallScore: number;
   sessionLengthS: number;
   goalsAchieved: string[];
-  documentNames: string[];
+  documents: Document[];
   fullAudioUrl: string;
   examplePositive: {
     heading: string;
