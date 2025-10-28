@@ -1,7 +1,7 @@
 'use client';
 
-import { Menu, X, HelpCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Menu, X, HelpCircle, Mail, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -18,6 +18,8 @@ import { VideoModal } from '../common/VideoModal';
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isSupportDropdownOpen, setIsSupportDropdownOpen] = useState(false);
+  const supportDropdownRef = useRef<HTMLDivElement>(null);
   const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const user = useUser();
@@ -46,6 +48,24 @@ export function AppHeader() {
       window.removeEventListener('resize', lockBodyScroll);
     };
   }, [isMenuOpen]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        supportDropdownRef.current &&
+        !supportDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsSupportDropdownOpen(false);
+      }
+    };
+    if (isSupportDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isSupportDropdownOpen]);
 
   return (
     <>
@@ -89,15 +109,42 @@ export function AppHeader() {
               ))}
             </div>
             <LanguageSwitcher />
-            {/* Help Button */}
-            <Button
-              className="hidden lg:flex h-8"
-              variant="outline"
-              onClick={() => setIsVideoModalOpen(true)}
-            >
-              <HelpCircle className="w-4 h-4 mr-2" />
-              <span className="text-xs font-medium">{tCommon('help')}</span>
-            </Button>
+            {/* Support Dropdown */}
+            <div ref={supportDropdownRef} className="hidden lg:block relative">
+              <Button
+                className="h-8"
+                variant="outline"
+                onClick={() => setIsSupportDropdownOpen(!isSupportDropdownOpen)}
+              >
+                <HelpCircle className="w-4 h-4 mr-2" />
+                <span className="text-xs font-medium">{tCommon('support')}</span>
+                <ChevronDown
+                  className={`w-3 h-3 ml-1 transition-transform ${isSupportDropdownOpen ? 'rotate-180' : ''}`}
+                />
+              </Button>
+              {isSupportDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-bw-20 py-1 z-50">
+                  <button
+                    className="w-full px-4 py-2 text-sm text-left hover:bg-bw-10 flex items-center gap-2 transition-colors"
+                    onClick={() => {
+                      setIsVideoModalOpen(true);
+                      setIsSupportDropdownOpen(false);
+                    }}
+                  >
+                    <HelpCircle className="w-4 h-4" />
+                    <span>{tCommon('help')}</span>
+                  </button>
+                  <a
+                    href="mailto:coach.ai@personio.foundation"
+                    className="w-full px-4 py-2 text-sm text-left hover:bg-bw-10 flex items-center gap-2 transition-colors block"
+                    onClick={() => setIsSupportDropdownOpen(false)}
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>{tCommon('contact')}</span>
+                  </a>
+                </div>
+              )}
+            </div>
             {/* Burger Menu Item */}
             <Button
               className="lg:hidden p-0"
@@ -170,6 +217,14 @@ export function AppHeader() {
               {tCommon('help')}
               <span className="block h-1 sm:h-1.5 bg-bw-70 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left scale-x-0 group-hover:scale-x-100 w-[95%]" />
             </span>
+            <a
+              href="mailto:coach.ai@personio.foundation"
+              className="bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 transition-colors relative group cursor-pointer"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {tCommon('contact')}
+              <span className="block h-1 sm:h-1.5 bg-bw-70 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left scale-x-0 group-hover:scale-x-100 w-[95%]" />
+            </a>
             <span
               className="bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 transition-colors relative group cursor-pointer"
               onClick={async () => {
