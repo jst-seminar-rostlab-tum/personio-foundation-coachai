@@ -13,7 +13,6 @@ from sqlmodel import select
 
 from app.config import Settings
 from app.dependencies.database import get_db_session
-from app.interfaces.mock_user_ids_enum import MockUserIdsEnum
 from app.models import UserProfile
 from app.models.user_profile import AccountRole
 
@@ -55,7 +54,7 @@ def verify_jwt(
     """
     if settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH:
         logging.info('Skipping JWT verification')
-        return JWTPayload(sub=str(MockUserIdsEnum.USER.value))
+        return JWTPayload(sub=str(settings.DEV_MODE_MOCK_ADMIN_ID))
     logging.info('Verifying JWT')
     if not credentials:
         logging.info('No JWT token')
