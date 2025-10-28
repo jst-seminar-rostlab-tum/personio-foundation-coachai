@@ -14,10 +14,12 @@ import { Button } from '../ui/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 import { HighlightedAppName } from '../common/HighlightedAppName';
 import { VideoModal } from '../common/VideoModal';
+import { ContactModal } from '../common/ContactModal';
 
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isSupportDropdownOpen, setIsSupportDropdownOpen] = useState(false);
   const supportDropdownRef = useRef<HTMLDivElement>(null);
   const tCommon = useTranslations('Common');
@@ -49,7 +51,6 @@ export function AppHeader() {
     };
   }, [isMenuOpen]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -134,14 +135,16 @@ export function AppHeader() {
                     <HelpCircle className="w-4 h-4" />
                     <span>{tCommon('help')}</span>
                   </button>
-                  <a
-                    href="mailto:coach.ai@personio.foundation"
-                    className="w-full px-4 py-2 text-sm text-left hover:bg-bw-10 flex items-center gap-2 transition-colors block"
-                    onClick={() => setIsSupportDropdownOpen(false)}
+                  <button
+                    className="w-full px-4 py-2 text-sm text-left hover:bg-bw-10 flex items-center gap-2 transition-colors"
+                    onClick={() => {
+                      setIsContactModalOpen(true);
+                      setIsSupportDropdownOpen(false);
+                    }}
                   >
                     <Mail className="w-4 h-4" />
                     <span>{tCommon('contact')}</span>
-                  </a>
+                  </button>
                 </div>
               )}
             </div>
@@ -217,14 +220,16 @@ export function AppHeader() {
               {tCommon('help')}
               <span className="block h-1 sm:h-1.5 bg-bw-70 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left scale-x-0 group-hover:scale-x-100 w-[95%]" />
             </span>
-            <a
-              href="mailto:coach.ai@personio.foundation"
+            <span
               className="bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 transition-colors relative group cursor-pointer"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={() => {
+                setIsContactModalOpen(true);
+                setIsMenuOpen(false);
+              }}
             >
               {tCommon('contact')}
               <span className="block h-1 sm:h-1.5 bg-bw-70 absolute left-1/2 -translate-x-1/2 -bottom-1 sm:-bottom-1.5 transition-transform duration-300 ease-in-out origin-left scale-x-0 group-hover:scale-x-100 w-[95%]" />
-            </a>
+            </span>
             <span
               className="bebas-neue font-bold uppercase text-4xl sm:text-5xl text-bw-70 transition-colors relative group cursor-pointer"
               onClick={async () => {
@@ -239,11 +244,16 @@ export function AppHeader() {
         </div>
       </div>
 
-      {/* Video Modal */}
       <VideoModal
         isOpen={isVideoModalOpen}
         onClose={() => setIsVideoModalOpen(false)}
         videoSrc="/CoachAIDemo.mp4"
+      />
+
+      <ContactModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+        email="coach.ai@personio.foundation"
       />
     </>
   );

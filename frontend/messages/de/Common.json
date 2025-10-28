@@ -71,5 +71,9 @@
   "videoModal": {
     "title": "Wie man CoachAI verwendet",
     "description": "Schauen Sie sich dieses Tutorial an, um zu lernen, wie Sie das Beste aus Ihren Trainingssitzungen herausholen."
+  },
+  "contactModal": {
+    "title": "Kontaktieren Sie uns",
+    "description": "Wenn Sie Fragen haben, kontaktieren Sie uns unter"
   }
 }

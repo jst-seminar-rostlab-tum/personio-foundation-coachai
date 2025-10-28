@@ -71,5 +71,9 @@
   "videoModal": {
     "title": "How to use CoachAI",
     "description": "Watch this tutorial to learn how to make the most of your training sessions."
+  },
+  "contactModal": {
+    "title": "Contact Us",
+    "description": "If you have any questions, contact us at"
   }
 }
