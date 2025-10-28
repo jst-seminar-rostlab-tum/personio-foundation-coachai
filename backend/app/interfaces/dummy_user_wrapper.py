@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from gotrue import AdminUserAttributes
+from supabase_auth import AdminUserAttributes
 
 from app.models import UserProfile
 

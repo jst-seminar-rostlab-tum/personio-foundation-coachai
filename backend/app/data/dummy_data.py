@@ -1,10 +1,9 @@
 import json
 import os
-import uuid
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
-from gotrue import AdminUserAttributes
+from supabase_auth import AdminUserAttributes
 
 from app.config import settings
 from app.enums.account_role import AccountRole
@@ -102,7 +101,7 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
         ),
         DummyUserWrapper(
             user_profile=UserProfile(
-                id=uuid.UUID('00000000-0000-0000-0000-000000000003'),
+                id=UUID('00000000-0000-0000-0000-000000000003'),
                 full_name='Sarah Schmidt',
                 email='sarah.schmidt@test.com',
                 phone_number='+491701234567',
@@ -133,7 +132,7 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
         # Neuer User ohne Sessions (Onboarding-Test)
         DummyUserWrapper(
             user_profile=UserProfile(
-                id=uuid.UUID('00000000-0000-0000-0000-000000000004'),
+                id=UUID('00000000-0000-0000-0000-000000000004'),
                 full_name='Michael Weber',
                 email='michael.weber@test.com',
                 phone_number='+491702345678',
@@ -163,7 +162,7 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
         ),
         DummyUserWrapper(
             user_profile=UserProfile(
-                id=uuid.UUID('00000000-0000-0000-0000-000000000005'),
+                id=UUID('00000000-0000-0000-0000-000000000005'),
                 full_name='Lisa Müller',
                 email='lisa.mueller@test.com',
                 phone_number='+491703456789',
@@ -193,7 +192,7 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
         ),
         DummyUserWrapper(
             user_profile=UserProfile(
-                id=uuid.UUID('00000000-0000-0000-0000-000000000006'),
+                id=UUID('00000000-0000-0000-0000-000000000006'),
                 full_name='Tom Fischer',
                 email='tom.fischer@test.com',
                 phone_number='+491704567890',

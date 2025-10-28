@@ -2,9 +2,9 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, HTTPException, status
-from gotrue import AdminUserAttributes, SignUpWithPasswordCredentials
 from sqlalchemy import select
 from sqlmodel import Session as DBSession
+from supabase_auth import AdminUserAttributes, SignUpWithPasswordCredentials
 
 from app.config import Settings
 from app.database import get_db_session, get_supabase_client

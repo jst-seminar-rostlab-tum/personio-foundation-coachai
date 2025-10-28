@@ -37,7 +37,7 @@ dependencies = [
     "apscheduler>=3.11.0",
     "pytz>=2025.0",
     "pymupdf>=1.26.5",
-    "gotrue>=2.12.4",
+    "supabase-auth>=2.12.3",
 ]
 
 [tool.setuptools]
