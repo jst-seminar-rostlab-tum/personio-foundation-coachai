@@ -1,7 +1,7 @@
 'use client';
 
-import { Menu, X, HelpCircle, Mail, ChevronDown } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -15,13 +15,12 @@ import { LanguageSwitcher } from '../common/LanguageSwitcher';
 import { HighlightedAppName } from '../common/HighlightedAppName';
 import { VideoModal } from '../common/VideoModal';
 import { ContactModal } from '../common/ContactModal';
+import { SupportDropdown } from '../common/SupportDropdown';
 
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [isSupportDropdownOpen, setIsSupportDropdownOpen] = useState(false);
-  const supportDropdownRef = useRef<HTMLDivElement>(null);
   const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const user = useUser();
@@ -51,23 +50,6 @@ export function AppHeader() {
     };
   }, [isMenuOpen]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        supportDropdownRef.current &&
-        !supportDropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsSupportDropdownOpen(false);
-      }
-    };
-    if (isSupportDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isSupportDropdownOpen]);
-
   return (
     <>
       <header className="fixed top-0 left-0 right-0 bg-custom-beige z-50 shadow">
@@ -89,7 +71,7 @@ export function AppHeader() {
               className="flex-shrink-0"
             />
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
             {/* Navigation Elements */}
             <div className="hidden lg:flex items-center gap-10">
               {navigationLinks.map(({ key, href }) => (
@@ -110,43 +92,11 @@ export function AppHeader() {
               ))}
             </div>
             <LanguageSwitcher />
-            {/* Support Dropdown */}
-            <div ref={supportDropdownRef} className="hidden lg:block relative">
-              <Button
-                className="h-8"
-                variant="outline"
-                onClick={() => setIsSupportDropdownOpen(!isSupportDropdownOpen)}
-              >
-                <HelpCircle className="w-4 h-4 mr-2" />
-                <span className="text-xs font-medium">{tCommon('support')}</span>
-                <ChevronDown
-                  className={`w-3 h-3 ml-1 transition-transform ${isSupportDropdownOpen ? 'rotate-180' : ''}`}
-                />
-              </Button>
-              {isSupportDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-bw-20 py-1 z-50">
-                  <button
-                    className="w-full px-4 py-2 text-sm text-left hover:bg-bw-10 flex items-center gap-2 transition-colors"
-                    onClick={() => {
-                      setIsVideoModalOpen(true);
-                      setIsSupportDropdownOpen(false);
-                    }}
-                  >
-                    <HelpCircle className="w-4 h-4" />
-                    <span>{tCommon('help')}</span>
-                  </button>
-                  <button
-                    className="w-full px-4 py-2 text-sm text-left hover:bg-bw-10 flex items-center gap-2 transition-colors"
-                    onClick={() => {
-                      setIsContactModalOpen(true);
-                      setIsSupportDropdownOpen(false);
-                    }}
-                  >
-                    <Mail className="w-4 h-4" />
-                    <span>{tCommon('contact')}</span>
-                  </button>
-                </div>
-              )}
+            <div className="hidden lg:block">
+              <SupportDropdown
+                onHelpClick={() => setIsVideoModalOpen(true)}
+                onContactClick={() => setIsContactModalOpen(true)}
+              />
             </div>
             {/* Burger Menu Item */}
             <Button
