@@ -10,7 +10,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import SupabaseVectorStore
 
 from app.config import Settings
-from app.database import get_supabase_client
+from app.dependencies.database import get_supabase_client
 
 settings = Settings()
 

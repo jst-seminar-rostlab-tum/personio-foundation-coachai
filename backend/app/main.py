@@ -10,7 +10,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.responses import Response
 
 from app.config import settings
-from app.database import get_db_session
+from app.dependencies.database import get_db_session
 from app.routers import (
     admin_dashboard_stats_route,
     app_config_route,

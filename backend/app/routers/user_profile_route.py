@@ -10,8 +10,8 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.connections.gcs_client import get_gcs_audio_manager
-from app.database import get_db_session
-from app.dependencies import require_admin, require_user
+from app.dependencies.auth import require_admin, require_user
+from app.dependencies.database import get_db_session
 from app.models.conversation_scenario import ConversationScenario
 from app.models.user_profile import UserProfile
 from app.schemas.user_profile import (

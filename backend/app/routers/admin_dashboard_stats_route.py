@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlmodel import Session as DBSession
 
-from app.database import get_db_session
-from app.dependencies import require_admin
+from app.dependencies.auth import require_admin
+from app.dependencies.database import get_db_session
 from app.schemas.admin_dashboard_stats import AdminDashboardStatsRead
 from app.services.admin_dashboard_service import AdminDashboardService
 

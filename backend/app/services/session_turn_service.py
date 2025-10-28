@@ -14,7 +14,7 @@ from sqlmodel import col, select
 
 from app.config import Settings
 from app.connections.gcs_client import get_gcs_audio_manager
-from app.database import get_db_session
+from app.dependencies.database import get_db_session
 from app.enums.speaker import SpeakerType
 from app.models.session import Session as SessionModel
 from app.models.session_turn import SessionTurn

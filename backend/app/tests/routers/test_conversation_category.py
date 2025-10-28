@@ -10,7 +10,8 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine, select
 
 from app.data.dummy_data import get_dummy_conversation_categories, get_dummy_user_data
-from app.dependencies import JWTPayload, get_db_session, security, verify_jwt
+from app.dependencies.auth import JWTPayload, security, verify_jwt
+from app.dependencies.database import get_db_session
 from app.main import app
 from app.models.conversation_category import ConversationCategory
 from app.schemas.conversation_category import ConversationCategoryRead

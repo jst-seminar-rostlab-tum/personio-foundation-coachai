@@ -15,7 +15,8 @@ from app.data.dummy_data import (
     get_dummy_conversation_scenarios,
     get_dummy_session_feedback,
 )
-from app.dependencies import get_db_session, require_user
+from app.dependencies.auth import require_user
+from app.dependencies.database import get_db_session
 from app.enums.account_role import AccountRole
 from app.enums.session_status import SessionStatus
 from app.enums.speaker import SpeakerType

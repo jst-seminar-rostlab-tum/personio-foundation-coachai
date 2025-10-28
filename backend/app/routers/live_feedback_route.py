@@ -3,8 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session as DBSession
 
-from app.database import get_db_session
-from app.dependencies import require_session_access, require_user
+from app.dependencies.auth import require_user
+from app.dependencies.database import get_db_session
+from app.dependencies.sessions import require_session_access
 from app.models.session import Session
 from app.schemas.live_feedback_schema import LiveFeedbackRead
 from app.services.live_feedback_service import fetch_live_feedback_for_session

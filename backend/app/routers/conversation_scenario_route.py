@@ -4,8 +4,8 @@ from uuid import UUID
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlmodel import Session as DBSession
 
-from app.database import get_db_session
-from app.dependencies import require_user
+from app.dependencies.auth import require_user
+from app.dependencies.database import get_db_session
 from app.models.user_profile import UserProfile
 from app.schemas.conversation_scenario import (
     ConversationScenarioConfirm,

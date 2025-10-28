@@ -11,7 +11,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.connections.gcs_client import get_gcs_audio_manager
-from app.database import get_db_session
+from app.dependencies.database import get_db_session
 from app.enums.feedback_status import FeedbackStatus
 from app.models.admin_dashboard_stats import AdminDashboardStats
 from app.models.camel_case import CamelModel

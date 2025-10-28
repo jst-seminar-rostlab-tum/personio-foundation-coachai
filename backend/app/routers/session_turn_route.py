@@ -4,8 +4,8 @@ from uuid import UUID
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
 from sqlmodel import Session as DBSession
 
-from app.database import get_db_session
-from app.dependencies import require_user
+from app.dependencies.auth import require_user
+from app.dependencies.database import get_db_session
 from app.enums.speaker import SpeakerType
 from app.models.user_profile import UserProfile
 from app.schemas.session_turn import SessionTurnCreate, SessionTurnRead

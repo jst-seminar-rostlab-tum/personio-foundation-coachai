@@ -12,9 +12,9 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.config import Settings
-from app.database import get_db_session
-from app.enums.session_status import SessionStatus
-from app.models import Session, UserProfile
+from app.dependencies.database import get_db_session
+from app.interfaces.mock_user_ids_enum import MockUserIdsEnum
+from app.models import UserProfile
 from app.models.user_profile import AccountRole
 
 settings = Settings()
@@ -55,7 +55,7 @@ def verify_jwt(
     """
     if settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH:
         logging.info('Skipping JWT verification')
-        return JWTPayload(sub=str(settings.DEV_MODE_MOCK_ADMIN_ID))
+        return JWTPayload(sub=str(MockUserIdsEnum.USER.value))
     logging.info('Verifying JWT')
     if not credentials:
         logging.info('No JWT token')
@@ -190,26 +190,3 @@ def _update_login_streak(db: DBSession, user_profile: UserProfile, timezone: str
         db.add(user_profile)
         db.commit()
         db.refresh(user_profile)
-
-
-def require_session_access(
-    session_id: UUID,
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-    user_profile: Annotated[UserProfile, Depends(require_user)],
-) -> Session:
-    session = db_session.exec(select(Session).where(Session.id == session_id)).first()
-    if not session:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Session not found',
-        )
-    if not session.scenario.user_id == user_profile.id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='User is not the owner of the scenario',
-        )
-    if session.status is SessionStatus.completed:
-        raise HTTPException(
-            status.HTTP_429_TOO_MANY_REQUESTS, detail='Session is already completed'
-        )
-    return session

@@ -16,7 +16,7 @@ from app.data import (
     get_dummy_conversation_scenarios,
     get_dummy_user_data,
 )
-from app.dependencies import get_db_session
+from app.dependencies.database import get_db_session
 from app.enums import SessionStatus, SpeakerType
 from app.models import Session, SessionTurn
 from app.services.google_cloud_storage_service import GCSManager

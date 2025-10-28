@@ -15,7 +15,8 @@ from app.data import (
     get_dummy_conversation_scenarios,
     get_dummy_user_data,
 )
-from app.dependencies import JWTPayload, get_db_session, verify_jwt
+from app.dependencies.auth import JWTPayload, verify_jwt
+from app.dependencies.database import get_db_session
 from app.enums.session_status import SessionStatus
 from app.models import Session, UserProfile
 from app.models.review import Review

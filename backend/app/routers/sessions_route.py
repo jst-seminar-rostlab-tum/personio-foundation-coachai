@@ -4,8 +4,9 @@ from uuid import UUID
 from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlmodel import Session as DBSession
 
-from app.database import get_db_session
-from app.dependencies import require_user
+from app.dependencies.auth import require_user
+from app.dependencies.database import get_db_session
+from app.dependencies.sessions import require_sessions_left_today
 from app.models.user_profile import UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
 from app.schemas.sessions_paginated import PaginatedSessionRead
@@ -49,7 +50,7 @@ def get_sessions(
     return service.fetch_paginated_sessions(user_profile, page, page_size, scenario_id)
 
 
-@router.post('', response_model=SessionRead)
+@router.post('', response_model=SessionRead, dependencies=[Depends(require_sessions_left_today)])
 def create_session(
     session_data: SessionCreate,
     service: Annotated[SessionService, Depends(get_session_service)],

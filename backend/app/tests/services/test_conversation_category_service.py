@@ -10,7 +10,8 @@ from sqlmodel import Session as DBSession
 from sqlmodel import SQLModel, create_engine, select
 
 from app.data.dummy_data import get_dummy_conversation_categories, get_dummy_user_data
-from app.dependencies import get_db_session, require_user
+from app.dependencies.auth import require_user
+from app.dependencies.database import get_db_session
 from app.models.conversation_category import ConversationCategory
 from app.schemas.conversation_category import ConversationCategoryRead
 from app.services.conversation_category_service import ConversationCategoryService

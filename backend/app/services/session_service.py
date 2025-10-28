@@ -2,12 +2,12 @@ from datetime import UTC, datetime
 from math import ceil
 from uuid import UUID
 
-from fastapi import BackgroundTasks, HTTPException, status
+from fastapi import BackgroundTasks, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import col, func, select
 
 from app.connections.gcs_client import get_gcs_audio_manager
-from app.database import get_db_session
+from app.dependencies.database import get_db_session
 from app.enums.account_role import AccountRole
 from app.enums.feedback_status import FeedbackStatus
 from app.enums.scenario_preparation_status import ScenarioPreparationStatus
@@ -23,7 +23,6 @@ from app.models.user_profile import UserProfile
 from app.schemas.session import SessionCreate, SessionDetailsRead, SessionRead, SessionUpdate
 from app.schemas.session_feedback import FeedbackCreate, SessionFeedbackRead
 from app.schemas.sessions_paginated import PaginatedSessionRead, SessionItem, SkillScores
-from app.services.app_config_service import AppConfigService
 from app.services.review_service import ReviewService
 from app.services.session_feedback.session_feedback_service import generate_and_store_feedback
 from app.services.session_turn_service import SessionTurnService
@@ -33,7 +32,6 @@ class SessionService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
         self.gcs_audio_manager = get_gcs_audio_manager()
-        self.app_config_service = AppConfigService(db)
 
     def fetch_session_details(
         self, session_id: UUID, user_profile: UserProfile
@@ -106,19 +104,6 @@ class SessionService:
     def create_new_session(
         self, session_data: SessionCreate, user_profile: UserProfile
     ) -> SessionRead:
-        daily_session_limit = user_profile.daily_session_limit
-        if daily_session_limit is None:
-            daily_session_limit = self.app_config_service.get_default_daily_session_limit()
-
-        if (
-            daily_session_limit is None
-            or user_profile.sessions_created_today >= daily_session_limit
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail='You have reached the daily session limit. Cannot create new session.',
-            )
-
         conversation_scenario = self.db.get(ConversationScenario, session_data.scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')

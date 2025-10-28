@@ -10,7 +10,7 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 from supabase import AuthError
 
-from app.database import get_supabase_client
+from app.dependencies.database import get_supabase_client
 from app.enums.account_role import AccountRole
 from app.enums.goal import Goal
 from app.models.user_confidence_score import UserConfidenceScore

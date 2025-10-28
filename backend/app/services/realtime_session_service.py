@@ -13,7 +13,6 @@ from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session
 from app.models.user_profile import UserProfile
-from app.services.app_config_service import AppConfigService
 
 if settings.FORCE_CHEAP_MODEL:
     MODEL = 'gpt-4o-mini-realtime-preview-2024-12-17'
@@ -24,7 +23,6 @@ else:
 class RealtimeSessionService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
-        self.app_config_service = AppConfigService(db)
 
     def _get_voice(self, persona_name: str) -> str:
         """
@@ -87,19 +85,6 @@ class RealtimeSessionService:
         if not api_key or not settings.ENABLE_AI:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='OPENAI_API_KEY not set'
-            )
-
-        daily_session_limit = user_profile.daily_session_limit
-        if daily_session_limit is None:
-            daily_session_limit = self.app_config_service.get_default_daily_session_limit()
-
-        if (
-            daily_session_limit is None
-            or user_profile.sessions_created_today >= daily_session_limit
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail='You have reached the daily session limit. Cannot start real-time session.',
             )
 
         conversation_scenario = self.db.exec(
