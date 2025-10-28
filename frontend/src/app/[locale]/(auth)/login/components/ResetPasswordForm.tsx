@@ -78,7 +78,7 @@ export default function ResetPasswordForm() {
 
   return (
     <ModalWrapper>
-      <Card className="border-0 bg-white animate-in fade-in zoom-in duration-200">
+      <Card className="border-0 animate-in fade-in zoom-in duration-200">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(sendPasswordReset)}>
             <CardHeader>

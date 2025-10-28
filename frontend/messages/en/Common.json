@@ -15,7 +15,12 @@
     "title": "Resources",
     "subtitle": "Helpful materials to download to deepen your knowledge.",
     "noResources": "No resources available for this scenario.",
-    "downloadError": "Failed to download resource. Please try again."
+    "downloadError": "Failed to download resource. Please try again.",
+    "viewSource": "View Source",
+    "by": "by",
+    "page": "Page",
+    "copyQuote": "Copy quote",
+    "copyError": "Failed to copy quote"
   },
   "saving": "Saving...",
   "save": "Save",
@@ -59,5 +64,10 @@
   "emailInputError": "Please enter a valid email address",
   "aiDisclaimer": "AI systems might unintentionally produce harmful or offensive content",
   "aiGeneratedDisclaimer": "This text was AI-generated using sources provided in the resources section below",
-  "aiGeneratedDisclaimer2": "This text was AI-generated using sources provided in the resources section from the preparation page"
+  "aiGeneratedDisclaimer2": "This text was AI-generated using sources provided in the resources section from the preparation page",
+  "help": "Help",
+  "videoModal": {
+    "title": "How to use CoachAI",
+    "description": "Watch this tutorial to learn how to make the most of your training sessions."
+  }
 }

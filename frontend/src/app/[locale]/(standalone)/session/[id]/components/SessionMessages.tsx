@@ -49,8 +49,8 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
     <div
       className={`text-base text-bw-90 rounded-xl px-4 py-2 max-w-[70%] ${
         message.sender === 'user'
-          ? 'self-end bg-marigold-30 rounded-br-none'
-          : 'self-start bg-white border border-marigold-30 rounded-bl-none'
+          ? 'self-end bg-custom-beige rounded-br-none'
+          : 'self-start border border-custom-beige rounded-bl-none'
       }`}
     >
       <span className="inline">

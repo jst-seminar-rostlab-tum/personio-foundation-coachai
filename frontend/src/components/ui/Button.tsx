@@ -8,19 +8,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-marigold-30 text-marigold-95 hover:bg-marigold-30/80',
-        secondary: 'bg-bw-60 text-white hover:bg-bw-60/80',
+        default: 'bg-black text-white hover:bg-black/80',
         outline:
-          'bg-transparent outline-1 outline-solid outline-bw-20 text-bw-70 hover:outline-2 hover:outline-bw-70',
-        disabled: 'bg-bw-10 text-bw-40',
+          'bg-custom-beige outline-1 outline-solid outline-black text-bw-70 hover:outline-2 hover:outline-bw-70',
+        disabled: 'bg-disabled-beige text-black cursor-not-allowed',
         destructive: 'bg-flame-50 text-white shadow-xs hover:bg-flame-50/80',
-        ghost: 'hover:bg-bw-10',
+        ghost: 'hover:bg-bw-40',
         link: 'text-blue-600 underline hover:text-blue-800',
       },
       size: {
         default: 'rounded-md px-4 py-3',
         full: 'rounded-md px-4 py-3 w-full justify-center flex-1',
-        pagination: 'h-9 px-4 py-2 has-[>svg]:px-3 hover:bg-bw-10 hover:rounded-md',
+        pagination: 'h-9 px-4 py-2 has-[>svg]:px-3 hover:bg-bw-40 hover:rounded-md',
         paginationIcon: 'size-9 rounded-md ',
         iconLarge:
           'w-14 h-14 max-h-14 aspect-square rounded-full flex items-center justify-center p-0',

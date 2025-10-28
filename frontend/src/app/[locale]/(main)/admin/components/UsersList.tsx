@@ -96,7 +96,7 @@ export default function UsersList({
     <>
       <div className="mt-4 mb-4 flex flex-row gap-4 items-end">
         <div className="relative w-full sm:max-w-sm">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-bw-40">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-bw-70">
             <Search className="w-4 h-4" />
           </span>
           <Input
@@ -104,7 +104,7 @@ export default function UsersList({
             placeholder={t('search')}
             value={search}
             onChange={handleSearch}
-            className="w-full pl-10 pr-3 py-2 border border-bw-20 rounded text-sm text-bw-70 placeholder-bw-40 focus:border-bw-20 focus-visible:outline-none focus-visible:ring-0"
+            className="w-full pl-10 pr-3 py-2 border border-bw-40 rounded text-sm text-bw-70 placeholder-bw-50 focus:border-bw-40 focus-visible:outline-none focus-visible:ring-0"
           />
         </div>
       </div>
@@ -112,7 +112,7 @@ export default function UsersList({
         <EmptyListComponent itemType={t('users')} />
       ) : (
         <>
-          <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 w-full">
+          <div className="overflow-x-auto rounded-lg border border-bw-40 mb-4 w-full">
             <Table className="min-w-[320px] text-sm table-fixed">
               <TableHeader>
                 <TableRow>
@@ -126,7 +126,7 @@ export default function UsersList({
                 {userList.map((user) => (
                   <TableRow
                     key={user.email}
-                    className="border-t border-bw-10 hover:bg-bw-5 cursor-pointer"
+                    className="border-t border-bw-50 hover:bg-bw-5 cursor-pointer"
                     onClick={() => handleUserClick(user.userId)}
                   >
                     <TableCell className="px-6 py-4 text-bw-70 w-[280px]">{user.email}</TableCell>

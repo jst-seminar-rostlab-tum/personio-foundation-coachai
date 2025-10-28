@@ -125,7 +125,7 @@ export default function ConfirmationForm({
 
   return (
     <ModalWrapper>
-      <Card className="border-0 bg-white animate-in fade-in zoom-in duration-200">
+      <Card className="border-0 animate-in fade-in zoom-in duration-200">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(verifyOTP)}>
             <CardContent className="space-y-4 p-4">
@@ -199,7 +199,7 @@ export default function ConfirmationForm({
                   {t('resendCodeButtonLabel')}
                 </Button>
               )}
-              <Button size="full" variant="secondary" onClick={onClose} disabled={isLoading}>
+              <Button size="full" onClick={onClose} disabled={isLoading}>
                 {tCommon('cancel')}
               </Button>
             </CardFooter>

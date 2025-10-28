@@ -171,7 +171,7 @@ export default function Settings({ userProfile }: SettingsProps) {
                 <div className="flex items-center justify-between w-full px-2 gap-8">
                   <div className="flex flex-col">
                     <div className="text-bw-70">{t('storeAudioTranscripts')}</div>
-                    <div className="text-bw-40">
+                    <div className="text-bw-70">
                       {storeConversations ? t('ninetyDays') : t('zeroDays')}
                     </div>
                   </div>
@@ -223,7 +223,7 @@ export default function Settings({ userProfile }: SettingsProps) {
                   currentRole={currentRoleSelect}
                   primaryGoals={primaryGoalsSelect}
                 />
-                <hr className="border-bw-20 px-2" />
+                <hr className="border-bw-40 px-2" />
                 <UserConfidenceFields
                   className="flex flex-col gap-8 px-2"
                   {...confidenceFieldsProps}

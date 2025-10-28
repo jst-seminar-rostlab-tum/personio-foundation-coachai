@@ -31,7 +31,7 @@ export default async function AdminPage() {
     <Suspense fallback={<AdminLoadingPage />}>
       <div className="max-w-full">
         <div className="text-2xl font-bold text-bw-70 text-center mb-2">{t('dashboardTitle')}</div>
-        <div className="text-sm text-bw-40 text-center mb-8">{t('dashboardSubtitle')}</div>
+        <div className="text-sm text-bw-70 text-center mb-8">{t('dashboardSubtitle')}</div>
         <AdminStatCards />
         <div className="text-xl mt-16 font-medium text-bw-70">{tCommon('reviews')}</div>
         <Reviews {...reviews} />

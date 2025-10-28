@@ -84,7 +84,7 @@ export default function ConversationScenarioForm() {
 
       {currentStep === 2 && <CustomizeStep />}
 
-      <div className="fixed bottom-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md">
+      <div className="fixed bottom-0 left-0 w-full z-50 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)] py-6 flex gap-4 justify-center">
           {currentStep > 0 && (
             <Button size="full" variant="outline" onClick={() => setStep(currentStep - 1)}>

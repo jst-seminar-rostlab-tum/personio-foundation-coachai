@@ -6,7 +6,7 @@ const Configuration: UserConfig = {
   extends: ['@commitlint/config-conventional'],
   parserPreset: {
     parserOpts: {
-      headerPattern: /^(\w+)\((F-\d{1,4}|B-\d{1,4}|M)\):\s(.*)$/,
+      headerPattern: /^(\w+)\(([FBM])\):\s(.*)$/,
       headerCorrespondence: ['type', 'scope', 'subject'],
       issuePrefixes: [],
     },

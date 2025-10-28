@@ -22,7 +22,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
   const DataProcessingCard = ({ item }: { item: DataProcessingTopic }) => (
     <div className="border rounded-lg p-4" key={item.key}>
       <div className="text-lg mb-2">{item.title}</div>
-      <div className="text-base text-bw-60 mb-3">{item.description}</div>
+      <div className="text-base text-bw-70 mb-3">{item.description}</div>
       <div className="space-y-2">
         <div>
           <div className="text-lg mb-1">{t('dataProcessing.headers.purpose')}:</div>
@@ -65,7 +65,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
             <tr key={item.key}>
               <td className="py-4 pr-4 align-top">
                 <div className="text-lg">{item.title}</div>
-                <div className="text-base text-bw-60 mt-1">{item.description}</div>
+                <div className="text-base text-bw-70 mt-1">{item.description}</div>
               </td>
               <td className="py-4 pr-4 align-top">
                 <ul className="text-base space-y-1" role="list">
@@ -141,7 +141,7 @@ export default function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps
                     />
                     <div>
                       <h4 className="text-lg">{t('encryption.title')}</h4>
-                      <p className="text-base text-bw-60 mt-1">{t('encryption.description')}</p>
+                      <p className="text-base text-bw-70 mt-1">{t('encryption.description')}</p>
                     </div>
                   </div>
                 </div>
