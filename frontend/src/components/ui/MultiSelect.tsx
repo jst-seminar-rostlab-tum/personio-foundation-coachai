@@ -92,7 +92,7 @@ export function MultiSelect({
       <div
         ref={wrapperRef}
         tabIndex={-1}
-        className="group rounded-md border border-bw-20 bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-bw-40 focus-within:ring-offset-2 flex items-center flex-wrap gap-1 cursor-pointer"
+        className="group rounded-md border border-bw-40 bg-custom-beige px-3 py-2 text-sm ring-offset-custom-beige focus-within:ring-2 focus-within:ring-bw-40 focus-within:ring-offset-2 flex items-center flex-wrap gap-1 cursor-pointer"
         onClick={handleWrapperClick}
         onBlur={handleBlur}
       >
@@ -102,10 +102,10 @@ export function MultiSelect({
             value={inputValue}
             onValueChange={setInputValue}
             placeholder={placeholder ?? 'Select options...'}
-            className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
+            className="flex-1 bg-custom-beige outline-none placeholder:text-muted-foreground"
           />
         ) : (
-          <span className="text-sm text-bw-40">{maxSelectedDisclaimer}</span>
+          <span className="text-sm text-bw-70">{maxSelectedDisclaimer}</span>
         )}
       </div>
       {value.length > 0 && (
@@ -131,7 +131,7 @@ export function MultiSelect({
       <div className="relative mt-2">
         <CommandList>
           {open && selectables.length > 0 && (
-            <div className="absolute top-0 z-10 w-full rounded-md border bg-white text-popover-foreground shadow-md outline-none">
+            <div className="absolute top-0 z-10 w-full rounded-md border bg-custom-beige text-popover-foreground shadow-md outline-none">
               <CommandGroup className="h-full overflow-auto">
                 {selectables.map((option) => (
                   <CommandItem
@@ -146,7 +146,7 @@ export function MultiSelect({
                         value.length < (maxSelected ?? Infinity) ? [...value, option.id] : value
                       );
                     }}
-                    className="cursor-pointer hover:bg-bw-10"
+                    className="cursor-pointer hover:bg-bw-40"
                   >
                     {option.label}
                   </CommandItem>

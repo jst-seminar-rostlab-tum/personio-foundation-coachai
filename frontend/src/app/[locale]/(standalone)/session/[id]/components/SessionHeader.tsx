@@ -31,7 +31,7 @@ function getConnectionStatusColor(status: ConnectionStatus) {
     case ConnectionStatus.Connected:
       return 'bg-forest-50';
     case ConnectionStatus.Connecting:
-      return 'bg-marigold-50';
+      return 'bg-forest-90';
     case ConnectionStatus.Disconnected:
     case ConnectionStatus.Closed:
     case ConnectionStatus.Failed:
@@ -53,12 +53,10 @@ export default function SessionHeader({
   const categories = Categories(tCategories);
 
   return (
-    <div className="relative border-b border-bw-10 w-full">
+    <div className="relative border-b border-bw-50 w-full">
       <div className="flex flex-col gap-6 p-6 max-w-7xl mx-auto px-[clamp(1.25rem,4vw,4rem)]">
         <div className="flex items-center justify-between">
-          <Badge variant="default" className="bg-marigold-30/40 text-marigold-90">
-            {categories[sessionLabel].name}
-          </Badge>
+          <Badge variant="default">{categories[sessionLabel].name}</Badge>
           <div className="flex items-center gap-3">
             {connectionStatus && (
               <Badge variant="outline" className="flex items-center gap-1.5">
@@ -82,7 +80,7 @@ export default function SessionHeader({
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Avatar className="border-marigold-50 border-1">
+          <Avatar className="border-forest-90 border-1">
             <AvatarImage
               src={tConversationScenario(`customize.persona.personas.${characterName}.imageUri`)}
               alt={`${tConversationScenario(

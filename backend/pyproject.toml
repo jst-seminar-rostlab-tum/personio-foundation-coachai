@@ -24,7 +24,7 @@ dependencies = [
     "langchain-community>0.3.20",
     "langchain-google-genai>=2.0.10",
     "google-generativeai>=0.8.5",
-    "supabase>=2.15.2",
+    "supabase~=2.18.0",
     "pypdf>=5.4.0",
     "pgvector>=0.2.5,<0.4",
     "langchain-openai>=0.3.21",
@@ -36,6 +36,7 @@ dependencies = [
     "langchain-google-vertexai>=2.0.27",
     "apscheduler>=3.11.0",
     "pytz>=2025.0",
+    "pymupdf>=1.26.5",
     "gotrue>=2.12.4",
     "sentry-sdk[fastapi]>=2.41.0",
 ]

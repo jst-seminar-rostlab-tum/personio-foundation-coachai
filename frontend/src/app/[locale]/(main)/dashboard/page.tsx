@@ -78,7 +78,7 @@ export default async function DashboardPage() {
       <section className="flex flex-col gap-6">
         <div>
           <h2 className="text-xl">{t('recentSessions.title')}</h2>
-          <p className="text-base text-bw-40">{t('recentSessions.subtitle')}</p>
+          <p className="text-base text-bw-70">{t('recentSessions.subtitle')}</p>
         </div>
         <DashboardTable
           scenarios={conversationScenarios.data.scenarios}

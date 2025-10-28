@@ -37,7 +37,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
             <h1 className="text-2xl font-bold text-bw-70">{tErrorPage('title')}</h1>
           </div>
 
-          <p className="text-bw-40 text-sm leading-relaxed max-w-sm">{tErrorPage('description')}</p>
+          <p className="text-bw-70 text-sm leading-relaxed max-w-sm">{tErrorPage('description')}</p>
 
           <div className="flex md:flex-row flex-col gap-3 w-full max-w-xs justify-center">
             <Button onClick={handleTryAgain}>

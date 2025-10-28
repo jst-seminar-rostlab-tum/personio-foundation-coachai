@@ -22,7 +22,7 @@ export default function PreparationChecklist({ checklist }: PreparationChecklist
         </div>
       ))}
       <div className="mt-3">
-        <p className="text-xs text-bw-40">{tCommon('aiGeneratedDisclaimer')}</p>
+        <p className="text-xs text-bw-50">{tCommon('aiGeneratedDisclaimer')}</p>
       </div>
     </div>
   );

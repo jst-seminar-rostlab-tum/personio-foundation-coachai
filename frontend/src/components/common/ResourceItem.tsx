@@ -39,10 +39,10 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ name }) => {
   return (
     <div
       onClick={handleDownload}
-      className="w-full flex items-center justify-between py-2 px-4 rounded-lg border border-bw-20 hover:border-bw-30 hover:bg-bw-10/50 transition-all duration-200 ease-in-out cursor-pointer group"
+      className="w-full flex items-center justify-between py-2 px-4 rounded-lg border border-bw-40 hover:border-bw-30 hover:bg-custom-beige/50 transition-all duration-200 ease-in-out cursor-pointer group"
     >
       <div className="flex items-center gap-3 flex-1">
-        <FileText className="w-4 h-4 text-bw-50 group-hover:text-bw-60 transition-colors duration-200" />
+        <FileText className="w-4 h-4 text-bw-50 group-hover:text-bw-70 transition-colors duration-200" />
         <span className="text-sm font-medium group-hover:underline transition-all duration-200">
           {name}
         </span>
@@ -52,13 +52,13 @@ const ResourceItem: React.FC<ResourceItemProps> = ({ name }) => {
         variant="ghost"
         size="icon"
         disabled={isLoading}
-        className="bg-marigold-5 hover:bg-marigold-10"
+        className="bg-forest-90 hover:bg-forest-90"
         aria-label={`Download ${name}`}
       >
         {isLoading ? (
-          <Loader2 className="w-5 h-5 animate-spin text-marigold-90" />
+          <Loader2 className="w-5 h-5 animate-spin text-white" />
         ) : (
-          <Download className="w-5 h-5 text-marigold-90" />
+          <Download className="w-5 h-5 text-white" />
         )}
       </Button>
     </div>

@@ -2,6 +2,7 @@ from pathlib import Path
 
 from app.config import Settings
 from app.connections.gemini_client import is_valid_api_key
+from app.connections.vertexai_client import credentials
 from app.rag.embeddings import get_embedding_model
 from app.rag.rag import load_and_index_documents
 from app.rag.vector_db import load_vector_db
@@ -11,18 +12,25 @@ settings = Settings()
 TABLE_NAME = 'hr_information'
 BASE_DIR = Path(__file__).parent
 DOC_FOLDER = BASE_DIR / 'documents'
+MODEL_TYPE = 'vertexai'
 
 
 def populate_vector_db(doc_folder: str = DOC_FOLDER) -> None:
-    embedding = get_embedding_model()
+    embedding = get_embedding_model(model_type=MODEL_TYPE)
     vector_db = load_vector_db(embedding)
     load_and_index_documents(vector_db, doc_folder)
 
 
 if __name__ == '__main__':
-    if not is_valid_api_key(settings.GEMINI_API_KEY):
+    if MODEL_TYPE == 'vertexai' and not credentials:
         print(
-            "Can't populate vector database. No valid GEMINI API KEY available! "
+            "Can't populate vector database. No valid VERTEX AI credentials available!"
+            'Please update your .env and rerun the script'
+        )
+        exit()
+    if MODEL_TYPE == 'gemini' and not is_valid_api_key(settings.GEMINI_API_KEY):
+        print(
+            "Can't populate vector database. No valid GEMINI API KEY available!"
             'Please update your .env and rerun the script'
         )
         exit()

@@ -20,6 +20,7 @@ import { showErrorToast } from '@/lib/utils/toast';
 import { useUser } from '@/contexts/User';
 import { useOnboardingStore } from '@/store/OnboardingStore';
 import { api } from '@/services/ApiClient';
+import { VideoModal } from '@/components/common/VideoModal';
 import { UserRadioComponent } from './UserRadioComponent';
 
 export default function OnboardingPageComponent() {
@@ -27,6 +28,7 @@ export default function OnboardingPageComponent() {
   const tCommon = useTranslations('Common');
   const router = useRouter();
   const userProfile = useUser();
+  const [showVideoModal, setShowVideoModal] = React.useState(false);
 
   const onboardingSteps = ['Step1', 'Step2', 'Step3'];
   const roleQuestion: UserOption[] = UserRoles();
@@ -73,18 +75,23 @@ export default function OnboardingPageComponent() {
           { confidenceArea: 'leading_challenging_conversations', score: conversation[0] },
         ],
       });
-      router.push('/dashboard');
-      setTimeout(reset, 2000);
+      setShowVideoModal(true);
     } catch (error) {
       showErrorToast(error, t('updateProfileError'));
     }
+  };
+
+  const handleVideoModalClose = () => {
+    setShowVideoModal(false);
+    router.push('/dashboard');
+    setTimeout(reset, 2000);
   };
 
   return (
     <div className="flex flex-col max-w-2xl py-5 gap-5 mr-auto ml-auto">
       <div className="flex flex-col gap-2 text-center">
         <span className="text-2xl">{t('title')}</span>
-        <span className="text-base text-bw-40">{t('subtitle')}</span>
+        <span className="text-base text-bw-70">{t('subtitle')}</span>
       </div>
 
       <Stepper
@@ -110,7 +117,7 @@ export default function OnboardingPageComponent() {
         <>
           <div className="text-center flex flex-col justify-around min-h-20">
             <div className="text-xl">{t('steps.step2')}</div>
-            <div className="text-base text-bw-40">{t('steps.step2Subtitle')}</div>
+            <div className="text-base text-bw-70">{t('steps.step2Subtitle')}</div>
           </div>
           <div className="h-63 overflow-y-auto">
             <div className="flex flex-col gap-5">
@@ -182,10 +189,16 @@ export default function OnboardingPageComponent() {
             </Button>
           )}
         </div>
-        <Link href="/dashboard" className="text-base text-bw-40 hover:underline hover:text-bw-60">
+        <Link href="/dashboard" className="text-base text-bw-70 hover:underline hover:text-bw-70">
           {tCommon('skip')}
         </Link>
       </div>
+
+      <VideoModal
+        isOpen={showVideoModal}
+        onClose={handleVideoModalClose}
+        videoSrc="/CoachAIDemo.mp4"
+      />
     </div>
   );
 }
