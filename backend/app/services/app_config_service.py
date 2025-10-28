@@ -1,7 +1,11 @@
-from fastapi import HTTPException, status
+from typing import Annotated
+
+from fastapi import Depends, HTTPException, status
+from sqlmodel import Session as DBSession
 from sqlmodel import Session as DBsession
 from sqlmodel import select
 
+from app.dependencies.database import get_db_session
 from app.enums.config_type import ConfigType
 from app.models.app_config import AppConfig
 from app.schemas.app_config import AppConfigCreate, AppConfigRead
@@ -138,3 +142,9 @@ class AppConfigService:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             ) from err
+
+
+def get_app_config_service(
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> AppConfigService:
+    return AppConfigService(db_session)

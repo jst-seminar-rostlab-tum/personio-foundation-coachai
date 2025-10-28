@@ -5,14 +5,13 @@ from fastapi import Depends, HTTPException, status
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
-from app.dependencies.app_config import get_app_config_service
 from app.dependencies.auth import require_user
 from app.dependencies.database import get_db_session
 from app.enums.account_role import AccountRole
 from app.enums.session_status import SessionStatus
 from app.models.session import Session
 from app.models.user_profile import UserProfile
-from app.services.app_config_service import AppConfigService
+from app.services.app_config_service import AppConfigService, get_app_config_service
 
 
 def require_session_access(
