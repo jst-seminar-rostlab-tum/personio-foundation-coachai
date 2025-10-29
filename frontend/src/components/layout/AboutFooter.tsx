@@ -50,7 +50,7 @@ export default async function AboutFooter() {
               {tCommon('privacyPolicy')}
             </Link>
             <Link href="/terms" className="text-black hover:text-forest-90">
-              {tCommon('termsOfService')}
+              {tCommon('dataProcessingPolicy')}
             </Link>
           </div>
         </div>

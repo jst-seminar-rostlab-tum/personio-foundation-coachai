@@ -2,6 +2,8 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadat
 import type { Metadata } from 'next';
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { getTranslations } from 'next-intl/server';
+import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
+import React from 'react';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -9,14 +11,12 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function TermsOfServicePage() {
-  const t = await getTranslations('TermsOfService');
   const tCommon = await getTranslations('Common');
   return (
     <div className="flex flex-col justify-between min-h-screen">
       <section className="flex flex-col gap-8">
-        <h1 className="text-4xl font-semibold break-words">{tCommon('termsOfService')}</h1>
-        <h2 className="text-xl font-semibold">{t('sections.limitationOfLiability.title')}</h2>
-        <p className="text-base leading-loose">{t('sections.limitationOfLiability.content')}</p>
+        <h1 className="text-4xl font-semibold break-words">{tCommon('dataProcessingPolicy')}</h1>
+        <PrivacyDialog variant="content" />
       </section>
     </div>
   );
