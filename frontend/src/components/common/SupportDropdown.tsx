@@ -30,13 +30,13 @@ export function SupportDropdown({ onHelpClick, onContactClick }: SupportDropdown
         <span>{tCommon('support')}</span>
       </SelectTrigger>
       <SelectContent className="bg-white min-w-[180px]">
-        <SelectItem value="help" className="text-sm">
+        <SelectItem value="help" className="text-sm data-[highlighted]:bg-custom-beige">
           <div className="flex items-center gap-2">
             <HelpCircle className="w-4 h-4" />
             <span>{tCommon('help')}</span>
           </div>
         </SelectItem>
-        <SelectItem value="contact" className="text-sm">
+        <SelectItem value="contact" className="text-sm data-[highlighted]:bg-custom-beige">
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4" />
             <span>{tCommon('contact')}</span>
