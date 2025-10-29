@@ -8,7 +8,7 @@ import { SignUpForm } from './SignUpForm';
 export default async function LoginPageComponent() {
   const t = await getTranslations('Login');
   return (
-    <Card>
+    <Card className="border border-bw-40">
       <CardHeader className="mt-5">
         <CardTitle>
           {t('welcome')} <HighlightedAppName />

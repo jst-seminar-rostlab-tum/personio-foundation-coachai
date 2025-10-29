@@ -48,7 +48,7 @@ export function ExportUserHandler() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" className="w-full">
+        <Button variant="default" className="w-full">
           <Download className="w-4 h-4" />
           <span className="hidden sm:inline">{tSettings('export')}</span>
         </Button>
