@@ -17,12 +17,12 @@ export function LanguageSwitcher() {
 
   return (
     <Select value={locale} onValueChange={onLocaleChange}>
-      <SelectTrigger className="h-8 w-16" variant="minimal">
+      <SelectTrigger className="h-8 w-16 hover:bg-bw-10" variant="minimal">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
         {routing.locales.map((cur) => (
-          <SelectItem key={cur} value={cur}>
+          <SelectItem key={cur} value={cur} className="data-[highlighted]:bg-custom-beige">
             <Image
               src={
                 cur === 'en' ? '/images/common/english-flag.svg' : '/images/common/german-flag.svg'
