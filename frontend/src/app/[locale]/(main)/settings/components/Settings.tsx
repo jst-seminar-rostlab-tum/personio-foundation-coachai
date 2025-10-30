@@ -194,7 +194,7 @@ export default function Settings({ userProfile }: SettingsProps) {
                   </div>
                   <div className="flex items-center">
                     <UpdateEmailHandler>
-                      <Button variant="outline" className="w-full">
+                      <Button variant="default" className="w-full">
                         <Mail className="w-4 h-4" />
                         <span className="hidden sm:inline">{t('updateEmail')}</span>
                       </Button>

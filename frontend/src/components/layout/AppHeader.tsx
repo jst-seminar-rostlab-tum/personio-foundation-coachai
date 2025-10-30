@@ -52,7 +52,7 @@ export function AppHeader() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 bg-custom-beige z-50 shadow">
+      <header className="fixed top-0 left-0 right-0 bg-marigold-5 z-50 shadow">
         <div className="flex h-16 items-center justify-between mx-auto px-[clamp(1.25rem,4vw,4rem)] max-w-7xl">
           <div className="flex items-center gap-3">
             <Link
