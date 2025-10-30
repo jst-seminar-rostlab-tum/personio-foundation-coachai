@@ -24,7 +24,7 @@ function getNamespaceFromPath(path: string): string {
     privacy: 'PrivacyPolicy',
     session: 'Session',
     settings: 'Settings',
-    terms: 'TermsOfService',
+    'data-processing': 'DataProcessingPolicy',
     contributors: 'Contributors',
   };
 
