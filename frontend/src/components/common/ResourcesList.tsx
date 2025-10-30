@@ -55,12 +55,12 @@ export default function ResourcesList({
   return (
     <div
       ref={containerRef}
-      className={`grid grid-cols-1 ${columns > 1 ? `md:grid-cols-${columns}` : ''} gap-2 ${enableScroll ? 'overflow-y-auto' : ''}`}
+      className={`grid grid-cols-1 ${columns > 1 ? `md:grid-cols-${columns}` : ''} gap-2 ${enableScroll ? 'overflow-y-auto' : ''} items-stretch`}
       style={enableScroll ? { maxHeight } : undefined}
     >
       {resources.map((resource, index) => {
         return (
-          <div key={resource.id || index} data-resource-item>
+          <div key={resource.id || index} data-resource-item className="flex">
             <QuoteResourceItem resource={resource} showCopyButton />
           </div>
         );

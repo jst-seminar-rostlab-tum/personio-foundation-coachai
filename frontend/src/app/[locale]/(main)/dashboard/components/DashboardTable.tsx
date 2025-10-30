@@ -133,7 +133,7 @@ export default function DashboardTable({ scenarios, totalScenarios, limit }: Das
   ];
 
   if (!rows.length) {
-    return <EmptyListComponent itemType="conversationScenario" />;
+    return <EmptyListComponent itemType={tConversationScenario('emptyListItemType')} />;
   }
 
   return (
