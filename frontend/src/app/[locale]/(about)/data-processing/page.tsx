@@ -7,7 +7,7 @@ import React from 'react';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
-  return generateDynamicMetadata(locale, '/terms', false);
+  return generateDynamicMetadata(locale, '/data-processing', false);
 }
 
 export default async function DataProcessingPage() {

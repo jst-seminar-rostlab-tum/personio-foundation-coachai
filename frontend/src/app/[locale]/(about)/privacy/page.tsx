@@ -25,66 +25,68 @@ type Section = {
 
 type Sections = Record<string, Section>;
 
+type Segment = { type: 'para'; lines: string[] } | { type: 'list'; items: string[] };
+
+const TEXT_CLASSES = 'text-base leading-loose whitespace-pre-line break-words' as const;
+const BULLET_PREFIX = '●\t' as const;
+
 function toArray(value?: string | string[]): string[] {
   if (value == null) return [];
-  if (Array.isArray(value)) return value;
-  return [value];
+  return Array.isArray(value) ? value : [value];
 }
 
-function Paragraph({ text, k }: { text: string; k: string }) {
-  if (!text) return null;
-
+function parseTextSegments(text: string): Segment[] {
   const lines = text.split('\n');
-  const textClasses = 'text-base leading-loose whitespace-pre-line break-words';
+  const segments: Segment[] = [];
+  let current: Segment | null = null;
 
-  type Seg = { type: 'para'; lines: string[] } | { type: 'list'; items: string[] };
-
-  const segments: Seg[] = [];
-  let current: Seg | null = null;
-
-  for (const raw of lines) {
-    const isBullet = raw.startsWith('●\t');
+  for (const line of lines) {
+    const isBullet = line.startsWith(BULLET_PREFIX);
 
     if (isBullet) {
-      // close a paragraph if we were in one
-      if (current && current.type === 'para') {
+      if (current?.type === 'para') {
         segments.push(current);
         current = null;
       }
-      // start / continue a list
       if (!current || current.type !== 'list') {
         current = { type: 'list', items: [] };
       }
-      current.items.push(raw.replace(/^●\t/, '').trim());
+      current.items.push(line.slice(BULLET_PREFIX.length).trim());
     } else {
-      // close a list if we were in one
-      if (current && current.type === 'list') {
+      if (current?.type === 'list') {
         segments.push(current);
         current = null;
       }
-      // start / continue a paragraph
       if (!current || current.type !== 'para') {
         current = { type: 'para', lines: [] };
       }
-      current.lines.push(raw);
+      current.lines.push(line);
     }
   }
+
   if (current) segments.push(current);
+  return segments;
+}
+
+const Paragraph = React.memo<{ text: string; k: string }>(({ text, k }) => {
+  if (!text) return null;
+
+  const segments = parseTextSegments(text);
 
   return (
-    <div key={k} className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       {segments.map((seg, i) => {
         if (seg.type === 'para') {
           const block = seg.lines.join('\n').trim();
-          if (!block) return null; // avoid empty <p> from blank separators
+          if (!block) return null;
           return (
-            <p key={`${k}-p-${i}`} className={textClasses}>
+            <p key={`${k}-p-${i}`} className={TEXT_CLASSES}>
               {block}
             </p>
           );
         }
         return (
-          <ul key={`${k}-ul-${i}`} className={`list-disc pl-6 space-y-1 ${textClasses}`}>
+          <ul key={`${k}-ul-${i}`} className={`list-disc pl-6 space-y-1 ${TEXT_CLASSES}`}>
             {seg.items.map((item, j) => (
               <li key={`${k}-li-${i}-${j}`}>{item}</li>
             ))}
@@ -93,58 +95,72 @@ function Paragraph({ text, k }: { text: string; k: string }) {
       })}
     </div>
   );
-}
+});
+
+Paragraph.displayName = 'Paragraph';
+
+const Topic = React.memo<{ topic: Topic; sectionKey: string; idx: number }>(
+  ({ topic, sectionKey, idx }) => {
+    const topicParas = toArray(topic.content);
+    return (
+      <div className="flex flex-col gap-3">
+        {topic.heading && <h3 className="text-lg font-semibold">{topic.heading}</h3>}
+        {topicParas.map((tp, j) => (
+          <Paragraph
+            key={`${sectionKey}-topic-${idx}-${j}`}
+            k={`${sectionKey}-topic-${idx}-${j}`}
+            text={tp}
+          />
+        ))}
+      </div>
+    );
+  }
+);
+
+Topic.displayName = 'Topic';
+
+const SectionContent = React.memo<{ section: Section; sectionKey: string }>(
+  ({ section, sectionKey }) => {
+    const paragraphs = toArray(section.content);
+
+    return (
+      <div className="flex flex-col gap-4">
+        {section.title && <h2 className="text-xl font-semibold">{section.title}</h2>}
+
+        {paragraphs.map((p, i) => (
+          <Paragraph key={`${sectionKey}-p-${i}`} k={`${sectionKey}-p-${i}`} text={p} />
+        ))}
+
+        {section.topics && section.topics.length > 0 && (
+          <div className="flex flex-col gap-4">
+            {section.topics.map((topic, idx) => (
+              <Topic
+                key={`${sectionKey}-topic-${idx}`}
+                topic={topic}
+                sectionKey={sectionKey}
+                idx={idx}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+SectionContent.displayName = 'SectionContent';
 
 export default async function PrivacyPolicyPage() {
-  const t = await getTranslations('PrivacyPolicyCombined');
-  const tCommon = await getTranslations('Common');
-
+  const t = await getTranslations('PrivacyPolicy');
   const sections = (await t.raw('sections')) as Sections;
-  const sectionKeys = Object.keys(sections);
 
   return (
     <div className="flex flex-col justify-between min-h-screen">
       <section className="flex flex-col gap-8">
-        <h1 className="text-4xl font-semibold break-words">{tCommon('privacyPolicyCombined')}</h1>
-
-        {sectionKeys.map((key) => {
-          const sec = sections[key];
-          if (!sec) return null;
-
-          const paragraphs = toArray(sec.content);
-
-          return (
-            <div key={key} className="flex flex-col gap-4">
-              {sec.title && <h2 className="text-xl font-semibold">{sec.title}</h2>}
-
-              {paragraphs.map((p, i) => (
-                <Paragraph key={`${key}-p-${i}`} k={`${key}-p-${i}`} text={p} />
-              ))}
-
-              {Array.isArray(sec.topics) && sec.topics.length > 0 && (
-                <div className="flex flex-col gap-4">
-                  {sec.topics.map((topic, idx) => {
-                    const topicParas = toArray(topic.content);
-                    return (
-                      <div key={`${key}-topic-${idx}`} className="flex flex-col gap-3">
-                        {topic.heading && (
-                          <h3 className="text-lg font-semibold">{topic.heading}</h3>
-                        )}
-                        {topicParas.map((tp, j) => (
-                          <Paragraph
-                            key={`${key}-topic-${idx}-${j}`}
-                            k={`${key}-topic-${idx}-${j}`}
-                            text={tp}
-                          />
-                        ))}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        })}
+        <h1 className="text-4xl font-semibold break-words">{t('title')}</h1>
+        {Object.entries(sections).map(([key, section]) => (
+          <SectionContent key={key} section={section} sectionKey={key} />
+        ))}
       </section>
     </div>
   );

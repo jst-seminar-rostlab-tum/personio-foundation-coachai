@@ -40,13 +40,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.5,
     },
     {
-      url: `${BASE_URL}/terms`,
+      url: `${BASE_URL}/data-processing`,
       lastModified: new Date(),
       changeFrequency: 'yearly' as const,
       priority: 0.5,
     },
     {
-      url: `${BASE_URL}/de/terms`,
+      url: `${BASE_URL}/de/data-processing`,
       lastModified: new Date(),
       changeFrequency: 'yearly' as const,
       priority: 0.5,
