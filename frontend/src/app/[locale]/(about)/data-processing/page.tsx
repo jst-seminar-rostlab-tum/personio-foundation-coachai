@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
   return generateDynamicMetadata(locale, '/terms', false);
 }
 
-export default async function TermsOfServicePage() {
+export default async function DataProcessingPage() {
   const tCommon = await getTranslations('Common');
   return (
     <div className="flex flex-col justify-between min-h-screen">

@@ -96,7 +96,7 @@ function Paragraph({ text, k }: { text: string; k: string }) {
 }
 
 export default async function PrivacyPolicyPage() {
-  const t = await getTranslations('TermsOfService');
+  const t = await getTranslations('PrivacyPolicyCombined');
   const tCommon = await getTranslations('Common');
 
   const sections = (await t.raw('sections')) as Sections;

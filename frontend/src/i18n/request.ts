@@ -20,7 +20,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
     Session: (await import(`../../messages/${locale}/Session.json`)).default,
     Settings: (await import(`../../messages/${locale}/Settings.json`)).default,
     PrivacyPolicy: (await import(`../../messages/${locale}/PrivacyPolicy.json`)).default,
-    TermsOfService: (await import(`../../messages/${locale}/TermsOfService.json`)).default,
+    PrivacyPolicyCombined: (await import(`../../messages/${locale}/PrivacyPolicyCombined.json`))
+      .default,
     Contributors: (await import(`../../messages/${locale}/Contributors.json`)).default,
     PersonalizationOptions: (await import(`../../messages/${locale}/PersonalizationOptions.json`))
       .default,
