@@ -21,12 +21,16 @@ export default function SessionFooter({
     <div className="flex items-center justify-center gap-16 px-6 pt-4 pb-2 z-10">
       <Button
         size="iconLarge"
-        variant="outline"
+        variant="default"
         onClick={toggleMicrophone}
         disabled={isDisabled}
         aria-label="Toggle microphone"
       >
-        {isMicActive ? <Mic className="!w-6 !h-6" /> : <MicOff className="!w-6 !h-6" />}
+        {isMicActive ? (
+          <Mic className="!w-6 !h-6 text-marigold-5" />
+        ) : (
+          <MicOff className="!w-6 !h-6 text-marigold-5" />
+        )}
       </Button>
       <Button
         size="iconLarge"
