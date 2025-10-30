@@ -157,5 +157,6 @@
     "title": "Daily Session Limit Reached",
     "description": "You've reached your daily session limit. Come back tomorrow to continue your training!",
     "backToDashboard": "Back to Dashboard"
-  }
+  },
+  "emptyListItemType": "Conversation Scenario"
 }
