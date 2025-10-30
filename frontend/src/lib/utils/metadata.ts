@@ -21,10 +21,10 @@ function getNamespaceFromPath(path: string): string {
     'new-conversation-scenario': 'ConversationScenario',
     onboarding: 'Onboarding',
     preparation: 'Preparation',
-    privacy: 'PrivacyPolicy',
+    privacy: 'PrivacyPolicyCombined',
     session: 'Session',
     settings: 'Settings',
-    terms: 'TermsOfService',
+    dataProcessing: 'DataProcessingPolicy',
     contributors: 'Contributors',
   };
 
