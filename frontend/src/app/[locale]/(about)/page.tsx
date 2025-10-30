@@ -7,6 +7,8 @@ import { generateMetadata as generateDynamicMetadata } from '@/lib/utils/metadat
 import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import type { Metadata } from 'next';
 import { HighlightedAppName } from '@/components/common/HighlightedAppName';
+import * as Sentry from '@sentry/nextjs';
+import { api } from '@/services/ApiServer';
 
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
@@ -192,6 +194,25 @@ export default async function AboutPage() {
             </div>
           </div>
         </section>
+
+        <button
+          onClick={() => {
+            console.warn('Triggering Sentry Frontend Error');
+            Sentry.captureException(new Error('Test error from Next.js frontend'));
+          }}
+          className="p-2 bg-red-500 text-white rounded"
+        >
+          Trigger Sentry Frontend Error
+        </button>
+        <button
+          onClick={() => {
+            api.get('/test-error');
+            console.warn('Triggering Sentry Backend Error');
+          }}
+          className="p-2 bg-red-500 text-white rounded"
+        >
+          Trigger Sentry Backend Error
+        </button>
       </div>
     </div>
   );

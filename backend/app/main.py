@@ -2,6 +2,7 @@ import logging
 import sys
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import NoReturn
 
 import sentry_sdk
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -104,3 +105,8 @@ app.include_router(review_route.router)
 app.include_router(realtime_session_route.router)
 app.include_router(signed_urls_route.router)
 app.include_router(live_feedback_route.router)
+
+
+@app.get('/test-error')
+def trigger_error() -> NoReturn:
+    raise Exception('Test error from FastAPI backend')
