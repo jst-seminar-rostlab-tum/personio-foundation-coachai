@@ -66,8 +66,14 @@
   "aiGeneratedDisclaimer": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich unten bereitgestellten Quellen generiert",
   "aiGeneratedDisclaimer2": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich auf der Vorbereitungsseite bereitgestellten Quellen generiert",
   "help": "Hilfe",
+  "support": "Support",
+  "contact": "Kontakt",
   "videoModal": {
     "title": "Wie man CoachAI verwendet",
     "description": "Schauen Sie sich dieses Tutorial an, um zu lernen, wie Sie das Beste aus Ihren Trainingssitzungen herausholen."
+  },
+  "contactModal": {
+    "title": "Kontaktieren Sie uns",
+    "description": "Wenn Sie Fragen haben, kontaktieren Sie uns unter"
   }
 }
