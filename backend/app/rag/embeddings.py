@@ -32,8 +32,8 @@ def get_embedding_model(
     """
     if model_type == 'vertexai':
         if not credentials:
-            raise ValueError('No GEMINI_API_KEY to create embedding model')
-        return VertexAIEmbeddings(model_name='text-embedding-004', credentials=credentials)
+            raise ValueError('No VertexAI Credentials to create embedding model')
+        return VertexAIEmbeddings(model_name='text-embedding-005', credentials=credentials)
     elif model_type == 'gemini':
         if not settings.GEMINI_API_KEY:
             raise ValueError('No GEMINI_API_KEY to create embedding model')
