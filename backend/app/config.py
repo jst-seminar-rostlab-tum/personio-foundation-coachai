@@ -75,6 +75,8 @@ class Settings(BaseSettings):
     VERTEXAI_LOCATION: str = 'europe-west9'
     VERTEXAI_MAX_TOKENS: int = 8192  # Max tokens for VertexAI in dev mode
 
+    SENTRY_DSN: str | None = None
+
     @property
     def mock_user_data(self) -> MockUser:
         return MockUser(
