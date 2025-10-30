@@ -31,7 +31,7 @@ class TestScenarioPreparationService(unittest.TestCase):
     def tearDown(self) -> None:
         self.session.rollback()
 
-    def fake_session_gen(self) -> Generator[DBSession, None, None]:
+    def fake_session_gen(self) -> Generator[DBSession]:
         yield self.session
 
     def test_create_pending_preparation(self) -> None:
@@ -119,7 +119,7 @@ class TestScenarioPreparationService(unittest.TestCase):
                 },
             ],
         )
-        self.assertIsInstance(result.document_names, list)
+        self.assertIsInstance(result.documents, list)
 
     @patch(
         'app.services.scenario_preparation.scenario_preparation_service.generate_key_concept',

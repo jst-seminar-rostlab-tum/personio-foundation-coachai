@@ -100,7 +100,7 @@ export default function DashboardTable({ scenarios, totalScenarios, limit }: Das
             alt={tConversationScenario(`customize.persona.personas.${row.personaName}.name`)}
             width={28}
             height={28}
-            className="rounded-full bg-white"
+            className="rounded-full bg-custom-beige"
           />
           <span className="text-sm">
             {tConversationScenario(`customize.persona.personas.${row.personaName}.name`)}
@@ -133,11 +133,11 @@ export default function DashboardTable({ scenarios, totalScenarios, limit }: Das
   ];
 
   if (!rows.length) {
-    return <EmptyListComponent itemType="conversationScenario" />;
+    return <EmptyListComponent itemType={tConversationScenario('emptyListItemType')} />;
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-bw-20 mb-4 max-w-full">
+    <div className="overflow-x-auto rounded-lg border border-bw-40 mb-4 max-w-full">
       <ClickableTable
         columns={columns}
         data={rows}

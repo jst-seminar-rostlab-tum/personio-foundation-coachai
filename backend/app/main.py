@@ -3,9 +3,14 @@ import sys
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+import sentry_sdk
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.httpx import HttpxIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
 
@@ -27,6 +32,19 @@ from app.routers import (
 )
 from app.services.data_retention_service import cleanup_old_session_turns
 
+if settings.stage == 'dev' and settings.SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        integrations=[
+            FastApiIntegration(),
+            SqlalchemyIntegration(),
+            HttpxIntegration(),
+            LoggingIntegration(level=logging.INFO, event_level=logging.ERROR),
+        ],
+        traces_sample_rate=0.1,
+        enable_tracing=True,
+    )
+
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
     stream=sys.stdout,
@@ -47,7 +65,7 @@ def scheduled_cleanup() -> None:
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     scheduler.add_job(scheduled_cleanup, 'cron', hour=3, minute=0)
     scheduler.start()
     yield

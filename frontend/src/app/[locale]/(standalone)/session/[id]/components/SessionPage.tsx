@@ -86,7 +86,7 @@ export default function SessionPageComponent({
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="sticky top-0 z-11 bg-white">
+      <div className="sticky top-0 z-11">
         <SessionHeader
           characterName={personaName}
           sessionLabel={categoryName}
@@ -97,9 +97,7 @@ export default function SessionPageComponent({
 
       <div className="flex-1 relative p-4 overflow-y-auto mb-4 md:mb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         <SessionMessages messages={messages} />
-        {isDisconnected && (
-          <div className="absolute inset-0 backdrop-blur-sm bg-background z-10"></div>
-        )}
+        {isDisconnected && <div className="absolute inset-0 backdrop-blur-sm z-10"></div>}
       </div>
 
       <SessionLiveFeedback liveFeedbacks={sessionLiveFeedbacks} />
@@ -114,7 +112,7 @@ export default function SessionPageComponent({
 
       {isDisconnected && (
         <div className="fixed inset-0 flex flex-col items-center justify-center z-50 pointer-events-none">
-          <Loader2 className="h-10 w-10 animate-spin text-marigold-50 mb-4" />
+          <Loader2 className="h-10 w-10 animate-spin text-forest-90 mb-4" />
           <div className="text-center text-bw-70 font-medium">
             {hangupInProgress && <p>{t('hangingUp')}</p>}
             {isConnecting && <p>{t('connectingMessage')}</p>}
@@ -126,7 +124,7 @@ export default function SessionPageComponent({
       <audio ref={remoteAudioRef} autoPlay playsInline />
 
       <div className="mt-4 mb-4 text-center">
-        <p className="text-xs text-bw-40">{tCommon('aiDisclaimer')}</p>
+        <p className="text-xs text-bw-50">{tCommon('aiDisclaimer')}</p>
       </div>
     </div>
   );

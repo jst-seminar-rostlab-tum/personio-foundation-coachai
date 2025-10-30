@@ -5,6 +5,7 @@ import { Home, RefreshCw, ServerCrash } from 'lucide-react';
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import * as Sentry from '@sentry/nextjs';
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
@@ -17,6 +18,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
 
   useEffect(() => {
     console.error(error);
+    Sentry.captureException(error);
   }, [error]);
 
   const handleTryAgain = () => {
@@ -35,7 +37,7 @@ export default function Error({ error, reset }: ErrorPageProps) {
             <h1 className="text-2xl font-bold text-bw-70">{tErrorPage('title')}</h1>
           </div>
 
-          <p className="text-bw-40 text-sm leading-relaxed max-w-sm">{tErrorPage('description')}</p>
+          <p className="text-bw-70 text-sm leading-relaxed max-w-sm">{tErrorPage('description')}</p>
 
           <div className="flex md:flex-row flex-col gap-3 w-full max-w-xs justify-center">
             <Button onClick={handleTryAgain}>

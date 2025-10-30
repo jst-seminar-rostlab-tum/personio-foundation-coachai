@@ -15,7 +15,12 @@
     "title": "Ressourcen",
     "subtitle": "Hilfreiche Materialien zum Herunterladen, um Ihr Wissen zu vertiefen.",
     "noResources": "Keine Ressourcen für dieses Szenario verfügbar.",
-    "downloadError": "Fehler beim Herunterladen der Ressource. Bitte versuchen Sie es erneut."
+    "downloadError": "Fehler beim Herunterladen der Ressource. Bitte versuchen Sie es erneut.",
+    "viewSource": "Quelle anzeigen",
+    "by": "von",
+    "page": "Seite",
+    "copyQuote": "Zitat kopieren",
+    "copyError": "Fehler beim Kopieren des Zitats"
   },
   "saving": "Speichern...",
   "save": "Speichern",
@@ -43,7 +48,7 @@
   "submitting": "Wird abgegeben...",
   "goalsAchieved": "Erreichte Ziele",
   "privacyPolicy": "Datenschutzerklärung",
-  "termsOfService": "Nutzungsbedingungen",
+  "dataProcessingPolicy": "Datenverarbeitung",
   "contributors": "Mitwirkende",
   "structure": "Struktur",
   "empathy": "Empathie",
@@ -59,5 +64,16 @@
   "emailInputError": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
   "aiDisclaimer": "KI-Systeme können unbeabsichtigt schädliche oder anstößige Inhalte produzieren",
   "aiGeneratedDisclaimer": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich unten bereitgestellten Quellen generiert",
-  "aiGeneratedDisclaimer2": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich auf der Vorbereitungsseite bereitgestellten Quellen generiert"
+  "aiGeneratedDisclaimer2": "Dieser Text wurde mithilfe von KI unter Verwendung der im Ressourcenbereich auf der Vorbereitungsseite bereitgestellten Quellen generiert",
+  "help": "Hilfe",
+  "support": "Support",
+  "contact": "Kontakt",
+  "videoModal": {
+    "title": "Wie man CoachAI verwendet",
+    "description": "Schauen Sie sich dieses Tutorial an, um zu lernen, wie Sie das Beste aus Ihren Trainingssitzungen herausholen."
+  },
+  "contactModal": {
+    "title": "Kontaktieren Sie uns",
+    "description": "Wenn Sie Fragen haben, kontaktieren Sie uns unter"
+  }
 }

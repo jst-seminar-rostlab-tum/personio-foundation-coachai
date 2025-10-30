@@ -32,7 +32,7 @@ export function DeleteConfirmButton({ onConfirm, isButton = false }: DeleteConfi
         ) : (
           <button
             type="button"
-            className="text-bw-40 hover:text-flame-50 transition-colors cursor-pointer"
+            className="text-bw-70 hover:text-flame-50 transition-colors cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               setOpen(true);

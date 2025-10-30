@@ -231,7 +231,7 @@ def create_pending_preparation(scenario_id: UUID, db_session: DBSession) -> Scen
 def generate_scenario_preparation(
     preparation_id: UUID,
     new_preparation: ScenarioPreparationCreate,
-    session_generator_func: Callable[[], Generator[DBSession, None, None]],
+    session_generator_func: Callable[[], Generator[DBSession]],
 ) -> ScenarioPreparation:
     """
     Generate scenario preparation data including objectives, checklist, and key concepts.
@@ -273,14 +273,14 @@ def generate_scenario_preparation(
         )
 
         # hr_docs_context is used for LLM prompt; doc_names is available for future use
-        hr_docs_context, doc_names = get_hr_docs_context(
+        hr_docs_context, _, documents = get_hr_docs_context(
             persona=new_preparation.persona,
             situational_facts=new_preparation.situational_facts,
             category=new_preparation.category,
         )
 
         has_error = False
-        preparation.document_names = doc_names
+        preparation.documents = documents
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_key_concepts = executor.submit(

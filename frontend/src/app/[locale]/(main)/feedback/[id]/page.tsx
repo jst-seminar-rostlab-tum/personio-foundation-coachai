@@ -21,7 +21,7 @@ export default async function FeedbackDetailPage({ params }: FeedbackPageProps) 
     <div>
       <FeedbackDetail sessionId={id} />
       <div className="mt-4 text-center">
-        <p className="text-xs text-bw-40">{tCommon('aiDisclaimer')}</p>
+        <p className="text-xs text-bw-50">{tCommon('aiDisclaimer')}</p>
       </div>
     </div>
   );

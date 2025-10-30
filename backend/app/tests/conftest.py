@@ -6,7 +6,7 @@ from app.services.session_feedback.session_feedback_llm import load_session_feed
 
 
 @pytest.fixture(autouse=True)
-def clear_config_cache() -> Generator[None, None, None]:
+def clear_config_cache() -> Generator[None]:
     load_session_feedback_config.cache_clear()
     yield
     load_session_feedback_config.cache_clear()

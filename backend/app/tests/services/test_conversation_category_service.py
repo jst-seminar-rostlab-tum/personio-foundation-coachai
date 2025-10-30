@@ -37,7 +37,7 @@ class TestConversationCategoryService(unittest.TestCase):
         cls.app = FastAPI()
 
         # Override the database dependency to use the in-memory database
-        def override_get_db() -> Generator[DBSession, None, None]:
+        def override_get_db() -> Generator[DBSession]:
             with cls.SessionLocal() as session:
                 yield session
 

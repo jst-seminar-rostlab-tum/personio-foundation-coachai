@@ -85,9 +85,21 @@ def get_mock_session_feedback() -> SessionFeedback:
         tone_analysis={'positive': 70, 'neutral': 20, 'negative': 10},
         overall_score=4.3,
         full_audio_filename='full_audio_123.mp3',
-        document_names=[
-            'Teamwork: An Open Access Practical Guide',
-            'Psychology of Human Relations',
+        documents=[
+            {
+                'quote': 'Example quote 1',
+                'title': 'Teamwork: An Open Access Practical Guide',
+                'page': 5,
+                'author': 'Andrew M. Clark',
+                'chapter': 'Chapter 10',
+            },
+            {
+                'quote': 'Example quote 2',
+                'title': 'Psychology of Human Relations',
+                'page': 10,
+                'author': 'Stevy Scarbrough',
+                'chapter': 'Chapter 5',
+            },
         ],
         speak_time_percent=60.5,
         questions_asked=5,
@@ -161,7 +173,7 @@ class AdvisorService:
         self,
         session_feedback_id: UUID,
         user_profile_id: UUID,
-        session_generator_func: Callable[[], Generator[DBSession, None, None]],
+        session_generator_func: Callable[[], Generator[DBSession]],
     ) -> None:
         session_gen = session_generator_func()
         try:

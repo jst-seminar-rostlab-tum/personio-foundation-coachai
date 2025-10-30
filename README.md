@@ -4,10 +4,15 @@ A simple full-stack application built with Next.js, FastAPI, and PostgreSQL.
 
 
 ### Frontend
-- Next.js 15.3.2
+- Next.js 15.5.4 with App Router
 - TypeScript
-- TailwindCSS
-- SWR for data fetching
+- TailwindCSS v4
+- Axios for HTTP requests with client/server separation
+- Supabase for authentication
+- Next-intl for internationalization
+- Zustand for state management
+- React Hook Form with Zod validation
+- schadcn/ui Components
 
 ### Backend
 - FastAPI
@@ -18,8 +23,8 @@ A simple full-stack application built with Next.js, FastAPI, and PostgreSQL.
 ## Prerequisites
 
 - Docker and Docker Compose
-- Node.js 18+ (for local frontend development)
-- Python 3.11+ (for local backend development)
+- Node.js 24 (for local frontend development)
+- Python 3.13 (for local backend development)
 
 ## Getting Started
 
@@ -51,10 +56,15 @@ The frontend is a Next.js application with TypeScript. Key features:
 - Responsive design with TailwindCSS
 
 Directory structure:
-- `src/app/`: Next.js app directory with pages
-- `src/components/`: Components directory
+- `src/app/`: Next.js app directory with pages, API routes, and page-specific components
+- `src/components/`: Reusable UI components (common, layout, ui)
 - `src/interfaces/`: TypeScript interfaces for type safety
-- `src/lib/`: Utility functions and API clients
+- `src/lib/`: Utility functions, API clients, and constants
+- `src/services/`: API service layer for backend communication (ApiClient/ApiServer)
+- `src/store/`: Zustand state management stores
+- `src/contexts/`: React contexts for global state
+- `src/i18n/`: Internationalization configuration
+- `src/styles/`: Global styles and TailwindCSS configuration
 
 ### Backend Development
 

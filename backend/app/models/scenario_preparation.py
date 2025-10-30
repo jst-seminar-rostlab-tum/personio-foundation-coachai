@@ -18,7 +18,7 @@ class ScenarioPreparation(CamelModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     scenario_id: UUID = Field(foreign_key='conversationscenario.id', ondelete='CASCADE')
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
-    document_names: list[str] = Field(default_factory=list, sa_column=Column(JSON))
+    documents: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     key_concepts: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
     prep_checklist: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: ScenarioPreparationStatus = Field(default=ScenarioPreparationStatus.pending)
