@@ -241,7 +241,7 @@ export function SignUpForm() {
                         {tLogin.rich('SignUpTab.agreeToTermsCheckboxLabel', {
                           terms: (chunks) => (
                             <Link
-                              href="/terms"
+                              href="/data-processing"
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-bw-50 hover:text-forest-90 underline"
@@ -287,7 +287,7 @@ export function SignUpForm() {
         />
       )}
 
-      <PrivacyDialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}></PrivacyDialog>
+      <PrivacyDialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog} />
     </>
   );
 }

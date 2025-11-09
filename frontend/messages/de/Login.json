@@ -10,7 +10,7 @@
     "passwordInputRequirementThreeLabel": "Mindestens ein Sonderzeichen (!@#$%^&*)",
     "gdprAdherenceText": "Wir halten uns strikt an die DSGVO, indem wir nur erforderliche Daten erheben, nichts Unnötiges speichern und Daten so schnell wie möglich löschen. ",
     "readMoreOnGdprLink": "Mehr erfahren",
-    "agreeToTermsCheckboxLabel": "Ich stimme den <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu",
+    "agreeToTermsCheckboxLabel": "Ich stimme der <terms>Datenverarbeitung</terms> und der <privacy>Datenschutzerklärung</privacy> zu",
     "signUpButtonLabel": "Registrieren",
     "signUpWithGoogleButtonLabel": "Oder mit Google registrieren",
     "genericError": "Ein Fehler ist während der Registrierung aufgetreten",

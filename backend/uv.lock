@@ -333,6 +333,7 @@ dependencies = [
     { name = "python-jose" },
     { name = "python-multipart" },
     { name = "pytz" },
+    { name = "sentry-sdk", extra = ["fastapi"] },
     { name = "sqlalchemy" },
     { name = "sqlmodel" },
     { name = "supabase" },
@@ -387,6 +388,7 @@ requires-dist = [
     { name = "python-jose", specifier = ">=3.3.0" },
     { name = "python-multipart", specifier = ">=0.0.6" },
     { name = "pytz", specifier = ">=2025.0" },
+    { name = "sentry-sdk", extras = ["fastapi"], specifier = ">=2.41.0" },
     { name = "sqlalchemy", specifier = ">=2.0.22" },
     { name = "sqlmodel", specifier = ">=0.0.24" },
     { name = "supabase", specifier = "~=2.18.0" },
@@ -2755,6 +2757,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/68/47/aea50a61d85bc07a34e6e7145aad7bd96c5671a86a32618059bad0cbc73b/sentry_sdk-2.41.0.tar.gz", hash = "sha256:e7af3f4d7f8bac4c56fbaf95adb0d111f061cce58d5df91cfcd4e69782759b10", size = 343942, upload-time = "2025-10-09T14:12:21.132Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/71/58/175d0e4d93f62075a01f8aebe904b412c34a94a4517e5045d0a1d512aad0/sentry_sdk-2.41.0-py2.py3-none-any.whl", hash = "sha256:343cde6540574113d13d178d1b2093e011ac21dd55abd3a1ec7e540f0d18a5bd", size = 370606, upload-time = "2025-10-09T14:12:19.003Z" },
+]
+
+[package.optional-dependencies]
+fastapi = [
+    { name = "fastapi" },
 ]
 
 [[package]]

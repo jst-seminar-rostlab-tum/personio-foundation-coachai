@@ -38,6 +38,8 @@ dependencies = [
     "pytz>=2025.0",
     "pymupdf>=1.26.5",
     "supabase-auth>=2.12.3",
+    "gotrue>=2.12.4",
+    "sentry-sdk[fastapi]>=2.41.0",
 ]
 
 [tool.setuptools]
