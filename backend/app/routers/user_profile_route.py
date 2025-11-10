@@ -10,12 +10,13 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.connections.gcs_client import get_gcs_audio_manager
-from app.database import get_db_session
-from app.dependencies import require_admin, require_user
+from app.dependencies.auth import require_admin, require_user
+from app.dependencies.database import get_db_session
 from app.models.conversation_scenario import ConversationScenario
 from app.models.user_profile import UserProfile
 from app.schemas.user_profile import (
-    PaginatedUserRead,
+    UserDailySessionLimitUpdate,
+    UserListPaginatedRead,
     UserProfileExtendedRead,
     UserProfileRead,
     UserProfileReplace,
@@ -34,25 +35,29 @@ def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserS
 
 @router.get(
     '',
-    response_model=PaginatedUserRead,
+    response_model=UserListPaginatedRead,
     dependencies=[Depends(require_admin)],
 )
 def get_user_profiles(
+    requesting_user: Annotated[UserProfile, Depends(require_admin)],
     service: Annotated[UserService, Depends(get_user_service)],
     page: int = Query(1, ge=1),
-    page_size: int = Query(10, ge=1),
+    limit: int = Query(10, ge=1),
     email_substring: str | None = Query(
         None,
         description='Filter profiles by email substring',
         min_length=1,
         max_length=100,
     ),
-) -> PaginatedUserRead:
+) -> UserListPaginatedRead:
     """
     Retrieve all user profiles.
     """
     return service.get_user_profiles(
-        page=page, page_size=page_size, email_substring=email_substring
+        requesting_user_id=requesting_user.id,
+        page=page,
+        limit=limit,
+        email_substring=email_substring,
     )
 
 
@@ -180,3 +185,26 @@ def export_user_data(
     mem_zip.seek(0)
     headers = {'Content-Disposition': 'attachment; filename="user_data_export.zip"'}
     return StreamingResponse(mem_zip, media_type='application/zip', headers=headers)
+
+
+@router.patch(
+    '/{user_id}/daily-session-limit',
+    response_model=UserProfileRead,
+    dependencies=[Depends(require_admin)],
+)
+def update_daily_session_limit(
+    user_id: UUID,
+    data: UserDailySessionLimitUpdate,
+    service: Annotated[UserService, Depends(get_user_service)],
+) -> UserProfileRead:
+    return service.update_daily_session_limit(
+        user_id=user_id, daily_session_limit=data.daily_session_limit
+    )
+
+
+@router.get('/{user_id}', response_model=UserProfileRead, dependencies=[Depends(require_admin)])
+def get_user_profile_by_id(
+    user_id: UUID,
+    service: Annotated[UserService, Depends(get_user_service)],
+) -> UserProfileRead:
+    return service.get_user_profile_by_id(user_id=user_id, detailed=False)

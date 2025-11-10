@@ -1,7 +1,11 @@
-from fastapi import HTTPException
+from typing import Annotated
+
+from fastapi import Depends, HTTPException, status
+from sqlmodel import Session as DBSession
 from sqlmodel import Session as DBsession
 from sqlmodel import select
 
+from app.dependencies.database import get_db_session
 from app.enums.config_type import ConfigType
 from app.models.app_config import AppConfig
 from app.schemas.app_config import AppConfigCreate, AppConfigRead
@@ -121,3 +125,26 @@ class AppConfigService:
                 status_code=422,
                 detail=f"Value '{value}' cannot be typecasted to {config_type}",
             ) from None
+
+    def get_value(self, key: str) -> str | None:
+        statement = select(AppConfig.value).where(AppConfig.key == key)
+        return self.db.scalar(statement)
+
+    def get_default_daily_session_limit(self) -> int:
+        value = self.get_value('defaultDailyUserSessionLimit')
+
+        if value is None:
+            return 0
+
+        try:
+            return int(value)
+        except (TypeError, ValueError) as err:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            ) from err
+
+
+def get_app_config_service(
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> AppConfigService:
+    return AppConfigService(db_session)

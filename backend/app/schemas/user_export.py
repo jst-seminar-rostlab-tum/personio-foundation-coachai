@@ -7,20 +7,24 @@ class ExportUserProfile(BaseModel):
     user_id: str
     full_name: str
     email: str
-    phone_number: str | None
+    phone_number: str
     preferred_language_code: str
-    account_role: str
-    professional_role: str
     experience: str
     preferred_learning_style: str
-    updated_at: str | None
+    updated_at: str
+    last_logged_in: str
     store_conversations: bool
+    account_role: str
+    professional_role: str
+    current_streak_days: int
     total_sessions: int
     training_time: float
-    current_streak_days: int
     score_sum: float
     goals_achieved: int
-    num_remaining_daily_sessions: int
+    scenario_advice: dict
+    sessions_created_today: int
+    last_session_date: str
+    daily_session_limit: int | None
 
 
 class ExportUserGoal(BaseModel):

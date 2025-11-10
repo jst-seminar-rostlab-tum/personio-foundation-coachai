@@ -59,6 +59,7 @@ class UserProfileRead(CamelModel):
     last_session_date: date
     num_remaining_daily_sessions: int
     scenario_advice: ScenarioAdvice | dict
+    daily_session_limit: int
 
 
 class UserProfileExtendedRead(UserProfileRead):
@@ -69,17 +70,17 @@ class UserProfileExtendedRead(UserProfileRead):
 UserProfileExtendedRead.model_rebuild()
 
 
-class UserEmailRead(CamelModel):
+class UserProfilePaginatedRead(CamelModel):
     user_id: UUID
     email: str
 
 
-class PaginatedUserRead(CamelModel):
+class UserListPaginatedRead(CamelModel):
     page: int
     limit: int
     total_pages: int
     total_users: int
-    users: list[UserProfileRead] | list[UserProfileExtendedRead] | list[UserEmailRead]
+    users: list[UserProfilePaginatedRead]
 
 
 # Schema for reading User Statistics
@@ -91,3 +92,7 @@ class UserStatistics(CamelModel):
     goals_achieved: int  # summation of all goals achieved
     daily_session_limit: int
     num_remaining_daily_sessions: int
+
+
+class UserDailySessionLimitUpdate(CamelModel):
+    daily_session_limit: int | None

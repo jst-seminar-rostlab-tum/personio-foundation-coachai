@@ -5,7 +5,7 @@ from sqlmodel import SQLModel
 
 import app.models  # noqa: F401  # required to register SQLModel metadata
 from alembic import context
-from app.database import SQLALCHEMY_DATABASE_URL
+from app.dependencies.database import SQLALCHEMY_DATABASE_URL
 from app.models.hr_information import (
     HrInformation,  # noqa: F401  # required to register HrInformation model separately
 )

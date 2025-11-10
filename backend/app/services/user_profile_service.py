@@ -5,89 +5,41 @@ from uuid import UUID
 
 from fastapi import HTTPException, status
 from pydantic import ValidationError
+from sqlalchemy import update
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 from supabase import AuthError
 
-from app.database import get_supabase_client
+from app.dependencies.database import get_supabase_client
 from app.enums.account_role import AccountRole
 from app.enums.goal import Goal
-from app.models.app_config import AppConfig
 from app.models.user_confidence_score import UserConfidenceScore
 from app.models.user_goal import UserGoal
 from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
-    PaginatedUserRead,
     ScenarioAdvice,
-    UserEmailRead,
+    UserListPaginatedRead,
     UserProfileExtendedRead,
+    UserProfilePaginatedRead,
     UserProfileRead,
     UserProfileReplace,
     UserProfileUpdate,
     UserStatistics,
 )
+from app.services.app_config_service import AppConfigService
 from app.services.conversation_scenario_service import ConversationScenarioService
 
 
 class UserService:
     def __init__(self, db: DBSession) -> None:
         self.db = db
-
-    def _get_detailed_user_profile_response(self, user: UserProfile) -> UserProfileExtendedRead:
-        daily_session_limit = self.db.exec(
-            select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
-        ).first()
-        daily_session_limit = int(daily_session_limit) if daily_session_limit is not None else 0
-
-        # If session limit is not configured, assume limit is hit (safety feature)
-        if daily_session_limit == 0:
-            num_remaining_daily_sessions = 0
-        else:
-            num_remaining_daily_sessions = max(0, daily_session_limit - user.sessions_created_today)
-
-        try:
-            scenario_advice = ScenarioAdvice.model_validate(user.scenario_advice)
-        except ValidationError:
-            scenario_advice = {}
-
-        return UserProfileExtendedRead(
-            user_id=user.id,
-            full_name=user.full_name,
-            email=user.email,
-            phone_number=user.phone_number,
-            preferred_language_code=user.preferred_language_code,
-            account_role=user.account_role,
-            professional_role=user.professional_role,
-            experience=user.experience,
-            preferred_learning_style=user.preferred_learning_style,
-            goals=[goal.goal for goal in user.user_goals],
-            confidence_scores=[
-                ConfidenceScoreRead(
-                    confidence_area=cs.confidence_area,
-                    score=cs.score,
-                )
-                for cs in user.user_confidence_scores
-            ],
-            updated_at=user.updated_at,
-            store_conversations=user.store_conversations,
-            sessions_created_today=user.sessions_created_today,
-            last_session_date=user.last_session_date,
-            num_remaining_daily_sessions=num_remaining_daily_sessions,
-            scenario_advice=scenario_advice,
-        )
+        self.app_config_service = AppConfigService(db)
 
     def _get_user_profile_response(self, user: UserProfile) -> UserProfileRead:
-        daily_session_limit = self.db.exec(
-            select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
-        ).first()
-        daily_session_limit = int(daily_session_limit) if daily_session_limit is not None else 0
-
-        # If session limit is not configured, assume limit is hit (safety feature)
-        if daily_session_limit == 0:
-            num_remaining_daily_sessions = 0
-        else:
-            num_remaining_daily_sessions = max(0, daily_session_limit - user.sessions_created_today)
+        daily_session_limit = user.daily_session_limit
+        if daily_session_limit is None:
+            daily_session_limit = self.app_config_service.get_default_daily_session_limit()
 
         try:
             scenario_advice = ScenarioAdvice.model_validate(user.scenario_advice)
@@ -108,43 +60,67 @@ class UserService:
             store_conversations=user.store_conversations,
             sessions_created_today=user.sessions_created_today,
             last_session_date=user.last_session_date,
-            num_remaining_daily_sessions=num_remaining_daily_sessions,
+            num_remaining_daily_sessions=max(0, daily_session_limit - user.sessions_created_today),
             scenario_advice=scenario_advice,
+            daily_session_limit=daily_session_limit,
+        )
+
+    def _get_detailed_user_profile_response(self, user: UserProfile) -> UserProfileExtendedRead:
+        user_profile_read = self._get_user_profile_response(user)
+
+        return UserProfileExtendedRead(
+            **user_profile_read.model_dump(),
+            goals=[goal.goal for goal in user.user_goals],
+            confidence_scores=[
+                ConfidenceScoreRead(
+                    confidence_area=cs.confidence_area,
+                    score=cs.score,
+                )
+                for cs in user.user_confidence_scores
+            ],
         )
 
     def get_user_profiles(
-        self, page: int = 1, page_size: int = 10, email_substring: str | None = None
-    ) -> PaginatedUserRead:
+        self,
+        requesting_user_id: UUID,
+        page: int = 1,
+        limit: int = 10,
+        email_substring: str | None = None,
+    ) -> UserListPaginatedRead:
         statement = select(UserProfile)
         if email_substring:
             statement = statement.where(col(UserProfile.email).like(f'%{email_substring}%'))
+
+        statement = statement.where(col(UserProfile.id) != requesting_user_id)
+
+        statement = statement.where(col(UserProfile.account_role) != AccountRole.admin)
 
         statement = statement.order_by(col(UserProfile.updated_at).desc())
 
         all_users = self.db.exec(statement).all()
         total_users = len(all_users)
         if total_users == 0:
-            return PaginatedUserRead(
+            return UserListPaginatedRead(
                 page=page,
-                limit=page_size,
+                limit=limit,
                 total_pages=1,
                 total_users=0,
                 users=[],
             )
 
-        total_pages = ceil(total_users / page_size)
+        total_pages = ceil(total_users / limit)
         if page < 1 or page > total_pages:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Invalid page number.',
             )
 
-        users = all_users[(page - 1) * page_size : (page) * page_size]
-        user_list = [UserEmailRead(user_id=user.id, email=user.email) for user in users]
+        users = all_users[(page - 1) * limit : page * limit]
+        user_list = [UserProfilePaginatedRead(user_id=user.id, email=user.email) for user in users]
 
-        return PaginatedUserRead(
+        return UserListPaginatedRead(
             page=page,
-            limit=page_size,
+            limit=limit,
             total_pages=total_pages,
             total_users=total_users,
             users=user_list,
@@ -173,16 +149,10 @@ class UserService:
                 detail='User profile not found.',
             )
 
-        daily_session_limit = self.db.exec(
-            select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
-        ).first()
-        daily_session_limit = int(daily_session_limit) if daily_session_limit is not None else 0
+        daily_session_limit = user.daily_session_limit
+        if daily_session_limit is None:
+            daily_session_limit = self.app_config_service.get_default_daily_session_limit()
 
-        # If session limit is not configured, assume limit is hit (safety feature)
-        if daily_session_limit == 0:
-            num_remaining_daily_sessions = 0
-        else:
-            num_remaining_daily_sessions = max(0, daily_session_limit - user.sessions_created_today)
         return UserStatistics(
             total_sessions=user.total_sessions,
             training_time=user.training_time,
@@ -190,7 +160,7 @@ class UserService:
             score_sum=user.score_sum,
             goals_achieved=user.goals_achieved,
             daily_session_limit=daily_session_limit,
-            num_remaining_daily_sessions=num_remaining_daily_sessions,
+            num_remaining_daily_sessions=max(0, daily_session_limit - user.sessions_created_today),
         )
 
     def _update_goals(self, user_id: UUID, goals: list[Goal]) -> None:
@@ -370,3 +340,21 @@ class UserService:
             )
         else:
             return self._delete_user(user_profile.id)
+
+    def update_daily_session_limit(
+        self, user_id: UUID, daily_session_limit: int | None
+    ) -> UserProfileRead:
+        statement = (
+            update(UserProfile)
+            .where(UserProfile.id == user_id)
+            .values(daily_session_limit=daily_session_limit)
+        )
+
+        result = self.db.exec(statement)
+
+        if result.rowcount == 0:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
+
+        self.db.commit()
+
+        return self.get_user_profile_by_id(user_id, detailed=False)

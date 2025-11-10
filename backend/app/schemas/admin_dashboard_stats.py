@@ -9,4 +9,4 @@ class AdminDashboardStatsRead(CamelModel):
     total_trainings: int = Field(..., description='Total number of trainig sessions')
     total_reviews: int = Field(..., description='Number of reviews')
     score_sum: float = Field(..., description='Sum of all scores')
-    daily_session_limit: int  # daily session limit retrieved from app_config table
+    default_daily_session_limit: int

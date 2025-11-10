@@ -6,7 +6,7 @@ from fastapi import BackgroundTasks, HTTPException
 from sqlmodel import Session as DBSession
 from sqlmodel import func, select
 
-from app.database import get_db_session
+from app.dependencies.database import get_db_session
 from app.enums.account_role import AccountRole
 from app.enums.language import LanguageCode
 from app.models.conversation_category import ConversationCategory

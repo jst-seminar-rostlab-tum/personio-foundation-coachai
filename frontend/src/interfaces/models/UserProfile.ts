@@ -11,6 +11,8 @@ export interface UserProfile {
   storeConversations?: boolean;
   confidenceScores?: ConfidenceScore[];
   scenarioAdvice: ScenarioAdvice;
+  sessionsCreatedToday?: number;
+  dailySessionLimit?: number;
 }
 
 export type UserProfileUpdate = Omit<
@@ -30,7 +32,6 @@ export enum AccountRole {
 
 export interface UserPaginationResponse {
   page: number;
-  limit: number;
   totalPages: number;
   totalUsers: number;
   users: UserProfile[];

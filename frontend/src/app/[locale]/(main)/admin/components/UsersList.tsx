@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -22,35 +22,35 @@ import type { UserProfile as User, UserPaginationResponse } from '@/interfaces/m
 import { showErrorToast } from '@/lib/utils/toast';
 import { adminService } from '@/services/AdminService';
 import { useAdminStatsStore } from '@/store/AdminStatsStore';
+import { USER_LIST_PAGE, USER_LIST_LIMIT } from '../constants/UsersList';
+import UserDialog from './UserDialog';
 
 export default function UsersList({
   users,
   totalUsers: initialTotalUsers,
-  page,
-  limit,
 }: UserPaginationResponse) {
   const [userList, setUserList] = useState<User[]>(users);
-  const [currentPage, setCurrentPage] = useState(page);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [totalUsers, setTotalUsers] = useState(initialTotalUsers);
-  const [hasMore, setHasMore] = useState(users.length < initialTotalUsers);
+  const [limit, setLimit] = useState(USER_LIST_LIMIT);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { setStats } = useAdminStatsStore();
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
 
-  const fetchUsers = async (pageNum: number, searchStr: string) => {
+  const fetchUsers = async (newLimit: number, searchStr: string) => {
     setLoading(true);
     try {
       const data = await ClientUserProfileService.getPaginatedUsers(
         api,
-        pageNum,
-        limit,
+        USER_LIST_PAGE,
+        newLimit,
         searchStr || undefined
       );
-      setUserList(data.users);
       setTotalUsers(data.totalUsers);
-      setHasMore((pageNum - 1) * limit + data.users.length < data.totalUsers);
+      setUserList(data.users);
     } catch (e) {
       showErrorToast(e, 'Error loading users');
     } finally {
@@ -58,23 +58,23 @@ export default function UsersList({
     }
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearch(value);
-    setCurrentPage(1);
-    fetchUsers(1, value);
+    fetchUsers(USER_LIST_LIMIT, value);
   };
 
-  const handleLoadMore = () => {
-    const nextPage = currentPage + 1;
-    setCurrentPage(nextPage);
-    fetchUsers(nextPage, search);
+  const handleLoadMore = async () => {
+    const nextLimit = limit + USER_LIST_LIMIT;
+    setLimit(nextLimit);
+    fetchUsers(nextLimit, search);
   };
+
+  const showLoadMoreUsersButton = () => userList.length < totalUsers;
 
   const onDeleteSuccess = async () => {
     try {
-      setCurrentPage(1);
-      fetchUsers(1, search);
+      fetchUsers(limit, search);
       const data = await adminService.getAdminStats(api);
       setStats(data);
     } catch (error) {
@@ -82,9 +82,15 @@ export default function UsersList({
     }
   };
 
-  useEffect(() => {
-    setHasMore((currentPage - 1) * limit + userList.length < totalUsers);
-  }, [userList, totalUsers, currentPage, limit]);
+  const handleUserClick = (userId: string) => {
+    setSelectedUserId(userId);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedUserId(null);
+  };
 
   return (
     <>
@@ -118,7 +124,11 @@ export default function UsersList({
               </TableHeader>
               <TableBody>
                 {userList.map((user) => (
-                  <TableRow key={user.email} className="border-t border-bw-50">
+                  <TableRow
+                    key={user.email}
+                    className="border-t border-bw-50 hover:bg-bw-5 cursor-pointer"
+                    onClick={() => handleUserClick(user.userId)}
+                  >
                     <TableCell className="px-6 py-4 text-bw-70 w-[280px]">{user.email}</TableCell>
                     <TableCell className="pl-0 pr-6 py-4 text-right">
                       <DeleteUserHandler id={user.userId} onDeleteSuccess={onDeleteSuccess} />
@@ -128,7 +138,7 @@ export default function UsersList({
               </TableBody>
             </Table>
           </div>
-          {hasMore && (
+          {showLoadMoreUsersButton() && (
             <div className="flex justify-center mt-4">
               <Button onClick={handleLoadMore} disabled={loading} variant="ghost">
                 {loading ? tCommon('loading') : tCommon('loadMore')}
@@ -138,6 +148,7 @@ export default function UsersList({
           )}
         </>
       )}
+      <UserDialog userId={selectedUserId} isOpen={isDialogOpen} onClose={handleDialogClose} />
     </>
   );
 }

@@ -9,14 +9,14 @@ import { showSuccessToast, showErrorToast } from '@/lib/utils/toast';
 import { api } from '@/services/ApiClient';
 
 interface SessionSetterProps {
-  dailySessionLimit: number;
+  defaultDailySessionLimit: number;
 }
 
-export default function SessionSetter({ dailySessionLimit }: SessionSetterProps) {
+export default function SessionSetter({ defaultDailySessionLimit }: SessionSetterProps) {
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
-  const [sessionLimit, setSessionLimit] = useState<number>(dailySessionLimit);
-  const [savedSessionLimit, setSavedSessionLimit] = useState<number>(dailySessionLimit);
+  const [sessionLimit, setSessionLimit] = useState<number>(defaultDailySessionLimit);
+  const [savedSessionLimit, setSavedSessionLimit] = useState<number>(defaultDailySessionLimit);
   const [saving, setSaving] = useState(false);
 
   const hasSessionLimitChanged = sessionLimit !== savedSessionLimit;
@@ -28,7 +28,7 @@ export default function SessionSetter({ dailySessionLimit }: SessionSetterProps)
     }
     setSaving(true);
     try {
-      await adminService.updateDailyUserSessionLimit(api, sessionLimit);
+      await adminService.updateDefaultDailyUserSessionLimit(api, sessionLimit);
       showSuccessToast(t('sessionSuccess'));
       setSavedSessionLimit(sessionLimit);
     } catch (error) {

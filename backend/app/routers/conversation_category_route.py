@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlmodel import Session as DBSession
 
-from app.database import get_db_session
-from app.dependencies import require_user
+from app.dependencies.auth import require_user
+from app.dependencies.database import get_db_session
 from app.schemas.conversation_category import ConversationCategoryRead
 from app.services.conversation_category_service import ConversationCategoryService
 

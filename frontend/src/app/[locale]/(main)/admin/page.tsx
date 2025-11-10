@@ -7,6 +7,7 @@ import { reviewService } from '@/services/ReviewService';
 import { UserProfileService } from '@/services/UserProfileService';
 import { getTranslations } from 'next-intl/server';
 import { api } from '@/services/ApiServer';
+import { REVIEWS_LIMIT, USER_LIST_LIMIT } from './constants/UsersList';
 import AdminLoadingPage from './loading';
 import SessionSetter from './components/SessionSetter';
 import Reviews from './components/Reviews';
@@ -19,10 +20,9 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 }
 
 export default async function AdminPage() {
-  const PAGE_SIZE = 4;
   const statsData = adminService.getAdminStats(api);
-  const reviewsData = reviewService.getPaginatedReviews(api, 1, PAGE_SIZE, 'newest');
-  const usersData = UserProfileService.getPaginatedUsers(api, 1, PAGE_SIZE);
+  const reviewsData = reviewService.getPaginatedReviews(api, 1, REVIEWS_LIMIT, 'newest');
+  const usersData = UserProfileService.getPaginatedUsers(api, 1, USER_LIST_LIMIT);
   const [stats, reviews, users] = await Promise.all([statsData, reviewsData, usersData]);
   const t = await getTranslations('Admin');
   const tCommon = await getTranslations('Common');
@@ -36,7 +36,7 @@ export default async function AdminPage() {
         <div className="text-xl mt-16 font-medium text-bw-70">{tCommon('reviews')}</div>
         <Reviews {...reviews} />
         <div className="text-xl mb-6 mt-12 font-medium text-bw-70">{t('users')}</div>
-        <SessionSetter dailySessionLimit={stats.dailySessionLimit} />
+        <SessionSetter defaultDailySessionLimit={stats.defaultDailySessionLimit} />
         <UsersList {...users} />
       </div>
     </Suspense>
