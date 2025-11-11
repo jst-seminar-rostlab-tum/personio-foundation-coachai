@@ -32,6 +32,9 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     last_logged_in: datetime = Field(default_factory=lambda: datetime.now(UTC))
     store_conversations: bool = Field(default=True)
+    is_nonprofit: bool = Field(default=False)
+    organization_name: str = Field(max_length=100, nullable=True)
+
     # Relationships
     reviews: list['Review'] = Relationship(back_populates='user_profile', cascade_delete=True)
 

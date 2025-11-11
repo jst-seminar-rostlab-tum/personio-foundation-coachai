@@ -25,6 +25,8 @@ class ExportUserProfile(BaseModel):
     sessions_created_today: int
     last_session_date: str
     daily_session_limit: int | None
+    is_nonprofit: bool
+    organization_name: str | None
 
 
 class ExportUserGoal(BaseModel):

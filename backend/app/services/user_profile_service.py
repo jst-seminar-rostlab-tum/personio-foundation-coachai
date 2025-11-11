@@ -63,6 +63,8 @@ class UserService:
             num_remaining_daily_sessions=max(0, daily_session_limit - user.sessions_created_today),
             scenario_advice=scenario_advice,
             daily_session_limit=daily_session_limit,
+            is_nonprofit=user.is_nonprofit,
+            organization_name=user.organization_name,
         )
 
     def _get_detailed_user_profile_response(self, user: UserProfile) -> UserProfileExtendedRead:
@@ -207,6 +209,8 @@ class UserService:
         user.preferred_learning_style = data.preferred_learning_style
         user.store_conversations = data.store_conversations
         user.professional_role = data.professional_role
+        user.is_nonprofit = data.is_nonprofit
+        user.organization_name = data.organization_name
 
         # Only admins can change the account role
         if data.account_role and user.account_role == 'admin':
@@ -251,6 +255,10 @@ class UserService:
             user.store_conversations = data.store_conversations
         if data.professional_role is not None:
             user.professional_role = data.professional_role
+        if data.is_nonprofit is not None:
+            user.is_nonprofit = data.is_nonprofit
+        if data.organization_name is not None:
+            user.organization_name = data.organization_name
 
         if data.account_role is not None:
             if user.account_role == 'admin':
