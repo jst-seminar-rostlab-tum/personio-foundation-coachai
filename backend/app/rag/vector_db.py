@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from pathlib import Path
 
 import pymupdf
@@ -13,6 +14,123 @@ from app.config import Settings
 from app.dependencies.database import get_supabase_client
 
 settings = Settings()
+
+
+def clean_text(text: str) -> str:
+    """
+    Cleans text extracted from PDFs by fixing common parsing issues.
+    Args:
+        text: Raw text from PDF extraction
+    Returns:
+        Cleaned text with normalized whitespace and fixed formatting
+    """
+    if not text:
+        return text
+
+    # Fix spaced-out characters (e.g., "J ohn" -> "John", "B . F ." -> "B.F.")
+    text = re.sub(r'\b(\w)\s+\.\s+(\w)', r'\1.\2', text)
+    text = re.sub(
+        r'\b(\w)\s+(\w)\b',
+        lambda m: m.group(1) + m.group(2)
+        if len(m.group(1)) == 1 and len(m.group(2)) == 1
+        else m.group(0),
+        text,
+    )
+
+    # Remove space before punctuation
+    text = re.sub(r'\s+([.,!?;:])', r'\1', text)
+
+    # Normalize multiple spaces to single space
+    text = re.sub(r' +', ' ', text)
+
+    # Normalize multiple newlines
+    text = re.sub(r'\n{3,}', '\n\n', text)
+
+    # Remove leading/trailing whitespace from each line
+    text = '\n'.join(line.strip() for line in text.split('\n'))
+
+    return text.strip()
+
+
+def remove_citations_and_captions(text: str) -> str:
+    """
+    Removes citations and captions from text while preserving the main content.
+
+    This function surgically removes:
+    - Image/Figure/Table captions
+    - Inline citations with URLs
+    - Reference list entries
+    - Standalone citation lines
+
+    Args:
+        text: Text that may contain citations and captions
+
+    Returns:
+        Cleaned text with citations/captions removed
+    """
+    if not text:
+        return text
+
+    lines = text.split('\n')
+    cleaned_lines = []
+
+    for line in lines:
+        line_stripped = line.strip()
+
+        # Skip empty lines
+        if not line_stripped:
+            cleaned_lines.append(line)
+            continue
+
+        # Remove image/figure/table captions (usually start with these keywords)
+        if re.match(
+            r'^(Image|Figure|Table|Chart|Diagram)\s*[:.]?\s*', line_stripped, re.IGNORECASE
+        ):
+            continue
+
+        # Remove lines that are clearly citations (contain Retrieved from, et al., etc.)
+        citation_indicators = [
+            r'Retrieved from https?://',
+            r'Available at:?\s*https?://',
+            r'^\s*\[?\d+\]?\s*[\w\s,&\.]+\(\d{4}[,)]',  # [1] Author, A. (2024)
+            r'doi:\s*10\.',
+            r'^\s*https?://',  # Line that's just a URL
+        ]
+
+        is_citation = False
+        for pattern in citation_indicators:
+            if re.search(pattern, line_stripped, re.IGNORECASE):
+                is_citation = True
+                break
+
+        if is_citation:
+            continue
+
+        # Clean inline citations within the line (but keep the rest of the text)
+        # Remove things like "OpenAI. (2024, July 9). ChatGPT. [Large language model]."
+        line_cleaned = re.sub(
+            r'\b[\w\s,&\.]+\.\s*\(\d{4}[^\)]*\)\.\s*[^\n]*\.\s*\[[^\]]+\]\.', '', line_stripped
+        )
+
+        # Remove standalone URLs from lines
+        line_cleaned = re.sub(r'https?://\S+', '', line_cleaned)
+
+        # Remove citation patterns like (Author, 2024) or [1]
+        line_cleaned = re.sub(r'\([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?,?\s+\d{4}\)', '', line_cleaned)
+        line_cleaned = re.sub(r'\[\d+\]', '', line_cleaned)
+
+        # Clean up extra spaces
+        line_cleaned = re.sub(r'\s+', ' ', line_cleaned).strip()
+
+        # Only add the line if there's still meaningful content
+        if line_cleaned and len(line_cleaned) > 10:
+            cleaned_lines.append(line_cleaned)
+
+    # Rejoin and clean up
+    result = '\n'.join(cleaned_lines)
+    result = re.sub(r'\n{3,}', '\n\n', result)  # Normalize multiple newlines
+
+    return result.strip()
 
 
 def extract_toc(file_path: str) -> tuple[list, int]:
