@@ -11,6 +11,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import Switch from '@/components/ui/Switch';
+import Input from '@/components/ui/Input';
+import Checkbox from '@/components/ui/Checkbox';
 import UserConfidenceFields from '@/components/common/UserConfidenceFields';
 import { DeleteUserHandler } from '@/components/common/DeleteUserHandler';
 import { UserProfileService } from '@/services/UserProfileService';
@@ -44,6 +46,8 @@ export default function Settings({ userProfile }: SettingsProps) {
   const [storeConversations, setStoreConversations] = useState(
     userProfileData.storeConversations ?? false
   );
+  const [organizationName, setOrganizationName] = useState(userProfileData.organizationName || '');
+  const [isNonprofit, setIsNonprofit] = useState(userProfileData.isNonprofit || false);
   const [currentRole, setCurrentRole] = useState(userProfileData.professionalRole);
   const [primaryGoals, setPrimaryGoals] = useState(userProfileData.goals);
   const [difficulty, setDifficulty] = useState(
@@ -60,6 +64,10 @@ export default function Settings({ userProfile }: SettingsProps) {
   const [savedStoreConversations, setSavedStoreConversations] = useState(
     userProfileData.storeConversations ?? false
   );
+  const [savedOrganizationName, setSavedOrganizationName] = useState(
+    userProfileData.organizationName || ''
+  );
+  const [savedIsNonprofit, setSavedIsNonprofit] = useState(userProfileData.isNonprofit || false);
   const [savedRole, setSavedRole] = useState(userProfileData.professionalRole);
   const [savedGoals, setSavedGoals] = useState(userProfileData.goals);
   const [savedDifficulty, setSavedDifficulty] = useState(
@@ -88,6 +96,8 @@ export default function Settings({ userProfile }: SettingsProps) {
   const hasFormChanged = () => {
     return (
       storeConversations !== savedStoreConversations ||
+      organizationName !== savedOrganizationName ||
+      isNonprofit !== savedIsNonprofit ||
       currentRole !== savedRole ||
       JSON.stringify(primaryGoals) !== JSON.stringify(savedGoals) ||
       difficulty[0] !== savedDifficulty ||
@@ -133,6 +143,8 @@ export default function Settings({ userProfile }: SettingsProps) {
       await UserProfileService.updateUserProfile(api, {
         fullName: userProfileData.fullName,
         storeConversations,
+        organizationName,
+        isNonprofit,
         professionalRole: currentRole,
         goals: primaryGoals,
         confidenceScores: [
@@ -144,6 +156,8 @@ export default function Settings({ userProfile }: SettingsProps) {
       showSuccessToast(t('saveSettingsSuccess'));
 
       setSavedStoreConversations(storeConversations);
+      setSavedOrganizationName(organizationName);
+      setSavedIsNonprofit(isNonprofit);
       setSavedRole(currentRole);
       setSavedGoals([...primaryGoals]);
       setSavedDifficulty(difficulty[0]);
@@ -162,7 +176,7 @@ export default function Settings({ userProfile }: SettingsProps) {
         <h1 className="text-2xl">{tCommon('settings')}</h1>
 
         <div className="space-y-4 flex items-center rounded-t-lg">
-          <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
+          <Accordion type="multiple" defaultValue={['item-1', 'item-2', 'item-3']}>
             {/* Privacy Controls */}
             <AccordionItem value="item-1">
               <AccordionTrigger>{t('privacyControls')}</AccordionTrigger>
@@ -214,8 +228,36 @@ export default function Settings({ userProfile }: SettingsProps) {
                 </div>
               </AccordionContent>
             </AccordionItem>
-            {/* Personalization Settings */}
+            {/* Organization Settings */}
             <AccordionItem value="item-2">
+              <AccordionTrigger>{t('organizationSettings')}</AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-6 px-2">
+                  {/* Organization Name */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base text-bw-70">{t('organizationName')}</label>
+                    <Input
+                      value={organizationName}
+                      onChange={(e) => setOrganizationName(e.target.value)}
+                      placeholder={t('organizationNamePlaceholder')}
+                      className="w-full"
+                    />
+                  </div>
+                  {/* Nonprofit Status */}
+                  <div className="flex items-start gap-3">
+                    <Checkbox checked={isNonprofit} onClick={() => setIsNonprofit(!isNonprofit)} />
+                    <label
+                      className="text-sm text-bw-70 cursor-pointer"
+                      onClick={() => setIsNonprofit(!isNonprofit)}
+                    >
+                      {t('nonprofitStatus')}
+                    </label>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            {/* Personalization Settings */}
+            <AccordionItem value="item-3">
               <AccordionTrigger>{t('personalizationSettings')}</AccordionTrigger>
               <AccordionContent>
                 <UserPreferences
