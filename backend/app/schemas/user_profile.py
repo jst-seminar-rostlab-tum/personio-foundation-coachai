@@ -65,7 +65,7 @@ class UserProfileRead(CamelModel):
     scenario_advice: ScenarioAdvice | dict
     daily_session_limit: int
     is_nonprofit: bool
-    organization_name: str
+    organization_name: str | None
 
 
 class UserProfileExtendedRead(UserProfileRead):
