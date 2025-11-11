@@ -51,8 +51,8 @@ export function SignUpForm() {
     fullName: z.string().min(1, tLogin('fullNameInputError')),
     email: z.string().email(tCommon('emailInputError')),
     phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
-    organizationName: z.string().min(1, tCommon('organizationNameInputError')),
-    isNonprofit: z.boolean(),
+    organizationName: z.string().optional(),
+    isNonprofit: z.boolean().optional(),
     password: z
       .string()
       .regex(/^.{8,}$/)

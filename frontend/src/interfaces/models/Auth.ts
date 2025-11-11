@@ -3,7 +3,7 @@ export interface UserCreate {
   email: string;
   phone: string;
   password: string;
-  organizationName: string;
+  organizationName?: string;
   isNonprofit: boolean;
   // code: string;
 }
