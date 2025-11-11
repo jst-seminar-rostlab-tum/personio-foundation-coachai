@@ -3,17 +3,15 @@ import os
 from datetime import UTC, datetime
 
 from sqlmodel import Session as DBSession
-from sqlmodel import col, select
+from sqlmodel import select
 
 from app.data import (
-    create_mock_users,
-    delete_mock_users,
     get_dummy_app_configs,
-    get_dummy_user_profiles,
 )
-from app.database import engine
+from app.data.dummy_data import get_dummy_user_data
+from app.dependencies.database import engine, get_supabase_client
 from app.enums.language import LanguageCode
-from app.models import AppConfig, ConversationCategory, UserProfile
+from app.models import AppConfig, ConversationCategory
 
 base_dir = os.path.dirname(__file__)
 with open(os.path.join(base_dir, 'initial_prompts.json'), encoding='utf-8') as f:
@@ -63,29 +61,14 @@ STATIC_PERSONAS = []
 
 
 def populate_demo_users() -> None:
-    """
-    Populate the database with demo users.
-    """
-    print('Removing mock users...')
-    delete_mock_users()
+    dummy_users = get_dummy_user_data()
+    supabase = get_supabase_client()
 
-    print('Creating mock users...')
-    create_mock_users()
+    for user in supabase.auth.admin.list_users():
+        supabase.auth.admin.delete_user(user.id)
 
-    with DBSession(engine) as db_session:
-        user_profiles = get_dummy_user_profiles()
-
-        user_profile_ids = [profile.id for profile in user_profiles]
-        statement = select(UserProfile).where(col(UserProfile.id).in_(user_profile_ids))
-        results = db_session.exec(statement).all()
-        for profile in results:
-            db_session.delete(profile)
-        db_session.commit()
-
-        # Populate User Profiles
-        print('Creating user profiles')
-        db_session.add_all(user_profiles)
-        db_session.commit()
+    for user in dummy_users:
+        supabase.auth.admin.create_user(user.supabase_profile)
 
 
 def populate_static_categories() -> None:

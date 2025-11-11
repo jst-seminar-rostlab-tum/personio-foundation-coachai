@@ -4,14 +4,14 @@ import { AxiosInstance } from 'axios';
 const getPaginatedReviews = async (
   api: AxiosInstance,
   page: number,
-  pageSize: number,
+  limit: number,
   sort: string = 'newest'
 ) => {
   try {
     const { data } = await api.get(`/reviews`, {
       params: {
         page,
-        page_size: pageSize,
+        limit,
         sort,
       },
     });

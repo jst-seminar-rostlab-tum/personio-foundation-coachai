@@ -1,23 +1,12 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from sqlmodel import Session as DBSession
 
-from app.database import get_db_session
-from app.dependencies import require_admin, require_user
+from app.dependencies.auth import require_admin, require_user
 from app.schemas.app_config import AppConfigCreate, AppConfigRead
-from app.services.app_config_service import AppConfigService
+from app.services.app_config_service import AppConfigService, get_app_config_service
 
 router = APIRouter(prefix='/app-configs', tags=['App Config'])
-
-
-def get_app_config_service(
-    db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> AppConfigService:
-    """
-    Dependency factory to inject the AppConfigService.
-    """
-    return AppConfigService(db_session)
 
 
 @router.get('', response_model=list[AppConfigRead], dependencies=[Depends(require_user)])

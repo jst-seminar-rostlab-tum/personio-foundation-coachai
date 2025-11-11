@@ -15,7 +15,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.responses import Response
 
 from app.config import settings
-from app.database import get_db_session
+from app.dependencies.database import get_db_session
 from app.routers import (
     admin_dashboard_stats_route,
     app_config_route,
@@ -32,7 +32,7 @@ from app.routers import (
 )
 from app.services.data_retention_service import cleanup_old_session_turns
 
-if settings.stage == 'dev' and settings.SENTRY_DSN:
+if settings.stage == 'prod' and settings.SENTRY_DSN:
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         integrations=[

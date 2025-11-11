@@ -59,6 +59,7 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
     # Daily session tracking
     sessions_created_today: int = Field(default=0)
     last_session_date: date = Field(default_factory=lambda: datetime.now(UTC).date())
+    daily_session_limit: int | None = Field(default=None, nullable=True)
 
 
 @event.listens_for(UserProfile, 'before_update')

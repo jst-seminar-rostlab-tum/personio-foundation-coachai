@@ -17,5 +17,13 @@
   "sessionsPerUserLabel": "Sitzungen pro Benutzer und Tag",
   "sessionSuccess": "Sitzungslimit erfolgreich gespeichert",
   "sessionFailed": "Fehler beim Speichern des Sitzungslimits",
-  "sessionNumberFailed": "Bitte geben Sie eine gültige Zahl zwischen 1 und 1.000 ein"
+  "sessionNumberFailed": "Bitte geben Sie eine gültige Zahl zwischen 1 und 1.000 ein",
+  "userDetails": "Benutzerdetails",
+  "fullName": "Vollständiger Name",
+  "role": "Rolle",
+  "admin": "Administrator",
+  "user": "Benutzer",
+  "professionalRole": "Berufliche Rolle",
+  "dailySessionLimit": "Tägliches Sitzungslimit",
+  "sessionsUsedToday": "Heute verwendete Sitzungen"
 }

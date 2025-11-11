@@ -1,6 +1,4 @@
 from .dummy_data import (
-    create_mock_users,
-    delete_mock_users,
     get_dummy_admin_stats,
     get_dummy_app_configs,
     get_dummy_conversation_categories,
@@ -12,13 +10,11 @@ from .dummy_data import (
     get_dummy_session_turns,
     get_dummy_sessions,
     get_dummy_user_confidence_scores,
+    get_dummy_user_data,
     get_dummy_user_goals,
-    get_dummy_user_profiles,
-    get_mock_user_data,
 )
 
 __all__ = [
-    'get_dummy_user_profiles',
     'get_dummy_user_goals',
     'get_dummy_conversation_scenarios',
     'get_dummy_conversation_categories',
@@ -30,8 +26,6 @@ __all__ = [
     'get_dummy_app_configs',
     'get_dummy_admin_stats',
     'get_dummy_reviews',
-    'get_mock_user_data',
-    'create_mock_users',
-    'delete_mock_users',
     'get_dummy_live_feedback_data',
+    'get_dummy_user_data',
 ]

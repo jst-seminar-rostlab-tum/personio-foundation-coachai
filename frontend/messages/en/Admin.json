@@ -17,5 +17,13 @@
   "sessionsPerUserLabel": "Sessions per user per day",
   "sessionSuccess": "Session limit saved successfully",
   "sessionFailed": "Error saving session limit",
-  "sessionNumberFailed": "Please enter a valid number (1-1000)"
+  "sessionNumberFailed": "Please enter a valid number (1-1000)",
+  "userDetails": "User Details",
+  "fullName": "Full Name",
+  "role": "Role",
+  "admin": "Admin",
+  "user": "User",
+  "professionalRole": "Professional Role",
+  "dailySessionLimit": "Daily Session Limit",
+  "sessionsUsedToday": "Sessions Used Today"
 }

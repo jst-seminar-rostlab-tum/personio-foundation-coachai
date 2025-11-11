@@ -2,7 +2,6 @@ from sqlmodel import Session as DBSession
 from sqlmodel import select
 
 from app.connections.gcs_client import get_gcs_audio_manager
-from app.models.app_config import AppConfig
 from app.models.conversation_scenario import ConversationScenario
 from app.models.review import Review
 from app.models.user_confidence_score import UserConfidenceScore
@@ -25,49 +24,28 @@ from app.schemas.user_export import (
 def _build_export_user_profile(
     user_profile: UserProfile, db_session: DBSession
 ) -> ExportUserProfile:
-    """Build export user profile from UserProfile model."""
-    try:
-        daily_session_limit = db_session.exec(
-            select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
-        ).first()
-        daily_session_limit = int(daily_session_limit) if daily_session_limit is not None else 0
-
-        # If session limit is not configured, assume limit is hit (safety feature)
-        if daily_session_limit == 0:
-            num_remaining_daily_sessions = 0
-        else:
-            num_remaining_daily_sessions = max(
-                0, daily_session_limit - user_profile.sessions_created_today
-            )
-        return ExportUserProfile(
-            user_id=str(user_profile.id),
-            full_name=user_profile.full_name,
-            email=user_profile.email,
-            phone_number=user_profile.phone_number,
-            preferred_language_code=str(user_profile.preferred_language_code),
-            account_role=str(user_profile.account_role),
-            professional_role=str(user_profile.professional_role),
-            experience=str(user_profile.experience),
-            preferred_learning_style=str(user_profile.preferred_learning_style),
-            updated_at=user_profile.updated_at.isoformat() if user_profile.updated_at else None,
-            store_conversations=user_profile.store_conversations,
-            total_sessions=user_profile.total_sessions,
-            training_time=user_profile.training_time,
-            current_streak_days=user_profile.current_streak_days,
-            score_sum=user_profile.score_sum,
-            goals_achieved=user_profile.goals_achieved,
-            num_remaining_daily_sessions=num_remaining_daily_sessions,
-        )
-    except Exception as e:
-        # Add debugging information
-        print(f'Error building export user profile: {e}')
-        print('User profile data types:')
-        print(f'  training_time: {type(user_profile.training_time)} = {user_profile.training_time}')
-        print(f'  score_sum: {type(user_profile.score_sum)} = {user_profile.score_sum}')
-        print(
-            f'  total_sessions: {type(user_profile.total_sessions)} = {user_profile.total_sessions}'
-        )
-        raise
+    return ExportUserProfile(
+        user_id=str(user_profile.id),
+        full_name=user_profile.full_name,
+        email=user_profile.email,
+        phone_number=user_profile.phone_number,
+        preferred_language_code=str(user_profile.preferred_language_code),
+        experience=str(user_profile.experience),
+        preferred_learning_style=str(user_profile.preferred_learning_style),
+        updated_at=user_profile.updated_at.isoformat(),
+        last_logged_in=user_profile.last_logged_in.isoformat(),
+        store_conversations=user_profile.store_conversations,
+        account_role=str(user_profile.account_role),
+        professional_role=str(user_profile.professional_role),
+        current_streak_days=user_profile.current_streak_days,
+        total_sessions=user_profile.total_sessions,
+        training_time=user_profile.training_time,
+        score_sum=user_profile.score_sum,
+        goals_achieved=user_profile.goals_achieved,
+        scenario_advice=user_profile.scenario_advice,
+        sessions_created_today=user_profile.sessions_created_today,
+        last_session_date=user_profile.last_session_date.isoformat(),
+    )
 
 
 def _build_export_goals(goals: list[UserGoal]) -> list[ExportUserGoal]:

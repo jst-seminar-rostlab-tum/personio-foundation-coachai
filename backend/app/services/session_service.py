@@ -7,13 +7,12 @@ from sqlmodel import Session as DBSession
 from sqlmodel import col, func, select
 
 from app.connections.gcs_client import get_gcs_audio_manager
-from app.database import get_db_session
+from app.dependencies.database import get_db_session
 from app.enums.account_role import AccountRole
 from app.enums.feedback_status import FeedbackStatus
 from app.enums.scenario_preparation_status import ScenarioPreparationStatus
 from app.enums.session_status import SessionStatus
 from app.models.admin_dashboard_stats import AdminDashboardStats
-from app.models.app_config import AppConfig
 from app.models.conversation_category import ConversationCategory
 from app.models.conversation_scenario import ConversationScenario
 from app.models.scenario_preparation import ScenarioPreparation
@@ -105,29 +104,6 @@ class SessionService:
     def create_new_session(
         self, session_data: SessionCreate, user_profile: UserProfile
     ) -> SessionRead:
-        # Enforce daily session limit for non-admin users
-        if user_profile.account_role != AccountRole.admin:
-            # Get session limit from AppConfig
-            session_limit_config = self.db.exec(
-                select(AppConfig.value).where(AppConfig.key == 'dailyUserSessionLimit')
-            ).first()
-
-            # If session limit is not configured, assume limit is hit (safety feature)
-            if session_limit_config is None:
-                raise HTTPException(
-                    status_code=403,
-                    detail='Daily session limit is not configured. '
-                    'Please contact an administrator.',
-                )
-
-            session_limit = int(session_limit_config)
-
-            # Check if the user has reached the daily session limit
-            if user_profile.sessions_created_today >= session_limit:
-                raise HTTPException(
-                    status_code=429,
-                    detail=f'You have reached the daily session limit of {session_limit}.',
-                )
         conversation_scenario = self.db.get(ConversationScenario, session_data.scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
