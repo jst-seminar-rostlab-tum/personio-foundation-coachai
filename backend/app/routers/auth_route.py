@@ -63,7 +63,6 @@ def create_user(req: UserCreate) -> None:
             'phone_confirm': True,
             'user_metadata': {
                 'full_name': req.full_name,
-                'is_nonprofit': req.is_nonprofit,
                 'organization_name': req.organization_name,
             },
         }

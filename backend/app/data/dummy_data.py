@@ -56,7 +56,6 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=32 * 12,
                 goals_achieved=4,
                 scenario_advice={},
-                is_nonprofit=False,
                 organization_name=None,
             ),
             supabase_profile=AdminUserAttributes(
@@ -88,7 +87,6 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=5 * 12,
                 goals_achieved=2,  # Summation of all goals achieved
                 scenario_advice={},
-                is_nonprofit=False,
                 organization_name=None,
             ),
             supabase_profile=AdminUserAttributes(
@@ -120,7 +118,6 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=18 * 12,
                 goals_achieved=7,
                 scenario_advice={},
-                is_nonprofit=True,
                 organization_name='Example Nonprofit Organization',
             ),
             supabase_profile=AdminUserAttributes(
@@ -153,7 +150,6 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=0,
                 goals_achieved=0,
                 scenario_advice={},
-                is_nonprofit=False,
                 organization_name=None,
             ),
             supabase_profile=AdminUserAttributes(
@@ -185,7 +181,6 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=85 * 12,
                 goals_achieved=15,
                 scenario_advice={},
-                is_nonprofit=False,
                 organization_name=None,
             ),
             supabase_profile=AdminUserAttributes(
@@ -217,7 +212,6 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=3 * 12,
                 goals_achieved=1,
                 scenario_advice={},
-                is_nonprofit=False,
                 organization_name=None,
             ),
             supabase_profile=AdminUserAttributes(

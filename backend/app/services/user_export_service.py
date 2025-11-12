@@ -45,7 +45,6 @@ def _build_export_user_profile(
         scenario_advice=user_profile.scenario_advice,
         sessions_created_today=user_profile.sessions_created_today,
         last_session_date=user_profile.last_session_date.isoformat(),
-        is_nonprofit=user_profile.is_nonprofit,
         organization_name=user_profile.organization_name,
     )
 
