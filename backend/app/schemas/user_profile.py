@@ -27,7 +27,6 @@ class UserProfileUpdate(CamelModel):
     store_conversations: bool | None = None
     goals: list[Goal] | None = None
     confidence_scores: list[ConfidenceScoreRead] | None = None
-    is_nonprofit: bool | None = None
     organization_name: str | None = None
 
 
@@ -42,7 +41,6 @@ class UserProfileReplace(CamelModel):
     store_conversations: bool
     goals: list[Goal]
     confidence_scores: list[ConfidenceScoreRead]
-    is_nonprofit: bool | None = None
     organization_name: str | None = None
 
 
@@ -64,7 +62,6 @@ class UserProfileRead(CamelModel):
     num_remaining_daily_sessions: int
     scenario_advice: ScenarioAdvice | dict
     daily_session_limit: int
-    is_nonprofit: bool
     organization_name: str | None
 
 
