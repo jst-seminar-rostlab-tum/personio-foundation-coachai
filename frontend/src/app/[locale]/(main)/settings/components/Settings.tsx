@@ -47,7 +47,7 @@ export default function Settings({ userProfile }: SettingsProps) {
     userProfileData.storeConversations ?? false
   );
   const [organizationName, setOrganizationName] = useState(userProfileData.organizationName || '');
-  const [isNonprofit, setIsNonprofit] = useState(userProfileData.isNonprofit || false);
+  const [isNonprofit, setIsNonprofit] = useState(!!userProfileData.organizationName);
   const [currentRole, setCurrentRole] = useState(userProfileData.professionalRole);
   const [primaryGoals, setPrimaryGoals] = useState(userProfileData.goals);
   const [difficulty, setDifficulty] = useState(
@@ -64,10 +64,10 @@ export default function Settings({ userProfile }: SettingsProps) {
   const [savedStoreConversations, setSavedStoreConversations] = useState(
     userProfileData.storeConversations ?? false
   );
+  const [savedIsNonprofit, setSavedIsNonprofit] = useState(!!userProfileData.organizationName);
   const [savedOrganizationName, setSavedOrganizationName] = useState(
     userProfileData.organizationName || ''
   );
-  const [savedIsNonprofit, setSavedIsNonprofit] = useState(userProfileData.isNonprofit || false);
   const [savedRole, setSavedRole] = useState(userProfileData.professionalRole);
   const [savedGoals, setSavedGoals] = useState(userProfileData.goals);
   const [savedDifficulty, setSavedDifficulty] = useState(
@@ -94,9 +94,12 @@ export default function Settings({ userProfile }: SettingsProps) {
   }, [searchParams, t]);
 
   const hasFormChanged = () => {
+    const currentEffectiveOrgName = isNonprofit ? organizationName : '';
+    const savedEffectiveOrgName = savedIsNonprofit ? savedOrganizationName : '';
+
     return (
       storeConversations !== savedStoreConversations ||
-      organizationName !== savedOrganizationName ||
+      currentEffectiveOrgName !== savedEffectiveOrgName ||
       isNonprofit !== savedIsNonprofit ||
       currentRole !== savedRole ||
       JSON.stringify(primaryGoals) !== JSON.stringify(savedGoals) ||
@@ -137,14 +140,18 @@ export default function Settings({ userProfile }: SettingsProps) {
   const handleSaveSettings = async () => {
     if (isSubmitting) return;
 
+    if (isNonprofit && !organizationName.trim()) {
+      showErrorToast(null, tCommon('organizationNameRequired'));
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       await UserProfileService.updateUserProfile(api, {
         fullName: userProfileData.fullName,
         storeConversations,
-        organizationName,
-        isNonprofit,
+        organizationName: isNonprofit ? organizationName : '',
         professionalRole: currentRole,
         goals: primaryGoals,
         confidenceScores: [
@@ -156,8 +163,8 @@ export default function Settings({ userProfile }: SettingsProps) {
       showSuccessToast(t('saveSettingsSuccess'));
 
       setSavedStoreConversations(storeConversations);
-      setSavedOrganizationName(organizationName);
       setSavedIsNonprofit(isNonprofit);
+      setSavedOrganizationName(organizationName);
       setSavedRole(currentRole);
       setSavedGoals([...primaryGoals]);
       setSavedDifficulty(difficulty[0]);
@@ -233,26 +240,43 @@ export default function Settings({ userProfile }: SettingsProps) {
               <AccordionTrigger>{t('organizationSettings')}</AccordionTrigger>
               <AccordionContent>
                 <div className="flex flex-col gap-6 px-2">
-                  {/* Organization Name */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-base text-bw-70">{t('organizationName')}</label>
-                    <Input
-                      value={organizationName}
-                      onChange={(e) => setOrganizationName(e.target.value)}
-                      placeholder={t('organizationNamePlaceholder')}
-                      className="w-full"
-                    />
-                  </div>
                   {/* Nonprofit Status */}
                   <div className="flex items-start gap-3">
-                    <Checkbox checked={isNonprofit} onClick={() => setIsNonprofit(!isNonprofit)} />
+                    <Checkbox
+                      checked={isNonprofit}
+                      onClick={() => {
+                        setIsNonprofit(!isNonprofit);
+                        if (!isNonprofit) {
+                          setOrganizationName('');
+                        }
+                      }}
+                    />
                     <label
                       className="text-sm text-bw-70 cursor-pointer"
-                      onClick={() => setIsNonprofit(!isNonprofit)}
+                      onClick={() => {
+                        setIsNonprofit(!isNonprofit);
+                        if (!isNonprofit) {
+                          setOrganizationName('');
+                        }
+                      }}
                     >
-                      {t('nonprofitStatus')}
+                      {tCommon('nonprofitStatusCheckboxLabel')}
                     </label>
                   </div>
+                  {/* Organization Name */}
+                  {isNonprofit && (
+                    <div className="flex flex-col gap-2">
+                      <label className="text-base text-bw-70">
+                        {tCommon('organizationNameInputLabel')}
+                      </label>
+                      <Input
+                        value={organizationName}
+                        onChange={(e) => setOrganizationName(e.target.value)}
+                        placeholder={tCommon('organizationNameInputPlaceholder')}
+                        className="w-full"
+                      />
+                    </div>
+                  )}
                 </div>
               </AccordionContent>
             </AccordionItem>

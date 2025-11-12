@@ -4,7 +4,6 @@ export interface UserCreate {
   phone: string;
   password: string;
   organizationName?: string;
-  isNonprofit: boolean;
   // code: string;
 }
 

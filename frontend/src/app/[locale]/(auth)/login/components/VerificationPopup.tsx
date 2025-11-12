@@ -112,8 +112,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
         email: signUpFormData.email,
         phone: signUpFormData.phone_number,
         password: signUpFormData.password,
-        organizationName: signUpFormData.organizationName,
-        isNonprofit: signUpFormData.isNonprofit ?? false,
+        organizationName: signUpFormData.isNonprofit ? signUpFormData.organizationName : undefined,
         // code: form.getValues('code'),
       };
       await authService.createUser(api, data);

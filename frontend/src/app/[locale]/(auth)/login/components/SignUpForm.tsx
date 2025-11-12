@@ -47,19 +47,32 @@ export function SignUpForm() {
     }
   }, [error]);
 
-  const signUpFormSchema = z.object({
-    fullName: z.string().min(1, tLogin('fullNameInputError')),
-    email: z.string().email(tCommon('emailInputError')),
-    phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
-    organizationName: z.string().optional(),
-    isNonprofit: z.boolean().optional(),
-    password: z
-      .string()
-      .regex(/^.{8,}$/)
-      .regex(/[A-Z]/)
-      .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/),
-    terms: z.boolean().refine((val) => val === true),
-  });
+  const signUpFormSchema = z
+    .object({
+      fullName: z.string().min(1, tLogin('fullNameInputError')),
+      email: z.string().email(tCommon('emailInputError')),
+      phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
+      organizationName: z.string().optional(),
+      isNonprofit: z.boolean().optional(),
+      password: z
+        .string()
+        .regex(/^.{8,}$/)
+        .regex(/[A-Z]/)
+        .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/),
+      terms: z.boolean().refine((val) => val === true),
+    })
+    .refine(
+      (data) => {
+        if (data.isNonprofit && (!data.organizationName || !data.organizationName.trim())) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: tCommon('organizationNameRequired'),
+        path: ['organizationName'],
+      }
+    );
 
   const signUpForm = useForm({
     resolver: zodResolver(signUpFormSchema),
@@ -195,26 +208,6 @@ export function SignUpForm() {
 
               <FormField
                 control={signUpForm.control}
-                name="organizationName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{tCommon('organizationNameInputLabel')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={tCommon('organizationNameInputPlaceholder')}
-                        {...field}
-                        className="w-full"
-                        disabled={isLoading}
-                        autoComplete="section-signup organization"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={signUpForm.control}
                 name="isNonprofit"
                 render={({ field }) => (
                   <FormItem className="flex flex-col space-y-2">
@@ -222,7 +215,12 @@ export function SignUpForm() {
                       <FormControl>
                         <Checkbox
                           checked={field.value}
-                          onClick={() => field.onChange(!field.value)}
+                          onClick={() => {
+                            field.onChange(!field.value);
+                            if (field.value) {
+                              signUpForm.setValue('organizationName', '');
+                            }
+                          }}
                           disabled={isLoading}
                         />
                       </FormControl>
@@ -233,6 +231,28 @@ export function SignUpForm() {
                   </FormItem>
                 )}
               />
+
+              {signUpForm.watch('isNonprofit') && (
+                <FormField
+                  control={signUpForm.control}
+                  name="organizationName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{tCommon('organizationNameInputLabel')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={tCommon('organizationNameInputPlaceholder')}
+                          {...field}
+                          className="w-full"
+                          disabled={isLoading}
+                          autoComplete="section-signup organization"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={signUpForm.control}

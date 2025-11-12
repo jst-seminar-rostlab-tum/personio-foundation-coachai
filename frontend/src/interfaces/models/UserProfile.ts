@@ -6,7 +6,6 @@ export interface UserProfile {
   email: string;
   phoneNumber: string;
   organizationName?: string;
-  isNonprofit?: boolean;
   professionalRole: string;
   goals: string[];
   accountRole: AccountRole;

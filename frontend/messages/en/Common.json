@@ -78,6 +78,6 @@
   },
   "organizationNameInputLabel": "Name of your organization or institution",
   "organizationNameInputPlaceholder": "Enter your organization name",
-  "organizationNameInputError": "Please enter your organization name",
-  "nonprofitStatusCheckboxLabel": "Nonprofit status – By checking this box, you confirm that your organization is officially recognized as a nonprofit under the laws of your country or jurisdiction."
+  "nonprofitStatusCheckboxLabel": "Nonprofit status – By checking this box, you confirm that your organization is officially recognized as a nonprofit under the laws of your country or jurisdiction.",
+  "organizationNameRequired": "Organization name is required"
 }
