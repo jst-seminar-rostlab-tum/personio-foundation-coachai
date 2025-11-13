@@ -3,6 +3,7 @@ export interface UserCreate {
   email: string;
   phone: string;
   password: string;
+  organizationName?: string;
   // code: string;
 }
 

@@ -47,17 +47,32 @@ export function SignUpForm() {
     }
   }, [error]);
 
-  const signUpFormSchema = z.object({
-    fullName: z.string().min(1, tLogin('fullNameInputError')),
-    email: z.string().email(tCommon('emailInputError')),
-    phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
-    password: z
-      .string()
-      .regex(/^.{8,}$/)
-      .regex(/[A-Z]/)
-      .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/),
-    terms: z.boolean().refine((val) => val === true),
-  });
+  const signUpFormSchema = z
+    .object({
+      fullName: z.string().min(1, tLogin('fullNameInputError')),
+      email: z.string().email(tCommon('emailInputError')),
+      phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
+      organizationName: z.string().optional(),
+      isNonprofit: z.boolean().optional(),
+      password: z
+        .string()
+        .regex(/^.{8,}$/)
+        .regex(/[A-Z]/)
+        .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/),
+      terms: z.boolean().refine((val) => val === true),
+    })
+    .refine(
+      (data) => {
+        if (data.isNonprofit && (!data.organizationName || !data.organizationName.trim())) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: tCommon('organizationNameRequired'),
+        path: ['organizationName'],
+      }
+    );
 
   const signUpForm = useForm({
     resolver: zodResolver(signUpFormSchema),
@@ -66,6 +81,8 @@ export function SignUpForm() {
       fullName: '',
       email: '',
       phone_number: '',
+      organizationName: '',
+      isNonprofit: false,
       password: '',
       terms: false,
     },
@@ -188,6 +205,54 @@ export function SignUpForm() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={signUpForm.control}
+                name="isNonprofit"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col space-y-2">
+                    <div className="flex items-start space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onClick={() => {
+                            field.onChange(!field.value);
+                            if (field.value) {
+                              signUpForm.setValue('organizationName', '');
+                            }
+                          }}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">
+                        {tCommon('nonprofitStatusCheckboxLabel')}
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              {signUpForm.watch('isNonprofit') && (
+                <FormField
+                  control={signUpForm.control}
+                  name="organizationName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{tCommon('organizationNameInputLabel')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={tCommon('organizationNameInputPlaceholder')}
+                          {...field}
+                          className="w-full"
+                          disabled={isLoading}
+                          autoComplete="section-signup organization"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={signUpForm.control}

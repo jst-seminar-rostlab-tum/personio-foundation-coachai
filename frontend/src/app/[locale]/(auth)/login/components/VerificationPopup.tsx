@@ -24,6 +24,8 @@ interface VerificationPopupProps {
     fullName: string;
     email: string;
     phone_number: string;
+    organizationName?: string;
+    isNonprofit?: boolean;
     password: string;
     terms: boolean;
   };
@@ -110,6 +112,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
         email: signUpFormData.email,
         phone: signUpFormData.phone_number,
         password: signUpFormData.password,
+        organizationName: signUpFormData.isNonprofit ? signUpFormData.organizationName : undefined,
         // code: form.getValues('code'),
       };
       await authService.createUser(api, data);
