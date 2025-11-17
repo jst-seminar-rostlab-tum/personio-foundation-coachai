@@ -237,7 +237,7 @@ export function SignUpForm() {
                             htmlFor="nonprofit-yes"
                             className="text-sm font-normal cursor-pointer"
                           >
-                            {tCommon('nonprofitStatusYes')}
+                            {tCommon('yes')}
                           </Label>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -246,7 +246,7 @@ export function SignUpForm() {
                             htmlFor="nonprofit-no"
                             className="text-sm font-normal cursor-pointer"
                           >
-                            {tCommon('nonprofitStatusNo')}
+                            {tCommon('no')}
                           </Label>
                         </div>
                       </RadioGroup>
