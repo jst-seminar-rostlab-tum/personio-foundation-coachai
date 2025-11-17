@@ -79,5 +79,9 @@
   "organizationNameInputLabel": "Name Ihrer Organisation oder Institution",
   "organizationNameInputPlaceholder": "Geben Sie den Namen Ihrer Organisation ein",
   "nonprofitStatusCheckboxLabel": "Gemeinnützigkeitsstatus – Durch das Aktivieren dieser Checkbox bestätigen Sie, dass Ihre Organisation gemäß den Gesetzen Ihres Landes oder Ihrer Region als gemeinnützig anerkannt ist.",
+  "nonprofitStatusLabel": "Ist Ihre Organisation gemäß den Gesetzen Ihres Landes oder Ihrer Region offiziell als gemeinnützig anerkannt?",
+  "nonprofitStatusYes": "Ja",
+  "nonprofitStatusNo": "Nein",
+  "nonprofitStatusRequired": "Bitte wählen Sie einen Gemeinnützigkeitsstatus aus",
   "organizationNameRequired": "Der Name der Organisation ist erforderlich"
 }
