@@ -49,7 +49,7 @@ services:
       dockerfile: Dockerfile
       args:
         stage: dev
-    entrypoint: [ "uv", "run", "-m", "app.data.populate_dummy_data" ]
+    entrypoint: [ "uv", "run", "-m", "app.data.populate_dummy_data", "&&", "uv", "run", "-m", "app.data.populate_static_data"]
     volumes:
       - ./backend:/app
       - /app/.venv
@@ -60,32 +60,18 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@host.docker.internal:54322/postgres
     depends_on:
       supabase:
-        condition: service_healthy
+        condition: service_completed_successfully
     networks:
       - app-network
 
   supabase:
-    image: node:20
-    working_dir: /app/supabase
-    network_mode: host # Has to run on host
-    volumes:
-      - .:/app
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /app/supabase/node_modules
-    environment:
-      SUPABASE_API_HOST: 0.0.0.0
+    image: alpine
     command: >
       sh -c "
-        npm install &&
-        npx supabase start --debug &&
-        tail -f /dev/null
+        echo 'Waiting for Supabase (host:54322)...' &&
+        until nc -z host.docker.internal 54322; do sleep 1; done &&
+        echo 'Supabase is ready.'
       "
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -sf http://127.0.0.1:54321/rest-admin/v1/ready || exit 1" ]
-      interval: 3s
-      timeout: 3s
-      retries: 10
-
 
 networks:
   app-network:

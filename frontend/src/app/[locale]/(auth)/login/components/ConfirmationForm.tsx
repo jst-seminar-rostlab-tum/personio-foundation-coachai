@@ -16,6 +16,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { DEV_MODE_SKIP_AUTH } from '@/lib/connector';
 import { ModalWrapper } from './ModelWrapper';
 
 export default function ConfirmationForm({
@@ -62,40 +63,42 @@ export default function ConfirmationForm({
     setIsLoading(true);
     setError(null);
 
-    const formData = confirmationFormSchema.parse(form.getValues());
-    const supabase = await createClient();
-    const params: VerifyEmailOtpParams = {
-      email: formData.email,
-      token: formData.code,
-      type: 'signup',
-    };
-    const { error: verifyError } = await supabase.auth.verifyOtp(params);
-    if (verifyError) {
-      setError(verifyError.message);
-      setIsLoading(false);
+    if (!DEV_MODE_SKIP_AUTH) {
+      const formData = confirmationFormSchema.parse(form.getValues());
+      const supabase = await createClient();
+      const params: VerifyEmailOtpParams = {
+        email: formData.email,
+        token: formData.code,
+        type: 'signup',
+      };
+      const { error: verifyError } = await supabase.auth.verifyOtp(params);
+      if (verifyError) {
+        setError(verifyError.message);
+        setIsLoading(false);
 
-      if (verifyError.code) {
-        switch (verifyError.code) {
-          case 'otp_expired':
-            setError(t('ConfirmationForm.expiredOtpError'));
-            setShowResendButton(true);
-            break;
-          default:
-            setError(t('ConfirmationForm.genericError'));
+        if (verifyError.code) {
+          switch (verifyError.code) {
+            case 'otp_expired':
+              setError(t('ConfirmationForm.expiredOtpError'));
+              setShowResendButton(true);
+              break;
+            default:
+              setError(t('ConfirmationForm.genericError'));
+          }
         }
+
+        return;
       }
 
-      return;
-    }
-
-    try {
-      await authService.confirmUser(api);
-      isConfirmedRef.current = true;
-      if (onClose) onClose(); // Close the modal on success
-    } catch {
-      setError(t('ConfirmationForm.genericError'));
-      setIsLoading(false);
-      return;
+      try {
+        await authService.confirmUser(api);
+        isConfirmedRef.current = true;
+        if (onClose) onClose(); // Close the modal on success
+      } catch {
+        setError(t('ConfirmationForm.genericError'));
+        setIsLoading(false);
+        return;
+      }
     }
 
     router.push('/onboarding');

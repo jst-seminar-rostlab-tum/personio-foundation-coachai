@@ -16,6 +16,7 @@ import { authService } from '@/services/AuthService';
 import { showErrorToast } from '@/lib/utils/toast';
 import { handleInputChange, handleKeyDown, handlePasteEvent } from '@/lib/handlers/handleOtpInput';
 import { api } from '@/services/ApiClient';
+import axios from 'axios';
 
 interface VerificationPopupProps {
   isOpen: boolean;
@@ -120,8 +121,19 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
 
       router.push(`/login?step=confirm&email=${encodeURIComponent(signUpFormData.email)}`);
     } catch (err) {
-      setError(err instanceof z.ZodError ? err.errors[0].message : tCommon('genericError'));
-      setIsLoading(false);
+      let message = tCommon('genericError');
+
+      if (err instanceof z.ZodError) {
+        // Validation fails
+        message = err.errors[0].message;
+      } else if (axios.isAxiosError(err)) {
+        const detail = err.response?.data?.detail;
+        // Number in use
+        if (typeof detail === 'string' && detail.includes('Phone number already registered')) {
+          message = tCommon('numberInUseError');
+        }
+      }
+      setError(message);
     }
   };
 
