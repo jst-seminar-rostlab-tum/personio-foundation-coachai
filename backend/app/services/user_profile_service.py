@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import HTTPException, status
 from pydantic import ValidationError
-from sqlalchemy import update
+from sqlalchemy import case, update
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 from supabase import AuthError
@@ -19,6 +19,8 @@ from app.models.user_profile import UserProfile
 from app.schemas.user_confidence_score import ConfidenceScoreRead
 from app.schemas.user_profile import (
     ScenarioAdvice,
+    SessionLimitType,
+    SortOption,
     UserListPaginatedRead,
     UserProfileExtendedRead,
     UserProfilePaginatedRead,
@@ -83,20 +85,61 @@ class UserService:
 
     def get_user_profiles(
         self,
-        requesting_user_id: UUID,
         page: int = 1,
         limit: int = 10,
         email_substring: str | None = None,
+        session_limit_type_filter: list[SessionLimitType] | None = None,
+        email_sorting_option: SortOption | None = None,
+        session_limit_sorting_option: SortOption | None = None,
     ) -> UserListPaginatedRead:
-        statement = select(UserProfile)
+        if session_limit_sorting_option and email_sorting_option:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Only one sorting option can be used at a time.',
+            )
+
+        statement = select(UserProfile).where(col(UserProfile.account_role) != AccountRole.admin)
+
+        if session_limit_type_filter:
+            types = set(session_limit_type_filter)
+
+            if types == {SessionLimitType.DEFAULT}:
+                statement = statement.where(UserProfile.daily_session_limit.is_(None))
+
+            elif types == {SessionLimitType.INDIVIDUAL}:
+                statement = statement.where(UserProfile.daily_session_limit.is_not(None))
+
         if email_substring:
             statement = statement.where(col(UserProfile.email).like(f'%{email_substring}%'))
 
-        statement = statement.where(col(UserProfile.id) != requesting_user_id)
+        if session_limit_sorting_option:
+            apply_limit_sort = not session_limit_type_filter or set(session_limit_type_filter) == {
+                SessionLimitType.DEFAULT,
+                SessionLimitType.INDIVIDUAL,
+            }
 
-        statement = statement.where(col(UserProfile.account_role) != AccountRole.admin)
+            if apply_limit_sort:
+                match session_limit_sorting_option:
+                    case SortOption.ASC:
+                        # DEFAULT first, then INDIVIDUAL
+                        sort_expr = case(
+                            (UserProfile.daily_session_limit.is_(None), 0), else_=1
+                        ).asc()
 
-        statement = statement.order_by(col(UserProfile.updated_at).desc())
+                    case SortOption.DESC:
+                        # INDIVIDUAL first, then DEFAULT
+                        sort_expr = case(
+                            (UserProfile.daily_session_limit.is_(None), 0), else_=1
+                        ).desc()
+
+                statement = statement.order_by(sort_expr)
+
+        if email_sorting_option:
+            match email_sorting_option:
+                case SortOption.ASC:
+                    statement = statement.order_by(col(UserProfile.email).asc())
+                case SortOption.DESC:
+                    statement = statement.order_by(col(UserProfile.email).desc())
 
         all_users = self.db.exec(statement).all()
         total_users = len(all_users)
@@ -117,7 +160,19 @@ class UserService:
             )
 
         users = all_users[(page - 1) * limit : page * limit]
-        user_list = [UserProfilePaginatedRead(user_id=user.id, email=user.email) for user in users]
+        user_list = [
+            UserProfilePaginatedRead(
+                user_id=user.id,
+                email=user.email,
+                daily_session_limit=self.app_config_service.get_default_daily_session_limit()
+                if user.daily_session_limit is None
+                else user.daily_session_limit,
+                limit_type=SessionLimitType.DEFAULT
+                if user.daily_session_limit is None
+                else SessionLimitType.INDIVIDUAL,
+            )
+            for user in users
+        ]
 
         return UserListPaginatedRead(
             page=page,
@@ -348,6 +403,9 @@ class UserService:
     def update_daily_session_limit(
         self, user_id: UUID, daily_session_limit: int | None
     ) -> UserProfileRead:
+        if daily_session_limit == self.app_config_service.get_default_daily_session_limit():
+            daily_session_limit = None
+
         statement = (
             update(UserProfile)
             .where(UserProfile.id == user_id)
