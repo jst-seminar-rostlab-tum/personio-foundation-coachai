@@ -16,42 +16,6 @@ from app.dependencies.database import get_supabase_client
 settings = Settings()
 
 
-def clean_text(text: str) -> str:
-    """
-    Cleans text extracted from PDFs by fixing common parsing issues.
-    Args:
-        text: Raw text from PDF extraction
-    Returns:
-        Cleaned text with normalized whitespace and fixed formatting
-    """
-    if not text:
-        return text
-
-    # Fix spaced-out characters (e.g., "J ohn" -> "John", "B . F ." -> "B.F.")
-    text = re.sub(r'\b(\w)\s+\.\s+(\w)', r'\1.\2', text)
-    text = re.sub(
-        r'\b(\w)\s+(\w)\b',
-        lambda m: m.group(1) + m.group(2)
-        if len(m.group(1)) == 1 and len(m.group(2)) == 1
-        else m.group(0),
-        text,
-    )
-
-    # Remove space before punctuation
-    text = re.sub(r'\s+([.,!?;:])', r'\1', text)
-
-    # Normalize multiple spaces to single space
-    text = re.sub(r' +', ' ', text)
-
-    # Normalize multiple newlines
-    text = re.sub(r'\n{3,}', '\n\n', text)
-
-    # Remove leading/trailing whitespace from each line
-    text = '\n'.join(line.strip() for line in text.split('\n'))
-
-    return text.strip()
-
-
 def remove_citations_and_captions(text: str) -> str:
     """
     Removes citations and captions from text while preserving the main content.
@@ -109,7 +73,7 @@ def remove_citations_and_captions(text: str) -> str:
         # Clean inline citations within the line (but keep the rest of the text)
         # Remove things like "OpenAI. (2024, July 9). ChatGPT. [Large language model]."
         line_cleaned = re.sub(
-            r'\b[\w\s,&\.]+\.\s*\(\d{4}[^\)]*\)\.\s*[^\n]*\.\s*\[[^\]]+\]\.', '', line_stripped
+            r'\b[\w\s,&.]+\.\s*\(\d{4}[^\)]*\)\.\s*[^\n]*\.\s*\[[^\]]+\]\.', '', line_stripped
         )
 
         # Remove standalone URLs from lines
@@ -117,7 +81,7 @@ def remove_citations_and_captions(text: str) -> str:
 
         # Remove citation patterns like (Author, 2024) or [1]
         line_cleaned = re.sub(r'\([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?,?\s+\d{4}\)', '', line_cleaned)
-        line_cleaned = re.sub(r'\[\d+\]', '', line_cleaned)
+        line_cleaned = re.sub(r'\[\d+]', '', line_cleaned)
 
         # Clean up extra spaces
         line_cleaned = re.sub(r'\s+', ' ', line_cleaned).strip()
@@ -131,6 +95,43 @@ def remove_citations_and_captions(text: str) -> str:
     result = re.sub(r'\n{3,}', '\n\n', result)  # Normalize multiple newlines
 
     return result.strip()
+
+
+def should_exclude_chunk(text: str) -> bool:
+    """
+    Determines if a text chunk should be excluded from the vector database.
+
+    Only excludes chunks that are ENTIRELY non-content:
+    - Very short chunks with no substance
+    - Chunks that are ONLY citations/references
+    - Page numbers or chapter headers only
+
+    Args:
+        text: Text chunk to evaluate
+
+    Returns:
+        True if chunk should be excluded, False otherwise
+    """
+    if not text or len(text.strip()) < 30:  # Too short
+        return True
+
+    text_stripped = text.strip()
+    word_count = len(text_stripped.split())
+
+    # Exclude if it's just a page number or chapter header
+    if word_count < 5 and (
+        re.match(r'^\s*\d+\s*$', text_stripped)
+        or re.match(r'^Chapter\s+\d+$', text_stripped, re.IGNORECASE)
+    ):
+        return True
+
+    # Exclude if it's ONLY a reference section header
+    reference_indicators = ['references', 'bibliography', 'works cited', 'further reading']
+    if any(text_stripped.lower() == ind for ind in reference_indicators):
+        return True
+
+    # Exclude if entire chunk is just URLs
+    return bool(re.match(r'^https?://\S+$', text_stripped))
 
 
 def extract_toc(file_path: str) -> tuple[list, int]:
@@ -216,14 +217,19 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
                 for doc in loaded_docs:
                     # Replacing null bytes as they lead to errors
                     doc.page_content = doc.page_content.replace('\u0000', '')
+                    # Cleaning URLs, citations etc.
+                    doc.page_content = remove_citations_and_captions(doc.page_content)
                     doc.metadata['licenseName'] = license_name
                     doc.metadata['author'] = author
                     doc.metadata['chapter'] = page_chapter_map.get(doc.metadata.get('page', 0))
                     doc.metadata.pop('source', None)
 
                 splits = text_splitter.split_documents(loaded_docs)
-                docs.extend(splits)
-                print(f'✅ Successfully processed {file} with {len(splits)} chunks')
+                filtered_splits = [
+                    split for split in splits if not should_exclude_chunk(split.page_content)
+                ]
+                docs.extend(filtered_splits)
+                print(f'✅ Successfully processed {file} with {len(filtered_splits)} chunks')
             except Exception as e:
                 print(f'❌ Error processing {file_path}: {e}')
 
