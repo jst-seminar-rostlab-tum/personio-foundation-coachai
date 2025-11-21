@@ -16,6 +16,8 @@ from app.dependencies.database import get_supabase_client
 settings = Settings()
 
 
+# -----------------------
+# Clean-up functionality
 def remove_citations_and_captions(text: str) -> str:
     """
     Removes citations and captions from text while preserving the main content.
@@ -97,7 +99,7 @@ def remove_citations_and_captions(text: str) -> str:
     return result.strip()
 
 
-def should_exclude_chunk(text: str) -> bool:
+def should_exclude_chunk(doc: Document) -> bool:
     """
     Determines if a text chunk should be excluded from the vector database.
 
@@ -105,13 +107,15 @@ def should_exclude_chunk(text: str) -> bool:
     - Very short chunks with no substance
     - Chunks that are ONLY citations/references
     - Page numbers or chapter headers only
+    ...
 
     Args:
-        text: Text chunk to evaluate
+        doc: doc chunk to evaluate
 
     Returns:
         True if chunk should be excluded, False otherwise
     """
+    text = doc.page_content
     if not text or len(text.strip()) < 30:  # Too short
         return True
 
@@ -130,17 +134,39 @@ def should_exclude_chunk(text: str) -> bool:
     if any(text_stripped.lower() == ind for ind in reference_indicators):
         return True
 
+    if 'chatgpt' in text_stripped.lower():
+        return True
+
+    chapter = doc.metadata['chapter']
+    if chapter and any(
+        term in chapter.strip().lower()
+        for term in [
+            'references',
+            'bibliography',
+            'works cited',
+            'version history',
+            'detailed licensing',
+            'index',
+            'further reading',
+            'errata',
+            'image credits',
+            'survey',
+            'resources',
+        ]
+    ):
+        return True
+
     # Exclude if entire chunk is just URLs
     return bool(re.match(r'^https?://\S+$', text_stripped))
 
 
 def extract_toc(file_path: str) -> tuple[list, int]:
     """
-    Extracts the Table of Contents of a file
+    Extracts TOC by analyzing text layout and positions
     """
     with pymupdf.open(file_path) as doc:
-        toc = doc.get_toc(simple=True)
         total_pages = len(doc)
+        toc = doc.get_toc(simple=True)
     return toc, total_pages
 
 
@@ -158,6 +184,9 @@ def build_page_chapter_map(toc: list, total_pages: int) -> dict:
         for page in range(start_page, end_page + 1):
             page_to_chapter[page] = title
     return page_to_chapter
+
+
+# -----------------------
 
 
 def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
@@ -225,9 +254,7 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
                     doc.metadata.pop('source', None)
 
                 splits = text_splitter.split_documents(loaded_docs)
-                filtered_splits = [
-                    split for split in splits if not should_exclude_chunk(split.page_content)
-                ]
+                filtered_splits = [split for split in splits if not should_exclude_chunk(split)]
                 docs.extend(filtered_splits)
                 print(f'✅ Successfully processed {file} with {len(filtered_splits)} chunks')
             except Exception as e:
