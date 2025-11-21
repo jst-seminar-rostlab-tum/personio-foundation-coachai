@@ -24,7 +24,7 @@ export default function ConfirmationForm({
   onClose,
 }: {
   initialEmail?: string;
-  onClose?: () => void;
+  onClose: () => void;
 }) {
   const t = useTranslations('Login');
   const tCommon = useTranslations('Common');
@@ -89,19 +89,18 @@ export default function ConfirmationForm({
 
         return;
       }
-
-      try {
-        await authService.confirmUser(api);
-        isConfirmedRef.current = true;
-        if (onClose) onClose(); // Close the modal on success
-      } catch {
-        setError(t('ConfirmationForm.genericError'));
-        setIsLoading(false);
-        return;
-      }
     }
 
-    router.push('/onboarding');
+    try {
+      if (!DEV_MODE_SKIP_AUTH) {
+        await authService.confirmUser(api);
+      }
+      isConfirmedRef.current = true;
+      router.push('/onboarding');
+    } catch {
+      setError(t('ConfirmationForm.genericError'));
+      setIsLoading(false);
+    }
   };
 
   const resendConfirmationEmail = async () => {
@@ -202,7 +201,7 @@ export default function ConfirmationForm({
                   {t('resendCodeButtonLabel')}
                 </Button>
               )}
-              <Button size="full" onClick={onClose} disabled={isLoading}>
+              <Button size="full" onClick={onClose} disabled={isLoading} type="button">
                 {tCommon('cancel')}
               </Button>
             </CardFooter>
