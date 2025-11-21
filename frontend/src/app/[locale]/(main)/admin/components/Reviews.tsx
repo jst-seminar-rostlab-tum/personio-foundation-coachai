@@ -20,8 +20,12 @@ import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
 
-export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
-  const limit = pagination?.pageSize;
+export default function Reviews({
+  ratingStatistics,
+  reviews,
+  pagination,
+  limit,
+}: ReviewsPaginated) {
   const router = useRouter();
   const locale = useLocale();
   const tCommon = useTranslations('Common');

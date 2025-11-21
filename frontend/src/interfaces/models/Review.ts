@@ -33,4 +33,5 @@ export interface ReviewsPaginated {
     pageSize: number;
   };
   ratingStatistics: RatingStatistics;
+  limit: number;
 }
