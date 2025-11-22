@@ -313,6 +313,55 @@ def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session])
             rating=3,
             comment='Decent content, but I expected more depth.',
         ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
     ]
 
 

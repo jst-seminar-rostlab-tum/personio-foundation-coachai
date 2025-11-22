@@ -149,9 +149,8 @@ class ReviewService:
 
     def get_reviews(
         self,
-        limit: int | None = None,
         page: int | None = None,
-        page_size: int = 10,
+        page_size: int = 8,
         sort: str = 'newest',
     ) -> list[ReviewRead] | PaginatedReviewRead:
         """
