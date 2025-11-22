@@ -229,7 +229,7 @@ export function SignUpForm() {
                         }}
                         value={field.value}
                         disabled={isLoading}
-                        className="flex flex-col space-y-3"
+                        className="flex flex-col"
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="yes" id="nonprofit-yes" />
