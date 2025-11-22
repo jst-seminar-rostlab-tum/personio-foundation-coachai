@@ -8,6 +8,8 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Checkbox from '@/components/ui/Checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
+import Label from '@/components/ui/Label';
 import { useEffect, useState } from 'react';
 import {
   Form,
@@ -53,7 +55,9 @@ export function SignUpForm() {
       email: z.string().email(tCommon('emailInputError')),
       phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
       organizationName: z.string().optional(),
-      isNonprofit: z.boolean().optional(),
+      nonprofitStatus: z.enum(['yes', 'no'], {
+        required_error: tCommon('nonprofitStatusRequired'),
+      }),
       password: z
         .string()
         .regex(/^.{8,}$/)
@@ -63,7 +67,10 @@ export function SignUpForm() {
     })
     .refine(
       (data) => {
-        if (data.isNonprofit && (!data.organizationName || !data.organizationName.trim())) {
+        if (
+          data.nonprofitStatus === 'yes' &&
+          (!data.organizationName || !data.organizationName.trim())
+        ) {
           return false;
         }
         return true;
@@ -82,7 +89,7 @@ export function SignUpForm() {
       email: '',
       phone_number: '',
       organizationName: '',
-      isNonprofit: false,
+      nonprofitStatus: undefined as 'yes' | 'no' | undefined,
       password: '',
       terms: false,
     },
@@ -208,31 +215,48 @@ export function SignUpForm() {
 
               <FormField
                 control={signUpForm.control}
-                name="isNonprofit"
+                name="nonprofitStatus"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col space-y-2">
-                    <div className="flex items-start space-x-2">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onClick={() => {
-                            field.onChange(!field.value);
-                            if (field.value) {
-                              signUpForm.setValue('organizationName', '');
-                            }
-                          }}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormLabel className="text-sm font-normal">
-                        {tCommon('nonprofitStatusCheckboxLabel')}
-                      </FormLabel>
-                    </div>
+                  <FormItem className="space-y-3">
+                    <FormLabel>{tCommon('nonprofitStatusLabel')}</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          if (value === 'no') {
+                            signUpForm.setValue('organizationName', '');
+                          }
+                        }}
+                        value={field.value}
+                        disabled={isLoading}
+                        className="flex flex-col"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="yes" id="nonprofit-yes" />
+                          <Label
+                            htmlFor="nonprofit-yes"
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            {tCommon('yes')}
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="no" id="nonprofit-no" />
+                          <Label
+                            htmlFor="nonprofit-no"
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            {tCommon('no')}
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {signUpForm.watch('isNonprofit') && (
+              {signUpForm.watch('nonprofitStatus') === 'yes' && (
                 <FormField
                   control={signUpForm.control}
                   name="organizationName"
