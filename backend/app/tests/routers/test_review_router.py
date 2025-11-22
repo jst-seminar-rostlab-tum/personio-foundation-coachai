@@ -171,7 +171,6 @@ class TestReviewRoute(unittest.TestCase):
         response = self.client.get(
             '/reviews', params={'page': 1, 'page_size': page_size, 'sort': 'newest'}
         )
-        print(response.json())
         self.assertEqual(response.status_code, 200)
 
         data = response.json()

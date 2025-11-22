@@ -20,7 +20,7 @@ from app.dependencies.database import get_db_session
 from app.enums.session_status import SessionStatus
 from app.models import Session, UserProfile
 from app.models.review import Review
-from app.schemas import PaginatedReviewRead, ReviewCreate
+from app.schemas import ReviewCreate
 from app.services.review_service import ReviewService
 
 
@@ -293,25 +293,29 @@ class TestReviewService(unittest.TestCase):
         self._create_multiple_dummy_reviews(self.normal_user, 1, 2)
         self._create_multiple_dummy_reviews(self.normal_user, 1, 1)
 
-        reviews = self.service.get_reviews(limit=5, sort='highest')
+        reviews = self.service.get_reviews(page_size=5, sort='highest')
+        reviews = reviews.reviews
         self.assertEqual(len(reviews), 5)
         self.assertTrue(
             all(reviews[i].rating >= reviews[i + 1].rating for i in range(len(reviews) - 1))
         )
 
-        reviews = self.service.get_reviews(limit=5, sort='lowest')
+        reviews = self.service.get_reviews(page_size=5, sort='lowest')
+        reviews = reviews.reviews
         self.assertEqual(len(reviews), 5)
         self.assertTrue(
             all(reviews[i].rating <= reviews[i + 1].rating for i in range(len(reviews) - 1))
         )
 
-        reviews = self.service.get_reviews(limit=5, sort='newest')
+        reviews = self.service.get_reviews(page_size=5, sort='newest')
+        reviews = reviews.reviews
         self.assertEqual(len(reviews), 5)
         self.assertTrue(
             all(reviews[i].date >= reviews[i + 1].date for i in range(len(reviews) - 1))
         )
 
-        reviews = self.service.get_reviews(limit=5, sort='oldest')
+        reviews = self.service.get_reviews(page_size=5, sort='oldest')
+        reviews = reviews.reviews
         self.assertEqual(len(reviews), 5)
         self.assertTrue(
             all(reviews[i].date <= reviews[i + 1].date for i in range(len(reviews) - 1))
@@ -323,17 +327,15 @@ class TestReviewService(unittest.TestCase):
         self._create_multiple_dummy_reviews(self.normal_user, 1, 3)
         self._create_multiple_dummy_reviews(self.normal_user, 1, 2)
         self._create_multiple_dummy_reviews(self.normal_user, 1, 1)
-        reviews = self.service.get_reviews(page=1, page_size=3, sort='newest', limit=None)
-        self.assertIsInstance(reviews, PaginatedReviewRead)
-        self.assertEqual(len(reviews.reviews), 3)
+        data = self.service.get_reviews(page=1, page_size=3, sort='newest')
+        reviews = data.reviews
+        self.assertIsInstance(reviews, list)
+        self.assertEqual(len(reviews), 3)
         self.assertTrue(
-            all(
-                reviews.reviews[i].date >= reviews.reviews[i + 1].date
-                for i in range(len(reviews.reviews) - 1)
-            )
+            all(reviews[i].date >= reviews[i + 1].date for i in range(len(reviews) - 1))
         )
-        self.assertEqual(reviews.pagination['currentPage'], 1)
-        self.assertEqual(reviews.pagination['totalPages'], 3)
-        self.assertEqual(reviews.pagination['totalCount'], 7)
-        self.assertEqual(reviews.pagination['pageSize'], 3)
-        self.assertEqual(reviews.rating_statistics.average, 3.43)
+        self.assertEqual(data.pagination['currentPage'], 1)
+        self.assertEqual(data.pagination['totalPages'], 3)
+        self.assertEqual(data.pagination['totalCount'], 7)
+        self.assertEqual(data.pagination['pageSize'], 3)
+        self.assertEqual(data.rating_statistics.average, 3.43)

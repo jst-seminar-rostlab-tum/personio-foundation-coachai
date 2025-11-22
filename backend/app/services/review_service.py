@@ -152,7 +152,7 @@ class ReviewService:
         page: int | None = None,
         page_size: int = 8,
         sort: str = 'newest',
-    ) -> list[ReviewRead] | PaginatedReviewRead:
+    ) -> PaginatedReviewRead:
         """
         Retrieve user reviews with optional pagination, statistics and sorting.
         """
