@@ -15,8 +15,6 @@ const getPaginatedReviews = async (
         sort,
       },
     });
-    // eslint-disable-next-line no-restricted-syntax
-    console.log('Reviews: ', data);
     return data;
   } catch (error) {
     console.error('Error getting review:', error);
