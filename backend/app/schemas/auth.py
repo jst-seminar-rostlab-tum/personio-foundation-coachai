@@ -6,6 +6,7 @@ class UserCreate(CamelModel):
     phone: str
     email: str
     password: str
+    organization_name: str | None = None
     # code: str
 
 

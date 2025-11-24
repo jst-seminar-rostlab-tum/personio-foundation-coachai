@@ -5,6 +5,7 @@ export interface UserProfile {
   fullName: string;
   email: string;
   phoneNumber: string;
+  organizationName?: string;
   professionalRole: string;
   goals: string[];
   accountRole: AccountRole;

@@ -63,6 +63,7 @@ def create_user(req: UserCreate) -> None:
             'phone_confirm': True,
             'user_metadata': {
                 'full_name': req.full_name,
+                'organization_name': req.organization_name,
             },
         }
         supabase.auth.admin.create_user(attributes)
