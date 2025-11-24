@@ -7,7 +7,7 @@ import { reviewService } from '@/services/ReviewService';
 import { UserProfileService } from '@/services/UserProfileService';
 import { getTranslations } from 'next-intl/server';
 import { api } from '@/services/ApiServer';
-import { USER_LIST_LIMIT } from './constants/UsersList';
+import { REVIEWS_LIMIT, USER_LIST_LIMIT } from './constants/UsersList';
 import AdminLoadingPage from './loading';
 import SessionSetter from './components/SessionSetter';
 import Reviews from './components/Reviews';
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
 
 export default async function AdminPage() {
   const statsData = adminService.getAdminStats(api);
-  const reviewsData = reviewService.getPaginatedReviews(api, 1, undefined, 'newest');
+  const reviewsData = reviewService.getPaginatedReviews(api, 1, REVIEWS_LIMIT, 'newest');
   const usersData = UserProfileService.getPaginatedUsers(api, 1, USER_LIST_LIMIT);
   const [stats, reviews, users] = await Promise.all([statsData, reviewsData, usersData]);
   const t = await getTranslations('Admin');
