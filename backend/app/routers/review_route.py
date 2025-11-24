@@ -28,15 +28,14 @@ def get_review_service(db: Annotated[DBSession, Depends(get_db_session)]) -> Rev
 )
 def get_reviews(
     service: Annotated[ReviewService, Depends(get_review_service)],
-    limit: int | None = Query(None),
     page: int | None = Query(None),
-    page_size: int = Query(10),
+    page_size: int = Query(8),
     sort: str = Query('newest'),
 ) -> list[ReviewRead] | PaginatedReviewRead:
     """
     Retrieve user reviews with optional pagination, statistics and sorting.
     """
-    return service.get_reviews(limit, page, page_size, sort)
+    return service.get_reviews(page, page_size, sort)
 
 
 @router.post('', response_model=ReviewConfirm)

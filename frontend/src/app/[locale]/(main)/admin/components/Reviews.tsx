@@ -70,7 +70,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
 
   useEffect(() => {
     if (!ratingStatistics?.average) {
-      setAnimatedAverage(0.1);
+      setAnimatedAverage(0.0);
       return;
     }
     if (averageRef.current) {
@@ -79,16 +79,18 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
     const duration = 1000;
     const start = performance.now();
     const target = ratingStatistics.average;
-    const startValue = 0.1;
+    const startValue = 0.0;
+
     function animate(now: number) {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
       const value = startValue + (target - startValue) * progress;
-      setAnimatedAverage(progress < 1 ? Math.max(value, 0.1) : target);
+      setAnimatedAverage(progress < 1 ? Math.max(value, 0.0) : target);
       if (progress < 1) {
         averageRef.current = requestAnimationFrame(animate);
       }
     }
+
     averageRef.current = requestAnimationFrame(animate);
   }, [ratingStatistics?.average]);
 
@@ -105,6 +107,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
       ratingStatistics?.numOneStar || 0,
     ];
     const maxCount = Math.max(...counts);
+
     function animate(now: number) {
       if (!countStartTime.current) countStartTime.current = now;
       const elapsed = now - countStartTime.current;
@@ -117,6 +120,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
         setAnimatedCounts(counts);
       }
     }
+
     if (maxCount > 0) {
       countAnimationRef.current = requestAnimationFrame(animate);
     } else {
@@ -206,6 +210,7 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
           });
         }
       }
+
       animationRefs.current[idx] = requestAnimationFrame(animate);
     });
     return () => {
