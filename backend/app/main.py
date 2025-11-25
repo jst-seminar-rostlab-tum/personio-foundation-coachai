@@ -32,7 +32,7 @@ from app.routers import (
 )
 from app.services.data_retention_service import cleanup_old_session_turns
 
-if settings.stage == 'prod' and settings.SENTRY_DSN:
+if settings.stage == 'dev' and settings.SENTRY_DSN:
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         integrations=[
@@ -41,7 +41,7 @@ if settings.stage == 'prod' and settings.SENTRY_DSN:
             HttpxIntegration(),
             LoggingIntegration(level=logging.INFO, event_level=logging.ERROR),
         ],
-        traces_sample_rate=0.1,
+        traces_sample_rate=1.0,
         enable_tracing=True,
     )
 
