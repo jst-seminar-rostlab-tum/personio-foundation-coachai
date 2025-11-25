@@ -110,6 +110,10 @@ GCP_CLIENT_ID=<...>
 ```bash
 npx supabase start
 ```
+To stop it, run:
+```bash
+npx supabase stop
+```
 
 4. Populate local PostgreSQL with dummy data. From the backend folder, run the following:
 
