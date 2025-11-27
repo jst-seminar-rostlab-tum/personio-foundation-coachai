@@ -16,9 +16,10 @@ interface UserDialogProps {
   userId: string | null;
   isOpen: boolean;
   onClose: () => void;
+  onUpdate: () => void;
 }
 
-export default function UserDialog({ userId, isOpen, onClose }: UserDialogProps) {
+export default function UserDialog({ userId, isOpen, onClose, onUpdate }: UserDialogProps) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -57,6 +58,9 @@ export default function UserDialog({ userId, isOpen, onClose }: UserDialogProps)
       await ClientUserProfileService.updateDailySessionLimit(api, userId, numericValue);
       showSuccessToast(t('sessionSuccess'));
       await fetchUserProfile();
+      if (onUpdate) {
+        onUpdate();
+      }
     } catch (error) {
       showErrorToast(error, t('sessionFailed'));
     } finally {
