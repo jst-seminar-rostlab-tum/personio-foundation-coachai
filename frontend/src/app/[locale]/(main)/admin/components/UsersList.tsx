@@ -113,8 +113,10 @@ export default function UsersList({
       newFilter = null;
     }
     setSessionLimitFilter(newFilter);
+    const updatedSessionLimitSorting = newFilter ? null : sessionLimitSorting;
+    setSessionLimitSorting(updatedSessionLimitSorting);
     setLimit(USER_LIST_LIMIT);
-    fetchUsers(USER_LIST_LIMIT, search, newFilter, emailSorting, sessionLimitSorting);
+    fetchUsers(USER_LIST_LIMIT, search, newFilter, emailSorting, updatedSessionLimitSorting);
   };
 
   const handleEmailSortingChange = (value: string) => {
@@ -242,6 +244,7 @@ export default function UsersList({
             <Select
               value={sessionLimitSorting === null ? SortOption.NONE : sessionLimitSorting}
               onValueChange={handleSessionLimitSortingChange}
+              disabled={!!sessionLimitFilter}
             >
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue />
@@ -260,22 +263,22 @@ export default function UsersList({
       ) : (
         <>
           <div className="overflow-x-auto rounded-lg border border-bw-40 mb-4 w-full">
-            <Table className="min-w-[320px] text-sm table-fixed">
+            <Table className="w-full min-w-[320px] text-sm table-auto">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-left font-semibold text-bw-70 px-6 py-4 w-[280px]">
+                  <TableHead className="text-left font-semibold text-bw-70 px-4 sm:px-6 py-4 w-full sm:w-[320px]">
                     <div className="flex items-center gap-2">
                       {t('email')}
                       {renderSortIndicator(emailSorting)}
                     </div>
                   </TableHead>
-                  <TableHead className="text-left font-semibold text-bw-70 px-6 py-4">
+                  <TableHead className="text-left font-semibold text-bw-70 px-4 sm:px-6 py-4">
                     <div className="flex items-center gap-2">
                       {t('dailySessionLimit')}
                       {renderSortIndicator(sessionLimitSorting)}
                     </div>
                   </TableHead>
-                  <TableHead className="text-right font-semibold text-bw-70 pl-0 pr-6 py-4"></TableHead>
+                  <TableHead className="text-right font-semibold text-bw-70 px-4 sm:px-6 py-4"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -285,11 +288,13 @@ export default function UsersList({
                     className="border-t border-bw-50 hover:bg-bw-5 cursor-pointer"
                     onClick={() => handleUserClick(user.userId)}
                   >
-                    <TableCell className="px-6 py-4 text-bw-70 w-[280px]">{user.email}</TableCell>
-                    <TableCell className="px-6 py-4 text-bw-70">
+                    <TableCell className="px-4 sm:px-6 py-4 text-bw-70 w-full sm:w-[320px] break-words">
+                      {user.email}
+                    </TableCell>
+                    <TableCell className="px-4 sm:px-6 py-4 text-bw-70">
                       {user.dailySessionLimit ?? '-'}
                     </TableCell>
-                    <TableCell className="pl-0 pr-6 py-4 text-right">
+                    <TableCell className="px-4 sm:px-6 py-4 text-right">
                       <DeleteUserHandler id={user.userId} onDeleteSuccess={onDeleteSuccess} />
                     </TableCell>
                   </TableRow>
@@ -312,7 +317,6 @@ export default function UsersList({
         isOpen={isDialogOpen}
         onClose={handleDialogClose}
         onUpdate={() => {
-          // Refresh the user list when session limit is updated
           fetchUsers(limit, search, sessionLimitFilter, emailSorting, sessionLimitSorting);
         }}
       />
