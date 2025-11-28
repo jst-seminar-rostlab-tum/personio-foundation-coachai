@@ -25,5 +25,14 @@
   "user": "User",
   "professionalRole": "Professional Role",
   "dailySessionLimit": "Daily Session Limit",
-  "sessionsUsedToday": "Sessions Used Today"
+  "sessionsUsedToday": "Sessions Used Today",
+  "filterBySessionLimit": "Filter by Session Limit",
+  "all": "All",
+  "default": "Default",
+  "individual": "Individual",
+  "sortByEmail": "Sort by Email",
+  "sortBySessionLimit": "Sort by Session Limit",
+  "ascending": "Ascending",
+  "descending": "Descending",
+  "noSort": "No Sort"
 }

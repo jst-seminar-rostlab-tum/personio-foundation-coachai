@@ -25,5 +25,14 @@
   "user": "Benutzer",
   "professionalRole": "Berufliche Rolle",
   "dailySessionLimit": "Tägliches Sitzungslimit",
-  "sessionsUsedToday": "Heute verwendete Sitzungen"
+  "sessionsUsedToday": "Heute verwendete Sitzungen",
+  "filterBySessionLimit": "Nach Sitzungslimit filtern",
+  "all": "Alle",
+  "default": "Standard",
+  "individual": "Individuell",
+  "sortByEmail": "Nach E-Mail sortieren",
+  "sortBySessionLimit": "Nach Sitzungslimit sortieren",
+  "ascending": "Aufsteigend",
+  "descending": "Absteigend",
+  "noSort": "Keine Sortierung"
 }

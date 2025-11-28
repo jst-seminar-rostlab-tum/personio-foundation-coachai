@@ -42,3 +42,15 @@ export interface ScenarioAdvice {
   scenario: ConversationScenario;
   mascotSpeech: string;
 }
+
+export enum SortOption {
+  NONE = 'none',
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
+export enum SessionLimitType {
+  ALL = 'all',
+  DEFAULT = 'DEFAULT',
+  INDIVIDUAL = 'INDIVIDUAL',
+}

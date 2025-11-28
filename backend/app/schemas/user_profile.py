@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from enum import Enum
 from uuid import UUID
 
 from app.enums.account_role import AccountRole
@@ -73,9 +74,16 @@ class UserProfileExtendedRead(UserProfileRead):
 UserProfileExtendedRead.model_rebuild()
 
 
+class SessionLimitType(str, Enum):
+    DEFAULT = 'DEFAULT'
+    INDIVIDUAL = 'INDIVIDUAL'
+
+
 class UserProfilePaginatedRead(CamelModel):
     user_id: UUID
     email: str
+    daily_session_limit: int
+    limit_type: SessionLimitType
 
 
 class UserListPaginatedRead(CamelModel):
@@ -99,3 +107,8 @@ class UserStatistics(CamelModel):
 
 class UserDailySessionLimitUpdate(CamelModel):
     daily_session_limit: int | None
+
+
+class SortOption(str, Enum):
+    ASC = 'ASC'
+    DESC = 'DESC'

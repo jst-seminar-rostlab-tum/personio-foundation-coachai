@@ -81,14 +81,43 @@ const getPaginatedUsers = async (
   api: AxiosInstance,
   page: number,
   limit: number,
-  emailSubstring?: string
+  emailSubstring?: string,
+  sessionLimitType?: string[],
+  emailSortingOption?: string,
+  sessionLimitSortingOption?: string
 ) => {
   try {
+    const params: Record<string, string[] | string | number> = {
+      page,
+      limit,
+    };
+
+    if (emailSubstring) {
+      params.email_substring = emailSubstring;
+    }
+
+    if (sessionLimitType && sessionLimitType.length > 0) {
+      params.session_limit_type = sessionLimitType;
+    }
+
+    if (emailSortingOption) {
+      params.email_sorting_option = emailSortingOption;
+    }
+
+    if (sessionLimitSortingOption) {
+      params.session_limit_sorting_option = sessionLimitSortingOption;
+    }
+
     const { data } = await api.get('/user-profiles', {
-      params: {
-        page,
-        limit,
-        email_substring: emailSubstring,
+      params,
+      paramsSerializer: (serializedParams) => {
+        const searchParams = new URLSearchParams();
+        Object.entries(serializedParams).forEach(([key, value]) => {
+          if (value == null) return;
+          const values = Array.isArray(value) ? value : [value];
+          values.forEach((item) => searchParams.append(key, String(item)));
+        });
+        return searchParams.toString();
       },
     });
     return data;

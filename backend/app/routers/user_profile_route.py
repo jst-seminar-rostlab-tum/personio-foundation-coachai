@@ -15,6 +15,8 @@ from app.dependencies.database import get_db_session
 from app.models.conversation_scenario import ConversationScenario
 from app.models.user_profile import UserProfile
 from app.schemas.user_profile import (
+    SessionLimitType,
+    SortOption,
     UserDailySessionLimitUpdate,
     UserListPaginatedRead,
     UserProfileExtendedRead,
@@ -39,7 +41,6 @@ def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserS
     dependencies=[Depends(require_admin)],
 )
 def get_user_profiles(
-    requesting_user: Annotated[UserProfile, Depends(require_admin)],
     service: Annotated[UserService, Depends(get_user_service)],
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1),
@@ -49,15 +50,20 @@ def get_user_profiles(
         min_length=1,
         max_length=100,
     ),
+    session_limit_type: Annotated[list[SessionLimitType] | None, Query()] = None,
+    email_sorting_option: SortOption | None = None,
+    session_limit_sorting_option: SortOption | None = None,
 ) -> UserListPaginatedRead:
     """
     Retrieve all user profiles.
     """
     return service.get_user_profiles(
-        requesting_user_id=requesting_user.id,
         page=page,
         limit=limit,
         email_substring=email_substring,
+        session_limit_type_filter=session_limit_type,
+        email_sorting_option=email_sorting_option,
+        session_limit_sorting_option=session_limit_sorting_option,
     )
 
 
