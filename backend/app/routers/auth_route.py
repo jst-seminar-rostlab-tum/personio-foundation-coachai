@@ -133,7 +133,7 @@ def confirm_mock_user(
         ) from e
 
 
-@router.post('/delete-unconfirmed', response_model=None, status_code=status.HTTP_200_OK)
+@router.delete('/delete-unconfirmed', response_model=None, status_code=status.HTTP_200_OK)
 def delete_unconfirmed_user(email: str = Body(..., embed=True)) -> None:
     """
     Delete a user from Supabase Auth by email if not confirmed.

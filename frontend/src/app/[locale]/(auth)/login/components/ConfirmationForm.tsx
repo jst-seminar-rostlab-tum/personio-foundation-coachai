@@ -74,8 +74,8 @@ export default function ConfirmationForm({
     setIsLoading(true);
     setError(null);
 
+    const formData = confirmationFormSchema.parse(form.getValues());
     if (!DEV_MODE_SKIP_AUTH) {
-      const formData = confirmationFormSchema.parse(form.getValues());
       const supabase = await createClient();
       const params: VerifyEmailOtpParams = {
         email: formData.email,
@@ -120,6 +120,7 @@ export default function ConfirmationForm({
       isConfirmedRef.current = true;
       router.push('/onboarding');
     } catch {
+      await authService.deleteUnconfirmedUser(api, formData.email);
       setError(t('ConfirmationForm.genericError'));
       setIsLoading(false);
     }

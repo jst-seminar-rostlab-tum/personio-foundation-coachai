@@ -133,6 +133,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
           message = tCommon('numberInUseError');
         }
       }
+      await authService.deleteUnconfirmedUser(api, signUpFormData.email);
       setError(message);
     }
   };
