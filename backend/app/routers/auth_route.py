@@ -113,7 +113,7 @@ def confirm_mock_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Endpoint not found')
 
     if not request.client or request.client.host not in ['127.0.0.1', 'localhost', '::1']:
-        raise HTTPException(status_code=404, detail='Endpoint not found')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Endpoint not found')
 
     try:
         user_data = UserProfile(
@@ -126,8 +126,10 @@ def confirm_mock_user(
         db_session.commit()
     except Exception as e:
         db_session.rollback()
+        print(f'Error creating user: {type(e).__name__}: {str(e)}')
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to confirm user'
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'Failed to confirm user: {str(e)}',
         ) from e
 
 
