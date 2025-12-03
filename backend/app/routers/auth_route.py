@@ -2,7 +2,7 @@ import logging
 from typing import Annotated
 from uuid import uuid4
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlmodel import Session as DBSession
 from supabase_auth import AdminUserAttributes, SignUpWithPasswordCredentials
@@ -106,16 +106,29 @@ def confirm_user(
 @router.post('/mock-confirm', response_model=None, status_code=status.HTTP_202_ACCEPTED)
 def confirm_mock_user(
     req: UserCreate,
+    request: Request,
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> None:
-    user_data = UserProfile(
-        id=uuid4(),
-        full_name=req.full_name,
-        email=req.email,
-        phone_number=req.phone,
-    )
-    db_session.add(user_data)
-    db_session.commit()
+    if not settings.DEV_MODE_SKIP_AUTH:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Endpoint not found')
+
+    if not request.client or request.client.host not in ['127.0.0.1', 'localhost', '::1']:
+        raise HTTPException(status_code=404, detail='Endpoint not found')
+
+    try:
+        user_data = UserProfile(
+            id=uuid4(),
+            full_name=req.full_name,
+            email=req.email,
+            phone_number=req.phone,
+        )
+        db_session.add(user_data)
+        db_session.commit()
+    except Exception as e:
+        db_session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to confirm user'
+        ) from e
 
 
 @router.post('/delete-unconfirmed', response_model=None, status_code=status.HTTP_200_OK)
