@@ -2,7 +2,7 @@ import logging
 from typing import Annotated
 from uuid import uuid4
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlmodel import Session as DBSession
 from supabase_auth import AdminUserAttributes, SignUpWithPasswordCredentials
@@ -134,26 +134,36 @@ def confirm_mock_user(
 
 
 @router.delete('/delete-unconfirmed', response_model=None, status_code=status.HTTP_200_OK)
-def delete_unconfirmed_user(email: str = Body(..., embed=True)) -> None:
+def delete_unconfirmed_user(
+    email: str,
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> None:
     """
     Delete a user from Supabase Auth by email if not confirmed.
     """
     try:
+        db_user = db_session.query(UserProfile).filter_by(email=email).first()
+
+        if db_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail='Failed delete user'
+            )
+
         supabase = get_supabase_client()
         users = supabase.auth.admin.list_users()
-        user = None
-        for u in users:
-            if getattr(u, 'email', None) == email:
-                user = u
-                break
+
+        user = next((u for u in users if getattr(u, 'email', None) == email), None)
+
         if not user:
-            raise HTTPException(status_code=404, detail='User not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
         supabase.auth.admin.delete_user(user.id)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f'Failed to delete user: {e}') from e
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f'Failed to delete user: {e}'
+        ) from e
 
 
-@router.post('/check-unique', status_code=200)
+@router.post('/check-unique', status_code=status.HTTP_200_OK)
 def check_unique(
     req: CheckUniqueRequest, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
