@@ -1,5 +1,6 @@
 import logging
 from typing import Annotated
+from uuid import uuid4
 
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy import select
@@ -97,6 +98,21 @@ def confirm_user(
         full_name=token['user_metadata']['full_name'],
         email=token['email'],
         phone_number=token['phone'],
+    )
+    db_session.add(user_data)
+    db_session.commit()
+
+
+@router.post('/mock-confirm', response_model=None, status_code=status.HTTP_202_ACCEPTED)
+def confirm_mock_user(
+    req: UserCreate,
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> None:
+    user_data = UserProfile(
+        id=uuid4(),
+        full_name=req.full_name,
+        email=req.email,
+        phone_number=req.phone,
     )
     db_session.add(user_data)
     db_session.commit()

@@ -17,14 +17,25 @@ import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { DEV_MODE_SKIP_AUTH } from '@/lib/connector';
+import { UserCreate } from '@/interfaces/models/Auth';
 import { ModalWrapper } from './ModelWrapper';
 
 export default function ConfirmationForm({
   initialEmail,
   onClose,
+  signUpFormData,
 }: {
   initialEmail?: string;
   onClose: () => void;
+  signUpFormData?: {
+    fullName: string;
+    email: string;
+    phone_number: string;
+    organizationName?: string;
+    isNonprofit?: boolean;
+    password: string;
+    terms: boolean;
+  };
 }) {
   const t = useTranslations('Login');
   const tCommon = useTranslations('Common');
@@ -94,6 +105,17 @@ export default function ConfirmationForm({
     try {
       if (!DEV_MODE_SKIP_AUTH) {
         await authService.confirmUser(api);
+      } else if (signUpFormData !== null) {
+        const data: UserCreate = {
+          fullName: signUpFormData!.fullName,
+          email: signUpFormData!.email,
+          phone: signUpFormData!.phone_number,
+          password: signUpFormData!.password,
+          organizationName: signUpFormData!.isNonprofit
+            ? signUpFormData!.organizationName
+            : undefined,
+        };
+        await authService.confirmMockUser(api, data);
       }
       isConfirmedRef.current = true;
       router.push('/onboarding');

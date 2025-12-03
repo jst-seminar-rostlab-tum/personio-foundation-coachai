@@ -15,6 +15,11 @@ const confirmUser = async (api: AxiosInstance) => {
   return response.data;
 };
 
+const confirmMockUser = async (api: AxiosInstance, data: UserCreate) => {
+  const response = await api.post('/auth/mock-confirm', data);
+  return response.data;
+};
+
 const sendVerificationCode = async (api: AxiosInstance, data: VerificationCodeCreate) => {
   const response = await api.post('/auth/send-verification', data);
   return response.data;
@@ -30,4 +35,5 @@ export const authService = {
   confirmUser,
   sendVerificationCode,
   verifyCode,
+  confirmMockUser,
 };

@@ -96,7 +96,6 @@ npm install # Required to initialize Husky which manages the pre-commit hooks
 - Create .env file from .env.example
 
 - Fill in variable values. GCP and Gemini on VertexAI use the same credentials, so make sure to set the env variables below to use LLM generative functions.
-- Reach out to TA, Ron or Simon for keys and credentials.
 
 ```bash
 GCP_PRIVATE_KEY_ID=<...>
@@ -108,6 +107,8 @@ GCP_CLIENT_ID=<...>
 3. Run a local PostgreSQL instace:
 
 ```bash
+cd supabase
+npm install
 npx supabase start
 ```
 To stop it, run:

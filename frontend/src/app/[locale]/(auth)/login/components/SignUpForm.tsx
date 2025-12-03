@@ -29,6 +29,7 @@ import { UserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiClient';
 import ConfirmationForm from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { DEV_MODE_SKIP_AUTH } from '@/lib/connector';
 
 export function SignUpForm() {
   const tLogin = useTranslations('Login');
@@ -354,6 +355,7 @@ export function SignUpForm() {
             setShowVerification(false);
             router.push('/login');
           }}
+          signUpFormData={DEV_MODE_SKIP_AUTH ? signUpForm.getValues() : undefined}
         />
       )}
 
