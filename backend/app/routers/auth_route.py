@@ -1,7 +1,8 @@
 import logging
 from typing import Annotated
+from uuid import uuid4
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlmodel import Session as DBSession
 from supabase_auth import AdminUserAttributes, SignUpWithPasswordCredentials
@@ -102,27 +103,67 @@ def confirm_user(
     db_session.commit()
 
 
-@router.post('/delete-unconfirmed', response_model=None, status_code=status.HTTP_200_OK)
-def delete_unconfirmed_user(email: str = Body(..., embed=True)) -> None:
+@router.post('/mock-confirm', response_model=None, status_code=status.HTTP_202_ACCEPTED)
+def confirm_mock_user(
+    req: UserCreate,
+    request: Request,
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> None:
+    if not settings.DEV_MODE_SKIP_AUTH:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Endpoint not found')
+
+    if not request.client or request.client.host not in ['127.0.0.1', 'localhost', '::1']:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Endpoint not found')
+
+    try:
+        user_data = UserProfile(
+            id=uuid4(),
+            full_name=req.full_name,
+            email=req.email,
+            phone_number=req.phone,
+        )
+        db_session.add(user_data)
+        db_session.commit()
+    except Exception as e:
+        db_session.rollback()
+        print(f'Error creating user: {type(e).__name__}: {str(e)}')
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'Failed to confirm user: {str(e)}',
+        ) from e
+
+
+@router.delete('/delete-unconfirmed', response_model=None, status_code=status.HTTP_200_OK)
+def delete_unconfirmed_user(
+    email: str,
+    db_session: Annotated[DBSession, Depends(get_db_session)],
+) -> None:
     """
     Delete a user from Supabase Auth by email if not confirmed.
     """
     try:
+        db_user = db_session.query(UserProfile).filter_by(email=email).first()
+
+        if db_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail='Failed delete user'
+            )
+
         supabase = get_supabase_client()
         users = supabase.auth.admin.list_users()
-        user = None
-        for u in users:
-            if getattr(u, 'email', None) == email:
-                user = u
-                break
+
+        user = next((u for u in users if getattr(u, 'email', None) == email), None)
+
         if not user:
-            raise HTTPException(status_code=404, detail='User not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
         supabase.auth.admin.delete_user(user.id)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f'Failed to delete user: {e}') from e
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f'Failed to delete user: {e}'
+        ) from e
 
 
-@router.post('/check-unique', status_code=200)
+@router.post('/check-unique', status_code=status.HTTP_200_OK)
 def check_unique(
     req: CheckUniqueRequest, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:

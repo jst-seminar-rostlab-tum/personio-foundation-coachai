@@ -15,6 +15,11 @@ const confirmUser = async (api: AxiosInstance) => {
   return response.data;
 };
 
+const confirmMockUser = async (api: AxiosInstance, data: UserCreate) => {
+  const response = await api.post('/auth/mock-confirm', data);
+  return response.data;
+};
+
 const sendVerificationCode = async (api: AxiosInstance, data: VerificationCodeCreate) => {
   const response = await api.post('/auth/send-verification', data);
   return response.data;
@@ -25,9 +30,18 @@ const verifyCode = async (api: AxiosInstance, data: VerificationCodeConfirm) => 
   return response.data;
 };
 
+const deleteUnconfirmedUser = async (api: AxiosInstance, email: string) => {
+  const response = await api.delete('/auth/delete-unconfirmed', {
+    data: { email },
+  });
+  return response.data;
+};
+
 export const authService = {
   createUser,
   confirmUser,
   sendVerificationCode,
   verifyCode,
+  confirmMockUser,
+  deleteUnconfirmedUser,
 };

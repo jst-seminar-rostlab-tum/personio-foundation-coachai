@@ -34,6 +34,7 @@
   "reviews": "Reviews",
   "delete": "Delete",
   "genericError": "An error occurred. Please try again later.",
+  "numberInUseError": "We couldn’t verify this number. If you’ve registered before, try signing in or resetting your password.",
   "back": "Back",
   "next": "Next",
   "finish": "Finish",

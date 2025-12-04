@@ -16,14 +16,26 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
+import { DEV_MODE_SKIP_AUTH } from '@/lib/connector';
+import { UserCreate } from '@/interfaces/models/Auth';
 import { ModalWrapper } from './ModelWrapper';
 
 export default function ConfirmationForm({
   initialEmail,
   onClose,
+  signUpFormData,
 }: {
   initialEmail?: string;
-  onClose?: () => void;
+  onClose: () => void;
+  signUpFormData?: {
+    fullName: string;
+    email: string;
+    phone_number: string;
+    organizationName?: string;
+    isNonprofit?: boolean;
+    password: string;
+    terms: boolean;
+  };
 }) {
   const t = useTranslations('Login');
   const tCommon = useTranslations('Common');
@@ -63,42 +75,55 @@ export default function ConfirmationForm({
     setError(null);
 
     const formData = confirmationFormSchema.parse(form.getValues());
-    const supabase = await createClient();
-    const params: VerifyEmailOtpParams = {
-      email: formData.email,
-      token: formData.code,
-      type: 'signup',
-    };
-    const { error: verifyError } = await supabase.auth.verifyOtp(params);
-    if (verifyError) {
-      setError(verifyError.message);
-      setIsLoading(false);
+    if (!DEV_MODE_SKIP_AUTH) {
+      const supabase = await createClient();
+      const params: VerifyEmailOtpParams = {
+        email: formData.email,
+        token: formData.code,
+        type: 'signup',
+      };
+      const { error: verifyError } = await supabase.auth.verifyOtp(params);
+      if (verifyError) {
+        setError(verifyError.message);
+        setIsLoading(false);
 
-      if (verifyError.code) {
-        switch (verifyError.code) {
-          case 'otp_expired':
-            setError(t('ConfirmationForm.expiredOtpError'));
-            setShowResendButton(true);
-            break;
-          default:
-            setError(t('ConfirmationForm.genericError'));
+        if (verifyError.code) {
+          switch (verifyError.code) {
+            case 'otp_expired':
+              setError(t('ConfirmationForm.expiredOtpError'));
+              setShowResendButton(true);
+              break;
+            default:
+              setError(t('ConfirmationForm.genericError'));
+          }
         }
-      }
 
-      return;
+        return;
+      }
     }
 
     try {
-      await authService.confirmUser(api);
+      if (!DEV_MODE_SKIP_AUTH) {
+        await authService.confirmUser(api);
+      } else if (signUpFormData !== null) {
+        const data: UserCreate = {
+          fullName: signUpFormData!.fullName,
+          email: signUpFormData!.email,
+          phone: signUpFormData!.phone_number,
+          password: signUpFormData!.password,
+          organizationName: signUpFormData!.isNonprofit
+            ? signUpFormData!.organizationName
+            : undefined,
+        };
+        await authService.confirmMockUser(api, data);
+      }
       isConfirmedRef.current = true;
-      if (onClose) onClose(); // Close the modal on success
+      router.push('/onboarding');
     } catch {
+      await authService.deleteUnconfirmedUser(api, formData.email);
       setError(t('ConfirmationForm.genericError'));
       setIsLoading(false);
-      return;
     }
-
-    router.push('/onboarding');
   };
 
   const resendConfirmationEmail = async () => {
@@ -199,7 +224,7 @@ export default function ConfirmationForm({
                   {t('resendCodeButtonLabel')}
                 </Button>
               )}
-              <Button size="full" onClick={onClose} disabled={isLoading}>
+              <Button size="full" onClick={onClose} disabled={isLoading} type="button">
                 {tCommon('cancel')}
               </Button>
             </CardFooter>

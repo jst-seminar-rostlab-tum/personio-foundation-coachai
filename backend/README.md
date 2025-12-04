@@ -23,7 +23,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 Use this option if you want to run the backend quickly without setting up a local Python environment. This is the easiest way to get started — especially useful for frontend developers who just need the API running.
 
 ```bash
-docker compose up supabae backend --build
+docker compose up supabase backend --build
 ```
 
 ### Option B: Console (better for developing)
@@ -96,7 +96,6 @@ npm install # Required to initialize Husky which manages the pre-commit hooks
 - Create .env file from .env.example
 
 - Fill in variable values. GCP and Gemini on VertexAI use the same credentials, so make sure to set the env variables below to use LLM generative functions.
-- Reach out to TA, Ron or Simon for keys and credentials.
 
 ```bash
 GCP_PRIVATE_KEY_ID=<...>
@@ -105,10 +104,16 @@ GCP_CLIENT_EMAIL=<...>
 GCP_CLIENT_ID=<...>
 ```
 
-3. Run a local PostgreSQL instace on Docker:
+3. Run a local PostgreSQL instace:
 
 ```bash
-docker compose up supabase -d
+cd supabase
+npm install
+npx supabase start
+```
+To stop it, run:
+```bash
+npx supabase stop
 ```
 
 4. Populate local PostgreSQL with dummy data. From the backend folder, run the following:

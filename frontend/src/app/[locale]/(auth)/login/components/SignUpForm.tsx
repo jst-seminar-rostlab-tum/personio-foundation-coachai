@@ -30,7 +30,8 @@ import Link from 'next/link';
 import { UserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiClient';
 import ConfirmationForm from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { DEV_MODE_SKIP_AUTH } from '@/lib/connector';
 
 export function SignUpForm() {
   const tLogin = useTranslations('Login');
@@ -39,6 +40,7 @@ export function SignUpForm() {
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const searchParams = useSearchParams();
   const step = searchParams.get('step');
@@ -373,6 +375,11 @@ export function SignUpForm() {
       {step === 'confirm' && (
         <ConfirmationForm
           initialEmail={searchParams.get('email') || signUpForm.getValues().email}
+          onClose={() => {
+            setShowVerification(false);
+            router.push('/login');
+          }}
+          signUpFormData={DEV_MODE_SKIP_AUTH ? signUpForm.getValues() : undefined}
         />
       )}
 
