@@ -244,7 +244,6 @@ export default function UsersList({
             <Select
               value={sessionLimitSorting === null ? SortOption.NONE : sessionLimitSorting}
               onValueChange={handleSessionLimitSortingChange}
-              disabled={!!sessionLimitFilter}
             >
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue />

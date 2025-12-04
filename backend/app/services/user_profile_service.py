@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import HTTPException, status
 from pydantic import ValidationError
-from sqlalchemy import case, update
+from sqlalchemy import func, literal, update
 from sqlmodel import Session as DBSession
 from sqlmodel import col, select
 from supabase import AuthError
@@ -113,26 +113,16 @@ class UserService:
             statement = statement.where(col(UserProfile.email).like(f'%{email_substring}%'))
 
         if session_limit_sorting_option:
-            apply_limit_sort = not session_limit_type_filter or set(session_limit_type_filter) == {
-                SessionLimitType.DEFAULT,
-                SessionLimitType.INDIVIDUAL,
-            }
+            effective_limit = func.coalesce(
+                UserProfile.daily_session_limit,
+                literal(self.app_config_service.get_default_daily_session_limit()),
+            )
 
-            if apply_limit_sort:
-                match session_limit_sorting_option:
-                    case SortOption.ASC:
-                        # DEFAULT first, then INDIVIDUAL
-                        sort_expr = case(
-                            (UserProfile.daily_session_limit.is_(None), 0), else_=1
-                        ).asc()
-
-                    case SortOption.DESC:
-                        # INDIVIDUAL first, then DEFAULT
-                        sort_expr = case(
-                            (UserProfile.daily_session_limit.is_(None), 0), else_=1
-                        ).desc()
-
-                statement = statement.order_by(sort_expr)
+            match session_limit_sorting_option:
+                case SortOption.ASC:
+                    statement = statement.order_by(effective_limit.asc())
+                case SortOption.DESC:
+                    statement = statement.order_by(effective_limit.desc())
 
         if email_sorting_option:
             match email_sorting_option:
