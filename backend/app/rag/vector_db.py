@@ -16,23 +16,57 @@ from app.dependencies.database import get_supabase_client
 settings = Settings()
 
 
-# -----------------------
-# Clean-up functionality
+def is_reference_page(text: str) -> bool:
+    """
+    Determines if an entire page is primarily references/TOC/index.
+    Should be called BEFORE cleaning to catch reference-heavy pages.
+    """
+    if not text or len(text.strip()) < 50:
+        return False
+
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    if not lines:
+        return False
+
+    # Count how many lines look like references/TOC
+    reference_line_count = 0
+
+    for line in lines:
+        # TOC patterns: "10.3.1: Pre-interview Preparation 528"
+        if re.match(r'^\d+(\.\d+)*[:.]?\s+[A-Z]', line):
+            reference_line_count += 1
+            continue
+
+        # URLs (with or without text)
+        if re.search(r'https?://|www\.[\w\-.]+\.[a-z]{2,}', line, re.IGNORECASE):
+            reference_line_count += 1
+            continue
+
+        # Citation patterns
+        citation_patterns = [
+            r'Retrieved from',
+            r'Available at:?',
+            r'accessed\s+(on\s+)?(January|February|March|April|May|June|July|August|September|October|November'
+            r'|December)',
+            r'doi:\s*10\.',
+            r'\(\d{4}\)[\.\,]',  # (2024).
+            r'et al[\.,]',
+            r'^\[?\d+\]',  # [1] or 1.
+        ]
+
+        if any(re.search(pattern, line, re.IGNORECASE) for pattern in citation_patterns):
+            reference_line_count += 1
+            continue
+
+    # If more than 60% of lines are references/TOC, consider it a reference page
+    reference_ratio = reference_line_count / len(lines)
+    return reference_ratio > 0.6
+
+
 def remove_citations_and_captions(text: str) -> str:
     """
     Removes citations and captions from text while preserving the main content.
-
-    This function surgically removes:
-    - Image/Figure/Table captions
-    - Inline citations with URLs
-    - Reference list entries
-    - Standalone citation lines
-
-    Args:
-        text: Text that may contain citations and captions
-
-    Returns:
-        Cleaned text with citations/captions removed
+    Enhanced with better URL and TOC detection.
     """
     if not text:
         return text
@@ -43,24 +77,34 @@ def remove_citations_and_captions(text: str) -> str:
     for line in lines:
         line_stripped = line.strip()
 
-        # Skip empty lines
         if not line_stripped:
             cleaned_lines.append(line)
             continue
 
-        # Remove image/figure/table captions (usually start with these keywords)
+        if re.search(r'^\d+[).]\s*\n?', line_stripped):
+            continue
+
+        # Skip TOC entries: "10.3.1: Pre-interview Preparation 528"
+        if re.match(r'^\d+(\.\d+)*[:.]?\s+[A-Z][\w\s]+(\d+)?$', line_stripped):
+            continue
+
+        # Remove image/figure/table captions
         if re.match(
             r'^(Image|Figure|Table|Chart|Diagram)\s*[:.]?\s*', line_stripped, re.IGNORECASE
         ):
             continue
 
-        # Remove lines that are clearly citations (contain Retrieved from, et al., etc.)
+        # Enhanced citation indicators
         citation_indicators = [
-            r'Retrieved from https?://',
-            r'Available at:?\s*https?://',
-            r'^\s*\[?\d+\]?\s*[\w\s,&\.]+\(\d{4}[,)]',  # [1] Author, A. (2024)
+            r'Retrieved from',
+            r'Available at:?',
+            r'accessed\s+(on\s+)?(January|February|March|April|May|June|July|August|September|October|November'
+            r'|December)',
+            r'^\s*\[?\d+\]?\s*[\w\s,&\.]+\(\d{4}[,)]',
             r'doi:\s*10\.',
-            r'^\s*https?://',  # Line that's just a URL
+            r'^https?://',
+            r'^www\.[\w\-\.]+',  # Lines starting with www.
+            r'^\(https?://',  # (http://...
         ]
 
         is_citation = False
@@ -72,29 +116,33 @@ def remove_citations_and_captions(text: str) -> str:
         if is_citation:
             continue
 
-        # Clean inline citations within the line (but keep the rest of the text)
-        # Remove things like "OpenAI. (2024, July 9). ChatGPT. [Large language model]."
+        # Clean inline citations
         line_cleaned = re.sub(
-            r'\b[\w\s,&.]+\.\s*\(\d{4}[^\)]*\)\.\s*[^\n]*\.\s*\[[^\]]+\]\.', '', line_stripped
+            r'\b[\w\s,&.]+\.\s*\(\d{4}[^)]*\)\.\s*[^\n]*\.\s*\[[^]]+]\.', '', line_stripped
         )
 
-        # Remove standalone URLs from lines
+        # Remove URLs more aggressively
         line_cleaned = re.sub(r'https?://\S+', '', line_cleaned)
+        line_cleaned = re.sub(r'www\.[\w\-.]+\.[a-z]{2,}\S*', '', line_cleaned, flags=re.IGNORECASE)
 
-        # Remove citation patterns like (Author, 2024) or [1]
+        # Remove citation patterns
         line_cleaned = re.sub(r'\([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?,?\s+\d{4}\)', '', line_cleaned)
         line_cleaned = re.sub(r'\[\d+]', '', line_cleaned)
+
+        # Remove "accessed [date]" patterns
+        line_cleaned = re.sub(
+            r'\(accessed\s+(on\s+)?\w+\s+\d+,?\s+\d{4}\)', '', line_cleaned, flags=re.IGNORECASE
+        )
 
         # Clean up extra spaces
         line_cleaned = re.sub(r'\s+', ' ', line_cleaned).strip()
 
-        # Only add the line if there's still meaningful content
+        # Only add if there's meaningful content
         if line_cleaned and len(line_cleaned) > 10:
             cleaned_lines.append(line_cleaned)
 
-    # Rejoin and clean up
     result = '\n'.join(cleaned_lines)
-    result = re.sub(r'\n{3,}', '\n\n', result)  # Normalize multiple newlines
+    result = re.sub(r'\n{3,}', '\n\n', result)
 
     return result.strip()
 
@@ -102,43 +150,53 @@ def remove_citations_and_captions(text: str) -> str:
 def should_exclude_chunk(doc: Document) -> bool:
     """
     Determines if a text chunk should be excluded from the vector database.
-
-    Only excludes chunks that are ENTIRELY non-content:
-    - Very short chunks with no substance
-    - Chunks that are ONLY citations/references
-    - Page numbers or chapter headers only
-    ...
-
-    Args:
-        doc: doc chunk to evaluate
-
-    Returns:
-        True if chunk should be excluded, False otherwise
+    Enhanced to catch more edge cases.
     """
     text = doc.page_content
-    if not text or len(text.strip()) < 30:  # Too short
+    if not text or len(text.strip()) < 30:
         return True
 
     text_stripped = text.strip()
     word_count = len(text_stripped.split())
 
-    # Exclude if it's just a page number or chapter header
-    if word_count < 5 and (
-        re.match(r'^\s*\d+\s*$', text_stripped)
-        or re.match(r'^Chapter\s+\d+$', text_stripped, re.IGNORECASE)
-    ):
+    # Exclude very short chunks
+    if word_count < 5:
         return True
 
-    # Exclude if it's ONLY a reference section header
-    reference_indicators = ['references', 'bibliography', 'works cited', 'further reading']
+    # Check if it's a TOC fragment that slipped through
+    # "10.3.1: Pre-interview Preparation"
+    if re.match(r'^\d+(\.\d+)+[:.]?\s+[A-Z]', text_stripped):
+        return True
+
+    # Exclude if it's mostly numbers and colons (TOC page numbers)
+    number_colon_ratio = len(re.findall(r'[\d:.]', text_stripped)) / len(text_stripped)
+    if number_colon_ratio > 0.4:
+        return True
+
+    # Exclude if it contains URLs or www
+    if re.search(r'https?://|www\.[\w\-.]+', text_stripped, re.IGNORECASE):
+        return True
+
+    # Exclude if it has "accessed [date]" pattern
+    if re.search(r'accessed\s+\w+\s+\d+,?\s+\d{4}', text_stripped, re.IGNORECASE):
+        return True
+
+    # Existing checks - ADDED 'contents' to the list
+    reference_indicators = [
+        'references',
+        'bibliography',
+        'works cited',
+        'further reading',
+        'contents',
+    ]
     if any(text_stripped.lower() == ind for ind in reference_indicators):
         return True
 
     if 'chatgpt' in text_stripped.lower():
         return True
 
-    chapter = doc.metadata['chapter']
-    if chapter and any(
+    chapter = doc.metadata.get('chapter', '')
+    return chapter and any(
         term in chapter.strip().lower()
         for term in [
             'references',
@@ -152,12 +210,10 @@ def should_exclude_chunk(doc: Document) -> bool:
             'image credits',
             'survey',
             'resources',
+            'contents',
+            'discussion questions',
         ]
-    ):
-        return True
-
-    # Exclude if entire chunk is just URLs
-    return bool(re.match(r'^https?://\S+$', text_stripped))
+    )
 
 
 def extract_toc(file_path: str) -> tuple[list, int]:
@@ -186,26 +242,10 @@ def build_page_chapter_map(toc: list, total_pages: int) -> dict:
     return page_to_chapter
 
 
-# -----------------------
-
-
 def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
     """
     Loads and splits PDF documents from a specified folder for vector database ingestion.
-
-    Each PDF is processed using LangChain's PyPDFLoader and split into smaller chunks using
-    RecursiveCharacterTextSplitter to prepare for embedding and storage.
-
-    Parameters:
-        doc_folder (str): The path to the folder containing PDF documents.
-
-    Returns:
-        list[Document]: A list of text-split Document objects ready for embedding.
-
-    Notes:
-        - Non-PDF files are ignored.
-        - Errors during loading or splitting are caught and printed.
-        - Returns an empty list if the folder does not exist.
+    Enhanced with page-level filtering before splitting.
     """
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
@@ -243,17 +283,29 @@ def prepare_vector_db_docs(doc_folder: str) -> list[Document]:
                 else:
                     print(f"📄 '{doc_name}' author: {author}")
 
+                filtered_loaded_docs = []
                 for doc in loaded_docs:
-                    # Replacing null bytes as they lead to errors
+                    # FIRST: Check if entire page is references/TOC before cleaning
+                    if is_reference_page(doc.page_content):
+                        print(f'  ⏭️  Skipping reference/TOC page {doc.metadata.get("page", "?")}')
+                        continue
+
+                    # THEN: Clean the content
                     doc.page_content = doc.page_content.replace('\u0000', '')
-                    # Cleaning URLs, citations etc.
                     doc.page_content = remove_citations_and_captions(doc.page_content)
+
+                    # Skip if cleaning removed everything
+                    if not doc.page_content or len(doc.page_content.strip()) < 30:
+                        continue
+
                     doc.metadata['licenseName'] = license_name
                     doc.metadata['author'] = author
                     doc.metadata['chapter'] = page_chapter_map.get(doc.metadata.get('page', 0))
                     doc.metadata.pop('source', None)
 
-                splits = text_splitter.split_documents(loaded_docs)
+                    filtered_loaded_docs.append(doc)
+
+                splits = text_splitter.split_documents(filtered_loaded_docs)
                 filtered_splits = [split for split in splits if not should_exclude_chunk(split)]
                 docs.extend(filtered_splits)
                 print(f'✅ Successfully processed {file} with {len(filtered_splits)} chunks')
