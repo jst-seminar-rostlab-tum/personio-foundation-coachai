@@ -8,6 +8,8 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Checkbox from '@/components/ui/Checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
+import Label from '@/components/ui/Label';
 import { useEffect, useState } from 'react';
 import {
   Form,
@@ -47,17 +49,37 @@ export function SignUpForm() {
     }
   }, [error]);
 
-  const signUpFormSchema = z.object({
-    fullName: z.string().min(1, tLogin('fullNameInputError')),
-    email: z.string().email(tCommon('emailInputError')),
-    phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
-    password: z
-      .string()
-      .regex(/^.{8,}$/)
-      .regex(/[A-Z]/)
-      .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/),
-    terms: z.boolean().refine((val) => val === true),
-  });
+  const signUpFormSchema = z
+    .object({
+      fullName: z.string().min(1, tLogin('fullNameInputError')),
+      email: z.string().email(tCommon('emailInputError')),
+      phone_number: z.string().regex(/^\+[1-9]\d{7,14}$/, tLogin('phoneNumberInputError')),
+      organizationName: z.string().optional(),
+      nonprofitStatus: z.enum(['yes', 'no'], {
+        required_error: tCommon('nonprofitStatusRequired'),
+      }),
+      password: z
+        .string()
+        .regex(/^.{8,}$/)
+        .regex(/[A-Z]/)
+        .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/),
+      terms: z.boolean().refine((val) => val === true),
+    })
+    .refine(
+      (data) => {
+        if (
+          data.nonprofitStatus === 'yes' &&
+          (!data.organizationName || !data.organizationName.trim())
+        ) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: tCommon('organizationNameRequired'),
+        path: ['organizationName'],
+      }
+    );
 
   const signUpForm = useForm({
     resolver: zodResolver(signUpFormSchema),
@@ -66,6 +88,8 @@ export function SignUpForm() {
       fullName: '',
       email: '',
       phone_number: '',
+      organizationName: '',
+      nonprofitStatus: undefined as 'yes' | 'no' | undefined,
       password: '',
       terms: false,
     },
@@ -188,6 +212,71 @@ export function SignUpForm() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={signUpForm.control}
+                name="nonprofitStatus"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>{tCommon('nonprofitStatusLabel')}</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          if (value === 'no') {
+                            signUpForm.setValue('organizationName', '');
+                          }
+                        }}
+                        value={field.value}
+                        disabled={isLoading}
+                        className="flex flex-col"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="yes" id="nonprofit-yes" />
+                          <Label
+                            htmlFor="nonprofit-yes"
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            {tCommon('yes')}
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="no" id="nonprofit-no" />
+                          <Label
+                            htmlFor="nonprofit-no"
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            {tCommon('no')}
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {signUpForm.watch('nonprofitStatus') === 'yes' && (
+                <FormField
+                  control={signUpForm.control}
+                  name="organizationName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{tCommon('organizationNameInputLabel')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={tCommon('organizationNameInputPlaceholder')}
+                          {...field}
+                          className="w-full"
+                          disabled={isLoading}
+                          autoComplete="section-signup organization"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={signUpForm.control}

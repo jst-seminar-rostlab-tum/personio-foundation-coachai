@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from enum import Enum
 from uuid import UUID
 
 from app.enums.account_role import AccountRole
@@ -27,6 +28,7 @@ class UserProfileUpdate(CamelModel):
     store_conversations: bool | None = None
     goals: list[Goal] | None = None
     confidence_scores: list[ConfidenceScoreRead] | None = None
+    organization_name: str | None = None
 
 
 # Schema for replacing UserProfile data
@@ -40,6 +42,7 @@ class UserProfileReplace(CamelModel):
     store_conversations: bool
     goals: list[Goal]
     confidence_scores: list[ConfidenceScoreRead]
+    organization_name: str | None = None
 
 
 # Schema for reading UserProfile data
@@ -60,6 +63,7 @@ class UserProfileRead(CamelModel):
     num_remaining_daily_sessions: int
     scenario_advice: ScenarioAdvice | dict
     daily_session_limit: int
+    organization_name: str | None
 
 
 class UserProfileExtendedRead(UserProfileRead):
@@ -70,9 +74,16 @@ class UserProfileExtendedRead(UserProfileRead):
 UserProfileExtendedRead.model_rebuild()
 
 
+class SessionLimitType(str, Enum):
+    DEFAULT = 'DEFAULT'
+    INDIVIDUAL = 'INDIVIDUAL'
+
+
 class UserProfilePaginatedRead(CamelModel):
     user_id: UUID
     email: str
+    daily_session_limit: int
+    limit_type: SessionLimitType
 
 
 class UserListPaginatedRead(CamelModel):
@@ -96,3 +107,8 @@ class UserStatistics(CamelModel):
 
 class UserDailySessionLimitUpdate(CamelModel):
     daily_session_limit: int | None
+
+
+class SortOption(str, Enum):
+    ASC = 'ASC'
+    DESC = 'DESC'

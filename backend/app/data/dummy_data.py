@@ -56,6 +56,7 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=32 * 12,
                 goals_achieved=4,
                 scenario_advice={},
+                organization_name=None,
             ),
             supabase_profile=AdminUserAttributes(
                 id=MockUserIdsEnum.USER.value.__str__(),
@@ -86,6 +87,7 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=5 * 12,
                 goals_achieved=2,  # Summation of all goals achieved
                 scenario_advice={},
+                organization_name=None,
             ),
             supabase_profile=AdminUserAttributes(
                 id=MockUserIdsEnum.ADMIN.value.__str__(),
@@ -116,6 +118,7 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=18 * 12,
                 goals_achieved=7,
                 scenario_advice={},
+                organization_name='Example Nonprofit Organization',
             ),
             supabase_profile=AdminUserAttributes(
                 id='00000000-0000-0000-0000-000000000003',
@@ -147,6 +150,7 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=0,
                 goals_achieved=0,
                 scenario_advice={},
+                organization_name=None,
             ),
             supabase_profile=AdminUserAttributes(
                 id='00000000-0000-0000-0000-000000000004',
@@ -177,6 +181,7 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=85 * 12,
                 goals_achieved=15,
                 scenario_advice={},
+                organization_name=None,
             ),
             supabase_profile=AdminUserAttributes(
                 id='00000000-0000-0000-0000-000000000005',
@@ -207,6 +212,7 @@ def get_dummy_user_data() -> list[DummyUserWrapper]:
                 score_sum=3 * 12,
                 goals_achieved=1,
                 scenario_advice={},
+                organization_name=None,
             ),
             supabase_profile=AdminUserAttributes(
                 id='00000000-0000-0000-0000-000000000006',
@@ -299,6 +305,55 @@ def get_dummy_reviews(user_profiles: list[UserProfile], sessions: list[Session])
             session_id=None,  # No session linked --> App Review
             rating=4,
             comment='Very informative, but the pace was a bit slow.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
+        ),
+        Review(
+            id=uuid4(),
+            user_id=user_profiles[1].id,
+            session_id=None,  # No session linked --> App Review
+            rating=3,
+            comment='Decent content, but I expected more depth.',
         ),
         Review(
             id=uuid4(),

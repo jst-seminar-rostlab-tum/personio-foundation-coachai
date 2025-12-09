@@ -75,5 +75,13 @@
   "contactModal": {
     "title": "Contact Us",
     "description": "If you have any questions, contact us at"
-  }
+  },
+  "organizationNameInputLabel": "Name of your organization or institution",
+  "organizationNameInputPlaceholder": "Enter your organization name",
+  "nonprofitStatusCheckboxLabel": "Nonprofit status – By checking this box, you confirm that your organization is officially recognized as a nonprofit under the laws of your country or jurisdiction.",
+  "nonprofitStatusLabel": "Is your organization officially recognized as a nonprofit under the laws of your country or jurisdiction?",
+  "yes": "Yes",
+  "no": "No",
+  "nonprofitStatusRequired": "Please select a nonprofit status",
+  "organizationNameRequired": "Organization name is required"
 }
