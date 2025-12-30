@@ -133,6 +133,22 @@ Once the server is running, you can access:
 - Interactive API documentation: http://localhost:8000/docs
 - Alternative API documentation: http://localhost:8000/redoc
 
+### Hook Authentication Error
+If you encounter any hook authentication errors when trying to log in or sign up locally, 
+execute the following SQL query in your local Supabase instance:
+```bash
+CREATE OR REPLACE FUNCTION public.custom_access_token_hook(event jsonb)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  -- Optionally inspect or modify the JWT claims here
+  RETURN event;
+END;
+$$;
+```
+
 ### Database Migrations with Alembic
 
 This project uses [Alembic](https://alembic.sqlalchemy.org/) for database migration management. Alembic helps us track, version, and deploy database schema changes in a controlled and reproducible way, especially important for production deployments.
