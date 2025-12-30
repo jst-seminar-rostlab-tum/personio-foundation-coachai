@@ -21,7 +21,7 @@ import { createClient } from '@/lib/supabase/client';
 import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/utils/toast';
-import ConfirmationForm from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
+import { ConfirmationForm } from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
 
 export function SignInForm() {
   const tLogin = useTranslations('Login');
@@ -29,7 +29,7 @@ export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [pendingEmail] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -68,23 +68,6 @@ export function SignInForm() {
 
     if (response.error) {
       // Check for unconfirmed email error
-      if (
-        response.error.message.toLowerCase().includes('confirm') ||
-        response.error.message.toLowerCase().includes('verify')
-      ) {
-        setPendingEmail(formData.email);
-        setShowConfirmation(true);
-
-        // Resend confirmation email
-        await supabase.auth.resend({
-          email: formData.email,
-          type: 'signup',
-        });
-
-        setIsLoading(false);
-        return;
-      }
-
       setError(response.error.message);
       setIsLoading(false);
       return;

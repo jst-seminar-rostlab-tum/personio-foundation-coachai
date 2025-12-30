@@ -29,7 +29,7 @@ import { showErrorToast } from '@/lib/utils/toast';
 import Link from 'next/link';
 import { UserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiClient';
-import ConfirmationForm from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
+import { ConfirmationForm } from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DEV_MODE_SKIP_AUTH } from '@/lib/connector';
 

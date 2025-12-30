@@ -20,11 +20,7 @@ import { DEV_MODE_SKIP_AUTH } from '@/lib/connector';
 import { UserCreate } from '@/interfaces/models/Auth';
 import { ModalWrapper } from './ModelWrapper';
 
-export default function ConfirmationForm({
-  initialEmail,
-  onClose,
-  signUpFormData,
-}: {
+interface ConfirmationFormProps {
   initialEmail?: string;
   onClose: () => void;
   signUpFormData?: {
@@ -36,7 +32,9 @@ export default function ConfirmationForm({
     password: string;
     terms: boolean;
   };
-}) {
+}
+
+export function ConfirmationForm({ initialEmail, onClose, signUpFormData }: ConfirmationFormProps) {
   const t = useTranslations('Login');
   const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
