@@ -1,3 +1,4 @@
+import math
 import unittest
 from collections.abc import Generator
 from datetime import datetime
@@ -141,35 +142,40 @@ class TestReviewRoute(unittest.TestCase):
         self._create_multiple_dummy_reviews(self.test_user, 1, 2)
         self._create_multiple_dummy_reviews(self.test_user, 1, 1)
 
-        response = self.client.get('/reviews', params={'limit': 5, 'sort': 'highest'})
+        response = self.client.get('/reviews', params={'page_size': 5, 'sort': 'highest'})
         self.assertEqual(response.status_code, 200)
-        reviews = response.json()
+        reviews = response.json()['reviews']
         self.assertEqual(len(reviews), 5)
         self.assertTrue(
             all(reviews[i]['rating'] >= reviews[i + 1]['rating'] for i in range(len(reviews) - 1))
         )
 
-        response = self.client.get('/reviews', params={'limit': 5, 'sort': 'lowest'})
+        response = self.client.get('/reviews', params={'page_size': 5, 'sort': 'lowest'})
         self.assertEqual(response.status_code, 200)
-        reviews = response.json()
+        reviews = response.json()['reviews']
         self.assertEqual(len(reviews), 5)
         self.assertTrue(
             all(reviews[i]['rating'] <= reviews[i + 1]['rating'] for i in range(len(reviews) - 1))
         )
 
     def test_get_reviews_route_pagination(self) -> None:
+        total_reviews = 7
+        page_size = 3
+        total_pages = math.ceil(total_reviews / page_size)
         self._create_multiple_dummy_reviews(self.test_user, 2, 5)
         self._create_multiple_dummy_reviews(self.test_user, 2, 4)
         self._create_multiple_dummy_reviews(self.test_user, 1, 3)
         self._create_multiple_dummy_reviews(self.test_user, 1, 2)
         self._create_multiple_dummy_reviews(self.test_user, 1, 1)
 
-        response = self.client.get('/reviews', params={'page': 1, 'page_size': 3, 'sort': 'newest'})
+        response = self.client.get(
+            '/reviews', params={'page': 1, 'page_size': page_size, 'sort': 'newest'}
+        )
         self.assertEqual(response.status_code, 200)
 
         data = response.json()
         self.assertIn('reviews', data)
-        self.assertEqual(len(data['reviews']), 3)
+        self.assertEqual(len(data['reviews']), page_size)
         self.assertTrue(
             all(
                 data['reviews'][i]['date'] >= data['reviews'][i + 1]['date']
@@ -177,9 +183,9 @@ class TestReviewRoute(unittest.TestCase):
             )
         )
         self.assertEqual(data['pagination']['currentPage'], 1)
-        self.assertEqual(data['pagination']['totalPages'], 3)
-        self.assertEqual(data['pagination']['totalCount'], 7)
-        self.assertEqual(data['pagination']['pageSize'], 3)
+        self.assertEqual(data['pagination']['totalPages'], total_pages)
+        self.assertEqual(data['pagination']['totalCount'], total_reviews)
+        self.assertEqual(data['pagination']['pageSize'], page_size)
         self.assertAlmostEqual(data['ratingStatistics']['average'], 3.43)
 
     def test_get_reviews_unauthenticated(self) -> None:

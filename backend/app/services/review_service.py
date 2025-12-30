@@ -149,21 +149,14 @@ class ReviewService:
 
     def get_reviews(
         self,
-        limit: int | None = None,
         page: int | None = None,
-        page_size: int = 10,
+        page_size: int = 8,
         sort: str = 'newest',
-    ) -> list[ReviewRead] | PaginatedReviewRead:
+    ) -> PaginatedReviewRead:
         """
         Retrieve user reviews with optional pagination, statistics and sorting.
         """
-
-        if limit is not None:
-            joined_reviews_users = self._query_reviews_with_users(sort=sort, limit=limit)
-            return self._build_review_read_list(joined_reviews_users)
-
-        else:
-            return self._get_paginated_reviews(page, page_size, sort)
+        return self._get_paginated_reviews(page, page_size, sort)
 
     def has_user_reviewed_session(self, session_id: UUID, user_id: UUID) -> bool:
         """
