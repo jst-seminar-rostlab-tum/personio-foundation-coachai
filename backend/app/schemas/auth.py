@@ -10,7 +10,7 @@ class UserCreate(CamelModel):
     # code: str
 
 
-class UserCreateResponse(CamelModel):
+class UserIdResponse(CamelModel):
     id: str
 
 

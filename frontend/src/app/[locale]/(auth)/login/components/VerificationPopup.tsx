@@ -100,7 +100,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     setIsLoading(true);
     setError(null);
 
-    let userId = null;
+    let userId: string | undefined;
 
     try {
       // First verify the code
@@ -120,7 +120,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
         // code: form.getValues('code'),
       };
       const result = await authService.createUser(api, data);
-      userId = result.data.id;
+      userId = result.id;
       setIsLoading(false);
 
       router.push(`/login?step=confirm&email=${encodeURIComponent(signUpFormData.email)}`);
@@ -137,7 +137,9 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
           message = tCommon('numberInUseError');
         }
       }
-      await authService.deleteUnconfirmedUser(api, userId);
+      if (userId) {
+        await authService.deleteUnconfirmedUser(api, userId);
+      }
       setError(message);
     }
   };

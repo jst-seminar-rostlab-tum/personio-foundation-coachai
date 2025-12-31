@@ -14,7 +14,7 @@ from app.models.user_profile import UserProfile
 from app.schemas.auth import (
     CheckUniqueRequest,
     UserCreate,
-    UserCreateResponse,
+    UserIdResponse,
     VerificationCodeConfirm,
     VerificationCodeCreate,
 )
@@ -45,8 +45,8 @@ def verify_code(req: VerificationCodeConfirm) -> None:
         )
 
 
-@router.post('', response_model=UserCreateResponse, status_code=status.HTTP_201_CREATED)
-def create_user(req: UserCreate) -> UserCreateResponse:
+@router.post('', response_model=UserIdResponse, status_code=status.HTTP_201_CREATED)
+def create_user(req: UserCreate) -> UserIdResponse:
     try:
         UserCreate.model_validate(req)
     except ValueError as e:
@@ -76,7 +76,7 @@ def create_user(req: UserCreate) -> UserCreateResponse:
         }
         supabase.auth.sign_up(credentials)
 
-        return UserCreateResponse(id=res.user.id)
+        return UserIdResponse(id=res.user.id)
     except Exception as e:
         logging.warning('Unhandled exception when creating user: ', e)
         raise HTTPException(
@@ -89,7 +89,7 @@ def create_user(req: UserCreate) -> UserCreateResponse:
 def confirm_user(
     token: Annotated[JWTPayload, Depends(verify_jwt)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
-) -> None:
+) -> UserIdResponse:
     if not token['user_metadata'].get('email_verified', False):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -104,6 +104,7 @@ def confirm_user(
     )
     db_session.add(user_data)
     db_session.commit()
+    return UserIdResponse(id=str(user_data.id))
 
 
 @router.post('/mock-confirm', response_model=None, status_code=status.HTTP_202_ACCEPTED)

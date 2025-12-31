@@ -32,7 +32,7 @@ const verifyCode = async (api: AxiosInstance, data: VerificationCodeConfirm) => 
 
 const deleteUnconfirmedUser = async (api: AxiosInstance, userid: string) => {
   const response = await api.delete('/auth/delete-unconfirmed', {
-    data: { userid },
+    params: { userid },
   });
   return response.data;
 };

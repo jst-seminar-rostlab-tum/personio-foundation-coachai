@@ -99,10 +99,11 @@ export function ConfirmationForm({ initialEmail, onClose, signUpFormData }: Conf
         return;
       }
     }
-
+    let userId: string | undefined;
     try {
       if (!DEV_MODE_SKIP_AUTH) {
-        await authService.confirmUser(api);
+        const result = await authService.confirmUser(api);
+        userId = result.id;
       } else if (signUpFormData !== null) {
         const data: UserCreate = {
           fullName: signUpFormData!.fullName,
@@ -118,7 +119,14 @@ export function ConfirmationForm({ initialEmail, onClose, signUpFormData }: Conf
       isConfirmedRef.current = true;
       router.push('/onboarding');
     } catch {
-      await authService.deleteUnconfirmedUser(api, formData.email);
+      /** [WARNING] If any error occurs in the email confirmation in
+       dev mode, the user won't be deleted from the auth or user table!
+       That's because we're using a placeholder JWT and can't access the auth id
+       without passing it from one component to the other, which is a security vulnerability.
+       */
+      if (userId) {
+        await authService.deleteUnconfirmedUser(api, userId);
+      }
       setError(t('ConfirmationForm.genericError'));
       setIsLoading(false);
     }
