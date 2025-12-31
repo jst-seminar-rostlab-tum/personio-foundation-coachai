@@ -127,6 +127,7 @@ export function ConfirmationForm({ initialEmail, onClose, signUpFormData }: Conf
       if (userId) {
         await authService.deleteUnconfirmedUser(api, userId);
       }
+      router.push('/login');
       setError(t('ConfirmationForm.genericError'));
       setIsLoading(false);
     }
