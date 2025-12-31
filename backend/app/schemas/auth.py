@@ -10,6 +10,10 @@ class UserCreate(CamelModel):
     # code: str
 
 
+class UserCreateResponse(CamelModel):
+    id: str
+
+
 class VerificationCodeCreate(CamelModel):
     phone_number: str
 

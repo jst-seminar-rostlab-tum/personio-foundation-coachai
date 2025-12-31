@@ -100,6 +100,8 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     setIsLoading(true);
     setError(null);
 
+    let userId = null;
+
     try {
       // First verify the code
       await authService.verifyCode(api, {
@@ -117,7 +119,8 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
           signUpFormData.nonprofitStatus === 'yes' ? signUpFormData.organizationName : undefined,
         // code: form.getValues('code'),
       };
-      await authService.createUser(api, data);
+      const result = await authService.createUser(api, data);
+      userId = result.data.id;
       setIsLoading(false);
 
       router.push(`/login?step=confirm&email=${encodeURIComponent(signUpFormData.email)}`);
@@ -134,7 +137,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
           message = tCommon('numberInUseError');
         }
       }
-      await authService.deleteUnconfirmedUser(api, signUpFormData.email);
+      await authService.deleteUnconfirmedUser(api, userId);
       setError(message);
     }
   };

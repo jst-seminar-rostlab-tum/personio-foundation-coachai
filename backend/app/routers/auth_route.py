@@ -14,6 +14,7 @@ from app.models.user_profile import UserProfile
 from app.schemas.auth import (
     CheckUniqueRequest,
     UserCreate,
+    UserCreateResponse,
     VerificationCodeConfirm,
     VerificationCodeCreate,
 )
@@ -44,8 +45,8 @@ def verify_code(req: VerificationCodeConfirm) -> None:
         )
 
 
-@router.post('', response_model=None, status_code=status.HTTP_201_CREATED)
-def create_user(req: UserCreate) -> None:
+@router.post('', response_model=UserCreateResponse, status_code=status.HTTP_201_CREATED)
+def create_user(req: UserCreate) -> UserCreateResponse:
     try:
         UserCreate.model_validate(req)
     except ValueError as e:
@@ -67,13 +68,15 @@ def create_user(req: UserCreate) -> None:
                 'organization_name': req.organization_name,
             },
         }
-        supabase.auth.admin.create_user(attributes)
+        res = supabase.auth.admin.create_user(attributes)
 
         credentials: SignUpWithPasswordCredentials = {
             'email': req.email,
             'password': req.password,
         }
         supabase.auth.sign_up(credentials)
+
+        return UserCreateResponse(id=res.user.id)
     except Exception as e:
         logging.warning('Unhandled exception when creating user: ', e)
         raise HTTPException(
@@ -135,28 +138,14 @@ def confirm_mock_user(
 
 @router.delete('/delete-unconfirmed', response_model=None, status_code=status.HTTP_200_OK)
 def delete_unconfirmed_user(
-    email: str,
-    db_session: Annotated[DBSession, Depends(get_db_session)],
+    userid: str,
 ) -> None:
     """
     Delete a user from Supabase Auth by email if not confirmed.
     """
     try:
-        db_user = db_session.query(UserProfile).filter_by(email=email).first()
-
-        if db_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail='Failed delete user'
-            )
-
         supabase = get_supabase_client()
-        users = supabase.auth.admin.list_users()
-
-        user = next((u for u in users if getattr(u, 'email', None) == email), None)
-
-        if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
-        supabase.auth.admin.delete_user(user.id)
+        supabase.auth.admin.delete_user(userid)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f'Failed to delete user: {e}'
