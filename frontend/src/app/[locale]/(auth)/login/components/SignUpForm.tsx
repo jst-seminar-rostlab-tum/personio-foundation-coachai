@@ -19,7 +19,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/Form';
-import { VerificationPopup } from '@/app/[locale]/(auth)/login/components/VerificationPopup';
 import {
   PasswordInput,
   PasswordRequirement,
@@ -29,9 +28,8 @@ import { showErrorToast } from '@/lib/utils/toast';
 import Link from 'next/link';
 import { UserProfileService } from '@/services/UserProfileService';
 import { api } from '@/services/ApiClient';
-import { ConfirmationForm } from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { DEV_MODE_SKIP_AUTH } from '@/lib/connector';
+import { PhoneNumberVerificationPopup } from '@/app/[locale]/(auth)/login/components/PhoneNumberVerificationPopup';
+import EmailConfirmationPopup from './EmailConfirmationPopup';
 
 export function SignUpForm() {
   const tLogin = useTranslations('Login');
@@ -40,10 +38,7 @@ export function SignUpForm() {
   const [showVerification, setShowVerification] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
-
-  const searchParams = useSearchParams();
-  const step = searchParams.get('step');
+  const [showEmailConfirmationForm, setShowEmailConfirmationForm] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -144,6 +139,11 @@ export function SignUpForm() {
 
     setShowVerification(true);
     setIsLoading(false);
+  };
+
+  const switchToEmailConfirmationForm = () => {
+    setShowVerification(false);
+    setShowEmailConfirmationForm(true);
   };
 
   return (
@@ -366,20 +366,18 @@ export function SignUpForm() {
         </Form>
       </Card>
 
-      <VerificationPopup
-        isOpen={showVerification}
-        onClose={() => setShowVerification(false)}
-        signUpFormData={signUpForm.getValues()}
-      />
+      {showVerification && (
+        <PhoneNumberVerificationPopup
+          onClose={() => setShowVerification(false)}
+          signUpFormData={signUpForm.getValues()}
+          onSuccess={() => switchToEmailConfirmationForm()}
+        />
+      )}
 
-      {step === 'confirm' && (
-        <ConfirmationForm
-          initialEmail={searchParams.get('email') || signUpForm.getValues().email}
-          onClose={() => {
-            setShowVerification(false);
-            router.push('/login');
-          }}
-          signUpFormData={DEV_MODE_SKIP_AUTH ? signUpForm.getValues() : undefined}
+      {showEmailConfirmationForm && (
+        <EmailConfirmationPopup
+          initialEmail={signUpForm.getValues().email}
+          onClose={() => setShowEmailConfirmationForm(false)}
         />
       )}
 
