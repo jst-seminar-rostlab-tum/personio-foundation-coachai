@@ -100,9 +100,8 @@ const getSdpResponseTextFromRealtimeApi = async (
 ) => {
   try {
     const baseUrl = 'https://api.openai.com/v1/realtime';
-    const modelId = 'gpt-realtime-2025-08-28';
 
-    const sdpResponse = await fetch(`${baseUrl}?model=${modelId}`, {
+    const sdpResponse = await fetch(`${baseUrl}/calls`, {
       method: 'POST',
       body: offerSdp,
       headers: {
@@ -111,8 +110,6 @@ const getSdpResponseTextFromRealtimeApi = async (
       },
     });
 
-    // eslint-disable-next-line no-restricted-syntax
-    console.log(sdpResponse);
     return sdpResponse.text();
   } catch (error) {
     console.error(error);

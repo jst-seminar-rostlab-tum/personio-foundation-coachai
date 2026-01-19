@@ -37,7 +37,7 @@ class RealtimeSessionService:
         elif 'sad' in persona_name:
             return 'ash'
         else:
-            return 'echo'
+            return 'alloy'
 
     def get_persona_difficulty_modifier(self, persona_name: str, difficulty: str) -> str | None:
         """
@@ -175,26 +175,41 @@ class RealtimeSessionService:
                 f.write(instructions)
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                'https://api.openai.com/v1/realtime/sessions',
+                'https://api.openai.com/v1/realtime/client_secrets',
                 headers={
                     'Authorization': f'Bearer {api_key}',
                     'Content-Type': 'application/json',
                 },
                 json={
-                    'model': MODEL,
-                    'voice': ai_voice,
-                    'input_audio_transcription': {
-                        'language': language,
-                        'model': 'gpt-4o-transcribe',
+                    'session': {
+                        'type': 'realtime',
+                        # Model selection
+                        'model': MODEL,
+                        # System instructions
+                        'instructions': instructions,
+                        # Audio + speech configuration
+                        'audio': {
+                            'input': {
+                                # Transcription
+                                'transcription': {
+                                    'model': 'gpt-4o-transcribe',
+                                    'language': language,
+                                },
+                                # Server-side VAD
+                                'turn_detection': {
+                                    'type': 'server_vad',
+                                    'threshold': 0.8,
+                                    'prefix_padding_ms': 300,
+                                    'silence_duration_ms': 500,
+                                },
+                            },
+                            'output': {
+                                # Speech speed
+                                'speed': 0.9,
+                                'voice': ai_voice,
+                            },
+                        },
                     },
-                    'instructions': instructions,
-                    'turn_detection': {
-                        'type': 'server_vad',
-                        'threshold': 0.8,
-                        'prefix_padding_ms': 300,
-                        'silence_duration_ms': 500,
-                    },
-                    'speed': 0.9,
                 },
             )
             try:
