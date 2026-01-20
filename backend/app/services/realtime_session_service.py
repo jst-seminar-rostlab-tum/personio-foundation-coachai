@@ -31,7 +31,7 @@ class RealtimeSessionService:
         elif 'positive' in persona_name:
             return 'shimmer'
         elif 'casual' in persona_name:
-            return 'alloy'
+            return 'marin'
         elif 'shy' in persona_name:
             return 'sage'
         elif 'sad' in persona_name:
