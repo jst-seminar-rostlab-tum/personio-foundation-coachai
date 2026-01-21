@@ -113,7 +113,7 @@ export function useWebRTC(sessionId: string, ephemeralKey: string) {
         const parsed = JSON.parse(event.data);
 
         switch (parsed.type) {
-          case 'conversation.item.created':
+          case 'conversation.item.done':
             if (parsed.item.role === 'user' && parsed.item.status === 'completed') {
               addPlaceholderMessage(MessageSender.USER);
             }
@@ -135,11 +135,11 @@ export function useWebRTC(sessionId: string, ephemeralKey: string) {
             });
             break;
 
-          case 'response.audio_transcript.delta':
+          case 'response.output_audio_transcript.delta':
             appendDeltaToLastMessage(MessageSender.ASSISTANT, parsed.delta);
             break;
 
-          case 'response.audio_transcript.done':
+          case 'response.output_audio_transcript.done':
             addMetadataToTurn(parsed.response_id, {
               sessionId,
               speaker: MessageSender.ASSISTANT,
