@@ -52,8 +52,9 @@ The following environment variables can be configured:
 - `NEXT_PUBLIC_API_URL`: Backend API URL
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anonymous key
-- `NEXT_PUBLIC_BASE_URL`: Base URL for the application 
+- `NEXT_PUBLIC_BASE_URL`: Base URL for the application
 - `NEXT_PUBLIC_DEV_MODE_SKIP_AUTH`: Skip authentication in development mode
+- `NEXT_PUBLIC_SKIP_EMAIL_VERIFICATION`: Skip email verification during signup
 
 ## Development Tools
 
@@ -88,3 +89,12 @@ Or using Docker Compose:
 ```bash
 docker compose up frontend
 ```
+
+## Test Signup Locally
+
+1. In `supabase\config.toml` set `enable_confirmations` under `[auth.email]` to `true`.
+2. Restart your local supabase instance (see backend readme).
+3. In your frontend `.env` file, set `NEXT_PUBLIC_SKIP_EMAIL_VERIFICATION` to `"false"`, and restart the frontend.
+4. Visit the login page and complete all signup steps until you have to enter the email verification code.
+5. Visit the email smtp server of your local supabase instance. By default this is reachable under `http://localhost:54324/`
+6. Search for the verification code corresponding to your email and enter it on the login page.
