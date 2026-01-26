@@ -13,11 +13,17 @@ import { api } from '@/services/ApiServer';
 import ConversationScenarioSuggestion from './components/ConversationScenarioSuggestion';
 import DashboardTable from './components/DashboardTable';
 
+/**
+ * Generates localized metadata for the dashboard page.
+ */
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/dashboard', true);
 }
 
+/**
+ * Renders the dashboard with user stats, suggestions, and recent sessions.
+ */
 export default async function DashboardPage() {
   const t = await getTranslations('Dashboard');
   const tCommon = await getTranslations('Common');
