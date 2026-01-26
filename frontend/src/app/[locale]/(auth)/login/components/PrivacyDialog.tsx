@@ -25,6 +25,9 @@ interface DataProcessingCardProps {
   storageDurationLabel: string;
 }
 
+/**
+ * Displays a single data processing topic in card form.
+ */
 const DataProcessingCard = ({
   item,
   purposeLabel,
@@ -63,6 +66,9 @@ interface DataProcessingTableProps {
   };
 }
 
+/**
+ * Renders data processing topics in a table layout.
+ */
 const DataProcessingTable = ({ items, headers }: DataProcessingTableProps) => (
   <div className="overflow-x-auto">
     <table className="w-full border-collapse" role="table">
@@ -117,6 +123,9 @@ interface DataProcessingSectionProps {
   };
 }
 
+/**
+ * Shows the data processing section with responsive card/table layouts.
+ */
 const DataProcessingSection = ({
   dataProcessingTopics,
   title,
@@ -156,6 +165,9 @@ interface ExternalServicesAndEncryptionSectionProps {
   encryptionDescription: string;
 }
 
+/**
+ * Presents external services used and encryption information.
+ */
 const ExternalServicesAndEncryptionSection = ({
   externalServices,
   externalServicesTitle,
@@ -211,6 +223,9 @@ interface UserRightsSectionProps {
   };
 }
 
+/**
+ * Highlights user rights related to account deletion and data export.
+ */
 const UserRightsSection = ({ title, accountDeletion, dataExport }: UserRightsSectionProps) => (
   <section aria-labelledby="user-rights-title">
     <Card>
@@ -248,6 +263,9 @@ const UserRightsSection = ({ title, accountDeletion, dataExport }: UserRightsSec
   </section>
 );
 
+/**
+ * Renders the privacy dialog content as either inline content or a modal dialog.
+ */
 export default function PrivacyDialog(props: PrivacyDialogProps) {
   const { variant = 'dialog' } = props as { variant: 'dialog' | 'content' };
 

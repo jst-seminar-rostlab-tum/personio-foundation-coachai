@@ -35,6 +35,9 @@ interface PhoneNumberVerificationPopupProps {
   onSuccess: () => void;
 }
 
+/**
+ * Verifies a phone number with an OTP before completing sign-up.
+ */
 export function PhoneNumberVerificationPopup({
   onClose,
   signUpFormData,
@@ -87,6 +90,9 @@ export function PhoneNumberVerificationPopup({
     }
   }, [error]);
 
+  /**
+   * Sends or resends the verification code with cooldown enforcement.
+   */
   const handleSendVerificationCode = async () => {
     if (resendCooldown > 0) return;
     try {
@@ -104,6 +110,9 @@ export function PhoneNumberVerificationPopup({
     }
   };
 
+  /**
+   * Submits the verification code and completes account creation.
+   */
   const handleSubmit = async () => {
     setIsLoading(true);
     setError(null);

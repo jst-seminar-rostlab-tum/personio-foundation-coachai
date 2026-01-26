@@ -16,6 +16,9 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { ModalWrapper } from './ModelWrapper';
 
+/**
+ * Prompts the user to confirm their email via OTP and handles resend flows.
+ */
 export default function EmailConfirmationPopup({
   initialEmail,
   onClose,
@@ -55,6 +58,9 @@ export default function EmailConfirmationPopup({
     },
   });
 
+  /**
+   * Verifies the OTP entered by the user and proceeds to onboarding on success.
+   */
   const verifyOTP = async () => {
     setIsLoading(true);
     setError(null);
@@ -88,6 +94,9 @@ export default function EmailConfirmationPopup({
     router.push('/onboarding');
   };
 
+  /**
+   * Requests a new confirmation email and resets the code input.
+   */
   const resendConfirmationEmail = async () => {
     setIsLoading(true);
     setError(null);

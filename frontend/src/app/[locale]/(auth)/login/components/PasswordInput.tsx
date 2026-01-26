@@ -20,6 +20,9 @@ interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   autocomplete?: string;
 }
 
+/**
+ * Password input with visibility toggle and live requirement feedback.
+ */
 export function PasswordInput({
   placeholder,
   disabled,
@@ -32,6 +35,9 @@ export function PasswordInput({
   const [passwordValue, setPasswordValue] = useState('');
   const t = useTranslations('Login.PasswordInput');
 
+  /**
+   * Tracks password changes locally while forwarding to the parent onChange handler.
+   */
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setPasswordValue(newValue);
