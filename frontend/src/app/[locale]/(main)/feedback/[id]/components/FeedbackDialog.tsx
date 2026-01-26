@@ -20,11 +20,17 @@ import { useState, Dispatch, SetStateAction } from 'react';
 import { api } from '@/services/ApiClient';
 import { FeedbackResponse } from '@/interfaces/models/SessionFeedback';
 
+/**
+ * Props for submitting a feedback rating and comment.
+ */
 interface FeedbackDialogProps {
   sessionId: string;
   setFeedbackDetail: Dispatch<SetStateAction<FeedbackResponse | null>>;
 }
 
+/**
+ * Collects a rating and comment for a completed session.
+ */
 export default function FeedbackDialog({ sessionId, setFeedbackDetail }: FeedbackDialogProps) {
   const t = useTranslations('Feedback');
   const tCommon = useTranslations('Common');
@@ -33,18 +39,27 @@ export default function FeedbackDialog({ sessionId, setFeedbackDetail }: Feedbac
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shareWithAdmin, setShareWithAdmin] = useState(false);
 
+  /**
+   * Resets the rating form state.
+   */
   const resetForm = () => {
     setRating(0);
     setRatingDescription('');
     setShareWithAdmin(false);
   };
 
+  /**
+   * Resets the form whenever the dialog opens.
+   */
   const handleOpenChange = (open: boolean) => {
     if (open) {
       resetForm();
     }
   };
 
+  /**
+   * Submits the review to the backend.
+   */
   const rateFeedback = async () => {
     if (isSubmitting) return;
 

@@ -2,6 +2,9 @@ import { useRef, useEffect, useState } from 'react';
 import { RotateCcwIcon, RotateCwIcon, PlayIcon, PauseIcon } from 'lucide-react';
 import Slider from '@/components/ui/Slider';
 
+/**
+ * Props for the feedback audio player.
+ */
 interface AudioPlayerProps {
   currentTime: number;
   setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
@@ -12,6 +15,9 @@ interface AudioPlayerProps {
   t: (key: string) => string;
 }
 
+/**
+ * Renders audio playback controls with keyboard shortcuts and a seek slider.
+ */
 export default function AudioPlayer({
   currentTime,
   setCurrentTime,
@@ -27,6 +33,9 @@ export default function AudioPlayer({
   const wasPlayingBeforeDrag = useRef(false);
 
   useEffect(() => {
+    /**
+     * Keeps playback state in sync with the audio element.
+     */
     const audio = audioRef.current;
     if (!audio) return;
     if (isPlaying) {
@@ -37,6 +46,9 @@ export default function AudioPlayer({
   }, [isPlaying]);
 
   useEffect(() => {
+    /**
+     * Updates the audio element when the current time is changed externally.
+     */
     const audio = audioRef.current;
     if (!audio) return;
     if (Math.abs(audio.currentTime - currentTime) > 1) {
@@ -45,6 +57,9 @@ export default function AudioPlayer({
   }, [currentTime]);
 
   useEffect(() => {
+    /**
+     * Wires audio element events to local state.
+     */
     const audio = audioRef.current;
     if (!audio) return undefined;
     const handleTimeUpdate = () => {
@@ -68,6 +83,9 @@ export default function AudioPlayer({
   }, [setCurrentTime, setIsPlaying]);
 
   useEffect(() => {
+    /**
+     * Restores playback state after dragging the scrubber.
+     */
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -92,6 +110,9 @@ export default function AudioPlayer({
   }, [isDragging, isPlaying, currentTime, setIsPlaying]);
 
   useEffect(() => {
+    /**
+     * Enables keyboard shortcuts for seeking and play/pause.
+     */
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
         (e.target as HTMLElement)?.tagName === 'INPUT' ||
