@@ -12,6 +12,9 @@ interface SessionSetterProps {
   defaultDailySessionLimit: number;
 }
 
+/**
+ * Allows admins to update the default daily session limit for users.
+ */
 export default function SessionSetter({ defaultDailySessionLimit }: SessionSetterProps) {
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
@@ -21,6 +24,9 @@ export default function SessionSetter({ defaultDailySessionLimit }: SessionSette
 
   const hasSessionLimitChanged = sessionLimit !== savedSessionLimit;
 
+  /**
+   * Persists the updated session limit after validation.
+   */
   const handleSaveSessionLimit = async () => {
     if (!Number.isInteger(sessionLimit) || sessionLimit < 1) {
       showErrorToast(null, t('sessionNumberFailed'));

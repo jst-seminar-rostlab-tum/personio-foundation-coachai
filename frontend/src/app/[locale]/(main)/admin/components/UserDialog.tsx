@@ -19,6 +19,9 @@ interface UserDialogProps {
   onUpdate: () => void;
 }
 
+/**
+ * Shows user details and allows editing per-user session limits.
+ */
 export default function UserDialog({ userId, isOpen, onClose, onUpdate }: UserDialogProps) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,6 +31,9 @@ export default function UserDialog({ userId, isOpen, onClose, onUpdate }: UserDi
   const tCommon = useTranslations('Common');
   const userRoles = UserRoles();
 
+  /**
+   * Fetches the selected user's profile for display and editing.
+   */
   const fetchUserProfile = useCallback(async () => {
     if (!userId) return;
 
@@ -49,6 +55,9 @@ export default function UserDialog({ userId, isOpen, onClose, onUpdate }: UserDi
     }
   }, [userId, isOpen, fetchUserProfile]);
 
+  /**
+   * Saves the updated session limit and refreshes the user profile.
+   */
   const handleSaveSessionLimit = async () => {
     if (!userId) return;
 
@@ -68,6 +77,9 @@ export default function UserDialog({ userId, isOpen, onClose, onUpdate }: UserDi
     }
   };
 
+  /**
+   * Updates the local session limit input value.
+   */
   const handleSessionLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSessionLimit(value);

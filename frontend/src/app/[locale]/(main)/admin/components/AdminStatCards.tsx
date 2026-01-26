@@ -8,6 +8,9 @@ import { calculateAverageScore } from '@/lib/utils/scoreUtils';
 import { useAdminStatsStore } from '@/store/AdminStatsStore';
 import { useEffect } from 'react';
 
+/**
+ * Displays aggregate admin stats in a responsive card grid.
+ */
 export default function AdminStatCards() {
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
@@ -15,6 +18,9 @@ export default function AdminStatCards() {
   const { stats, setStats } = useAdminStatsStore();
 
   useEffect(() => {
+    /**
+     * Fetches the latest admin stats and updates the store.
+     */
     const fetchStats = async () => {
       try {
         const data = await adminService.getAdminStats(api);

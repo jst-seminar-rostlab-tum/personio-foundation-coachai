@@ -1,3 +1,6 @@
+/**
+ * Shows a skeleton UI while the admin dashboard loads.
+ */
 export default function AdminLoadingPage() {
   return (
     <div className="max-w-full">
