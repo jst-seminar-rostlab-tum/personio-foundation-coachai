@@ -14,6 +14,9 @@ export async function generateMetadata({ params }: MetadataProps): Promise<Metad
   return generateDynamicMetadata(locale, '/login', true);
 }
 
+/**
+ * Props for the login page, including auth step query parameters.
+ */
 interface LoginPageProps {
   searchParams: Promise<{ step?: string }>;
 }

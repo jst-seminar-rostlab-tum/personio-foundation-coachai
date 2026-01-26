@@ -7,6 +7,9 @@ import { Dialog, DialogContent } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
 import { DataProcessingTopic } from '@/interfaces/models/PrivacyDialog';
 
+/**
+ * Props for rendering the privacy dialog either inline or as a modal.
+ */
 type PrivacyDialogProps =
   | {
       variant?: 'dialog';
@@ -19,6 +22,9 @@ type PrivacyDialogProps =
       onOpenChange?: never;
     };
 
+/**
+ * Props for a single data processing card entry.
+ */
 interface DataProcessingCardProps {
   item: DataProcessingTopic;
   purposeLabel: string;
@@ -57,6 +63,9 @@ const DataProcessingCard = ({
   </div>
 );
 
+/**
+ * Props for the data processing table layout.
+ */
 interface DataProcessingTableProps {
   items: DataProcessingTopic[];
   headers: {
@@ -113,6 +122,9 @@ const DataProcessingTable = ({ items, headers }: DataProcessingTableProps) => (
   </div>
 );
 
+/**
+ * Props for the data processing section container.
+ */
 interface DataProcessingSectionProps {
   dataProcessingTopics: DataProcessingTopic[];
   title: string;
@@ -158,6 +170,9 @@ const DataProcessingSection = ({
   </section>
 );
 
+/**
+ * Props for the external services and encryption section.
+ */
 interface ExternalServicesAndEncryptionSectionProps {
   externalServices: string[];
   externalServicesTitle: string;
@@ -211,6 +226,9 @@ const ExternalServicesAndEncryptionSection = ({
   </section>
 );
 
+/**
+ * Props for the user rights section.
+ */
 interface UserRightsSectionProps {
   title: string;
   accountDeletion: {

@@ -3,6 +3,9 @@
 import { useRouter } from 'next/navigation';
 import { ReactNode } from 'react';
 
+/**
+ * Props for the modal wrapper container.
+ */
 interface ModalWrapperProps {
   children: ReactNode;
 }

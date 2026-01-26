@@ -6,12 +6,18 @@ import { cn } from '@/lib/utils/cnMerge';
 import { useTranslations } from 'next-intl';
 import Input from '@/components/ui/Input';
 
+/**
+ * Describes a password rule and its validation predicate.
+ */
 export interface PasswordRequirement {
   id: string;
   label: string;
   test: (password: string) => boolean;
 }
 
+/**
+ * Props for the password input component.
+ */
 interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   placeholder: string;
   disabled: boolean;

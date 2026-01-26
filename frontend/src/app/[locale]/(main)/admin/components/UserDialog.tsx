@@ -12,6 +12,9 @@ import type { UserProfile } from '@/interfaces/models/UserProfile';
 import { AccountRole } from '@/interfaces/models/UserProfile';
 import { UserRoles } from '@/lib/constants/userRoles';
 
+/**
+ * Props for the user detail dialog.
+ */
 interface UserDialogProps {
   userId: string | null;
   isOpen: boolean;

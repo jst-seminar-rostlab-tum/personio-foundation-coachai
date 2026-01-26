@@ -15,19 +15,31 @@ export async function generateMetadata({
   return generateDynamicMetadata(locale, '/privacy', false);
 }
 
+/**
+ * Represents a labeled privacy topic with text content.
+ */
 type Topic = {
   heading?: string;
   content: string | string[];
 };
 
+/**
+ * Represents a privacy policy section with optional topics.
+ */
 type Section = {
   title?: string;
   content?: string | string[];
   topics?: Topic[];
 };
 
+/**
+ * Maps section keys to section content.
+ */
 type Sections = Record<string, Section>;
 
+/**
+ * Represents a parsed text segment as paragraph or list items.
+ */
 type Segment = { type: 'para'; lines: string[] } | { type: 'list'; items: string[] };
 
 const TEXT_CLASSES = 'text-base leading-loose whitespace-pre-line break-words' as const;

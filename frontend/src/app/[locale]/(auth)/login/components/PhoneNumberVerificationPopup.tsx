@@ -21,6 +21,9 @@ import { createClient } from '@/lib/supabase/client';
 import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
 import { SKIP_EMAIL_VERIFICATION } from '@/lib/connector';
 
+/**
+ * Props for the phone number verification flow.
+ */
 interface PhoneNumberVerificationPopupProps {
   onClose: () => void;
   signUpFormData: {

@@ -8,6 +8,9 @@ import { adminService } from '@/services/AdminService';
 import { showSuccessToast, showErrorToast } from '@/lib/utils/toast';
 import { api } from '@/services/ApiClient';
 
+/**
+ * Props for configuring the default daily session limit.
+ */
 interface SessionSetterProps {
   defaultDailySessionLimit: number;
 }
