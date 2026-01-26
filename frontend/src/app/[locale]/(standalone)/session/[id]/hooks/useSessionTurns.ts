@@ -5,12 +5,21 @@ import { api } from '@/services/ApiClient';
 import { showErrorToast } from '@/lib/utils/toast';
 import { useTranslations } from 'next-intl';
 
+/**
+ * Partial session turn data collected before upload.
+ */
 type PartialSessionTurn = Partial<CreateSessionTurnRequest>;
 
+/**
+ * Buffers and uploads session turns once all parts are available.
+ */
 export function useSessionTurns() {
   const t = useTranslations('Session');
   const sessionTurnsMap = useRef<Map<string, PartialSessionTurn>>(new Map());
 
+  /**
+   * Builds a multipart form payload for a session turn.
+   */
   const convertSessionTurnToFormData = useCallback((turn: CreateSessionTurnRequest): FormData => {
     const formData = new FormData();
     formData.append('session_id', turn.sessionId);
@@ -22,6 +31,9 @@ export function useSessionTurns() {
     return formData;
   }, []);
 
+  /**
+   * Checks if a turn has all required fields to upload.
+   */
   const isTurnComplete = useCallback((turnId: string) => {
     const turn = sessionTurnsMap.current.get(turnId);
     if (!turn) return false;
@@ -35,10 +47,16 @@ export function useSessionTurns() {
     );
   }, []);
 
+  /**
+   * Removes a buffered turn after upload.
+   */
   const removeTurn = useCallback((turnId: string) => {
     sessionTurnsMap.current.delete(turnId);
   }, []);
 
+  /**
+   * Uploads a buffered turn if it is complete.
+   */
   const postSessionTurn = useCallback(
     async (turnId: string) => {
       if (!isTurnComplete(turnId)) return;
@@ -56,6 +74,9 @@ export function useSessionTurns() {
     [isTurnComplete, convertSessionTurnToFormData, removeTurn, t]
   );
 
+  /**
+   * Attaches audio to a turn and attempts upload.
+   */
   const addAudioToTurn = useCallback(
     (turnId: string, audioFile: Blob) => {
       const existing = sessionTurnsMap.current.get(turnId) || {};
@@ -69,6 +90,9 @@ export function useSessionTurns() {
     [postSessionTurn]
   );
 
+  /**
+   * Attaches metadata to a turn and attempts upload.
+   */
   const addMetadataToTurn = useCallback(
     (
       turnId: string,
@@ -85,6 +109,9 @@ export function useSessionTurns() {
     [postSessionTurn]
   );
 
+  /**
+   * Sets the start offset for a turn.
+   */
   const addStartOffsetMsToTurn = useCallback((turnId: string, startOffsetMs: number) => {
     const existing = sessionTurnsMap.current.get(turnId) || {};
     sessionTurnsMap.current.set(turnId, {
@@ -93,6 +120,9 @@ export function useSessionTurns() {
     });
   }, []);
 
+  /**
+   * Sets the end offset and attempts upload.
+   */
   const addEndOffsetMsToTurn = useCallback(
     (turnId: string, endOffsetMs: number) => {
       const existing = sessionTurnsMap.current.get(turnId) || {};

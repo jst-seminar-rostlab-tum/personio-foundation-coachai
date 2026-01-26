@@ -1,11 +1,17 @@
 import { useCallback, useRef, useState } from 'react';
 
+/**
+ * Tracks elapsed time with start/stop controls.
+ */
 export function useElapsedTime() {
   const [elapsedTimeS, setElapsedTimeS] = useState(0);
   const elapsedTimeMsRef = useRef(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimestampRef = useRef<number | null>(null);
 
+  /**
+   * Starts the interval timer for elapsed time updates.
+   */
   const startTimer = useCallback(() => {
     if (intervalRef.current) return;
 
@@ -21,6 +27,9 @@ export function useElapsedTime() {
     }, 100);
   }, []);
 
+  /**
+   * Stops the interval timer and resets the start timestamp.
+   */
   const stopTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
