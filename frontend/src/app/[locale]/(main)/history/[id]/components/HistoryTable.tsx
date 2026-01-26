@@ -14,17 +14,25 @@ import { useLocale, useTranslations } from 'next-intl';
 import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 
+/**
+ * Props for the history sessions table.
+ */
+interface HistoryTableProps {
+  sessions: Session[];
+  limit: number;
+  totalSessions: number;
+  scenarioId: string;
+}
+
+/**
+ * Renders a paginated table of past sessions for a scenario.
+ */
 export default function HistoryTable({
   sessions,
   limit,
   totalSessions,
   scenarioId,
-}: {
-  sessions: Session[];
-  limit: number;
-  totalSessions: number;
-  scenarioId: string;
-}) {
+}: HistoryTableProps) {
   const tCommon = useTranslations('Common');
   const tHistory = useTranslations('History');
   const locale = useLocale();
@@ -35,10 +43,16 @@ export default function HistoryTable({
   const [visibleCount, setVisibleCount] = useState(limit);
   const canLoadMore = visibleCount < totalSessions;
 
+  /**
+   * Advances pagination to load more sessions.
+   */
   const handleLoadMore = (newPage: number) => {
     setPageNumber(newPage);
   };
 
+  /**
+   * Fetches additional sessions for the scenario.
+   */
   const getSessions = async () => {
     try {
       setIsLoading(true);
@@ -63,8 +77,14 @@ export default function HistoryTable({
     }
   };
 
+  /**
+   * Navigates to the feedback detail for a session.
+   */
   const handleRowClick = (row: Session) => router.push(`/feedback/${row.sessionId}`);
 
+  /**
+   * Deletes a session and refreshes the list.
+   */
   const handleDelete = async (id: string) => {
     try {
       await sessionService.deleteSession(api, id);
