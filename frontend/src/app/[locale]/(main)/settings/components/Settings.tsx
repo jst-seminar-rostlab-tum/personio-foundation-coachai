@@ -27,10 +27,16 @@ import { Mail } from 'lucide-react';
 import UserPreferences from './UserPreferences';
 import { ExportUserHandler } from './ExportUserHandler';
 
+/**
+ * Props for the settings page component.
+ */
 interface SettingsProps {
   userProfile: Promise<UserProfile>;
 }
 
+/**
+ * Extracts confidence score values with a fallback default.
+ */
 const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   const score = userProfileData.confidenceScores?.find(
     (confidenceScore) => confidenceScore.confidenceArea === area
@@ -38,6 +44,9 @@ const getConfidenceScores = (userProfileData: UserProfile, area: string) => {
   return score !== undefined ? [score] : [50];
 };
 
+/**
+ * Renders the user settings form with privacy and personalization options.
+ */
 export default function Settings({ userProfile }: SettingsProps) {
   const t = useTranslations('Settings');
   const tCommon = useTranslations('Common');
@@ -93,6 +102,9 @@ export default function Settings({ userProfile }: SettingsProps) {
     // eslint-disable-next-line
   }, [searchParams, t]);
 
+  /**
+   * Detects whether the form has unsaved changes.
+   */
   const hasFormChanged = () => {
     const currentEffectiveOrgName = isNonprofit ? organizationName : '';
     const savedEffectiveOrgName = savedIsNonprofit ? savedOrganizationName : '';
@@ -137,6 +149,9 @@ export default function Settings({ userProfile }: SettingsProps) {
     },
   };
 
+  /**
+   * Persists settings changes to the user profile.
+   */
   const handleSaveSettings = async () => {
     if (isSubmitting) return;
 
