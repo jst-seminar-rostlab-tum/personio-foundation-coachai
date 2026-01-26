@@ -2,6 +2,9 @@ import { ContextMode, ContextModeEnums } from '@/interfaces/models/ConversationS
 import { useConversationScenarioStore } from '@/store/ConversationScenarioStore';
 import { useTranslations } from 'next-intl';
 
+/**
+ * Lets users choose between default and custom context modes.
+ */
 export default function ContextCardButtons() {
   const t = useTranslations('ConversationScenario');
   const { formState, updateForm } = useConversationScenarioStore();

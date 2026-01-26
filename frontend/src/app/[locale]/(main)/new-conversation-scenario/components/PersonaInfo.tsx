@@ -4,12 +4,18 @@ import { ContextModeEnums } from '@/interfaces/models/ConversationScenario';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { PersonaTextarea } from './PersonaTextarea';
 
+/**
+ * Shows persona details and syncs persona description into form state.
+ */
 export function PersonaInfo() {
   const { formState, updateForm } = useConversationScenarioStore();
   const t = useTranslations('ConversationScenario.customize.persona');
   const { contextMode, persona } = formState;
   const isCustomContextMode = contextMode === ContextModeEnums.CUSTOM;
 
+  /**
+   * Retrieves persona data arrays from translations.
+   */
   const getPersonaData = (personaId: string) => {
     if (!personaId || personaId.trim() === '')
       return { traits: [], trainingFocus: [], personality: [] };
@@ -23,6 +29,9 @@ export function PersonaInfo() {
   const selectedPersonaData = getPersonaData(persona);
   const personaName = t.raw(`personas.${persona}.name`) as string;
 
+  /**
+   * Formats a list of strings as bullet lines.
+   */
   const renderBullets = useCallback((textArray?: string[]) => {
     if (!textArray || textArray.length === 0) return '';
     return textArray.map((s) => `- ${s.trim()}`).join('\n');
@@ -46,6 +55,9 @@ export function PersonaInfo() {
 
   const [texts, setTexts] = useState(initialTexts);
 
+  /**
+   * Builds the persona description string for storage.
+   */
   const generateDescription = useCallback(
     (textData: typeof texts) => {
       return `${t('about.personality')}:\n ${textData.personality}\n\n${t('about.behavioralTraits')}:\n ${textData.traits}\n\n${t('about.trainingFocus')}:\n ${textData.focus}`;
