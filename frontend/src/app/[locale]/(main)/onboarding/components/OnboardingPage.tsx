@@ -23,6 +23,9 @@ import { api } from '@/services/ApiClient';
 import { VideoModal } from '@/components/common/VideoModal';
 import { UserRadioComponent } from './UserRadioComponent';
 
+/**
+ * Renders the multi-step onboarding form and submits user profile updates.
+ */
 export default function OnboardingPageComponent() {
   const t = useTranslations('Onboarding');
   const tCommon = useTranslations('Common');
@@ -50,12 +53,18 @@ export default function OnboardingPageComponent() {
     reset,
   } = useOnboardingStore();
 
+  /**
+   * Validates whether a given step has the required inputs.
+   */
   const isValidStep = (stepIndex: number) => {
     if (stepIndex === 0) return role !== '';
     if (stepIndex === 1) return goals.length > 0;
     return true;
   };
 
+  /**
+   * Advances the stepper when the previous step is valid.
+   */
   const handleStepChange = (stepIndex: number) => {
     if (!isValidStep(stepIndex - 1)) return;
     if (stepIndex <= step || stepIndex === step + 1) {
@@ -63,6 +72,9 @@ export default function OnboardingPageComponent() {
     }
   };
 
+  /**
+   * Persists onboarding selections to the user profile.
+   */
   const updateUserProfile = async () => {
     try {
       await UserProfileService.updateUserProfile(api, {
@@ -81,6 +93,9 @@ export default function OnboardingPageComponent() {
     }
   };
 
+  /**
+   * Closes the video modal and routes to the dashboard.
+   */
   const handleVideoModalClose = () => {
     setShowVideoModal(false);
     router.push('/dashboard');
