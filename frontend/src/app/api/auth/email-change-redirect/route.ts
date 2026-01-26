@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Handles email change redirects and refreshes the Supabase session.
+ */
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   if (searchParams.has('error')) {
