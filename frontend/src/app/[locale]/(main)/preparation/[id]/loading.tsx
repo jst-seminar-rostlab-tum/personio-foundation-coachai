@@ -1,3 +1,6 @@
+/**
+ * Shows a skeleton UI while preparation data loads.
+ */
 export default function PreparationPage() {
   return (
     <div className="flex flex-col gap-8 p-8">

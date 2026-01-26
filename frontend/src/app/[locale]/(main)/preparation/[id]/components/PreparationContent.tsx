@@ -19,6 +19,9 @@ import ObjectivesList from './ObjectivesList';
 import PreparationKeyConcepts from './PreparationKeyConcepts';
 import { CreateSessionButton } from './CreateSessionButton';
 
+/**
+ * Loads and renders preparation details for a conversation scenario.
+ */
 export default function PreparationContent() {
   const t = useTranslations('Preparation');
   const tCommon = useTranslations('Common');
@@ -32,6 +35,9 @@ export default function PreparationContent() {
   const params = useParams();
   const conversationScenarioId = params.id as string;
 
+  /**
+   * Fetches preparation details and retries while processing.
+   */
   const getTrainingPreparation = useCallback(
     async (id: string) => {
       try {

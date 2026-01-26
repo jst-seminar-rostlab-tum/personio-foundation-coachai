@@ -1,10 +1,16 @@
 import { Goal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+/**
+ * Props for the objectives list.
+ */
 interface ObjectivesListProps {
   objectives: string[];
 }
 
+/**
+ * Displays the scenario objectives as a bullet list.
+ */
 export default function ObjectivesList({ objectives }: ObjectivesListProps) {
   const tCommon = useTranslations('Common');
 

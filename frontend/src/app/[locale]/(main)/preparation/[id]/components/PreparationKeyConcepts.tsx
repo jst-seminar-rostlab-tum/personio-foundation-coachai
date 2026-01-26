@@ -1,10 +1,16 @@
 import { KeyConcept } from '@/interfaces/models/ConversationScenario';
 import { useTranslations } from 'next-intl';
 
+/**
+ * Props for the key concepts list.
+ */
 interface PreparationKeyConceptsProps {
   keyConcepts: KeyConcept[];
 }
 
+/**
+ * Displays key concepts with headings and descriptions.
+ */
 export default function PreparationKeyConcepts({ keyConcepts }: PreparationKeyConceptsProps) {
   const tCommon = useTranslations('Common');
 

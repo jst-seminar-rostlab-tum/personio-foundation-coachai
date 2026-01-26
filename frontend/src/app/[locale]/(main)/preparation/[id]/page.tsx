@@ -7,11 +7,17 @@ import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { getTranslations } from 'next-intl/server';
 import PreparationContent from './components/PreparationContent';
 
+/**
+ * Generates localized metadata for the preparation page.
+ */
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/preparation', true);
 }
 
+/**
+ * Renders preparation content or a session limit warning.
+ */
 export default async function PreparationPage() {
   const t = await getTranslations('Preparation');
   const tCommon = await getTranslations('Common');
