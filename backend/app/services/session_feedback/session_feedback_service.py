@@ -1,3 +1,5 @@
+"""Service layer for session feedback service."""
+
 import concurrent.futures
 import logging
 from collections.abc import Callable, Generator
@@ -52,7 +54,14 @@ from app.services.vector_db_context_service import query_vector_db_and_prompt
 def prepare_feedback_requests(
     example_request: FeedbackCreate,
 ) -> tuple[GoalsAchievedCreate, FeedbackCreate]:
-    """Prepare all feedback-related request objects."""
+    """Prepare all feedback-related request objects
+
+    Parameters:
+        example_request (FeedbackCreate): Base feedback request payload.
+
+    Returns:
+        tuple[GoalsAchievedCreate, FeedbackCreate]: Goals and recommendations requests.
+    """
     goals_request = GoalsAchievedCreate(
         transcript=example_request.transcript,
         objectives=example_request.objectives,
@@ -73,7 +82,14 @@ def prepare_feedback_requests(
 def get_hr_docs_context(
     recommendations_request: FeedbackCreate,
 ) -> tuple[str, list[str], list[dict]]:
-    """Generate HR docs context using the vector DB."""
+    """Generate HR docs context using the vector database.
+
+    Parameters:
+        recommendations_request (FeedbackCreate): Request payload for context.
+
+    Returns:
+        tuple[str, list[str], list[dict]]: Context string, document titles, and metadata.
+    """
     return query_vector_db_and_prompt(
         session_context=[
             recommendations_request.category,
@@ -88,6 +104,8 @@ def get_hr_docs_context(
 
 
 class FeedbackGenerationResult(CamelModel):
+    """Container for feedback generation outputs."""
+
     examples_positive: list[PositiveExample] = Field(default_factory=list)
     examples_negative: list[NegativeExample] = Field(default_factory=list)
     goals: GoalsAchievedRead = Field(default_factory=lambda: GoalsAchievedRead(goals_achieved=[]))
@@ -111,7 +129,21 @@ def generate_feedback_components(
     session_turn_service: SessionTurnService,
     session_id: UUID,
 ) -> FeedbackGenerationResult:
-    """Run all feedback-related generation in parallel."""
+    """Generate feedback components concurrently.
+
+    Parameters:
+        feedback_request (FeedbackCreate): Feedback request payload.
+        goals_request (GoalsAchievedCreate): Goals request payload.
+        hr_docs_context (str): HR document context.
+        documents (list[dict]): Retrieved document metadata.
+        conversation (ConversationScenarioRead): Scenario and transcript context.
+        scoring_service (ScoringService): Scoring service for conversation grading.
+        session_turn_service (SessionTurnService): Service for audio stitching.
+        session_id (UUID): Session identifier.
+
+    Returns:
+        FeedbackGenerationResult: Generated feedback components.
+    """
     examples_positive: list[PositiveExample] = []
     examples_negative: list[NegativeExample] = []
     goals: GoalsAchievedRead = GoalsAchievedRead(goals_achieved=[])
@@ -218,7 +250,18 @@ def update_statistics(
     overall_score: float,
     has_error: bool,
 ) -> FeedbackStatus:
-    """Update user profile and admin dashboard stats, handle commit/rollback."""
+    """Update user and admin statistics based on feedback results, handle commit/rollback..
+
+    Parameters:
+        db_session (DBSession): Database session for updates.
+        conversation (ConversationScenarioRead | None): Conversation context.
+        goals (GoalsAchievedRead): Achieved goals response.
+        overall_score (float): Overall score for the session.
+        has_error (bool): Whether generation had errors.
+
+    Returns:
+        FeedbackStatus: Final feedback status.
+    """
     if conversation and conversation.scenario and conversation.scenario.user_id:
         user = db_session.exec(
             select(UserProfile).where(UserProfile.id == conversation.scenario.user_id)
@@ -252,7 +295,17 @@ def save_session_feedback(
     feedback_generation_result: FeedbackGenerationResult,
     status: FeedbackStatus,
 ) -> SessionFeedback:
-    """Build and save the SessionFeedback record."""
+    """Persist a SessionFeedback record from generation results.
+
+    Parameters:
+        db_session (DBSession): Database session for persistence.
+        session_id (UUID): Session identifier.
+        feedback_generation_result (FeedbackGenerationResult): Generated feedback data.
+        status (FeedbackStatus): Final feedback status.
+
+    Returns:
+        SessionFeedback: Persisted feedback record.
+    """
     feedback = SessionFeedback(
         id=uuid4(),
         session_id=session_id,
@@ -279,8 +332,17 @@ def save_session_feedback(
 
 
 def get_conversation_data(db_session: DBSession, session_id: UUID) -> ConversationScenarioRead:
-    """
-    Get conversation data from the database in a single transaction.
+    """Get conversation data from the database in a single transaction.
+
+    Parameters:
+        db_session (DBSession): Database session for queries.
+        session_id (UUID): Session identifier.
+
+    Returns:
+        ConversationScenarioRead: Scenario and transcript payload.
+
+    Raises:
+        HTTPException: If the session or scenario cannot be found.
     """
     with db_session.begin():
         session = db_session.exec(select(Session).where(Session.id == session_id)).first()
@@ -312,12 +374,24 @@ def generate_and_store_feedback(
     session_turn_service: SessionTurnService | None = None,
     advisor_service: AdvisorService | None = None,
 ) -> SessionFeedback:
-    """
-    Generates feedback for a given session, stores it in the database, and returns the resulting
+    """Generates feedback for a given session, stores it in the database, and returns the resulting
     SessionFeedback object. This function prepares the necessary requests and context for
     feedback generation, retrieves conversation data, and uses the provided or default scoring
     service to generate feedback components. It then updates session statistics,
     saves the generated feedback to the database, and returns the saved feedback.
+
+    Parameters:
+        session_id (UUID): Session identifier.
+        feedback_request (FeedbackCreate): Feedback request payload.
+        session_generator_func (Callable[[], Generator[DBSession]]): DB session generator.
+        user_profile_id (UUID): User profile identifier.
+        background_tasks (BackgroundTasks): Background task manager.
+        scoring_service (ScoringService | None): Optional scoring service override.
+        session_turn_service (SessionTurnService | None): Optional session turn service override.
+        advisor_service (AdvisorService | None): Optional advisor service override.
+
+    Returns:
+        SessionFeedback: Persisted feedback record.
     """
 
     session_gen = session_generator_func()
@@ -388,9 +462,16 @@ def generate_and_store_feedback(
 def check_data_retention(
     db_session: DBSession, session_id: UUID, conversation_scenario: ConversationScenario
 ) -> None:
-    """
-    Check if the user has opted out of data retention and delete session turns, audio files
+    """Check if the user has opted out of data retention and delete session turns, audio files
     and transcript if so.
+
+    Parameters:
+        db_session (DBSession): Database session for deletes.
+        session_id (UUID): Session identifier.
+        conversation_scenario (ConversationScenario): Scenario context.
+
+    Returns:
+        None: This function deletes records when retention is disabled.
     """
     # Get user profile
     user_profile = db_session.exec(

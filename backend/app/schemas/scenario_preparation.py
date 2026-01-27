@@ -1,3 +1,5 @@
+"""Pydantic schema definitions for scenario preparation."""
+
 from datetime import datetime
 from uuid import UUID
 
@@ -13,6 +15,8 @@ from app.models.camel_case import CamelModel
 
 # Schema for genarating objectives / goals
 class ObjectivesCreate(CamelModel):
+    """Schema for objectives create."""
+
     category: str
     persona: str
     situational_facts: str
@@ -24,6 +28,8 @@ class ObjectivesCreate(CamelModel):
 
 # Schema for generating key concepts
 class KeyConceptsCreate(CamelModel):
+    """Schema for key concepts create."""
+
     category: str
     persona: str
     situational_facts: str
@@ -34,6 +40,8 @@ class KeyConceptsCreate(CamelModel):
 
 # Schema for generating a checklist
 class ChecklistCreate(CamelModel):
+    """Schema for checklist create."""
+
     category: str
     persona: str
     situational_facts: str
@@ -45,21 +53,29 @@ class ChecklistCreate(CamelModel):
 
 # Response schema for a list of strings --> needed to return generated text in a given format
 class StringListRead(CamelModel):
+    """Schema for string list read."""
+
     items: list[str]
 
 
 # Response schema for key concepts
 class KeyConcept(CamelModel):
+    """Schema for key concept."""
+
     header: str
     value: str
 
 
 class KeyConceptsRead(CamelModel):
+    """Schema for key concepts read."""
+
     items: list[KeyConcept]
 
 
 # Schema for creating a new ScenarioPreparation
 class ScenarioPreparationCreate(CamelModel):
+    """Schema for scenario preparation create."""
+
     category: str
     persona: str
     situational_facts: str
@@ -72,6 +88,8 @@ class ScenarioPreparationCreate(CamelModel):
 
 # Schema for reading ScenarioPreparation data
 class ScenarioPreparationRead(CamelModel):
+    """Schema for scenario preparation read."""
+
     id: UUID
     scenario_id: UUID
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))

@@ -1,3 +1,5 @@
+"""API routes for live feedback route."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
@@ -23,4 +25,14 @@ def get_live_feedback_for_session(
     session: Annotated[Session, Depends(require_session_access)],
     limit: int | None = Query(None, gt=0),
 ) -> list[LiveFeedbackRead]:
+    """Return live feedback items for a session.
+
+    Parameters:
+        db_session (DBSession): Database session dependency.
+        session (Session): Session resolved by access dependency.
+        limit (int | None): Optional maximum number of items.
+
+    Returns:
+        list[LiveFeedbackRead]: Live feedback items.
+    """
     return fetch_live_feedback_for_session(db_session, session.id, limit)

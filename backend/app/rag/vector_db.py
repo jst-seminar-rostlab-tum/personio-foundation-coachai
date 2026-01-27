@@ -1,3 +1,5 @@
+"""Retrieval-augmented generation helpers for vector db."""
+
 import json
 import os
 import re

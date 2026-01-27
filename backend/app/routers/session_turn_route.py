@@ -1,3 +1,5 @@
+"""API routes for session turn route."""
+
 from typing import Annotated
 from uuid import UUID
 
@@ -19,8 +21,13 @@ router = APIRouter(
 def get_session_turn_service(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> SessionTurnService:
-    """
-    Dependency factory to inject the SessionTurnService.
+    """Provide SessionTurnService via dependency injection.
+
+    Parameters:
+        db_session (DBSession): Database session dependency.
+
+    Returns:
+        SessionTurnService: Service instance.
     """
     return SessionTurnService(db_session)
 
@@ -37,6 +44,22 @@ async def create_session_turn(
     text: str = Form(...),  # noqa: B008
     audio_file: UploadFile = File(...),  # noqa: B008
 ) -> SessionTurnRead:
+    """Create a session turn with uploaded audio.
+
+    Parameters:
+        service (SessionTurnService): Service dependency.
+        user_profile (UserProfile): Authenticated user profile.
+        background_tasks (BackgroundTasks): Background task manager.
+        session_id (UUID): Session identifier.
+        speaker (SpeakerType): Speaker enum.
+        start_offset_ms (int): Start offset in milliseconds.
+        end_offset_ms (int): End offset in milliseconds.
+        text (str): Transcript text.
+        audio_file (UploadFile): Uploaded audio file.
+
+    Returns:
+        SessionTurnRead: Created turn payload.
+    """
     # manually create SessionTurnCreate
     turn = SessionTurnCreate(
         session_id=session_id,

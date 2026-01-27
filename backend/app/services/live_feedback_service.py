@@ -1,3 +1,5 @@
+"""Service layer for live feedback service."""
+
 import concurrent.futures
 import json
 import logging
@@ -19,6 +21,16 @@ from app.services.voice_analysis_service import analyze_voice
 def fetch_live_feedback_for_session(
     db_session: DBSession, session_id: UUID, limit: int | None
 ) -> list[LiveFeedbackRead]:
+    """Fetch live feedback items for a session.
+
+    Parameters:
+        db_session (DBSession): Database session used for queries.
+        session_id (UUID): Session identifier.
+        limit (int | None): Maximum number of items to return.
+
+    Returns:
+        list[LiveFeedbackRead]: Live feedback items ordered newest-first.
+    """
     statement = (
         select(LiveFeedback)
         .where(LiveFeedback.session_id == session_id)
@@ -33,6 +45,14 @@ def fetch_live_feedback_for_session(
 
 
 def format_feedback_lines(feedback_items: list[LiveFeedbackRead]) -> list[str]:
+    """Serialize live feedback items to JSON strings.
+
+    Parameters:
+        feedback_items (list[LiveFeedbackRead]): Feedback items to serialize.
+
+    Returns:
+        list[str]: JSON-encoded feedback lines.
+    """
     return [
         json.dumps({'heading': item.heading, 'feedback_text': item.feedback_text})
         for item in feedback_items
@@ -46,6 +66,17 @@ def safe_generate_live_feedback_item(
     hr_docs_context: str = '',
     language: str = 'en',
 ) -> LiveFeedbackLlmOutput:
+    """Retry-safe wrapper for generating a live feedback item.
+
+    Parameters:
+        session_turn_context (SessionTurn): Current session turn context.
+        previous_feedback (str): Prior feedback history.
+        hr_docs_context (str): HR document context.
+        language (str): Language code for responses.
+
+    Returns:
+        LiveFeedbackLlmOutput: Generated feedback output.
+    """
     if previous_feedback is None:
         previous_feedback = []
     return generate_live_feedback_item(
@@ -64,6 +95,18 @@ def generate_live_feedback_item(
     hr_docs_context: str = 'No hr document context available',
     language: str = 'en',
 ) -> LiveFeedbackLlmOutput:
+    """Generate a live feedback item using LLM analysis.
+
+    Parameters:
+        user_audio_path (str | None): Path or URI to the user audio.
+        transcript (str): Transcript text for the turn.
+        previous_feedback (str): Prior feedback context.
+        hr_docs_context (str): HR document context.
+        language (str): Language code for responses.
+
+    Returns:
+        LiveFeedbackLlmOutput: Generated feedback item.
+    """
     voice_analysis = ''
     if user_audio_path:
         voice_analysis = analyze_voice(user_audio_path)
@@ -140,6 +183,18 @@ def generate_and_store_live_feedback(
     hr_docs_context: str = '',
     language: str = 'en',
 ) -> LiveFeedback | None:
+    """Generate a live feedback item and persist it to the database.
+
+    Parameters:
+        session_generator_func (Callable[[], Generator[DBSession]]): DB session generator.
+        session_id (UUID): Session identifier.
+        session_turn_context (SessionTurn): Current session turn context.
+        hr_docs_context (str): HR document context.
+        language (str): Language code for responses.
+
+    Returns:
+        LiveFeedback | None: Stored feedback record or None on failure.
+    """
     session_gen = session_generator_func()
     try:
         db_session: DBSession = next(session_gen)

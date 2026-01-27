@@ -1,3 +1,5 @@
+"""API routes for auth route."""
+
 import logging
 from typing import Annotated
 
@@ -25,6 +27,17 @@ settings = Settings()
 
 @router.post('/send-verification', response_model=None)
 def send_verification(req: VerificationCodeCreate) -> None:
+    """Send a phone verification code.
+
+    Parameters:
+        req (VerificationCodeCreate): Verification request payload.
+
+    Returns:
+        None: Raises on failure.
+
+    Raises:
+        HTTPException: If sending the verification code fails.
+    """
     verification_status = send_verification_code(req.phone_number)
     if verification_status == 'failed':
         raise HTTPException(
@@ -35,6 +48,17 @@ def send_verification(req: VerificationCodeCreate) -> None:
 
 @router.post('/verify-code', response_model=None)
 def verify_code(req: VerificationCodeConfirm) -> None:
+    """Verify a phone verification code.
+
+    Parameters:
+        req (VerificationCodeConfirm): Verification confirmation payload.
+
+    Returns:
+        None: Raises on invalid code.
+
+    Raises:
+        HTTPException: If verification fails.
+    """
     verification_status = check_verification_code(req.phone_number, req.code)
     if verification_status != 'approved':
         raise HTTPException(
@@ -45,6 +69,17 @@ def verify_code(req: VerificationCodeConfirm) -> None:
 
 @router.post('', response_model=None, status_code=status.HTTP_201_CREATED)
 def create_user(req: UserCreate) -> None:
+    """Create a new user in Supabase and initiate sign-up.
+
+    Parameters:
+        req (UserCreate): User creation payload.
+
+    Returns:
+        None: Raises on failure.
+
+    Raises:
+        HTTPException: If validation or Supabase operations fail.
+    """
     try:
         UserCreate.model_validate(req)
     except ValueError as e:
@@ -86,6 +121,18 @@ def confirm_user(
     token: Annotated[JWTPayload, Depends(verify_jwt)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> None:
+    """Create a user profile after email confirmation.
+
+    Parameters:
+        token (JWTPayload): JWT payload for the authenticated user.
+        db_session (DBSession): Database session dependency.
+
+    Returns:
+        None: Persists the user profile.
+
+    Raises:
+        HTTPException: If the user is not confirmed.
+    """
     if not token['user_metadata'].get('email_verified', False):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -104,8 +151,16 @@ def confirm_user(
 
 @router.post('/delete-unconfirmed', response_model=None, status_code=status.HTTP_200_OK)
 def delete_unconfirmed_user(email: str = Body(..., embed=True)) -> None:
-    """
-    Delete a user from Supabase Auth by email if not confirmed.
+    """Delete an unconfirmed Supabase user by email.
+
+    Parameters:
+        email (str): User email address.
+
+    Returns:
+        None: Raises on failure.
+
+    Raises:
+        HTTPException: If deletion fails or user is not found.
     """
     try:
         supabase = get_supabase_client()
@@ -126,6 +181,15 @@ def delete_unconfirmed_user(email: str = Body(..., embed=True)) -> None:
 def check_unique(
     req: CheckUniqueRequest, db_session: Annotated[DBSession, Depends(get_db_session)]
 ) -> dict:
+    """Check whether email and phone are unique across DB and Supabase.
+
+    Parameters:
+        req (CheckUniqueRequest): Uniqueness check request payload.
+        db_session (DBSession): Database session dependency.
+
+    Returns:
+        dict: Flags indicating whether email/phone already exist.
+    """
     # Remove '+' from phone number for database comparison
     phone_for_db = req.phone.lstrip('+')
 

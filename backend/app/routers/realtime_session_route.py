@@ -1,3 +1,5 @@
+"""API routes for realtime session route."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -16,8 +18,13 @@ router = APIRouter(prefix='/realtime-sessions', tags=['realtime-session'])
 def get_realtime_session_service(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> RealtimeSessionService:
-    """
-    Dependency factory to inject the RealtimeSessionService.
+    """Dependency factory to inject the RealtimeSessionService.
+
+    Parameters:
+        db_session (DBSession): Database session dependency.
+
+    Returns:
+        RealtimeSessionService: Service instance.
     """
     return RealtimeSessionService(db_session)
 
@@ -28,8 +35,15 @@ async def get_realtime_session(
     session: Annotated[Session, Depends(require_session_access)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> dict:
-    """
-    Proxies a POST request to OpenAI's realtime sessions endpoint
+    """Proxies a POST request to OpenAI's realtime sessions endpoint
     and returns the JSON response.
+
+    Parameters:
+        service (RealtimeSessionService): Service dependency.
+        session (Session): Session resolved by access dependency.
+        user_profile (UserProfile): Authenticated user profile.
+
+    Returns:
+        dict: Realtime session payload.
     """
     return await service.get_realtime_session(session, user_profile)

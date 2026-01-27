@@ -1,3 +1,5 @@
+"""Pydantic schema definitions for session turn."""
+
 from datetime import datetime
 from uuid import UUID
 
@@ -7,6 +9,8 @@ from app.models.camel_case import CamelModel
 
 # Schema for creating a new SessionTurn
 class SessionTurnCreate(CamelModel):
+    """Schema for session turn create."""
+
     session_id: UUID
     speaker: SpeakerType
     start_offset_ms: int
@@ -16,6 +20,8 @@ class SessionTurnCreate(CamelModel):
 
 # Schema for reading SessionTurn data
 class SessionTurnRead(CamelModel):
+    """Schema for session turn read."""
+
     id: UUID
     speaker: SpeakerType
     full_audio_start_offset_ms: int
@@ -25,5 +31,7 @@ class SessionTurnRead(CamelModel):
 
 
 class SessionTurnStitchAudioSuccess(CamelModel):
+    """Schema for session turn stitch audio success."""
+
     output_filename: str
     audio_duration_s: int

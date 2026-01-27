@@ -1,3 +1,5 @@
+"""Retrieval-augmented generation helpers for embeddings."""
+
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_vertexai import VertexAIEmbeddings
 from langchain_openai import OpenAIEmbeddings

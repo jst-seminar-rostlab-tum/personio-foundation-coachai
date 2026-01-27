@@ -1,3 +1,5 @@
+"""Database model definitions for review."""
+
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -12,6 +14,8 @@ if TYPE_CHECKING:
 
 
 class Review(CamelModel, table=True):
+    """Database model for review."""
+
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key='userprofile.id', ondelete='CASCADE')
     session_id: UUID | None = Field(foreign_key='session.id', default=None, ondelete='CASCADE')

@@ -1,3 +1,5 @@
+"""Retrieval-augmented generation helpers for populate vector db."""
+
 from pathlib import Path
 
 from app.config import Settings
@@ -16,6 +18,14 @@ MODEL_TYPE = 'vertexai'
 
 
 def populate_vector_db(doc_folder: str = DOC_FOLDER) -> None:
+    """Populate the vector database with documents from a folder.
+
+    Parameters:
+        doc_folder (str): Directory containing documents to index.
+
+    Returns:
+        None: This function loads and indexes documents.
+    """
     embedding = get_embedding_model(model_type=MODEL_TYPE)
     vector_db = load_vector_db(embedding)
     load_and_index_documents(vector_db, doc_folder)

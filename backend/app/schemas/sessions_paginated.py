@@ -1,3 +1,5 @@
+"""Pydantic schema definitions for sessions paginated."""
+
 from datetime import datetime
 from uuid import UUID
 
@@ -6,6 +8,8 @@ from app.models.camel_case import CamelModel
 
 
 class SkillScores(CamelModel):
+    """Schema for skill scores."""
+
     structure: int
     empathy: int
     focus: int
@@ -13,6 +17,8 @@ class SkillScores(CamelModel):
 
 
 class SessionItem(CamelModel):
+    """Schema for session item."""
+
     session_id: UUID
     title: str
     summary: str
@@ -25,6 +31,8 @@ class SessionItem(CamelModel):
 
 
 class PaginatedSessionRead(CamelModel):
+    """Schema for paginated session read."""
+
     page: int
     limit: int
     total_pages: int

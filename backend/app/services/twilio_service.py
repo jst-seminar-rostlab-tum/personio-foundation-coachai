@@ -1,3 +1,5 @@
+"""Service layer for twilio service."""
+
 from twilio.rest import Client
 
 from app.config import settings
@@ -14,6 +16,14 @@ client = Client(account_sid, auth_token) if twilio_configured else None
 
 
 def send_verification_code(phone_number: str) -> str:
+    """Send a verification code via Twilio Verify.
+
+    Parameters:
+        phone_number (str): Destination phone number in E.164 format.
+
+    Returns:
+        str: Twilio verification status string.
+    """
     if not twilio_configured:
         print('Twilio not configured - skipping verification code send')
         return 'approved'
@@ -29,6 +39,15 @@ def send_verification_code(phone_number: str) -> str:
 
 
 def check_verification_code(phone_number: str, code: str) -> bool:
+    """Check a verification code via Twilio Verify.
+
+    Parameters:
+        phone_number (str): Destination phone number in E.164 format.
+        code (str): Verification code entered by the user.
+
+    Returns:
+        bool: Verification status or fallback status string when Twilio is disabled.
+    """
     if not twilio_configured:
         print('Twilio not configured - auto-approving verification code')
         return 'approved'

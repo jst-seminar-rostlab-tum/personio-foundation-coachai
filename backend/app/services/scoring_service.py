@@ -1,3 +1,5 @@
+"""Service layer for scoring service."""
+
 # ruff: noqa: E501
 import json
 from pathlib import Path
@@ -12,16 +14,36 @@ from app.services.utils import normalize_quotes
 
 
 class ScoringService:
+    """Service for scoring conversations with an LLM rubric."""
+
     def __init__(self, rubric_path: Path | None = None) -> None:
+        """Initialize the scoring service with a rubric file.
+
+        Parameters:
+            rubric_path (Path | None): Optional path to the rubric JSON file.
+        """
         if rubric_path is None:
             rubric_path = Path(__file__).parent.parent / 'data' / 'conversation_rubric.json'
         self.rubric = self._load_json(rubric_path)
 
     def _load_json(self, path: Path) -> dict[str, Any]:
+        """Load a JSON file from disk.
+
+        Parameters:
+            path (Path): Path to the JSON file.
+
+        Returns:
+            dict[str, Any]: Parsed JSON content.
+        """
         with open(path, encoding='utf-8') as f:
             return json.load(f)
 
     def _build_system_prompt(self) -> str:
+        """Build the system prompt for conversation scoring.
+
+        Returns:
+            str: System prompt content.
+        """
         system_prompt = (
             'You are an expert communication coach who grades conversations based on the following rubric.\n\n'
             '**Scoring Instructions:**\n'
@@ -40,6 +62,14 @@ class ScoringService:
         return system_prompt
 
     def _build_user_prompt(self, conversation: ConversationScenarioRead) -> str:
+        """Build the user prompt from a conversation transcript.
+
+        Parameters:
+            conversation (ConversationScenarioRead): Scenario and transcript payload.
+
+        Returns:
+            str: User prompt content.
+        """
         scenario = conversation.scenario
         transcript = conversation.transcript
         prompt = (
@@ -65,6 +95,16 @@ class ScoringService:
         temperature: float = 0.0,
         audio_uri: str | None = None,
     ) -> ScoringRead:
+        """Score a conversation and return structured results.
+
+        Parameters:
+            conversation (ConversationScenarioRead): Scenario and transcript payload.
+            temperature (float): Sampling temperature for the LLM.
+            audio_uri (str | None): Optional audio URI for additional cues.
+
+        Returns:
+            ScoringRead: Structured scoring output.
+        """
         user_prompt = self._build_user_prompt(conversation)
         system_prompt = self._build_system_prompt()
 
@@ -91,8 +131,10 @@ class ScoringService:
         return response
 
     def rubric_to_markdown(self) -> str:
-        """
-        Convert the rubric content to a human-readable Markdown format (English only).
+        """Convert the rubric content to a human-readable Markdown format (English only).
+
+        Returns:
+            str: Human-readable Markdown representation of the rubric.
         """
         rubric = self.rubric
         md = f'# {rubric.get("title", "")}\n\n{rubric.get("description", "")}\n\n'
@@ -113,6 +155,14 @@ class ScoringService:
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
     def safe_score_conversation(self, conversation: ConversationScenarioRead) -> ScoringRead:
+        """Retry scoring for transient failures.
+
+        Parameters:
+            conversation (ConversationScenarioRead): Scenario and transcript payload.
+
+        Returns:
+            ScoringRead: Structured scoring output.
+        """
         return self.score_conversation(conversation)
 
 
@@ -120,4 +170,9 @@ scoring_service = ScoringService()
 
 
 def get_scoring_service() -> ScoringService:
+    """Return the singleton scoring service instance.
+
+    Returns:
+        ScoringService: Shared scoring service.
+    """
     return scoring_service

@@ -1,3 +1,5 @@
+"""Service layer for review service."""
+
 from collections.abc import Sequence
 from uuid import UUID
 
@@ -22,7 +24,14 @@ from app.schemas.review import (
 
 
 class ReviewService:
+    """Service for creating and querying user reviews."""
+
     def __init__(self, db: DBSession) -> None:
+        """Initialize the service with a database session.
+
+        Parameters:
+            db (DBSession): Database session used for queries and mutations.
+        """
         self.db = db
 
     def _query_reviews_with_users(
@@ -31,6 +40,16 @@ class ReviewService:
         limit: int | None = None,
         offset: int | None = None,
     ) -> Sequence[tuple[Review, UserProfile]]:
+        """Query reviews joined with user profiles.
+
+        Parameters:
+            sort (str): Sorting strategy (newest, oldest, highest, lowest).
+            limit (int | None): Max number of records to return.
+            offset (int | None): Offset for pagination.
+
+        Returns:
+            Sequence[tuple[Review, UserProfile]]: Joined review and user rows.
+        """
         sort_mapping = {
             'newest': desc(Review.created_at),
             'oldest': asc(Review.created_at),
@@ -57,6 +76,14 @@ class ReviewService:
     def _build_review_read_list(
         self, joined_reviews_users: Sequence[tuple[Review, UserProfile]]
     ) -> list[ReviewRead]:
+        """Build ReviewRead objects from joined rows.
+
+        Parameters:
+            joined_reviews_users (Sequence[tuple[Review, UserProfile]]): Joined rows.
+
+        Returns:
+            list[ReviewRead]: Review DTOs.
+        """
         review_list = []
         for review, user in joined_reviews_users:
             session = None
@@ -78,6 +105,11 @@ class ReviewService:
         return review_list
 
     def _get_review_statistics(self) -> ReviewStatistics:
+        """Compute aggregate review statistics.
+
+        Returns:
+            ReviewStatistics: Aggregated ratings data.
+        """
         stmt = sqlalchemy_select(
             func.avg(Review.rating),
             func.count(case((Review.rating == 5, 1))),  # type: ignore
@@ -103,7 +135,16 @@ class ReviewService:
         page_size: int = 10,
         sort: str = 'newest',
     ) -> PaginatedReviewRead:
-        """Retrieve paginated reviews with optional sorting."""
+        """Retrieve paginated reviews with optional sorting.
+
+        Parameters:
+            page (int | None): Page number (1-based).
+            page_size (int): Number of items per page.
+            sort (str): Sorting strategy (newest, oldest, highest, lowest).
+
+        Returns:
+            PaginatedReviewRead: Paginated reviews and statistics.
+        """
 
         # Pagination
         total_count = self.db.exec(select(func.count()).select_from(Review)).one()
@@ -153,14 +194,27 @@ class ReviewService:
         page_size: int = 8,
         sort: str = 'newest',
     ) -> PaginatedReviewRead:
-        """
-        Retrieve user reviews with optional pagination, statistics and sorting.
+        """Retrieve user reviews with pagination, sorting and statistics.
+
+        Parameters:
+            page (int | None): Page number (1-based).
+            page_size (int): Number of items per page.
+            sort (str): Sorting strategy (newest, oldest, highest, lowest).
+
+        Returns:
+            PaginatedReviewRead: Paginated reviews and statistics.
         """
         return self._get_paginated_reviews(page, page_size, sort)
 
     def has_user_reviewed_session(self, session_id: UUID, user_id: UUID) -> bool:
-        """
-        Check if the current user has already submitted a review for this session.
+        """Check if the current user has already submitted a review for this session.
+
+        Parameters:
+            session_id (UUID): Session identifier.
+            user_id (UUID): User identifier.
+
+        Returns:
+            bool: True if a review exists.
         """
         review = self.db.exec(
             select(Review).where(Review.session_id == session_id, Review.user_id == user_id)
@@ -172,9 +226,14 @@ class ReviewService:
         session_id: UUID,
         user_profile: UserProfile,
     ) -> None:
-        """
-        Check if the user has permission to create a review for the given session.
-        Raises HTTPException if the session does not exist or the user does not have permission.
+        """Check if the user has permission to create a review for the given session.
+
+        Parameters:
+            session_id (UUID): Session identifier.
+            user_profile (UserProfile): Requesting user profile.
+
+        Raises:
+            HTTPException: If the session does not exist or the user does not have permission.
         """
         # Check if the session exists
         session = self.db.get(Session, session_id)
@@ -202,8 +261,17 @@ class ReviewService:
         review: ReviewCreate,
         user_profile: UserProfile,
     ) -> ReviewConfirm:
-        """
-        Create a new review.
+        """Create a review and optionally grant admin session access.
+
+        Parameters:
+            review (ReviewCreate): Review payload.
+            user_profile (UserProfile): Requesting user profile.
+
+        Returns:
+            ReviewConfirm: Confirmation message and review ID.
+
+        Raises:
+            HTTPException: If validation fails or permissions are missing.
         """
         user_id = user_profile.id  # Logged-in user's ID
 

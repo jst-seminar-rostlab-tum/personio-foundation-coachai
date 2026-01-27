@@ -1,3 +1,5 @@
+"""Database model definitions for session feedback."""
+
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -16,6 +18,8 @@ from app.enums.feedback_status import FeedbackStatus
 
 
 class SessionFeedback(CamelModel, table=True):
+    """Database model for session feedback."""
+
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     session_id: UUID = Field(foreign_key='session.id', ondelete='CASCADE')
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
@@ -40,4 +44,14 @@ class SessionFeedback(CamelModel, table=True):
 
 @event.listens_for(SessionFeedback, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'SessionFeedback') -> None:
+    """Update the updated_at timestamp before persistence.
+
+    Parameters:
+        mapper (Mapper): SQLAlchemy mapper for the model.
+        connection (Connection): Active database connection.
+        target (Any): Model instance being updated.
+
+    Returns:
+        None: This function mutates the target instance in-place.
+    """
     target.updated_at = datetime.now(UTC)
