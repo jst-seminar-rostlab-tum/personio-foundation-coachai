@@ -5,6 +5,9 @@ import * as SliderPrimitive from '@radix-ui/react-slider';
 
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Slider control with Radix primitives and styling.
+ */
 function Slider({
   className,
   defaultValue,

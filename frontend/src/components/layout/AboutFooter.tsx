@@ -2,6 +2,9 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { HighlightedAppName } from '../common/HighlightedAppName';
 
+/**
+ * Renders the about page footer with links and attribution.
+ */
 export default async function AboutFooter() {
   const t = await getTranslations('HomePage');
   const tCommon = await getTranslations('Common');

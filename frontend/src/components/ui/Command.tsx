@@ -6,6 +6,9 @@ import { SearchIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Command palette root container.
+ */
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
   return (
     <CommandPrimitive
@@ -19,6 +22,9 @@ function Command({ className, ...props }: React.ComponentProps<typeof CommandPri
   );
 }
 
+/**
+ * Input row for command search.
+ */
 function CommandInput({
   className,
   ...props
@@ -38,6 +44,9 @@ function CommandInput({
   );
 }
 
+/**
+ * Scrollable list for command items.
+ */
 function CommandList({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.List>) {
   return (
     <CommandPrimitive.List
@@ -48,6 +57,9 @@ function CommandList({ className, ...props }: React.ComponentProps<typeof Comman
   );
 }
 
+/**
+ * Empty state for command list.
+ */
 function CommandEmpty({ ...props }: React.ComponentProps<typeof CommandPrimitive.Empty>) {
   return (
     <CommandPrimitive.Empty
@@ -58,6 +70,9 @@ function CommandEmpty({ ...props }: React.ComponentProps<typeof CommandPrimitive
   );
 }
 
+/**
+ * Group container for command items.
+ */
 function CommandGroup({
   className,
   ...props
@@ -74,6 +89,9 @@ function CommandGroup({
   );
 }
 
+/**
+ * Visual separator between command groups.
+ */
 function CommandSeparator({
   className,
   ...props
@@ -87,6 +105,9 @@ function CommandSeparator({
   );
 }
 
+/**
+ * Selectable command item.
+ */
 function CommandItem({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Item>) {
   return (
     <CommandPrimitive.Item
@@ -100,6 +121,9 @@ function CommandItem({ className, ...props }: React.ComponentProps<typeof Comman
   );
 }
 
+/**
+ * Shortcut hint for a command item.
+ */
 function CommandShortcut({ className, ...props }: React.ComponentProps<'span'>) {
   return (
     <span

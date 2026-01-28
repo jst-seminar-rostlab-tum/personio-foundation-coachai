@@ -17,8 +17,14 @@ import { cn } from '@/lib/utils/cnMerge';
 import Label from '@/components/ui/Label';
 import { FormFieldContext, FormItemContext } from '@/contexts/Form';
 
+/**
+ * React Hook Form provider wrapper.
+ */
 const Form = FormProvider;
 
+/**
+ * Form field wrapper that wires React Hook Form controller into context.
+ */
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -32,6 +38,9 @@ const FormField = <
   );
 };
 
+/**
+ * Hook to access form field state and IDs.
+ */
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);
@@ -55,6 +64,9 @@ const useFormField = () => {
   };
 };
 
+/**
+ * Container for a form item with shared IDs.
+ */
 function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
   const id = React.useId();
 
@@ -65,6 +77,9 @@ function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Label tied to the current form item.
+ */
 function FormLabel({ className, ...props }: React.ComponentProps<typeof LabelPrimitive.Root>) {
   const { error, formItemId } = useFormField();
 
@@ -79,6 +94,9 @@ function FormLabel({ className, ...props }: React.ComponentProps<typeof LabelPri
   );
 }
 
+/**
+ * Slot wrapper that wires aria attributes for form controls.
+ */
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
 
@@ -93,6 +111,9 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
   );
 }
 
+/**
+ * Description text for a form field.
+ */
 function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
   const { formDescriptionId } = useFormField();
 
@@ -106,6 +127,9 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
   );
 }
 
+/**
+ * Validation message for a form field.
+ */
 function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error?.message ?? '') : props.children;

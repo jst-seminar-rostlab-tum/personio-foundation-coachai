@@ -1,12 +1,18 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Props for the segmented progress bar.
+ */
 interface SegmentedProgressProps {
   className?: string;
   value: number;
   max?: number;
 }
 
+/**
+ * Renders a segmented progress bar with partial fills.
+ */
 function SegmentedProgress({ className, value, max = 5 }: SegmentedProgressProps) {
   return (
     <div className={cn('flex w-80 h-2.5 gap-1', className)}>
