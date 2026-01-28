@@ -1,3 +1,6 @@
+/**
+ * Calculates a formatted average score or returns a placeholder when invalid.
+ */
 export const calculateAverageScore = (scoreSum: number, totalSessions: number): string => {
   if (
     totalSessions === 0 ||

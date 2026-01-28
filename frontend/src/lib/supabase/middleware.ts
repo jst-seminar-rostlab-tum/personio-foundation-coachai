@@ -4,10 +4,16 @@ import { jwtDecode } from 'jwt-decode';
 import { AccountRole } from '@/interfaces/models/UserProfile';
 import { createClient } from './server';
 
+/**
+ * Locale prefixes accepted in routes.
+ */
 const acceptedLocales = routing.locales
   .map(String)
   .concat(!!routing.localePrefix && routing.localePrefix === 'as-needed' ? [''] : []);
 
+/**
+ * Removes the locale prefix from a path.
+ */
 const stripLocaleFromPath = (path: string): string => {
   for (const locale of acceptedLocales) {
     const localePrefix = locale ? `/${locale}` : '';
@@ -18,10 +24,22 @@ const stripLocaleFromPath = (path: string): string => {
   return path;
 };
 
+/**
+ * Routes that do not require authentication.
+ */
 const publicRoutes = ['/', '/data-processing', '/privacy', '/contributors'];
+/**
+ * Routes used for authentication flows.
+ */
 const authRoutes = ['/login'];
+/**
+ * Routes restricted to admin users.
+ */
 const adminRoutes = ['/admin'];
 
+/**
+ * Enforces auth, redirects, and admin checks for protected routes.
+ */
 export async function authMiddleware(
   request: NextRequest,
   response: NextResponse

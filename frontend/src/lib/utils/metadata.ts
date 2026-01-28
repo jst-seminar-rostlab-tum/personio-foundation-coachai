@@ -2,6 +2,9 @@ import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { BASE_URL } from '../connector';
 
+/**
+ * Resolves the translation namespace for a given route path.
+ */
 function getNamespaceFromPath(path: string): string {
   const cleanPath = path.replace(/^\/|\/$/g, '');
   const segments = cleanPath.split('/');
@@ -31,6 +34,9 @@ function getNamespaceFromPath(path: string): string {
   return pathMap[pathSegment] || 'HomePage';
 }
 
+/**
+ * Generates SEO metadata for a route and locale.
+ */
 export async function generateMetadata(
   locale: string,
   path: string,

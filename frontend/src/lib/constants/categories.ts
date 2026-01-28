@@ -1,5 +1,8 @@
 import { ConversationCategory } from '@/interfaces/models/ConversationScenario';
 
+/**
+ * Returns the localized conversation category definitions.
+ */
 export function Categories(t: (key: string) => string): Record<string, ConversationCategory> {
   return {
     giving_feedback: {

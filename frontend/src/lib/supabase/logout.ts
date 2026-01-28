@@ -1,5 +1,8 @@
 import { redirect } from 'next/navigation';
 
+/**
+ * Signs out the user and redirects to the home page.
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const logoutUser = async (createClient: any) => {
   const supabase = await createClient();
