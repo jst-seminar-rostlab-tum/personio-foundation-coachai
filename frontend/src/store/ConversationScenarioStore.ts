@@ -10,6 +10,9 @@ import {
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+/**
+ * Initial form values for scenario creation.
+ */
 const initialFormState: ConversationScenarioFormState = {
   category: '',
   situationalFacts: '',
@@ -20,6 +23,9 @@ const initialFormState: ConversationScenarioFormState = {
   contextMode: ContextModeEnums.DEFAULT,
 };
 
+/**
+ * Zustand store for the conversation scenario flow.
+ */
 export const useConversationScenarioStore = create<ConversationScenarioState>()(
   persist(
     (set) => ({
