@@ -6,10 +6,16 @@ import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/Select';
 
+/**
+ * Renders a locale selector that navigates to the chosen language.
+ */
 export function LanguageSwitcher() {
   const pathname = usePathname();
   const locale = useLocale();
 
+  /**
+   * Navigates to the same path under a new locale prefix.
+   */
   const onLocaleChange = (value: string) => {
     const newPath = `/${value}${pathname}`;
     window.location.href = newPath;

@@ -4,12 +4,18 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/Dialog';
 
+/**
+ * Props for the video modal.
+ */
 interface VideoModalProps {
   isOpen: boolean;
   onClose: () => void;
   videoSrc: string;
 }
 
+/**
+ * Displays a full-screen modal with an embedded video player.
+ */
 export function VideoModal({ isOpen, onClose, videoSrc }: VideoModalProps) {
   const t = useTranslations('Common.videoModal');
 

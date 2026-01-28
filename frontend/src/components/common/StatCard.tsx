@@ -1,8 +1,14 @@
+/**
+ * Props for a statistic card.
+ */
 interface StatCardProps {
   value: string | number;
   label: string;
 }
 
+/**
+ * Displays a labeled statistic value.
+ */
 export default function StatCard({ value, label }: StatCardProps) {
   return (
     <div className="@container w-full bg-custom-beige rounded-lg flex flex-col justify-center gap-3 p-4 md:p-6">

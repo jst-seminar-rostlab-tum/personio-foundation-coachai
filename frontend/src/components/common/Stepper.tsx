@@ -5,6 +5,9 @@ import { cn } from '@/lib/utils/cnMerge';
 import { CheckIcon } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
+/**
+ * Props for the stepper component.
+ */
 interface StepperProps {
   steps: string[];
   currentStep: number;
@@ -15,6 +18,9 @@ interface StepperProps {
   currentStepValid?: boolean;
 }
 
+/**
+ * Renders a multi-step progress indicator with clickable steps.
+ */
 const Stepper: React.FC<StepperProps> = ({
   steps,
   currentStep,
