@@ -34,6 +34,7 @@
   "reviews": "Bewertungen",
   "delete": "Löschen",
   "genericError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+  "numberInUseError": "Wir konnten diese Nummer nicht verifizieren. Falls Sie bereits registriert sind, versuchen Sie, sich anzumelden oder Ihr Passwort zurückzusetzen.",
   "back": "Zurück",
   "next": "Weiter",
   "finish": "Abschließen",

@@ -12,7 +12,7 @@ type RatingButtonProps = LucideProps & {
   icon?: ReactElement<LucideProps>;
 };
 
-type RatingProps = {
+interface RatingProps {
   defaultValue: number;
   value?: number;
   onChange?: (
@@ -23,7 +23,7 @@ type RatingProps = {
   readOnly?: boolean;
   className?: string;
   children?: ReactNode;
-};
+}
 
 export const RatingButton = ({
   index: providedIndex,

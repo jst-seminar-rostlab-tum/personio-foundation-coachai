@@ -220,10 +220,8 @@ def generate_feedback_components(
                     try:
                         audio_signed_url = gcs.generate_signed_url(stitch_result.output_filename)
                     except Exception as e:
-                        has_error = True
                         logging.warning(f'Failed to generate signed url for audio: {e}')
         except Exception as e:
-            has_error = True
             logging.warning('Failed to call Audio Stitching: %s', e)
 
     return FeedbackGenerationResult(
@@ -239,7 +237,7 @@ def generate_feedback_components(
         documents=documents,
         has_error=has_error,
         audio_url=audio_signed_url,
-        session_length_s=stitch_result.audio_duration_s if stitch_result else -1,
+        session_length_s=stitch_result.audio_duration_s if stitch_result else 0,
     )
 
 

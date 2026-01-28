@@ -5,7 +5,7 @@ import type { AxiosInstance } from 'axios';
 export const setupAuthInterceptor = (api: AxiosInstance, getSupabaseClient: any) => {
   api.interceptors.request.use(
     async (config) => {
-      if (config.url?.includes('/auth') && !config.url?.includes('/auth/confirm')) {
+      if (config.url?.includes('/auth')) {
         return config;
       }
 

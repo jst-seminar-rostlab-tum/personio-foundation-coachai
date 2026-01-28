@@ -20,7 +20,7 @@ export default async function SessionPage(props: PagesProps) {
       sessionId={id}
       personaName={sessionRealtime.data.persona_name}
       categoryName={sessionRealtime.data.category_name}
-      ephemeralKey={sessionRealtime.data.client_secret.value}
+      ephemeralKey={sessionRealtime.data.value}
     />
   );
 }

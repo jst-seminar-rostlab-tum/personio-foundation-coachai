@@ -1,5 +1,3 @@
-"""Service layer for user profile service."""
-
 import logging
 from math import ceil
 from typing import Union
@@ -36,26 +34,11 @@ from app.services.conversation_scenario_service import ConversationScenarioServi
 
 
 class UserService:
-    """Service for user profile management and admin operations."""
-
     def __init__(self, db: DBSession) -> None:
-        """Initialize the service with a database session.
-
-        Parameters:
-            db (DBSession): Database session used for queries and mutations.
-        """
         self.db = db
         self.app_config_service = AppConfigService(db)
 
     def _get_user_profile_response(self, user: UserProfile) -> UserProfileRead:
-        """Build a UserProfileRead response from a model instance.
-
-        Parameters:
-            user (UserProfile): User profile model.
-
-        Returns:
-            UserProfileRead: Read model with computed fields.
-        """
         daily_session_limit = user.daily_session_limit
         if daily_session_limit is None:
             daily_session_limit = self.app_config_service.get_default_daily_session_limit()
@@ -86,14 +69,6 @@ class UserService:
         )
 
     def _get_detailed_user_profile_response(self, user: UserProfile) -> UserProfileExtendedRead:
-        """Build a detailed user profile response.
-
-        Parameters:
-            user (UserProfile): User profile model.
-
-        Returns:
-            UserProfileExtendedRead: Extended read model with goals and scores.
-        """
         user_profile_read = self._get_user_profile_response(user)
 
         return UserProfileExtendedRead(
@@ -117,22 +92,6 @@ class UserService:
         email_sorting_option: SortOption | None = None,
         session_limit_sorting_option: SortOption | None = None,
     ) -> UserListPaginatedRead:
-        """Fetch paginated user profiles with optional filters and sorting.
-
-        Parameters:
-            page (int): Page number (1-based).
-            limit (int): Items per page.
-            email_substring (str | None): Email filter substring.
-            session_limit_type_filter (list[SessionLimitType] | None): Session limit filters.
-            email_sorting_option (SortOption | None): Email sorting option.
-            session_limit_sorting_option (SortOption | None): Session limit sorting option.
-
-        Returns:
-            UserListPaginatedRead: Paginated user list payload.
-
-        Raises:
-            HTTPException: If sorting options or page are invalid.
-        """
         if session_limit_sorting_option and email_sorting_option:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -216,18 +175,6 @@ class UserService:
     def get_user_profile_by_id(
         self, user_id: UUID, detailed: bool
     ) -> Union[UserProfileRead, UserProfileExtendedRead]:
-        """Fetch a user profile by ID.
-
-        Parameters:
-            user_id (UUID): User identifier.
-            detailed (bool): Whether to include goals and confidence scores.
-
-        Returns:
-            UserProfileRead | UserProfileExtendedRead: Requested profile payload.
-
-        Raises:
-            HTTPException: If the user is not found.
-        """
         user = self.db.get(UserProfile, user_id)
         if not user:
             raise HTTPException(
@@ -241,17 +188,6 @@ class UserService:
             return self._get_user_profile_response(user)
 
     def get_user_statistics(self, user_id: UUID) -> UserStatistics:
-        """Return user statistics for dashboards.
-
-        Parameters:
-            user_id (UUID): User identifier.
-
-        Returns:
-            UserStatistics: Aggregated user statistics.
-
-        Raises:
-            HTTPException: If the user is not found.
-        """
         user = self.db.get(UserProfile, user_id)
         if not user:
             raise HTTPException(
@@ -274,15 +210,6 @@ class UserService:
         )
 
     def _update_goals(self, user_id: UUID, goals: list[Goal]) -> None:
-        """Replace the user's goals with a new set.
-
-        Parameters:
-            user_id (UUID): User identifier.
-            goals (list[Goal]): New goals list.
-
-        Returns:
-            None: This function mutates persisted records.
-        """
         # Clear existing goals
         statement = select(UserGoal).where(UserGoal.user_id == user_id)
         existing_goals = self.db.exec(statement).all()
@@ -299,15 +226,6 @@ class UserService:
     def _update_confidence_scores(
         self, user_id: UUID, confidence_scores: list[ConfidenceScoreRead]
     ) -> None:
-        """Replace the user's confidence scores with a new set.
-
-        Parameters:
-            user_id (UUID): User identifier.
-            confidence_scores (list[ConfidenceScoreRead]): New confidence scores list.
-
-        Returns:
-            None: This function mutates persisted records.
-        """
         statement = select(UserConfidenceScore).where(UserConfidenceScore.user_id == user_id)
         existing_scores = self.db.exec(statement).all()
         # Clear existing confidence scores
@@ -328,18 +246,6 @@ class UserService:
     def replace_user_profile(
         self, user: UserProfile, data: UserProfileReplace
     ) -> UserProfileExtendedRead:
-        """Replace user profile fields with the provided data.
-
-        Parameters:
-            user (UserProfile): User profile model to update.
-            data (UserProfileReplace): Replacement payload.
-
-        Returns:
-            UserProfileExtendedRead: Updated profile payload.
-
-        Raises:
-            HTTPException: If validation or permissions fail.
-        """
         # Update UserProfile fields
         user.full_name = data.full_name
         user.experience = data.experience
@@ -381,18 +287,6 @@ class UserService:
     def update_user_profile(
         self, user: UserProfile, data: UserProfileUpdate
     ) -> UserProfileExtendedRead:
-        """Update user profile fields that are provided.
-
-        Parameters:
-            user (UserProfile): User profile model to update.
-            data (UserProfileUpdate): Partial update payload.
-
-        Returns:
-            UserProfileExtendedRead: Updated profile payload.
-
-        Raises:
-            HTTPException: If permissions or validation fail.
-        """
         # Update UserProfile fields if provided
         if data.experience is not None:
             user.experience = data.experience
@@ -431,17 +325,6 @@ class UserService:
         return self._get_detailed_user_profile_response(user)
 
     def _delete_user(self, user_id: UUID) -> dict:
-        """Delete a user profile and related data.
-
-        Parameters:
-            user_id (UUID): User identifier to delete.
-
-        Returns:
-            dict: Deletion confirmation payload.
-
-        Raises:
-            HTTPException: If the user cannot be deleted.
-        """
         user = self.db.get(UserProfile, user_id)
         if not user:
             raise HTTPException(
@@ -478,14 +361,6 @@ class UserService:
         return {'message': 'User profile deleted successfully'}
 
     def _delete_supabase_user(self, user_id: UUID) -> None:
-        """Delete a user from Supabase auth.
-
-        Parameters:
-            user_id (UUID): User identifier.
-
-        Returns:
-            None: This function performs a remote deletion.
-        """
         try:
             supabase = get_supabase_client()
             supabase.auth.admin.delete_user(str(user_id))
@@ -496,18 +371,6 @@ class UserService:
             raise e
 
     def delete_user_profile(self, user_profile: UserProfile, delete_user_id: UUID | None) -> dict:
-        """Delete a user profile, with admin safeguards.
-
-        Parameters:
-            user_profile (UserProfile): Requesting user profile.
-            delete_user_id (UUID | None): Target user identifier.
-
-        Returns:
-            dict: Deletion confirmation payload.
-
-        Raises:
-            HTTPException: If permissions are insufficient.
-        """
         if delete_user_id and user_profile.account_role == AccountRole.admin:
             # Check if the admin is trying to delete another admin that is not himself
             if delete_user_id != user_profile.id:
@@ -530,18 +393,6 @@ class UserService:
     def update_daily_session_limit(
         self, user_id: UUID, daily_session_limit: int | None
     ) -> UserProfileRead:
-        """Update a user's daily session limit.
-
-        Parameters:
-            user_id (UUID): User identifier.
-            daily_session_limit (int | None): New limit or None for default.
-
-        Returns:
-            UserProfileRead: Updated user profile payload.
-
-        Raises:
-            HTTPException: If the user is not found.
-        """
         if daily_session_limit == self.app_config_service.get_default_daily_session_limit():
             daily_session_limit = None
 

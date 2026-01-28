@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { UserCreate } from '@/interfaces/models/Auth';
@@ -16,9 +16,12 @@ import { authService } from '@/services/AuthService';
 import { showErrorToast } from '@/lib/utils/toast';
 import { handleInputChange, handleKeyDown, handlePasteEvent } from '@/lib/handlers/handleOtpInput';
 import { api } from '@/services/ApiClient';
+import axios from 'axios';
+import { createClient } from '@/lib/supabase/client';
+import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
+import { SKIP_EMAIL_VERIFICATION } from '@/lib/connector';
 
-interface VerificationPopupProps {
-  isOpen: boolean;
+interface PhoneNumberVerificationPopupProps {
   onClose: () => void;
   signUpFormData: {
     fullName: string;
@@ -29,9 +32,14 @@ interface VerificationPopupProps {
     password: string;
     terms: boolean;
   };
+  onSuccess: () => void;
 }
 
-export function VerificationPopup({ isOpen, onClose, signUpFormData }: VerificationPopupProps) {
+export function PhoneNumberVerificationPopup({
+  onClose,
+  signUpFormData,
+  onSuccess,
+}: PhoneNumberVerificationPopupProps) {
   const t = useTranslations('Login.VerificationPopup');
   const tCommon = useTranslations('Common');
   const tLogin = useTranslations('Login');
@@ -67,7 +75,20 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
     return () => clearTimeout(timer);
   }, [resendCooldown]);
 
-  const sendInitialVerificationCode = useCallback(async () => {
+  useEffect(() => {
+    if (!verificationSent) {
+      handleSendVerificationCode();
+    }
+  });
+
+  useEffect(() => {
+    if (error) {
+      showErrorToast(null, error);
+    }
+  }, [error]);
+
+  const handleSendVerificationCode = async () => {
+    if (resendCooldown > 0) return;
     try {
       setIsLoading(true);
       await authService.sendVerificationCode(api, {
@@ -77,72 +98,55 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
       setResendCooldown(30);
     } catch (err) {
       console.error(err);
-      setError(t(`error`));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [signUpFormData.phone_number, t]); // add dependencies the function uses
-
-  useEffect(() => {
-    if (isOpen && !verificationSent) {
-      sendInitialVerificationCode();
-    }
-  }, [isOpen, verificationSent, sendInitialVerificationCode]);
-
-  useEffect(() => {
-    if (error) {
-      showErrorToast(null, error);
-    }
-  }, [error]);
-
-  const handleSubmit = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // First verify the code
-      await authService.verifyCode(api, {
-        phoneNumber: signUpFormData.phone_number,
-        code: form.getValues('code'),
-      });
-
-      // If verification successful, create the user
-      const data: UserCreate = {
-        fullName: signUpFormData.fullName,
-        email: signUpFormData.email,
-        phone: signUpFormData.phone_number,
-        password: signUpFormData.password,
-        organizationName:
-          signUpFormData.nonprofitStatus === 'yes' ? signUpFormData.organizationName : undefined,
-        // code: form.getValues('code'),
-      };
-      await authService.createUser(api, data);
-      setIsLoading(false);
-
-      router.push(`/login?step=confirm&email=${encodeURIComponent(signUpFormData.email)}`);
-    } catch (err) {
-      setError(err instanceof z.ZodError ? err.errors[0].message : tCommon('genericError'));
-      setIsLoading(false);
-    }
-  };
-
-  const handleResendCode = async () => {
-    if (resendCooldown > 0) return;
-    try {
-      setIsLoading(true);
-      await authService.sendVerificationCode(api, {
-        phoneNumber: signUpFormData.phone_number,
-      });
-      setResendCooldown(30);
-    } catch (err) {
-      console.error(err);
       setError(t(`errorResend`));
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (!isOpen) return null;
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setError(null);
+    const data: UserCreate = {
+      fullName: signUpFormData.fullName,
+      email: signUpFormData.email,
+      phone: signUpFormData.phone_number,
+      verificationCode: form.getValues('code'),
+      password: signUpFormData.password,
+      organizationName:
+        signUpFormData.nonprofitStatus === 'yes' ? signUpFormData.organizationName : undefined,
+    };
+
+    try {
+      await authService.signUpUser(api, data);
+      const supabase = await createClient();
+      const credentials: SignInWithPasswordCredentials = {
+        email: signUpFormData.email,
+        password: signUpFormData.password,
+      };
+
+      if (SKIP_EMAIL_VERIFICATION) {
+        await supabase.auth.signInWithPassword(credentials);
+        router.push('/onboarding');
+      } else {
+        onSuccess();
+      }
+
+      setIsLoading(false);
+    } catch (err) {
+      let message = tCommon('genericError');
+
+      if (err instanceof z.ZodError) {
+        message = err.errors[0].message;
+      } else if (axios.isAxiosError(err)) {
+        const detail = err.response?.data?.detail;
+        if (typeof detail === 'string' && detail.includes('Phone number already registered')) {
+          message = tCommon('numberInUseError');
+        }
+      }
+      setError(message);
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -203,7 +207,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                   type="button"
                   variant="ghost"
                   size="default"
-                  onClick={handleResendCode}
+                  onClick={handleSendVerificationCode}
                   disabled={resendCooldown > 0 || isLoading}
                   className={`text-base p-0 h-auto font-normal transition-colors flex items-center gap-1 ${
                     resendCooldown > 0 || isLoading
@@ -213,7 +217,7 @@ export function VerificationPopup({ isOpen, onClose, signUpFormData }: Verificat
                 >
                   <RotateCcw
                     size={14}
-                    className={`${resendCooldown > 0 ? 'animate-spin' : ''} ${
+                    className={`${resendCooldown > 0 ? 'animate-spin [animation-direction:reverse]' : ''} ${
                       resendCooldown > 0 || isLoading ? 'text-gray-bw-40' : 'text-forest-90'
                     }`}
                   />

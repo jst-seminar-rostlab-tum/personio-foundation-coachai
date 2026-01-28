@@ -7,8 +7,6 @@ import Input from '@/components/ui/Input';
 import { handleInputChange, handleKeyDown, handlePasteEvent } from '@/lib/handlers/handleOtpInput';
 import { createClient } from '@/lib/supabase/client';
 import { showErrorToast } from '@/lib/utils/toast';
-import { api } from '@/services/ApiClient';
-import { authService } from '@/services/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResendParams, VerifyEmailOtpParams } from '@supabase/supabase-js';
 import { useTranslations } from 'next-intl';
@@ -18,7 +16,7 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { ModalWrapper } from './ModelWrapper';
 
-export default function ConfirmationForm({
+export default function EmailConfirmationPopup({
   initialEmail,
   onClose,
 }: {
@@ -35,7 +33,6 @@ export default function ConfirmationForm({
   const searchParams = useSearchParams();
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const isConfirmedRef = useRef(false);
 
   useEffect(() => {
     if (error) {
@@ -85,16 +82,6 @@ export default function ConfirmationForm({
         }
       }
 
-      return;
-    }
-
-    try {
-      await authService.confirmUser(api);
-      isConfirmedRef.current = true;
-      if (onClose) onClose(); // Close the modal on success
-    } catch {
-      setError(t('ConfirmationForm.genericError'));
-      setIsLoading(false);
       return;
     }
 

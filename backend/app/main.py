@@ -41,7 +41,7 @@ if settings.stage == 'prod' and settings.SENTRY_DSN:
             FastApiIntegration(),
             SqlalchemyIntegration(),
             HttpxIntegration(),
-            LoggingIntegration(level=logging.INFO, event_level=logging.ERROR),
+            LoggingIntegration(level=logging.INFO, event_level=logging.WARNING),
         ],
         traces_sample_rate=0.1,
         enable_tracing=True,
