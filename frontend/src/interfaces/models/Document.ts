@@ -1,3 +1,6 @@
+/**
+ * Document metadata used in resources and quotes.
+ */
 export interface Document {
   id: string;
   title: string;
@@ -9,6 +12,9 @@ export interface Document {
   documentName?: string;
 }
 
+/**
+ * Response wrapper for a list of documents.
+ */
 export interface DocumentsResponse {
   documents: Document[];
 }

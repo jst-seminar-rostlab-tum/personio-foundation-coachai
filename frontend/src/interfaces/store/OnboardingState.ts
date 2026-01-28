@@ -1,3 +1,6 @@
+/**
+ * Store state and actions for onboarding.
+ */
 export interface OnboardingState {
   step: number;
   role: string;

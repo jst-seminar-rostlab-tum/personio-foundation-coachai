@@ -1,5 +1,8 @@
 import { SessionScores } from './Common';
 
+/**
+ * Aggregated stats for a user.
+ */
 export type UserStats = {
   totalSessions: number;
   trainingTime: number;
@@ -12,6 +15,9 @@ export type UserStats = {
   numRemainingDailySessions: number;
 };
 
+/**
+ * Response wrapper for user stats.
+ */
 export type UserStatsResponse = {
   stats: UserStats;
 };

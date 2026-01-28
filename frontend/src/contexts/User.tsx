@@ -8,14 +8,30 @@ import { UserProfileService } from '@/services/UserProfileService';
 import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 
+/**
+ * Holds the current user profile for the session.
+ */
 const UserContext = createContext<UserProfile | undefined>(undefined);
 
-export function UserContextProvider({ children }: { children: React.ReactNode }) {
+/**
+ * Props for the user context provider.
+ */
+interface UserContextProviderProps {
+  children: React.ReactNode;
+}
+
+/**
+ * Provides the current user profile and refreshes on auth changes.
+ */
+export function UserContextProvider({ children }: UserContextProviderProps) {
   const [user, setUser] = useState<UserProfile | undefined>(undefined);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
+    /**
+     * Refreshes routes when the auth session changes.
+     */
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(() => {
@@ -27,6 +43,9 @@ export function UserContextProvider({ children }: { children: React.ReactNode })
   }, [router]);
 
   useEffect(() => {
+    /**
+     * Loads the current user profile or logs out on error.
+     */
     const fetchUser = async () => {
       try {
         const userProfile = await UserProfileService.getUserProfile(api);
@@ -43,6 +62,9 @@ export function UserContextProvider({ children }: { children: React.ReactNode })
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
 
+/**
+ * Hook to access the current user context.
+ */
 export function useUser() {
   return useContext(UserContext);
 }
