@@ -267,3 +267,34 @@ You can skip these steps below if you don't want to use phone number verificatio
 - **Alembic**: For database migrations
 - **FastAPI**: For API development
 - **Uvicorn**: For ASGI server
+
+## Structure
+
+```
+backend/
+├─ app/
+│  ├─ main.py            # FastAPI app entrypoint
+│  ├─ config.py          # Settings and env var loading
+│  ├─ connections/       # External clients (DB, caches, APIs)
+│  ├─ data/              # Data loaders, dummy/static data scripts
+│  ├─ dependencies/      # FastAPI dependency injection helpers
+│  ├─ enums/             # Shared enum definitions
+│  ├─ interfaces/        # Interfaces/abstractions for services
+│  ├─ models/            # SQLAlchemy ORM models
+│  ├─ rag/               # RAG workflow for LLM resources context
+│  ├─ routers/           # API route handlers by domain
+│  ├─ schemas/           # Pydantic request/response models (for API communication)
+│  ├─ services/          # Business logic and domain services
+│  └─ tests/             # Backend tests
+├─ alembic/              # Migration tooling and scripts
+│  ├─ versions/          # Auto-generated migration files
+│  └─ data/              # Migration-related data helpers
+├─ alembic.ini           # Alembic configuration
+├─ pyproject.toml        # Python project metadata and dependencies
+├─ uv.lock               # Locked dependency versions (uv)
+├─ ruff.toml             # Ruff lint/format configuration
+├─ Dockerfile            # Backend container build
+├─ fly.toml              # Fly.io deployment config (prod)
+├─ fly-dev.toml          # Fly.io deployment config (dev)
+└─ README.md             # Backend documentation
+```
