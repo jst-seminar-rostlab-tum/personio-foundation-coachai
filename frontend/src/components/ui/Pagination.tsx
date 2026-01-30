@@ -4,6 +4,9 @@ import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from 'lucide-re
 import { cn } from '@/lib/utils/cnMerge';
 import { Button, buttonVariants } from '@/components/ui/Button';
 
+/**
+ * Pagination navigation container.
+ */
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
   return (
     <nav
@@ -16,6 +19,9 @@ function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
   );
 }
 
+/**
+ * Pagination list container.
+ */
 function PaginationContent({ className, ...props }: React.ComponentProps<'ul'>) {
   return (
     <ul
@@ -26,15 +32,24 @@ function PaginationContent({ className, ...props }: React.ComponentProps<'ul'>) 
   );
 }
 
+/**
+ * Pagination list item wrapper.
+ */
 function PaginationItem({ ...props }: React.ComponentProps<'li'>) {
   return <li data-slot="pagination-item" {...props} />;
 }
 
+/**
+ * Props for a pagination link.
+ */
 type PaginationLinkProps = {
   isActive?: boolean;
 } & Pick<React.ComponentProps<typeof Button>, 'size'> &
   React.ComponentProps<'a'>;
 
+/**
+ * Pagination link styled as a button.
+ */
 function PaginationLink({
   className,
   isActive,
@@ -58,6 +73,9 @@ function PaginationLink({
   );
 }
 
+/**
+ * Previous page link.
+ */
 function PaginationPrevious({ className, ...props }: React.ComponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
@@ -72,6 +90,9 @@ function PaginationPrevious({ className, ...props }: React.ComponentProps<typeof
   );
 }
 
+/**
+ * Next page link.
+ */
 function PaginationNext({ className, ...props }: React.ComponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
@@ -86,6 +107,9 @@ function PaginationNext({ className, ...props }: React.ComponentProps<typeof Pag
   );
 }
 
+/**
+ * Ellipsis indicator for pagination.
+ */
 function PaginationEllipsis({ className, ...props }: React.ComponentProps<'span'>) {
   return (
     <span

@@ -3,14 +3,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Message } from '@/interfaces/models/Session';
 
+/**
+ * Props for rendering a single message item.
+ */
 interface MessageItemProps {
   message: Message;
 }
 
+/**
+ * Props for the messages list.
+ */
 interface SessionMessagesProps {
   messages: Message[];
 }
 
+/**
+ * Animates in a chunk of message text.
+ */
 const Chunk: React.FC<{ text: string }> = ({ text }) => {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -25,6 +34,9 @@ const Chunk: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
+/**
+ * Renders an individual message bubble with incremental text updates.
+ */
 const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const [chunks, setChunks] = useState<string[]>([message.text]);
   const prevTextRef = useRef(message.text);
@@ -62,6 +74,9 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   );
 };
 
+/**
+ * Displays a scrolling list of session messages.
+ */
 export default function SessionMessages({ messages }: SessionMessagesProps) {
   const messageEndRef = useRef<HTMLDivElement>(null);
 

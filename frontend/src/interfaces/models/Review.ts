@@ -1,9 +1,15 @@
+/**
+ * Payload for creating a review.
+ */
 export interface ReviewCreate {
   rating: number;
   comment: string;
   sessionId: string;
   allowAdminAccess: boolean;
 }
+/**
+ * Review entity returned from the API.
+ */
 export interface Review {
   id: string;
   userId: string;
@@ -15,6 +21,9 @@ export interface Review {
   allowAdminAccess: boolean;
 }
 
+/**
+ * Aggregated rating statistics for reviews.
+ */
 export interface RatingStatistics {
   average: number;
   numFiveStar: number;
@@ -24,6 +33,9 @@ export interface RatingStatistics {
   numOneStar: number;
 }
 
+/**
+ * Paginated review response with statistics.
+ */
 export interface ReviewsPaginated {
   reviews: Review[];
   pagination: {

@@ -19,11 +19,17 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/AlertDialog';
 
+/**
+ * Exports the current user's data as a downloadable archive.
+ */
 export function ExportUserHandler() {
   const [loading, setLoading] = useState(false);
   const tCommon = useTranslations('Common');
   const tSettings = useTranslations('Settings');
 
+  /**
+   * Fetches user data, builds a download, and triggers file save.
+   */
   async function handleExportUser() {
     setLoading(true);
     try {

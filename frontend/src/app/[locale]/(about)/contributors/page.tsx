@@ -4,11 +4,17 @@ import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import { getTranslations } from 'next-intl/server';
 import { Monitor, Server, Settings, Calendar, UserCheck } from 'lucide-react';
 
+/**
+ * Generates localized metadata for the contributors page.
+ */
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/contributors', false);
 }
 
+/**
+ * Lists contributor teams and members for the project.
+ */
 export default async function ContributorsPage() {
   const t = await getTranslations('Contributors');
   const tCommon = await getTranslations('Common');

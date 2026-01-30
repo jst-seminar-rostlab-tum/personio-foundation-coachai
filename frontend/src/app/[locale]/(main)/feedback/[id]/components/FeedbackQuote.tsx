@@ -3,6 +3,9 @@
 import { ChartNoAxesColumnIncreasingIcon, CheckCircle, CircleX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+/**
+ * Props for rendering a feedback quote block.
+ */
 interface FeedbackQuoteProps {
   heading: string;
   feedback?: string;
@@ -12,6 +15,9 @@ interface FeedbackQuoteProps {
   icon?: string;
 }
 
+/**
+ * Displays a feedback item with optional quotes and recommendations.
+ */
 export default function FeedbackQuote({
   heading,
   feedback,
@@ -20,6 +26,9 @@ export default function FeedbackQuote({
   recommendation,
   icon,
 }: FeedbackQuoteProps) {
+  /**
+   * Resolves the icon component for a feedback type.
+   */
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Check':

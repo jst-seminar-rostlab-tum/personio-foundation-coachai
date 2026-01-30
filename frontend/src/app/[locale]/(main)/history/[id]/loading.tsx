@@ -1,3 +1,6 @@
+/**
+ * Shows a skeleton UI while scenario history loads.
+ */
 export default function HistoryPage() {
   return (
     <div className="flex flex-col gap-12">

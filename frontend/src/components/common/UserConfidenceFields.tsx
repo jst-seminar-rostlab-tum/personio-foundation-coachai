@@ -5,6 +5,9 @@ import Slider from '@/components/ui/Slider';
 import { cn } from '@/lib/utils/cnMerge';
 import { useTranslations } from 'next-intl';
 
+/**
+ * Props for the confidence slider group.
+ */
 interface UserConfidenceFieldProps {
   className?: string;
   difficulty: number[];
@@ -15,6 +18,9 @@ interface UserConfidenceFieldProps {
   setConversation: (value: number[]) => void;
 }
 
+/**
+ * Renders confidence sliders for key coaching areas.
+ */
 export default function UserConfidenceFields({
   className,
   difficulty,

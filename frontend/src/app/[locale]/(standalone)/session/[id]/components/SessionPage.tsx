@@ -14,6 +14,9 @@ import SessionLiveFeedback from './SessionLiveFeedback';
 import { useWebRTC } from '../hooks/useWebRTC';
 import SessionFooter from './SessionFooter';
 
+/**
+ * Props for the live session page component.
+ */
 type SessionPageComponentProps = {
   personaName: string;
   categoryName: string;
@@ -34,6 +37,9 @@ const TERMINAL_STATES = [
   ConnectionStatus.Failed,
 ];
 
+/**
+ * Orchestrates the live session UI and WebRTC connection lifecycle.
+ */
 export default function SessionPageComponent({
   personaName,
   categoryName,
@@ -65,6 +71,9 @@ export default function SessionPageComponent({
     };
   }, [initWebRTC, cleanup]);
 
+  /**
+   * Completes the session and routes to feedback.
+   */
   const onDisconnect = async () => {
     try {
       setHangupInProgress(true);

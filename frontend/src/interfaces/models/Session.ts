@@ -1,11 +1,17 @@
 import { SessionScores } from './Common';
 
+/**
+ * Status values for a session lifecycle.
+ */
 export enum SessionStatus {
   STARTED = 'started',
   COMPLETED = 'completed',
   FAILED = 'failed',
 }
 
+/**
+ * Session entity with metadata and scores.
+ */
 export interface Session {
   id: string;
   scenarioId: string;
@@ -20,6 +26,9 @@ export interface Session {
   sessionLengthS: number;
 }
 
+/**
+ * Paginated sessions response.
+ */
 export interface SessionPaginated {
   page: number;
   limit: number;
@@ -28,6 +37,9 @@ export interface SessionPaginated {
   sessions: SessionFromPagination[];
 }
 
+/**
+ * Session summary shape used in pagination lists.
+ */
 export interface SessionFromPagination {
   date: string;
   sessionId: string;
@@ -38,6 +50,9 @@ export interface SessionFromPagination {
   skills: SessionScores;
 }
 
+/**
+ * Payload for creating a session turn.
+ */
 export interface CreateSessionTurnRequest {
   sessionId: string;
   speaker: MessageSender;
@@ -47,23 +62,35 @@ export interface CreateSessionTurnRequest {
   audioFile: Blob;
 }
 
+/**
+ * Chat message in a live session.
+ */
 export interface Message {
   id: number;
   text: string;
   sender: MessageSender;
 }
 
+/**
+ * Sender roles for messages.
+ */
 export enum MessageSender {
   USER = 'user',
   ASSISTANT = 'assistant',
 }
 
+/**
+ * Live feedback item shown during a session.
+ */
 export interface SessionLiveFeedback {
   id: string;
   heading: string;
   feedbackText: string;
 }
 
+/**
+ * WebRTC connection status values.
+ */
 export enum ConnectionStatus {
   Connecting = 'connecting',
   Connected = 'connected',

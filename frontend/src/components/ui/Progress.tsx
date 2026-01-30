@@ -5,6 +5,9 @@ import * as ProgressPrimitive from '@radix-ui/react-progress';
 
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Progress bar wrapper with animated indicator.
+ */
 function Progress({
   className,
   value,

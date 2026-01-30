@@ -1,3 +1,6 @@
+/**
+ * Shows a skeleton UI while the session page loads.
+ */
 export default function SessionPage() {
   return (
     <div className="flex flex-col h-[92vh] justify-between">

@@ -4,6 +4,9 @@ import {
 } from '@/interfaces/models/ConversationScenario';
 import { AxiosInstance } from 'axios';
 
+/**
+ * Fetches paginated conversation scenarios.
+ */
 const getConversationScenarios = async (api: AxiosInstance, page: number, pageSize: number) => {
   try {
     const response = await api.get('/conversation-scenarios', {
@@ -19,6 +22,9 @@ const getConversationScenarios = async (api: AxiosInstance, page: number, pageSi
   }
 };
 
+/**
+ * Fetches a single conversation scenario by ID.
+ */
 const getConversationScenario = async (api: AxiosInstance, id: string) => {
   try {
     const response = await api.get(`/conversation-scenarios/${id}`);
@@ -29,6 +35,9 @@ const getConversationScenario = async (api: AxiosInstance, id: string) => {
   }
 };
 
+/**
+ * Creates a new conversation scenario.
+ */
 const createConversationScenario = async (
   api: AxiosInstance,
   scenario: ConversationScenario,
@@ -49,6 +58,9 @@ const createConversationScenario = async (
   }
 };
 
+/**
+ * Fetches preparation data for a scenario.
+ */
 const getPreparation = async (api: AxiosInstance, id: string) => {
   try {
     const response = await api.get(`/conversation-scenarios/${id}/preparation`);
@@ -59,6 +71,9 @@ const getPreparation = async (api: AxiosInstance, id: string) => {
   }
 };
 
+/**
+ * Deletes a conversation scenario by ID.
+ */
 const deleteConversationScenario = async (api: AxiosInstance, id: string) => {
   try {
     const response = await api.delete(`/conversation-scenarios/${id}`);
@@ -69,6 +84,9 @@ const deleteConversationScenario = async (api: AxiosInstance, id: string) => {
   }
 };
 
+/**
+ * Conversation scenario API methods.
+ */
 export const conversationScenarioService = {
   getPreparation,
   createConversationScenario,

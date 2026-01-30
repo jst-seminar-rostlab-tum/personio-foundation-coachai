@@ -1,3 +1,6 @@
+/**
+ * Shows a skeleton UI while the dashboard loads.
+ */
 export default function DashboardLoading() {
   return (
     <div className="flex flex-col gap-12">

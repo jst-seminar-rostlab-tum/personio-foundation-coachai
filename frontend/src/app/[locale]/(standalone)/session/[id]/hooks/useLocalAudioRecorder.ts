@@ -1,6 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { useRef, useCallback } from 'react';
 
+/**
+ * Tracks a MediaRecorder instance and its buffered chunks.
+ */
 type LocalAudioRecorder = {
   recorder: MediaRecorder;
   chunks: Blob[];
@@ -10,6 +13,9 @@ type LocalAudioRecorder = {
 const INACTIVITY_TIMEOUT_MS = 300000;
 const AUDIO_MIME_TYPE = 'audio/webm';
 
+/**
+ * Converts an AudioBuffer into a WAV Blob.
+ */
 const bufferToWav = async (buffer: AudioBuffer): Promise<Blob> => {
   const numOfChan = buffer.numberOfChannels;
   const length = buffer.length * numOfChan * 2 + 44;
@@ -60,6 +66,9 @@ const bufferToWav = async (buffer: AudioBuffer): Promise<Blob> => {
   return new Blob([bufferArray], { type: 'audio/wav' });
 };
 
+/**
+ * Manages local audio recording and extracts WAV segments by time offsets.
+ */
 export function useLocalAudioRecorder(localStreamRef: React.RefObject<MediaStream | null>) {
   const currentIndexRef = useRef(0);
   const recorderARef = useRef<LocalAudioRecorder | null>(null);
@@ -67,11 +76,17 @@ export function useLocalAudioRecorder(localStreamRef: React.RefObject<MediaStrea
   const inactivityTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Memoized helpers
+  /**
+   * Returns the currently active recorder ref.
+   */
   const getCurrentRecorderRef = useCallback(
     () => (currentIndexRef.current === 0 ? recorderARef : recorderBRef),
     []
   );
 
+  /**
+   * Stops a recorder and clears its chunks.
+   */
   const stopAndResetRecorder = useCallback(
     (recorderRef: React.RefObject<LocalAudioRecorder | null>) => {
       if (recorderRef.current) {
@@ -83,6 +98,9 @@ export function useLocalAudioRecorder(localStreamRef: React.RefObject<MediaStrea
     []
   );
 
+  /**
+   * Creates and starts a recorder with a start offset.
+   */
   const initializeRecorder = useCallback(
     (recorderRef: React.RefObject<LocalAudioRecorder | null>, startOffsetMs: number) => {
       if (recorderRef.current) {
@@ -106,6 +124,9 @@ export function useLocalAudioRecorder(localStreamRef: React.RefObject<MediaStrea
     [localStreamRef]
   );
 
+  /**
+   * Starts dual local recording buffers.
+   */
   const startLocalRecording = useCallback((): void => {
     if (recorderARef.current && recorderBRef.current) return; // Already running
     initializeRecorder(recorderARef, 0);
@@ -113,6 +134,9 @@ export function useLocalAudioRecorder(localStreamRef: React.RefObject<MediaStrea
     currentIndexRef.current = 0;
   }, [initializeRecorder]);
 
+  /**
+   * Stops local recording and clears timers.
+   */
   const stopLocalRecording = useCallback((): void => {
     stopAndResetRecorder(recorderARef);
     stopAndResetRecorder(recorderBRef);
@@ -123,6 +147,9 @@ export function useLocalAudioRecorder(localStreamRef: React.RefObject<MediaStrea
     }
   }, [stopAndResetRecorder, localStreamRef]);
 
+  /**
+   * Stops a recorder and resolves its recorded chunks.
+   */
   const stopRecorderAndCollectChunks = useCallback(
     (recorderRef: React.RefObject<LocalAudioRecorder | null>): Promise<Blob[]> => {
       return new Promise((resolve) => {
@@ -142,6 +169,9 @@ export function useLocalAudioRecorder(localStreamRef: React.RefObject<MediaStrea
     []
   );
 
+  /**
+   * Resets the inactivity timeout that restarts recorders.
+   */
   const resetInactivityTimeout = useCallback(
     (elapsedTimeMs: number) => {
       if (inactivityTimeoutRef.current) {
@@ -157,6 +187,9 @@ export function useLocalAudioRecorder(localStreamRef: React.RefObject<MediaStrea
     [initializeRecorder]
   );
 
+  /**
+   * Extracts a WAV segment between offsets from the active recorder.
+   */
   const extractSegment = useCallback(
     async (startOffsetMs: number, endOffsetMs: number, elapsedTimeMs: number): Promise<Blob> => {
       const currentRef = getCurrentRecorderRef();

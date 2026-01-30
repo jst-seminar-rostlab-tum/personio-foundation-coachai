@@ -3,6 +3,9 @@
 import { Phone, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
+/**
+ * Props for the session footer controls.
+ */
 interface SessionFooterProps {
   isMicActive: boolean;
   toggleMicrophone: () => void;
@@ -11,6 +14,9 @@ interface SessionFooterProps {
   isDisabled?: boolean;
 }
 
+/**
+ * Renders microphone and hangup controls for the live session.
+ */
 export default function SessionFooter({
   isMicActive,
   toggleMicrophone,

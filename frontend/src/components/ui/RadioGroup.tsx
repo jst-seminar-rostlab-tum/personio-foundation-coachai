@@ -6,6 +6,9 @@ import { CircleIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Radio group container.
+ */
 function RadioGroup({
   className,
   ...props
@@ -19,6 +22,9 @@ function RadioGroup({
   );
 }
 
+/**
+ * Radio group item with indicator.
+ */
 function RadioGroupItem({
   className,
   ...props

@@ -1,3 +1,6 @@
+/**
+ * Formats a date string with locale and optional time.
+ */
 export const formatDateFlexible = (
   date: string | undefined,
   locale: string,

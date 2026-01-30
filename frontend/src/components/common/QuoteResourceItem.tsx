@@ -7,11 +7,17 @@ import { api } from '@/services/ApiClient';
 import { getDocsSignedUrl } from '@/services/ResourceService';
 import { Button } from '../ui/Button';
 
+/**
+ * Props for a quoted resource list item.
+ */
 interface QuoteResourceItemProps {
   resource: Document;
   showCopyButton?: boolean;
 }
 
+/**
+ * Renders a quote-style resource card with copy and download actions.
+ */
 const QuoteResourceItem: React.FC<QuoteResourceItemProps> = ({
   resource,
   showCopyButton = true,
@@ -20,6 +26,9 @@ const QuoteResourceItem: React.FC<QuoteResourceItemProps> = ({
   const [copied, setCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  /**
+   * Copies the quote text to the clipboard.
+   */
   const handleCopyQuote = async () => {
     try {
       await navigator.clipboard.writeText(resource.quote);
@@ -30,6 +39,9 @@ const QuoteResourceItem: React.FC<QuoteResourceItemProps> = ({
     }
   };
 
+  /**
+   * Requests a signed URL and opens the resource download.
+   */
   const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (isDownloading || !resource.title) return;

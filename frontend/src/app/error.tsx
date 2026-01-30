@@ -7,11 +7,17 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import * as Sentry from '@sentry/nextjs';
 
+/**
+ * Props for the global error boundary.
+ */
 interface ErrorPageProps {
   error: Error & { digest?: string };
   reset: () => void;
 }
 
+/**
+ * Renders a user-friendly error page with retry and home actions.
+ */
 export default function Error({ error, reset }: ErrorPageProps) {
   const tCommon = useTranslations('Common');
   const tErrorPage = useTranslations('ErrorPage');
@@ -21,6 +27,9 @@ export default function Error({ error, reset }: ErrorPageProps) {
     Sentry.captureException(error);
   }, [error]);
 
+  /**
+   * Retries rendering by invoking the reset callback.
+   */
   const handleTryAgain = () => {
     reset();
   };

@@ -1,5 +1,8 @@
 import * as Sentry from '@sentry/nextjs';
 
+/**
+ * Registers runtime-specific Sentry configuration.
+ */
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     await import('../sentry.server.config');
@@ -10,4 +13,7 @@ export async function register() {
   }
 }
 
+/**
+ * Reports request errors to Sentry.
+ */
 export const onRequestError = Sentry.captureRequestError;

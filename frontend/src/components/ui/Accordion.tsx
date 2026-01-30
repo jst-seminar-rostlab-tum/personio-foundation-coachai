@@ -6,16 +6,25 @@ import { ChevronDownIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Wrapper for the Radix accordion root.
+ */
 function Accordion({ ...props }: React.ComponentProps<typeof AccordionPrimitive.Root>) {
   return (
     <AccordionPrimitive.Root data-slot="accordion" className="w-full py-4 space-y-4" {...props} />
   );
 }
 
+/**
+ * Wrapper for a Radix accordion item.
+ */
 function AccordionItem({ ...props }: React.ComponentProps<typeof AccordionPrimitive.Item>) {
   return <AccordionPrimitive.Item data-slot="accordion-item" className="text-bw-90" {...props} />;
 }
 
+/**
+ * Accordion trigger with chevron indicator.
+ */
 function AccordionTrigger({
   children,
   ...props
@@ -34,6 +43,9 @@ function AccordionTrigger({
   );
 }
 
+/**
+ * Accordion content panel with spacing.
+ */
 function AccordionContent({
   className,
   children,

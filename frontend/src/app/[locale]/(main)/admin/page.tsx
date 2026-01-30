@@ -14,11 +14,17 @@ import Reviews from './components/Reviews';
 import UsersList from './components/UsersList';
 import AdminStatCards from './components/AdminStatCards';
 
+/**
+ * Generates localized metadata for the admin dashboard page.
+ */
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/admin', true);
 }
 
+/**
+ * Renders the admin dashboard with stats, reviews, and user management.
+ */
 export default async function AdminPage() {
   const statsData = adminService.getAdminStats(api);
   const reviewsData = reviewService.getPaginatedReviews(api, 1, REVIEWS_LIMIT, 'newest');

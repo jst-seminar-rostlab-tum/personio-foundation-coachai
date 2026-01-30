@@ -37,6 +37,9 @@ import {
 import { USER_LIST_PAGE, USER_LIST_LIMIT } from '../constants/UsersList';
 import UserDialog from './UserDialog';
 
+/**
+ * Renders the admin user list with search, filters, sorting, and pagination.
+ */
 export default function UsersList({
   users,
   totalUsers: initialTotalUsers,
@@ -55,6 +58,9 @@ export default function UsersList({
   const t = useTranslations('Admin');
   const tCommon = useTranslations('Common');
 
+  /**
+   * Converts the UI filter selection into the API filter value.
+   */
   const getSessionLimitFilterValue = (
     sessionLimitFilterValue: SessionLimitType[] | null
   ): SessionLimitType => {
@@ -64,6 +70,9 @@ export default function UsersList({
       : SessionLimitType.INDIVIDUAL;
   };
 
+  /**
+   * Loads users with the current filters, search, and sorting options.
+   */
   const fetchUsers = async (
     newLimit: number,
     searchStr: string,
@@ -96,6 +105,9 @@ export default function UsersList({
     }
   };
 
+  /**
+   * Updates search input and refreshes the user list.
+   */
   const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearch(value);
@@ -103,6 +115,9 @@ export default function UsersList({
     fetchUsers(USER_LIST_LIMIT, value, sessionLimitFilter, emailSorting, sessionLimitSorting);
   };
 
+  /**
+   * Applies a session limit filter and refreshes the user list.
+   */
   const handleSessionLimitFilterChange = (value: string) => {
     let newFilter: SessionLimitType[] | null = null;
     if (value === SessionLimitType.DEFAULT) {
@@ -119,6 +134,9 @@ export default function UsersList({
     fetchUsers(USER_LIST_LIMIT, search, newFilter, emailSorting, updatedSessionLimitSorting);
   };
 
+  /**
+   * Applies email sorting and refreshes the user list.
+   */
   const handleEmailSortingChange = (value: string) => {
     let newSort: SortOption | null = null;
     if (value === SortOption.ASC) {
@@ -136,6 +154,9 @@ export default function UsersList({
     fetchUsers(USER_LIST_LIMIT, search, sessionLimitFilter, newSort, null);
   };
 
+  /**
+   * Applies session limit sorting and refreshes the user list.
+   */
   const handleSessionLimitSortingChange = (value: string) => {
     let newSort: SortOption | null = null;
     if (value === SortOption.ASC) {
@@ -153,14 +174,23 @@ export default function UsersList({
     fetchUsers(USER_LIST_LIMIT, search, sessionLimitFilter, null, newSort);
   };
 
+  /**
+   * Extends the list by fetching the next page of users.
+   */
   const handleLoadMore = async () => {
     const nextLimit = limit + USER_LIST_LIMIT;
     setLimit(nextLimit);
     fetchUsers(nextLimit, search, sessionLimitFilter, emailSorting, sessionLimitSorting);
   };
 
+  /**
+   * Determines if the "load more" button should be visible.
+   */
   const showLoadMoreUsersButton = () => userList.length < totalUsers;
 
+  /**
+   * Refreshes user list and admin stats after a successful delete.
+   */
   const onDeleteSuccess = async () => {
     try {
       fetchUsers(limit, search, sessionLimitFilter, emailSorting, sessionLimitSorting);
@@ -171,16 +201,25 @@ export default function UsersList({
     }
   };
 
+  /**
+   * Opens the user detail dialog for the selected user.
+   */
   const handleUserClick = (userId: string) => {
     setSelectedUserId(userId);
     setIsDialogOpen(true);
   };
 
+  /**
+   * Closes the user detail dialog and clears selection.
+   */
   const handleDialogClose = () => {
     setIsDialogOpen(false);
     setSelectedUserId(null);
   };
 
+  /**
+   * Returns the icon matching the current sort option.
+   */
   const renderSortIndicator = (sortOption: SortOption | null) => {
     if (sortOption === SortOption.ASC) {
       return <ArrowUp className="w-4 h-4 text-bw-70" />;

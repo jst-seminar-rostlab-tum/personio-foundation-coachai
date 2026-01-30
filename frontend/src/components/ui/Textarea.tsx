@@ -2,6 +2,9 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Styled textarea control.
+ */
 function Textarea({ className, ...props }: React.ComponentProps<'textarea'>) {
   return (
     <textarea

@@ -20,6 +20,9 @@ import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { formatDateFlexible } from '@/lib/utils/formatDateAndTime';
 import { api } from '@/services/ApiClient';
 
+/**
+ * Renders rating analytics and a paginated, sortable list of reviews.
+ */
 export default function Reviews({ ratingStatistics, reviews, pagination }: ReviewsPaginated) {
   const limit = pagination?.pageSize;
   const router = useRouter();
@@ -64,6 +67,9 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
   const countAnimationRef = useRef<number | null>(null);
   const countStartTime = useRef<number>(0);
 
+  /**
+   * Eases numeric transitions for smooth progress animations.
+   */
   function easeInOutCubic(t: number) {
     return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
   }
@@ -81,6 +87,9 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
     const target = ratingStatistics.average;
     const startValue = 0.0;
 
+    /**
+     * Animates the average rating display.
+     */
     function animate(now: number) {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
@@ -108,6 +117,9 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
     ];
     const maxCount = Math.max(...counts);
 
+    /**
+     * Animates the rating counts up to their target values.
+     */
     function animate(now: number) {
       if (!countStartTime.current) countStartTime.current = now;
       const elapsed = now - countStartTime.current;
@@ -131,16 +143,25 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
     };
   }, [ratingStatistics]);
 
+  /**
+   * Navigates to the detailed feedback view for a review's session.
+   */
   const handleReviewClick = (sessionId: string | null) => {
     if (sessionId) {
       router.push(`/feedback/${sessionId}`);
     }
   };
 
+  /**
+   * Updates the page number to fetch more reviews.
+   */
   const handleLoadMore = (newPage: number) => {
     setPageNumber(newPage);
   };
 
+  /**
+   * Applies a new sort order and reloads the review list.
+   */
   const handleSortChange = async (value: string) => {
     setSortBy(value);
     setPageNumber(1);
@@ -157,6 +178,9 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
   };
 
   useEffect(() => {
+    /**
+     * Loads additional review pages when pagination advances.
+     */
     const getSessions = async () => {
       try {
         setIsLoading(true);
@@ -184,6 +208,9 @@ export default function Reviews({ ratingStatistics, reviews, pagination }: Revie
     const duration = 500;
 
     progressTargets.forEach((target, idx) => {
+      /**
+       * Animates each progress bar towards its target percentage.
+       */
       function animate(now: number) {
         if (!startTimes.current[idx]) {
           startTimes.current[idx] = now;

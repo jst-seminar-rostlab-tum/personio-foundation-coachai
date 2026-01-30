@@ -28,6 +28,9 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { ModalWrapper } from './ModelWrapper';
 
+/**
+ * Updates the user's password after a reset flow.
+ */
 export default function UpdatePasswordForm() {
   const t = useTranslations('Login.UpdatePassword');
   const tCommon = useTranslations('Common');
@@ -66,6 +69,9 @@ export default function UpdatePasswordForm() {
     },
   });
 
+  /**
+   * Persists the new password via Supabase and routes on success.
+   */
   const updatePassword = async (values: z.infer<typeof updatePasswordFormSchema>) => {
     setError(null);
     setIsLoading(true);

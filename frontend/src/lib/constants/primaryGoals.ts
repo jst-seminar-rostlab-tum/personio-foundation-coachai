@@ -1,6 +1,9 @@
 import { UserOption } from '@/interfaces/models/UserInputFields';
 import { useTranslations } from 'next-intl';
 
+/**
+ * Returns localized primary goal options for user preferences.
+ */
 export function PrimaryGoals(): UserOption[] {
   const tOptions = useTranslations('PersonalizationOptions');
 

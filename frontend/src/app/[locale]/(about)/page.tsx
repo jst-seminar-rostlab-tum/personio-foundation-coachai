@@ -8,11 +8,17 @@ import { MetadataProps } from '@/interfaces/props/MetadataProps';
 import type { Metadata } from 'next';
 import { HighlightedAppName } from '@/components/common/HighlightedAppName';
 
+/**
+ * Generates localized metadata for the about landing page.
+ */
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '', false);
 }
 
+/**
+ * Renders the public about/landing content with hero, how-it-works, and features sections.
+ */
 export default async function AboutPage() {
   const t = await getTranslations('HomePage');
   const howItWorks = [

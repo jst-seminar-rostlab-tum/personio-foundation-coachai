@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 
+/**
+ * Props for the animated score donut chart.
+ */
 interface DonutChartProps {
   totalScore: number;
   maxScore: number;
@@ -10,6 +13,9 @@ const stroke = 8;
 const normalizedRadius = radius;
 const circumference = 2 * Math.PI * normalizedRadius;
 
+/**
+ * Renders an animated donut chart with score and total.
+ */
 export default function DonutChart({ totalScore, maxScore }: DonutChartProps) {
   const percent = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
   const [animatedPercent, setAnimatedPercent] = useState(0);
@@ -17,7 +23,13 @@ export default function DonutChart({ totalScore, maxScore }: DonutChartProps) {
   useEffect(() => {
     const duration = 1000;
     let start = 0;
+    /**
+     * Eases progress for smooth ring animation.
+     */
     const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+    /**
+     * Animates the percentage ring and numeric score.
+     */
     const animate = (now: number) => {
       if (!start) start = now;
       const elapsed = now - start;

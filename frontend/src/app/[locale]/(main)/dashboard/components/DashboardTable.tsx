@@ -17,12 +17,18 @@ import Image from 'next/image';
 import EmptyListComponent from '@/components/common/EmptyListComponent';
 import { Badge } from '@/components/ui/Badge';
 
+/**
+ * Props for the dashboard scenarios table.
+ */
 type DashboardTableProps = {
   scenarios: ConversationScenario[];
   totalScenarios: number;
   limit: number;
 };
 
+/**
+ * Renders a paginated table of recent conversation scenarios.
+ */
 export default function DashboardTable({ scenarios, totalScenarios, limit }: DashboardTableProps) {
   const router = useRouter();
   const locale = useLocale();
@@ -37,12 +43,21 @@ export default function DashboardTable({ scenarios, totalScenarios, limit }: Das
   const canLoadMore = visibleCount < totalScenarios;
   const categories = Categories(tCategories);
 
+  /**
+   * Advances to the next page of scenarios.
+   */
   const handleLoadMore = (newPage: number) => {
     setPageNumber(newPage);
   };
 
+  /**
+   * Navigates to the selected scenario's history.
+   */
   const handleRowClick = (row: ConversationScenario) => router.push(`/history/${row.scenarioId}`);
 
+  /**
+   * Loads additional scenarios and appends new rows.
+   */
   const getScenarios = async () => {
     try {
       setIsLoading(true);
@@ -66,6 +81,9 @@ export default function DashboardTable({ scenarios, totalScenarios, limit }: Das
     }
   };
 
+  /**
+   * Deletes a scenario and refreshes the list.
+   */
   const handleDelete = async (id: string) => {
     try {
       await conversationScenarioService.deleteConversationScenario(api, id);

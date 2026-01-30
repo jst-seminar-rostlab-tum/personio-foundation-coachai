@@ -1,5 +1,8 @@
 import Image from 'next/image';
 
+/**
+ * Props for a persona selection button.
+ */
 interface PersonaButtonProps {
   onClick?: () => void;
   selected?: boolean;
@@ -11,6 +14,9 @@ interface PersonaButtonProps {
 const personaButtonStyles =
   'w-full box-border rounded-2xl flex flex-col items-center justify-center text-lg outline outline-2 outline-bw-40 cursor-pointer hover:bg-forest-90/80 hover:text-white active:outline-none active:bg-forest-90 disabled:pointer-events-none p-6';
 
+/**
+ * Button for selecting a persona or difficulty option.
+ */
 export function PersonaButton({ selected, onClick, className, image, label }: PersonaButtonProps) {
   return (
     <button

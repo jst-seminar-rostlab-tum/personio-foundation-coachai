@@ -15,6 +15,9 @@ import { CategoryStep } from './CategoryStep';
 import { CustomizeStep } from './CustomizeStep';
 import ContextCardButtons from './ContextCardButtons';
 
+/**
+ * Guides users through the multi-step scenario creation flow.
+ */
 export default function ConversationScenarioForm() {
   const t = useTranslations('ConversationScenario');
   const tCommon = useTranslations('Common');
@@ -25,6 +28,9 @@ export default function ConversationScenarioForm() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /**
+   * Validates the current step based on form state.
+   */
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 0:
@@ -38,6 +44,9 @@ export default function ConversationScenarioForm() {
     }
   };
 
+  /**
+   * Advances steps or submits the scenario on the final step.
+   */
   const submitForm = async () => {
     if (currentStep !== 2) {
       setStep(currentStep + 1);

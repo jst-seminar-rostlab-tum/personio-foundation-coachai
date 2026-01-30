@@ -2,6 +2,9 @@ import { Clock } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 
+/**
+ * Displays a notice when the daily session limit is reached.
+ */
 export default async function SessionLimitReached() {
   const t = await getTranslations('ConversationScenario.sessionLimitReached');
 

@@ -3,10 +3,16 @@ import { ChevronUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { SessionLiveFeedback } from '@/interfaces/models/Session';
 
+/**
+ * Props for the live feedback list.
+ */
 interface SessionLiveFeedbackProps {
   liveFeedbacks: SessionLiveFeedback[];
 }
 
+/**
+ * Shows AI live feedback suggestions with highlight for new items.
+ */
 export default function SessionLiveFeedback({ liveFeedbacks }: SessionLiveFeedbackProps) {
   const t = useTranslations('Session.LiveFeedback');
   const tCommon = useTranslations('Common');

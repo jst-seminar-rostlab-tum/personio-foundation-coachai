@@ -23,6 +23,9 @@ import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/utils/toast';
 import EmailConfirmationPopup from './EmailConfirmationPopup';
 
+/**
+ * Handles user sign-in with email and password.
+ */
 export function SignInForm() {
   const tLogin = useTranslations('Login');
   const tCommon = useTranslations('Common');
@@ -53,6 +56,9 @@ export function SignInForm() {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  /**
+   * Submits credentials and routes on success or shows confirmation if needed.
+   */
   const handleSubmit = async (values: z.infer<typeof signInFormSchema>) => {
     setError(null);
     setIsLoading(true);

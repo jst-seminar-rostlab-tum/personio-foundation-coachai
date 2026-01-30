@@ -8,6 +8,9 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 
+/**
+ * Describes a column configuration for the clickable table.
+ */
 export type ClickableTableColumn<T> = {
   header: React.ReactNode;
   accessor: keyof T | ((row: T) => React.ReactNode);
@@ -17,6 +20,9 @@ export type ClickableTableColumn<T> = {
   cell?: (row: T) => React.ReactNode;
 };
 
+/**
+ * Props for the clickable table component.
+ */
 export type ClickableTableProps<T> = {
   columns: ClickableTableColumn<T>[];
   data: T[];
@@ -25,12 +31,18 @@ export type ClickableTableProps<T> = {
   rowClassName?: (row: T) => string;
 };
 
+/**
+ * Resolves a cell's value using accessor or custom cell renderer.
+ */
 function getCellValue<T>(row: T, col: ClickableTableColumn<T>): React.ReactNode {
   if (col.cell) return col.cell(row);
   if (typeof col.accessor === 'function') return col.accessor(row);
   return (row as Record<string, unknown>)[col.accessor as string] as React.ReactNode;
 }
 
+/**
+ * Renders a table with optional clickable rows.
+ */
 export function ClickableTable<T>({
   columns,
   data,

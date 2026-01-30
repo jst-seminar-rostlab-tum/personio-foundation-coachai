@@ -11,6 +11,9 @@ import { useRemoteAudioRecorder } from './useRemoteAudioRecorder';
 import { useSessionTurns } from './useSessionTurns';
 import { useSessionLiveFeedback } from './useSessionLiveFeedback';
 
+/**
+ * Manages WebRTC connection, audio streaming, and realtime events.
+ */
 export function useWebRTC(sessionId: string, ephemeralKey: string) {
   const t = useTranslations('Session');
 
@@ -44,6 +47,9 @@ export function useWebRTC(sessionId: string, ephemeralKey: string) {
   const inputAudioBufferSpeechStartedOffsetMsRef = useRef<number>(0);
   const remoteResponseIdRef = useRef<string | null>(null);
 
+  /**
+   * Tears down WebRTC resources and stops timers.
+   */
   const cleanup = useCallback(() => {
     if (cleanupRef.current) return;
     cleanupRef.current = true;
@@ -59,6 +65,9 @@ export function useWebRTC(sessionId: string, ephemeralKey: string) {
     stopGetLiveFeedbackInterval();
   }, [stopStream, stopLocalRecording, stopRemoteRecording, stopTimer, stopGetLiveFeedbackInterval]);
 
+  /**
+   * Initializes the peer connection and data channel.
+   */
   const initWebRTC = useCallback(async () => {
     if (hasInitializedRef.current) return;
     hasInitializedRef.current = true;

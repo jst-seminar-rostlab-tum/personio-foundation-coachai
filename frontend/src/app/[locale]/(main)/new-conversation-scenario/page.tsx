@@ -6,11 +6,17 @@ import { UserProfileService } from '@/services/UserProfileService';
 import SessionLimitReached from '@/components/common/SessionLimitReached';
 import ConversationScenarioForm from './components/ConversationScenarioForm';
 
+/**
+ * Generates localized metadata for the new conversation scenario page.
+ */
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/new-conversation-scenario', true);
 }
 
+/**
+ * Renders the new scenario form or a session limit warning.
+ */
 export default async function ConversationScenarioPage() {
   const userProfilePromise = UserProfileService.getUserProfile(api);
   const userStatsPromise = UserProfileService.getUserStats(api);

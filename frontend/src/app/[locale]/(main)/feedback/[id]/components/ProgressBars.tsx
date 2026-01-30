@@ -1,15 +1,24 @@
 import SegmentedProgress from '@/components/ui/SegmentedProgress';
 import { useEffect, useState } from 'react';
 
+/**
+ * Represents a single labeled progress bar.
+ */
 interface ProgressBarItem {
   key: string;
   value: number;
 }
 
+/**
+ * Props for rendering a list of progress bars.
+ */
 interface ProgressBarsProps {
   data: ProgressBarItem[];
 }
 
+/**
+ * Renders a single animated progress bar with label.
+ */
 function AnimatedProgressBar({ label, value }: { label: string; value: number }) {
   const [animatedValue, setAnimatedValue] = useState(0);
 
@@ -38,6 +47,9 @@ function AnimatedProgressBar({ label, value }: { label: string; value: number })
   );
 }
 
+/**
+ * Displays a set of progress bars for feedback scores.
+ */
 export default function ProgressBars({ data }: ProgressBarsProps) {
   return (
     <div className="flex flex-col gap-8 flex-1 w-full p-2">

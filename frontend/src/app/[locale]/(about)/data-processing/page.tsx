@@ -5,11 +5,17 @@ import { getTranslations } from 'next-intl/server';
 import PrivacyDialog from '@/app/[locale]/(auth)/login/components/PrivacyDialog';
 import React from 'react';
 
+/**
+ * Generates localized metadata for the data processing policy page.
+ */
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/data-processing', false);
 }
 
+/**
+ * Shows the data processing policy content via the shared privacy dialog.
+ */
 export default async function DataProcessingPage() {
   const tCommon = await getTranslations('Common');
   return (

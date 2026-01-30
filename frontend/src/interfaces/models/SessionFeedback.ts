@@ -1,6 +1,9 @@
 import { SessionScores } from './Common';
 import { Document } from './Document';
 
+/**
+ * Response payload for session feedback details.
+ */
 export interface FeedbackResponse {
   id: string;
   scenarioId: string;
@@ -11,6 +14,9 @@ export interface FeedbackResponse {
   hasReviewed: boolean;
 }
 
+/**
+ * Detailed feedback content for a session.
+ */
 export interface SessionFeedback {
   scores: SessionScores;
   overallScore: number;

@@ -2,6 +2,9 @@ import { OnboardingState } from '@/interfaces/store/OnboardingState';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+/**
+ * Zustand store for onboarding progress and responses.
+ */
 export const useOnboardingStore = create<OnboardingState>()(
   persist(
     (set) => ({

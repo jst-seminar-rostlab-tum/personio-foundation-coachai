@@ -10,15 +10,27 @@ import {
   SUPABASE_URL,
 } from './lib/connector';
 
+/**
+ * Allowed origins for CORS responses.
+ */
 const allowedOrigins = [BASE_URL];
 
+/**
+ * CORS headers applied to responses.
+ */
 const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
+/**
+ * Locale-aware middleware from next-intl.
+ */
 const i18nMiddleware = createMiddleware(routing);
 
+/**
+ * Applies i18n routing, CSP headers, CORS handling, and auth protection.
+ */
 export default async function middleware(request: NextRequest) {
   const origin = request.headers.get('origin') || '';
   const isAllowedOrigin = allowedOrigins.includes(origin);
@@ -36,6 +48,9 @@ export default async function middleware(request: NextRequest) {
     );
   }
 
+  /**
+   * Content Security Policy with a per-request nonce.
+   */
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
   const cspHeader = `
     default-src 'self';

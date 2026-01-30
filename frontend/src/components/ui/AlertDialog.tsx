@@ -6,20 +6,32 @@ import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
 import { cn } from '@/lib/utils/cnMerge';
 import { buttonVariants } from '@/components/ui/Button';
 
+/**
+ * Wrapper for the Radix alert dialog root.
+ */
 function AlertDialog({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
 }
 
+/**
+ * Trigger element for the alert dialog.
+ */
 function AlertDialogTrigger({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Trigger>) {
   return <AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props} />;
 }
 
+/**
+ * Portal wrapper for alert dialog content.
+ */
 function AlertDialogPortal({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Portal>) {
   return <AlertDialogPrimitive.Portal data-slot="alert-dialog-portal" {...props} />;
 }
 
+/**
+ * Overlay backdrop for the alert dialog.
+ */
 function AlertDialogOverlay({
   className,
   ...props
@@ -37,6 +49,9 @@ function AlertDialogOverlay({
   );
 }
 
+/**
+ * Main content panel for the alert dialog.
+ */
 function AlertDialogContent({
   className,
   ...props
@@ -56,6 +71,9 @@ function AlertDialogContent({
   );
 }
 
+/**
+ * Header container for alert dialog content.
+ */
 function AlertDialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -66,6 +84,9 @@ function AlertDialogHeader({ className, ...props }: React.ComponentProps<'div'>)
   );
 }
 
+/**
+ * Footer container for alert dialog actions.
+ */
 function AlertDialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -76,6 +97,9 @@ function AlertDialogFooter({ className, ...props }: React.ComponentProps<'div'>)
   );
 }
 
+/**
+ * Title element for the alert dialog.
+ */
 function AlertDialogTitle({
   className,
   ...props
@@ -89,6 +113,9 @@ function AlertDialogTitle({
   );
 }
 
+/**
+ * Description text for the alert dialog.
+ */
 function AlertDialogDescription({
   className,
   ...props
@@ -102,6 +129,9 @@ function AlertDialogDescription({
   );
 }
 
+/**
+ * Action button for confirming the alert dialog.
+ */
 function AlertDialogAction({
   className,
   ...props
@@ -114,6 +144,9 @@ function AlertDialogAction({
   );
 }
 
+/**
+ * Cancel button for the alert dialog.
+ */
 function AlertDialogCancel({
   className,
   ...props

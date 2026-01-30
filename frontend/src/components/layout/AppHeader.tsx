@@ -17,6 +17,9 @@ import { VideoModal } from '../common/VideoModal';
 import { ContactModal } from '../common/ContactModal';
 import { SupportDropdown } from '../common/SupportDropdown';
 
+/**
+ * Renders the main application header with navigation and support actions.
+ */
 export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -34,6 +37,9 @@ export function AppHeader() {
   ];
 
   useEffect(() => {
+    /**
+     * Locks body scroll when the mobile menu is open.
+     */
     const lockBodyScroll = () => {
       const isMobile = window.matchMedia('(max-width: 767px)').matches;
       if (isMenuOpen && isMobile) {

@@ -4,6 +4,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 import { UserRadioQuestion } from '@/interfaces/models/UserInputFields';
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Renders a radio group question with optional label hints.
+ */
 export const UserRadioComponent: React.FC<UserRadioQuestion> = ({
   question,
   options,

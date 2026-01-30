@@ -6,6 +6,9 @@ import BackButton from '@/components/common/BackButton';
 import { Toaster } from '@/components/ui/Sonner';
 import { UserContextProvider } from '@/contexts/User';
 
+/**
+ * Provides the main app layout with header, back button, and user context.
+ */
 export default async function MainLayout({ children }: LayoutProps) {
   return (
     <NextIntlClientProvider>

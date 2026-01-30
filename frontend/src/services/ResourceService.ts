@@ -1,6 +1,9 @@
 import { AxiosInstance } from 'axios';
 import { SignedUrlResponse } from '@/interfaces/models/Resource';
 
+/**
+ * Fetches a signed URL for a document download.
+ */
 export const getDocsSignedUrl = async (
   api: AxiosInstance,
   filename: string
