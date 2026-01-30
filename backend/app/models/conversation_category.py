@@ -1,3 +1,5 @@
+"""Database model definitions for conversation category."""
+
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
@@ -14,6 +16,8 @@ if TYPE_CHECKING:
 
 
 class ConversationCategory(CamelModel, table=True):
+    """Database model for conversation category."""
+
     id: str = Field(primary_key=True)
     name: str = Field(unique=True)
     initial_prompt: str = Field(default='')
@@ -32,4 +36,14 @@ class ConversationCategory(CamelModel, table=True):
 def update_timestamp(
     mapper: Mapper, connection: Connection, target: 'ConversationCategory'
 ) -> None:
+    """Update the updated_at timestamp before persistence.
+
+    Parameters:
+        mapper (Mapper): SQLAlchemy mapper for the model.
+        connection (Connection): Active database connection.
+        target (Any): Model instance being updated.
+
+    Returns:
+        None: This function mutates the target instance in-place.
+    """
     target.updated_at = datetime.now(UTC)

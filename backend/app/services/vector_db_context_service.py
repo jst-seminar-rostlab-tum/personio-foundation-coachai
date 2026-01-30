@@ -1,3 +1,5 @@
+"""Service layer for vector db context service."""
+
 from functools import lru_cache
 
 from app.rag.rag import build_vector_db_retriever
@@ -15,7 +17,7 @@ def build_query_prep_feedback(
     Constructs a detailed query string based on the conversation scenario
     for preparation and feedback
 
-    Args:
+    Parameters:
         session_context (ConversationScenarioAIPromptRead): The scenario for the current session,
             including category, persona, and situational background facts
         user_audio_analysis (str, optional): Description of the tone, emotion, or delivery
@@ -53,7 +55,7 @@ def build_query_general(
     """
     Builds a query string for general purposes, i.e. usually OTHER than preparation and feedback
 
-    Args:
+    Parameters:
         other_context (list of str, optional): A list of strings describing general
             context. Not tied to a certain schema
         user_audio_analysis (str, optional):Description of the tone, emotion, or delivery
@@ -85,7 +87,7 @@ def query_vector_db(
     Retrieves relevant documents from the vector database based on the session context,
     user audio and text
 
-    Args:
+    Parameters:
         session_context (ConversationScenarioAIPromptRead or list of str, optional):
             Either a structured conversation scenario prompt object or a list of context strings
         user_audio_path (str, optional): File path to the user's audio recording for analysis
@@ -132,7 +134,7 @@ def query_vector_db_and_prompt(
     objectives etc. It includes relevant documents from the vector database
     based on the session context, user audio and text, which are fetched in the background.
 
-    Args:
+    Parameters:
         generated_object (str): The object, whose prompt we're extending (is being generated)
         session_context (ConversationScenarioAIPromptRead or list of str, optional):
             Either a structured conversation scenario object or a list of context strings
@@ -172,6 +174,16 @@ def query_vector_db_and_prompt(
 def get_hr_docs_context(
     persona: str, situational_facts: str, category: str = ''
 ) -> tuple[str, list[str], list[dict]]:
+    """Fetch HR document context for a given scenario from local cache.
+
+    Parameters:
+        persona (str): Persona description.
+        situational_facts (str): Scenario situational facts.
+        category (str): Category name.
+
+    Returns:
+        tuple[str, list[str], list[dict]]: Context string, document titles, and metadata.
+    """
     return query_vector_db_and_prompt(
         session_context=[category, persona, situational_facts],
         generated_object='output',

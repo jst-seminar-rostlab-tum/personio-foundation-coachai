@@ -1,3 +1,5 @@
+"""Service layer for google cloud storage service."""
+
 import logging
 from datetime import timedelta
 from pathlib import Path
@@ -10,9 +12,16 @@ from app.config import settings
 
 
 class GCSManager:
+    """Manage uploads and downloads to Google Cloud Storage."""
+
     GCSFolderType = Literal['docs', 'audio']
 
     def __init__(self, folder: GCSFolderType) -> None:
+        """Initialize a GCS manager scoped to a folder prefix.
+
+        Parameters:
+            folder (GCSFolderType): Folder prefix to scope operations to.
+        """
         creds_info = {
             'type': 'service_account',
             'project_id': settings.GCP_PROJECT_ID,
@@ -38,6 +47,14 @@ class GCSManager:
         self.bucket = self.client.bucket(self.bucket_name)
 
     def upload_documents(self, directory: Path | None = None) -> None:
+        """Upload documents from a local directory into GCS.
+
+        Parameters:
+            directory (Path | None): Directory to upload from, defaults to local docs dir.
+
+        Returns:
+            None: This function uploads files to GCS.
+        """
         upload_dir = Path(directory) if directory else self.local_dir
 
         if not upload_dir.exists() or not upload_dir.is_dir():
@@ -57,8 +74,15 @@ class GCSManager:
     def upload_from_fileobj(
         self, file_obj: BinaryIO, blob_name: str, content_type: str | None = None
     ) -> str:
-        """
-        Upload a file-like object to GCS.
+        """Upload a file-like object to GCS.
+
+        Parameters:
+            file_obj (BinaryIO): File-like object to upload.
+            blob_name (str): Destination blob name.
+            content_type (str | None): Optional content type to set.
+
+        Returns:
+            str: GCS URI of the uploaded object.
         """
         blob = self.bucket.blob(f'{self.prefix}{blob_name}')
 
@@ -69,6 +93,14 @@ class GCSManager:
         return f'gs://{self.bucket.name}/{blob.name}'
 
     def download_documents(self, directory: Path | None = None) -> None:
+        """Download all documents under the prefix to a local directory.
+
+        Parameters:
+            directory (Path | None): Destination directory for downloads.
+
+        Returns:
+            None: This function downloads files to disk.
+        """
         target_dir = Path(directory) if directory else self.download_dir
         target_dir.mkdir(parents=True, exist_ok=True)
 
@@ -81,6 +113,11 @@ class GCSManager:
             print(f'Downloaded {blob.name} → {local_path}')
 
     def delete_all_documents(self) -> None:
+        """Delete all documents under the current prefix.
+
+        Returns:
+            None: This function deletes blobs in the bucket.
+        """
         blobs = self.client.list_blobs(self.bucket, prefix=self.prefix)
         deleted = 0
         for blob in blobs:
@@ -92,10 +129,27 @@ class GCSManager:
         print(f'Total deleted: {deleted}')
 
     def list_documents(self) -> list[str]:
+        """List documents under the current prefix.
+
+        Returns:
+            list[str]: Blob names under the prefix.
+        """
         blobs = self.client.list_blobs(self.bucket, prefix=self.prefix)
         return [blob.name for blob in blobs if not blob.name.endswith('/')]
 
     def generate_signed_url(self, filename: str, expiration_minutes: int = 5) -> str:
+        """Generate a signed download URL for a blob.
+
+        Parameters:
+            filename (str): Blob filename relative to the prefix.
+            expiration_minutes (int): URL validity period in minutes.
+
+        Returns:
+            str: Signed URL string.
+
+        Raises:
+            FileNotFoundError: If the blob does not exist.
+        """
         blob_name = f'{self.prefix}{filename}'
         blob = self.bucket.blob(blob_name)
 
@@ -109,16 +163,26 @@ class GCSManager:
         )
 
     def document_exists(self, filename: str) -> bool:
-        """
-        Check if a document exists in the GCS bucket under the current prefix.
+        """Check if a document exists in the GCS bucket under the current prefix.
+
+        Parameters:
+            filename (str): Blob filename relative to the prefix.
+
+        Returns:
+            bool: True if the blob exists.
         """
         blob_name = f'{self.prefix}{filename}'
         blob = self.bucket.blob(blob_name)
         return blob.exists(self.client)
 
     def delete_document(self, filename: str) -> None:
-        """
-        Delete a single document (blob) from GCS under the current prefix.
+        """Delete a single document (blob) from GCS under the current prefix.
+
+        Parameters:
+            filename (str): Blob filename relative to the prefix.
+
+        Returns:
+            None: This function deletes a blob if it exists.
         """
         blob_name = f'{self.prefix}{filename}'
         blob = self.bucket.blob(blob_name)
@@ -128,8 +192,16 @@ class GCSManager:
             logging.warning(f'Blob does not exist: {blob_name}')
 
     def download_to_bytesio(self, filename: str) -> BinaryIO:
-        """
-        Download a single file to a BytesIO object.
+        """Download a single file into a BytesIO object.
+
+        Parameters:
+            filename (str): Blob filename relative to the prefix.
+
+        Returns:
+            BinaryIO: In-memory bytes buffer with the file content.
+
+        Raises:
+            FileNotFoundError: If the blob does not exist.
         """
         import io
 

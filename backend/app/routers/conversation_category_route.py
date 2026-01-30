@@ -1,3 +1,5 @@
+"""API routes for conversation category route."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -14,8 +16,13 @@ router = APIRouter(prefix='/conversation-categories', tags=['Conversation Catego
 def get_conversation_category_service(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> ConversationCategoryService:
-    """
-    Dependency factory to inject the ConversationCategoryService.
+    """Provide ConversationCategoryService via dependency injection.
+
+    Parameters:
+        db_session (DBSession): Database session dependency.
+
+    Returns:
+        ConversationCategoryService: Service instance.
     """
     return ConversationCategoryService(db_session)
 
@@ -24,7 +31,12 @@ def get_conversation_category_service(
 def get_conversation_categories(
     service: Annotated[ConversationCategoryService, Depends(get_conversation_category_service)],
 ) -> list[ConversationCategoryRead]:
-    """
-    Retrieve all conversation categories.
+    """Retrieve all conversation categories.
+
+    Parameters:
+        service (ConversationCategoryService): Service dependency.
+
+    Returns:
+        list[ConversationCategoryRead]: Conversation categories.
     """
     return service.fetch_all_conversation_categories()

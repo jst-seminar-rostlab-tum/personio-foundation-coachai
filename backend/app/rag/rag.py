@@ -1,3 +1,5 @@
+"""Retrieval-augmented generation helpers for rag."""
+
 import os
 from pathlib import Path
 from typing import Any

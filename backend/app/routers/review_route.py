@@ -1,3 +1,5 @@
+"""API routes for review route."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
@@ -18,6 +20,14 @@ router = APIRouter(prefix='/reviews', tags=['User Review'])
 
 
 def get_review_service(db: Annotated[DBSession, Depends(get_db_session)]) -> ReviewService:
+    """Provide ReviewService via dependency injection.
+
+    Parameters:
+        db (DBSession): Database session dependency.
+
+    Returns:
+        ReviewService: Service instance.
+    """
     return ReviewService(db)
 
 
@@ -32,8 +42,16 @@ def get_reviews(
     page_size: int = Query(8),
     sort: str = Query('newest'),
 ) -> list[ReviewRead] | PaginatedReviewRead:
-    """
-    Retrieve user reviews with optional pagination, statistics and sorting.
+    """Retrieve user reviews with optional pagination, statistics and sorting.
+
+    Parameters:
+        service (ReviewService): Service dependency.
+        page (int | None): Page number (1-based).
+        page_size (int): Items per page.
+        sort (str): Sorting strategy.
+
+    Returns:
+        list[ReviewRead] | PaginatedReviewRead: Review payload(s).
     """
     return service.get_reviews(page, page_size, sort)
 
@@ -44,7 +62,14 @@ def create_review(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ReviewService, Depends(get_review_service)],
 ) -> ReviewConfirm:
-    """
-    Create a new review.
+    """Create a new review.
+
+    Parameters:
+        review (ReviewCreate): Review payload.
+        user_profile (UserProfile): Authenticated user profile.
+        service (ReviewService): Service dependency.
+
+    Returns:
+        ReviewConfirm: Confirmation payload.
     """
     return service.create_review(review, user_profile)

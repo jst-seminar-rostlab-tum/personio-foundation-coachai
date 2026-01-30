@@ -1,7 +1,11 @@
+"""Enum definitions for goal."""
+
 from enum import Enum as PyEnum
 
 
 class Goal(str, PyEnum):
+    """Enum for goal."""
+
     giving_constructive_feedback = 'giving_constructive_feedback'
     managing_team_conflicts = 'managing_team_conflicts'
     performance_reviews = 'performance_reviews'

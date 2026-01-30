@@ -1,3 +1,5 @@
+"""Service layer for user export service."""
+
 from sqlmodel import Session as DBSession
 from sqlmodel import select
 
@@ -24,6 +26,15 @@ from app.schemas.user_export import (
 def _build_export_user_profile(
     user_profile: UserProfile, db_session: DBSession
 ) -> ExportUserProfile:
+    """Build an export-friendly user profile payload.
+
+    Parameters:
+        user_profile (UserProfile): Source user profile.
+        db_session (DBSession): Database session for additional context.
+
+    Returns:
+        ExportUserProfile: Export-ready user profile data.
+    """
     return ExportUserProfile(
         user_id=str(user_profile.id),
         full_name=user_profile.full_name,
@@ -50,7 +61,14 @@ def _build_export_user_profile(
 
 
 def _build_export_goals(goals: list[UserGoal]) -> list[ExportUserGoal]:
-    """Build export goals from UserGoal models."""
+    """Build export goals from UserGoal models.
+
+    Parameters:
+        goals (list[UserGoal]): User goal models.
+
+    Returns:
+        list[ExportUserGoal]: Export-ready goal payloads.
+    """
     return [
         ExportUserGoal(
             goal=str(goal.goal),
@@ -63,7 +81,14 @@ def _build_export_goals(goals: list[UserGoal]) -> list[ExportUserGoal]:
 def _build_export_confidence_scores(
     confidence_scores: list[UserConfidenceScore],
 ) -> list[ExportConfidenceScore]:
-    """Build export confidence scores from UserConfidenceScore models."""
+    """Build export confidence scores from UserConfidenceScore models.
+
+    Parameters:
+        confidence_scores (list[UserConfidenceScore]): Confidence score models.
+
+    Returns:
+        list[ExportConfidenceScore]: Export-ready confidence score payloads.
+    """
     return [
         ExportConfidenceScore(
             confidence_area=str(cs.confidence_area),
@@ -77,7 +102,14 @@ def _build_export_confidence_scores(
 def _build_export_scenarios(
     scenarios: list[ConversationScenario],
 ) -> list[ExportConversationScenario]:
-    """Build export scenarios from ConversationScenario models."""
+    """Build export scenarios from ConversationScenario models.
+
+    Parameters:
+        scenarios (list[ConversationScenario]): Scenario models.
+
+    Returns:
+        list[ExportConversationScenario]: Export-ready scenario payloads.
+    """
     try:
         return [
             ExportConversationScenario(
@@ -111,7 +143,14 @@ def _build_export_scenarios(
 def _build_export_scenario_preparations(
     scenarios: list[ConversationScenario],
 ) -> list[ExportScenarioPreparation]:
-    """Build export scenario preparations from ConversationScenario models."""
+    """Build export scenario preparations from ConversationScenario models.
+
+    Parameters:
+        scenarios (list[ConversationScenario]): Scenario models.
+
+    Returns:
+        list[ExportScenarioPreparation]: Export-ready preparation payloads.
+    """
     try:
         scenario_preparations = []
         for s in scenarios:
@@ -145,7 +184,14 @@ def _build_export_scenario_preparations(
 
 
 def _build_export_sessions(scenarios: list[ConversationScenario]) -> list[ExportSession]:
-    """Build export sessions from ConversationScenario models."""
+    """Build export sessions from ConversationScenario models.
+
+    Parameters:
+        scenarios (list[ConversationScenario]): Scenario models.
+
+    Returns:
+        list[ExportSession]: Export-ready session payloads.
+    """
     try:
         sessions = []
         for scenario in scenarios:
@@ -183,7 +229,14 @@ def _build_export_sessions(scenarios: list[ConversationScenario]) -> list[Export
 
 
 def _build_export_session_turns(sessions: list) -> list[ExportSessionTurn]:
-    """Build export session turns from Session models."""
+    """Build export session turns from Session models.
+
+    Parameters:
+        sessions (list): Session models.
+
+    Returns:
+        list[ExportSessionTurn]: Export-ready session turn payloads.
+    """
     session_turns = []
     for sess in sessions:
         for turn in sess.session_turns:
@@ -206,7 +259,14 @@ def _build_export_session_turns(sessions: list) -> list[ExportSessionTurn]:
 
 
 def _build_export_session_feedback(sessions: list) -> list[ExportSessionFeedback]:
-    """Build export session feedback from Session models."""
+    """Build export session feedback from Session models.
+
+    Parameters:
+        sessions (list): Session models.
+
+    Returns:
+        list[ExportSessionFeedback]: Export-ready feedback payloads.
+    """
     session_feedbacks = []
     for sess in sessions:
         if sess.feedback:
@@ -235,7 +295,14 @@ def _build_export_session_feedback(sessions: list) -> list[ExportSessionFeedback
 
 
 def _build_export_reviews(reviews: list[Review]) -> list[ExportReview]:
-    """Build export reviews from Review models."""
+    """Build export reviews from Review models.
+
+    Parameters:
+        reviews (list[Review]): Review models.
+
+    Returns:
+        list[ExportReview]: Export-ready review payloads.
+    """
     return [
         ExportReview(
             id=str(r.id),
@@ -249,9 +316,14 @@ def _build_export_reviews(reviews: list[Review]) -> list[ExportReview]:
 
 
 def _collect_audio_files_for_export(sessions: list) -> dict[str, list[tuple[str, str]]]:
-    """
-    Collect all audio files for the user's sessions, organized by session ID.
+    """Collect all audio files for the user's sessions, organized by session ID.
     Returns a dict mapping session_id to list of (audio_uri, filename) tuples.
+
+    Parameters:
+        sessions (list): Session models to inspect.
+
+    Returns:
+        dict[str, list[tuple[str, str]]]: Session ID to (audio_uri, filename) tuples.
     """
     gcs_manager = get_gcs_audio_manager()
     if not gcs_manager:
@@ -276,7 +348,15 @@ def _collect_audio_files_for_export(sessions: list) -> dict[str, list[tuple[str,
 
 
 def build_user_data_export(user_profile: UserProfile, db_session: DBSession) -> UserDataExport:
-    """Build complete user data export from database models."""
+    """Build complete user data export from database models.
+
+    Parameters:
+        user_profile (UserProfile): User profile model.
+        db_session (DBSession): Database session for queries.
+
+    Returns:
+        UserDataExport: Export-ready user data payload.
+    """
     user_id = user_profile.id
 
     # Fetch all related data

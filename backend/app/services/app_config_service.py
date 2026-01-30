@@ -1,3 +1,5 @@
+"""Service layer for app config service."""
+
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
@@ -12,21 +14,37 @@ from app.schemas.app_config import AppConfigCreate, AppConfigRead
 
 
 class AppConfigService:
+    """Service for managing application configuration records."""
+
     def __init__(self, db: DBsession) -> None:
+        """Initialize the service with a database session.
+
+        Parameters:
+            db (DBsession): Database session used for persistence.
+        """
         self.db = db
 
     def fetch_all_app_configs(self) -> list[AppConfigRead]:
-        """
-        Retrieve all app configurations.
+        """Retrieve all application configurations.
+
+        Returns:
+            list[AppConfigRead]: All configuration records.
         """
         statement = select(AppConfig)
         app_configs = self.db.exec(statement).all()
         return [AppConfigRead(**config.model_dump()) for config in app_configs]
 
     def create_new_app_config(self, app_config: AppConfigCreate) -> AppConfigRead:
-        """
-        Create a new app configuration.
-        Automatically assigns the type based on the value.
+        """Create a new application configuration entry.
+
+        Parameters:
+            app_config (AppConfigCreate): Configuration payload.
+
+        Returns:
+            AppConfigRead: Created configuration.
+
+        Raises:
+            HTTPException: If the key already exists or validation fails.
         """
         existing_config = self.db.get(AppConfig, app_config.key)
         if existing_config:
@@ -41,9 +59,17 @@ class AppConfigService:
         return AppConfigRead(**db_app_config.model_dump())
 
     def update_existing_app_config(self, updated_data: AppConfigCreate) -> AppConfigRead:
-        """
-        Update an existing app configuration.
+        """Update an existing application configuration entry.
         Automatically assigns the type based on the value.
+
+        Parameters:
+            updated_data (AppConfigCreate): Updated configuration payload.
+
+        Returns:
+            AppConfigRead: Updated configuration.
+
+        Raises:
+            HTTPException: If the configuration does not exist or validation fails.
         """
         key = updated_data.key
         app_config = self.db.get(AppConfig, key)
@@ -61,8 +87,16 @@ class AppConfigService:
         return AppConfigRead(**app_config.model_dump())
 
     def patch_app_configs(self, updated_data: list[AppConfigCreate]) -> list[AppConfigRead]:
-        """
-        Partially update existing app configurations.
+        """Partially update existing app configurations.
+
+        Parameters:
+            updated_data (list[AppConfigCreate]): List of updates.
+
+        Returns:
+            list[AppConfigRead]: Updated configurations.
+
+        Raises:
+            HTTPException: If keys are missing or records are not found.
         """
         updated_configs = []
 
@@ -94,8 +128,16 @@ class AppConfigService:
         return [AppConfigRead(**config.model_dump()) for config in updated_configs]
 
     def delete_app_config_by_key(self, key: str) -> dict:
-        """
-        Delete an app configuration by its key.
+        """Delete an application configuration by key.
+
+        Parameters:
+            key (str): Configuration key to delete.
+
+        Returns:
+            dict: Deletion confirmation message.
+
+        Raises:
+            HTTPException: If the configuration is not found.
         """
         app_config = self.db.get(AppConfig, key)
         if not app_config:
@@ -106,9 +148,14 @@ class AppConfigService:
         return {'message': 'AppConfig deleted successfully'}
 
     def _validate_config_value(self, value: str, config_type: ConfigType) -> None:
-        """
-        Validate if the value can be typecasted to the specified ConfigType.
-        Raises a 422 error if the typecast fails.
+        """Validate if the value can be typecasted to the specified ConfigType.
+
+        Parameters:
+            value (str): Raw configuration value.
+            config_type (ConfigType): Declared configuration type.
+
+        Raises:
+            HTTPException: If the value cannot be cast to the configured type.
         """
         try:
             if config_type == ConfigType.int:
@@ -127,10 +174,26 @@ class AppConfigService:
             ) from None
 
     def get_value(self, key: str) -> str | None:
+        """Fetch a configuration value by key.
+
+        Parameters:
+            key (str): Configuration key.
+
+        Returns:
+            str | None: Stored configuration value, if present.
+        """
         statement = select(AppConfig.value).where(AppConfig.key == key)
         return self.db.scalar(statement)
 
     def get_default_daily_session_limit(self) -> int:
+        """Return the default daily session limit for users.
+
+        Returns:
+            int: Daily session limit, or 0 when unset.
+
+        Raises:
+            HTTPException: If the stored value cannot be cast to int.
+        """
         value = self.get_value('defaultDailyUserSessionLimit')
 
         if value is None:
@@ -147,4 +210,12 @@ class AppConfigService:
 def get_app_config_service(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> AppConfigService:
+    """Provide an AppConfigService instance for dependency injection.
+
+    Parameters:
+        db_session (DBSession): Database session dependency.
+
+    Returns:
+        AppConfigService: Configured service instance.
+    """
     return AppConfigService(db_session)

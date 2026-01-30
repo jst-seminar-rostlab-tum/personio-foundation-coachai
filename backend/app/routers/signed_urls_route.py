@@ -1,3 +1,5 @@
+"""API routes for signed urls route."""
+
 import logging
 from http import HTTPStatus
 
@@ -22,6 +24,17 @@ router = APIRouter(
 def get_docs_signed_url(
     filename: str = Query(..., min_length=1, description='Name of the document file'),
 ) -> dict:
+    """Generate a signed URL for a document file.
+
+    Parameters:
+        filename (str): Document filename.
+
+    Returns:
+        dict: Signed URL payload.
+
+    Raises:
+        HTTPException: If the file is missing or URL generation fails.
+    """
     bucket_name = None
     prefix = None
     try:
@@ -54,6 +67,17 @@ def get_docs_signed_url(
 def get_audio_signed_url(
     filename: str = Query(..., min_length=1, description='Name of the audio file'),
 ) -> dict:
+    """Generate a signed URL for an audio file.
+
+    Parameters:
+        filename (str): Audio filename.
+
+    Returns:
+        dict: Signed URL payload.
+
+    Raises:
+        HTTPException: If the file is missing or URL generation fails.
+    """
     bucket_name = None
     prefix = None
     try:

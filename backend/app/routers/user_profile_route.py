@@ -1,3 +1,5 @@
+"""API routes for user profile route."""
+
 import io
 import json
 import zipfile
@@ -32,6 +34,14 @@ router = APIRouter(prefix='/user-profiles', tags=['User Profiles'])
 
 
 def get_user_service(db: Annotated[DBSession, Depends(get_db_session)]) -> UserService:
+    """Provide UserService via dependency injection.
+
+    Parameters:
+        db (DBSession): Database session dependency.
+
+    Returns:
+        UserService: Service instance.
+    """
     return UserService(db)
 
 
@@ -54,8 +64,19 @@ def get_user_profiles(
     email_sorting_option: SortOption | None = None,
     session_limit_sorting_option: SortOption | None = None,
 ) -> UserListPaginatedRead:
-    """
-    Retrieve all user profiles.
+    """Return paginated user profiles with filters.
+
+    Parameters:
+        service (UserService): Service dependency.
+        page (int): Page number (1-based).
+        limit (int): Items per page.
+        email_substring (str | None): Email substring filter.
+        session_limit_type (list[SessionLimitType] | None): Session limit type filter.
+        email_sorting_option (SortOption | None): Email sorting option.
+        session_limit_sorting_option (SortOption | None): Session limit sorting option.
+
+    Returns:
+        UserListPaginatedRead: Paginated user list payload.
     """
     return service.get_user_profiles(
         page=page,
@@ -76,12 +97,17 @@ def get_user_profile(
     service: Annotated[UserService, Depends(get_user_service)],
     detailed: bool = Query(False, description='Return extended profile details'),
 ) -> Union[UserProfileRead, UserProfileExtendedRead]:
-    """
-    Retrieve a single user profile.
-
+    """Return the authenticated user's profile.
     - If `detailed` is False (default), returns simplified profiles.
-
     - If `detailed` is True, returns extended profiles including goals and confidence scores.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        service (UserService): Service dependency.
+        detailed (bool): Whether to return extended profile details.
+
+    Returns:
+        UserProfileRead | UserProfileExtendedRead: Profile payload.
     """
     return service.get_user_profile_by_id(user_id=user_profile.id, detailed=detailed)
 
@@ -91,6 +117,15 @@ def get_user_stats(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserStatistics:
+    """Return statistics for the authenticated user.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        service (UserService): Service dependency.
+
+    Returns:
+        UserStatistics: User statistics payload.
+    """
     return service.get_user_statistics(user_id=user_profile.id)
 
 
@@ -100,6 +135,16 @@ def replace_user_profile(
     data: UserProfileReplace,
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserProfileExtendedRead:
+    """Replace the authenticated user's profile fields.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        data (UserProfileReplace): Replacement payload.
+        service (UserService): Service dependency.
+
+    Returns:
+        UserProfileExtendedRead: Updated profile payload.
+    """
     return service.replace_user_profile(
         user=user_profile,
         data=data,
@@ -112,6 +157,16 @@ def update_user_profile(
     data: UserProfileUpdate,
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserProfileExtendedRead:
+    """Update the authenticated user's profile fields.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        data (UserProfileUpdate): Update payload.
+        service (UserService): Service dependency.
+
+    Returns:
+        UserProfileExtendedRead: Updated profile payload.
+    """
     return service.update_user_profile(
         user=user_profile,
         data=data,
@@ -124,9 +179,16 @@ def delete_user_profile(
     service: Annotated[UserService, Depends(get_user_service)],
     delete_user_id: UUID | None = None,
 ) -> dict:
-    """
-    Delete a user profile by its unique user ID.
+    """Delete a user profile by its unique user ID.
     Cascades the deletion to related goals and confidence scores.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        service (UserService): Service dependency.
+        delete_user_id (UUID | None): Target user ID for admins.
+
+    Returns:
+        dict: Deletion summary.
     """
     return service.delete_user_profile(
         user_profile=user_profile,
@@ -139,8 +201,14 @@ def export_user_data(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> StreamingResponse:
-    """
-    Export all user-related data (history) for the currently authenticated user as a zip file.
+    """Export all user-related data (history) for the currently authenticated user as a zip file.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        db_session (DBSession): Database session dependency.
+
+    Returns:
+        StreamingResponse: Zip archive stream with export data.
     """
 
     # Build the export data
@@ -203,6 +271,16 @@ def update_daily_session_limit(
     data: UserDailySessionLimitUpdate,
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserProfileRead:
+    """Update a user's daily session limit.
+
+    Parameters:
+        user_id (UUID): User identifier.
+        data (UserDailySessionLimitUpdate): Daily limit payload.
+        service (UserService): Service dependency.
+
+    Returns:
+        UserProfileRead: Updated user profile payload.
+    """
     return service.update_daily_session_limit(
         user_id=user_id, daily_session_limit=data.daily_session_limit
     )
@@ -213,4 +291,13 @@ def get_user_profile_by_id(
     user_id: UUID,
     service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserProfileRead:
+    """Return a user profile by ID (admin only).
+
+    Parameters:
+        user_id (UUID): User identifier.
+        service (UserService): Service dependency.
+
+    Returns:
+        UserProfileRead: User profile payload.
+    """
     return service.get_user_profile_by_id(user_id=user_id, detailed=False)

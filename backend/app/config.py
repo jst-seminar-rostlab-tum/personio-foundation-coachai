@@ -1,3 +1,5 @@
+"""Application configuration and settings."""
+
 from pathlib import Path
 from typing import Literal
 from uuid import UUID
@@ -8,6 +10,53 @@ from app.interfaces import MockUser, MockUserIdsEnum
 
 
 class Settings(BaseSettings):
+    """Application settings loaded from environment variables.
+
+    Parameters:
+        stage (Literal['dev', 'prod']): Deployment stage identifier.
+        postgres_host (str): Postgres hostname.
+        postgres_user (str): Postgres username.
+        postgres_password (str): Postgres password.
+        postgres_db (str): Postgres database name.
+        postgres_port (str): Postgres port.
+        database_url (str | None): Optional full database URL override.
+        LOG_LEVEL (str): Logging level for the application.
+        SUPABASE_URL (str): Supabase API URL.
+        SUPABASE_ANON_KEY (str): Supabase anon key.
+        SUPABASE_SERVICE_ROLE_KEY (str): Supabase service role key.
+        SUPABASE_JWT_SECRET (str): Supabase JWT secret.
+        GEMINI_API_KEY (str): Gemini API key.
+        OPENAI_API_KEY (str): OpenAI API key.
+        CORS_ORIGIN (str): Allowed CORS origin.
+        ssl_cert_url (str): URL to fetch SSL certificate.
+        ssl_cert_dir (str): Directory to store SSL certs.
+        ssl_cert_name (str): SSL certificate filename.
+        TWILIO_ACCOUNT_SID (str): Twilio account SID.
+        TWILIO_AUTH_TOKEN (str): Twilio auth token.
+        TWILIO_VERIFY_SERVICE_SID (str): Twilio verify service SID.
+        ENABLE_AI (bool): Toggle AI features.
+        FORCE_CHEAP_MODEL (bool): Prefer cheaper LLM model when enabled.
+        DEFAULT_CHEAP_MODEL (str): Default low-cost LLM model.
+        DEFAULT_MODEL (str): Default primary LLM model.
+        DEV_MODE_SKIP_AUTH (bool): Skip auth in development mode.
+        DEV_MODE_MOCK_ADMIN_ID (UUID): Mock admin user ID for dev.
+        STORE_PROMPTS (bool): Persist prompts for debugging or audits.
+        DEMO_USER_EMAIL (str): Demo user email.
+        DEMO_USER_PASSWORD (str): Demo user password.
+        DEMO_ADMIN_EMAIL (str): Demo admin email.
+        DEMO_ADMIN_PASSWORD (str): Demo admin password.
+        GCP_PRIVATE_KEY_ID (str): GCP private key ID.
+        GCP_PRIVATE_KEY (str): GCP private key.
+        GCP_CLIENT_EMAIL (str): GCP client email.
+        GCP_CLIENT_ID (str): GCP client ID.
+        GCP_BUCKET (str): GCS bucket name.
+        GCP_PROJECT_ID (str): GCP project ID.
+        VERTEXAI_PROJECT_ID (str): Vertex AI project ID.
+        VERTEXAI_LOCATION (str): Vertex AI region.
+        VERTEXAI_MAX_TOKENS (int): Max tokens for Vertex AI.
+        SENTRY_DSN (str | None): Sentry DSN for error reporting.
+    """
+
     stage: Literal['dev', 'prod'] = 'dev'
     postgres_host: str = 'localhost'
     postgres_user: str = 'postgres'
@@ -79,6 +128,11 @@ class Settings(BaseSettings):
 
     @property
     def mock_user_data(self) -> MockUser:
+        """Build mock demo user credentials.
+
+        Returns:
+            MockUser: Mock user account information.
+        """
         return MockUser(
             email=self.DEMO_USER_EMAIL,
             password=self.DEMO_USER_PASSWORD,
@@ -88,6 +142,11 @@ class Settings(BaseSettings):
 
     @property
     def mock_admin_data(self) -> MockUser:
+        """Build mock demo admin credentials.
+
+        Returns:
+            MockUser: Mock admin account information.
+        """
         return MockUser(
             email=self.DEMO_ADMIN_EMAIL,
             password=self.DEMO_ADMIN_PASSWORD,

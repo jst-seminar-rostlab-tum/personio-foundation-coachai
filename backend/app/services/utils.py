@@ -1,3 +1,5 @@
+"""Service layer for utils."""
+
 import unicodedata
 
 
@@ -17,6 +19,11 @@ def strip_markdown_code_block(s: str) -> str:
     """
     Remove markdown code block (```json ... ``` or ``` ... ```) from LLM output, if present.
     Returns the inner JSON string.
+    Parameters:
+        s (str): Input string that may contain code fences.
+
+    Returns:
+        str: Inner content without fences when present.
     """
     import re
 
@@ -32,6 +39,11 @@ def strip_markdown_code_block(s: str) -> str:
 def auto_strip_markdown_code_block(s: str) -> str:
     """
     Only strip markdown code block if s starts with ``` or ```json, otherwise return as is.
+    Parameters:
+        s (str): Input string to inspect.
+
+    Returns:
+        str: Stripped content or original string.
     """
     if not s:
         return s

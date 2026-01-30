@@ -1,3 +1,5 @@
+"""External service clients for vertexai client."""
+
 from typing import Any, TypeVar
 
 from google import genai
@@ -66,6 +68,15 @@ else:
 
 
 def generate_content_vertexai(contents: list[Any], model: str = DEFAULT_CHEAP_MODEL) -> str:
+    """Generate text content using Gemini on Vertex AI.
+
+    Parameters:
+        contents (list[Any]): Inputs for the model.
+        model (str): Model name to use.
+
+    Returns:
+        str: Generated response text, or an empty string on failure.
+    """
     if not ENABLE_AI or vertexai_client is None:
         print('Cannot upload files to Gemini on VertexAI, AI is disabled')
         return ''
@@ -81,6 +92,14 @@ def generate_content_vertexai(contents: list[Any], model: str = DEFAULT_CHEAP_MO
 
 
 def upload_audio_vertexai(audio_uri: str) -> Part | None:
+    """Create a Vertex AI Part from an audio URI.
+
+    Parameters:
+        audio_uri (str): GCS URI to the audio file.
+
+    Returns:
+        Part | None: Part for the audio file, or None on failure.
+    """
     if not ENABLE_AI or vertexai_client is None:
         print('Cannot upload files to Gemini on VertexAI, AI is disabled')
         return None
@@ -103,6 +122,19 @@ def call_llm_with_audio(
     max_tokens: int = VERTEXAI_MAX_TOKENS,
     temperature: float = 1.0,
 ) -> str:
+    """Call Gemini on Vertex AI with text and audio input.
+
+    Parameters:
+        request_prompt (str): User prompt content.
+        audio_uri (str): Audio URI or object key.
+        system_prompt (str | None): Optional system prompt.
+        model (str): Model name to use.
+        max_tokens (int): Maximum output tokens.
+        temperature (float): Sampling temperature.
+
+    Returns:
+        str: Generated response text, or an empty string on failure.
+    """
     if not ENABLE_AI or vertexai_client is None:
         return ''
     try:
@@ -140,6 +172,24 @@ def call_structured_llm(
     audio_uri: str | None = None,
     mock_response: T | None = None,
 ) -> T:
+    """Call Gemini on Vertex AI and parse a structured response.
+
+    Parameters:
+        request_prompt (str): User prompt content.
+        output_model (type[T]): Pydantic model for structured parsing.
+        system_prompt (str | None): Optional system prompt.
+        model (str): Model name to use.
+        temperature (float): Sampling temperature.
+        max_tokens (int): Maximum output tokens.
+        audio_uri (str | None): Optional audio input reference.
+        mock_response (T | None): Fallback response when AI is disabled.
+
+    Returns:
+        T: Parsed structured response.
+
+    Raises:
+        ValueError: If AI is disabled without a mock response or parsing fails.
+    """
     if not ENABLE_AI or vertexai_client is None:
         if not mock_response:
             raise ValueError('AI is disabled and no mock response provided')

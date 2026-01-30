@@ -1,3 +1,5 @@
+"""Pydantic schema definitions for session feedback."""
+
 from sqlmodel import JSON, Column, Field
 
 from app.enums.language import LanguageCode
@@ -6,6 +8,8 @@ from app.schemas.session_turn import SessionTurnRead
 
 
 class FeedbackCreate(CamelModel):
+    """Schema for feedback create."""
+
     transcript: str | None  # Full transcript of the session
     objectives: list[str] = Field(
         ..., description='List of training objectives the user is expected to achieve'
@@ -22,12 +26,16 @@ class FeedbackCreate(CamelModel):
 
 
 class PositiveExample(CamelModel):
+    """Schema for positive example."""
+
     heading: str = Field(..., description='Title or summary of the positive example')
     feedback: str = Field(..., description='Explanation of why this is a good example')
     quote: str = Field(..., description='Direct quote from the transcript')
 
 
 class NegativeExample(CamelModel):
+    """Schema for negative example."""
+
     heading: str = Field(..., description='Title or summary of the negative example')
     feedback: str = Field(..., description='Description or context of the example')
     quote: str = Field(..., description='Problematic or unhelpful quote mentioned by the user')
@@ -35,6 +43,8 @@ class NegativeExample(CamelModel):
 
 
 class SessionExamplesRead(CamelModel):
+    """Schema for session examples read."""
+
     positive_examples: list[PositiveExample] = Field(..., description='List of positive examples')
     negative_examples: list[NegativeExample] = Field(..., description='List of negative examples')
 
@@ -60,11 +70,15 @@ class GoalsAchievedRead(CamelModel):
 
 
 class Recommendation(CamelModel):
+    """Schema for recommendation."""
+
     heading: str = Field(..., description='Title or summary of the recommendation')
     recommendation: str = Field(..., description='Description or elaboration of the recommendation')
 
 
 class RecommendationsRead(CamelModel):
+    """Schema for recommendations read."""
+
     recommendations: list[Recommendation] = Field(
         ..., description='List of improvement recommendations'
     )
@@ -72,6 +86,8 @@ class RecommendationsRead(CamelModel):
 
 # Schema for reading a session's feedback metrics
 class SessionFeedbackRead(CamelModel):
+    """Schema for session feedback read."""
+
     scores: dict = Field(default_factory=dict, sa_column=Column(JSON))
     tone_analysis: dict = Field(default_factory=dict, sa_column=Column(JSON))
     overall_score: float

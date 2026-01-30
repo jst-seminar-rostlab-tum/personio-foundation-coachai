@@ -1,3 +1,5 @@
+"""API routes for admin dashboard stats route."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -14,6 +16,14 @@ router = APIRouter(prefix='/admin-stats', tags=['Admin Dashboard'])
 def get_admin_dashboard_service(
     db: Annotated[DBSession, Depends(get_db_session)],
 ) -> AdminDashboardService:
+    """Provide AdminDashboardService via dependency injection.
+
+    Parameters:
+        db (DBSession): Database session dependency.
+
+    Returns:
+        AdminDashboardService: Service instance.
+    """
     return AdminDashboardService(db)
 
 
@@ -25,4 +35,12 @@ def get_admin_dashboard_service(
 def get_admin_dashboard_stats(
     service: Annotated[AdminDashboardService, Depends(get_admin_dashboard_service)],
 ) -> AdminDashboardStatsRead:
+    """Return admin dashboard statistics.
+
+    Parameters:
+        service (AdminDashboardService): Service dependency.
+
+    Returns:
+        AdminDashboardStatsRead: Dashboard stats payload.
+    """
     return service.get_admin_dashboard_stats()

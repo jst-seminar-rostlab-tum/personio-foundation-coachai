@@ -1,3 +1,5 @@
+"""Database model definitions for user profile."""
+
 from datetime import UTC, date, datetime
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
@@ -22,6 +24,8 @@ if TYPE_CHECKING:
 
 
 class UserProfile(CamelModel, table=True):  # `table=True` makes it a database table
+    """Database model for user profile."""
+
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     full_name: str = Field(max_length=100)
     email: str = Field(max_length=100, unique=True)
@@ -66,4 +70,14 @@ class UserProfile(CamelModel, table=True):  # `table=True` makes it a database t
 
 @event.listens_for(UserProfile, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserProfile') -> None:
+    """Update the updated_at timestamp before persistence.
+
+    Parameters:
+        mapper (Mapper): SQLAlchemy mapper for the model.
+        connection (Connection): Active database connection.
+        target (Any): Model instance being updated.
+
+    Returns:
+        None: This function mutates the target instance in-place.
+    """
     target.updated_at = datetime.now(UTC)

@@ -1,3 +1,5 @@
+"""Service layer for session service."""
+
 from datetime import UTC, datetime
 from math import ceil
 from uuid import UUID
@@ -29,13 +31,32 @@ from app.services.session_turn_service import SessionTurnService
 
 
 class SessionService:
+    """Service for session lifecycle management and retrieval."""
+
     def __init__(self, db: DBSession) -> None:
+        """Initialize the service with a database session.
+
+        Parameters:
+            db (DBSession): Database session used for queries and mutations.
+        """
         self.db = db
         self.gcs_audio_manager = get_gcs_audio_manager()
 
     def fetch_session_details(
         self, session_id: UUID, user_profile: UserProfile
     ) -> SessionDetailsRead:
+        """Fetch session details with feedback and goals.
+
+        Parameters:
+            session_id (UUID): Session identifier.
+            user_profile (UserProfile): Requesting user profile.
+
+        Returns:
+            SessionDetailsRead: Detailed session payload.
+
+        Raises:
+            HTTPException: If access is denied or records are missing.
+        """
         session = self._get_session(session_id)
         scenario = self._get_conversation_scenario(session.scenario_id)
         self._authorize_access(scenario, user_profile, session.allow_admin_access)
@@ -73,6 +94,20 @@ class SessionService:
         page_size: int,
         scenario_id: UUID | None = None,
     ) -> PaginatedSessionRead:
+        """Fetch paginated sessions for a user or scenario.
+
+        Parameters:
+            user_profile (UserProfile): Requesting user profile.
+            page (int): Page number (1-based).
+            page_size (int): Items per page.
+            scenario_id (UUID | None): Optional scenario filter.
+
+        Returns:
+            PaginatedSessionRead: Paginated session list.
+
+        Raises:
+            HTTPException: If scenario access is invalid.
+        """
         if scenario_id:
             scenario = self._validate_scenario_access(scenario_id, user_profile)
             scenario_ids = [scenario.id]
@@ -104,6 +139,18 @@ class SessionService:
     def create_new_session(
         self, session_data: SessionCreate, user_profile: UserProfile
     ) -> SessionRead:
+        """Create a new session for a conversation scenario.
+
+        Parameters:
+            session_data (SessionCreate): Session creation payload.
+            user_profile (UserProfile): Requesting user profile.
+
+        Returns:
+            SessionRead: Created session payload.
+
+        Raises:
+            HTTPException: If scenario is missing or unauthorized.
+        """
         conversation_scenario = self.db.get(ConversationScenario, session_data.scenario_id)
         if not conversation_scenario:
             raise HTTPException(status_code=404, detail='Conversation scenario not found')
@@ -131,6 +178,20 @@ class SessionService:
         user_profile: UserProfile,
         background_tasks: BackgroundTasks,
     ) -> SessionRead:
+        """Update a session and trigger feedback generation on completion.
+
+        Parameters:
+            session_id (UUID): Session identifier.
+            updated_data (SessionUpdate): Session update payload.
+            user_profile (UserProfile): Requesting user profile.
+            background_tasks (BackgroundTasks): Background task manager.
+
+        Returns:
+            SessionRead: Updated session payload.
+
+        Raises:
+            HTTPException: If session is missing or invalid to update.
+        """
         session = self.db.get(Session, session_id)
         if not session:
             raise HTTPException(status_code=404, detail='Session not found')
@@ -168,6 +229,14 @@ class SessionService:
         return SessionRead(**session.model_dump())
 
     def delete_all_user_sessions(self, user_profile: UserProfile) -> dict:
+        """Delete all sessions and related audio for a user.
+
+        Parameters:
+            user_profile (UserProfile): Requesting user profile.
+
+        Returns:
+            dict: Deletion summary and deleted audio list.
+        """
         user_id = user_profile.id
         statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
         conversation_scenarios = self.db.exec(statement).all()
@@ -205,6 +274,18 @@ class SessionService:
         }
 
     def delete_session_by_id(self, session_id: UUID, user_profile: UserProfile) -> dict:
+        """Delete a single session and related audio.
+
+        Parameters:
+            session_id (UUID): Session identifier.
+            user_profile (UserProfile): Requesting user profile.
+
+        Returns:
+            dict: Deletion summary and deleted audio list.
+
+        Raises:
+            HTTPException: If session is missing or unauthorized.
+        """
         session = self.db.exec(select(Session).where(Session.id == session_id)).first()
         if not session:
             raise HTTPException(status_code=404, detail='Session not found')
@@ -239,6 +320,17 @@ class SessionService:
         }
 
     def delete_full_audio_from_session_feedback(self, session_id: UUID) -> str | None:
+        """Delete stitched session audio referenced by feedback.
+
+        Parameters:
+            session_id (UUID): Session identifier.
+
+        Returns:
+            str | None: Deleted audio filename if present.
+
+        Raises:
+            HTTPException: If audio deletion fails.
+        """
         feedback = self.db.exec(
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
         ).first()
@@ -267,9 +359,16 @@ class SessionService:
         updated_status: SessionStatus | None,
         feedback: SessionFeedback | None,
     ) -> bool:
-        """
-        Helper function to check if the session is transitioning to 'completed' status
+        """Helper function to check if the session is transitioning to 'completed' status
         and has no feedback associated with it.
+
+        Parameters:
+            previous_status (SessionStatus): Previous session status.
+            updated_status (SessionStatus | None): New session status.
+            feedback (SessionFeedback | None): Existing feedback record.
+
+        Returns:
+            bool: True if the session should trigger completion handling.
         """
         return (
             previous_status != SessionStatus.completed
@@ -284,9 +383,20 @@ class SessionService:
         user_profile: UserProfile,
         background_tasks: BackgroundTasks,
     ) -> None:
-        """
-        Handle the logic for completing a session, including generating feedback,
+        """Handle the logic for completing a session, including generating feedback,
         updating user statistics, and admin dashboard stats.
+
+        Parameters:
+            session (Session): Session being completed.
+            conversation_scenario (ConversationScenario): Scenario context.
+            user_profile (UserProfile): Requesting user profile.
+            background_tasks (BackgroundTasks): Background task manager.
+
+        Returns:
+            None: This function mutates session/user state and schedules work.
+
+        Raises:
+            HTTPException: If preparation is missing or incomplete.
         """
         session.ended_at = datetime.now(UTC)
 
@@ -347,8 +457,19 @@ class SessionService:
         transcripts: str | None,
         category: ConversationCategory | None,
     ) -> None:
-        """
-        Update user statistics, schedule feedback generation, and update admin dashboard stats.
+        """Update user statistics, schedule feedback generation, and update admin dashboard stats.
+
+        Parameters:
+            session (Session): Session being completed.
+            user_profile (UserProfile): User profile to update.
+            background_tasks (BackgroundTasks): Background task manager.
+            conversation_scenario (ConversationScenario): Scenario context.
+            preparation (ScenarioPreparation): Preparation record.
+            transcripts (str | None): Session transcript text.
+            category (ConversationCategory | None): Scenario category.
+
+        Returns:
+            None: This function mutates persisted records.
         """
         # Prepare key concepts string
         key_concepts = preparation.key_concepts
@@ -404,12 +525,34 @@ class SessionService:
         stats.total_trainings = (stats.total_trainings or 0) + 1
 
     def _get_session(self, session_id: UUID) -> Session:
+        """Load a session by ID.
+
+        Parameters:
+            session_id (UUID): Session identifier.
+
+        Returns:
+            Session: Loaded session.
+
+        Raises:
+            HTTPException: If the session is not found.
+        """
         session = self.db.get(Session, session_id)
         if not session:
             raise HTTPException(status_code=404, detail='No session found with the given ID')
         return session
 
     def _get_conversation_scenario(self, scenario_id: UUID) -> ConversationScenario:
+        """Load a conversation scenario by ID.
+
+        Parameters:
+            scenario_id (UUID): Scenario identifier.
+
+        Returns:
+            ConversationScenario: Loaded scenario.
+
+        Raises:
+            HTTPException: If the scenario is not found.
+        """
         scenario = self.db.get(ConversationScenario, scenario_id)
         if not scenario:
             raise HTTPException(
@@ -420,6 +563,16 @@ class SessionService:
     def _authorize_access(
         self, scenario: ConversationScenario, user_profile: UserProfile, allow_admin_access: bool
     ) -> None:
+        """Authorize session access for the requesting user.
+
+        Parameters:
+            scenario (ConversationScenario): Scenario being accessed.
+            user_profile (UserProfile): Requesting user profile.
+            allow_admin_access (bool): Whether admins may access the session.
+
+        Raises:
+            HTTPException: If access is denied.
+        """
         if scenario.user_id != user_profile.id and user_profile.account_role != AccountRole.admin:
             raise HTTPException(
                 status_code=403, detail='You do not have permission to access this session'
@@ -435,6 +588,14 @@ class SessionService:
             )
 
     def _get_training_title(self, scenario: ConversationScenario) -> str:
+        """Resolve a session title from scenario data.
+
+        Parameters:
+            scenario (ConversationScenario): Scenario context.
+
+        Returns:
+            str: Title derived from category or custom label.
+        """
         if scenario.category:
             return scenario.category.name
         if scenario.custom_category_label:
@@ -444,6 +605,18 @@ class SessionService:
     def _get_session_feedback(
         self, session_id: UUID, user_profile: UserProfile
     ) -> SessionFeedbackRead | None:
+        """Fetch session feedback and signed audio URL if available.
+
+        Parameters:
+            session_id (UUID): Session identifier.
+            user_profile (UserProfile): Requesting user profile.
+
+        Returns:
+            SessionFeedbackRead | None: Feedback payload.
+
+        Raises:
+            HTTPException: If feedback is pending or failed.
+        """
         feedback = self.db.exec(
             select(SessionFeedback).where(SessionFeedback.session_id == session_id)
         ).first()
@@ -490,12 +663,28 @@ class SessionService:
         )
 
     def _get_user_scenario_ids(self, user_id: UUID) -> list[UUID]:
+        """Fetch scenario IDs for a user.
+
+        Parameters:
+            user_id (UUID): User identifier.
+
+        Returns:
+            list[UUID]: Scenario IDs for the user.
+        """
         result = self.db.exec(
             select(ConversationScenario.id).where(ConversationScenario.user_id == user_id)
         ).all()
         return list(result)
 
     def _count_sessions(self, scenario_ids: list[UUID]) -> int:
+        """Count sessions for the given scenario IDs.
+
+        Parameters:
+            scenario_ids (list[UUID]): Scenario identifiers.
+
+        Returns:
+            int: Number of sessions.
+        """
         return self.db.exec(
             select(func.count()).where(col(Session.scenario_id).in_(scenario_ids))
         ).one()
@@ -503,6 +692,16 @@ class SessionService:
     def _get_sessions_paginated(
         self, scenario_ids: list[UUID], page: int, page_size: int
     ) -> list[Session]:
+        """Fetch a page of sessions for scenario IDs.
+
+        Parameters:
+            scenario_ids (list[UUID]): Scenario identifiers.
+            page (int): Page number (1-based).
+            page_size (int): Items per page.
+
+        Returns:
+            list[Session]: Session records.
+        """
         sessions = self.db.exec(
             select(Session)
             .where(col(Session.scenario_id).in_(scenario_ids))
@@ -513,6 +712,17 @@ class SessionService:
         return list(sessions)
 
     def _build_session_item(self, sess: Session) -> SessionItem:
+        """Build a SessionItem DTO from a session record.
+
+        Parameters:
+            sess (Session): Session record.
+
+        Returns:
+            SessionItem: Session summary payload.
+
+        Raises:
+            HTTPException: If the scenario is missing.
+        """
         scenario = self.db.exec(
             select(ConversationScenario).where(ConversationScenario.id == sess.scenario_id)
         ).first()

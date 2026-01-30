@@ -1,3 +1,5 @@
+"""External service clients for openai client."""
+
 from __future__ import annotations
 
 import os
@@ -21,6 +23,14 @@ DEFAULT_CHEAP_MODEL = 'gpt-4o-mini'
 
 # Check for API key and handle edge cases
 def _is_valid_api_key(key: str | None) -> bool:
+    """Validate that the OpenAI API key is present and non-empty.
+
+    Parameters:
+        key (str | None): Candidate API key value.
+
+    Returns:
+        bool: True if the key is a non-empty string.
+    """
     return bool(key and isinstance(key, str) and key.strip())
 
 
@@ -37,11 +47,13 @@ else:
 
 
 def get_client() -> OpenAI:
-    """
-    Returns the OpenAI client instance.
+    """Return the configured OpenAI client instance.
 
-    returns:
-    - OpenAI client instance
+    Returns:
+        OpenAI: Configured OpenAI client.
+
+    Raises:
+        RuntimeError: If the client is not available or AI is disabled.
     """
     if not ENABLE_AI or client is None:
         raise RuntimeError(
@@ -64,8 +76,23 @@ def call_structured_llm(
     mock_response: T | None = None,
     audio_uri: str | None = None,
 ) -> T:
-    """
-    Call the LLM with a structured output request and parse the response.
+    """Call the LLM with a structured output request and parse the response.
+
+    Parameters:
+        request_prompt (str): User prompt content.
+        model (str): Model name to use.
+        output_model (type[T]): Pydantic model for structured parsing.
+        temperature (float): Sampling temperature.
+        max_tokens (int): Maximum output tokens.
+        system_prompt (str | None): Optional system prompt.
+        mock_response (T | None): Fallback response when AI is disabled.
+        audio_uri (str | None): Optional audio input reference.
+
+    Returns:
+        T: Parsed structured response.
+
+    Raises:
+        ValueError: If AI is disabled without a mock response or parsing fails.
     """
     if not ENABLE_AI or client is None:
         if not mock_response:

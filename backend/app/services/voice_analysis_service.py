@@ -1,3 +1,5 @@
+"""Service layer for voice analysis service."""
+
 from app.connections.vertexai_client import call_llm_with_audio
 
 prompt = (
@@ -13,7 +15,7 @@ def analyze_voice(audio_uri: str) -> str:
     Analyzes the tone and speaking manner of a speaker from an audio uri using Gemini via Vertex AI.
     The analysis focuses on vocal delivery rather than content.
 
-    Args:
+    Parameters:
         audio_uri (str): The file uri.
 
     Returns:

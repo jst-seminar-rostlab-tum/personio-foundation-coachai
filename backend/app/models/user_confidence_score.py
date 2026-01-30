@@ -1,3 +1,5 @@
+"""Database model definitions for user confidence score."""
+
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
@@ -15,6 +17,16 @@ if TYPE_CHECKING:
 
 
 class UserConfidenceScore(CamelModel, table=True):
+    """Database model for user confidence score.
+
+    Parameters:
+        confidence_area (ConfidenceArea): Field value.
+        user_id (UUID): Field value.
+        score (int): Field value.
+        updated_at (datetime): Field value.
+        user (Optional['UserProfile']): Field value.
+    """
+
     confidence_area: ConfidenceArea = Field(
         default=ConfidenceArea.giving_difficult_feedback, primary_key=True
     )
@@ -27,4 +39,14 @@ class UserConfidenceScore(CamelModel, table=True):
 
 @event.listens_for(UserConfidenceScore, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'UserConfidenceScore') -> None:
+    """Update the updated_at timestamp before persistence.
+
+    Parameters:
+        mapper (Mapper): SQLAlchemy mapper for the model.
+        connection (Connection): Active database connection.
+        target (Any): Model instance being updated.
+
+    Returns:
+        None: This function mutates the target instance in-place.
+    """
     target.updated_at = datetime.now(UTC)
