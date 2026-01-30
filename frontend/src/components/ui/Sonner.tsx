@@ -2,6 +2,9 @@
 
 import { Toaster as Sonner, ToasterProps } from 'sonner';
 
+/**
+ * App toaster wrapper with themed styles.
+ */
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner

@@ -1,10 +1,16 @@
 import Checkbox from '@/components/ui/Checkbox';
 import { useTranslations } from 'next-intl';
 
+/**
+ * Props for the preparation checklist.
+ */
 interface PreparationChecklistProps {
   checklist: string[];
 }
 
+/**
+ * Displays a checklist of preparation tasks.
+ */
 export default function PreparationChecklist({ checklist }: PreparationChecklistProps) {
   const tCommon = useTranslations('Common');
 

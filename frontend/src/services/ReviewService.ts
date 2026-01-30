@@ -1,6 +1,9 @@
 import { ReviewCreate } from '@/interfaces/models/Review';
 import { AxiosInstance } from 'axios';
 
+/**
+ * Fetches paginated reviews with optional sorting.
+ */
 const getPaginatedReviews = async (
   api: AxiosInstance,
   page: number,
@@ -22,6 +25,9 @@ const getPaginatedReviews = async (
   }
 };
 
+/**
+ * Creates a new review entry.
+ */
 const createReview = async (api: AxiosInstance, review: ReviewCreate) => {
   try {
     const { data } = await api.post('/reviews', review);
@@ -32,6 +38,9 @@ const createReview = async (api: AxiosInstance, review: ReviewCreate) => {
   }
 };
 
+/**
+ * Review-related API methods.
+ */
 export const reviewService = {
   getPaginatedReviews,
   createReview,

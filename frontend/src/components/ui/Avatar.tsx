@@ -5,6 +5,9 @@ import * as AvatarPrimitive from '@radix-ui/react-avatar';
 
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Wrapper for the Radix avatar root.
+ */
 function Avatar({ className, ...props }: React.ComponentProps<typeof AvatarPrimitive.Root>) {
   return (
     <AvatarPrimitive.Root
@@ -18,6 +21,9 @@ function Avatar({ className, ...props }: React.ComponentProps<typeof AvatarPrimi
   );
 }
 
+/**
+ * Image slot for the avatar.
+ */
 function AvatarImage({ className, ...props }: React.ComponentProps<typeof AvatarPrimitive.Image>) {
   return (
     <AvatarPrimitive.Image
@@ -28,6 +34,9 @@ function AvatarImage({ className, ...props }: React.ComponentProps<typeof Avatar
   );
 }
 
+/**
+ * Fallback slot for the avatar.
+ */
 function AvatarFallback({
   className,
   ...props

@@ -11,16 +11,32 @@ import { BASE_URL } from '@/lib/connector';
 const inter = Inter({ subsets: ['latin'] });
 const bebasNeue = BebasNeue({ subsets: ['latin'], weight: '400' });
 
+/**
+ * Global viewport configuration for the app.
+ */
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+/**
+ * Props for the root layout.
+ */
+interface RootLayoutProps {
+  children: React.ReactNode;
+}
+
+/**
+ * Provides the root HTML structure, fonts, and JSON-LD schema.
+ */
+export default async function RootLayout({ children }: RootLayoutProps) {
   const locale = await getLocale();
   const nonce = (await headers()).get('x-nonce') || '';
 
+  /**
+   * JSON-LD metadata for search engines.
+   */
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',

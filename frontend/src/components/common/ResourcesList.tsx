@@ -4,12 +4,18 @@ import { useEffect, useRef, useState } from 'react';
 import { Document } from '@/interfaces/models/Document';
 import QuoteResourceItem from './QuoteResourceItem';
 
+/**
+ * Props for the resources list component.
+ */
 interface ResourcesListProps {
   resources: Document[];
   columns?: number;
   enableScroll?: boolean;
 }
 
+/**
+ * Renders a grid of resource cards with optional scrolling.
+ */
 export default function ResourcesList({
   resources,
   columns = 1,
@@ -23,6 +29,9 @@ export default function ResourcesList({
       return () => {};
     }
 
+    /**
+     * Calculates a max height that fits two items.
+     */
     const updateHeight = () => {
       if (!containerRef.current) return;
 

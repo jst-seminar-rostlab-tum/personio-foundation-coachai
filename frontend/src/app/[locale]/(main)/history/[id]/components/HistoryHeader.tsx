@@ -3,7 +3,17 @@ import { RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-export default function HistoryHeader({ scenarioId }: { scenarioId: string }) {
+/**
+ * Props for the history header.
+ */
+interface HistoryHeaderProps {
+  scenarioId: string;
+}
+
+/**
+ * Renders the history header and restart scenario button.
+ */
+export default function HistoryHeader({ scenarioId }: HistoryHeaderProps) {
   const t = useTranslations('Common');
   const tPersonalization = useTranslations('PersonalizationOptions');
   return (

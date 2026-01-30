@@ -4,6 +4,10 @@ import AboutHeader from '@/components/layout/AboutHeader';
 import AboutFooter from '@/components/layout/AboutFooter';
 import type { LayoutProps } from '@/interfaces/props/LayoutProps';
 
+/**
+ * Provides the shared layout chrome for the about section, including header, footer,
+ * and locale-aware provider wrapper.
+ */
 export default async function AboutLayout({ children }: LayoutProps) {
   return (
     <NextIntlClientProvider>

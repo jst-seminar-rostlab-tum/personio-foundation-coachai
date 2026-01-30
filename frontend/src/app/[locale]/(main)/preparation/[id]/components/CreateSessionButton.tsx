@@ -9,16 +9,25 @@ import { showErrorToast } from '@/lib/utils/toast';
 import { useState } from 'react';
 import { api } from '@/services/ApiClient';
 
+/**
+ * Props for creating a new session from a scenario.
+ */
 interface CreateSessionButtonProps {
   scenarioId: string;
 }
 
+/**
+ * Button that creates a session and routes to the live session view.
+ */
 export const CreateSessionButton = ({ scenarioId }: CreateSessionButtonProps) => {
   const t = useTranslations('Preparation');
   const tCommon = useTranslations('Common');
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /**
+   * Requests a new session and navigates to it.
+   */
   const handleCreateSession = async () => {
     if (isSubmitting) return;
 

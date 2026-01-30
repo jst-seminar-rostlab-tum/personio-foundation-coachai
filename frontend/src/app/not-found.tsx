@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/Button';
 import { TriangleAlert, Home } from 'lucide-react';
 import Link from 'next/link';
 
+/**
+ * Renders the localized 404 page.
+ */
 export default async function NotFound() {
   const t = await getTranslations('NotFound');
   const tCommon = await getTranslations('Common');

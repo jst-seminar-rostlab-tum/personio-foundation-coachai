@@ -3,11 +3,17 @@ import { api } from '@/services/ApiClient';
 import { sessionService } from '@/services/SessionService';
 import { useCallback, useRef, useState } from 'react';
 
+/**
+ * Polls the backend for live feedback during a session.
+ */
 export function useSessionLiveFeedback(sessionId: string) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isFetchingRef = useRef(false);
   const [sessionLiveFeedbacks, setSessionLiveFeedbacks] = useState<SessionLiveFeedback[]>([]);
 
+  /**
+   * Stops the polling interval.
+   */
   const stopGetLiveFeedbackInterval = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -15,6 +21,9 @@ export function useSessionLiveFeedback(sessionId: string) {
     }
   }, []);
 
+  /**
+   * Starts the polling interval and updates live feedback state.
+   */
   const startGetLiveFeedbackInterval = useCallback(() => {
     stopGetLiveFeedbackInterval();
 

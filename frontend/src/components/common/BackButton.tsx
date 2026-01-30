@@ -7,7 +7,17 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
-export const BackButtonComponent = ({ label }: { label: string }) => {
+/**
+ * Props for the back button component.
+ */
+interface BackButtonComponentProps {
+  label: string;
+}
+
+/**
+ * Renders a styled back button label with icon.
+ */
+export const BackButtonComponent = ({ label }: BackButtonComponentProps) => {
   return (
     <Button
       variant="ghost"
@@ -23,6 +33,9 @@ export const BackButtonComponent = ({ label }: { label: string }) => {
   );
 };
 
+/**
+ * Displays a back-to-home link except on specific routes.
+ */
 export default function BackButton() {
   const pathname = usePathname();
   const t = useTranslations('Common');

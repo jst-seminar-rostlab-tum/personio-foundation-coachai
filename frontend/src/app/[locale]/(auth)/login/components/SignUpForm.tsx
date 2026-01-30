@@ -31,6 +31,9 @@ import { api } from '@/services/ApiClient';
 import { PhoneNumberVerificationPopup } from '@/app/[locale]/(auth)/login/components/PhoneNumberVerificationPopup';
 import EmailConfirmationPopup from './EmailConfirmationPopup';
 
+/**
+ * Handles user registration, validation, and verification handoff.
+ */
 export function SignUpForm() {
   const tLogin = useTranslations('Login');
   const tCommon = useTranslations('Common');
@@ -110,6 +113,9 @@ export function SignUpForm() {
     },
   ];
 
+  /**
+   * Validates uniqueness and triggers the phone verification step.
+   */
   const handleSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
     setError(null);
     setIsLoading(true);
@@ -141,6 +147,9 @@ export function SignUpForm() {
     setIsLoading(false);
   };
 
+  /**
+   * Switches from phone verification to email confirmation.
+   */
   const switchToEmailConfirmationForm = () => {
     setShowVerification(false);
     setShowEmailConfirmationForm(true);

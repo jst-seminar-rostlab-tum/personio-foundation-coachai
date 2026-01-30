@@ -1,3 +1,6 @@
+/**
+ * Shows a skeleton UI while feedback details load.
+ */
 export default function FeedbackDetailLoadingPage() {
   return (
     <div className="flex flex-col items-center w-full gap-8 px-4 pb-8">

@@ -1,9 +1,15 @@
 import { useRef, useCallback } from 'react';
 
+/**
+ * Records remote audio into a single blob.
+ */
 export function useRemoteAudioRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
+  /**
+   * Starts recording the remote audio stream.
+   */
   const startRemoteRecording = useCallback((stream: MediaStream) => {
     if (mediaRecorderRef.current) return;
     chunksRef.current = [];
@@ -17,6 +23,9 @@ export function useRemoteAudioRecorder() {
     recorder.start();
   }, []);
 
+  /**
+   * Stops recording and resolves a merged audio blob.
+   */
   const stopRemoteRecording = useCallback((): Promise<Blob> => {
     return new Promise((resolve) => {
       const recorder = mediaRecorderRef.current;

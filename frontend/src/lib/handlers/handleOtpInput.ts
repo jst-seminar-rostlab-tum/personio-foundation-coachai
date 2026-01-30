@@ -1,8 +1,14 @@
+/**
+ * Field interface for OTP input updates.
+ */
 interface PasteField {
   onChange: (code: string) => void;
   value?: string;
 }
 
+/**
+ * Handles pasting OTP codes into the input group.
+ */
 export function handlePasteEvent(
   e: React.ClipboardEvent<HTMLInputElement>,
   field: PasteField,
@@ -22,6 +28,9 @@ export function handlePasteEvent(
   }
 }
 
+/**
+ * Handles individual OTP input changes and focus movement.
+ */
 export function handleInputChange(
   e: React.ChangeEvent<HTMLInputElement>,
   field: PasteField,
@@ -39,6 +48,9 @@ export function handleInputChange(
   }
 }
 
+/**
+ * Handles backspace navigation across OTP inputs.
+ */
 export function handleKeyDown(
   e: React.KeyboardEvent<HTMLInputElement>,
   field: PasteField,

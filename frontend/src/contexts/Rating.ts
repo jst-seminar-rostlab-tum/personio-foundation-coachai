@@ -1,5 +1,8 @@
 import React, { useContext, MouseEvent, KeyboardEvent } from 'react';
 
+/**
+ * Context value for the rating components.
+ */
 export type RatingContextValue = {
   value: number;
   readOnly: boolean;
@@ -14,8 +17,14 @@ export type RatingContextValue = {
   setFocusedStar: (value: number | null) => void;
 };
 
+/**
+ * Provides rating state to child components.
+ */
 export const RatingContext = React.createContext<RatingContextValue | null>(null);
 
+/**
+ * Hook to access the current rating context.
+ */
 export const useRating = () => {
   const context = useContext(RatingContext);
   if (!context) {

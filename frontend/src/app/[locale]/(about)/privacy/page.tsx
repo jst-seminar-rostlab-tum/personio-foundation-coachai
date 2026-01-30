@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import React from 'react';
 
+/**
+ * Generates localized metadata for the privacy policy page.
+ */
 export async function generateMetadata({
   params,
 }: {
@@ -12,29 +15,47 @@ export async function generateMetadata({
   return generateDynamicMetadata(locale, '/privacy', false);
 }
 
+/**
+ * Represents a labeled privacy topic with text content.
+ */
 type Topic = {
   heading?: string;
   content: string | string[];
 };
 
+/**
+ * Represents a privacy policy section with optional topics.
+ */
 type Section = {
   title?: string;
   content?: string | string[];
   topics?: Topic[];
 };
 
+/**
+ * Maps section keys to section content.
+ */
 type Sections = Record<string, Section>;
 
+/**
+ * Represents a parsed text segment as paragraph or list items.
+ */
 type Segment = { type: 'para'; lines: string[] } | { type: 'list'; items: string[] };
 
 const TEXT_CLASSES = 'text-base leading-loose whitespace-pre-line break-words' as const;
 const BULLET_PREFIX = '●\t' as const;
 
+/**
+ * Normalizes an optional string or string array into a string array.
+ */
 function toArray(value?: string | string[]): string[] {
   if (value == null) return [];
   return Array.isArray(value) ? value : [value];
 }
 
+/**
+ * Splits text into paragraph and list segments based on bullet-prefixed lines.
+ */
 function parseTextSegments(text: string): Segment[] {
   const lines = text.split('\n');
   const segments: Segment[] = [];
@@ -68,6 +89,9 @@ function parseTextSegments(text: string): Segment[] {
   return segments;
 }
 
+/**
+ * Renders a block of text as paragraphs and optional bullet lists.
+ */
 const Paragraph = React.memo<{ text: string; k: string }>(({ text, k }) => {
   if (!text) return null;
 
@@ -99,6 +123,9 @@ const Paragraph = React.memo<{ text: string; k: string }>(({ text, k }) => {
 
 Paragraph.displayName = 'Paragraph';
 
+/**
+ * Renders a single privacy policy topic with heading and paragraphs.
+ */
 const Topic = React.memo<{ topic: Topic; sectionKey: string; idx: number }>(
   ({ topic, sectionKey, idx }) => {
     const topicParas = toArray(topic.content);
@@ -119,6 +146,9 @@ const Topic = React.memo<{ topic: Topic; sectionKey: string; idx: number }>(
 
 Topic.displayName = 'Topic';
 
+/**
+ * Renders a privacy policy section including title, paragraphs, and nested topics.
+ */
 const SectionContent = React.memo<{ section: Section; sectionKey: string }>(
   ({ section, sectionKey }) => {
     const paragraphs = toArray(section.content);
@@ -150,6 +180,9 @@ const SectionContent = React.memo<{ section: Section; sectionKey: string }>(
 
 SectionContent.displayName = 'SectionContent';
 
+/**
+ * Displays the full privacy policy content sourced from localized translations.
+ */
 export default async function PrivacyPolicyPage() {
   const t = await getTranslations('PrivacyPolicy');
   const sections = (await t.raw('sections')) as Sections;

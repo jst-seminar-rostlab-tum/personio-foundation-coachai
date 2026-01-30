@@ -1,6 +1,9 @@
 import { DEV_MODE_SKIP_AUTH, IS_DEVELOPMENT } from '@/lib/connector';
 import type { AxiosInstance } from 'axios';
 
+/**
+ * Attaches auth headers and error handling to an Axios instance.
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const setupAuthInterceptor = (api: AxiosInstance, getSupabaseClient: any) => {
   api.interceptors.request.use(

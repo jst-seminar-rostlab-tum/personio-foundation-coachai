@@ -24,16 +24,25 @@ import FeedbackDialog from './FeedbackDialog';
 import DonutChart from './DonutChart';
 import ProgressBars from './ProgressBars';
 
+/**
+ * Props for the feedback detail view.
+ */
 interface FeedbackDetailProps {
   sessionId: string;
 }
 
+/**
+ * Displays session feedback details, audio, and review submission.
+ */
 export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
   const t = useTranslations('Feedback');
   const tCommon = useTranslations('Common');
   const locale = useLocale();
   const [feedbackDetail, setFeedbackDetail] = useState<FeedbackResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  /**
+   * Fetches feedback details and retries while processing.
+   */
   const getFeedbackDetail = useCallback(
     async (id: string) => {
       try {
@@ -71,6 +80,9 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
     { key: tCommon('clarity'), value: feedbackDetail?.feedback?.scores.clarity ?? 0 },
   ];
 
+  /**
+   * Formats seconds into a mm:ss or hh:mm:ss display.
+   */
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
@@ -82,6 +94,9 @@ export default function FeedbackDetail({ sessionId }: FeedbackDetailProps) {
 
   const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlayingState] = useState(false);
+  /**
+   * Provides a stable setter for playback state.
+   */
   const setIsPlaying = useCallback((val: boolean | ((prev: boolean) => boolean)) => {
     setIsPlayingState(val);
   }, []);

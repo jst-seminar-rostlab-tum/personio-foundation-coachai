@@ -1,5 +1,37 @@
 # Next.js Frontend
 
+## Project Structure
+
+```
+frontend/
+├─ src/
+│  ├─ app/                      # Next.js App Router (routes, layouts, handlers)
+│  │  ├─ api/                   # Route handlers / API routes
+│  │  └─ [locale]/              # Locale-specific routes
+│  │     ├─ (about)/            # Route group: about pages
+│  │     ├─ (auth)/             # Route group: authentication
+│  │     ├─ (main)/             # Route group: main app pages
+│  │     └─ (standalone)/       # Route group: standalone pages
+│  ├─ components/               # Reusable UI components
+│  ├─ contexts/                 # React contexts
+│  ├─ i18n/                     # i18n setup and helpers
+│  ├─ interfaces/               # Shared TypeScript interfaces
+│  ├─ lib/                      # Utilities, constants, supabase, handlers
+│  ├─ services/                 # API clients and domain services
+│  ├─ store/                    # Zustand stores
+│  ├─ styles/                   # Global styles
+│  ├─ instrumentation.ts        # Server-side instrumentation (Sentry)
+│  ├─ instrumentation-client.ts # Client-side instrumentation (Sentry)
+│  └─ middleware.ts             # Next.js middleware
+├─ public/                      # Static assets
+├─ messages/                    # i18n message catalogs (en/de)
+├─ __tests__/                   # Unit/integration tests
+├─ Dockerfile                   # Frontend container build
+├─ next.config.ts               # Next.js configuration
+├─ package.json                 # NPM scripts and dependencies
+└─ README.md                    # Frontend documentation
+```
+
 ## Setup
 
 Copy the .env.example into your .env.

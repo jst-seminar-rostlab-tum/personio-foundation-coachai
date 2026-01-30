@@ -7,6 +7,9 @@ import { useTranslations } from 'next-intl';
 import { ConnectionStatus } from '@/interfaces/models/Session';
 import { Categories } from '@/lib/constants/categories';
 
+/**
+ * Props for the session header.
+ */
 interface SessionHeaderProps {
   characterName: string;
   sessionLabel: string;
@@ -14,6 +17,9 @@ interface SessionHeaderProps {
   connectionStatus?: ConnectionStatus;
 }
 
+/**
+ * Formats elapsed time as mm:ss or hh:mm:ss.
+ */
 function formatTime(seconds: number) {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -26,6 +32,9 @@ function formatTime(seconds: number) {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+/**
+ * Maps connection status to a badge color class.
+ */
 function getConnectionStatusColor(status: ConnectionStatus) {
   switch (status) {
     case ConnectionStatus.Connected:
@@ -41,6 +50,9 @@ function getConnectionStatusColor(status: ConnectionStatus) {
   }
 }
 
+/**
+ * Displays persona, category, and connection status for the live session.
+ */
 export default function SessionHeader({
   characterName,
   sessionLabel,

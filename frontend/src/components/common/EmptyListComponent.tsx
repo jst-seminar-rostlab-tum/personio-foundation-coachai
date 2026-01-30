@@ -3,11 +3,17 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
+/**
+ * Props for the empty list state component.
+ */
 interface EmptyListComponentProps {
   itemType: string;
   showBorder?: boolean;
 }
 
+/**
+ * Displays an empty-state illustration and message.
+ */
 export default function EmptyListComponent({
   itemType,
   showBorder = true,

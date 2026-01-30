@@ -6,14 +6,23 @@ import { api } from '@/services/ApiClient';
 import { getDocsSignedUrl } from '@/services/ResourceService';
 import { Button } from '../ui/Button';
 
+/**
+ * Props for a resource list item.
+ */
 interface ResourceItemProps {
   name: string;
 }
 
+/**
+ * Renders a resource row with download action.
+ */
 const ResourceItem: React.FC<ResourceItemProps> = ({ name }) => {
   const t = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Requests a signed URL and triggers a file download.
+   */
   const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (isLoading) return;
