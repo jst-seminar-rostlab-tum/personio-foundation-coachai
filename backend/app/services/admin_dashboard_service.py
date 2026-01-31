@@ -1,3 +1,5 @@
+"""Service layer for admin dashboard service."""
+
 from sqlmodel import Session as DBSession
 from sqlmodel import func, select
 
@@ -9,17 +11,39 @@ from app.services.app_config_service import AppConfigService
 
 
 class AdminDashboardService:
+    """Service for assembling admin dashboard statistics."""
+
     def __init__(self, db: DBSession) -> None:
+        """Initialize the service with a database session.
+
+        Parameters:
+            db (DBSession): Database session used for queries.
+        """
         self.db = db
         self.app_config_service = AppConfigService(db)
 
     def _get_user_count(self) -> int:
+        """Return the total number of user profiles.
+
+        Returns:
+            int: Total user count.
+        """
         return self.db.exec(select(func.count()).select_from(UserProfile)).one()
 
     def _get_review_count(self) -> int:
+        """Return the total number of reviews.
+
+        Returns:
+            int: Total review count.
+        """
         return self.db.exec(select(func.count()).select_from(Review)).one()
 
     def _get_admin_stats(self) -> AdminDashboardStats:
+        """Load or initialize admin aggregate statistics.
+
+        Returns:
+            AdminDashboardStats: Persisted stats record.
+        """
         stats = self.db.exec(select(AdminDashboardStats)).first()
         if not stats:
             stats = AdminDashboardStats()
@@ -29,6 +53,11 @@ class AdminDashboardService:
         return stats
 
     def get_admin_dashboard_stats(self) -> AdminDashboardStatsRead:
+        """Return computed admin dashboard statistics.
+
+        Returns:
+            AdminDashboardStatsRead: Aggregated dashboard metrics.
+        """
         stats = self._get_admin_stats()
 
         return AdminDashboardStatsRead(

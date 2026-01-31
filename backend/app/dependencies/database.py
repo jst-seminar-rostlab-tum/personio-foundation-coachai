@@ -1,3 +1,5 @@
+"""Dependency providers for database."""
+
 import os
 import urllib.request
 from collections.abc import Generator
@@ -30,6 +32,11 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_size=5, max_overflow=4, poo
 
 
 def get_db_session() -> Generator[DBSession, Any]:
+    """Provide a database session generator for dependency injection.
+
+    Returns:
+        Generator[DBSession, Any]: Yields a SQLModel session and closes it after use.
+    """
     with DBSession(engine) as db_session:
         try:
             yield db_session
@@ -38,6 +45,14 @@ def get_db_session() -> Generator[DBSession, Any]:
 
 
 def get_supabase_client() -> Client:
+    """Create and return an authenticated Supabase client.
+
+    Returns:
+        Client: Supabase client with service role permissions.
+
+    Raises:
+        RuntimeError: If Supabase credentials are not configured.
+    """
     if settings.SUPABASE_URL and settings.SUPABASE_SERVICE_ROLE_KEY:
         client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
         client.rpc('grant_hr_info_permissions')

@@ -11,6 +11,9 @@ import { useRemoteAudioRecorder } from './useRemoteAudioRecorder';
 import { useSessionTurns } from './useSessionTurns';
 import { useSessionLiveFeedback } from './useSessionLiveFeedback';
 
+/**
+ * Manages WebRTC connection, audio streaming, and realtime events.
+ */
 export function useWebRTC(sessionId: string, ephemeralKey: string) {
   const t = useTranslations('Session');
 
@@ -44,6 +47,9 @@ export function useWebRTC(sessionId: string, ephemeralKey: string) {
   const inputAudioBufferSpeechStartedOffsetMsRef = useRef<number>(0);
   const remoteResponseIdRef = useRef<string | null>(null);
 
+  /**
+   * Tears down WebRTC resources and stops timers.
+   */
   const cleanup = useCallback(() => {
     if (cleanupRef.current) return;
     cleanupRef.current = true;
@@ -59,6 +65,9 @@ export function useWebRTC(sessionId: string, ephemeralKey: string) {
     stopGetLiveFeedbackInterval();
   }, [stopStream, stopLocalRecording, stopRemoteRecording, stopTimer, stopGetLiveFeedbackInterval]);
 
+  /**
+   * Initializes the peer connection and data channel.
+   */
   const initWebRTC = useCallback(async () => {
     if (hasInitializedRef.current) return;
     hasInitializedRef.current = true;
@@ -113,7 +122,7 @@ export function useWebRTC(sessionId: string, ephemeralKey: string) {
         const parsed = JSON.parse(event.data);
 
         switch (parsed.type) {
-          case 'conversation.item.created':
+          case 'conversation.item.done':
             if (parsed.item.role === 'user' && parsed.item.status === 'completed') {
               addPlaceholderMessage(MessageSender.USER);
             }
@@ -135,11 +144,11 @@ export function useWebRTC(sessionId: string, ephemeralKey: string) {
             });
             break;
 
-          case 'response.audio_transcript.delta':
+          case 'response.output_audio_transcript.delta':
             appendDeltaToLastMessage(MessageSender.ASSISTANT, parsed.delta);
             break;
 
-          case 'response.audio_transcript.done':
+          case 'response.output_audio_transcript.done':
             addMetadataToTurn(parsed.response_id, {
               sessionId,
               speaker: MessageSender.ASSISTANT,

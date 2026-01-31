@@ -7,6 +7,9 @@ import { Dialog, DialogContent } from '@/components/ui/Dialog';
 import { useTranslations } from 'next-intl';
 import { DataProcessingTopic } from '@/interfaces/models/PrivacyDialog';
 
+/**
+ * Props for rendering the privacy dialog either inline or as a modal.
+ */
 type PrivacyDialogProps =
   | {
       variant?: 'dialog';
@@ -19,12 +22,18 @@ type PrivacyDialogProps =
       onOpenChange?: never;
     };
 
+/**
+ * Props for a single data processing card entry.
+ */
 interface DataProcessingCardProps {
   item: DataProcessingTopic;
   purposeLabel: string;
   storageDurationLabel: string;
 }
 
+/**
+ * Displays a single data processing topic in card form.
+ */
 const DataProcessingCard = ({
   item,
   purposeLabel,
@@ -54,6 +63,9 @@ const DataProcessingCard = ({
   </div>
 );
 
+/**
+ * Props for the data processing table layout.
+ */
 interface DataProcessingTableProps {
   items: DataProcessingTopic[];
   headers: {
@@ -63,6 +75,9 @@ interface DataProcessingTableProps {
   };
 }
 
+/**
+ * Renders data processing topics in a table layout.
+ */
 const DataProcessingTable = ({ items, headers }: DataProcessingTableProps) => (
   <div className="overflow-x-auto">
     <table className="w-full border-collapse" role="table">
@@ -107,6 +122,9 @@ const DataProcessingTable = ({ items, headers }: DataProcessingTableProps) => (
   </div>
 );
 
+/**
+ * Props for the data processing section container.
+ */
 interface DataProcessingSectionProps {
   dataProcessingTopics: DataProcessingTopic[];
   title: string;
@@ -117,6 +135,9 @@ interface DataProcessingSectionProps {
   };
 }
 
+/**
+ * Shows the data processing section with responsive card/table layouts.
+ */
 const DataProcessingSection = ({
   dataProcessingTopics,
   title,
@@ -149,6 +170,9 @@ const DataProcessingSection = ({
   </section>
 );
 
+/**
+ * Props for the external services and encryption section.
+ */
 interface ExternalServicesAndEncryptionSectionProps {
   externalServices: string[];
   externalServicesTitle: string;
@@ -156,6 +180,9 @@ interface ExternalServicesAndEncryptionSectionProps {
   encryptionDescription: string;
 }
 
+/**
+ * Presents external services used and encryption information.
+ */
 const ExternalServicesAndEncryptionSection = ({
   externalServices,
   externalServicesTitle,
@@ -199,6 +226,9 @@ const ExternalServicesAndEncryptionSection = ({
   </section>
 );
 
+/**
+ * Props for the user rights section.
+ */
 interface UserRightsSectionProps {
   title: string;
   accountDeletion: {
@@ -211,6 +241,9 @@ interface UserRightsSectionProps {
   };
 }
 
+/**
+ * Highlights user rights related to account deletion and data export.
+ */
 const UserRightsSection = ({ title, accountDeletion, dataExport }: UserRightsSectionProps) => (
   <section aria-labelledby="user-rights-title">
     <Card>
@@ -248,6 +281,9 @@ const UserRightsSection = ({ title, accountDeletion, dataExport }: UserRightsSec
   </section>
 );
 
+/**
+ * Renders the privacy dialog content as either inline content or a modal dialog.
+ */
 export default function PrivacyDialog(props: PrivacyDialogProps) {
   const { variant = 'dialog' } = props as { variant: 'dialog' | 'content' };
 

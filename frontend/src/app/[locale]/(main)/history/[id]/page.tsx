@@ -13,11 +13,17 @@ import HistoryHeader from './components/HistoryHeader';
 import Loading from './loading';
 import HistoryTable from './components/HistoryTable';
 
+/**
+ * Generates localized metadata for the scenario history page.
+ */
 export async function generateMetadata({ params }: MetadataProps): Promise<Metadata> {
   const { locale } = await params;
   return generateDynamicMetadata(locale, '/history', true);
 }
 
+/**
+ * Renders a scenario's history, stats, and session list.
+ */
 export default async function HistoryPage(props: PagesProps) {
   const { id } = await props.params;
   const PAGE_SIZE = 3;

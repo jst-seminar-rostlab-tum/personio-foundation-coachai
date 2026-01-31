@@ -1,3 +1,5 @@
+"""Database model definitions for session."""
+
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -18,6 +20,8 @@ if TYPE_CHECKING:
 
 
 class Session(CamelModel, table=True):
+    """Database model for session."""
+
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     scenario_id: UUID = Field(foreign_key='conversationscenario.id', ondelete='CASCADE')
     scheduled_at: datetime | None = None
@@ -41,4 +45,14 @@ class Session(CamelModel, table=True):
 
 @event.listens_for(Session, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'Session') -> None:
+    """Update the updated_at timestamp before persistence.
+
+    Parameters:
+        mapper (Mapper): SQLAlchemy mapper for the model.
+        connection (Connection): Active database connection.
+        target (Any): Model instance being updated.
+
+    Returns:
+        None: This function mutates the target instance in-place.
+    """
     target.updated_at = datetime.now(UTC)

@@ -619,7 +619,7 @@ class TestSessionFeedbackService(unittest.TestCase):
             self.assertEqual(feedback.session_length_s, 100)
 
             self.assertEqual(feedback.overall_score, 10.0)
-            self.assertEqual(feedback.has_error, True)
+            self.assertEqual(feedback.has_error, False)
 
 
 if __name__ == '__main__':

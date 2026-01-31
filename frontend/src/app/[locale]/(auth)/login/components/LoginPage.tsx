@@ -5,6 +5,9 @@ import { HighlightedAppName } from '@/components/common/HighlightedAppName';
 import { SignInForm } from './SignInForm';
 import { SignUpForm } from './SignUpForm';
 
+/**
+ * Renders the login card with sign-in and sign-up tabs.
+ */
 export default async function LoginPageComponent() {
   const t = await getTranslations('Login');
   return (

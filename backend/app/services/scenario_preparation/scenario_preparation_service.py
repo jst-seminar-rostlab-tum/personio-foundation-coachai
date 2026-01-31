@@ -1,3 +1,5 @@
+"""Service layer for scenario preparation service."""
+
 from __future__ import annotations
 
 import concurrent.futures
@@ -30,6 +32,11 @@ from app.services.vector_db_context_service import get_hr_docs_context
 
 @lru_cache
 def load_scenario_prep_config() -> ScenarioPrepConfigRead:
+    """Load scenario preparation configuration from disk.
+
+    Returns:
+        ScenarioPrepConfigRead: Parsed configuration model.
+    """
     config_path = os.path.join(os.path.dirname(__file__), 'scenario_prep_config.json')
     with open(config_path, encoding='utf-8') as f:
         data = json.load(f)  # Python dict
@@ -42,11 +49,29 @@ config = load_scenario_prep_config()
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_objectives(request: ObjectivesCreate, hr_docs_context: str = '') -> list[str]:
+    """Retry-safe wrapper for objective generation.
+
+    Parameters:
+        request (ObjectivesCreate): Objectives request payload.
+        hr_docs_context (str): HR document context.
+
+    Returns:
+        list[str]: Generated objectives.
+    """
     return generate_objectives(request, hr_docs_context)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 def safe_generate_checklist(request: ChecklistCreate, hr_docs_context: str = '') -> list[str]:
+    """Retry-safe wrapper for checklist generation.
+
+    Parameters:
+        request (ChecklistCreate): Checklist request payload.
+        hr_docs_context (str): HR document context.
+
+    Returns:
+        list[str]: Generated checklist items.
+    """
     return generate_checklist(request, hr_docs_context)
 
 
@@ -54,12 +79,27 @@ def safe_generate_checklist(request: ChecklistCreate, hr_docs_context: str = '')
 def safe_generate_key_concepts(
     request: KeyConceptsCreate, hr_docs_context: str = ''
 ) -> list[KeyConcept]:
+    """Retry-safe wrapper for key concept generation.
+
+    Parameters:
+        request (KeyConceptsCreate): Key concepts request payload.
+        hr_docs_context (str): HR document context.
+
+    Returns:
+        list[KeyConcept]: Generated key concepts.
+    """
     return generate_key_concept(request, hr_docs_context)
 
 
 def generate_objectives(request: ObjectivesCreate, hr_docs_context: str = '') -> list[str]:
-    """
-    Generate a list of training objectives using structured output from the LLM.
+    """Generate training objectives using structured LLM output.
+
+    Parameters:
+        request (ObjectivesCreate): Objectives request payload.
+        hr_docs_context (str): HR document context.
+
+    Returns:
+        list[str]: Generated objectives.
     """
 
     lang = request.language_code
@@ -101,8 +141,14 @@ def generate_objectives(request: ObjectivesCreate, hr_docs_context: str = '') ->
 
 
 def generate_checklist(request: ChecklistCreate, hr_docs_context: str = '') -> list[str]:
-    """
-    Generate a preparation checklist using structured output from the LLM.
+    """Generate a preparation checklist using structured LLM output.
+
+    Parameters:
+        request (ChecklistCreate): Checklist request payload.
+        hr_docs_context (str): HR document context.
+
+    Returns:
+        list[str]: Generated checklist items.
     """
     lang = request.language_code
     settings = config.root[lang]
@@ -146,6 +192,17 @@ def build_key_concept_prompt(
     hr_docs_context: str = '',
     language_name: str = 'English',
 ) -> str:
+    """Build the prompt for key concept generation.
+
+    Parameters:
+        request (KeyConceptsCreate): Key concepts request payload.
+        example (str): Example JSON output for guidance.
+        hr_docs_context (str): HR document context.
+        language_name (str): Language label for the prompt.
+
+    Returns:
+        str: Constructed prompt string.
+    """
     return f"""
 Please write the following response in {language_name}.\n\n
 Based on the HR professionals conversation scenario below, 
@@ -192,6 +249,15 @@ Conversation scenario:
 
 
 def generate_key_concept(request: KeyConceptsCreate, hr_docs_context: str = '') -> list[KeyConcept]:
+    """Generate key concepts using structured LLM output.
+
+    Parameters:
+        request (KeyConceptsCreate): Key concepts request payload.
+        hr_docs_context (str): HR document context.
+
+    Returns:
+        list[KeyConcept]: Generated key concepts.
+    """
     lang = request.language_code
     settings = config.root[lang]
 
@@ -213,8 +279,14 @@ def generate_key_concept(request: KeyConceptsCreate, hr_docs_context: str = '') 
 
 
 def create_pending_preparation(scenario_id: UUID, db_session: DBSession) -> ScenarioPreparation:
-    """
-    Create a new ScenarioPreparation record with status 'pending'.
+    """Create a new ScenarioPreparation record with status 'pending'.
+
+    Parameters:
+        scenario_id (UUID): Scenario identifier.
+        db_session (DBSession): Database session for persistence.
+
+    Returns:
+        ScenarioPreparation: Newly created preparation record.
     """
     prep = ScenarioPreparation(
         scenario_id=scenario_id,
@@ -233,9 +305,19 @@ def generate_scenario_preparation(
     new_preparation: ScenarioPreparationCreate,
     session_generator_func: Callable[[], Generator[DBSession]],
 ) -> ScenarioPreparation:
-    """
-    Generate scenario preparation data including objectives, checklist, and key concepts.
+    """Generate scenario preparation data including objectives, checklist, and key concepts.
     Updates the ScenarioPreparation record and returns it.
+
+    Parameters:
+        preparation_id (UUID): Preparation record identifier.
+        new_preparation (ScenarioPreparationCreate): Preparation request payload.
+        session_generator_func (Callable[[], Generator[DBSession]]): DB session generator.
+
+    Returns:
+        ScenarioPreparation: Updated preparation record.
+
+    Raises:
+        ValueError: If preparation is missing or not in pending state.
     """
 
     session_gen = session_generator_func()

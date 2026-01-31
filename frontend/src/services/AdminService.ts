@@ -1,5 +1,8 @@
 import { AxiosInstance } from 'axios';
 
+/**
+ * Fetches aggregated admin statistics.
+ */
 const getAdminStats = async (api: AxiosInstance) => {
   try {
     const { data } = await api.get(`/admin-stats`);
@@ -10,6 +13,9 @@ const getAdminStats = async (api: AxiosInstance) => {
   }
 };
 
+/**
+ * Updates the default daily session limit configuration.
+ */
 const updateDefaultDailyUserSessionLimit = async (api: AxiosInstance, limit: number) => {
   try {
     const { data } = await api.put(`/app-configs`, {
@@ -24,6 +30,9 @@ const updateDefaultDailyUserSessionLimit = async (api: AxiosInstance, limit: num
   }
 };
 
+/**
+ * Admin-related API methods.
+ */
 export const adminService = {
   getAdminStats,
   updateDefaultDailyUserSessionLimit,

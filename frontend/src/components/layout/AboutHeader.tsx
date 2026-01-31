@@ -9,6 +9,9 @@ import Image from 'next/image';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 import { HighlightedAppName } from '../common/HighlightedAppName';
 
+/**
+ * Renders the public about header with branding and locale switcher.
+ */
 export default function AboutHeader() {
   const t = useTranslations('HomePage');
   const pathname = usePathname();

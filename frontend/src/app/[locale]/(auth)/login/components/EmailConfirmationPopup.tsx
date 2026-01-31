@@ -7,8 +7,6 @@ import Input from '@/components/ui/Input';
 import { handleInputChange, handleKeyDown, handlePasteEvent } from '@/lib/handlers/handleOtpInput';
 import { createClient } from '@/lib/supabase/client';
 import { showErrorToast } from '@/lib/utils/toast';
-import { api } from '@/services/ApiClient';
-import { authService } from '@/services/AuthService';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResendParams, VerifyEmailOtpParams } from '@supabase/supabase-js';
 import { useTranslations } from 'next-intl';
@@ -18,7 +16,10 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { ModalWrapper } from './ModelWrapper';
 
-export default function ConfirmationForm({
+/**
+ * Prompts the user to confirm their email via OTP and handles resend flows.
+ */
+export default function EmailConfirmationPopup({
   initialEmail,
   onClose,
 }: {
@@ -35,7 +36,6 @@ export default function ConfirmationForm({
   const searchParams = useSearchParams();
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const isConfirmedRef = useRef(false);
 
   useEffect(() => {
     if (error) {
@@ -58,6 +58,9 @@ export default function ConfirmationForm({
     },
   });
 
+  /**
+   * Verifies the OTP entered by the user and proceeds to onboarding on success.
+   */
   const verifyOTP = async () => {
     setIsLoading(true);
     setError(null);
@@ -88,19 +91,12 @@ export default function ConfirmationForm({
       return;
     }
 
-    try {
-      await authService.confirmUser(api);
-      isConfirmedRef.current = true;
-      if (onClose) onClose(); // Close the modal on success
-    } catch {
-      setError(t('ConfirmationForm.genericError'));
-      setIsLoading(false);
-      return;
-    }
-
     router.push('/onboarding');
   };
 
+  /**
+   * Requests a new confirmation email and resets the code input.
+   */
   const resendConfirmationEmail = async () => {
     setIsLoading(true);
     setError(null);

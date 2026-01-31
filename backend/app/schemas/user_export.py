@@ -1,9 +1,13 @@
+"""Pydantic schema definitions for user export."""
+
 from typing import Any
 
 from pydantic import BaseModel
 
 
 class ExportUserProfile(BaseModel):
+    """Schema for export user profile."""
+
     user_id: str
     full_name: str
     email: str
@@ -29,17 +33,23 @@ class ExportUserProfile(BaseModel):
 
 
 class ExportUserGoal(BaseModel):
+    """Schema for export user goal."""
+
     goal: str
     updated_at: str | None
 
 
 class ExportConfidenceScore(BaseModel):
+    """Schema for export confidence score."""
+
     confidence_area: str
     score: int
     updated_at: str | None
 
 
 class ExportConversationScenario(BaseModel):
+    """Schema for export conversation scenario."""
+
     id: str
     category_id: str | None
     custom_category_label: str | None
@@ -54,6 +64,8 @@ class ExportConversationScenario(BaseModel):
 
 
 class ExportScenarioPreparation(BaseModel):
+    """Schema for export scenario preparation."""
+
     id: str
     scenario_id: str
     objectives: list[str]
@@ -65,6 +77,8 @@ class ExportScenarioPreparation(BaseModel):
 
 
 class ExportSession(BaseModel):
+    """Schema for export session."""
+
     id: str
     scenario_id: str
     scheduled_at: str | None
@@ -76,6 +90,8 @@ class ExportSession(BaseModel):
 
 
 class ExportSessionTurn(BaseModel):
+    """Schema for export session turn."""
+
     id: str
     session_id: str
     speaker: str
@@ -88,6 +104,8 @@ class ExportSessionTurn(BaseModel):
 
 
 class ExportSessionFeedback(BaseModel):
+    """Schema for export session feedback."""
+
     id: str
     session_id: str
     scores: dict[str, Any]
@@ -106,6 +124,8 @@ class ExportSessionFeedback(BaseModel):
 
 
 class ExportReview(BaseModel):
+    """Schema for export review."""
+
     id: str
     session_id: str | None
     rating: int
@@ -114,6 +134,8 @@ class ExportReview(BaseModel):
 
 
 class UserDataExport(BaseModel):
+    """Schema for user data export."""
+
     profile: ExportUserProfile
     goals: list[ExportUserGoal]
     confidence_scores: list[ExportConfidenceScore]

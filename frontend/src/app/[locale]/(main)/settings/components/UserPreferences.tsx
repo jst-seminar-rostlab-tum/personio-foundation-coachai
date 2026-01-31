@@ -10,11 +10,23 @@ import {
 } from '@/components/ui/Select';
 import { MultiSelect } from '@/components/ui/MultiSelect';
 
-const UserPreferences: React.FC<{
+/**
+ * Props for the user preferences selection controls.
+ */
+interface UserPreferencesProps {
   currentRole: UserPreference;
   primaryGoals: UserPreference<string[]>;
   className?: string;
-}> = ({ currentRole, primaryGoals, className }) => {
+}
+
+/**
+ * Renders role and primary goal selectors.
+ */
+const UserPreferences: React.FC<UserPreferencesProps> = ({
+  currentRole,
+  primaryGoals,
+  className,
+}) => {
   return (
     <div className={cn('flex flex-col gap-12 w-full', className)}>
       <div key={currentRole.label} className="flex flex-col gap-2">

@@ -1,3 +1,5 @@
+"""Service layer for data retention service."""
+
 import logging
 from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
@@ -12,9 +14,14 @@ from app.models.session_turn import SessionTurn
 
 
 def cleanup_old_session_turns(db: DBSession) -> None:
-    """
-    Clean up old session_turn records and related GCS files.
+    """Clean up old session_turn records and related GCS files.
     Delete session_turn records older than 90 days.
+
+    Parameters:
+        db (DBSession): Database session used for cleanup.
+
+    Returns:
+        None: This function deletes records and related audio files.
     """
     threshold = datetime.now(UTC) - timedelta(days=90)
     turns = db.exec(select(SessionTurn).where(SessionTurn.created_at <= threshold)).all()
@@ -25,13 +32,19 @@ def cleanup_old_session_turns(db: DBSession) -> None:
 
 
 def delete_session_turns_and_audio_files(db: DBSession, turns: Sequence[SessionTurn]) -> None:
-    """
-    Delete session_turn records and associated GCS audio files.
+    """Delete session_turn records and associated GCS audio files.
     For each turn:
     1. Delete the GCS file referenced by audio_uri.
     2. Check if session_feedback references this audio_uri and delete the GCS file if
          it exists, then clear the full_audio_filename field.
     3. Delete the session_turn record.
+
+    Parameters:
+        db (DBSession): Database session used for deletion.
+        turns (Sequence[SessionTurn]): Session turns to delete.
+
+    Returns:
+        None: This function deletes records and updates feedback entries.
     """
 
     gcs = get_gcs_audio_manager()
@@ -68,8 +81,14 @@ def delete_session_turns_and_audio_files(db: DBSession, turns: Sequence[SessionT
 
 
 def delete_session_turns_by_session_id(db: DBSession, session_id: UUID) -> None:
-    """
-    Delete all session_turn records for a given session_id.
+    """Delete all session_turn records for a given session_id.
+
+    Parameters:
+        db (DBSession): Database session used for deletion.
+        session_id (UUID): Session identifier.
+
+    Returns:
+        None: This function deletes records and related audio files.
     """
     turns = db.exec(select(SessionTurn).where(SessionTurn.session_id == session_id)).all()
     if not turns:
@@ -79,9 +98,15 @@ def delete_session_turns_by_session_id(db: DBSession, session_id: UUID) -> None:
 
 
 def delete_full_audio_for_feedback_by_session_id(db: DBSession, session_id: UUID) -> None:
-    """
-    Delete all full audio files from GCS referenced by SessionFeedback.full_audio_filename
+    """Delete all full audio files from GCS referenced by SessionFeedback.full_audio_filename
     for a given session_id, and set full_audio_filename to an empty string.
+
+    Parameters:
+        db (DBSession): Database session used for updates.
+        session_id (UUID): Session identifier.
+
+    Returns:
+        None: This function clears audio references and deletes files.
     """
     gcs = get_gcs_audio_manager()
     feedbacks = db.exec(

@@ -2,6 +2,9 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Styled input control.
+ */
 function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   return (
     <input

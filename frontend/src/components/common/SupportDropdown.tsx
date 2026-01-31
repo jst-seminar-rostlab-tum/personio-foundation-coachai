@@ -4,14 +4,23 @@ import { HelpCircle, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '../ui/Select';
 
+/**
+ * Props for the support dropdown actions.
+ */
 interface SupportDropdownProps {
   onHelpClick: () => void;
   onContactClick: () => void;
 }
 
+/**
+ * Renders a support menu with help and contact actions.
+ */
 export function SupportDropdown({ onHelpClick, onContactClick }: SupportDropdownProps) {
   const tCommon = useTranslations('Common');
 
+  /**
+   * Dispatches the selected support action.
+   */
   const handleValueChange = (value: string) => {
     if (value === 'help') {
       onHelpClick();

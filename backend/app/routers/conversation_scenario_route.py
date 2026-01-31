@@ -1,3 +1,5 @@
+"""API routes for conversation scenario route."""
+
 from typing import Annotated
 from uuid import UUID
 
@@ -22,8 +24,13 @@ router = APIRouter(prefix='/conversation-scenarios', tags=['Conversation Scenari
 def get_conversation_scenario_service(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> ConversationScenarioService:
-    """
-    Dependency factory to inject the ConversationScenarioService.
+    """Provide ConversationScenarioService via dependency injection.
+
+    Parameters:
+        db_session (DBSession): Database session dependency.
+
+    Returns:
+        ConversationScenarioService: Service instance.
     """
     return ConversationScenarioService(db_session)
 
@@ -39,9 +46,17 @@ def list_conversation_scenarios(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
 ) -> PaginatedConversationScenarioSummary:
-    """
-    Retrieve **all** conversation scenarios for the current user with summary data.
+    """Retrieve **all** conversation scenarios for the current user with summary data.
     Admins receive every scenario in the system.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        service (ConversationScenarioService): Service dependency.
+        page (int): Page number (1-based).
+        page_size (int): Items per page.
+
+    Returns:
+        PaginatedConversationScenarioSummary: Paginated scenario summaries.
     """
     return service.list_scenarios_summary(user_profile, page, page_size)
 
@@ -56,8 +71,15 @@ def get_conversation_scenario_metadata(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
 ) -> ConversationScenarioReadDetail:
-    """
-    Retrieve detailed metadata for a single conversation scenario.
+    """Retrieve detailed metadata for single conversation scenario.
+
+    Parameters:
+        id (UUID): Scenario identifier.
+        user_profile (UserProfile): Authenticated user profile.
+        service (ConversationScenarioService): Service dependency.
+
+    Returns:
+        ConversationScenarioReadDetail: Scenario detail payload.
     """
     return service.get_scenario_summary(id, user_profile)
 
@@ -71,8 +93,18 @@ def create_conversation_scenario_with_preparation(
     custom_scenario: bool = False,
     advised_scenario: bool = False,
 ) -> ConversationScenarioConfirm:
-    """
-    Create a new conversation scenario and start the preparation process in the background.
+    """Create a conversation scenario and start preparation process in the background.
+
+    Parameters:
+        conversation_scenario (ConversationScenarioCreate): Scenario payload.
+        background_tasks (BackgroundTasks): Background task manager.
+        user_profile (UserProfile): Authenticated user profile.
+        service (ConversationScenarioService): Service dependency.
+        custom_scenario (bool): Whether scenario is custom.
+        advised_scenario (bool): Whether scenario is advisor-provided.
+
+    Returns:
+        ConversationScenarioConfirm: Confirmation payload.
     """
     return service.create_conversation_scenario_with_preparation(
         conversation_scenario, user_profile, background_tasks, custom_scenario, advised_scenario
@@ -85,8 +117,15 @@ def get_scenario_preparation_by_scenario_id(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
 ) -> ScenarioPreparationRead:
-    """
-    Retrieve the scenario preparation data for a given conversation scenario ID.
+    """Retrieve the scenario preparation data for a given conversation scenario ID.
+
+    Parameters:
+        id (UUID): Scenario identifier.
+        user_profile (UserProfile): Authenticated user profile.
+        service (ConversationScenarioService): Service dependency.
+
+    Returns:
+        ScenarioPreparationRead: Scenario preparation payload.
     """
     return service.get_scenario_preparation_by_scenario_id(id, user_profile)
 
@@ -96,8 +135,14 @@ def clear_all_conversation_scenarios(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
 ) -> dict:
-    """
-    Deletes all conversation scenarios for the authenticated user.
+    """Delete all conversation scenarios for the authenticated user.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        service (ConversationScenarioService): Service dependency.
+
+    Returns:
+        dict: Deletion summary.
     """
     return service.clear_all_conversation_scenarios(user_profile)
 
@@ -108,7 +153,14 @@ def delete_conversation_scenario(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[ConversationScenarioService, Depends(get_conversation_scenario_service)],
 ) -> dict:
-    """
-    Deletes a single conversation scenario by ID.
+    """Delete a single conversation scenario by ID.
+
+    Parameters:
+        id (UUID): Scenario identifier.
+        user_profile (UserProfile): Authenticated user profile.
+        service (ConversationScenarioService): Service dependency.
+
+    Returns:
+        dict: Deletion summary.
     """
     return service.delete_conversation_scenario(id, user_profile)

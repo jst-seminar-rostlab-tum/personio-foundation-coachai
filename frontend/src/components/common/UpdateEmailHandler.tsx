@@ -20,11 +20,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import Input from '../ui/Input';
 import { Button } from '../ui/Button';
 
+/**
+ * Props for the update email dialog wrapper.
+ */
 interface UpdateEmailHandlerProps {
   id?: string;
   children: React.ReactNode;
 }
 
+/**
+ * Wraps children with a dialog to update the user's email.
+ */
 export function UpdateEmailHandler({ children }: UpdateEmailHandlerProps) {
   const [isLoading, setLoading] = useState(false);
   const t = useTranslations('Settings');
@@ -42,6 +48,9 @@ export function UpdateEmailHandler({ children }: UpdateEmailHandlerProps) {
     },
   });
 
+  /**
+   * Submits the email update request to Supabase.
+   */
   async function updateEmail(values: z.infer<typeof updateEmailFormSchema>) {
     setLoading(true);
     try {

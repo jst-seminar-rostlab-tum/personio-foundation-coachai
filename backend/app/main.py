@@ -1,3 +1,5 @@
+"""Application entrypoint and FastAPI setup."""
+
 import logging
 import sys
 from collections.abc import AsyncGenerator
@@ -39,7 +41,7 @@ if settings.stage == 'prod' and settings.SENTRY_DSN:
             FastApiIntegration(),
             SqlalchemyIntegration(),
             HttpxIntegration(),
-            LoggingIntegration(level=logging.INFO, event_level=logging.ERROR),
+            LoggingIntegration(level=logging.INFO, event_level=logging.WARNING),
         ],
         traces_sample_rate=0.1,
         enable_tracing=True,
@@ -56,6 +58,11 @@ scheduler = BackgroundScheduler()
 
 
 def scheduled_cleanup() -> None:
+    """Run scheduled data-retention cleanup tasks.
+
+    Returns:
+        None: This function closes the database generator after use.
+    """
     db_gen = get_db_session()
     db = next(db_gen)
     try:
@@ -66,6 +73,14 @@ def scheduled_cleanup() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
+    """Manage application startup and shutdown tasks.
+
+    Parameters:
+        app (FastAPI): FastAPI application instance.
+
+    Returns:
+        AsyncGenerator[None]: Async lifespan context manager.
+    """
     scheduler.add_job(scheduled_cleanup, 'cron', hour=3, minute=0)
     scheduler.start()
     yield
@@ -76,7 +91,18 @@ app = FastAPI(title='CoachAI', debug=settings.stage == 'dev', lifespan=lifespan)
 
 
 class TimezoneAwareMiddleware(BaseHTTPMiddleware):
+    """Attach client timezone information to the request state."""
+
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        """Store request timezone header on the request state.
+
+        Parameters:
+            request (Request): Incoming request.
+            call_next (RequestResponseEndpoint): Next middleware or route handler.
+
+        Returns:
+            Response: Response returned by downstream handlers.
+        """
         timezone = request.headers.get('x-timezone')
 
         request.state.timezone = timezone if timezone else 'UTC'

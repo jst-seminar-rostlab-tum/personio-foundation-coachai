@@ -1,3 +1,6 @@
+/**
+ * Shows a skeleton UI while settings load.
+ */
 export default function SettingsLoadingPage() {
   return (
     <div className="mx-auto pt-8">

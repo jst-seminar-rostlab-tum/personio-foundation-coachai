@@ -1,16 +1,24 @@
 import { Textarea } from '@/components/ui/Textarea';
 
+/**
+ * Props for the persona text area.
+ */
+interface PersonaTextareaProps {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  isCustomContextMode: boolean;
+}
+
+/**
+ * Textarea for editing persona details, locked in default context mode.
+ */
 export const PersonaTextarea = ({
   label,
   value,
   onChange,
   isCustomContextMode,
-}: {
-  label: string;
-  value: string;
-  onChange: (val: string) => void;
-  isCustomContextMode: boolean;
-}) => {
+}: PersonaTextareaProps) => {
   const lockedClasses = `border border-bw-40 placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none ${
     isCustomContextMode ? '' : 'text-bw-70 cursor-not-allowed'
   } resize-none overflow-auto`;

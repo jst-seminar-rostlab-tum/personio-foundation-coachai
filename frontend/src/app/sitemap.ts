@@ -1,6 +1,9 @@
 import { MetadataRoute } from 'next';
 import { BASE_URL } from '@/lib/connector';
 
+/**
+ * Generates the static sitemap routes for the application.
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     {

@@ -1,3 +1,5 @@
+"""Service layer for conversation scenario service."""
+
 from collections.abc import Sequence
 from math import ceil
 from uuid import UUID
@@ -32,7 +34,14 @@ from app.services.session_turn_service import SessionTurnService
 
 
 class ConversationScenarioService:
+    """Service for creating and managing conversation scenarios."""
+
     def __init__(self, db: DBSession) -> None:
+        """Initialize the service with a database session.
+
+        Parameters:
+            db (DBSession): Database session used for persistence.
+        """
         self.db = db
 
     def create_conversation_scenario_with_preparation(
@@ -43,9 +52,20 @@ class ConversationScenarioService:
         custom_scenario: bool = False,
         advised_scenario: bool = False,
     ) -> ConversationScenarioConfirm:
-        """
-        Create a new conversation scenario and start the preparation process in the background.
+        """Create a new conversation scenario and start the preparation process in the background.
 
+        Parameters:
+            conversation_scenario (ConversationScenarioCreate): Scenario payload.
+            user_profile (UserProfile): Owner of the scenario.
+            background_tasks (BackgroundTasks): Background task manager.
+            custom_scenario (bool): Whether the scenario is custom.
+            advised_scenario (bool): Whether the scenario was advisor-provided.
+
+        Returns:
+            ConversationScenarioConfirm: Confirmation and scenario ID.
+
+        Raises:
+            HTTPException: If the category is invalid or scenario cannot be created.
         """
         # Validate category
         category = self._validate_category(conversation_scenario.category_id)
@@ -96,8 +116,17 @@ class ConversationScenarioService:
     def get_scenario_preparation_by_scenario_id(
         self, scenario_id: UUID, user_profile: UserProfile
     ) -> ScenarioPreparationRead:
-        """
-        Retrieve the scenario preparation data for a given conversation scenario ID.
+        """Retrieve the scenario preparation data for a given conversation scenario ID.
+
+        Parameters:
+            scenario_id (UUID): Scenario identifier.
+            user_profile (UserProfile): Requesting user profile.
+
+        Returns:
+            ScenarioPreparationRead: Preparation details.
+
+        Raises:
+            HTTPException: If the scenario is missing, unauthorized, or incomplete.
         """
         conversation_scenario = self.db.get(ConversationScenario, scenario_id)
         if not conversation_scenario:
@@ -158,13 +187,13 @@ class ConversationScenarioService:
         - `total_sessions`: Total number of sessions associated with the scenario.
         - `average_score`: Average score of completed session feedback.
 
-        If the user is not an admin, only scenarios owned by the user are included.
-
-        Args:
-            user_profile (UserProfile): The profile of the user requesting the summary.
+        Parameters:
+            user_profile (UserProfile): Requesting user profile.
+            page (int): Page number (1-based).
+            page_size (int): Number of items per page.
 
         Returns:
-            list[ConversationScenarioSummary]: A list of summaries for all conversation scenarios.
+            PaginatedConversationScenarioSummary: Paginated scenario summaries.
         """
 
         stmt = (
@@ -238,8 +267,17 @@ class ConversationScenarioService:
         )
 
     def delete_conversation_scenario(self, scenario_id: UUID, user_profile: UserProfile) -> dict:
-        """
-        Deletes a single conversation scenario by ID, ensuring cascade deletion of sessions.
+        """Delete a single conversation scenario by ID, ensuring cascade deletion of sessions.
+
+        Parameters:
+            scenario_id (UUID): Scenario identifier to delete.
+            user_profile (UserProfile): Requesting user profile.
+
+        Returns:
+            dict: Deletion summary and deleted audio list.
+
+        Raises:
+            HTTPException: If the user is not authorized.
         """
         user_id = user_profile.id
         scenario = self.db.get(ConversationScenario, scenario_id)
@@ -279,9 +317,14 @@ class ConversationScenarioService:
         }
 
     def clear_all_conversation_scenarios(self, user_profile: UserProfile) -> dict:
-        """
-        Deletes all conversation scenarios for the authenticated user, ensuring cascade deletion of
-        sessions.
+        """Delete all conversation scenarios for the authenticated user, ensuring cascade deletion
+        of sessions.
+
+        Parameters:
+            user_profile (UserProfile): Requesting user profile.
+
+        Returns:
+            dict: Deletion summary and deleted audio list.
         """
         user_id = user_profile.id
         statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
@@ -329,8 +372,7 @@ class ConversationScenarioService:
     def get_scenario_summary(
         self, scenario_id: UUID, user_profile: UserProfile
     ) -> ConversationScenarioReadDetail:
-        """
-        Retrieve a summary for a specific conversation scenario.
+        """Retrieve a summary for a specific conversation scenario.
 
         The summary includes:
         - `scenario_id`: Unique identifier for the scenario.
@@ -339,18 +381,15 @@ class ConversationScenarioService:
         - `total_sessions`: Total number of sessions associated with the scenario.
         - `average_score`: Average score of completed session feedback.
 
-        Validates that the scenario exists and that the user has permission to access it.
-
-        Args:
-            scenario_id (UUID): The unique identifier of the conversation scenario.
-            user_profile (UserProfile): The profile of the user requesting the summary.
+        Parameters:
+            scenario_id (UUID): Scenario identifier.
+            user_profile (UserProfile): Requesting user profile.
 
         Returns:
-            ConversationScenarioSummary: A summary of the specified conversation scenario.
+            ConversationScenarioReadDetail: Scenario summary details.
 
         Raises:
-            HTTPException: If the scenario does not exist or the user does not have permission to
-            access it.
+            HTTPException: If the scenario is missing or unauthorized.
         """
         scenario = self.db.get(ConversationScenario, scenario_id)
         if not scenario:
@@ -397,8 +436,16 @@ class ConversationScenarioService:
         )
 
     def _validate_category(self, category_id: str | None) -> ConversationCategory | None:
-        """
-        Validate that the category exists in the database.
+        """Validate that the category exists in the database by ID.
+
+        Parameters:
+            category_id (str | None): Category identifier to validate.
+
+        Returns:
+            ConversationCategory | None: Category record if found, otherwise None.
+
+        Raises:
+            HTTPException: If the category ID is provided but not found.
         """
         if category_id:
             category = self.db.get(ConversationCategory, category_id)
@@ -414,8 +461,16 @@ class ConversationScenarioService:
         language_code: LanguageCode,
         difficulty_level: DifficultyLevel,
     ) -> Sequence[ConversationScenario]:
-        """
-        Retrieve all conversation scenarios for a given user and category.
+        """Retrieve scenarios for a user filtered by category, language and difficulty.
+
+        Parameters:
+            user_id (UUID): User identifier.
+            category_id (str | None): Category identifier.
+            language_code (LanguageCode): Scenario language code.
+            difficulty_level (DifficultyLevel): Scenario difficulty level.
+
+        Returns:
+            Sequence[ConversationScenario]: Matching scenarios.
         """
         statement = select(ConversationScenario).where(ConversationScenario.user_id == user_id)
         if category_id:
@@ -429,8 +484,14 @@ class ConversationScenarioService:
     def _get_equal_scenario(
         self, scenarios: Sequence[ConversationScenario], new_scenario: ConversationScenarioCreate
     ) -> UUID | None:
-        """
-        Check if there are any existing scenarios with the same prompt as the new scenario.
+        """Check if there are any existing scenarios with the same prompt as the new scenario.
+
+        Parameters:
+            scenarios (Sequence[ConversationScenario]): Existing scenarios to compare.
+            new_scenario (ConversationScenarioCreate): New scenario payload.
+
+        Returns:
+            UUID | None: Matching scenario ID if found.
         """
         for scenario in scenarios:
             if scenario.persona.replace(' ', '') == new_scenario.persona.replace(
@@ -448,8 +509,16 @@ class ConversationScenarioService:
         category: ConversationCategory | None,
         background_tasks: BackgroundTasks,
     ) -> None:
-        """
-        Start the background task to generate scenario preparation.
+        """Start background task to generate scenario preparation.
+
+        Parameters:
+            prep_id (UUID): Preparation record identifier.
+            conversation_scenario (ConversationScenario): Scenario context.
+            category (ConversationCategory | None): Category context.
+            background_tasks (BackgroundTasks): Background task manager.
+
+        Returns:
+            None: This function schedules background work.
         """
         new_preparation = ScenarioPreparationCreate(
             category=category.name if category else '',

@@ -1,3 +1,5 @@
+"""Service layer for session turn service."""
+
 import io
 import logging
 import os
@@ -38,6 +40,14 @@ STITCH_MODE = MODE_TIMELINE  # or MODE_TIMELINE
 
 
 def is_valid_audio_mime_type(mime_type: str) -> bool:
+    """Check whether a MIME type is supported for audio uploads.
+
+    Parameters:
+        mime_type (str): MIME type to validate.
+
+    Returns:
+        bool: True if the MIME type is supported.
+    """
     return mime_type in [
         'audio/webm',
         'video/webm',
@@ -50,6 +60,17 @@ def is_valid_audio_mime_type(mime_type: str) -> bool:
 
 
 def get_audio_content_type(upload_file: UploadFile) -> str:
+    """Detect and validate the MIME type of an uploaded audio file.
+
+    Parameters:
+        upload_file (UploadFile): Uploaded file object.
+
+    Returns:
+        str: Detected MIME type.
+
+    Raises:
+        HTTPException: If the file type is not supported.
+    """
     matches = puremagic.magic_stream(upload_file.file)
     upload_file.file.seek(0)
     if not matches:
@@ -67,6 +88,17 @@ def get_audio_content_type(upload_file: UploadFile) -> str:
 
 
 def get_file_extension_from_content_type(content_type: str) -> str:
+    """Map a MIME type to a file extension.
+
+    Parameters:
+        content_type (str): MIME type to map.
+
+    Returns:
+        str: File extension for the MIME type.
+
+    Raises:
+        HTTPException: If the content type is unsupported.
+    """
     mapping = {
         'audio/webm': '.webm',
         'video/webm': '.webm',
@@ -86,6 +118,18 @@ def get_file_extension_from_content_type(content_type: str) -> str:
 
 
 def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
+    """Upload an audio file to GCS and return its blob name.
+
+    Parameters:
+        session_id (UUID): Session identifier for naming.
+        audio_file (UploadFile): Uploaded audio file.
+
+    Returns:
+        str: Stored audio blob name.
+
+    Raises:
+        HTTPException: If the upload fails.
+    """
     content_type = get_audio_content_type(audio_file)
     file_extension = get_file_extension_from_content_type(content_type)
     audio_name = f'{session_id}_{uuid4().hex}{file_extension}'
@@ -106,7 +150,14 @@ def store_audio_file(session_id: UUID, audio_file: UploadFile) -> str:
 
 
 class SessionTurnService:
+    """Service for managing session turns and audio stitching."""
+
     def __init__(self, db: DBSession) -> None:
+        """Initialize the service with a database session.
+
+        Parameters:
+            db (DBSession): Database session used for queries and updates.
+        """
         self.db = db
         self.gcs_manager = get_gcs_audio_manager()
 
@@ -117,6 +168,20 @@ class SessionTurnService:
         user_profile: UserProfile,
         background_tasks: BackgroundTasks,
     ) -> SessionTurnRead:
+        """Create a session turn and optionally generate live feedback.
+
+        Parameters:
+            turn (SessionTurnCreate): Turn payload.
+            audio_file (UploadFile): Uploaded audio file.
+            user_profile (UserProfile): Requesting user profile.
+            background_tasks (BackgroundTasks): Background task manager.
+
+        Returns:
+            SessionTurnRead: Created turn payload.
+
+        Raises:
+            HTTPException: If session validation fails.
+        """
         session = self.db.get(SessionModel, turn.session_id)
 
         if not session.scenario.user_id == user_profile.id:
@@ -168,13 +233,21 @@ class SessionTurnService:
         )
 
     def get_audio_duration_seconds(self, buffer: io.BytesIO) -> float:
-        """
-        Write buffer to a temp file and return its audio duration in seconds.
+        """Write buffer to a temp file and return its audio duration in seconds.
         Four fallbacks, in order:
         1) ffprobe container duration
         2) ffprobe audio‐stream duration
         3) parse “Duration: hh:mm:ss.xx” from ffmpeg -i stderr
         4) decode with ffmpeg -f null and grab the last time= log
+
+        Parameters:
+            buffer (io.BytesIO): Audio buffer to analyze.
+
+        Returns:
+            float: Audio duration in seconds.
+
+        Raises:
+            RuntimeError: If duration cannot be determined.
         """
         # 1) dump to temp file
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
@@ -263,6 +336,19 @@ class SessionTurnService:
     def stitch_mp3s_from_gcs(
         self, session_id: UUID, output_blob_name: str
     ) -> SessionTurnStitchAudioSuccess | None:
+        """Stitch session turn audio files into a single MP3.
+
+        Parameters:
+            session_id (UUID): Session identifier.
+            output_blob_name (str): Destination blob name for stitched audio.
+
+        Returns:
+            SessionTurnStitchAudioSuccess | None: Stitching result or None when skipped.
+
+        Raises:
+            HTTPException: If storage access is unavailable.
+            RuntimeError: If ffmpeg processing fails.
+        """
         # Order by configured start_offset_ms to respect timeline
 
         if not settings.ENABLE_AI:
@@ -408,6 +494,14 @@ class SessionTurnService:
         )
 
     def get_session_turns(self, session_id: UUID) -> list[SessionTurnRead]:
+        """Fetch session turns ordered by stitched audio offsets.
+
+        Parameters:
+            session_id (UUID): Session identifier.
+
+        Returns:
+            list[SessionTurnRead]: Session turn summaries.
+        """
         turns = self.db.exec(
             select(SessionTurn)
             .where(SessionTurn.session_id == session_id)
@@ -426,6 +520,17 @@ class SessionTurnService:
         ]
 
     def delete_session_turns(self, session_turns: list[SessionTurn]) -> list[str]:
+        """Delete session turns and associated audio files.
+
+        Parameters:
+            session_turns (list[SessionTurn]): Turns to delete.
+
+        Returns:
+            list[str]: Deleted audio blob names.
+
+        Raises:
+            HTTPException: If audio deletion fails.
+        """
         if not session_turns:
             return []
 

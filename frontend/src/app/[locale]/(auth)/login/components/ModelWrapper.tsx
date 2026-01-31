@@ -3,13 +3,22 @@
 import { useRouter } from 'next/navigation';
 import { ReactNode } from 'react';
 
+/**
+ * Props for the modal wrapper container.
+ */
 interface ModalWrapperProps {
   children: ReactNode;
 }
 
+/**
+ * Centers modal content and handles closing by clicking the backdrop.
+ */
 export function ModalWrapper({ children }: ModalWrapperProps) {
   const router = useRouter();
 
+  /**
+   * Navigates back to the login route when the backdrop is clicked.
+   */
   const handleBackdropClick = () => {
     router.push('/login'); // You can preserve query params if needed
   };

@@ -1,3 +1,5 @@
+"""API routes for sessions route."""
+
 from typing import Annotated
 from uuid import UUID
 
@@ -18,8 +20,13 @@ router = APIRouter(prefix='/sessions', tags=['Sessions'])
 def get_session_service(
     db_session: Annotated[DBSession, Depends(get_db_session)],
 ) -> SessionService:
-    """
-    Dependency factory to inject the SessionService.
+    """Provide SessionService via dependency injection.
+
+    Parameters:
+        db_session (DBSession): Database session dependency.
+
+    Returns:
+        SessionService: Service instance.
     """
     return SessionService(db_session)
 
@@ -30,8 +37,15 @@ def get_session_by_id(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[SessionService, Depends(get_session_service)],
 ) -> SessionDetailsRead:
-    """
-    Retrieve a session by its ID.
+    """Return session details by ID.
+
+    Parameters:
+        id (UUID): Session identifier.
+        user_profile (UserProfile): Authenticated user profile.
+        service (SessionService): Service dependency.
+
+    Returns:
+        SessionDetailsRead: Session detail payload.
     """
     return service.fetch_session_details(id, user_profile)
 
@@ -44,8 +58,17 @@ def get_sessions(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
 ) -> PaginatedSessionRead:
-    """
-    Return paginated list of completed sessions for a user.
+    """Return paginated sessions for a user or scenario.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        service (SessionService): Service dependency.
+        scenario_id (UUID | None): Optional scenario filter.
+        page (int): Page number (1-based).
+        page_size (int): Items per page.
+
+    Returns:
+        PaginatedSessionRead: Paginated session list.
     """
     return service.fetch_paginated_sessions(user_profile, page, page_size, scenario_id)
 
@@ -56,8 +79,15 @@ def create_session(
     service: Annotated[SessionService, Depends(get_session_service)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> SessionRead:
-    """
-    Create a new session.
+    """Create a new session.
+
+    Parameters:
+        session_data (SessionCreate): Session creation payload.
+        service (SessionService): Service dependency.
+        user_profile (UserProfile): Authenticated user profile.
+
+    Returns:
+        SessionRead: Created session payload.
     """
     return service.create_new_session(session_data, user_profile)
 
@@ -70,8 +100,17 @@ def update_session(
     background_tasks: BackgroundTasks,
     service: Annotated[SessionService, Depends(get_session_service)],
 ) -> SessionRead:
-    """
-    Update an existing session.
+    """Update an existing session.
+
+    Parameters:
+        id (UUID): Session identifier.
+        updated_data (SessionUpdate): Session update payload.
+        user_profile (UserProfile): Authenticated user profile.
+        background_tasks (BackgroundTasks): Background task manager.
+        service (SessionService): Service dependency.
+
+    Returns:
+        SessionRead: Updated session payload.
     """
     return service.update_existing_session(id, updated_data, user_profile, background_tasks)
 
@@ -81,8 +120,14 @@ def delete_sessions_by_user(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     service: Annotated[SessionService, Depends(get_session_service)],
 ) -> dict:
-    """
-    Delete all sessions related to conversation scenarios for a given user ID.
+    """Delete all sessions related to conversation scenarios for a given user ID.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        service (SessionService): Service dependency.
+
+    Returns:
+        dict: Deletion summary.
     """
     return service.delete_all_user_sessions(user_profile)
 
@@ -93,7 +138,14 @@ def delete_session(
     service: Annotated[SessionService, Depends(get_session_service)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> dict:
-    """
-    Delete a session.
+    """Delete a session by ID.
+
+    Parameters:
+        id (UUID): Session identifier.
+        service (SessionService): Service dependency.
+        user_profile (UserProfile): Authenticated user profile.
+
+    Returns:
+        dict: Deletion summary.
     """
     return service.delete_session_by_id(id, user_profile)

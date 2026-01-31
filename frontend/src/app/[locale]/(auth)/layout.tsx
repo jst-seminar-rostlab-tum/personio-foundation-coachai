@@ -5,6 +5,9 @@ import AboutFooter from '@/components/layout/AboutFooter';
 import type { LayoutProps } from '@/interfaces/props/LayoutProps';
 import { Toaster } from '@/components/ui/Sonner';
 
+/**
+ * Provides the shared layout chrome for auth pages with header, footer, and toasts.
+ */
 export default async function AuthLayout({ children }: LayoutProps) {
   return (
     <NextIntlClientProvider>

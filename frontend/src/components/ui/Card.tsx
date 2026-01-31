@@ -2,6 +2,9 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Base card container.
+ */
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -15,6 +18,9 @@ function Card({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Card header section.
+ */
 function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -28,10 +34,16 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Card title text.
+ */
 function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return <div data-slot="card-title" className={cn('text-2xl text-bw-70', className)} {...props} />;
 }
 
+/**
+ * Card description text.
+ */
 function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -42,6 +54,9 @@ function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Card action slot for buttons or links.
+ */
 function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -52,10 +67,16 @@ function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Card body content container.
+ */
 function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
   return <div data-slot="card-content" className={cn('px-6', className)} {...props} />;
 }
 
+/**
+ * Card footer section.
+ */
 function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

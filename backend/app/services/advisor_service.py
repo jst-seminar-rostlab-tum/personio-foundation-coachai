@@ -1,3 +1,5 @@
+"""Service layer for advisor service."""
+
 import logging
 from collections.abc import Callable, Generator
 from contextlib import suppress
@@ -67,6 +69,11 @@ mock_situational_facts = """
 
 
 def get_mock_advisor_response() -> AdvisorResponse:
+    """Return a mock advisor response for development/testing.
+
+    Returns:
+        AdvisorResponse: Mock advisor response payload.
+    """
     return AdvisorResponse(
         category_id='giving_feedback',
         persona=mock_persona,
@@ -78,6 +85,11 @@ def get_mock_advisor_response() -> AdvisorResponse:
 
 
 def get_mock_session_feedback() -> SessionFeedback:
+    """Return a mock session feedback record for development/testing.
+
+    Returns:
+        SessionFeedback: Mock session feedback payload.
+    """
     return SessionFeedback(
         id=uuid4(),
         session_id=uuid4(),
@@ -169,12 +181,27 @@ def get_mock_session_feedback() -> SessionFeedback:
 
 
 class AdvisorService:
+    """Service for generating next-scenario advice from session feedback."""
+
     def generate_and_store_advice(
         self,
         session_feedback_id: UUID,
         user_profile_id: UUID,
         session_generator_func: Callable[[], Generator[DBSession]],
     ) -> None:
+        """Generate advice and store it on the user's profile.
+
+        Parameters:
+            session_feedback_id (UUID): Session feedback identifier.
+            user_profile_id (UUID): User profile identifier.
+            session_generator_func (Callable[[], Generator[DBSession]]): DB session generator.
+
+        Returns:
+            None: This function persists advice to the database.
+
+        Raises:
+            HTTPException: If the session feedback cannot be found.
+        """
         session_gen = session_generator_func()
         try:
             db_session: DBSession = next(session_gen)
@@ -203,6 +230,14 @@ class AdvisorService:
                 next(session_gen)
 
     def _generate_advice(self, session_feedback: SessionFeedback) -> ScenarioAdvice:
+        """Generate scenario advice based on session feedback.
+
+        Parameters:
+            session_feedback (SessionFeedback): Feedback data to analyze.
+
+        Returns:
+            ScenarioAdvice: Suggested scenario guidance.
+        """
         language_code = LanguageCode.en
         try:
             previous_scenario = session_feedback.session.scenario

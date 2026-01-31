@@ -1,3 +1,6 @@
+/**
+ * Generic user preference selector configuration.
+ */
 export interface UserPreference<T = string> {
   label: string;
   options: UserOption[];
@@ -8,6 +11,9 @@ export interface UserPreference<T = string> {
   onChange?: (value: T) => void;
 }
 
+/**
+ * Configuration for a confidence slider field.
+ */
 export interface UserConfidenceField {
   title: string;
   minLabel: string;
@@ -18,12 +24,18 @@ export interface UserConfidenceField {
   onChange?: (value: number[]) => void;
 }
 
+/**
+ * Option item used in select and radio inputs.
+ */
 export interface UserOption {
   id: string;
   label: string;
   labelHint?: string;
 }
 
+/**
+ * Radio question configuration for onboarding.
+ */
 export interface UserRadioQuestion {
   question: string;
   options: UserOption[];

@@ -1,3 +1,5 @@
+"""Service layer for session feedback llm."""
+
 import json
 import os
 from functools import lru_cache
@@ -24,6 +26,11 @@ from app.services.utils import normalize_quotes
 
 @lru_cache
 def load_session_feedback_config() -> SessionFeedbackConfigRead:
+    """Load session feedback configuration from disk.
+
+    Returns:
+        SessionFeedbackConfigRead: Parsed configuration model.
+    """
     config_path = os.path.join(os.path.dirname(__file__), 'session_feedback_config.json')
     with open(config_path, encoding='utf-8') as f:
         data = json.load(f)  # Python dict
@@ -41,6 +48,17 @@ def safe_generate_training_examples(
     audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> SessionExamplesRead:
+    """Retry-safe wrapper to generate training examples.
+
+    Parameters:
+        request (FeedbackCreate): Feedback request payload.
+        hr_docs_context (str): HR document context.
+        audio_uri (str | None): Optional audio URI.
+        temperature (float): Sampling temperature.
+
+    Returns:
+        SessionExamplesRead: Generated example pairs.
+    """
     return generate_training_examples(request, hr_docs_context, audio_uri, temperature)
 
 
@@ -51,6 +69,17 @@ def safe_get_achieved_goals(
     audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> GoalsAchievedRead:
+    """Retry-safe wrapper to get achieved goals.
+
+    Parameters:
+        request (GoalsAchievedCreate): Goals request payload.
+        hr_docs_context (str): HR document context.
+        audio_uri (str | None): Optional audio URI.
+        temperature (float): Sampling temperature.
+
+    Returns:
+        GoalsAchievedRead: Achieved goals response.
+    """
     if audio_uri is not None:
         return get_achieved_goals(request, hr_docs_context, audio_uri, temperature=temperature)
     else:
@@ -64,6 +93,17 @@ def safe_generate_recommendations(
     audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> RecommendationsRead:
+    """Retry-safe wrapper to generate recommendations.
+
+    Parameters:
+        request (FeedbackCreate): Feedback request payload.
+        hr_docs_context (str): HR document context.
+        audio_uri (str | None): Optional audio URI.
+        temperature (float): Sampling temperature.
+
+    Returns:
+        RecommendationsRead: Recommendations response.
+    """
     return generate_recommendations(request, hr_docs_context, audio_uri, temperature)
 
 
@@ -73,6 +113,17 @@ def generate_training_examples(
     audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> SessionExamplesRead:
+    """Generate positive and negative training examples.
+
+    Parameters:
+        request (FeedbackCreate): Feedback request payload.
+        hr_docs_context (str): HR document context.
+        audio_uri (str | None): Optional audio URI.
+        temperature (float): Sampling temperature.
+
+    Returns:
+        SessionExamplesRead: Generated training examples.
+    """
     if not request.transcript or all(
         (line.strip() == '' or line.strip().startswith('Assistant:'))
         for line in request.transcript.splitlines()
@@ -122,6 +173,17 @@ def get_achieved_goals(
     audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> GoalsAchievedRead:
+    """Evaluate achieved goals from a transcript.
+
+    Parameters:
+        request (GoalsAchievedCreate): Goals request payload.
+        hr_docs_context (str): HR document context.
+        audio_uri (str | None): Optional audio URI.
+        temperature (float): Sampling temperature.
+
+    Returns:
+        GoalsAchievedRead: Achieved goals response.
+    """
     lang = request.language_code
     settings = config.root[lang]
 
@@ -155,6 +217,17 @@ def generate_recommendations(
     audio_uri: str | None = None,
     temperature: float = 0.0,
 ) -> RecommendationsRead:
+    """Generate coaching recommendations from a transcript.
+
+    Parameters:
+        request (FeedbackCreate): Feedback request payload.
+        hr_docs_context (str): HR document context.
+        audio_uri (str | None): Optional audio URI.
+        temperature (float): Sampling temperature.
+
+    Returns:
+        RecommendationsRead: Recommendations response.
+    """
     if not request.transcript or all(
         (line.strip() == '' or line.strip().startswith('Assistant:'))
         for line in request.transcript.splitlines()

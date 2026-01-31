@@ -1,3 +1,5 @@
+"""Database model definitions for scenario preparation."""
+
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -15,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class ScenarioPreparation(CamelModel, table=True):
+    """Database model for scenario preparation."""
+
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     scenario_id: UUID = Field(foreign_key='conversationscenario.id', ondelete='CASCADE')
     objectives: list[str] = Field(default_factory=list, sa_column=Column(JSON))
@@ -31,4 +35,14 @@ class ScenarioPreparation(CamelModel, table=True):
 
 @event.listens_for(ScenarioPreparation, 'before_update')
 def update_timestamp(mapper: Mapper, connection: Connection, target: 'ScenarioPreparation') -> None:
+    """Update the updated_at timestamp before persistence.
+
+    Parameters:
+        mapper (Mapper): SQLAlchemy mapper for the model.
+        connection (Connection): Active database connection.
+        target (Any): Model instance being updated.
+
+    Returns:
+        None: This function mutates the target instance in-place.
+    """
     target.updated_at = datetime.now(UTC)

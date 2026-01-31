@@ -21,15 +21,17 @@ import { createClient } from '@/lib/supabase/client';
 import { SignInWithPasswordCredentials } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { showErrorToast } from '@/lib/utils/toast';
-import ConfirmationForm from '@/app/[locale]/(auth)/login/components/ConfirmationForm';
+import EmailConfirmationPopup from './EmailConfirmationPopup';
 
+/**
+ * Handles user sign-in with email and password.
+ */
 export function SignInForm() {
   const tLogin = useTranslations('Login');
   const tCommon = useTranslations('Common');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [showEmailConfirmationForm, setShowEmailConfirmationForm] = useState(false);
 
   const router = useRouter();
 
@@ -54,6 +56,9 @@ export function SignInForm() {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  /**
+   * Submits credentials and routes on success or shows confirmation if needed.
+   */
   const handleSubmit = async (values: z.infer<typeof signInFormSchema>) => {
     setError(null);
     setIsLoading(true);
@@ -67,26 +72,12 @@ export function SignInForm() {
     const response = await supabase.auth.signInWithPassword(credentials);
 
     if (response.error) {
-      // Check for unconfirmed email error
-      if (
-        response.error.message.toLowerCase().includes('confirm') ||
-        response.error.message.toLowerCase().includes('verify')
-      ) {
-        setPendingEmail(formData.email);
-        setShowConfirmation(true);
-
-        // Resend confirmation email
-        await supabase.auth.resend({
-          email: formData.email,
-          type: 'signup',
-        });
-
-        setIsLoading(false);
-        return;
-      }
-
       setError(response.error.message);
       setIsLoading(false);
+      if (response.error.code === 'email_not_confirmed') {
+        setError(null);
+        setShowEmailConfirmationForm(true);
+      }
       return;
     }
 
@@ -158,8 +149,11 @@ export function SignInForm() {
           </CardFooter>
         </form>
       </Form>
-      {showConfirmation && pendingEmail && (
-        <ConfirmationForm initialEmail={pendingEmail} onClose={() => setShowConfirmation(false)} />
+      {showEmailConfirmationForm && (
+        <EmailConfirmationPopup
+          initialEmail={signInForm.getValues('email')}
+          onClose={() => setShowEmailConfirmationForm(false)}
+        />
       )}
     </Card>
   );

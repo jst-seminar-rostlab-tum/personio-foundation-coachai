@@ -7,6 +7,9 @@ import { Categories } from '@/lib/constants/categories';
 import { ContextModeEnums } from '@/interfaces/models/ConversationScenario';
 import { PersonaButton } from './PersonaButton';
 
+/**
+ * Renders the category selection step with context preview/editing.
+ */
 export function CategoryStep() {
   const t = useTranslations('ConversationScenario');
   const tCategories = useTranslations('ConversationScenario.categories');

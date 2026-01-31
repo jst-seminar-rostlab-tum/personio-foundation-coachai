@@ -1,3 +1,6 @@
+/**
+ * Store state for admin statistics.
+ */
 export interface AdminStatsState {
   stats: {
     totalUsers: number;

@@ -6,12 +6,18 @@ import { cn } from '@/lib/utils/cnMerge';
 import { useTranslations } from 'next-intl';
 import Input from '@/components/ui/Input';
 
+/**
+ * Describes a password rule and its validation predicate.
+ */
 export interface PasswordRequirement {
   id: string;
   label: string;
   test: (password: string) => boolean;
 }
 
+/**
+ * Props for the password input component.
+ */
 interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   placeholder: string;
   disabled: boolean;
@@ -20,6 +26,9 @@ interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   autocomplete?: string;
 }
 
+/**
+ * Password input with visibility toggle and live requirement feedback.
+ */
 export function PasswordInput({
   placeholder,
   disabled,
@@ -32,6 +41,9 @@ export function PasswordInput({
   const [passwordValue, setPasswordValue] = useState('');
   const t = useTranslations('Login.PasswordInput');
 
+  /**
+   * Tracks password changes locally while forwarding to the parent onChange handler.
+   */
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setPasswordValue(newValue);

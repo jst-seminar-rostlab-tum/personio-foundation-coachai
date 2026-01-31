@@ -1,3 +1,5 @@
+"""Service layer for realtime session service."""
+
 import json
 import logging
 import os
@@ -14,19 +16,28 @@ from app.models.conversation_scenario import ConversationScenario
 from app.models.session import Session
 from app.models.user_profile import UserProfile
 
-if settings.FORCE_CHEAP_MODEL:
-    MODEL = 'gpt-4o-mini-realtime-preview-2024-12-17'
-else:
-    MODEL = 'gpt-4o-realtime-preview-2025-06-03'
+MODEL = 'gpt-realtime-mini-2025-12-15' if settings.FORCE_CHEAP_MODEL else 'gpt-realtime-2025-08-28'
 
 
 class RealtimeSessionService:
+    """Service for creating OpenAI realtime sessions."""
+
     def __init__(self, db: DBSession) -> None:
+        """Initialize the service with a database session.
+
+        Parameters:
+            db (DBSession): Database session used for queries and updates.
+        """
         self.db = db
 
     def _get_voice(self, persona_name: str) -> str:
-        """
-        Returns the voice to be used based on the persona name.
+        """Return the voice to be used based on the persona name.
+
+        Parameters:
+            persona_name (str): Persona name.
+
+        Returns:
+            str: Voice identifier for the realtime model.
         """
         persona_name = persona_name.lower()
         if 'angry' in persona_name:
@@ -34,17 +45,23 @@ class RealtimeSessionService:
         elif 'positive' in persona_name:
             return 'shimmer'
         elif 'casual' in persona_name:
-            return 'alloy'
+            return 'marin'
         elif 'shy' in persona_name:
             return 'sage'
         elif 'sad' in persona_name:
             return 'ash'
         else:
-            return 'echo'
+            return 'alloy'
 
     def get_persona_difficulty_modifier(self, persona_name: str, difficulty: str) -> str | None:
-        """
-        Returns the modifier string for a given persona name and difficulty.
+        """Returns the modifier string for a given persona name and difficulty.
+
+        Parameters:
+            persona_name (str): Persona name key.
+            difficulty (str): Difficulty level key.
+
+        Returns:
+            str | None: Formatted modifier string, or None if not found.
         """
         modifiers_path = os.path.join(
             os.path.dirname(__file__), '..', 'data', 'persona_difficulty_modifiers.json'
@@ -77,9 +94,18 @@ class RealtimeSessionService:
         return '\n\n'.join(formatted)
 
     async def get_realtime_session(self, session: Session, user_profile: UserProfile) -> dict:
-        """
-        Proxies a POST request to OpenAI's realtime sessions endpoint
+        """Proxies a POST request to OpenAI's realtime sessions endpoint
         and returns the JSON response.
+
+        Parameters:
+            session (Session): Session context for the request.
+            user_profile (UserProfile): Requesting user profile.
+
+        Returns:
+            dict: Realtime session payload with persona metadata.
+
+        Raises:
+            HTTPException: If configuration is missing or upstream returns an error.
         """
         api_key = settings.OPENAI_API_KEY
         if not api_key or not settings.ENABLE_AI:
@@ -178,26 +204,41 @@ class RealtimeSessionService:
                 f.write(instructions)
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                'https://api.openai.com/v1/realtime/sessions',
+                'https://api.openai.com/v1/realtime/client_secrets',
                 headers={
                     'Authorization': f'Bearer {api_key}',
                     'Content-Type': 'application/json',
                 },
                 json={
-                    'model': MODEL,
-                    'voice': ai_voice,
-                    'input_audio_transcription': {
-                        'language': language,
-                        'model': 'gpt-4o-transcribe',
+                    'session': {
+                        'type': 'realtime',
+                        # Model selection
+                        'model': MODEL,
+                        # System instructions
+                        'instructions': instructions,
+                        # Audio + speech configuration
+                        'audio': {
+                            'input': {
+                                # Transcription
+                                'transcription': {
+                                    'model': 'gpt-4o-transcribe',
+                                    'language': language,
+                                },
+                                # Server-side VAD
+                                'turn_detection': {
+                                    'type': 'server_vad',
+                                    'threshold': 0.8,
+                                    'prefix_padding_ms': 300,
+                                    'silence_duration_ms': 500,
+                                },
+                            },
+                            'output': {
+                                # Speech speed
+                                'speed': 0.9,
+                                'voice': ai_voice,
+                            },
+                        },
                     },
-                    'instructions': instructions,
-                    'turn_detection': {
-                        'type': 'server_vad',
-                        'threshold': 0.8,
-                        'prefix_padding_ms': 300,
-                        'silence_duration_ms': 500,
-                    },
-                    'speed': 0.9,
                 },
             )
             try:

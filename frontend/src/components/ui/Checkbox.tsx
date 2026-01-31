@@ -6,6 +6,9 @@ import { CheckIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils/cnMerge';
 
+/**
+ * Wrapper for the Radix checkbox with custom styling.
+ */
 function Checkbox({ className, ...props }: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (
     <CheckboxPrimitive.Root

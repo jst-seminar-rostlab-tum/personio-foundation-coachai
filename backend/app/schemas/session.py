@@ -1,3 +1,5 @@
+"""Pydantic schema definitions for session."""
+
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
@@ -11,6 +13,8 @@ from app.schemas.session_feedback import SessionFeedbackRead
 
 # Schema for creating a new Session
 class SessionCreate(CamelModel):
+    """Schema for session create."""
+
     scenario_id: UUID
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
@@ -20,6 +24,8 @@ class SessionCreate(CamelModel):
 
 # Schema for updating an existing Session
 class SessionUpdate(CamelModel):
+    """Schema for session update."""
+
     scenario_id: UUID | None = None
     scheduled_at: datetime | None = None
     started_at: datetime | None = None
@@ -29,6 +35,8 @@ class SessionUpdate(CamelModel):
 
 # Schema for reading Session data
 class SessionRead(CamelModel):
+    """Schema for session read."""
+
     id: UUID
     scenario_id: UUID
     scheduled_at: datetime | None
@@ -43,6 +51,8 @@ class SessionRead(CamelModel):
 # Schema for reading Session data with details including skill scores, goals achieved,
 # session metrics, and feedback insights
 class SessionDetailsRead(SessionRead):
+    """Schema for session details read."""
+
     title: str | None = None
     goals_total: list[str] | None = None
     has_reviewed: bool = False

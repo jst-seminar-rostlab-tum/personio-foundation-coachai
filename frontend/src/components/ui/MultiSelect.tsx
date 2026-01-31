@@ -8,6 +8,9 @@ import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui
 import { Command as CommandPrimitive } from 'cmdk';
 import { UserOption } from '@/interfaces/models/UserInputFields';
 
+/**
+ * Props for the multi-select component.
+ */
 interface MultiSelectProps {
   options: UserOption[];
   value: string[];
@@ -17,6 +20,9 @@ interface MultiSelectProps {
   maxSelected?: number;
 }
 
+/**
+ * Renders a multi-select with badges and a command-style dropdown.
+ */
 export function MultiSelect({
   options,
   value,
@@ -52,11 +58,17 @@ export function MultiSelect({
     };
   }, []);
 
+  /**
+   * Removes a selected option.
+   */
   const handleUnselect = (optionId: string) => {
     onChange(value.filter((s) => s !== optionId));
     // Removed inputRef.current?.focus() to prevent dropdown from opening on badge removal
   };
 
+  /**
+   * Handles keyboard interactions for selection removal.
+   */
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       const input = inputRef.current;
@@ -74,6 +86,9 @@ export function MultiSelect({
     [value, onChange]
   );
 
+  /**
+   * Focuses the input and opens the dropdown.
+   */
   const handleWrapperClick = () => {
     if (selectables.length > 0 && value.length < (maxSelected ?? Infinity)) {
       inputRef.current?.focus();
@@ -81,6 +96,9 @@ export function MultiSelect({
     setOpen(true);
   };
 
+  /**
+   * Closes the dropdown when focus leaves the wrapper.
+   */
   const handleBlur = (e: React.FocusEvent) => {
     if (!wrapperRef.current?.contains(e.relatedTarget as Node)) {
       setOpen(false);

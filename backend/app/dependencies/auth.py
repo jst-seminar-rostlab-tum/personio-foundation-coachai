@@ -1,3 +1,5 @@
+"""Dependency providers for auth."""
+
 import logging
 from datetime import datetime
 from typing import Annotated, Any, NoReturn, TypedDict
@@ -21,6 +23,25 @@ security = HTTPBearer(auto_error=not (settings.stage == 'dev' and settings.DEV_M
 
 
 class JWTPayload(TypedDict, total=False):
+    """Typed JWT payload shape expected from Supabase.
+
+    Parameters:
+        iss (str): Token issuer.
+        sub (str): Subject (user ID).
+        aud (str): Token audience.
+        exp (int): Expiration timestamp (epoch seconds).
+        iat (int): Issued-at timestamp (epoch seconds).
+        email (str): User email.
+        phone (str): User phone number.
+        app_metadata (dict[str, Any]): App metadata payload.
+        user_metadata (dict[str, Any]): User metadata payload.
+        role (str): User role.
+        aal (str): Auth assurance level.
+        amr (list[Any]): Authentication methods reference.
+        session_id (str): Session identifier.
+        is_anonymous (bool): Anonymous session flag.
+    """
+
     iss: str
     sub: str
     aud: str
@@ -41,7 +62,16 @@ ALLOWED_ROLES = {AccountRole.user.value, AccountRole.admin.value}
 
 
 def _forbidden(detail: str, log_msg: str, *args: str) -> NoReturn:
-    """Log a warning and raise a 403 HttpException."""
+    """Log a warning and raise a 403 HTTPException.
+
+    Parameters:
+        detail (str): Error detail returned to the client.
+        log_msg (str): Log message template.
+        *args (str): Arguments for log message formatting.
+
+    Raises:
+        HTTPException: Always raised with a 403 status.
+    """
     logging.warning(log_msg, *args)
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
 
@@ -49,8 +79,16 @@ def _forbidden(detail: str, log_msg: str, *args: str) -> NoReturn:
 def verify_jwt(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
 ) -> JWTPayload:
-    """
-    Checks the validity of the JWT token and retrieves its information.
+    """Checks the validity of the JWT token and retrieves its information.
+
+    Parameters:
+        credentials (HTTPAuthorizationCredentials): Bearer token credentials.
+
+    Returns:
+        JWTPayload: Decoded JWT payload.
+
+    Raises:
+        HTTPException: When the token is missing, invalid, or expired.
     """
     if settings.stage == 'dev' and settings.DEV_MODE_SKIP_AUTH:
         logging.info('Skipping JWT verification')
@@ -90,9 +128,19 @@ def require_user(
     db: Annotated[DBSession, Depends(get_db_session)],
     request: Request,
 ) -> UserProfile:
-    """
-    Checks that the JWT has a 'sub', that a UserProfile exists for it,
+    """Checks that the JWT has a 'sub', that a UserProfile exists for it,
     and that its role is either 'user' or 'admin'.
+
+    Parameters:
+        token (JWTPayload): Decoded JWT payload.
+        db (DBSession): Database session dependency.
+        request (Request): Incoming request for timezone context.
+
+    Returns:
+        UserProfile: The authenticated user profile.
+
+    Raises:
+        HTTPException: If authentication or authorization fails.
     """
     user_id = token.get('sub') or _forbidden('Cannot find user', 'JWT payload missing "sub" claim')
 
@@ -119,8 +167,18 @@ def require_admin(
     db: Annotated[DBSession, Depends(get_db_session)],
     request: Request,
 ) -> UserProfile:
-    """
-    Ensures the JWT has a 'sub' claim, the user exists, and is an admin.
+    """Ensures the JWT has a 'sub' claim, the user exists, and is an admin.
+
+    Parameters:
+        token (JWTPayload): Decoded JWT payload.
+        db (DBSession): Database session dependency.
+        request (Request): Incoming request for timezone context.
+
+    Returns:
+        UserProfile: The authenticated admin user profile.
+
+    Raises:
+        HTTPException: If authentication or authorization fails.
     """
     user_id = token.get('sub') or _forbidden('Cannot find user', 'JWT payload missing "sub" claim')
 

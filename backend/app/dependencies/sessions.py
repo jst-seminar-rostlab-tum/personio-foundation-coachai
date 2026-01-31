@@ -1,3 +1,5 @@
+"""Dependency providers for sessions."""
+
 from typing import Annotated
 from uuid import UUID
 
@@ -19,6 +21,19 @@ def require_session_access(
     db_session: Annotated[DBSession, Depends(get_db_session)],
     user_profile: Annotated[UserProfile, Depends(require_user)],
 ) -> Session:
+    """Ensure the current user can access the requested session.
+
+    Parameters:
+        session_id (UUID): Session identifier to validate.
+        db_session (DBSession): Database session dependency.
+        user_profile (UserProfile): Authenticated user profile.
+
+    Returns:
+        Session: The session if access is allowed.
+
+    Raises:
+        HTTPException: If the session is missing, unauthorized, or completed.
+    """
     session = db_session.exec(select(Session).where(Session.id == session_id)).first()
     if not session:
         raise HTTPException(
@@ -41,6 +56,18 @@ def require_sessions_left_today(
     user_profile: Annotated[UserProfile, Depends(require_user)],
     app_config_service: Annotated[AppConfigService, Depends(get_app_config_service)],
 ) -> None:
+    """Ensure the user has remaining daily sessions.
+
+    Parameters:
+        user_profile (UserProfile): Authenticated user profile.
+        app_config_service (AppConfigService): App config service for defaults.
+
+    Returns:
+        None: This function raises on limit violations.
+
+    Raises:
+        HTTPException: If the daily session limit has been reached.
+    """
     if user_profile.account_role == AccountRole.admin:
         return
 

@@ -9,6 +9,9 @@ import { Badge } from '@/components/ui/Badge';
 import Image from 'next/image';
 import { DifficultyLevelEnums } from '@/interfaces/models/ConversationScenario';
 
+/**
+ * Props for the persona collapsible details section.
+ */
 interface PersonaCollapsibleSectionProps {
   situationalFacts?: string;
   persona?: string;
@@ -19,6 +22,9 @@ interface PersonaCollapsibleSectionProps {
   imgSrc?: string;
 }
 
+/**
+ * Displays persona details and situational facts in collapsible panels.
+ */
 export default function PersonaCollapsibleSection({
   situationalFacts,
   persona,

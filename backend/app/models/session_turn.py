@@ -1,3 +1,5 @@
+"""Database model definitions for session turn."""
+
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
@@ -12,6 +14,8 @@ if TYPE_CHECKING:
 
 
 class SessionTurn(CamelModel, table=True):
+    """Database model for session turn."""
+
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     session_id: UUID = Field(foreign_key='session.id', ondelete='CASCADE')
     speaker: SpeakerType

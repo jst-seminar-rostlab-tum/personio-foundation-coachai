@@ -1,6 +1,9 @@
 import { UserOption } from '@/interfaces/models/UserInputFields';
 import { useTranslations } from 'next-intl';
 
+/**
+ * Returns localized role options for user profiles.
+ */
 export function UserRoles(): UserOption[] {
   const tOptions = useTranslations('PersonalizationOptions');
   return [

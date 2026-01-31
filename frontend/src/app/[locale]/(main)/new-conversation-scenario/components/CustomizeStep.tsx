@@ -4,6 +4,9 @@ import { useConversationScenarioStore } from '@/store/ConversationScenarioStore'
 import { PersonaButton } from './PersonaButton';
 import { PersonaInfo } from './PersonaInfo';
 
+/**
+ * Renders persona and difficulty selection step.
+ */
 export function CustomizeStep() {
   const t = useTranslations('ConversationScenario');
 

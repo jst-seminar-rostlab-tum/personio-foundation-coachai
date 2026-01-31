@@ -7,12 +7,18 @@ import { Children, cloneElement, useCallback, useEffect, useRef, useState } from
 import type { KeyboardEvent, MouseEvent, ReactElement, ReactNode } from 'react';
 import { RatingContext, RatingContextValue, useRating } from '@/contexts/Rating';
 
+/**
+ * Props for a rating button icon.
+ */
 type RatingButtonProps = LucideProps & {
   index?: number;
   icon?: ReactElement<LucideProps>;
 };
 
-type RatingProps = {
+/**
+ * Props for the rating group.
+ */
+interface RatingProps {
   defaultValue: number;
   value?: number;
   onChange?: (
@@ -23,8 +29,11 @@ type RatingProps = {
   readOnly?: boolean;
   className?: string;
   children?: ReactNode;
-};
+}
 
+/**
+ * Interactive star button used inside a rating group.
+ */
 export const RatingButton = ({
   index: providedIndex,
   size = 20,
@@ -80,6 +89,9 @@ export const RatingButton = ({
   );
 };
 
+/**
+ * Renders a rating control with keyboard and hover interactions.
+ */
 export const Rating = ({
   value: controlledValue,
   onValueChange: controlledOnValueChange,
@@ -99,6 +111,9 @@ export const Rating = ({
     onChange: controlledOnValueChange,
   });
 
+  /**
+   * Handles value changes from click or keyboard events.
+   */
   const handleValueChange = useCallback(
     (event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>, newValue: number) => {
       if (!readOnly) {
@@ -109,6 +124,9 @@ export const Rating = ({
     [readOnly, onChange, onValueChange]
   );
 
+  /**
+   * Handles keyboard navigation between rating buttons.
+   */
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLButtonElement>) => {
       if (readOnly) {

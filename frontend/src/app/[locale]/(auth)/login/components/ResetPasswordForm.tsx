@@ -28,6 +28,9 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { ModalWrapper } from './ModelWrapper';
 
+/**
+ * Collects email address to initiate the password reset flow.
+ */
 export default function ResetPasswordForm() {
   const t = useTranslations('Login.Reset');
   const tCommon = useTranslations('Common');
@@ -52,6 +55,9 @@ export default function ResetPasswordForm() {
     },
   });
 
+  /**
+   * Sends a password reset email using Supabase auth.
+   */
   const sendPasswordReset = async (values: z.infer<typeof passwordResetFormSchema>) => {
     setError(null);
     setIsLoading(true);

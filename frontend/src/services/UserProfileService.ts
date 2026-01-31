@@ -1,6 +1,9 @@
 import { UserProfile, UserProfileUpdate } from '@/interfaces/models/UserProfile';
 import { AxiosInstance } from 'axios';
 
+/**
+ * Fetches the current user's profile.
+ */
 const getUserProfile = async (api: AxiosInstance) => {
   try {
     const { data } = await api.get<UserProfile>(`/user-profiles/profile`, {
@@ -13,6 +16,9 @@ const getUserProfile = async (api: AxiosInstance) => {
   }
 };
 
+/**
+ * Fetches stats for the current user.
+ */
 const getUserStats = async (api: AxiosInstance) => {
   try {
     const { data } = await api.get(`/user-profiles/stats`);
@@ -23,6 +29,9 @@ const getUserStats = async (api: AxiosInstance) => {
   }
 };
 
+/**
+ * Updates the current user's profile.
+ */
 const updateUserProfile = async (
   api: AxiosInstance,
   userProfile: UserProfileUpdate
@@ -36,6 +45,9 @@ const updateUserProfile = async (
   }
 };
 
+/**
+ * Exports user data as a blob.
+ */
 const exportUserData = async (api: AxiosInstance) => {
   try {
     const response = await api.get('/user-profiles/export', { responseType: 'blob' });
@@ -46,6 +58,9 @@ const exportUserData = async (api: AxiosInstance) => {
   }
 };
 
+/**
+ * Deletes a user by optional ID or current user.
+ */
 const deleteUser = async (api: AxiosInstance, deleteUserId?: string) => {
   try {
     const url = `/user-profiles${deleteUserId ? `?delete_user_id=${deleteUserId}` : ''}`;
@@ -57,16 +72,9 @@ const deleteUser = async (api: AxiosInstance, deleteUserId?: string) => {
   }
 };
 
-const deleteUnconfirmedUser = async (api: AxiosInstance, email: string) => {
-  try {
-    const { data } = await api.post('/auth/delete-unconfirmed', { email });
-    return data;
-  } catch (error) {
-    console.error('Error deleting unconfirmed user:', error);
-    throw error;
-  }
-};
-
+/**
+ * Checks uniqueness of email and phone during signup.
+ */
 const checkUnique = async (api: AxiosInstance, email: string, phone: string) => {
   try {
     const { data } = await api.post('/auth/check-unique', { email, phone });
@@ -77,6 +85,9 @@ const checkUnique = async (api: AxiosInstance, email: string, phone: string) => 
   }
 };
 
+/**
+ * Fetches paginated users with filtering and sorting.
+ */
 const getPaginatedUsers = async (
   api: AxiosInstance,
   page: number,
@@ -127,6 +138,9 @@ const getPaginatedUsers = async (
   }
 };
 
+/**
+ * Fetches a user profile by ID.
+ */
 const getUserProfileById = async (api: AxiosInstance, userId: string) => {
   try {
     const { data } = await api.get<UserProfile>(`/user-profiles/${userId}`);
@@ -137,6 +151,9 @@ const getUserProfileById = async (api: AxiosInstance, userId: string) => {
   }
 };
 
+/**
+ * Updates a user's daily session limit.
+ */
 const updateDailySessionLimit = async (
   api: AxiosInstance,
   userId: string,
@@ -153,13 +170,15 @@ const updateDailySessionLimit = async (
   }
 };
 
+/**
+ * User profile API methods.
+ */
 export const UserProfileService = {
   getUserProfile,
   getUserStats,
   updateUserProfile,
   exportUserData,
   deleteUser,
-  deleteUnconfirmedUser,
   checkUnique,
   getPaginatedUsers,
   getUserProfileById,

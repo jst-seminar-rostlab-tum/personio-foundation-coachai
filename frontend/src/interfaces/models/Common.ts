@@ -1,3 +1,6 @@
+/**
+ * Numeric scores for session evaluation categories.
+ */
 export interface SessionScores {
   clarity: number;
   empathy: number;

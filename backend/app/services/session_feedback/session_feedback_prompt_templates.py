@@ -1,3 +1,6 @@
+"""Service layer for session feedback prompt templates."""
+
+
 def build_training_examples_prompt(
     category: str,
     transcript: str | None,
@@ -12,7 +15,7 @@ def build_training_examples_prompt(
     Builds a user prompt for extracting positive and negative examples
     from a training session transcript.
 
-    Args:
+    Parameters:
         category (str): The conversation or training context/category.
         transcript (str): The full transcript of the session.
         objectives (list): List of objectives for the training.
@@ -93,7 +96,7 @@ def build_goals_achieved_prompt(
     """
     Builds a user prompt for evaluating which goals were achieved by the user in a session.
 
-    Args:
+    Parameters:
         transcript (str, optional): The session transcript. Defaults to empty string if None.
         objectives (list, optional): List of goals/objectives.
         hr_docs_context (str, optional): Additional HR document context.
@@ -155,7 +158,7 @@ def build_recommendations_prompt(
     """
     Builds a user prompt for generating actionable communication improvement recommendations.
 
-    Args:
+    Parameters:
         transcript (str, optional): Session transcript.
         persona (str, optional): Persona description and training focus.
         objectives (list, optional): List of objectives.

@@ -1,3 +1,6 @@
+/**
+ * Shows a skeleton UI while the new scenario flow loads.
+ */
 export default function ConversationScenarioPageLoading() {
   return (
     <div className="mx-auto pb-8">

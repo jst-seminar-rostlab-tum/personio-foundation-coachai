@@ -3,12 +3,18 @@
 import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent } from '../ui/Dialog';
 
+/**
+ * Props for the contact modal.
+ */
 interface ContactModalProps {
   isOpen: boolean;
   onClose: () => void;
   email?: string;
 }
 
+/**
+ * Displays a modal with contact information and email link.
+ */
 export function ContactModal({
   isOpen,
   onClose,

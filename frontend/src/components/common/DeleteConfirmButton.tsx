@@ -14,11 +14,17 @@ import {
 } from '@/components/ui/AlertDialog';
 import { Button } from '../ui/Button';
 
+/**
+ * Props for the delete confirmation trigger.
+ */
 interface DeleteConfirmButtonProps {
   onConfirm: () => Promise<void>;
   isButton?: boolean;
 }
 
+/**
+ * Renders a delete action with confirmation dialog.
+ */
 export function DeleteConfirmButton({ onConfirm, isButton = false }: DeleteConfirmButtonProps) {
   const t = useTranslations('Common');
   const [open, setOpen] = useState(false);

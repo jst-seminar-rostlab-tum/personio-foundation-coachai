@@ -10,11 +10,17 @@ import { api } from '@/services/ApiClient';
 import { conversationScenarioService } from '@/services/ConversationScenarioService';
 import { useRouter } from 'next/navigation';
 
+/**
+ * Props for the suggested conversation scenario card.
+ */
 interface ConversationScenarioSuggestionProps {
   suggestion: string;
   scenario: ConversationScenario;
 }
 
+/**
+ * Displays a suggested scenario and launches it on request.
+ */
 export default function ConversationScenarioSuggestion({
   suggestion,
   scenario,
@@ -34,6 +40,9 @@ export default function ConversationScenarioSuggestion({
 
   if (!suggestion || !scenario) return null;
 
+  /**
+   * Creates a scenario from the suggestion and navigates to preparation.
+   */
   const onClickStartSuggestedScenario = async () => {
     try {
       const { data } = await conversationScenarioService.createConversationScenario(
