@@ -62,6 +62,7 @@ export function SignUpForm() {
         .string()
         .regex(/^.{8,}$/)
         .regex(/[A-Z]/)
+        .regex(/[0-9]/)
         .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/),
       terms: z.boolean().refine((val) => val === true),
     })
@@ -107,8 +108,13 @@ export function SignUpForm() {
       test: (password: string) => /[A-Z]/.test(password),
     },
     {
-      id: 'special',
+      id: 'digit',
       label: tLogin('SignUpTab.passwordInputRequirementThreeLabel'),
+      test: (password: string) => /[0-9]/.test(password),
+    },
+    {
+      id: 'special',
+      label: tLogin('SignUpTab.passwordInputRequirementFourLabel'),
       test: (password: string) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
     },
   ];
