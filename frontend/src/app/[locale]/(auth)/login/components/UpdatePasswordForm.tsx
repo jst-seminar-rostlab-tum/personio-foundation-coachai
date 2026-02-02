@@ -52,6 +52,7 @@ export default function UpdatePasswordForm() {
         .string()
         .min(8, t('passwordLengthError'))
         .regex(/[A-Z]/, t('passwordUppercaseError'))
+        .regex(/[0-9]/, t('passwordDigitError'))
         .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, t('passwordSpecialCharError'))
         .trim(),
       confirmPassword: z.string(),
