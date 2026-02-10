@@ -4,7 +4,7 @@ A simple full-stack application built with Next.js, FastAPI, and PostgreSQL.
 
 
 ### Frontend
-- Next.js 15.5.4 with App Router
+- Next.js 15.5.9 with App Router
 - TypeScript
 - TailwindCSS v4
 - Axios for HTTP requests with client/server separation
