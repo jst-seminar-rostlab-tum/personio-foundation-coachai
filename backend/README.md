@@ -290,7 +290,7 @@ You can skip these steps below if you don't want to use phone number verificatio
 - **Uvicorn**: For ASGI server
 
 ## Structure
-The project file and folder structure is as follows:
+The project file and folder structure is as follows: 
 
 ```
 backend/
